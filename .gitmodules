@@ -1,0 +1,3 @@
+[submodule "subprojects/lite-play-common"]
+	path = subprojects/lite-play-common
+	url = git@github.com:BISDigital/lite-play-common.git
