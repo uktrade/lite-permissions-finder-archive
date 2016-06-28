@@ -1,0 +1,29 @@
+@import views.html.common.page.govukTemplate
+
+@(htmlTitle: String, propositionHeading: Option[Html] = None)(content: Html)
+
+@govukTemplate(
+  Some(htmlTitle),
+  bodyClasses = None,
+  htmlLang = None
+)(
+  head = HtmlFormat.empty,
+  bodyStart = HtmlFormat.empty,
+  bodyEnd = HtmlFormat.empty,
+  insideHeader = HtmlFormat.empty,
+  afterHeader = HtmlFormat.empty,
+  footerTop = HtmlFormat.empty,
+  footerLinks = HtmlFormat.empty,
+  headerClass = Html("with-proposition"),
+  propositionHeader = Html("<div class=\"header-proposition\"><div class=\"content\"><nav id=\"proposition-menu\"><a id=\"proposition-name\" href=\"/\">"
+    + propositionHeading.getOrElse("Import / Export Licensing") + "</a></nav></div></div>"),
+  homepageUrl = None,
+  globalHeaderText = None,
+  cookieMessage = None,
+  skipLinkMessage = None,
+  logoLinkTitle = None,
+  licenceMessage = Html("<p>All content is available under the " +
+    "<a rel=\"license\" href=\"https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/\">Open Government Licence v3.0</a>," +
+    " except where otherwise stated</p>"),
+  crownCopyrightMessage = None
+)(content)
