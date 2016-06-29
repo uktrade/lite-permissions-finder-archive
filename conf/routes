@@ -9,7 +9,9 @@ GET     /trade-type                 controllers.TradeTypeController.renderForm
 
 POST    /select-trade-type          controllers.TradeTypeController.handleSubmit
 
-POST    /select-export-category     controllers.ExportCategoryController.handleSubmit
+POST    /export-category/select     controllers.categories.ExportCategoryController.handleSubmit
+
+POST    /export-category/arts-cultural     controllers.categories.ArtsCulturalController.handleSubmit
 
 POST    /select-goods-type          controllers.GoodsTypeController.handleSubmit
 

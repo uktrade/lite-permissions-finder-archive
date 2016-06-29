@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import controllers.categories.ExportCategoryController;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;

@@ -1,10 +1,11 @@
 @import util._
 @import views.html.common.page._
+@import controllers.categories.ExportCategoryController
 
 @()
 @standardPage("Your exports", Some(Html("What are you exporting?"))){ }{
 
-  <form action="@routes.ExportCategoryController.handleSubmit()" method="POST">
+  <form action="@controllers.categories.routes.ExportCategoryController.handleSubmit()" method="POST">
 
     @detailPanel("mil"){Military equipment and firearms} {
       <p>
@@ -25,6 +26,13 @@
         You should choose this category if you are exporting goods that you think could be used for military purposes, even if you are not sure.
       </p>
       <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.DUAL_USE">Continue</button>
+    }
+
+    @detailPanel("artscultural"){Arts and cultural goods}{
+      <p>
+        This includes cultural artefacts, works of art, antiques (including weapons), manuscripts and archaeological items.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.ARTS_CULTURAL">Continue</button>
     }
 
     <p>or</p>

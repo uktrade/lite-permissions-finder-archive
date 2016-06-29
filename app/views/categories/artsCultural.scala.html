@@ -1,0 +1,20 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import controllers.categories.ArtsCulturalController
+
+@(form: Form[_])
+@standardPage("Arts and cultural goods", Some(Html("Arts and cultural goods"))){ @errorSummary(form) }{
+
+  <form action="@controllers.categories.routes.ArtsCulturalController.handleSubmit()" method="POST">
+
+    @formRadioGroup(form("itemAge"), ArtsCulturalController.AGE_OPTIONS){ How old is the item? }
+
+    @formRadioBoolean(form("firearm"), Html("Is it a gun or firearm?"))
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+
+  </form>
+}
