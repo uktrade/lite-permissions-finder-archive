@@ -4,13 +4,13 @@
 
 @(form: Form[_])
 
-@standardPage("Trade Activities", Some(Html("Your trade activities"))){
-
+@standardPage("Trade Activities", Some(Html("Your trade activities"))) {
   @errorSummary(form)
+}{
 
   <form action="@routes.TradeTypeController.handleSubmit()" method="POST">
 
-    @formRadios(form("tradeType"), TradeTypeController.TRADE_TYPE_OPTIONS){
+    @formRadioGroup(form("tradeType"), TradeTypeController.TRADE_TYPE_OPTIONS){
       Are you importing, exporting or <a href="#" rel="external">brokering trade</a> from the UK?
     }
 

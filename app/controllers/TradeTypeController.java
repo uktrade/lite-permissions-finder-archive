@@ -6,26 +6,27 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
-import utils.common.CheckboxOption;
+import utils.common.SelectOption;
 import views.html.tradeType;
-import views.html.exportCategories;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class TradeTypeController extends Controller {
 
-  public static final List<CheckboxOption> TRADE_TYPE_OPTIONS = Arrays.asList(
-    new CheckboxOption("IMPORT", "I am importing"),
-    new CheckboxOption("EXPORT", "I am exporting"),
-    new CheckboxOption("BROKERING", "I am brokering trade")
+  public static final List<SelectOption> TRADE_TYPE_OPTIONS = Arrays.asList(
+    new SelectOption("IMPORT", "I am importing"),
+    new SelectOption("EXPORT", "I am exporting"),
+    new SelectOption("BROKERING", "I am brokering trade")
   );
 
   private final FormFactory formFactory;
+  private final ExportCategoryController exportCategoryController;
 
   @Inject
-  public TradeTypeController(FormFactory formFactory) {
+  public TradeTypeController(FormFactory formFactory, ExportCategoryController exportCategoryController) {
     this.formFactory = formFactory;
+    this.exportCategoryController = exportCategoryController;
   }
 
   public Result renderForm() {
@@ -46,7 +47,7 @@ public class TradeTypeController extends Controller {
       case "BROKERING":
         return ok("Not implemented");
       case "EXPORT":
-        return ok(exportCategories.render());
+        return exportCategoryController.renderForm(); //ok(exportCategories.render());
       default:
         return badRequest("Unknown trade type " + tradeTypeParam);
     }

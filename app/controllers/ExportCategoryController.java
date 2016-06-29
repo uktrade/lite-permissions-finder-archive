@@ -5,6 +5,7 @@ import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.exportCategories;
 
 public class ExportCategoryController extends Controller {
 
@@ -15,10 +16,16 @@ public class ExportCategoryController extends Controller {
   }
 
   private final FormFactory formFactory;
+  private final GoodsTypeController goodsTypeController;
 
   @Inject
-  public ExportCategoryController(FormFactory formFactory) {
+  public ExportCategoryController(FormFactory formFactory, GoodsTypeController goodsTypeController) {
     this.formFactory = formFactory;
+    this.goodsTypeController = goodsTypeController;
+  }
+
+  public Result renderForm() {
+    return ok(exportCategories.render());
   }
 
   public Result handleSubmit() {
@@ -29,7 +36,7 @@ public class ExportCategoryController extends Controller {
 
     switch (category) {
       case MILITARY:
-        return ok("MIL");
+        return goodsTypeController.renderForm();
       case DUAL_USE:
         return ok("DUAL USE");
       case NONE:
@@ -37,7 +44,5 @@ public class ExportCategoryController extends Controller {
       default:
         throw new RuntimeException("Unknown category " + category);
     }
-
   }
-
 }

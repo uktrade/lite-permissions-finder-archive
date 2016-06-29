@@ -1,0 +1,36 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+
+@(form: Form[_])
+@standardPage("Select goods type", Some(Html("Are you exporting goods, software or technology?"))){
+  @errorSummary(form)
+}{
+
+  <form action="@routes.GoodsTypeController.handleSubmit()" method="POST">
+
+    @fieldContainer(form("goodsType")) {
+
+      @formRadio(form("goodsType"), Html("I am exporting physical goods"), GoodsTypeController.GoodsTypeOption.PHYSICAL.toString)
+      <p class="panel panel-border-wide">
+        eg military hardware, nuclear materials, electronic equipment
+      </p>
+
+      @formRadio(form("goodsType"), Html("I am exporting software"), GoodsTypeController.GoodsTypeOption.SOFTWARE.toString)
+      <p class="panel panel-border-wide">
+        eg programmes or source code
+      </p>
+
+      @formRadio(form("goodsType"), Html("I am exporting technology"), GoodsTypeController.GoodsTypeOption.TECHNOLOGY.toString)
+      <p class="panel panel-border-wide">
+        eg manuals, plans, designs, models or blueprints, and also technical assistance in the form of training, consulting and other services.
+        Read more about <a href="https://www.gov.uk/guidance/export-of-technology" rel="external" target="_blank">exporting technology</a>.
+      </p>
+    }
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+
+  </form>
+}

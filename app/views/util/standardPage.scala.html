@@ -1,14 +1,20 @@
 @import util._
 
-@(htmlTitle: String, pageHeading: Option[Html], propositionHeading: Option[Html] = None)(content: Html)
+@(htmlTitle: String, pageHeading: Option[Html])(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle) {
+
   <main id="content" role="main">
 
     @phaseBanner()
 
+    <a href="javascript:history.back();" class="link-back js-only">Back</a>
+
+    <a id="contentStart"></a>
+
+    @beforeHeader
+
     <header class="page-header">
-      @*<a href="javascript:history.back();" class="link-back">Back</a>*@
 
       @if(pageHeading.isDefined) {
         <div>
