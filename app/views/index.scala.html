@@ -1,20 +1,69 @@
 @import util._
-@import views.html.common.page.detailPanel
 
-@standardPage("My Title", Some(Html("Test Heading"))){
+@govukTemplateDefaults("Import / export licensing service") {
+  <main id="content" role="main">
 
-  This is content
+    @phaseBanner()
 
-  @detailPanel("testid"){
-    Expand these details
-  }{
-    <p>Hello there</p>
-  }
+    <div class="breadcrumbs">
+      <ol role="breadcrumbs">
+        <li><a href="http://www.gov.uk">Home</a></li>
+        <li><a href="/">Import &amp; export</a></li>
+        <li>Import &amp; export licensing</li>
+      </ol>
+    </div>
 
-  @detailPanel("testid2"){
-    Expand these details again
-  }{
-    <p>Hello there again</p>
-  }
+    <div class="grid-row">
+      <div class="column-two-thirds">
 
+        <header class="page-header">
+          <h1 class="heading-xlarge">Find out if you need an international trade licence</h1>
+        </header>
+
+        <span class="lede">Use this service to:</span>
+        <ul class="list list-bullet">
+          <li>find out if you need a licence to import or export goods, software or technology</li>
+          <li>apply and register for import and export licences and permissions</li>
+        </ul>
+
+        <div style="padding-top:10px;">
+          <span class="lede">You will need to know:</span>
+          <ul class="list list-bullet">
+            <li>where items are being sent to and from</li>
+            <li>a description of the items</li>
+          </ul>
+        </div>
+
+        <a href="/trade-type" class="button button-start" name="action" value="select-export-type">Start now</a>
+
+      </div>
+
+      <div class="column-third">
+
+        <div class="related-links">
+          <h2 class="heading-medium">Ready to make an application?</h2>
+
+          <ul class="font-xsmall">
+            <li><a href="/quick-links">Quick links</a></li>
+          </ul>
+
+        </div>
+
+        <div class="related-links">
+          <h2 class="heading-medium">Need some help?</h2>
+
+          <p>
+            Telephone helpline: 0207 123 4567
+          </p>
+
+          <ul class="font-xsmall">
+            <li><a href="#">Email helpline</a></li>
+            <li><a href="images/live-chat-window.png">Live Chat help</a></li>
+          </ul>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
 }

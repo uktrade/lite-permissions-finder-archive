@@ -1,0 +1,23 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+
+@(form: Form[_])
+
+@standardPage("Trade Activities", Some(Html("Your trade activities"))){
+
+  @errorSummary(form)
+
+  <form action="@routes.TradeTypeController.handleSubmit()" method="POST">
+
+    @formRadios(form("tradeType"), TradeTypeController.TRADE_TYPE_OPTIONS){
+      Are you importing, exporting or <a href="#" rel="external">brokering trade</a> from the UK?
+    }
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+
+  </form>
+
+}

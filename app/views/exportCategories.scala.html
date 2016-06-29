@@ -1,0 +1,40 @@
+@import util._
+@import views.html.common.page._
+
+@()
+@standardPage("Your exports", Some(Html("What are you exporting?"))){
+
+  <form action="@routes.ExportCategoryController.handleSubmit()" method="POST">
+
+    @detailPanel("mil"){Military equipment and firearms} {
+      <p>
+        This covers all military items, such as weapons, weapon-delivery systems, explosives, munitions, ammunition and ordnance, and military vehicles.
+        It also includes software and source code to enable the use of military goods, and technology such as manuals, designs, models or blueprints for goods that themselves require an export licence.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.MILITARY">Continue</button>
+    }
+
+    @detailPanel("dualuse"){Dual-use goods, software and technology}{
+      <p>
+        <a href="#">Dual-use items</a> are civilian goods, equipment, technology, documents or diagrams that can also be used for military purposes. They can be raw materials, components or finished systems.
+      </p>
+      <p>
+        Dual-use items are typically high-tech, advanced products, often with military standard specifications.
+      </p>
+      <p>
+        You should choose this category if you are exporting goods that you think could be used for military purposes, even if you are not sure.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.DUAL_USE">Continue</button>
+    }
+
+    <p>or</p>
+
+    @detailPanel("none"){None of the above}{
+      <p>
+        Choose this if you are sure your items do not fall into any of the categories above.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.NONE">Continue</button>
+    }
+
+  </form>
+}
