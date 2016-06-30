@@ -2,6 +2,7 @@ package controllers.categories;
 
 import com.google.inject.Inject;
 import controllers.GoodsTypeController;
+import controllers.StaticContentController;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -23,11 +24,13 @@ public class ArtsCulturalController extends Controller {
 
   private final FormFactory formFactory;
   private final GoodsTypeController goodsTypeController;
+  private final StaticContentController staticContentController;
 
   @Inject
-  public ArtsCulturalController(FormFactory formFactory, GoodsTypeController goodsTypeController) {
+  public ArtsCulturalController(FormFactory formFactory, GoodsTypeController goodsTypeController, StaticContentController staticContentController) {
     this.formFactory = formFactory;
     this.goodsTypeController = goodsTypeController;
+    this.staticContentController = staticContentController;
   }
 
   public Result renderForm() {
@@ -47,7 +50,7 @@ public class ArtsCulturalController extends Controller {
       }
     }
 
-    return ok("TODO static response NLR");
+    return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.NO_LICENCE_CULTURAL);
   }
 
   public static class ArtsForm {
