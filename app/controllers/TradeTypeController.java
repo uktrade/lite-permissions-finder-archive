@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TradeTypeController extends Controller {
 
-  public static final List<SelectOption> TRADE_TYPE_OPTIONS = Arrays.asList(
+  private static final List<SelectOption> TRADE_TYPE_OPTIONS = Arrays.asList(
     new SelectOption("IMPORT", "I am importing"),
     new SelectOption("EXPORT", "I am exporting"),
     new SelectOption("BROKERING", "I am brokering trade")
@@ -31,7 +31,7 @@ public class TradeTypeController extends Controller {
   }
 
   public Result renderForm() {
-    return ok(tradeType.render(formFactory.form(TradeTypeForm.class)));
+    return ok(tradeType.render(formFactory.form(TradeTypeForm.class), TRADE_TYPE_OPTIONS));
   }
 
   public Result handleSubmit() {
@@ -39,7 +39,7 @@ public class TradeTypeController extends Controller {
     Form<TradeTypeForm> form = formFactory.form(TradeTypeForm.class).bindFromRequest();
 
     if (form.hasErrors()) {
-      return ok(tradeType.render(form));
+      return ok(tradeType.render(form, TRADE_TYPE_OPTIONS));
     }
 
     String tradeTypeParam = form.get().tradeType;
