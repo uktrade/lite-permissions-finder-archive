@@ -15,7 +15,7 @@ public class StaticContentController extends Controller {
 
   public enum StaticHtml {
 
-    NO_LICENCE_CULTURAL("noLicenceCultural", "No licence required");
+    NO_LICENCE_CULTURAL("noLicenceCultural.html", "No licence required");
 
     StaticHtml(String filename, String title) {
       this.filename = filename;
