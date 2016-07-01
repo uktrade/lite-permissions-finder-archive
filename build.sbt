@@ -1,4 +1,4 @@
-name := """lite-permission-finder"""
+name := """lite-permissions-finder"""
 
 version := "1.0-SNAPSHOT"
 
