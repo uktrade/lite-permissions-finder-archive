@@ -15,7 +15,7 @@
       <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.MILITARY">Continue</button>
     }
 
-    @detailPanel("dualuse"){Dual-use goods, software and technology}{
+    @detailPanel("dual-use"){Dual-use goods, software and technology}{
       <p>
         <a href="#">Dual-use items</a> are civilian goods, equipment, technology, documents or diagrams that can also be used for military purposes. They can be raw materials, components or finished systems.
       </p>
@@ -28,14 +28,86 @@
       <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.DUAL_USE">Continue</button>
     }
 
-    @detailPanel("artscultural"){Arts and cultural goods}{
+    @detailPanel("torture-restraint"){Goods that could be used for torture, restraint or execution}{
+      <p>
+        This covers items that could be used for capital punishment, torture or other cruel, inhuman or degrading treatment or punishment. It also includes goods designed for the execution of human beings such as gallows, electric chairs and automatic drug-injection systems.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.TORTURE_RESTRAINT">Continue</button>
+    }
+
+    @detailPanel("radioactive"){Radioactive goods}{
+      <p>
+        This covers high-activity radioactive sources as defined by the International Atomic Energy Agency.
+      <p>
+      <p>
+      Read guidance on <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources" class="external" target="_blank" rel="external">controls on radioactive sources</a> for more information on the items covered in this category.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.RADIOACTIVE">Continue</button>
+    }
+
+    @detailPanel("chemicals-cosmetics"){Cosmetics, chemicals, and pesticides}{
+      <p>
+        This includes toiletries and beauty products, detergents, disinfectants, domestic cleaners, industrial chemicals, chemical raw materials and food-handling materials.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.CHEMICALS_COSMETICS">Continue</button>
+    }
+
+    @detailPanel("arts-cultural"){Arts and cultural goods}{
       <p>
         This includes cultural artefacts, works of art, antiques (including weapons), manuscripts and archaeological items.
       </p>
       <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.ARTS_CULTURAL">Continue</button>
     }
 
-    <p>or</p>
+    @detailPanel("plants-animals"){Plants and animals}{
+      <p>
+        This includes live animals and birds, non-edible flowers and plants, seeds and other wildlife.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.PLANTS_ANIMALS">Continue</button>
+    }
+
+    @detailPanel("Food"){Food}{
+      <p>
+        This includes any products suitable for human consumption, including fresh food and processed food.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.FOOD">Continue</button>
+    }
+
+    @detailPanel("medicines-drugs"){Medicines and drugs}{
+      <p>
+        This includes medicinal products, prescription drugs and controlled drugs.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.MEDICINES_DRUGS">Continue</button>
+    }
+
+    @detailPanel("technical-assistance"){Technical assistance}{
+      <p>
+        This covers any technical support for military or dual-use items. This includes:
+      </p>
+      <ul class="list list-bullet text">
+        <li>repairs</li>
+        <li>development</li>
+        <li>manufacture</li>
+        <li>testing</li>
+        <li>maintenance</li>
+        <li>any other technical service</li>
+      </ul>
+      <p>
+        You should choose this category if you are providing training, instruction or advice, working knowledge, skills or consulting services, either in person, verbally or electronically.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.TECHNICAL_ASSISTANCE">Continue</button>
+    }
+
+    @detailPanel("financial-assistance"){Financing and financial assistance}{
+      <p>
+        This covers the provision of brokering services, insurance, financing and financial support related to the sale, supply, transfer or export of goods and technology to certain destinations. It includes the processing of payments for prohibited or restricted trade transactions.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.FINANCIAL_ASSISTANCE">Continue</button>
+    }
+
+    <p class="category-or">
+      <span class="font-medium">or</span>
+    </p>
 
     @detailPanel("none"){None of the above}{
       <p>

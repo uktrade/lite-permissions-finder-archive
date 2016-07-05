@@ -13,8 +13,16 @@ public class ExportCategoryController extends Controller {
   public enum ExportCategory {
     MILITARY,
     DUAL_USE,
+    TORTURE_RESTRAINT,
+    RADIOACTIVE,
+    CHEMICALS_COSMETICS,
     ARTS_CULTURAL,
-    NONE;
+    PLANTS_ANIMALS,
+    FOOD,
+    MEDICINES_DRUGS,
+    TECHNICAL_ASSISTANCE,
+    FINANCIAL_ASSISTANCE,
+    NONE
   }
 
   private final FormFactory formFactory;
