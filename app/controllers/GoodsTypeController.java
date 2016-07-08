@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import controllers.search.PhysicalGoodsSearchController;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -18,9 +19,12 @@ public class GoodsTypeController extends Controller {
 
   private final FormFactory formFactory;
 
+  private final PhysicalGoodsSearchController physicalGoodsSearchController;
+
   @Inject
-  public GoodsTypeController(FormFactory formFactory) {
+  public GoodsTypeController(FormFactory formFactory, PhysicalGoodsSearchController physicalGoodsSearchController) {
     this.formFactory = formFactory;
+    this.physicalGoodsSearchController = physicalGoodsSearchController;
   }
 
   public Result renderForm() {
@@ -41,7 +45,7 @@ public class GoodsTypeController extends Controller {
       case SOFTWARE:
         return ok("Not implemented");
       case PHYSICAL:
-        return ok("physical");
+        return physicalGoodsSearchController.renderForm();
       default:
         return badRequest("Unknown goods type " + goodsTypeOption);
     }

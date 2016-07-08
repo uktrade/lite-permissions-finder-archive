@@ -1,6 +1,6 @@
 @import util._
 
-@(htmlTitle: String, pageHeading: Option[Html])(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, pageHeading: Option[Html], backLinkText: String = "Back")(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle + " - Import & Export Licensing") {
 
@@ -8,7 +8,7 @@
 
     @phaseBanner()
 
-    <a href="javascript:history.back();" class="link-back js-only">Back</a>
+    <a href="javascript:history.back();" class="link-back js-only">@backLinkText</a>
 
     <a id="contentStart"></a>
 

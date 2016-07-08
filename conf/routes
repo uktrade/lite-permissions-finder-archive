@@ -3,17 +3,21 @@
 ->      /common                     common.Routes
 
 # Main index page
-GET     /                           controllers.EntryPointController.index
+GET     /                                     controllers.EntryPointController.index
 
-GET     /trade-type                 controllers.TradeTypeController.renderForm
+GET     /trade-type                           controllers.TradeTypeController.renderForm
 
-POST    /select-trade-type          controllers.TradeTypeController.handleSubmit
+POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
 
-POST    /export-category/select     controllers.categories.ExportCategoryController.handleSubmit
+POST    /export-category/select               controllers.categories.ExportCategoryController.handleSubmit
 
-POST    /export-category/arts-cultural     controllers.categories.ArtsCulturalController.handleSubmit
+POST    /export-category/arts-cultural        controllers.categories.ArtsCulturalController.handleSubmit
 
-POST    /select-goods-type          controllers.GoodsTypeController.handleSubmit
+POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
+
+POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
+
+POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)

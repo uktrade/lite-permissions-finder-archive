@@ -1,0 +1,5 @@
+@import controllers.search.ControlCodeSearchResults
+
+@(results: ControlCodeSearchResults)
+@formAction = {@controllers.search.routes.PhysicalGoodsSearchResultsController.handleSubmit()}
+@controlCodeSearchResultsBase(results, formAction.toString())
