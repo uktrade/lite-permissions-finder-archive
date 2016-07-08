@@ -1,6 +1,7 @@
 package controllers.search;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import play.Logger;
 import play.libs.ws.WSClient;
 
@@ -12,17 +13,18 @@ public class ControlCodeSearchClient {
 
   private static final long REQUEST_TIMEOUT_MS = 10000; //10 Seconds
 
-  private static final String REQUEST_URL = "http://searchproto-1.lite.bis.gov.uk:4567/search"; //Solr
+  private final String webServiceUrl;
 
   private final WSClient ws;
 
   @Inject
-  public ControlCodeSearchClient(WSClient ws) {
+  public ControlCodeSearchClient(WSClient ws, @Named("controlCodeSearchServiceHostname") String webServiceHostname){
     this.ws = ws;
+    this.webServiceUrl= "http://" + webServiceHostname + "/search";
   }
 
   public CompletionStage<ControlCodeSearchResponse> search(String searchTerm){
-    return ws.url(REQUEST_URL)
+    return ws.url(webServiceUrl)
         .setRequestTimeout(REQUEST_TIMEOUT_MS)
         .setQueryParameter("term", searchTerm)
         .get().handle((response, error) -> {
