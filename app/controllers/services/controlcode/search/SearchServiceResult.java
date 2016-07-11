@@ -1,6 +1,6 @@
-package controllers.search;
+package controllers.services.controlcode.search;
 
-public class ControlCodeSearchResult {
+public class SearchServiceResult {
 
   public String highlightedText;
 

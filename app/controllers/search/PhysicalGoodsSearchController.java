@@ -4,6 +4,7 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import controllers.ErrorController;
+import controllers.services.controlcode.search.SearchServiceClient;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -13,15 +14,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 
-public class PhysicalGoodsSearchController extends ControlCodeSearchController{
+public class PhysicalGoodsSearchController extends SearchController {
 
   private PhysicalGoodsSearchResultsController physicalGoodsSearchResultsController;
 
   @Inject
-  public PhysicalGoodsSearchController(FormFactory formFactory, ControlCodeSearchClient controlCodeSearchClient,
+  public PhysicalGoodsSearchController(FormFactory formFactory, SearchServiceClient searchServiceClient,
                                        ErrorController errorController,
                                        PhysicalGoodsSearchResultsController physicalGoodsSearchResultsController) {
-    super(formFactory, controlCodeSearchClient, errorController);
+    super(formFactory, searchServiceClient, errorController);
     this.physicalGoodsSearchResultsController = physicalGoodsSearchResultsController;
   }
 

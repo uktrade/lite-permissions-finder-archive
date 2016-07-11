@@ -1,10 +1,9 @@
+@import controllers.services.controlcode.search.SearchServiceResults
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
 
-@import controllers.search.ControlCodeSearchResults
-
-@(results: ControlCodeSearchResults, formAction: String)
+@(results: SearchServiceResults, formAction: String)
 
 @standardPage("Possible matches", Some(Html("Possible matches")), backLinkText = "Edit description"){
 

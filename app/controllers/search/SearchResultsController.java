@@ -4,11 +4,11 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 
-public class ControlCodeSearchResultsController {
+public class SearchResultsController {
 
   private final FormFactory formFactory;
 
-  public ControlCodeSearchResultsController(FormFactory formFactory) {
+  public SearchResultsController(FormFactory formFactory) {
     this.formFactory = formFactory;
   }
 

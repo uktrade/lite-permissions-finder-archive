@@ -1,6 +1,8 @@
 package controllers.search;
 
 import controllers.ErrorController;
+import controllers.services.controlcode.search.SearchServiceClient;
+import controllers.services.controlcode.search.SearchServiceResponse;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -9,23 +11,23 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ControlCodeSearchController {
+public class SearchController {
 
   protected final FormFactory formFactory;
 
-  protected final ControlCodeSearchClient controlCodeSearchClient;
+  protected final SearchServiceClient searchServiceClient;
 
   protected final ErrorController errorController;
 
-  public ControlCodeSearchController(FormFactory formFactory, ControlCodeSearchClient controlCodeSearchClient,
-                                     ErrorController errorController) {
+  public SearchController(FormFactory formFactory, SearchServiceClient searchServiceClient,
+                          ErrorController errorController) {
     this.formFactory = formFactory;
-    this.controlCodeSearchClient = controlCodeSearchClient;
+    this.searchServiceClient = searchServiceClient;
     this.errorController = errorController;
   }
 
-  public CompletionStage<ControlCodeSearchResponse> physicalGoodsSearch(Form<ControlCodeSearchForm> form) {
-    return controlCodeSearchClient.search(getSearchTerms(form));
+  public CompletionStage<SearchServiceResponse> physicalGoodsSearch(Form<ControlCodeSearchForm> form) {
+    return searchServiceClient.search(getSearchTerms(form));
   }
 
   public Form<ControlCodeSearchForm> bindForm(){
