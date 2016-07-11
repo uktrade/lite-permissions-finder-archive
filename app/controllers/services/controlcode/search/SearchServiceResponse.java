@@ -1,19 +1,20 @@
 package controllers.services.controlcode.search;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import controllers.services.controlcode.ServiceResponseStatus;
 import play.libs.Json;
 
 public class SearchServiceResponse {
 
   private final SearchServiceResults searchResults;
 
-  private final SearchServiceResponseStatus status;
+  private final ServiceResponseStatus status;
 
   public static class Builder {
 
     private SearchServiceResults searchResults;
 
-    private SearchServiceResponseStatus status;
+    private ServiceResponseStatus status;
 
     public SearchServiceResponse build() {
       return new SearchServiceResponse(this);
@@ -24,7 +25,7 @@ public class SearchServiceResponse {
       return this;
     }
 
-    public Builder setStatus(SearchServiceResponseStatus status){
+    public Builder setStatus(ServiceResponseStatus status){
       this.status = status;
       return this;
     }
@@ -43,12 +44,12 @@ public class SearchServiceResponse {
     return searchResults;
   }
 
-  public SearchServiceResponseStatus getStatus() {
+  public ServiceResponseStatus getStatus() {
     return status;
   }
 
   public boolean isOk() {
-    return this.status == SearchServiceResponseStatus.SUCCESS;
+    return this.status == ServiceResponseStatus.SUCCESS;
   }
 
 }

@@ -2,6 +2,7 @@ package controllers.services.controlcode.search;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import controllers.services.controlcode.ServiceResponseStatus;
 import play.Logger;
 import play.libs.ws.WSClient;
 
@@ -33,7 +34,7 @@ public class SearchServiceClient {
             Logger.error(error.getMessage(), error);
             return CompletableFuture.completedFuture(
                 SearchServiceResponse.builder()
-                    .setStatus(SearchServiceResponseStatus.UNCHECKED_EXCEPTION)
+                    .setStatus(ServiceResponseStatus.UNCHECKED_EXCEPTION)
                     .build()
             );
           }
@@ -41,7 +42,7 @@ public class SearchServiceClient {
             Logger.error("Unexpected HTTP status code from ControlCodeSearchService: {}", response.getStatus());
             return CompletableFuture.completedFuture(
                 SearchServiceResponse.builder()
-                    .setStatus(SearchServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE)
+                    .setStatus(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE)
                     .build()
             );
           }
@@ -49,7 +50,7 @@ public class SearchServiceClient {
             return CompletableFuture.completedFuture(
                 SearchServiceResponse.builder()
                     .setSearchResults(response.asJson())
-                    .setStatus(SearchServiceResponseStatus.SUCCESS)
+                    .setStatus(ServiceResponseStatus.SUCCESS)
                     .build()
             );
           }

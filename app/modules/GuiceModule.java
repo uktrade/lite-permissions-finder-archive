@@ -20,5 +20,7 @@ public class GuiceModule extends AbstractModule{
   protected void configure() {
     bindConstant().annotatedWith(Names.named("controlCodeSearchServiceHostname"))
         .to(configuration.getString("controlCodeSearchService.hostname"));
+    bindConstant().annotatedWith(Names.named("controlCodeLookupServiceHostname"))
+        .to(configuration.getString("controlCodeLookupService.hostname"));
   }
 }
