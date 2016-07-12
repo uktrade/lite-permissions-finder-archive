@@ -2,7 +2,6 @@ package controllers.search;
 
 import controllers.ErrorController;
 import controllers.services.controlcode.search.SearchServiceClient;
-import controllers.services.controlcode.search.SearchServiceResponse;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -26,7 +25,7 @@ public class SearchController {
     this.errorController = errorController;
   }
 
-  public CompletionStage<SearchServiceResponse> physicalGoodsSearch(Form<ControlCodeSearchForm> form) {
+  public CompletionStage<SearchServiceClient.Response> physicalGoodsSearch(Form<ControlCodeSearchForm> form) {
     return searchServiceClient.search(getSearchTerms(form));
   }
 

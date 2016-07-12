@@ -5,13 +5,14 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import controllers.ErrorController;
 import controllers.services.controlcode.lookup.LookupServiceClient;
-import controllers.services.controlcode.search.SearchServiceResults;
+import controllers.services.controlcode.search.SearchServiceResult;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.Result;
 import views.html.search.physicalGoodsSearchResults;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -22,7 +23,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     super(formFactory, lookupServiceClient, errorController);
   }
 
-  public Result renderForm(SearchServiceResults searchResults){
+  public Result renderForm(List<SearchServiceResult> searchResults){
     return ok(physicalGoodsSearchResults.render(searchResults));
   }
 
