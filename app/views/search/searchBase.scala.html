@@ -11,17 +11,27 @@
   </p>
   <form action="@formAction" method="POST">
 
-    @formInput(form("description"), Some(Html("eg unmanned aircraft, tunable lasers, microcircuits")))(Html("Description of goods"))
+    @formInput(form("description"), Some(Html("eg unmanned aircraft, tunable lasers, microcircuits"))){
+      Description of goods
+    }
 
-    @formInput(form("component"), Some(Html("eg engine for submersible vehicle, software for testing aero gas turbine engines")))(Html("If the item is a component, attachment or part for another item, describe its use with the other item"))
+    @formInput(form("component"), Some(Html("eg engine for submersible vehicle, software for testing aero gas turbine engines"))){
+      If the item is a component, attachment or part for another item, describe its use with the other item
+    }
 
-    @formInput(form("brand"), Some(Html("eg Boeing, AK-47, TiSon GSB")))(Html("Brand or manufacturer "))
+    @formInput(form("brand"), Some(Html("eg Boeing, AK-47, TiSon GSB"))) {
+      Brand or manufacturer
+    }
 
-    @formInput(form("partNumber"), Some(Html("eg KJ07600, EPD108550A, 3168 Series")))(Html("Part or part model"))
+    @formInput(form("partNumber"), Some(Html("eg KJ07600, EPD108550A, 3168 Series"))){
+      Part or part model
+    }
 
     <div class="hs-code-wrapper">
       @detailPanel("hs-code-details")(Html("Do you have the Harmonised System (HS) code for your goods?")){
-        @formInput(form("hsCode"), hint = Some(Html("eg 8424.20.0000, 2829.90.0000")))(Html("Harmonised System (HS) code"))
+        @formInput(form("hsCode"), hint = Some(Html("eg 8424.20.0000, 2829.90.0000"))){
+          Harmonised System (HS) code
+        }
       }
     </div>
 
