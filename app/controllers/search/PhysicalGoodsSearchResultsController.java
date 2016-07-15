@@ -27,10 +27,6 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     return ok(physicalGoodsSearchResults.render(searchResultsForm(), searchResults));
   }
 
-  public Result renderForm(List<SearchServiceResult> searchResults, Form<ControlCodeSearchResultsForm> form){
-    return ok(physicalGoodsSearchResults.render(form, searchResults));
-  }
-
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeSearchResultsForm> form = bindSearchResultsForm();
     String result = form.field("result").value();
