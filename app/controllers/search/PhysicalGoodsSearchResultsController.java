@@ -3,15 +3,16 @@ package controllers.search;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import controllers.ControlCodeController;
 import controllers.ErrorController;
 import controllers.services.controlcode.lookup.LookupServiceClient;
 import controllers.services.controlcode.search.SearchServiceResult;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.Json;
 import play.mvc.Result;
 import views.html.search.physicalGoodsSearchResults;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -19,8 +20,9 @@ import java.util.concurrent.CompletionStage;
 public class PhysicalGoodsSearchResultsController extends SearchResultsController {
 
   @Inject
-  public PhysicalGoodsSearchResultsController(FormFactory formFactory, LookupServiceClient lookupServiceClient, ErrorController errorController) {
-    super(formFactory, lookupServiceClient, errorController);
+  public PhysicalGoodsSearchResultsController(FormFactory formFactory, LookupServiceClient lookupServiceClient,
+                                              ControlCodeController controlCodeController, ErrorController errorController) {
+    super(formFactory, lookupServiceClient, controlCodeController, errorController);
   }
 
   public Result renderForm(List<SearchServiceResult> searchResults){
@@ -44,7 +46,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     if (ControlCodeSearchResultsForm.isResultValid(result)) {
       return lookupServiceClient.lookup(result).thenApply(response -> {
         if (response.isOk()) {
-          return ok(Json.toJson(response.getLookupServiceResult()));
+          return controlCodeController.renderForm(Collections.singletonList(response.getLookupServiceResult()));
         }
         return errorController.renderForm("An issue occurred while processing your request, please try again later.");
       });

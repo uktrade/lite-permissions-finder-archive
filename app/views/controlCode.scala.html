@@ -1,0 +1,21 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+
+@import controllers.services.controlcode.lookup.LookupServiceResult
+
+@(form: Form[_], controlCodes: List[LookupServiceResult])
+@standardPage(controlCodes.last.friendlyDescription, Some(Html(controlCodes.last.friendlyDescription)), "Possible matches"){
+  @errorSummary(form)
+}{
+
+  <div class="form-group">
+    @for(controlCode <- controlCodes) {
+      <ul class="list list-bullet text">
+        <li>@controlCode.controlCode</li>
+        <li>@Html(controlCode.friendlyDescription)</li>
+      </ul>
+    }
+  </div>
+
+}

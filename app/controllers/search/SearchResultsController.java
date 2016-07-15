@@ -1,5 +1,6 @@
 package controllers.search;
 
+import controllers.ControlCodeController;
 import controllers.ErrorController;
 import controllers.services.controlcode.lookup.LookupServiceClient;
 import play.data.Form;
@@ -11,11 +12,15 @@ public class SearchResultsController {
 
   protected final LookupServiceClient lookupServiceClient;
 
+  protected final ControlCodeController controlCodeController;
+
   protected final ErrorController errorController;
 
-  public SearchResultsController(FormFactory formFactory, LookupServiceClient lookupServiceClient, ErrorController errorController) {
+  public SearchResultsController(FormFactory formFactory, LookupServiceClient lookupServiceClient,
+                                 ControlCodeController controlCodeController, ErrorController errorController) {
     this.formFactory = formFactory;
     this.lookupServiceClient = lookupServiceClient;
+    this.controlCodeController = controlCodeController;
     this.errorController = errorController;
   }
 
