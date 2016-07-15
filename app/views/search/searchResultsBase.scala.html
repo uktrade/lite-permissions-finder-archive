@@ -10,29 +10,31 @@
 }{
 
   <p>
-    <span class="font-medium">Select the description that most closely matches your items.</span>
+    @if(results.size() > 0) {
+      <span class="font-medium">Select the description that most closely matches your items.</span>
+    } else {
+      <span class="font-large">We have not found any matches for your terms</span>
+    }
   </p>
 
   <form action="@formAction" method="POST">
 
-    <table class="search-results">
-
-      <thead/>
-
-      <tbody>
-
-        @for(result <- results) {
-          <tr>
-            <td>
-              <p>
-                <button type="submit" class="link font-xsmall" name="result" value="@result.getCode()">@Html(result.getHighlightedText())</button>
-              </p>
-            </td>
-          </tr>
-        }
-      </tbody>
-
-    </table>
+    @if(results.size() > 0) {
+      <table class="search-results">
+        <thead/>
+          <tbody>
+            @for(result <- results) {
+              <tr>
+                <td>
+                  <p>
+                    <button type="submit" class="link font-xsmall" name="result" value="@result.getCode()">@Html(result.getHighlightedText())</button>
+                  </p>
+                </td>
+              </tr>
+            }
+        </tbody>
+      </table>
+    }
 
   </form>
 }
