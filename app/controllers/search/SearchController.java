@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class SearchController {
 
-  protected final FormFactory formFactory;
+  private final FormFactory formFactory;
 
   protected final SearchServiceClient searchServiceClient;
 
@@ -29,8 +29,12 @@ public class SearchController {
     return searchServiceClient.search(getSearchTerms(form));
   }
 
-  public Form<ControlCodeSearchForm> bindForm(){
-    return formFactory.form(ControlCodeSearchForm.class).bindFromRequest();
+  public Form<ControlCodeSearchForm> searchForm(){
+    return formFactory.form(ControlCodeSearchForm.class);
+  }
+
+  public Form<ControlCodeSearchForm> bindSearchForm(){
+    return searchForm().bindFromRequest();
   }
 
   public String getSearchTerms(Form<ControlCodeSearchForm> form){

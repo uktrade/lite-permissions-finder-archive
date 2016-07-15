@@ -4,7 +4,6 @@ import controllers.ErrorController;
 import controllers.services.controlcode.lookup.LookupServiceClient;
 import play.data.Form;
 import play.data.FormFactory;
-import play.data.validation.Constraints.Required;
 
 public class SearchResultsController {
 
@@ -20,14 +19,41 @@ public class SearchResultsController {
     this.errorController = errorController;
   }
 
-  public Form<ControlCodeSearchResultsForm> bindForm(){
-    return formFactory.form(ControlCodeSearchResultsForm.class).bindFromRequest();
+  public Form<ControlCodeSearchResultsForm> searchResultsForm() {
+    return formFactory.form(ControlCodeSearchResultsForm.class);
+  }
+
+  public Form<ControlCodeSearchResultsForm> bindSearchResultsForm(){
+    return searchResultsForm().bindFromRequest();
   }
 
   public static class ControlCodeSearchResultsForm {
 
-    @Required
     public String result;
 
+    public String action;
+
+    public String validate() {
+      if (isResultValid() || isActionValid()) {
+        return null;
+      }
+      else {
+        return "Please pick a button on this screen to continue";
+      }
+    }
+
+    private boolean isResultValid(){
+      return !(result == null || result.isEmpty());
+    }
+
+    private boolean isActionValid(){
+      if (action == null || action.isEmpty()){
+        return false;
+      }
+      else if(action.equals("no-matched-result")){
+        return true;
+      }
+      return false;
+    }
   }
 }

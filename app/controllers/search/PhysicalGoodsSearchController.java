@@ -27,11 +27,11 @@ public class PhysicalGoodsSearchController extends SearchController {
   }
 
   public Result renderForm() {
-    return ok(physicalGoodsSearch.render(formFactory.form(ControlCodeSearchForm.class)));
+    return ok(physicalGoodsSearch.render(searchForm()));
   }
 
   public CompletionStage<Result> handleSubmit() {
-    Form<ControlCodeSearchForm> form = bindForm();
+    Form<ControlCodeSearchForm> form = bindSearchForm();
 
     if(form.hasErrors()){
       return CompletableFuture.completedFuture(ok(physicalGoodsSearch.render(form)));

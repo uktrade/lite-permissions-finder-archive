@@ -24,24 +24,29 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   }
 
   public Result renderForm(List<SearchServiceResult> searchResults){
-    return ok(physicalGoodsSearchResults.render(searchResults));
+    return ok(physicalGoodsSearchResults.render(searchResultsForm(), searchResults));
+  }
+
+  public Result renderForm(List<SearchServiceResult> searchResults, Form<ControlCodeSearchResultsForm> form){
+    return ok(physicalGoodsSearchResults.render(form, searchResults));
   }
 
   public CompletionStage<Result> handleSubmit() {
-    Form<ControlCodeSearchResultsForm> form = bindForm();
+    Form<ControlCodeSearchResultsForm> form = bindSearchResultsForm();
     String result = form.field("result").value();
-
-    if (form.hasErrors() || result == null || result.isEmpty()) {
+    String action = form.field("action").value();
+    if (form.hasErrors()) {
+      //TODO Re-render the page here with an error summary
       return CompletableFuture.completedFuture(errorController.renderForm("Something is wrong with the page you were on, please go back refresh the page."));
     }
-
+    if(action.equals("no-matched-result")){
+      return CompletableFuture.completedFuture(ok("\"None of these describe my export\" not implemented"));
+    }
     return lookupServiceClient.lookup(result).thenApply(response -> {
       if (response.isOk()) {
         return ok(Json.toJson(response.getLookupServiceResult()));
       }
-      else {
-        return errorController.renderForm("An issue occurred while processing your request, please try again later.");
-      }
+      return errorController.renderForm("An issue occurred while processing your request, please try again later.");
     });
   }
 }
