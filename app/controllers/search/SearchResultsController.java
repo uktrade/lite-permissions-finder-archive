@@ -34,7 +34,7 @@ public class SearchResultsController {
     public String action;
 
     public String validate() {
-      if (isResultValid() || isActionValid()) {
+      if (isResultValid(result) || isActionValid(action)) {
         return null;
       }
       else {
@@ -42,11 +42,11 @@ public class SearchResultsController {
       }
     }
 
-    private boolean isResultValid(){
+    public static boolean isResultValid(String result){
       return !(result == null || result.isEmpty());
     }
 
-    private boolean isActionValid(){
+    public static boolean isActionValid(String action){
       if (action == null || action.isEmpty()){
         return false;
       }

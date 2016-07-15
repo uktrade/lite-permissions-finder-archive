@@ -35,18 +35,25 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     Form<ControlCodeSearchResultsForm> form = bindSearchResultsForm();
     String result = form.field("result").value();
     String action = form.field("action").value();
+
     if (form.hasErrors()) {
       //TODO Re-render the page here with an error summary
       return CompletableFuture.completedFuture(errorController.renderForm("Something is wrong with the page you were on, please go back refresh the page."));
     }
-    if(action.equals("no-matched-result")){
+
+    if (ControlCodeSearchResultsForm.isActionValid(action)){
       return CompletableFuture.completedFuture(ok("\"None of these describe my export\" not implemented"));
     }
-    return lookupServiceClient.lookup(result).thenApply(response -> {
-      if (response.isOk()) {
-        return ok(Json.toJson(response.getLookupServiceResult()));
-      }
-      return errorController.renderForm("An issue occurred while processing your request, please try again later.");
-    });
+
+    if (ControlCodeSearchResultsForm.isResultValid(result)) {
+      return lookupServiceClient.lookup(result).thenApply(response -> {
+        if (response.isOk()) {
+          return ok(Json.toJson(response.getLookupServiceResult()));
+        }
+        return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+      });
+    }
+
+    return CompletableFuture.completedFuture(errorController.renderForm("An issue occurred while processing your request, please try again later."));
   }
 }
