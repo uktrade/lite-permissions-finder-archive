@@ -9,6 +9,9 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.goodsType;
 
+import java.util.EnumSet;
+import java.util.Optional;
+
 public class GoodsTypeController extends Controller {
 
   public enum GoodsTypeOption {
@@ -39,15 +42,21 @@ public class GoodsTypeController extends Controller {
       return ok(goodsType.render(form));
     }
 
-    GoodsTypeOption goodsTypeOption = GoodsTypeOption.valueOf(form.get().goodsType);
-    switch (goodsTypeOption) {
-      case TECHNOLOGY:
-      case SOFTWARE:
-        return ok("Not implemented");
-      case PHYSICAL:
+    String goodsTypeParam = form.get().goodsType;
+
+    Optional<GoodsTypeOption> goodsTypeOption = EnumSet.allOf(GoodsTypeController.GoodsTypeOption.class).stream()
+        .filter(e -> e.name().equals(goodsTypeParam)).findFirst();
+
+    if(goodsTypeOption.isPresent()) {
+      if(goodsTypeOption.get() == GoodsTypeOption.PHYSICAL) {
         return physicalGoodsSearchController.renderForm();
-      default:
-        return badRequest("Unknown goods type " + goodsTypeOption);
+      }
+      else {
+        return ok("Not implemented");
+      }
+    }
+    else {
+      return badRequest("Unknown goods type " + goodsTypeParam);
     }
   }
 
