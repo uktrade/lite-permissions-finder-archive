@@ -1,0 +1,163 @@
+/******** Tree, base styling ********/
+
+.flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.flex-y-center {
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.flex-x-center {
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.tree-circle {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background: #000;
+}
+
+table.tree {
+  height: 100%;
+  width: 100%;
+}
+
+/******** Tree, middle node(s) ********/
+
+.tree-line {
+  width: 42px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background-image: url("../images/line.png");
+  background-repeat: repeat-y;
+  padding-bottom: 30px;
+}
+
+.tree-line .tree-circle {
+  margin-left: 11px; margin-top: 4px;
+}
+
+.tree-row {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  margin-top: 30px;
+}
+
+.tree-code {
+  width: 120px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  padding-bottom: 30px;
+  text-align: left;
+}
+
+.tree-code-wrapper {
+  @extend .flex;
+  @extend .flex-y-center;
+  width: 100%;
+  height: 100%;
+  padding-left: 20px;
+  border-left-style: dotted;
+  border-width: 2px;
+}
+
+/******** Tree, first node ********/
+
+.tree-circle-first {
+  @extend .tree-circle
+}
+
+.tree-line-first .tree-circle-first {
+  margin-left: 11px;
+}
+
+.tree-line-first{
+  width: 42px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+}
+
+.tree-wrapper-first {
+  height: 100%;
+  width: 100%;
+  background-image: url("../images/line.png");
+  background-repeat: repeat-y;
+  padding-bottom: 30px;
+}
+
+.tree-desc {
+  width: auto;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 40px;
+}
+
+/******** Tree, last node ********/
+
+.tree-line-last {
+  width: 42px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: #000;
+}
+
+.tree-desc-last {
+  @extend .tree-desc;
+  padding-top:15px;
+  padding-bottom: 15px;
+  padding-left: 20px;
+  padding-right: 15px;
+
+}
+
+.tree-code-last {
+  @extend .tree-code;
+  margin-left: 10px;
+  padding-bottom: 0px;
+}
+
+.tree-code-wrapper-last {
+  @extend .tree-code-wrapper;
+  height: 80%;
+}
+
+.tree-row-last {
+  @extend .tree-row;
+  border-top-style: solid;
+  border-left-style: solid;
+  border-right-style: solid;
+  border-bottom-style: solid;
+  border-width: 1px;
+}
+
+.tree-wrapper-last {
+  @extend .flex-y-center;
+  @extend .flex-x-center;
+  @extend .flex;
+  height: 100%;
+  width: 100%;
+  color: #fff;
+}

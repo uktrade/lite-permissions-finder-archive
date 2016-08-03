@@ -4,18 +4,74 @@
 
 @import controllers.services.controlcode.lookup.LookupServiceResult
 
-@(form: Form[_], controlCodes: List[LookupServiceResult])
-@standardPage(controlCodes.last.friendlyDescription, Some(Html(controlCodes.last.friendlyDescription)), "Possible matches"){
+@(form: Form[_], primaryCode: LookupServiceResult, greatestAncestorCode: Option[LookupServiceResult],
+  otherAncestorCodes: List[LookupServiceResult])
+@standardPage("Dummy title, electronics and lasers", Some(Html("Dummy title, electronics and lasers")), "Possible matches"){
   @errorSummary(form)
 }{
 
-  <div class="form-group">
-    @for(controlCode <- controlCodes) {
-      <ul class="list list-bullet text">
-        <li>@controlCode.controlCode</li>
-        <li>@Html(controlCode.friendlyDescription)</li>
-      </ul>
+  <table class="tree">
+
+    @if(greatestAncestorCode.isDefined) {
+      <tr class="tree-row">
+        <td class="tree-line-first">
+          <div class="tree-wrapper-first">
+            <div class="tree-circle-first"></div>
+          </div>
+        </td>
+        <td class="tree-desc">
+          <span class="font-small">@Html(greatestAncestorCode.get.friendlyDescription)</span>
+        </td>
+        <td class="tree-code">
+          <div class="tree-code-wrapper">
+            <span class="font-small">@greatestAncestorCode.get.controlCode</span>
+          </div>
+        </td>
+      </tr>
     }
-  </div>
+
+    @for(otherAncestorCode <- otherAncestorCodes){
+      <tr class="tree-row">
+        <td class="tree-line" >
+          <div class="tree-circle"></div>
+        </td>
+        <td class="tree-desc">
+          <span class="font-small">@Html(otherAncestorCode.friendlyDescription)</span>
+        </td>
+        <td class="tree-code">
+          <div class="tree-code-wrapper">
+            <span class="font-small">@otherAncestorCode.controlCode</span>
+          </div>
+        </td>
+      </tr>
+    }
+
+    <tr class="tree-row-last">
+      <td class="tree-line-last">
+        <div class="tree-wrapper-last">
+          <span class="bold-medium">&#10003;<span class="font-small"></span></span>
+        </div>
+      </td>
+      <td class="tree-desc-last">
+        <span class="font-small">@Html(primaryCode.friendlyDescription)</span>
+      </td>
+      <td class="tree-code-last">
+        <div class="tree-code-wrapper-last">
+          <span class="font-small">@primaryCode.controlCode</span>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+
+  <form action="@routes.ControlCodeController.handleSubmit()" method="POST">
+
+    @formRadioBoolean(form("couldDescribeItems"), Html("Could this describe your items"), "Yes", "No")
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+
+  </form>
 
 }
