@@ -3,41 +3,38 @@
 @import views.html.common.form._
 
 @(form: Form[_], formAction: String, pageTitle: String)
-@standardPage(pageTitle, Some(Html(pageTitle))){
+@standardPage(pageTitle, Some(Html(pageTitle)), headingCssClass = "heading-xlarge heading-tight"){
   @errorSummary(form)
 }{
-  <p>
-    Complete as many details as you know about your items. You may be able to get more information from the original seller or manufacturer of your items.
-  </p>
+
   <form action="@formAction" method="POST">
 
-    @formInput(form("description"), Some(Html("eg unmanned aircraft, tunable lasers, microcircuits"))){
-      Description of goods
+    <span class="form-hint">Provide as much information as you can</span>
+    @formTextarea(form("description"), cssClass = "form-control-wide") {
+
     }
 
-    @formInput(form("component"), Some(Html("eg engine for submersible vehicle, software for testing aero gas turbine engines"))){
-      If the item is a component, attachment or part for another item, describe its use with the other item
+    <p><span class="bold-medium">Other questions (optional)</span></p>
+    @formTextarea(form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide"){
+      If the item is a component, attachment or part for another item, describe its use.
     }
 
-    @formInput(form("brand"), Some(Html("eg Boeing, AK-47, TiSon GSB"))) {
+    @formInput(form("brand")){
       Brand or manufacturer
     }
 
-    @formInput(form("partNumber"), Some(Html("eg KJ07600, EPD108550A, 3168 Series"))){
-      Part or part model
+    @formInput(form("partNumber")){
+      Part or model number
     }
 
-    <div class="hs-code-wrapper">
-      @detailPanel("hs-code-details")(Html("Do you have the Harmonised System (HS) code for your goods?")){
-        @formInput(form("hsCode"), hint = Some(Html("eg 8424.20.0000, 2829.90.0000"))){
-          Harmonised System (HS) code
-        }
-      }
-    </div>
+    @formInput(form("hsCode"), hint = Some(Html("For example 8424.20.0000"))){
+      Harmonised System (HS) code
+    }
 
     <div class="form-group">
       <button type="submit" class="button">Search</button>
     </div>
 
   </form>
+
 }
