@@ -1,6 +1,6 @@
 @import util._
 
-@(htmlTitle: String, pageHeading: Option[Html], backLinkText: String = "Back")(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", backLinkText: String = "Back")(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle + " - Import & Export Licensing") {
 
@@ -18,7 +18,7 @@
 
       @if(pageHeading.isDefined) {
         <div>
-          <h1 class="heading-xlarge">@pageHeading</h1>
+          <h1 class="@headingCssClass">@pageHeading</h1>
         </div>
       }
 
