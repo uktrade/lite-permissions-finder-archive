@@ -1,4 +1,4 @@
 @import controllers.services.controlcode.search.SearchServiceResult
-@(form: Form[_], results: List[SearchServiceResult])
+@(form: Form[_], results: List[SearchServiceResult], showResults: Boolean)
 @formAction = {@controllers.search.routes.PhysicalGoodsSearchResultsController.handleSubmit()}
-@searchResultsBase(form, formAction.toString(), results)
+@searchResultsBase(form, formAction.toString(), results, showResults)

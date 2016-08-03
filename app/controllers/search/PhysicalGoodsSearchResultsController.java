@@ -27,7 +27,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   }
 
   public Result renderForm(List<SearchServiceResult> searchResults){
-    return ok(physicalGoodsSearchResults.render(searchResultsForm(), searchResults));
+    return ok(physicalGoodsSearchResults.render(searchResultsForm(), searchResults, !searchResults.isEmpty()));
   }
 
   public CompletionStage<Result> handleSubmit() {

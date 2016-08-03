@@ -3,41 +3,51 @@
 @import views.html.common.page._
 @import views.html.common.form._
 
-@(form: Form[_], formAction: String, results: List[SearchServiceResult])
-@standardPage("Possible matches", Some(Html("Possible matches")), backLinkText = "Edit description"){
-  @errorSummary(form)
-}{
+@(form: Form[_], formAction: String, results: List[SearchServiceResult], showResults: Boolean)
+  @standardPage(
+    if (showResults) "Possible matches" else "Your search did not return any results",
+    Some(Html(if (showResults) "Possible matches" else "Your search did not return any results")),
+    backLinkText = "Edit description") {
+    @errorSummary(form)
+  }{
 
-  <p>
-    @if(results.size() > 0) {
-      <span class="font-medium">Select the description that most closely matches your items.</span>
-    } else {
-      <span class="font-large">We have not found any matches for your terms</span>
-    }
-  </p>
+    @if(showResults) {
 
-  <form action="@formAction" method="POST">
+      <form action="@formAction" method="POST">
 
-    @if(results.size() > 0) {
-      <table class="search-results">
-        <thead/>
+        <table class="search-results">
+          <thead/>
           <tbody>
-            @for(result <- results) {
-              <tr>
-                <td>
-                  <p>
-                    <button type="submit" class="link font-xsmall" name="result" value="@result.getCode()">@Html(result.getHighlightedText())</button>
-                  </p>
-                </td>
-              </tr>
-            }
-        </tbody>
-      </table>
+          @for(result <- results) {
+            <tr>
+              <td>
+                <p>
+                  <button type="submit" class="link font-xsmall" name="result" value="@result.getCode()">@Html(result.getHighlightedText())</button>
+                </p>
+              </td>
+            </tr>
+          }
+          </tbody>
+        </table>
+
+        <div class="no-matched-result-wrapper">
+          <button type="submit" name="action" value="no-matched-result" class="link underlined font-small">None of these describe my export</button>
+        </div>
+
+      </form>
+
+    } else {
+
+      <p>
+        Edit your description, and:
+      </p>
+
+      <ul class="list list-bullet text">
+        <li class="font-">check your terms are spelled correctly</li>
+        <li>try different terms</li>
+        <li>if you are searching for components of larger items, widen your search to include those larger items</li>
+      </ul>
+
     }
 
-    <div class="no-matched-result-wrapper">
-      <button type="submit" name="action" value="no-matched-result" class="link underlined font-small">None of these describe my export</button>
-    </div>
-
-  </form>
-}
+  }
