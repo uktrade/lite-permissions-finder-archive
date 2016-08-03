@@ -7,19 +7,19 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
-import utils.common.SelectOption;
 import views.html.tradeType;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Optional;
 
 public class TradeTypeController extends Controller {
 
-  private static final List<SelectOption> TRADE_TYPE_OPTIONS = Arrays.asList(
-    new SelectOption("IMPORT", "I am importing"),
-    new SelectOption("EXPORT", "I am exporting"),
-    new SelectOption("BROKERING", "I am brokering trade")
-  );
+  public enum TradeTypeOption {
+    IMPORT,
+    EXPORT,
+    BROKERING,
+    TRANSSHIPMENT
+  }
 
   private final FormFactory formFactory;
   private final ExportCategoryController exportCategoryController;
@@ -31,7 +31,7 @@ public class TradeTypeController extends Controller {
   }
 
   public Result renderForm() {
-    return ok(tradeType.render(formFactory.form(TradeTypeForm.class), TRADE_TYPE_OPTIONS));
+    return ok(tradeType.render(formFactory.form(TradeTypeForm.class)));
   }
 
   public Result handleSubmit() {
@@ -39,18 +39,24 @@ public class TradeTypeController extends Controller {
     Form<TradeTypeForm> form = formFactory.form(TradeTypeForm.class).bindFromRequest();
 
     if (form.hasErrors()) {
-      return ok(tradeType.render(form, TRADE_TYPE_OPTIONS));
+      return ok(tradeType.render(form));
     }
 
     String tradeTypeParam = form.get().tradeType;
-    switch (tradeTypeParam) {
-      case "IMPORT":
-      case "BROKERING":
+
+    Optional<TradeTypeOption> tradeTypeOption = EnumSet.allOf(TradeTypeOption.class).stream()
+        .filter(e -> e.name().equals(tradeTypeParam)).findFirst();
+
+    if(tradeTypeOption.isPresent()) {
+      if(tradeTypeOption.get() == TradeTypeOption.EXPORT) {
+        return exportCategoryController.renderForm();
+      }
+      else {
         return ok("Not implemented");
-      case "EXPORT":
-        return exportCategoryController.renderForm(); //ok(exportCategories.render());
-      default:
-        return badRequest("Unknown trade type " + tradeTypeParam);
+      }
+    }
+    else {
+      return badRequest("Unknown trade type " + tradeTypeParam);
     }
   }
 

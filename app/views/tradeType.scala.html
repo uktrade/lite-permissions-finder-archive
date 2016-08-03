@@ -3,21 +3,50 @@
 @import views.html.common.form._
 @import utils.common.SelectOption
 
-@(form: Form[_], tradeTypeOptions: List[SelectOption])
+@(form: Form[_])
 
-@standardPage("Trade Activities", Some(Html("Your trade activities"))) {
+@standardPage("Where are your items going?", Some(Html("Where are your items going?"))) {
   @errorSummary(form)
 }{
 
   <form action="@routes.TradeTypeController.handleSubmit()" method="POST">
 
-    @formRadioGroup(form("tradeType"), tradeTypeOptions){
-      Are you importing, exporting or <a href="#" rel="external">brokering trade</a> from the UK?
-    }
+    @fieldContainer(form("tradeType")) {
 
-    <div class="form-group">
+      <div class="form-group">
+        @formRadio(form("tradeType"), Html("From the UK to another country"),
+          TradeTypeController.TradeTypeOption.EXPORT.toString, "label-trade-type")
+        <p class="panel panel-border-wide">
+          This is known as an export
+        </p>
+      </div>
+
+      <div class="form-group">
+        @formRadio(form("tradeType"), Html("From another country to the UK "),
+          TradeTypeController.TradeTypeOption.IMPORT.toString, "label-trade-type")
+        <p class="panel panel-border-wide">
+          This is known as an import
+        </p>
+      </div>
+
+      <div class="form-group">
+        @formRadio(form("tradeType"), Html("Between non-UK countries "),
+          TradeTypeController.TradeTypeOption.BROKERING.toString, "label-trade-type")
+        <p class="panel panel-border-wide">
+          This is known as trafficking or brokering
+        </p>
+      </div>
+
+      <div class="form-group">
+        @formRadio(form("tradeType"), Html("Through the UK, from one non-UK country to another "),
+          TradeTypeController.TradeTypeOption.TRANSSHIPMENT.toString, "label-trade-type")
+        <p class="panel panel-border-wide">
+          This is known as transhipment
+        </p>
+      </div>
+
       <button type="submit" class="button">Continue</button>
-    </div>
+    }
 
   </form>
 
