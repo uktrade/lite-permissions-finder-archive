@@ -22,7 +22,7 @@ public class ControlCodeData {
   public String friendlyDescription;
 
   @JsonProperty("additionalSpecifications")
-  public String additionalSpecifications;
+  public AdditionalSpecifications additionalSpecifications;
 
   public ControlCodeData(){}
 
