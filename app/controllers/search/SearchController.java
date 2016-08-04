@@ -1,7 +1,7 @@
 package controllers.search;
 
 import controllers.ErrorController;
-import controllers.services.controlcode.search.SearchServiceClient;
+import components.services.controlcode.search.SearchServiceClient;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;

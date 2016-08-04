@@ -4,7 +4,7 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import controllers.ErrorController;
-import controllers.services.controlcode.search.SearchServiceClient;
+import components.services.controlcode.search.SearchServiceClient;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;

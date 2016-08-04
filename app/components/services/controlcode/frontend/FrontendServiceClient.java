@@ -1,21 +1,18 @@
-package controllers.services.controlcode.search;
+package components.services.controlcode.frontend;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import controllers.services.controlcode.ServiceResponseStatus;
+import components.services.controlcode.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WSClient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
-public class SearchServiceClient {
+public class FrontendServiceClient {
 
   private static final long REQUEST_TIMEOUT_MS = 10000; //10 Seconds
 
@@ -24,23 +21,23 @@ public class SearchServiceClient {
   private final WSClient ws;
 
   @Inject
-  public SearchServiceClient(WSClient ws, @Named("controlCodeSearchServiceHostname") String webServiceHostname){
+  public FrontendServiceClient(WSClient ws, @Named("controlCodeFrontendServiceHostname") String webServiceUrl){
     this.ws = ws;
-    this.webServiceUrl= "http://" + webServiceHostname + "/search";
+    this.webServiceUrl = "http://" + webServiceUrl + "/frontend-control-codes";
   }
 
-  public CompletionStage<Response> get(String searchTerm){
-    return ws.url(webServiceUrl)
-        .setRequestTimeout(REQUEST_TIMEOUT_MS)
-        .setQueryParameter("term", searchTerm)
-        .get().handle((response, error) -> {
+  public CompletionStage<Response> get(String controlCode) {
+    return ws.url(webServiceUrl + "/" + controlCode)
+        .setRequestTimeout(REQUEST_TIMEOUT_MS).get()
+        .handle((response, error) -> {
           if (error != null) {
-            Logger.error("Unchecked exception in ControlCodeSearchService");
+            Logger.error("Unchecked exception in ControlCodeFrontendService");
             Logger.error(error.getMessage(), error);
             return CompletableFuture.completedFuture(Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION));
           }
           else if (response.getStatus() != 200) {
-            Logger.error("Unexpected HTTP status code from ControlCodeSearchService: {}", response.getStatus());
+            String errorMessage = response.asJson() != null ? errorMessage = response.asJson().get("message").asText() : "";
+            Logger.error("Unexpected HTTP status code from ControlCodeFrontendService: {} {}", response.getStatus(), errorMessage);
             return CompletableFuture.completedFuture(Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE));
           }
           else {
@@ -52,30 +49,30 @@ public class SearchServiceClient {
 
   public static class Response {
 
-    private List<SearchServiceResult> searchResults;
+    private final FrontendServiceResult frontendServiceResult;
 
     private final ServiceResponseStatus status;
 
     private Response(ServiceResponseStatus status, JsonNode responseJson) {
       this.status = status;
-      this.searchResults = Arrays.asList(Json.fromJson(responseJson.get("results"), SearchServiceResult[].class));
+      this.frontendServiceResult = Json.fromJson(responseJson, FrontendServiceResult.class);
     }
 
     private Response(ServiceResponseStatus status) {
       this.status = status;
-      this.searchResults = new ArrayList<>();
+      this.frontendServiceResult = null;
     }
 
-    public static Response success(JsonNode responseJson){
+    public static Response success(JsonNode responseJson) {
       return new Response(ServiceResponseStatus.SUCCESS, responseJson);
     }
 
-    public static Response failure(ServiceResponseStatus status){
+    public static Response failure(ServiceResponseStatus status) {
       return new Response(status);
     }
 
-    public List<SearchServiceResult> getSearchResults() {
-      return searchResults;
+    public FrontendServiceResult getFrontendServiceResult() {
+      return frontendServiceResult;
     }
 
     public ServiceResponseStatus getStatus() {

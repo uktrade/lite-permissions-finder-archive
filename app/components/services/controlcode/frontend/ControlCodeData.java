@@ -1,4 +1,4 @@
-package controllers.services.controlcode.frontend;
+package components.services.controlcode.frontend;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

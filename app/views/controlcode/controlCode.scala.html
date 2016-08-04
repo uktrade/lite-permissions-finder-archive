@@ -2,8 +2,8 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
-@import controllers.services.controlcode.frontend.Ancestor
-@import controllers.services.controlcode.frontend.ControlCodeData
+@import components.services.controlcode.frontend.Ancestor
+@import components.services.controlcode.frontend.ControlCodeData
 @(form: Form[_], primaryCode: ControlCodeData, greatestAncestorCode: Option[Ancestor],
   otherAncestorCodes: List[Ancestor])
 @standardPage(primaryCode.title, Some(Html(primaryCode.title)), backLinkText = "Possible matches"){

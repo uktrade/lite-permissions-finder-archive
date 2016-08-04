@@ -1,4 +1,4 @@
-package controllers.services.controlcode.search;
+package components.services.controlcode.search;
 
 public class SearchServiceResult {
 

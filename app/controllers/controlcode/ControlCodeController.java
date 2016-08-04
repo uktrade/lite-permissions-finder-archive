@@ -1,8 +1,8 @@
 package controllers.controlcode;
 
 import com.google.inject.Inject;
-import controllers.services.controlcode.frontend.Ancestor;
-import controllers.services.controlcode.frontend.FrontendServiceResult;
+import components.services.controlcode.frontend.Ancestor;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
