@@ -29,7 +29,7 @@ public class SearchServiceClient {
     this.webServiceUrl= "http://" + webServiceHostname + "/search";
   }
 
-  public CompletionStage<Response> search(String searchTerm){
+  public CompletionStage<Response> get(String searchTerm){
     return ws.url(webServiceUrl)
         .setRequestTimeout(REQUEST_TIMEOUT_MS)
         .setQueryParameter("term", searchTerm)

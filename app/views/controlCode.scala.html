@@ -2,11 +2,12 @@
 @import views.html.common.page._
 @import views.html.common.form._
 
-@import controllers.services.controlcode.lookup.LookupServiceResult
 
-@(form: Form[_], primaryCode: LookupServiceResult, greatestAncestorCode: Option[LookupServiceResult],
-  otherAncestorCodes: List[LookupServiceResult])
-@standardPage("Dummy title, electronics and lasers", Some(Html("Dummy title, electronics and lasers")), "Possible matches"){
+@import controllers.services.controlcode.frontend.Ancestor
+@import controllers.services.controlcode.frontend.ControlCodeData
+@(form: Form[_], primaryCode: ControlCodeData, greatestAncestorCode: Option[Ancestor],
+  otherAncestorCodes: List[Ancestor])
+@standardPage(primaryCode.title, Some(Html(primaryCode.title)), backLinkText = "Possible matches"){
   @errorSummary(form)
 }{
 

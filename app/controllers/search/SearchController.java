@@ -26,7 +26,7 @@ public class SearchController {
   }
 
   public CompletionStage<SearchServiceClient.Response> physicalGoodsSearch(Form<ControlCodeSearchForm> form) {
-    return searchServiceClient.search(getSearchTerms(form));
+    return searchServiceClient.get(getSearchTerms(form));
   }
 
   public Form<ControlCodeSearchForm> searchForm(){
