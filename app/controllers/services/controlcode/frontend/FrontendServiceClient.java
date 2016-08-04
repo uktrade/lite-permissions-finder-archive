@@ -21,7 +21,7 @@ public class FrontendServiceClient {
   private final WSClient ws;
 
   @Inject
-  public FrontendServiceClient(WSClient ws, @Named("controlCodeLookupServiceHostname") String webServiceUrl){
+  public FrontendServiceClient(WSClient ws, @Named("controlCodeFrontendServiceHostname") String webServiceUrl){
     this.ws = ws;
     this.webServiceUrl = "http://" + webServiceUrl + "/frontend-control-codes";
   }
