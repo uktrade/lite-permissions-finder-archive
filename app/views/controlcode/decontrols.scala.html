@@ -1,0 +1,18 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+
+@(form: Form[_])
+@standardPage("decontrols DUMMY", Some(Html("decontrols DUMMY"))){
+  @errorSummary(form)
+} {
+
+  <form action="@controllers.controlcode.routes.DecontrolsController.handleSubmit()" method="POST">
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+
+  </form>
+
+}

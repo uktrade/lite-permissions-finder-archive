@@ -1,6 +1,6 @@
 package controllers.search;
 
-import controllers.ControlCodeController;
+import controllers.controlcode.ControlCodeController;
 import controllers.ErrorController;
 import controllers.services.controlcode.frontend.FrontendServiceClient;
 import play.data.Form;

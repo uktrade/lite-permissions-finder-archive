@@ -3,7 +3,7 @@ package controllers.search;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import controllers.ControlCodeController;
+import controllers.controlcode.ControlCodeController;
 import controllers.ErrorController;
 import controllers.services.controlcode.frontend.FrontendServiceClient;
 import controllers.services.controlcode.search.SearchServiceResult;

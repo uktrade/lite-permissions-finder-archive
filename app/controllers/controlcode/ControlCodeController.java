@@ -1,4 +1,4 @@
-package controllers;
+package controllers.controlcode;
 
 import com.google.inject.Inject;
 import controllers.services.controlcode.frontend.Ancestor;
@@ -7,7 +7,7 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import scala.Option;
-import views.html.controlCode;
+import views.html.controlcode.controlCode;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,9 +17,12 @@ public class ControlCodeController extends Controller {
 
   private final FormFactory formFactory;
 
+  private final AdditionalSpecificationsController additionalSpecificationsController;
+
   @Inject
-  public ControlCodeController (FormFactory formFactory) {
+  public ControlCodeController (FormFactory formFactory, AdditionalSpecificationsController additionalSpecificationsController) {
     this.formFactory = formFactory;
+    this.additionalSpecificationsController = additionalSpecificationsController;
   }
 
   public Result renderForm(FrontendServiceResult frontendServiceResult) {
@@ -34,7 +37,7 @@ public class ControlCodeController extends Controller {
   }
 
   public Result handleSubmit() {
-    return ok("Not yet implemented");
+    return additionalSpecificationsController.renderForm();
   }
 
   public static class ControlCodeForm {

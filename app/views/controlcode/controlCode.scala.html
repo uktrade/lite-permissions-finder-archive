@@ -1,8 +1,7 @@
+@import controllers.controlcode.ControlCodeController
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
-
-
 @import controllers.services.controlcode.frontend.Ancestor
 @import controllers.services.controlcode.frontend.ControlCodeData
 @(form: Form[_], primaryCode: ControlCodeData, greatestAncestorCode: Option[Ancestor],
@@ -65,9 +64,9 @@
 
   </table>
 
-  <form action="@routes.ControlCodeController.handleSubmit()" method="POST">
+  <form action="@controllers.controlcode.routes.ControlCodeController.handleSubmit()" method="POST">
 
-    @formRadioBoolean(form("couldDescribeItems"), Html("Could this describe your items"), "Yes", "No")
+    @formRadioBoolean(form("couldDescribeItems"), Html("Could this describe your items?"), "Yes", "No")
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>
