@@ -9,7 +9,8 @@ scalaVersion := "2.11.7"
 libraryDependencies ++= Seq(
   javaJdbc,
   cache,
-  javaWs
+  javaWs,
+  "redis.clients" % "jedis" % "2.8.1"
 )
 
 // Contains all files and libraries shared across other projects

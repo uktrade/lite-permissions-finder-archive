@@ -26,4 +26,20 @@ public class ControlCodeData {
 
   public ControlCodeData(){}
 
+  public boolean canShowDecontrols() {
+    return !(decontrols == null || decontrols.isEmpty());
+  }
+
+  public boolean canShowAdditionalSpecifications() {
+    return additionalSpecifications != null && additionalSpecifications.canShow();
+  }
+
+  public boolean canShowTechnicalNotes() {
+    return !(technicalNotes == null || technicalNotes.isEmpty());
+  }
+
+  public boolean canShow() {
+    return canShowDecontrols() || canShowAdditionalSpecifications() || canShowTechnicalNotes();
+  }
+
 }

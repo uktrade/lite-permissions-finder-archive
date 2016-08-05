@@ -14,4 +14,16 @@ public class AdditionalSpecifications {
 
   public AdditionalSpecifications(){}
 
+  public boolean canShowClauseText() {
+    return !(clauseText == null || clauseText.isEmpty());
+  }
+
+  public boolean canShowSpecificationText() {
+    return !(specificationText == null || specificationText.isEmpty());
+  }
+
+  public boolean canShow() {
+    return canShowClauseText() || canShowSpecificationText();
+  }
+
 }

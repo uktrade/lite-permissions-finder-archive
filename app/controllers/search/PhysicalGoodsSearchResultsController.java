@@ -3,12 +3,14 @@ package controllers.search;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import controllers.controlcode.ControlCodeController;
-import controllers.ErrorController;
+import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.search.SearchServiceResult;
+import controllers.ErrorController;
+import controllers.controlcode.ControlCodeController;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.search.physicalGoodsSearchResults;
 
@@ -18,10 +20,16 @@ import java.util.concurrent.CompletionStage;
 
 public class PhysicalGoodsSearchResultsController extends SearchResultsController {
 
+  private HttpExecutionContext ec;
+
+  private PermissionsFinderDao dao;
+
   @Inject
   public PhysicalGoodsSearchResultsController(FormFactory formFactory, FrontendServiceClient frontendServiceClient,
-                                              ControlCodeController controlCodeController, ErrorController errorController) {
+                                              ControlCodeController controlCodeController, ErrorController errorController, HttpExecutionContext ec, PermissionsFinderDao dao) {
     super(formFactory, frontendServiceClient, controlCodeController, errorController);
+    this.ec = ec;
+    this.dao = dao;
   }
 
   public Result renderForm(List<SearchServiceResult> searchResults){
@@ -43,14 +51,20 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     }
 
     if (ControlCodeSearchResultsForm.isResultValid(result)) {
-      return frontendServiceClient.get(result).thenApply(response -> {
-        if (response.isOk()) {
-          return controlCodeController.renderForm(response.getFrontendServiceResult());
-        }
-        return errorController.renderForm("An issue occurred while processing your request, please try again later.");
-      });
+      return frontendServiceClient.get(result)
+          .thenApplyAsync(response -> {
+            dao.savePhysicalGoodControlCode(response.getFrontendServiceResult().controlCodeData.controlCode);
+            return response;
+          }, ec.current())
+          .thenApply(response -> {
+            if (response.isOk()) {
+              return controlCodeController.renderForm(response.getFrontendServiceResult());
+            }
+            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+          });
     }
 
     return CompletableFuture.completedFuture(errorController.renderForm("An issue occurred while processing your request, please try again later."));
   }
+
 }

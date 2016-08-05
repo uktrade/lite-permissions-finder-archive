@@ -2,6 +2,7 @@ package modules;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
+import components.common.CommonGuiceModule;
 import play.Configuration;
 import play.Environment;
 
@@ -18,6 +19,9 @@ public class GuiceModule extends AbstractModule{
 
   @Override
   protected void configure() {
+
+    install(new CommonGuiceModule(environment, configuration));
+
     bindConstant().annotatedWith(Names.named("controlCodeSearchServiceHostname"))
         .to(configuration.getString("controlCodeSearchService.hostname"));
     bindConstant().annotatedWith(Names.named("controlCodeFrontendServiceHostname"))

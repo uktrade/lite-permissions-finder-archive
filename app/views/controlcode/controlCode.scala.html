@@ -1,18 +1,17 @@
-@import controllers.controlcode.ControlCodeController
+@import components.services.controlcode.frontend.FrontendServiceResult
 @import util._
-@import views.html.common.page._
 @import views.html.common.form._
-@import components.services.controlcode.frontend.Ancestor
-@import components.services.controlcode.frontend.ControlCodeData
-@(form: Form[_], primaryCode: ControlCodeData, greatestAncestorCode: Option[Ancestor],
-  otherAncestorCodes: List[Ancestor])
-@standardPage(primaryCode.title, Some(Html(primaryCode.title)), backLinkText = "Possible matches"){
+@import views.html.common.page._
+@import controllers.controlcode.routes.ControlCodeController
+
+@(form: Form[_], frontendServiceResult: FrontendServiceResult)
+@standardPage(frontendServiceResult.controlCodeData.title, Some(Html(frontendServiceResult.controlCodeData.title)), backLinkText = "Possible matches"){
   @errorSummary(form)
 }{
 
   <table class="tree">
 
-    @if(greatestAncestorCode.isDefined) {
+    @if(frontendServiceResult.getGreatestAncestor.isDefined) {
       <tr class="tree-row">
         <td class="tree-line-first">
           <div class="tree-wrapper-first">
@@ -20,17 +19,17 @@
           </div>
         </td>
         <td class="tree-desc">
-          <span class="font-small">@Html(greatestAncestorCode.get.friendlyDescription)</span>
+          <span class="font-small">@Html(frontendServiceResult.getGreatestAncestor.get.friendlyDescription)</span>
         </td>
         <td class="tree-code">
           <div class="tree-code-wrapper">
-            <span class="font-small">@greatestAncestorCode.get.controlCode</span>
+            <span class="font-small">@frontendServiceResult.getGreatestAncestor.get.controlCode</span>
           </div>
         </td>
       </tr>
     }
 
-    @for(otherAncestorCode <- otherAncestorCodes){
+    @for(otherAncestorCode <- frontendServiceResult.getOtherAncestors){
       <tr class="tree-row">
         <td class="tree-line" >
           <div class="tree-circle"></div>
@@ -53,18 +52,18 @@
         </div>
       </td>
       <td class="tree-desc-last">
-        <span class="font-small">@Html(primaryCode.friendlyDescription)</span>
+        <span class="font-small">@Html(frontendServiceResult.controlCodeData.friendlyDescription)</span>
       </td>
       <td class="tree-code-last">
         <div class="tree-code-wrapper-last">
-          <span class="font-small">@primaryCode.controlCode</span>
+          <span class="font-small">@frontendServiceResult.controlCodeData.controlCode</span>
         </div>
       </td>
     </tr>
 
   </table>
 
-  <form action="@controllers.controlcode.routes.ControlCodeController.handleSubmit()" method="POST">
+  <form action="@ControlCodeController.handleSubmit()" method="POST">
 
     @formRadioBoolean(form("couldDescribeItems"), Html("Could this describe your items?"), "Yes", "No")
 

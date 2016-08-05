@@ -1,16 +1,51 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import components.services.controlcode.frontend.FrontendServiceResult
+@import controllers.controlcode.routes.AdditionalSpecificationsController
 
-@(form: Form[_])
-@standardPage("Additional specifications DUMMY", Some(Html("Additional specifications DUMMY"))){
+@(form: Form[_], frontendServiceResult: FrontendServiceResult)
+@standardPage(frontendServiceResult.controlCodeData.title, Some(Html(frontendServiceResult.controlCodeData.title))){
   @errorSummary(form)
 } {
 
-  <form action="@controllers.controlcode.routes.AdditionalSpecificationsController.handleSubmit()" method="POST">
+  <table class="tree">
+
+    <tr class="tree-row-last">
+      <td class="tree-line-last">
+        <div class="tree-wrapper-last">
+          <span class="bold-medium">&#10003;<span class="font-small"></span></span>
+        </div>
+      </td>
+      <td class="tree-desc-last">
+        <span class="font-small">@Html(frontendServiceResult.controlCodeData.friendlyDescription)</span>
+      </td>
+      <td class="tree-code-last">
+        <div class="tree-code-wrapper-last">
+          <span class="font-small">@frontendServiceResult.controlCodeData.controlCode</span>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+
+  <h2 class="heading-medium">The specific equipment referred to above is:</h2>
+
+  <ul class="list list-bullet">
+    @if(frontendServiceResult.controlCodeData.additionalSpecifications.canShowClauseText) {
+      <li>@Html(frontendServiceResult.controlCodeData.additionalSpecifications.clauseText)</li>
+    }
+    @for(text <- frontendServiceResult.controlCodeData.additionalSpecifications.specificationText) {
+      <li>@Html(text.text)</li>
+    }
+  </ul>
+
+  <form action="@AdditionalSpecificationsController.handleSubmit()" method="POST">
+
+    @formRadioBoolean(form("stillDescribesItems"), Html("Does this still describe your items?"), "Yes", "No")
 
     <div class="form-group">
-      <button type="submit" class="button">Continue</button>
+      <button type="submit" class="button">Save and continue</button>
     </div>
 
   </form>

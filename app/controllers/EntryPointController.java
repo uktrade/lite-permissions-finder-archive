@@ -1,5 +1,8 @@
 package controllers;
 
+import com.google.inject.Inject;
+import components.common.transaction.TransactionManager;
+import play.Logger;
 import play.mvc.*;
 
 import views.html.*;
@@ -7,8 +10,16 @@ import views.html.*;
 
 public class EntryPointController extends Controller {
 
-    public Result index() {
-        return ok(index.render());
-    }
+  private final TransactionManager transactionManager;
+
+  @Inject
+  public EntryPointController(TransactionManager transactionManager){
+    this.transactionManager = transactionManager;
+  }
+
+  public Result index() {
+    transactionManager.createTransaction();
+    return ok(index.render());
+  }
 
 }
