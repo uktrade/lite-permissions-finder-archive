@@ -25,10 +25,29 @@ public class GuiceModule extends AbstractModule{
 
     install(new CommonGuiceModule(environment, configuration));
 
-    bindConstant().annotatedWith(Names.named("controlCodeSearchServiceHostname"))
+    // controlCodeSearchService
+    bindConstant().annotatedWith(Names.named("controlCodeSearchServiceHost"))
         .to(configuration.getString("controlCodeSearchService.hostname"));
-    bindConstant().annotatedWith(Names.named("controlCodeFrontendServiceHostname"))
+    bindConstant().annotatedWith(Names.named("controlCodeSearchServicePort"))
+        .to(configuration.getString("controlCodeSearchService.port"));
+    bindConstant().annotatedWith(Names.named("controlCodeSearchServiceTimeout"))
+        .to(configuration.getString("controlCodeSearchService.timeout"));
+
+    // controlCodeFrontendService
+    bindConstant().annotatedWith(Names.named("controlCodeFrontendServiceHost"))
         .to(configuration.getString("controlCodeFrontendService.hostname"));
+    bindConstant().annotatedWith(Names.named("controlCodeFrontendServicePort"))
+        .to(configuration.getString("controlCodeFrontendService.port"));
+    bindConstant().annotatedWith(Names.named("controlCodeFrontendServiceTimeout"))
+        .to(configuration.getString("controlCodeFrontendService.timeout"));
+
+    // countryService
+    bindConstant().annotatedWith(Names.named("countryServiceHost"))
+        .to(configuration.getString("countryService.hostname"));
+    bindConstant().annotatedWith(Names.named("countryServicePort"))
+        .to(configuration.getString("countryService.port"));
+    bindConstant().annotatedWith(Names.named("countryServiceTimeout"))
+        .to(configuration.getString("countryService.timeout"));
 
   }
 

@@ -14,21 +14,31 @@ import java.util.function.Function;
 
 public class FrontendServiceClient {
 
-  private static final long REQUEST_TIMEOUT_MS = 10000; //10 Seconds
+  private final WSClient ws;
+
+  private final String webServiceHost;
+
+  private final String webServicePort;
+
+  private final int webServiceTimeout;
 
   private final String webServiceUrl;
 
-  private final WSClient ws;
-
   @Inject
-  public FrontendServiceClient(WSClient ws, @Named("controlCodeFrontendServiceHostname") String webServiceUrl){
+  public FrontendServiceClient(WSClient ws,
+                               @Named("controlCodeFrontendServiceHost") String webServiceHost,
+                               @Named("controlCodeFrontendServicePort") String webServicePort,
+                               @Named("controlCodeFrontendServiceTimeout") int webServiceTimeout){
     this.ws = ws;
-    this.webServiceUrl = "http://" + webServiceUrl + "/frontend-control-codes";
+    this.webServiceHost = webServiceHost;
+    this.webServicePort = webServicePort;
+    this.webServiceTimeout = webServiceTimeout;
+    this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/frontend-control-codes";
   }
 
   public CompletionStage<Response> get(String controlCode) {
     return ws.url(webServiceUrl + "/" + controlCode)
-        .setRequestTimeout(REQUEST_TIMEOUT_MS).get()
+        .setRequestTimeout(webServiceTimeout).get()
         .handle((response, error) -> {
           if (error != null) {
             Logger.error("Unchecked exception in ControlCodeFrontendService");

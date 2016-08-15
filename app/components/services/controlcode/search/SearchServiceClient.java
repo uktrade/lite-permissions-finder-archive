@@ -17,21 +17,32 @@ import java.util.function.Function;
 
 public class SearchServiceClient {
 
-  private static final long REQUEST_TIMEOUT_MS = 10000; //10 Seconds
+  private final WSClient ws;
+
+  private final String webServiceHost;
+
+  private final int webServicePort;
+
+  private final int webServiceTimeout;
 
   private final String webServiceUrl;
 
-  private final WSClient ws;
-
   @Inject
-  public SearchServiceClient(WSClient ws, @Named("controlCodeSearchServiceHostname") String webServiceHostname){
+  public SearchServiceClient(WSClient ws,
+                             @Named("controlCodeSearchServiceHost") String webServiceHost,
+                             @Named("controlCodeSearchServicePort") int webServicePort,
+                             @Named("controlCodeSearchServiceTimeout") int webServiceTimeout
+  ){
     this.ws = ws;
-    this.webServiceUrl= "http://" + webServiceHostname + "/search";
+    this.webServiceHost = webServiceHost;
+    this.webServicePort = webServicePort;
+    this.webServiceTimeout = webServiceTimeout;
+    this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/search";
   }
 
   public CompletionStage<Response> get(String searchTerm){
     return ws.url(webServiceUrl)
-        .setRequestTimeout(REQUEST_TIMEOUT_MS)
+        .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("term", searchTerm)
         .get().handle((response, error) -> {
           if (error != null) {
