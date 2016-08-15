@@ -53,7 +53,9 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     if (ControlCodeSearchResultsForm.isResultValid(result)) {
       return frontendServiceClient.get(result)
           .thenApplyAsync(response -> {
-            dao.savePhysicalGoodControlCode(response.getFrontendServiceResult().controlCodeData.controlCode);
+            if (response.isOk()){
+              dao.savePhysicalGoodControlCode(response.getFrontendServiceResult().controlCodeData.controlCode);
+            }
             return response;
           }, ec.current())
           .thenApply(response -> {
