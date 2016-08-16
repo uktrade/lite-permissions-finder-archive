@@ -1,12 +1,11 @@
 package controllers.controlcode;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-
 import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.ControlCodeData;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
+import controllers.DestinationCountryController;
 import controllers.ErrorController;
 import play.data.Form;
 import play.data.FormFactory;
@@ -16,6 +15,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.controlcode.controlCode;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class ControlCodeController extends Controller {
@@ -36,6 +36,8 @@ public class ControlCodeController extends Controller {
 
   private final TechnicalNotesController technicalNotesController;
 
+  private final DestinationCountryController destinationCountryController;
+
   @Inject
   public ControlCodeController(FormFactory formFactory,
                                PermissionsFinderDao dao,
@@ -44,7 +46,8 @@ public class ControlCodeController extends Controller {
                                ErrorController errorController,
                                AdditionalSpecificationsController additionalSpecificationsController,
                                DecontrolsController decontrolsController,
-                               TechnicalNotesController technicalNotesController) {
+                               TechnicalNotesController technicalNotesController,
+                               DestinationCountryController destinationCountryController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
@@ -53,6 +56,7 @@ public class ControlCodeController extends Controller {
     this.additionalSpecificationsController = additionalSpecificationsController;
     this.decontrolsController = decontrolsController;
     this.technicalNotesController = technicalNotesController;
+    this.destinationCountryController = destinationCountryController;
   }
 
 
@@ -61,32 +65,31 @@ public class ControlCodeController extends Controller {
   }
 
   public CompletionStage<Result> handleSubmit() {
-    return completedFuture(dao.getPhysicalGoodControlCode())
-        .thenComposeAsync(frontendServiceClient::get)
-        .thenApplyAsync(response -> {
-          if(!response.isOk()) {
-            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
-          }
-          else {
-            Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
+    CompletionStage<String> daoStage = CompletableFuture.supplyAsync(dao::getPhysicalGoodControlCode, ec.current());
+    CompletionStage<FrontendServiceClient.Response> responseStage = daoStage.thenCompose(frontendServiceClient::get);
+    CompletionStage<Result> resultStage = responseStage.thenApplyAsync(response -> {
+      if (!response.isOk()) {
+        return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+      } else {
+        Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
 
-            if (form.hasErrors()) {
-              return ok(controlCode.render(form, response.getFrontendServiceResult()));
-            }
+        if (form.hasErrors()) {
+          return ok(controlCode.render(form, response.getFrontendServiceResult()));
+        }
 
-            String couldDescribeItems = form.field("couldDescribeItems").value();
+        String couldDescribeItems = form.field("couldDescribeItems").value();
 
-            if (couldDescribeItems.equals("true")) {
-              return nextScreenTrue(response.getFrontendServiceResult());
-            }
-            else if (couldDescribeItems.equals("false")) {
-              return nextScreenFalse(response.getFrontendServiceResult());
-            }
+        if (couldDescribeItems.equals("true")) {
+          return nextScreenTrue(response.getFrontendServiceResult());
+        } else if (couldDescribeItems.equals("false")) {
+          return nextScreenFalse(response.getFrontendServiceResult());
+        }
 
-            // TODO Handle this branch condition better
-            return ok(controlCode.render(form, response.getFrontendServiceResult()));
-          }
-        }, ec.current());
+        // TODO Handle this branch condition better
+        return ok(controlCode.render(form, response.getFrontendServiceResult()));
+      }
+    }, ec.current());
+    return resultStage;
   }
 
   public Result nextScreenTrue(FrontendServiceResult frontendServiceResult) {
@@ -103,7 +106,8 @@ public class ControlCodeController extends Controller {
       }
     }
     else {
-      return ok("SHOW COUNTRY SELECT");
+      // TODO this should add to the completion stage chain
+      return destinationCountryController.renderForm();
     }
   }
 

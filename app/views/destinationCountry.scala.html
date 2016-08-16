@@ -1,0 +1,34 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import models.common.Country
+
+@(form: Form[_], countries: List[Country])
+@standardPage("Where are your items being sent to?", Some(Html("Where are your items being sent to?"))){
+  @errorSummary(form)
+}{
+
+  <div class="form-group">
+    <span class="form-hint">Type your destination country or territory.</span>
+    <select name="destinationCountry" id="destinationCountry">
+      <option value="" selected="selected"></option>
+      @for(country <- countries) {
+        <option value="@country.getCountryRef">@country.getCountryName</option>
+      }
+    </select>
+    @detailPanel("destination-help"){
+      Can't find your destination?
+    } {
+      This text is here!
+    }
+  </div>
+
+  <div class="form-group">
+    <a href="#">Add another destination</a>
+  </div>
+
+  <div class="form-group">
+    <button type="submit" class="button">Continue</button>
+  </div>
+
+}
