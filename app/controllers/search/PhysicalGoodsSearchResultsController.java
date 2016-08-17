@@ -20,13 +20,17 @@ import java.util.concurrent.CompletionStage;
 
 public class PhysicalGoodsSearchResultsController extends SearchResultsController {
 
-  private HttpExecutionContext ec;
+  private final HttpExecutionContext ec;
 
-  private PermissionsFinderDao dao;
+  private final PermissionsFinderDao dao;
 
   @Inject
-  public PhysicalGoodsSearchResultsController(FormFactory formFactory, FrontendServiceClient frontendServiceClient,
-                                              ControlCodeController controlCodeController, ErrorController errorController, HttpExecutionContext ec, PermissionsFinderDao dao) {
+  public PhysicalGoodsSearchResultsController(FormFactory formFactory,
+                                              FrontendServiceClient frontendServiceClient,
+                                              ControlCodeController controlCodeController,
+                                              ErrorController errorController,
+                                              HttpExecutionContext ec,
+                                              PermissionsFinderDao dao) {
     super(formFactory, frontendServiceClient, controlCodeController, errorController);
     this.ec = ec;
     this.dao = dao;
@@ -38,8 +42,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeSearchResultsForm> form = bindSearchResultsForm();
-    String result = form.field("result").value();
-    String action = form.field("action").value();
+    String result = form.get().result;
+    String action = form.get().action;
 
     if (form.hasErrors()) {
       //TODO Re-render the page here with an error summary
@@ -56,14 +60,11 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
             if (response.isOk()){
               dao.savePhysicalGoodControlCode(response.getFrontendServiceResult().controlCodeData.controlCode);
             }
-            return response;
-          }, ec.current())
-          .thenApply(response -> {
             if (response.isOk()) {
               return controlCodeController.renderForm(response.getFrontendServiceResult());
             }
             return errorController.renderForm("An issue occurred while processing your request, please try again later.");
-          });
+          }, ec.current());
     }
 
     return CompletableFuture.completedFuture(errorController.renderForm("An issue occurred while processing your request, please try again later."));
