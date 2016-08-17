@@ -16,6 +16,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   private static final String PHYSICAL_GOOD_CONTROL_CODE = "physicalGoodControlCode";
 
+  private static final String SOURCE_COUNTRY = "sourceCountry";
+
   private static final String DESTINATION_COUNTRY_LIST = "destinationCountryList";
 
   private static final String OGEL_QUESTION_MAP = "ogelQuestionsMap";
@@ -33,11 +35,19 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readString(PHYSICAL_GOOD_CONTROL_CODE);
   }
 
+  public void saveSourceCountry(String sourceCountry) {
+    writeString(SOURCE_COUNTRY, sourceCountry);
+  }
+
+  public String getSourceCountry() {
+    return readString(SOURCE_COUNTRY);
+  }
+
   public void saveDestinationCountryList(List<String> destinationCountries) {
     writeString(DESTINATION_COUNTRY_LIST, Json.stringify(Json.toJson(destinationCountries)));
   }
 
-  public List<String> readDestinationCountryList() {
+  public List<String> getDestinationCountryList() {
     return Arrays.asList(Json.fromJson(Json.parse(readString(DESTINATION_COUNTRY_LIST)), String[].class));
   }
 
@@ -45,7 +55,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
     writeString(OGEL_QUESTION_MAP, Json.stringify(Json.toJson(ogelQuestions)));
   }
 
-  public Map<String, String> readOgelQuestionMap() {
+  public Map<String, String> getOgelQuestionMap() {
     // TODO, see if this bind works
     OgelQuestionsController.OgelQuestionsForm form = Json.fromJson(Json.parse(readString(OGEL_QUESTION_MAP)), OgelQuestionsController.OgelQuestionsForm.class);
     return null;
