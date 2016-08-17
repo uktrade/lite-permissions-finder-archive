@@ -8,9 +8,7 @@ import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WSClient;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 public class FrontendServiceClient {
 
@@ -43,18 +41,17 @@ public class FrontendServiceClient {
           if (error != null) {
             Logger.error("Unchecked exception in ControlCodeFrontendService");
             Logger.error(error.getMessage(), error);
-            return CompletableFuture.completedFuture(Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION));
+            return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
           }
           else if (response.getStatus() != 200) {
             String errorMessage = response.asJson() != null ? errorMessage = response.asJson().get("message").asText() : "";
             Logger.error("Unexpected HTTP status code from ControlCodeFrontendService: {} {}", response.getStatus(), errorMessage);
-            return CompletableFuture.completedFuture(Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE));
+            return Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE);
           }
           else {
-            return CompletableFuture.completedFuture(Response.success(response.asJson()));
+            return Response.success(response.asJson());
           }
-        })
-        .thenCompose(Function.identity());
+        });
   }
 
   public static class Response {
