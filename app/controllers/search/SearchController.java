@@ -1,14 +1,14 @@
 package controllers.search;
 
-import controllers.ErrorController;
 import components.services.controlcode.search.SearchServiceClient;
+import controllers.ErrorController;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SearchController {
 
@@ -38,9 +38,14 @@ public class SearchController {
   }
 
   public String getSearchTerms(Form<ControlCodeSearchForm> form){
-    return Stream.of(ControlCodeSearchForm.class.getFields())
-        .map(f -> form.field(f.getName()).value())
-        .filter(fv -> !fv.isEmpty())
+    return Arrays.asList(
+        form.get().description,
+        form.get().component,
+        form.get().brand,
+        form.get().partNumber,
+        form.get().hsCode
+    ).stream()
+        .filter(fv -> fv != null && !fv.isEmpty())
         .collect(Collectors.joining(", "));
   }
 
