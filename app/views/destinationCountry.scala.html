@@ -8,27 +8,50 @@
   @errorSummary(form)
 }{
 
-  <div class="form-group">
-    <span class="form-hint">Type your destination country or territory.</span>
-    <select name="destinationCountry" id="destinationCountry">
-      <option value="" selected="selected"></option>
-      @for(country <- countries) {
-        <option value="@country.getCountryRef">@country.getCountryName</option>
+  <form action="@routes.DestinationCountryController.handleSubmit()" method="POST">
+
+    <div class="form-group">
+      <div class="@if(form.field("destinationCountry").error.isDefined){ error }">
+        <div class="grid-row">
+          <div class="column-one-half">
+
+
+            @if(form.field("destinationCountry").error.isDefined) {
+              <p class="error-message">@Messages(form.field("destinationCountry").error.get.message)</p>
+            }
+
+            <span class="form-hint">Type your destination country or territory.</span>
+
+            <select name="destinationCountry" id="destinationCountry" class="ui-autocomplete-base" autofocus="autofocus" autocorrect="off" autocomplete="off">
+              <option value="" selected="selected"></option>
+              @for(country <- countries) {
+                <option value="@country.getCountryRef" data-alternative-spellings="" data-relevancy-booster="1">@country.getCountryName</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      @detailPanel("destination-help"){
+        Can't find your destination?
+      } {
+        <p>
+          If you can't find your destination, country to territory you can get help from the
+          government's Export Control Organisation
+        </p>
+
+        @helpInfoPanel()
       }
-    </select>
-    @detailPanel("destination-help"){
-      Can't find your destination?
-    } {
-      This text is here!
-    }
-  </div>
 
-  <div class="form-group">
-    <a href="#">Add another destination</a>
-  </div>
+    </div>
 
-  <div class="form-group">
-    <button type="submit" class="button">Continue</button>
-  </div>
+    <div class="form-group">
+      <a href="#">Add another destination</a>
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+  </form>
 
 }

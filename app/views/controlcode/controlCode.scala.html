@@ -71,6 +71,23 @@
       <button type="submit" class="button">Continue</button>
     </div>
 
+    @detailPanel("im-not-sure")(Html("I'm not sure")) {
+      <p>
+        If your item is not described above you can:
+        <ul class="list list-bullet text">
+          <li><a href="javascript:parent.history.go(-1);">return to your search results</a> and choose again</li>
+          <li><a href="javascript:parent.history.go(-2);">edit your item description</a> to get a different set of results</li>
+        </ul>
+      </p>
+
+      <p>
+        If you have been unable to identify your items using this service you can get help from the government's Export Control Organisation, who will be able to help you find the correct licence.
+      </p>
+
+      @helpInfoPanel()
+
+    }
+
   </form>
 
 }

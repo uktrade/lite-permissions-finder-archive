@@ -1,0 +1,44 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import components.services.ogel.OgelServiceResult
+
+@(form: Form[_], ogels: List[OgelServiceResult])
+@standardPage("Based on your answers, you may be able to use one of the following licences?", Some(Html("Based on your answers, you may be able to use one of the following licences?"))){
+  @errorSummary(form)
+}{
+
+  <form action="@controllers.ogel.routes.OgelResultsController.handleSubmit()" method="POST">
+
+
+    <div class="form-group">
+      <table>
+        <thead><tr><th></th></tr></thead>
+        <tbody>
+        @for(ogel <- ogels) {
+          <tr>
+            <td>
+              <div>
+                <button type="submit" class="link" name="chosenOgel" value="@ogel.id">@ogel.title</button>
+                <div>
+                @ogel.additionalText
+                </div>
+              </div>
+            </td>
+          </tr>
+        }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-group">
+      @detailPanel("none-suitable")(Html("None of these are suitable for my export")){
+        <p>
+          You may be able to use a standard individual export licence (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
+        </p>
+        <a class="button font-medium" href="https://www.spire.bis.gov.uk/spire/fox/espire/LOGIN/login">Apply for a SIEL using SPIRE</a>
+      }
+    </div>
+
+  </form>
+}
