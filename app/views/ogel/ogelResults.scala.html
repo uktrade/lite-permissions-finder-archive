@@ -12,16 +12,18 @@
 
 
     <div class="form-group">
-      <table>
+      <table class="ogel-results">
         <thead><tr><th></th></tr></thead>
         <tbody>
         @for(ogel <- ogels) {
           <tr>
             <td>
-              <div>
-                <button type="submit" class="link" name="chosenOgel" value="@ogel.id">@ogel.title</button>
-                <div>
-                @ogel.additionalText
+              <div class="ogel-results-cell">
+                <button type="submit" class="link" name="chosenOgel" value="@ogel.id">@ogel.name</button>
+                <div class="ogel-usage-summary">
+                  @for(entry <- ogel.usageSummary) {
+                    <span class="font-xsmall">@entry</span><br/>
+                  }
                 </div>
               </div>
             </td>

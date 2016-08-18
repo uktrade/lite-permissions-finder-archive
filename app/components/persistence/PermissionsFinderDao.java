@@ -4,23 +4,21 @@ import com.google.inject.Inject;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
-import controllers.ogel.OgelQuestionsController;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class PermissionsFinderDao extends CommonRedisDao {
 
-  private static final String PHYSICAL_GOOD_CONTROL_CODE = "physicalGoodControlCode";
+  public static final String PHYSICAL_GOOD_CONTROL_CODE = "physicalGoodControlCode";
 
-  private static final String SOURCE_COUNTRY = "sourceCountry";
+  public static final String SOURCE_COUNTRY = "sourceCountry";
 
-  private static final String DESTINATION_COUNTRY_LIST = "destinationCountryList";
+  public static final String DESTINATION_COUNTRY_LIST = "destinationCountryList";
 
-  private static final String OGEL_QUESTION_MAP = "ogelQuestionsMap";
+  public static final String OGEL_ACTIVITY_LIST = "ogelActivityList";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -51,14 +49,12 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return Arrays.asList(Json.fromJson(Json.parse(readString(DESTINATION_COUNTRY_LIST)), String[].class));
   }
 
-  public void saveOgelQuestionMap(Map<String, String> ogelQuestions) {
-    writeString(OGEL_QUESTION_MAP, Json.stringify(Json.toJson(ogelQuestions)));
+  public void saveOgelActivityList(List<String> ogelActivities) {
+    writeString(OGEL_ACTIVITY_LIST, Json.stringify(Json.toJson(ogelActivities)));
   }
 
-  public Map<String, String> getOgelQuestionMap() {
-    // TODO, see if this bind works
-    OgelQuestionsController.OgelQuestionsForm form = Json.fromJson(Json.parse(readString(OGEL_QUESTION_MAP)), OgelQuestionsController.OgelQuestionsForm.class);
-    return null;
+  public List<String> getOgelActivityList() {
+    return Arrays.asList(Json.fromJson(Json.parse(readString(OGEL_ACTIVITY_LIST)), String[].class));
   }
 
 }

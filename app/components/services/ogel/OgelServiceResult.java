@@ -4,39 +4,21 @@ import java.util.List;
 
 public class OgelServiceResult {
 
+  public String name;
+
   public String id;
 
-  public String title;
+  public List<String> usageSummary;
 
-  public String additionalText;
-
-  public List<String> canConditions;
-
-  public List<String> cantConditions;
-
-  public List<String> mustConditions;
+  public String getName() {
+    return name;
+  }
 
   public String getId() {
     return id;
   }
 
-  public String getTitle() {
-    return title;
-  }
-
-  public String getAdditionalText() {
-    return additionalText;
-  }
-
-  public List<String> getCanConditions() {
-    return canConditions;
-  }
-
-  public List<String> getCantConditions() {
-    return cantConditions;
-  }
-
-  public List<String> getMustConditions() {
-    return mustConditions;
+  public List<String> getUsageSummary() {
+    return usageSummary;
   }
 }

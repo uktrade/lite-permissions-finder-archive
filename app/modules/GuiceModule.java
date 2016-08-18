@@ -49,6 +49,14 @@ public class GuiceModule extends AbstractModule{
     bindConstant().annotatedWith(Names.named("countryServiceTimeout"))
         .to(configuration.getString("countryService.timeout"));
 
+    // ogelService
+    bindConstant().annotatedWith(Names.named("ogelServiceHost"))
+        .to(configuration.getString("ogelService.hostname"));
+    bindConstant().annotatedWith(Names.named("ogelServicePort"))
+        .to(configuration.getString("ogelService.port"));
+    bindConstant().annotatedWith(Names.named("ogelServiceTimeout"))
+        .to(configuration.getString("ogelService.timeout"));
+
   }
 
   @Provides

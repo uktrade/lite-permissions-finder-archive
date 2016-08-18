@@ -1,0 +1,23 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+
+@()
+@standardPage("We could not find a licence for you", Some(Html("We could not find a licence for you"))){
+
+}{
+
+  <div class="notice form-group">
+    <i class="icon icon-important">
+      <span class="visuallyhidden">Warning</span>
+    </i>
+    <strong class="bold-small">
+      Based on your answers, no Open General Export Licences are suitable for your export. You may still be able to apply for a Standard Individual Export Licence (SIEL).
+    </strong>
+  </div>
+
+  <p>
+    <a class="button font-medium" href="https://www.spire.bis.gov.uk/spire/fox/espire/LOGIN/login">Apply for a SIEL using SPIRE</a>
+  </p>
+
+}

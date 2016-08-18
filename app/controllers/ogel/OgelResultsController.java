@@ -4,16 +4,19 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
+import components.services.ogel.OgelServiceClient;
 import components.services.ogel.OgelServiceResult;
+import controllers.ErrorController;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.ogel.ogelResults;
+import views.html.ogel.ogelNoResults;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class OgelResultsController {
 
@@ -21,39 +24,52 @@ public class OgelResultsController {
 
   private final PermissionsFinderDao dao;
 
-  private final HttpExecutionContext ec;
+  private final OgelServiceClient ogelServiceClient;
 
-  private final List<OgelServiceResult> ogels;
+  private final ErrorController errorController;
 
   @Inject
-  public OgelResultsController(FormFactory formFactory, PermissionsFinderDao dao, HttpExecutionContext ec) {
+  public OgelResultsController(FormFactory formFactory,
+                               PermissionsFinderDao dao,
+                               OgelServiceClient ogelServiceClient,
+                               ErrorController errorController
+                               ) {
     this.formFactory = formFactory;
     this.dao = dao;
-    this.ec = ec;
-    OgelServiceResult ogel = new OgelServiceResult();
-    ogel.id = "1";
-    ogel.title = "Open general export licence (export after repair/replacement under warranty: dual-use items)";
-    ogel.additionalText = "Export dual-use items that were previously imported to the UK or EU for repair or replacement under warranty.";
-    ogels = new ArrayList<OgelServiceResult>();
-    ogels.add(ogel);
-    ogels.add(ogel);
-    ogels.add(ogel);
+    this.ogelServiceClient = ogelServiceClient;
+    this.errorController = errorController;
   }
 
-  public Result renderForm() {
-    // TODO hook into ogel service
-    // TODO handle no results path
-    return ok(ogelResults.render(formFactory.form(OgelResultsForm.class), ogels));
+  public CompletionStage<Result> renderForm() {
+    return renderWithForm(formFactory.form(OgelResultsForm.class));
   }
 
-  public Result handleSubmit() {
+  public CompletionStage<Result> renderWithForm(Form<OgelResultsForm> form) {
+    String sourceCountry = dao.getSourceCountry();
+    String controlCode = dao.getPhysicalGoodControlCode();
+    List<String> destinationCountries = dao.getDestinationCountryList();
+    List<String> ogelActivities = dao.getOgelActivityList();
+    return ogelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
+        .thenApply(response -> {
+          if (!response.isOk()) {
+            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+          }
+          List<OgelServiceResult> results = response.getResults();
+          if (results.isEmpty()) {
+            return ok(ogelNoResults.render());
+          }
+          return ok(ogelResults.render(form, results));
+        });
+  }
+
+  public CompletionStage<Result> handleSubmit() {
     Form<OgelResultsForm> form = formFactory.form(OgelResultsForm.class).bindFromRequest();
 
     if (form.hasErrors()) {
-      return ok(ogelResults.render(form, ogels));
+      renderWithForm(form);
     }
 
-    return ok("Selected OGEL: " + form.get().chosenOgel);
+    return CompletableFuture.completedFuture(ok("Selected OGEL: " + form.get().chosenOgel));
   }
 
   public static class OgelResultsForm {

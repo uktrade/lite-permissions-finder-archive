@@ -4,6 +4,7 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
+import model.OgelActivityType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -11,8 +12,11 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.ogel.ogelQuestions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 public class OgelQuestionsController {
 
@@ -36,29 +40,47 @@ public class OgelQuestionsController {
   }
 
   public Result renderForm() {
+    dao.getPhysicalGoodControlCode();
     return ok(ogelQuestions.render(formFactory.form(OgelQuestionsForm.class)));
   }
 
   public CompletionStage<Result> handleSubmit() {
-
-    Form<OgelQuestionsForm> form = formFactory.form(OgelQuestionsForm.class).bindFromRequest();
-
-    CompletionStage<Void> daoStage = CompletableFuture.runAsync(() -> {
-      if (!form.hasErrors()) {
-        dao.saveOgelQuestionMap(form.data());
-      }
-    }, ec.current());
-
-    CompletionStage<Result> resultStage = daoStage.thenApply(aVoid-> {
+    return CompletableFuture.supplyAsync(() -> {
+      Form<OgelQuestionsForm> form = formFactory.form(OgelQuestionsForm.class).bindFromRequest();
       if (form.hasErrors()) {
-        return ok(ogelQuestions.render(form));
+        return CompletableFuture.completedFuture(ok(ogelQuestions.render(form)));
       }
       else {
+        dao.saveOgelActivityList(formToActivityTypes(form));
         return ogelResultsController.renderForm();
       }
-    });
+    }, ec.current()).thenCompose(Function.identity());
+  }
 
-    return resultStage;
+  public List<String> formToActivityTypes(Form<OgelQuestionsForm> form) {
+    // TODO before1897upto35k currently unused
+    // TODO account for TECH
+
+    OgelQuestionsForm questionsForm = form.get();
+    List<String> activityTypes = new ArrayList<>();
+
+    if ("true".equals(questionsForm.toGovernment)) {
+      activityTypes.add(OgelActivityType.MIL_GOV);
+    }
+
+    if ("true".equals(questionsForm.forRepairReplacement)) {
+      activityTypes.add(OgelActivityType.REPAIR);
+    }
+
+    if ("true".equals(questionsForm.forExhibitionDemonstration)) {
+      activityTypes.add(OgelActivityType.EXHIBITION);
+    }
+
+    // Always add these types
+    activityTypes.add(OgelActivityType.MIL_ANY);
+    activityTypes.add(OgelActivityType.DU_ANY);
+
+    return activityTypes;
   }
 
   public static class OgelQuestionsForm {
