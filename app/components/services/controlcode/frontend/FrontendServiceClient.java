@@ -3,7 +3,7 @@ package components.services.controlcode.frontend;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.services.controlcode.ServiceResponseStatus;
+import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WSClient;

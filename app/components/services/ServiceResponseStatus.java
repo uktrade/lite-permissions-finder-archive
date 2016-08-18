@@ -1,4 +1,4 @@
-package components.services.controlcode;
+package components.services;
 
 public enum ServiceResponseStatus {
   SUCCESS,
