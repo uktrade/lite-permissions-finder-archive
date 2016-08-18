@@ -1,9 +1,9 @@
+@import components.services.ogels.applicable.ApplicableOgelServiceResult
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
-@import components.services.ogel.OgelServiceResult
 
-@(form: Form[_], ogels: List[OgelServiceResult])
+@(form: Form[_], ogels: List[ApplicableOgelServiceResult])
 @standardPage("Based on your answers, you may be able to use one of the following licences?", Some(Html("Based on your answers, you may be able to use one of the following licences?"))){
   @errorSummary(form)
 }{
