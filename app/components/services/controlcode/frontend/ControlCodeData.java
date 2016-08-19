@@ -6,25 +6,31 @@ import java.util.List;
 
 public class ControlCodeData {
 
-  @JsonProperty("decontrols")
-  public List<Decontrol> decontrols;
+  public final List<Decontrol> decontrols;
 
-  @JsonProperty("controlCode")
-  public String controlCode;
+  public final String controlCode;
 
-  @JsonProperty("title")
-  public String title;
+  public final String title;
 
-  @JsonProperty("technicalNotes")
-  public String technicalNotes;
+  public final String technicalNotes;
 
-  @JsonProperty("friendlyDescription")
-  public String friendlyDescription;
+  public final String friendlyDescription;
 
-  @JsonProperty("additionalSpecifications")
-  public AdditionalSpecifications additionalSpecifications;
+  public final AdditionalSpecifications additionalSpecifications;
 
-  public ControlCodeData(){}
+  public ControlCodeData(@JsonProperty("decontrols") List<Decontrol> decontrols,
+                         @JsonProperty("controlCode") String controlCode,
+                         @JsonProperty("title") String title,
+                         @JsonProperty("technicalNotes") String technicalNotes,
+                         @JsonProperty("friendlyDescription") String friendlyDescription,
+                         @JsonProperty("additionalSpecifications") AdditionalSpecifications additionalSpecifications) {
+    this.decontrols = decontrols;
+    this.controlCode = controlCode;
+    this.title = title;
+    this.technicalNotes = technicalNotes;
+    this.friendlyDescription = friendlyDescription;
+    this.additionalSpecifications = additionalSpecifications;
+  }
 
   public boolean canShowDecontrols() {
     return !(decontrols == null || decontrols.isEmpty());

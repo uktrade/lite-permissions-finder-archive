@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SpecificationText {
 
-  @JsonProperty("text")
-  public String text;
+  public final String text;
 
-  @JsonProperty("linkedControlCode")
-  public String linkedControlCode;
+  public final String linkedControlCode;
 
-  public SpecificationText(){}
+  public SpecificationText(@JsonProperty("text") String text,
+                           @JsonProperty("linkedControlCode") String linkedControlCode) {
+    this.text = text;
+    this.linkedControlCode = linkedControlCode;
+  }
 
 }

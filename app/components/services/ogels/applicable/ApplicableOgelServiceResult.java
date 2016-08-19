@@ -1,24 +1,23 @@
 package components.services.ogels.applicable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class ApplicableOgelServiceResult {
 
-  public String name;
+  public final String name;
 
-  public String id;
+  public final String id;
 
-  public List<String> usageSummary;
+  public final List<String> usageSummary;
 
-  public String getName() {
-    return name;
+  public ApplicableOgelServiceResult(@JsonProperty("name") String name,
+                                     @JsonProperty("id") String id,
+                                     @JsonProperty("usageSummary") List<String> usageSummary) {
+    this.name = name;
+    this.id = id;
+    this.usageSummary = usageSummary;
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public List<String> getUsageSummary() {
-    return usageSummary;
-  }
 }

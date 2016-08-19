@@ -1,16 +1,17 @@
 package components.services.controlcode.search;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SearchServiceResult {
 
-  public String highlightedText;
+  public final String highlightedText;
 
-  public String code;
+  public final String code;
 
-  public String getHighlightedText() {
-    return highlightedText;
+  public SearchServiceResult(@JsonProperty("highlightedText") String highlightedText,
+                             @JsonProperty("code") String code) {
+    this.highlightedText = highlightedText;
+    this.code = code;
   }
 
-  public String getCode() {
-    return code;
-  }
 }

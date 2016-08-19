@@ -6,13 +6,15 @@ import java.util.List;
 
 public class AdditionalSpecifications {
 
-  @JsonProperty("clauseText")
-  public String clauseText;
+  public final String clauseText;
 
-  @JsonProperty("specificationText")
-  public List<SpecificationText> specificationText;
+  public final List<SpecificationText> specificationText;
 
-  public AdditionalSpecifications(){}
+  public AdditionalSpecifications(@JsonProperty("clauseText") String clauseText,
+                                  @JsonProperty("specificationText") List<SpecificationText> specificationText) {
+    this.clauseText = clauseText;
+    this.specificationText = specificationText;
+  }
 
   public boolean canShowClauseText() {
     return !(clauseText == null || clauseText.isEmpty());

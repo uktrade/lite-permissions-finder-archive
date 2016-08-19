@@ -9,13 +9,15 @@ import java.util.stream.IntStream;
 
 public class FrontendServiceResult {
 
-  @JsonProperty("controlCodeData")
-  public ControlCodeData controlCodeData;
+  public final ControlCodeData controlCodeData;
 
-  @JsonProperty("lineage")
-  public List<Ancestor> ancestors;
+  public final List<Ancestor> ancestors;
 
-  public FrontendServiceResult(){}
+  public FrontendServiceResult(@JsonProperty("controlCodeData") ControlCodeData controlCodeData,
+                               @JsonProperty("lineage")List<Ancestor> ancestors) {
+    this.controlCodeData = controlCodeData;
+    this.ancestors = ancestors;
+  }
 
   public Option<Ancestor> getGreatestAncestor() {
     return !ancestors.isEmpty() ? Option.apply(ancestors.get(ancestors.size() -1)) : Option.empty();

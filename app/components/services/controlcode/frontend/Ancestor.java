@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Ancestor {
 
-  @JsonProperty("controlCode")
-  public String controlCode;
+  public final String controlCode;
 
-  @JsonProperty("friendlyDescription")
-  public String friendlyDescription;
+  public final String friendlyDescription;
 
-  public Ancestor(){}
+  public Ancestor(@JsonProperty("controlCode") String controlCode,
+                  @JsonProperty("friendlyDescription") String friendlyDescription) {
+    this.controlCode = controlCode;
+    this.friendlyDescription = friendlyDescription;
+  }
 
 }

@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Decontrol {
 
-  @JsonProperty("originControlCode")
   public String originControlCode;
 
-  @JsonProperty("text")
   public String text;
 
-  public Decontrol(){}
-
+  public Decontrol(@JsonProperty("originControlCode") String originControlCode,
+                   @JsonProperty("text") String text) {
+    this.originControlCode = originControlCode;
+    this.text = text;
+  }
 }
