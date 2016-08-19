@@ -7,11 +7,11 @@ import components.persistence.PermissionsFinderDao;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import controllers.ErrorController;
+import controllers.StaticContentController;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Result;
-import views.html.ogel.ogelNoResults;
 import views.html.ogel.ogelResults;
 
 import java.util.List;
@@ -27,6 +27,8 @@ public class OgelResultsController {
 
   private final ErrorController errorController;
 
+  private final StaticContentController staticContentController;
+
   private final OgelSummaryController ogelSummaryController;
 
   @Inject
@@ -34,12 +36,14 @@ public class OgelResultsController {
                                PermissionsFinderDao dao,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                ErrorController errorController,
+                               StaticContentController staticContentController,
                                OgelSummaryController ogelSummaryController
                                ) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.errorController = errorController;
+    this.staticContentController = staticContentController;
     this.ogelSummaryController = ogelSummaryController;
   }
 
@@ -59,7 +63,7 @@ public class OgelResultsController {
           }
           List<ApplicableOgelServiceResult> results = response.getResults();
           if (results.isEmpty()) {
-            return ok(ogelNoResults.render());
+            return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.OGEL_NO_RESULTS);
           }
           return ok(ogelResults.render(form, results));
         });
