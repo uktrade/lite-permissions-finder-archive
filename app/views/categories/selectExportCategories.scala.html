@@ -2,8 +2,10 @@
 @import views.html.common.page._
 @import controllers.categories.ExportCategoryController
 
-@()
-@standardPage("Your exports", Some(Html("What are you exporting?"))){ }{
+@(form: Form[_])
+@standardPage("Your exports", Some(Html("What are you exporting?"))){
+  @errorSummary(form)
+}{
 
   <form action="@controllers.categories.routes.ExportCategoryController.handleSubmit()" method="POST">
 

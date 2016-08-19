@@ -1,12 +1,16 @@
 package controllers.categories;
 
 import com.google.inject.Inject;
+import controllers.ErrorController;
 import controllers.GoodsTypeController;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.categories.selectExportCategories;
+
+import java.util.EnumSet;
+import java.util.Optional;
 
 public class ExportCategoryController extends Controller {
 
@@ -30,7 +34,9 @@ public class ExportCategoryController extends Controller {
   private final ArtsCulturalController artsCulturalController;
 
   @Inject
-  public ExportCategoryController(FormFactory formFactory, GoodsTypeController goodsTypeController,
+  public ExportCategoryController(FormFactory formFactory,
+                                  ErrorController errorController,
+                                  GoodsTypeController goodsTypeController,
                                   ArtsCulturalController artsCulturalController) {
     this.formFactory = formFactory;
     this.goodsTypeController = goodsTypeController;
@@ -38,26 +44,49 @@ public class ExportCategoryController extends Controller {
   }
 
   public Result renderForm() {
-    return ok(selectExportCategories.render());
+    return ok(selectExportCategories.render(formFactory.form()));
   }
 
   public Result handleSubmit() {
-
     DynamicForm form = formFactory.form().bindFromRequest();
 
-    ExportCategory category = ExportCategory.valueOf(form.get("category"));
+    Optional<ExportCategory> exportCategoryOptional = EnumSet.allOf(ExportCategory.class).stream()
+        .filter(e -> e.name().equals(form.get("category"))).findFirst();
 
-    switch (category) {
-      case MILITARY:
-        return goodsTypeController.renderForm();
-      case ARTS_CULTURAL:
-        return artsCulturalController.renderForm();
-      case DUAL_USE:
-        return ok("DUAL USE");
-      case NONE:
-        return ok("NONE");
-      default:
-        throw new RuntimeException("Unknown category " + category);
+    if (exportCategoryOptional.isPresent()) {
+      switch (exportCategoryOptional.get()) {
+        case MILITARY:
+          return goodsTypeController.renderForm();
+        case DUAL_USE:
+          return ok("DUAL USE");
+        case TORTURE_RESTRAINT:
+          return ok("TORTURE_RESTRAINT");
+        case RADIOACTIVE:
+          return ok("RADIOACTIVE");
+        case CHEMICALS_COSMETICS:
+          return ok("CHEMICALS_COSMETICS");
+        case ARTS_CULTURAL:
+          return artsCulturalController.renderForm();
+        case PLANTS_ANIMALS:
+          return ok("PLANTS_ANIMALS");
+        case FOOD:
+          return ok("FOOD");
+        case MEDICINES_DRUGS:
+          return ok("MEDICINES_DRUGS");
+        case TECHNICAL_ASSISTANCE:
+          return ok("TECHNICAL_ASSISTANCE");
+        case FINANCIAL_ASSISTANCE:
+          return ok("FINANCIAL_ASSISTANCE");
+        case NONE:
+          return ok("NONE");
+        default:
+          form.reject("Please select a category");
+          return ok(selectExportCategories.render(form));
+      }
+    }
+    else {
+      form.reject("Please select a category");
+      return ok(selectExportCategories.render(form));
     }
   }
 }
