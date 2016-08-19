@@ -1,0 +1,81 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+
+@import components.services.ogels.ogel.OgelServiceResult
+@import controllers.ogel.OgelSummaryController.OgelSummaryForm
+@(form: Form[OgelSummaryForm], ogel: OgelServiceResult)
+@standardPage(ogel.name, Some(Html(ogel.name))){
+  @errorSummary(form)
+}{
+
+  <p>
+    You may be able to use the <strong class="bold-small">@ogel.name</strong>. What you can and can&apos;t do with this licence is show below.
+  </p>
+
+  <h2 class="heading-medium">
+    What you can do
+  </h2>
+
+  <ul class="ogel-summary-bullet-list">
+    @for(can <- ogel.summary.canList) {
+      <li>
+        @can
+      </li>
+    }
+  </ul>
+
+  <h2 class="heading-medium">
+    What you can&apos;t do
+  </h2>
+
+  <ul class="ogel-summary-bullet-list">
+    @for(cant <- ogel.summary.cantList) {
+      <li>
+        @cant
+      </li>
+    }
+  </ul>
+
+  <h2 class="heading-medium">
+    What you must do
+  </h2>
+
+  <ul class="list ogel-summary-bullet-list">
+    @for(must <- ogel.summary.mustList) {
+      <li>
+        @must
+      </li>
+    }
+  </ul>
+
+  <p class="bold-small">
+    This is only a summary of the licence conditions. You must <a href="@ogel.link">read the licence in full</a> before registering for it.
+  </p>
+
+  <form action="@controllers.ogel.routes.OgelSummaryController.handleSubmit()" method="POST">
+
+    <div class="form-group @if(form.field("fullLicenceRead").hasErrors) { error }">
+      @if(form.field("fullLicenceRead").error.isDefined) {
+        <span class="error-message">
+        @form.field("fullLicenceRead").error.get.message
+        </span>
+      }
+      <label class="block-label" for="full_licence_read">
+        <input type="checkbox" id="full_licence_read" name="fullLicenceRead" value="true"/>
+        I confirm that I have read the full licence text
+      </label>
+    </div>
+
+    <div class="form-group">
+      If this is your first registration for an open general licence, you will be contacted by the ECO within 2 weeks to make sure this is the right licence for your exports and to help with any questions you may have. If a different licence is more suitable you will then be able to register for that licence instead.
+    </div>
+
+    <div class="licence-options">
+      <button type="submit" class="button">Register for this licence</button>
+      <a href="javascript:history.back();" class="link-next-to-button">Back</a>
+    </div>
+    
+  </form>
+  
+}

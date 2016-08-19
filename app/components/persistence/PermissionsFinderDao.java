@@ -20,6 +20,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String OGEL_ACTIVITY_LIST = "ogelActivityList";
 
+  public static final String OGEL_ID = "ogelId";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -55,6 +57,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public List<String> getOgelActivityList() {
     return Arrays.asList(Json.fromJson(Json.parse(readString(OGEL_ACTIVITY_LIST)), String[].class));
+  }
+
+  public void saveOgelId(String ogelId) {
+    writeString(OGEL_ID, ogelId);
+  }
+
+  public String getOgelId() {
+    return readString(OGEL_ID);
   }
 
 }

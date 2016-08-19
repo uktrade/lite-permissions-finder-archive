@@ -11,11 +11,10 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Result;
-import views.html.ogel.ogelResults;
 import views.html.ogel.ogelNoResults;
+import views.html.ogel.ogelResults;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class OgelResultsController {
@@ -28,16 +27,20 @@ public class OgelResultsController {
 
   private final ErrorController errorController;
 
+  private final OgelSummaryController ogelSummaryController;
+
   @Inject
   public OgelResultsController(FormFactory formFactory,
                                PermissionsFinderDao dao,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
-                               ErrorController errorController
+                               ErrorController errorController,
+                               OgelSummaryController ogelSummaryController
                                ) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.errorController = errorController;
+    this.ogelSummaryController = ogelSummaryController;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -64,12 +67,11 @@ public class OgelResultsController {
 
   public CompletionStage<Result> handleSubmit() {
     Form<OgelResultsForm> form = formFactory.form(OgelResultsForm.class).bindFromRequest();
-
     if (form.hasErrors()) {
       renderWithForm(form);
     }
-
-    return CompletableFuture.completedFuture(ok("Selected OGEL: " + form.get().chosenOgel));
+    dao.saveOgelId(form.get().chosenOgel);
+    return ogelSummaryController.renderForm();
   }
 
   public static class OgelResultsForm {

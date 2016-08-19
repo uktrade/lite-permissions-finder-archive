@@ -38,7 +38,6 @@ public class ApplicableOgelServiceClient {
   }
 
   public CompletionStage<Response> get(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes){
-
     String destinationCountry = !destinationCountries.isEmpty() ? destinationCountries.get(0) : "";
 
     WSRequest req = ws.url(webServiceUrl)
@@ -51,12 +50,12 @@ public class ApplicableOgelServiceClient {
 
     return req.get().handle((response, error) -> {
       if (error != null) {
-        Logger.error("Unchecked exception in OgelService");
+        Logger.error("Unchecked exception in ApplicableOgelService");
         Logger.error(error.getMessage(), error);
         return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
       }
       else if (response.getStatus() != 200) {
-        Logger.error("Unexpected HTTP status code from OgelService: {}", response.getStatus());
+        Logger.error("Unexpected HTTP status code from ApplicableOgelService: {}", response.getStatus());
         return Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE);
       }
       else {
