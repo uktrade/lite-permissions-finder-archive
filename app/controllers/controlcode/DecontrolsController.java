@@ -31,19 +31,23 @@ public class DecontrolsController {
 
   private final TechnicalNotesController technicalNotesController;
 
+  private final ConfirmationController confirmationController;
+
   @Inject
   public DecontrolsController(FormFactory formFactory,
                               PermissionsFinderDao dao,
                               HttpExecutionContext ec,
                               FrontendServiceClient frontendServiceClient,
                               ErrorController errorController,
-                              TechnicalNotesController technicalNotesController) {
+                              TechnicalNotesController technicalNotesController,
+                              ConfirmationController confirmationController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
     this.frontendServiceClient = frontendServiceClient;
     this.errorController = errorController;
     this.technicalNotesController = technicalNotesController;
+    this.confirmationController = confirmationController;
   }
 
   public Result renderForm(FrontendServiceResult frontendServiceResult) {
@@ -87,7 +91,7 @@ public class DecontrolsController {
     if (frontendServiceResult.controlCodeData.canShowTechnicalNotes()){
       return technicalNotesController.renderForm(frontendServiceResult);
     }
-    return ok("SHOW CONFIRMATION PAGE");
+    return confirmationController.renderForm(frontendServiceResult);
   }
 
   public static class DecontrolsForm {

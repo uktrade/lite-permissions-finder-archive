@@ -31,20 +31,23 @@ public class TechnicalNotesController {
 
   private final SearchAgainController searchAgainController;
 
+  private final ConfirmationController confirmationController;
+
   @Inject
   public TechnicalNotesController(FormFactory formFactory,
                                   PermissionsFinderDao dao,
                                   HttpExecutionContext ec,
                                   FrontendServiceClient frontendServiceClient,
                                   ErrorController errorController,
-                                  SearchAgainController searchAgainController)
-                                   {
+                                  SearchAgainController searchAgainController,
+                                  ConfirmationController confirmationController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
     this.frontendServiceClient = frontendServiceClient;
     this.errorController = errorController;
     this.searchAgainController = searchAgainController;
+    this.confirmationController = confirmationController;
   }
 
   public Result renderForm(FrontendServiceResult frontendServiceResult){
@@ -67,7 +70,7 @@ public class TechnicalNotesController {
             String stillDescribesItems = form.field("stillDescribesItems").value();
 
             if (stillDescribesItems.equals("true")) {
-              return nextScreenTrue();
+              return nextScreenTrue(response.getFrontendServiceResult());
             }
             else if (stillDescribesItems.equals("false")) {
               return nextScreenFalse(response.getFrontendServiceResult());
@@ -79,8 +82,8 @@ public class TechnicalNotesController {
         }, ec.current());
   }
 
-  public Result nextScreenTrue() {
-    return ok("SHOW CONFIRMATION PAGE");
+  public Result nextScreenTrue(FrontendServiceResult frontendServiceResult) {
+    return confirmationController.renderForm(frontendServiceResult);
   }
 
   public Result nextScreenFalse(FrontendServiceResult frontendServiceResult) {

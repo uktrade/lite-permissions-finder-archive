@@ -35,6 +35,8 @@ public class AdditionalSpecificationsController {
 
   private final SearchAgainController searchAgainController;
 
+  private final ConfirmationController confirmationController;
+
 
   @Inject
   public AdditionalSpecificationsController(FormFactory formFactory,
@@ -44,7 +46,8 @@ public class AdditionalSpecificationsController {
                                             ErrorController errorController,
                                             DecontrolsController decontrolsController,
                                             TechnicalNotesController technicalNotesController,
-                                            SearchAgainController searchAgainController) {
+                                            SearchAgainController searchAgainController,
+                                            ConfirmationController confirmationController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
@@ -53,6 +56,7 @@ public class AdditionalSpecificationsController {
     this.decontrolsController = decontrolsController;
     this.technicalNotesController = technicalNotesController;
     this.searchAgainController = searchAgainController;
+    this.confirmationController = confirmationController;
   }
 
   public Result renderForm(FrontendServiceResult frontendServiceResult) {
@@ -95,7 +99,7 @@ public class AdditionalSpecificationsController {
     else if (frontendServiceResult.controlCodeData.canShowTechnicalNotes()) {
       return technicalNotesController.renderForm(frontendServiceResult);
     }
-    return ok("SHOW CONFIRMATION PAGE");
+    return confirmationController.renderForm(frontendServiceResult);
   }
 
   public Result nextScreenFalse(FrontendServiceResult frontendServiceResult){
