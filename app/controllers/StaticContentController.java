@@ -16,7 +16,9 @@ public class StaticContentController extends Controller {
   public enum StaticHtml {
 
     NO_LICENCE_CULTURAL("noLicenceCultural.html", "No licence required"),
-    OGEL_NO_RESULTS("ogelNoResults.html", "We could not find a licence for you");
+    OGEL_NO_RESULTS("ogelNoResults.html", "We could not find a licence for you"),
+    BROKERING_TRANSHIPMENT("tradetypes/brokeringTranshipment.html","Trade controls, trafficking and brokering"),
+    IMPORT("tradetypes/import.html","Import licences");
 
     StaticHtml(String filename, String title) {
       this.filename = filename;
@@ -28,9 +30,7 @@ public class StaticContentController extends Controller {
   }
 
   public Result renderStaticHtml(StaticHtml staticHtml) {
-
     try {
-
       URL resource = getClass().getClassLoader().getResource("static/html/" + staticHtml.filename);
       if (resource == null) {
         throw new RuntimeException("Not a file: " + staticHtml.filename);

@@ -26,6 +26,7 @@ public class TradeTypeController extends Controller {
   }
 
   private final FormFactory formFactory;
+  private final StaticContentController staticContentController;
   private final ExportCategoryController exportCategoryController;
   private final PermissionsFinderDao dao;
   private final HttpExecutionContext ec;
@@ -34,9 +35,11 @@ public class TradeTypeController extends Controller {
 
   @Inject
   public TradeTypeController(FormFactory formFactory,
+                             StaticContentController staticContentController,
                              ExportCategoryController exportCategoryController,
                              PermissionsFinderDao dao, HttpExecutionContext ec) {
     this.formFactory = formFactory;
+    this.staticContentController = staticContentController;
     this.exportCategoryController = exportCategoryController;
     this.dao = dao;
     this.ec = ec;
@@ -55,22 +58,22 @@ public class TradeTypeController extends Controller {
       }
 
       String tradeTypeParam = form.get().tradeType;
-
       Optional<TradeTypeOption> tradeTypeOption = EnumSet.allOf(TradeTypeOption.class).stream()
           .filter(e -> e.name().equals(tradeTypeParam)).findFirst();
 
       if(tradeTypeOption.isPresent()) {
-        if(tradeTypeOption.get() == TradeTypeOption.EXPORT) {
-          dao.saveSourceCountry(UNITED_KINGDOM);
-          return exportCategoryController.renderForm();
-        }
-        else {
-          return ok("Not implemented");
+        switch(tradeTypeOption.get()) {
+          case IMPORT:
+            return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.IMPORT);
+          case EXPORT:
+            dao.saveSourceCountry(UNITED_KINGDOM);
+            return exportCategoryController.renderForm();
+          case BROKERING:
+          case TRANSSHIPMENT:
+            return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.BROKERING_TRANSHIPMENT);
         }
       }
-      else {
-        return badRequest("Unknown trade type " + tradeTypeParam);
-      }
+      return badRequest("Unknown trade type " + tradeTypeParam);
     }, ec.current());
   }
 
