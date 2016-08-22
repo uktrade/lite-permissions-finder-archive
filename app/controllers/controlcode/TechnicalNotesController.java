@@ -85,7 +85,7 @@ public class TechnicalNotesController {
   }
 
   public Result nextScreenFalse(FrontendServiceResult frontendServiceResult) {
-    return searchAgainController.renderForm(frontendServiceResult);
+    return searchAgainController.render(frontendServiceResult);
   }
 
   public static class TechnicalNotesForm {

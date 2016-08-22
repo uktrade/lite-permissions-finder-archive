@@ -11,7 +11,7 @@ public class SearchAgainController {
   public SearchAgainController() {
   }
 
-  public Result renderForm(FrontendServiceResult frontendServiceResult) {
+  public Result render(FrontendServiceResult frontendServiceResult) {
     return ok(searchAgain.render(frontendServiceResult));
   }
 
