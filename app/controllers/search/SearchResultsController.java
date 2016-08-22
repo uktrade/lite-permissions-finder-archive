@@ -55,7 +55,7 @@ public class SearchResultsController {
       if (action == null || action.isEmpty()){
         return false;
       }
-      else if(action.equals("no-matched-result")){
+      else if("no-matched-result".equals(action)){
         return true;
       }
       return false;

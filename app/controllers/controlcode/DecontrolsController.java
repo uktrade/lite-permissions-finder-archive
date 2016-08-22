@@ -74,10 +74,10 @@ public class DecontrolsController {
 
             String decontrolsDescribeItem = form.field("decontrolsDescribeItem").value();
 
-            if (decontrolsDescribeItem.equals("true")) {
+            if ("true".equals(form.get().decontrolsDescribeItem)) {
               return nextScreenTrue(response.getFrontendServiceResult());
             }
-            else if (decontrolsDescribeItem.equals("false")) {
+            else if ("false".equals(form.get().decontrolsDescribeItem)) {
               return nextScreenFalse(response.getFrontendServiceResult());
             }
 

@@ -77,12 +77,10 @@ public class AdditionalSpecificationsController {
               return ok(additionalSpecifications.render(form, response.getFrontendServiceResult()));
             }
 
-            String stillDescribesItems = form.field("stillDescribesItems").value();
-
-            if (stillDescribesItems.equals("true")) {
+            if ("true".equals(form.get().stillDescribesItems)) {
               return nextScreenTrue(response.getFrontendServiceResult());
             }
-            else if (stillDescribesItems.equals("false")) {
+            else if ("false".equals(form.get().stillDescribesItems)) {
               return nextScreenFalse(response.getFrontendServiceResult());
             }
 

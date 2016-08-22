@@ -81,11 +81,10 @@ public class ControlCodeController extends Controller {
           return ok(controlCode.render(form, response.getFrontendServiceResult()));
         }
 
-        String couldDescribeItems = form.field("couldDescribeItems").value();
-
-        if (couldDescribeItems.equals("true")) {
+        if ("true".equals(form.get().couldDescribeItems)) {
           return nextScreenTrue(response.getFrontendServiceResult());
-        } else if (couldDescribeItems.equals("false")) {
+        }
+        else if ("false".equals(form.get().couldDescribeItems)) {
           return nextScreenFalse(response.getFrontendServiceResult());
         }
 
