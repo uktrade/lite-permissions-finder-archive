@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
+import model.ExportCategory;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
 
@@ -21,6 +22,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String OGEL_ACTIVITY_LIST = "ogelActivityList";
 
   public static final String OGEL_ID = "ogelId";
+
+  public static final String EXPORT_CATEGORY = "exportCategory";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -65,6 +68,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public String getOgelId() {
     return readString(OGEL_ID);
+  }
+
+  public void saveExportCategory(ExportCategory exportCategory) {
+    writeString(EXPORT_CATEGORY, exportCategory.value());
+  }
+
+  public ExportCategory getExportCategory() {
+    return ExportCategory.getMatched(readString(EXPORT_CATEGORY)).get();
   }
 
 }

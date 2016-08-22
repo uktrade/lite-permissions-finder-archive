@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import controllers.categories.ExportCategoryController
+@import model.ExportCategory
 
 @(form: Form[_])
 @standardPage("Your exports", Some(Html("What are you exporting?"))){
@@ -14,7 +15,7 @@
         This covers all military items, such as weapons, weapon-delivery systems, explosives, munitions, ammunition and ordnance, and military vehicles.
         It also includes software and source code to enable the use of military goods, and technology such as manuals, designs, models or blueprints for goods that themselves require an export licence.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.MILITARY">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.MILITARY.value()">Continue</button>
     }
 
     @detailPanel("dual-use"){Dual-use goods, software and technology}{
@@ -27,14 +28,14 @@
       <p>
         You should choose this category if you are exporting goods that you think could be used for military purposes, even if you are not sure.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.DUAL_USE">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.DUAL_USE.value()">Continue</button>
     }
 
     @detailPanel("torture-restraint"){Goods that could be used for torture, restraint or execution}{
       <p>
         This covers items that could be used for capital punishment, torture or other cruel, inhuman or degrading treatment or punishment. It also includes goods designed for the execution of human beings such as gallows, electric chairs and automatic drug-injection systems.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.TORTURE_RESTRAINT">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.TORTURE_RESTRAINT.value()">Continue</button>
     }
 
     @detailPanel("radioactive"){Radioactive goods}{
@@ -44,42 +45,42 @@
       <p>
       Read guidance on <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources" class="external" target="_blank" rel="external">controls on radioactive sources</a> for more information on the items covered in this category.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.RADIOACTIVE">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.RADIOACTIVE.value()">Continue</button>
     }
 
     @detailPanel("chemicals-cosmetics"){Cosmetics, chemicals, and pesticides}{
       <p>
         This includes toiletries and beauty products, detergents, disinfectants, domestic cleaners, industrial chemicals, chemical raw materials and food-handling materials.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.CHEMICALS_COSMETICS">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.CHEMICALS_COSMETICS.value()">Continue</button>
     }
 
     @detailPanel("arts-cultural"){Arts and cultural goods}{
       <p>
         This includes cultural artefacts, works of art, antiques (including weapons), manuscripts and archaeological items.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.ARTS_CULTURAL">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.ARTS_CULTURAL.value()">Continue</button>
     }
 
     @detailPanel("plants-animals"){Plants and animals}{
       <p>
         This includes live animals and birds, non-edible flowers and plants, seeds and other wildlife.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.PLANTS_ANIMALS">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.PLANTS_ANIMALS.value()">Continue</button>
     }
 
     @detailPanel("Food"){Food}{
       <p>
         This includes any products suitable for human consumption, including fresh food and processed food.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.FOOD">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.FOOD.value()">Continue</button>
     }
 
     @detailPanel("medicines-drugs"){Medicines and drugs}{
       <p>
         This includes medicinal products, prescription drugs and controlled drugs.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.MEDICINES_DRUGS">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.MEDICINES_DRUGS.value()">Continue</button>
     }
 
     @detailPanel("technical-assistance"){Technical assistance}{
@@ -97,14 +98,14 @@
       <p>
         You should choose this category if you are providing training, instruction or advice, working knowledge, skills or consulting services, either in person, verbally or electronically.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.TECHNICAL_ASSISTANCE">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.TECHNICAL_ASSISTANCE.value()">Continue</button>
     }
 
     @detailPanel("financial-assistance"){Financing and financial assistance}{
       <p>
         This covers the provision of brokering services, insurance, financing and financial support related to the sale, supply, transfer or export of goods and technology to certain destinations. It includes the processing of payments for prohibited or restricted trade transactions.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.FINANCIAL_ASSISTANCE">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.FINANCIAL_ASSISTANCE.value()">Continue</button>
     }
 
     <p class="category-or">
@@ -115,7 +116,7 @@
       <p>
         Choose this if you are sure your items do not fall into any of the categories above.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategoryController.ExportCategory.NONE">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.NONE.value()">Continue</button>
     }
 
   </form>

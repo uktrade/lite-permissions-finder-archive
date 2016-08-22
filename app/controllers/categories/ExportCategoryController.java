@@ -1,44 +1,31 @@
 package controllers.categories;
 
 import com.google.inject.Inject;
-import controllers.ErrorController;
+import components.persistence.PermissionsFinderDao;
 import controllers.GoodsTypeController;
+import model.ExportCategory;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.categories.selectExportCategories;
 
-import java.util.EnumSet;
 import java.util.Optional;
 
 public class ExportCategoryController extends Controller {
 
-  public enum ExportCategory {
-    MILITARY,
-    DUAL_USE,
-    TORTURE_RESTRAINT,
-    RADIOACTIVE,
-    CHEMICALS_COSMETICS,
-    ARTS_CULTURAL,
-    PLANTS_ANIMALS,
-    FOOD,
-    MEDICINES_DRUGS,
-    TECHNICAL_ASSISTANCE,
-    FINANCIAL_ASSISTANCE,
-    NONE
-  }
-
   private final FormFactory formFactory;
+  private final PermissionsFinderDao dao;
   private final GoodsTypeController goodsTypeController;
   private final ArtsCulturalController artsCulturalController;
 
   @Inject
   public ExportCategoryController(FormFactory formFactory,
-                                  ErrorController errorController,
+                                  PermissionsFinderDao dao,
                                   GoodsTypeController goodsTypeController,
                                   ArtsCulturalController artsCulturalController) {
     this.formFactory = formFactory;
+    this.dao = dao;
     this.goodsTypeController = goodsTypeController;
     this.artsCulturalController = artsCulturalController;
   }
@@ -50,13 +37,13 @@ public class ExportCategoryController extends Controller {
   public Result handleSubmit() {
     DynamicForm form = formFactory.form().bindFromRequest();
 
-    Optional<ExportCategory> exportCategoryOptional = EnumSet.allOf(ExportCategory.class).stream()
-        .filter(e -> e.name().equals(form.get("category"))).findFirst();
+    Optional<ExportCategory> exportCategoryOptional = ExportCategory.getMatched(form.get("category"));
 
     if (exportCategoryOptional.isPresent()) {
+      dao.saveExportCategory(exportCategoryOptional.get());
       switch (exportCategoryOptional.get()) {
         case MILITARY:
-          return goodsTypeController.renderForm();
+        return goodsTypeController.renderForm();
         case DUAL_USE:
           return ok("DUAL USE");
         case TORTURE_RESTRAINT:
@@ -79,14 +66,9 @@ public class ExportCategoryController extends Controller {
           return ok("FINANCIAL_ASSISTANCE");
         case NONE:
           return ok("NONE");
-        default:
-          form.reject("Please select a category");
-          return ok(selectExportCategories.render(form));
       }
     }
-    else {
-      form.reject("Please select a category");
-      return ok(selectExportCategories.render(form));
-    }
+
+    return badRequest("Unknown export category: \"" + form.get("category") + "\"");
   }
 }
