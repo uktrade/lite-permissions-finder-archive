@@ -33,6 +33,8 @@ public class DecontrolsController {
 
   private final ConfirmationController confirmationController;
 
+  private final DecontrolledItemController decontrolledItemController;
+
   @Inject
   public DecontrolsController(FormFactory formFactory,
                               PermissionsFinderDao dao,
@@ -40,7 +42,8 @@ public class DecontrolsController {
                               FrontendServiceClient frontendServiceClient,
                               ErrorController errorController,
                               TechnicalNotesController technicalNotesController,
-                              ConfirmationController confirmationController) {
+                              ConfirmationController confirmationController,
+                              DecontrolledItemController decontrolledItemController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
@@ -48,6 +51,7 @@ public class DecontrolsController {
     this.errorController = errorController;
     this.technicalNotesController = technicalNotesController;
     this.confirmationController = confirmationController;
+    this.decontrolledItemController = decontrolledItemController;
   }
 
   public Result renderForm(FrontendServiceResult frontendServiceResult) {
@@ -84,7 +88,7 @@ public class DecontrolsController {
   }
 
   public Result nextScreenTrue(FrontendServiceResult frontendServiceResult){
-    return ok("SHOW NLR");
+    return decontrolledItemController.render(frontendServiceResult);
   }
 
   public Result nextScreenFalse(FrontendServiceResult frontendServiceResult){
