@@ -20,6 +20,8 @@ import java.util.concurrent.CompletionStage;
 
 public class PhysicalGoodsSearchResultsController extends SearchResultsController {
 
+  private final NoneDescribedController noneDescribedController;
+
   private final HttpExecutionContext ec;
 
   private final PermissionsFinderDao dao;
@@ -29,9 +31,11 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                                               FrontendServiceClient frontendServiceClient,
                                               ControlCodeController controlCodeController,
                                               ErrorController errorController,
+                                              NoneDescribedController noneDescribedController,
                                               HttpExecutionContext ec,
                                               PermissionsFinderDao dao) {
     super(formFactory, frontendServiceClient, controlCodeController, errorController);
+    this.noneDescribedController = noneDescribedController;
     this.ec = ec;
     this.dao = dao;
   }
@@ -51,7 +55,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     }
 
     if (ControlCodeSearchResultsForm.isActionValid(action)){
-      return CompletableFuture.completedFuture(ok("\"None of these describe my export\" not implemented"));
+      return CompletableFuture.completedFuture(noneDescribedController.render());
     }
 
     if (ControlCodeSearchResultsForm.isResultValid(result)) {
