@@ -29,18 +29,22 @@ public class TechnicalNotesController {
 
   private final ErrorController errorController;
 
+  private final SearchAgainController searchAgainController;
+
   @Inject
   public TechnicalNotesController(FormFactory formFactory,
                                   PermissionsFinderDao dao,
                                   HttpExecutionContext ec,
                                   FrontendServiceClient frontendServiceClient,
-                                  ErrorController errorController)
+                                  ErrorController errorController,
+                                  SearchAgainController searchAgainController)
                                    {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
     this.frontendServiceClient = frontendServiceClient;
     this.errorController = errorController;
+    this.searchAgainController = searchAgainController;
   }
 
   public Result renderForm(FrontendServiceResult frontendServiceResult){
@@ -56,7 +60,6 @@ public class TechnicalNotesController {
           }
           else {
             Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
-
             if (form.hasErrors()) {
               return ok(technicalNotes.render(form, response.getFrontendServiceResult()));
             }
@@ -67,7 +70,7 @@ public class TechnicalNotesController {
               return nextScreenTrue();
             }
             else if (stillDescribesItems.equals("false")) {
-              return nextScreenFalse();
+              return nextScreenFalse(response.getFrontendServiceResult());
             }
 
             // TODO Handle this branch condition better
@@ -80,8 +83,8 @@ public class TechnicalNotesController {
     return ok("SHOW CONFIRMATION PAGE");
   }
 
-  public Result nextScreenFalse() {
-    return ok("SHOW SEARCH AGAIN PAGE");
+  public Result nextScreenFalse(FrontendServiceResult frontendServiceResult) {
+    return searchAgainController.renderForm(frontendServiceResult);
   }
 
   public static class TechnicalNotesForm {

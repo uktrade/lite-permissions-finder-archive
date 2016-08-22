@@ -1,0 +1,24 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import components.services.controlcode.frontend.FrontendServiceResult
+
+@(frontendServiceResult: FrontendServiceResult)
+@standardPage(frontendServiceResult.controlCodeData.title, Some(Html(frontendServiceResult.controlCodeData.title))){ }{
+
+  <p>
+    If <span class="bold-small">@frontendServiceResult.controlCodeData.controlCode</span> is not applicable to your items, you can:
+  </p>
+
+  <ul class="list list-bullet text">
+    <li><a href="#">return to your search results</a> and choose again
+    </li>
+    <li><a href="#">edit your item description</a> to get a different set of results
+    </li>
+  </ul>
+
+  <p>
+    If you have been unable to identify your items but you still think you may need a licence, you can contact the Export Control Organisation (ECO) to discuss your export. You can contact them by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help&commat;bis.gsi.gov.uk">eco.help&commat;bis.gsi.gov.uk</a>.
+  </p>
+  
+}

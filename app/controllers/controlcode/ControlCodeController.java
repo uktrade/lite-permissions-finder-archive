@@ -38,6 +38,8 @@ public class ControlCodeController extends Controller {
 
   private final DestinationCountryController destinationCountryController;
 
+  private final SearchAgainController searchAgainController;
+
   @Inject
   public ControlCodeController(FormFactory formFactory,
                                PermissionsFinderDao dao,
@@ -47,7 +49,8 @@ public class ControlCodeController extends Controller {
                                AdditionalSpecificationsController additionalSpecificationsController,
                                DecontrolsController decontrolsController,
                                TechnicalNotesController technicalNotesController,
-                               DestinationCountryController destinationCountryController) {
+                               DestinationCountryController destinationCountryController,
+                               SearchAgainController searchAgainController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
@@ -57,6 +60,7 @@ public class ControlCodeController extends Controller {
     this.decontrolsController = decontrolsController;
     this.technicalNotesController = technicalNotesController;
     this.destinationCountryController = destinationCountryController;
+    this.searchAgainController = searchAgainController;
   }
 
 
@@ -67,7 +71,7 @@ public class ControlCodeController extends Controller {
   public CompletionStage<Result> handleSubmit() {
     CompletionStage<String> daoStage = CompletableFuture.supplyAsync(dao::getPhysicalGoodControlCode, ec.current());
     CompletionStage<FrontendServiceClient.Response> responseStage = daoStage.thenCompose(frontendServiceClient::get);
-    CompletionStage<Result> resultStage = responseStage.thenApplyAsync(response -> {
+    return responseStage.thenApplyAsync(response -> {
       if (!response.isOk()) {
         return errorController.renderForm("An issue occurred while processing your request, please try again later.");
       } else {
@@ -89,7 +93,6 @@ public class ControlCodeController extends Controller {
         return ok(controlCode.render(form, response.getFrontendServiceResult()));
       }
     }, ec.current());
-    return resultStage;
   }
 
   public Result nextScreenTrue(FrontendServiceResult frontendServiceResult) {
@@ -112,7 +115,7 @@ public class ControlCodeController extends Controller {
   }
 
   public Result nextScreenFalse(FrontendServiceResult frontendServiceResult) {
-    return ok("SEARCH AGAIN SCREEN");
+    return searchAgainController.renderForm(frontendServiceResult);
   }
 
   public static class ControlCodeForm {

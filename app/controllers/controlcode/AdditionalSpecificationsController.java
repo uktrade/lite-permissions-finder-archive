@@ -33,6 +33,8 @@ public class AdditionalSpecificationsController {
 
   private final TechnicalNotesController technicalNotesController;
 
+  private final SearchAgainController searchAgainController;
+
 
   @Inject
   public AdditionalSpecificationsController(FormFactory formFactory,
@@ -41,7 +43,8 @@ public class AdditionalSpecificationsController {
                                             FrontendServiceClient frontendServiceClient,
                                             ErrorController errorController,
                                             DecontrolsController decontrolsController,
-                                            TechnicalNotesController technicalNotesController) {
+                                            TechnicalNotesController technicalNotesController,
+                                            SearchAgainController searchAgainController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
@@ -49,6 +52,7 @@ public class AdditionalSpecificationsController {
     this.errorController = errorController;
     this.decontrolsController = decontrolsController;
     this.technicalNotesController = technicalNotesController;
+    this.searchAgainController = searchAgainController;
   }
 
   public Result renderForm(FrontendServiceResult frontendServiceResult) {
@@ -95,7 +99,7 @@ public class AdditionalSpecificationsController {
   }
 
   public Result nextScreenFalse(FrontendServiceResult frontendServiceResult){
-    return ok("SEARCH AGAIN PAGE");
+    return searchAgainController.renderForm(frontendServiceResult);
   }
 
   public static class AdditionalSpecificationsForm {
