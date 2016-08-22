@@ -1,12 +1,29 @@
 package model;
 
-public final class OgelActivityType {
-  public static final String TECH = "TECH";
-  public static final String MIL_GOV = "MIL_GOV";
-  public static final String MIL_ANY = "MIL_ANY";
-  public static final String EXHIBITION = "EXHIBITION";
-  public static final String REPAIR = "REPAIR";
-  public static final String DU_ANY = "DU_ANY";
-  public static final String ANTIQUE = "ANTIQUE";
-  public OgelActivityType() {}
+import java.util.EnumSet;
+import java.util.Optional;
+
+public enum OgelActivityType {
+  ANTIQUE("ANTIQUE"),
+  DU_ANY("DU_ANY"),
+  EXHIBITION("EXHIBITION"),
+  MIL_ANY("MIL_ANY"),
+  MIL_GOV("MIL_GOV"),
+  REPAIR("REPAIR"),
+  TECH("TECH");
+
+  private String value;
+
+  OgelActivityType(String value) {
+    this.value = value;
+  }
+
+  public String value() {
+    return this.value;
+  }
+
+  public static Optional<OgelActivityType> getMatched(String ogelActivity) {
+    return EnumSet.allOf(OgelActivityType.class).stream().filter(e -> e.value().equals(ogelActivity)).findFirst();
+  }
+
 }

@@ -65,20 +65,20 @@ public class OgelQuestionsController {
     List<String> activityTypes = new ArrayList<>();
 
     if ("true".equals(questionsForm.toGovernment)) {
-      activityTypes.add(OgelActivityType.MIL_GOV);
+      activityTypes.add(OgelActivityType.MIL_GOV.value());
     }
 
     if ("true".equals(questionsForm.forRepairReplacement)) {
-      activityTypes.add(OgelActivityType.REPAIR);
+      activityTypes.add(OgelActivityType.REPAIR.value());
     }
 
     if ("true".equals(questionsForm.forExhibitionDemonstration)) {
-      activityTypes.add(OgelActivityType.EXHIBITION);
+      activityTypes.add(OgelActivityType.EXHIBITION.value());
     }
 
     // Always add these types
-    activityTypes.add(OgelActivityType.MIL_ANY);
-    activityTypes.add(OgelActivityType.DU_ANY);
+    activityTypes.add(OgelActivityType.MIL_ANY.value());
+    activityTypes.add(OgelActivityType.DU_ANY.value());
 
     return activityTypes;
   }
