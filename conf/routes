@@ -19,6 +19,8 @@ POST    /export-category/financial-technical-assistance   controllers.categories
 
 POST    /export-category/torture-restraint    controllers.categories.TortureRestraintController.handleSubmit
 
+POST    /export-category/radioactive          controllers.categories.RadioactiveController.handleSubmit
+
 POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
 
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit

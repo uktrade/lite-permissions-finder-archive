@@ -1,0 +1,39 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import controllers.categories.routes.RadioactiveController
+
+@(form: Form[_])
+@standardPage("You need a licence to export radioactive materials above certain activity thresholds", Some(Html("You need a licence to export radioactive materials above certain activity thresholds"))){
+  @errorSummary(form)
+}{
+
+  <p>
+    The export of certain high-activity radioactive sources is controlled in order to minimise the risk of their falling into the hands of terrorists or criminal groups.
+  </p>
+
+  <p>
+    <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources#scope-of-the-controls-on-radioactive-sources" class="external" target="_blank" rel="external">View the activity thresholds of the radioactive materials controlled</a>
+  </p>
+
+  <p>
+    If you are exporting radioactive goods above any of the thresholds, you will need an export licence.
+  </p>
+
+  <form action="@RadioactiveController.handleSubmit" method="POST">
+
+    <p>
+      Continue to <button type="submit" class="link underlined font-small" name="goToSearch" value="true">use this service</button> if you want to register for the <span class="bold-small">open general export licence for radioactive sources</span>.
+    </p>
+
+  </form>
+
+  <p>
+    For other licences to export radioactive goods, you will need to <a href="https://www.spire.bis.gov.uk/spire/fox/espire/LOGIN/login" class="external" target="_blank" rel="external">apply through SPIRE</a>.
+  </p>
+
+  <p>
+    Read more about <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources" class="external" target="_blank" rel="external">controls on radioactive sources</a>.
+  </p>
+  
+}
