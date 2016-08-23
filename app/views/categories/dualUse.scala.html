@@ -1,0 +1,49 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import controllers.categories.routes.DualUseController;
+
+@(form: Form[_])
+@standardPage("Do your items have a dual use?", Some(Html("Do your items have a dual use?"))){
+  @errorSummary(form)
+}{
+
+
+  <p>
+    Some things exported for civilian purposes can also have a military use and therefore need a licence. They are typically high-tech, advanced products, often with military standard specifications. These are called dual-use items.
+  </p>
+
+  <p>
+    Many items you might not think need a licence may in fact have a dual use, such as:
+    <ul class="list list-bullet text">
+      <li>protective suits, gloves and shoes</li>
+      <li>machine tools</li>
+      <li>computers</li>
+      <li>capacitors</li>
+      <li>microchips</li>
+      <li>telecommunications equipment</li>
+      <li>underwater equipment</li>
+    </ul>
+  </p>
+
+  <p>
+    There are many other examples of dual-use items, and not all of the items listed above will require a licence. Watch a short video about dual-use items: <a href="#">[video]</a>
+  </p>
+
+  <form action="@DualUseController.handleSubmit()" method="POST">
+
+    @formRadioBoolean(form("isDualUse"), Html("Could your items be dual use?"))
+
+    <div class="form-group">
+      @detailPanel("im-not-sure") { I'm not sure } {
+        If there is a chance your items are dual use, you should choose <span class="bold-small">Yes</span> above and continue to find out whether you need a licence.
+      }
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+    
+  </form>
+  
+}

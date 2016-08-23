@@ -13,6 +13,8 @@ POST    /export-category/select               controllers.categories.ExportCateg
 
 POST    /export-category/arts-cultural        controllers.categories.ArtsCulturalController.handleSubmit
 
+POST    /export-category/dual-use             controllers.categories.DualUseController.handleSubmit
+
 POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
 
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
