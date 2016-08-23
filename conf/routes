@@ -17,6 +17,8 @@ POST    /export-category/dual-use             controllers.categories.DualUseCont
 
 POST    /export-category/financial-technical-assistance   controllers.categories.FinancialTechnicalAssistanceController.handleSubmit
 
+POST    /export-category/torture-restraint    controllers.categories.TortureRestraintController.handleSubmit
+
 POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
 
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit

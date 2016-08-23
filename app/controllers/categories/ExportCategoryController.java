@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import controllers.GoodsTypeController;
 import model.ExportCategory;
-import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -21,6 +20,7 @@ public class ExportCategoryController extends Controller {
   private final ArtsCulturalController artsCulturalController;
   private final DualUseController dualUseController;
   private final FinancialTechnicalAssistanceController financialTechnicalAssistanceController;
+  private final TortureRestraintController tortureRestraintController;
 
   @Inject
   public ExportCategoryController(FormFactory formFactory,
@@ -28,13 +28,15 @@ public class ExportCategoryController extends Controller {
                                   GoodsTypeController goodsTypeController,
                                   ArtsCulturalController artsCulturalController,
                                   DualUseController dualUseController,
-                                  FinancialTechnicalAssistanceController financialTechnicalAssistanceController) {
+                                  FinancialTechnicalAssistanceController financialTechnicalAssistanceController,
+                                  TortureRestraintController tortureRestraintController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.goodsTypeController = goodsTypeController;
     this.artsCulturalController = artsCulturalController;
     this.dualUseController = dualUseController;
     this.financialTechnicalAssistanceController = financialTechnicalAssistanceController;
+    this.tortureRestraintController = tortureRestraintController;
   }
 
   public Result renderForm() {
@@ -54,8 +56,7 @@ public class ExportCategoryController extends Controller {
         case DUAL_USE:
           return goodsTypeController.renderForm();
         case TORTURE_RESTRAINT:
-          // TODO TORTURE_RESTRAINT
-          return ok("TORTURE_RESTRAINT");
+          return tortureRestraintController.renderForm();
         case RADIOACTIVE:
           // TODO RADIOACTIVE
           return ok("RADIOACTIVE");
