@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
+import controllers.DestinationCountryController;
 import controllers.ErrorController;
 import play.data.Form;
 import play.data.FormFactory;
@@ -31,7 +32,7 @@ public class DecontrolsController {
 
   private final TechnicalNotesController technicalNotesController;
 
-  private final ConfirmationController confirmationController;
+  private final DestinationCountryController destinationCountryController;
 
   private final DecontrolledItemController decontrolledItemController;
 
@@ -42,7 +43,7 @@ public class DecontrolsController {
                               FrontendServiceClient frontendServiceClient,
                               ErrorController errorController,
                               TechnicalNotesController technicalNotesController,
-                              ConfirmationController confirmationController,
+                              DestinationCountryController destinationCountryController,
                               DecontrolledItemController decontrolledItemController) {
     this.formFactory = formFactory;
     this.dao = dao;
@@ -50,7 +51,7 @@ public class DecontrolsController {
     this.frontendServiceClient = frontendServiceClient;
     this.errorController = errorController;
     this.technicalNotesController = technicalNotesController;
-    this.confirmationController = confirmationController;
+    this.destinationCountryController = destinationCountryController;
     this.decontrolledItemController = decontrolledItemController;
   }
 
@@ -95,7 +96,7 @@ public class DecontrolsController {
     if (frontendServiceResult.controlCodeData.canShowTechnicalNotes()){
       return technicalNotesController.renderForm(frontendServiceResult);
     }
-    return confirmationController.renderForm(frontendServiceResult);
+    return destinationCountryController.renderForm();
   }
 
   public static class DecontrolsForm {

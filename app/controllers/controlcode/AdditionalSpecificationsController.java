@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
+import controllers.DestinationCountryController;
 import controllers.ErrorController;
 import play.data.Form;
 import play.data.FormFactory;
@@ -35,7 +36,7 @@ public class AdditionalSpecificationsController {
 
   private final SearchAgainController searchAgainController;
 
-  private final ConfirmationController confirmationController;
+  private final DestinationCountryController destinationCountryController;
 
 
   @Inject
@@ -47,7 +48,7 @@ public class AdditionalSpecificationsController {
                                             DecontrolsController decontrolsController,
                                             TechnicalNotesController technicalNotesController,
                                             SearchAgainController searchAgainController,
-                                            ConfirmationController confirmationController) {
+                                            DestinationCountryController destinationCountryController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
@@ -56,7 +57,7 @@ public class AdditionalSpecificationsController {
     this.decontrolsController = decontrolsController;
     this.technicalNotesController = technicalNotesController;
     this.searchAgainController = searchAgainController;
-    this.confirmationController = confirmationController;
+    this.destinationCountryController = destinationCountryController;
   }
 
   public Result renderForm(FrontendServiceResult frontendServiceResult) {
@@ -97,7 +98,7 @@ public class AdditionalSpecificationsController {
     else if (frontendServiceResult.controlCodeData.canShowTechnicalNotes()) {
       return technicalNotesController.renderForm(frontendServiceResult);
     }
-    return confirmationController.renderForm(frontendServiceResult);
+    return destinationCountryController.renderForm();
   }
 
   public Result nextScreenFalse(FrontendServiceResult frontendServiceResult){

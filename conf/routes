@@ -37,8 +37,6 @@ POST    /control-code/decontrols              controllers.controlcode.Decontrols
 
 POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSubmit
 
-POST    /control-code/confirmation            controllers.controlcode.ConfirmationController.handleSubmit
-
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
 POST    /export-questions                     controllers.ogel.OgelQuestionsController.handleSubmit
