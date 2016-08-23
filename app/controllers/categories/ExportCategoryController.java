@@ -20,18 +20,21 @@ public class ExportCategoryController extends Controller {
   private final GoodsTypeController goodsTypeController;
   private final ArtsCulturalController artsCulturalController;
   private final DualUseController dualUseController;
+  private final FinancialTechnicalAssistanceController financialTechnicalAssistanceController;
 
   @Inject
   public ExportCategoryController(FormFactory formFactory,
                                   PermissionsFinderDao dao,
                                   GoodsTypeController goodsTypeController,
                                   ArtsCulturalController artsCulturalController,
-                                  DualUseController dualUseController) {
+                                  DualUseController dualUseController,
+                                  FinancialTechnicalAssistanceController financialTechnicalAssistanceController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.goodsTypeController = goodsTypeController;
     this.artsCulturalController = artsCulturalController;
     this.dualUseController = dualUseController;
+    this.financialTechnicalAssistanceController = financialTechnicalAssistanceController;
   }
 
   public Result renderForm() {
@@ -71,11 +74,9 @@ public class ExportCategoryController extends Controller {
           // TODO MEDICINES_DRUGS
           return ok("MEDICINES_DRUGS");
         case TECHNICAL_ASSISTANCE:
-          // TODO TECHNICAL_ASSISTANCE
-          return ok("TECHNICAL_ASSISTANCE");
+          return financialTechnicalAssistanceController.renderForm();
         case FINANCIAL_ASSISTANCE:
-          // TODO FINANCIAL_ASSISTANCE
-          return ok("FINANCIAL_ASSISTANCE");
+          return financialTechnicalAssistanceController.renderForm();
         case NONE:
           return dualUseController.renderForm();
       }
