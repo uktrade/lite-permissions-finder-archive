@@ -25,6 +25,7 @@ public class ExportCategoryController extends Controller {
   private final TortureRestraintController tortureRestraintController;
   private final RadioactiveController radioactiveController;
   private final ChemicalsCosmeticsController chemicalsCosmeticsController;
+  private final PlantsAnimalsController plantsAnimalsController;
 
   @Inject
   public ExportCategoryController(FormFactory formFactory,
@@ -36,7 +37,8 @@ public class ExportCategoryController extends Controller {
                                   FinancialTechnicalAssistanceController financialTechnicalAssistanceController,
                                   TortureRestraintController tortureRestraintController,
                                   RadioactiveController radioactiveController,
-                                  ChemicalsCosmeticsController chemicalsCosmeticsController) {
+                                  ChemicalsCosmeticsController chemicalsCosmeticsController,
+                                  PlantsAnimalsController plantsAnimalsController) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.staticContentController = staticContentController;
@@ -47,6 +49,7 @@ public class ExportCategoryController extends Controller {
     this.tortureRestraintController = tortureRestraintController;
     this.radioactiveController = radioactiveController;
     this.chemicalsCosmeticsController = chemicalsCosmeticsController;
+    this.plantsAnimalsController = plantsAnimalsController;
   }
 
   public Result renderForm() {
@@ -74,8 +77,7 @@ public class ExportCategoryController extends Controller {
         case ARTS_CULTURAL:
           return artsCulturalController.renderForm();
         case PLANTS_ANIMALS:
-          // TODO PLANTS_ANIMALS
-          return ok("PLANTS_ANIMALS");
+          return plantsAnimalsController.renderForm();
         case FOOD:
           return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_FOOD);
         case MEDICINES_DRUGS:
