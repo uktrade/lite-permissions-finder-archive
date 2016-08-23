@@ -4,10 +4,10 @@
 @import components.services.controlcode.frontend.FrontendServiceResult
 
 @(frontendServiceResult: FrontendServiceResult)
-@standardPage(frontendServiceResult.controlCodeData.title, Some(Html(frontendServiceResult.controlCodeData.title))){ }{
+@standardPage(frontendServiceResult.controlCodeData.controlCode + " is not applicable to your items", Some(Html(frontendServiceResult.controlCodeData.controlCode + " is not applicable to your items"))){ }{
 
   <p>
-    If <span class="bold-small">@frontendServiceResult.controlCodeData.controlCode</span> is not applicable to your items, you can:
+    You should select another item type from your search results, or edit your description to get a new set of results:
   </p>
 
   <ul class="list list-bullet text">
@@ -17,8 +17,6 @@
     </li>
   </ul>
 
-  <p>
-    If you have been unable to identify your items but you still think you may need a licence, you can contact the Export Control Organisation (ECO) to discuss your export. You can contact them by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help&commat;bis.gsi.gov.uk">eco.help&commat;bis.gsi.gov.uk</a>.
-  </p>
+  @helpInfoPanel(showParagraph = true)
   
 }

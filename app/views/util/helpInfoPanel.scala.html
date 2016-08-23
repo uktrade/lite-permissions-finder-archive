@@ -1,8 +1,14 @@
-@()
+@(showParagraph: Boolean = false)
 
 <div>
 
   <h2 class="heading-medium">Need some help?</h2>
+
+  @if(showParagraph) {
+    <p>
+      If you have been unable to identify your items using this service you can get help from the government's Export Control Organisation, who will be able to help you find the correct licence.
+    </p>
+  }
 
   <ul class="list">
     <li>Telephone helpline: 0207 123 4567</li>
