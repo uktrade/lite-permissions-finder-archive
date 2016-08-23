@@ -21,6 +21,8 @@ POST    /export-category/torture-restraint    controllers.categories.TortureRest
 
 POST    /export-category/radioactive          controllers.categories.RadioactiveController.handleSubmit
 
+POST    /export-category/chemicals-cosmetics  controllers.categories.ChemicalsCosmeticsController.handleSubmit
+
 POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
 
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
