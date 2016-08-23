@@ -1,0 +1,21 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import controllers.categories.routes.MedicinesDrugsController
+
+@(form: Form[_])
+@standardPage("Medicines and drugs", Some(Html("Medicines and drugs"))){
+  @errorSummary(form)
+}{
+
+  <form action="@MedicinesDrugsController.handleSubmit" method="POST">
+
+    @formRadioBoolean(form("isUsedForExecutionTorture"), Html("Are your drugs for execution or torture?"))
+  
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+    
+  </form>
+  
+}

@@ -25,6 +25,8 @@ POST    /export-category/chemicals-cosmetics  controllers.categories.ChemicalsCo
 
 POST    /export-category/plants-animals       controllers.categories.PlantsAnimalsController.handleSubmit
 
+POST    /export-category/medicines-drugs      controllers.categories.MedicinesDrugsController.handleSubmit
+
 POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
 
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit

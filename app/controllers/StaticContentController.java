@@ -22,7 +22,8 @@ public class StaticContentController extends Controller {
     CATEGORY_FOOD("categories/food.html","You need to check the rules for your export destination"),
     CATEGORY_ENDANGERED_ANIMAL("categories/endangeredAnimal.html", "You may need a CITES permit"),
     CATEGORY_NON_ENDANGERED_ANIMAL("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
-    CATEGORY_PLANT("categories/plant.html", "You may need approval from the destination country");
+    CATEGORY_PLANT("categories/plant.html", "You may need approval from the destination country"),
+    CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines");
 
     StaticHtml(String filename, String title) {
       this.filename = filename;
