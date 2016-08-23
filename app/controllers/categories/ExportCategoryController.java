@@ -3,6 +3,7 @@ package controllers.categories;
 import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import controllers.GoodsTypeController;
+import controllers.StaticContentController;
 import model.ExportCategory;
 import play.data.Form;
 import play.data.FormFactory;
@@ -16,6 +17,7 @@ public class ExportCategoryController extends Controller {
 
   private final FormFactory formFactory;
   private final PermissionsFinderDao dao;
+  private final StaticContentController staticContentController;
   private final GoodsTypeController goodsTypeController;
   private final ArtsCulturalController artsCulturalController;
   private final DualUseController dualUseController;
@@ -27,6 +29,7 @@ public class ExportCategoryController extends Controller {
   @Inject
   public ExportCategoryController(FormFactory formFactory,
                                   PermissionsFinderDao dao,
+                                  StaticContentController staticContentController,
                                   GoodsTypeController goodsTypeController,
                                   ArtsCulturalController artsCulturalController,
                                   DualUseController dualUseController,
@@ -36,6 +39,7 @@ public class ExportCategoryController extends Controller {
                                   ChemicalsCosmeticsController chemicalsCosmeticsController) {
     this.formFactory = formFactory;
     this.dao = dao;
+    this.staticContentController = staticContentController;
     this.goodsTypeController = goodsTypeController;
     this.artsCulturalController = artsCulturalController;
     this.dualUseController = dualUseController;
@@ -73,8 +77,7 @@ public class ExportCategoryController extends Controller {
           // TODO PLANTS_ANIMALS
           return ok("PLANTS_ANIMALS");
         case FOOD:
-          // TODO FOOD
-          return ok("FOOD");
+          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_FOOD);
         case MEDICINES_DRUGS:
           // TODO MEDICINES_DRUGS
           return ok("MEDICINES_DRUGS");
