@@ -1,0 +1,41 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import controllers.routes.StartApplicationController
+
+@(form: Form[_], applicationCode: String)
+@standardPage("Saving your application", Some(Html("Saving your application"))){
+  @errorSummary(form)
+}{
+
+  <div class="panel panel-border-wide">
+    Your application number
+    <br/>
+    <span class="bold-xlarge">@applicationCode</span>
+  </div>
+
+  <p>
+    You can save your application and return to it at any time. You will need your application number (above), and memorable word, which you create below.
+  </p>
+
+  <form action="@StartApplicationController.handleSubmit" method="POST">
+
+    @formInput(form("emailAddress")) {
+      Enter your email address to receive your application number (optional)
+    }
+
+    @formInput(form("memorableWord"), Some(Html("For example your surname"))) {
+      Create your memorable word
+    }
+
+    <p>
+      <a href="javascript:window.print();">Print this page</a> to have a copy of your application number for your reference.
+    </p>
+
+    <div class="form-group">
+      <button type="submit" class="button">Save and Continue</button>
+    </div>
+
+  </form>
+
+}

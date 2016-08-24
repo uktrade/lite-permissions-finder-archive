@@ -25,6 +25,12 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String EXPORT_CATEGORY = "exportCategory";
 
+  public static final String APPLICATION_CODE = "applicationCode";
+
+  public static final String EMAIL_ADDRESS = "emailAddress";
+
+  public static final String MEMORABLE_WORD = "memorableWord";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -76,6 +82,30 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public ExportCategory getExportCategory() {
     return ExportCategory.getMatched(readString(EXPORT_CATEGORY)).get();
+  }
+
+  public void saveApplicationCode(String applicationCode) {
+    writeString(APPLICATION_CODE, applicationCode);
+  }
+
+  public String getApplicationCode() {
+    return readString(APPLICATION_CODE);
+  }
+
+  public void saveEmailAddress(String emailAddress) {
+    writeString(EMAIL_ADDRESS, emailAddress);
+  }
+
+  public String getEmailAddress() {
+    return readString(EMAIL_ADDRESS);
+  }
+
+  public void saveMemorableWord(String memorableWord) {
+    writeString(MEMORABLE_WORD, memorableWord);
+  }
+
+  public String getMemorableWord() {
+    return readString(MEMORABLE_WORD);
   }
 
 }

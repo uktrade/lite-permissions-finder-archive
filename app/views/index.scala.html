@@ -1,4 +1,5 @@
 @import util._
+@import controllers.routes.EntryPointController
 
 @govukTemplateDefaults("Import / export licensing service") {
   <main id="content" role="main">
@@ -35,7 +36,13 @@
           </ul>
         </div>
 
-        <a href="/trade-type" class="button button-start" name="action" value="select-export-type">Start now</a>
+        <form action="@EntryPointController.handleSubmit" method="POST">
+
+          <button type="submit" class="button start-application" name="action" value="start">Start an application</button>
+
+          <button type="submit" class="button secondary" name="action" value="continue">Return to an application</button>
+
+        </form>
 
       </div>
 

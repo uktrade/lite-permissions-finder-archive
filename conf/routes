@@ -5,7 +5,9 @@
 # Main index page
 GET     /                                     controllers.EntryPointController.index
 
-GET     /trade-type                           controllers.TradeTypeController.renderForm
+POST    /                                     controllers.EntryPointController.handleSubmit
+
+POST    /start-application                    controllers.StartApplicationController.handleSubmit
 
 POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
 
