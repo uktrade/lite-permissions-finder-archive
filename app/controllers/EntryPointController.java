@@ -2,7 +2,6 @@ package controllers;
 
 import com.google.inject.Inject;
 import components.common.transaction.TransactionManager;
-import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.*;
@@ -15,12 +14,17 @@ public class EntryPointController extends Controller {
   private final TransactionManager transactionManager;
   private final FormFactory formFactory;
   private final StartApplicationController startApplicationController;
+  private final ContinueApplicationController continueApplicationController;
 
   @Inject
-  public EntryPointController(TransactionManager transactionManager, FormFactory formFactory, StartApplicationController startApplicationController) {
+  public EntryPointController(TransactionManager transactionManager,
+                              FormFactory formFactory,
+                              StartApplicationController startApplicationController,
+                              ContinueApplicationController continueApplicationController) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
     this.startApplicationController = startApplicationController;
+    this.continueApplicationController = continueApplicationController;
   }
 
   public Result index() {
@@ -35,7 +39,7 @@ public class EntryPointController extends Controller {
       return startApplicationController.renderForm();
     }
     if ("continue".equals(action)) {
-      return ok(action);
+      return continueApplicationController.renderForm();
     }
     return badRequest("Unknown value for action: \"" + action + "\"");
   }

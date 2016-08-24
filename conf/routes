@@ -9,6 +9,8 @@ POST    /                                     controllers.EntryPointController.h
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit
 
+POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
+
 POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
 
 POST    /export-category/select               controllers.categories.ExportCategoryController.handleSubmit

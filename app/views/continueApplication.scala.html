@@ -1,0 +1,35 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import controllers.routes.ContinueApplicationController;
+
+@(form: Form[_])
+@standardPage("Return to your application", Some(Html("Return to your application"))){
+  @errorSummary(form)
+}{
+
+  <h2 class="heading-medium section">
+    Enter your details below
+  </h2>
+
+  <form action="@ContinueApplicationController.handleSubmit" method="POST">
+
+    @formInput(form("applicationNumber"), Some(Html("This was emailed to you (if you entered your email address)"))) {
+      Application number
+    }
+
+    @formInput(form("memorableWord"), Some(Html("You created this at the start of the application"))) {
+      Memorable word
+    }
+
+    <div class="form-group">
+      <button type="submit" class="button">Find my application</button>
+    </div>
+
+    <p>
+      Don't have these details? <button class="link underlined" type="submit" name="startApplication" value="true">Start a new application</button>.
+    </p>
+    
+  </form>
+  
+}
