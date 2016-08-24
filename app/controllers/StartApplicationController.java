@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 
 public class StartApplicationController {
 
-  private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'));
+  private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'));
 
   private final FormFactory formFactory;
   private final PermissionsFinderDao dao;
@@ -59,7 +59,7 @@ public class StartApplicationController {
   }
 
   /**
-   * Builds a random application code satisfying the regular expression \[0-9A-Z]{4}[\-][0-9A-Z]{4}\
+   * Builds a random application code satisfying the regular expression \[0-9A-Z]{4}[\-][0-9A-Z]{4}\ and Crockford encoding compliant
    * e.g. XME1-BM7S
    * @return The application code
    */
