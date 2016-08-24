@@ -16,7 +16,6 @@ public class StaticContentController extends Controller {
   public enum StaticHtml {
 
     NO_LICENCE_CULTURAL("noLicenceCultural.html", "No licence required"),
-    OGEL_NO_RESULTS("ogelNoResults.html", "We could not find a licence for you"),
     BROKERING_TRANSHIPMENT("tradetypes/brokeringTranshipment.html","Trade controls, trafficking and brokering"),
     IMPORT("tradetypes/import.html","Import licences"),
     CATEGORY_FOOD("categories/food.html","You need to check the rules for your export destination"),

@@ -7,7 +7,6 @@ import components.persistence.PermissionsFinderDao;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import controllers.ErrorController;
-import controllers.StaticContentController;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -27,24 +26,24 @@ public class OgelResultsController {
 
   private final ErrorController errorController;
 
-  private final StaticContentController staticContentController;
-
   private final OgelSummaryController ogelSummaryController;
+
+  private final OgelNoResultsController ogelNoResultsController;
 
   @Inject
   public OgelResultsController(FormFactory formFactory,
                                PermissionsFinderDao dao,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                ErrorController errorController,
-                               StaticContentController staticContentController,
-                               OgelSummaryController ogelSummaryController
+                               OgelSummaryController ogelSummaryController,
+                               OgelNoResultsController ogelNoResultsController
                                ) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.errorController = errorController;
-    this.staticContentController = staticContentController;
     this.ogelSummaryController = ogelSummaryController;
+    this.ogelNoResultsController = ogelNoResultsController;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -63,7 +62,7 @@ public class OgelResultsController {
           }
           List<ApplicableOgelServiceResult> results = response.getResults();
           if (results.isEmpty()) {
-            return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.OGEL_NO_RESULTS);
+            return ogelNoResultsController.render();
           }
           return ok(ogelResults.render(form, results));
         });
