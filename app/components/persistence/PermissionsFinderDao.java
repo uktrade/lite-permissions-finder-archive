@@ -9,6 +9,7 @@ import play.libs.Json;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PermissionsFinderDao extends CommonRedisDao {
@@ -57,7 +58,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   public List<String> getDestinationCountryList() {
-    return Arrays.asList(Json.fromJson(Json.parse(readString(DESTINATION_COUNTRY_LIST)), String[].class));
+    return new LinkedList<String>(Arrays.asList(Json.fromJson(Json.parse(readString(DESTINATION_COUNTRY_LIST)), String[].class)));
   }
 
   public void saveOgelActivityList(List<String> ogelActivities) {

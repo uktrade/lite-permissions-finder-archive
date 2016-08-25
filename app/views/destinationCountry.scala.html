@@ -10,7 +10,6 @@
 }{
 
   <form action="@routes.DestinationCountryController.handleSubmit()" method="POST">
-    <input type="hidden" name="numberOfDestinationCountries" value="@numberOfDestinationCountries"/>
 
     @countrySelectGenerator(form, "destinationCountry", numberOfDestinationCountries, countries)
 
@@ -32,6 +31,12 @@
     @if(numberOfDestinationCountries >= DestinationCountryController.MIN_NUMBER_OF_COUNTRIES && numberOfDestinationCountries < DestinationCountryController.MAX_NUMBER_OF_COUNTRIES) {
       <div class="form-group">
         <button type="submit" class="link" name="addAnotherDestination" value="true">Add another destination</button>
+      </div>
+    }
+
+    @if(numberOfDestinationCountries > DestinationCountryController.MIN_NUMBER_OF_COUNTRIES) {
+      <div class="form-group">
+        <button type="submit" class="link" name="removeLastDestination" value="true">Remove last destination</button>
       </div>
     }
 

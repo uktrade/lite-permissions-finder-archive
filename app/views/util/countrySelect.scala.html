@@ -10,11 +10,9 @@
       <span class="form-hint">Type your destination country or territory.</span>
 
       <select name="@field.name" id="@field.id" class="ui-autocomplete-base" autofocus="autofocus" autocorrect="off" autocomplete="off">
-        @if(!field.value.isDefined || (field.value.isDefined && "".equals(field.value.get))) {
-          <option value="" selected="selected"></option>
-        }
+        <option value="" @if(!field.value.isDefined || (field.value.isDefined && "".equals(field.value.get))) {selected="selected"}></option>
         @for(country <- countries) {
-          <option value="@country.getCountryRef" data-alternative-spellings="" data-relevancy-booster="1" @if(field.value.isDefined && country.equals(field.value.get)){selected="selected"}>@country.getCountryName</option>
+          <option value="@country.getCountryRef" data-alternative-spellings="" data-relevancy-booster="1" @if(field.value.isDefined && country.getCountryRef.equals(field.value.get)){selected="selected"}>@country.getCountryName</option>
         }
       </select>
     </div>
