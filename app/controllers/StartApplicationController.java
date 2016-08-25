@@ -79,7 +79,7 @@ public class StartApplicationController {
 
     public List<ValidationError> validate() {
       List<ValidationError> errors = new ArrayList<>();
-      if (memorableWord != null && memorableWord.trim().length() <= 3) {
+      if (memorableWord != null && memorableWord.trim().length() < 3) {
         errors.add(new ValidationError("memorableWord", "Please make your word at least three letters in length"));
       }
       return errors.isEmpty() ? null : errors;
