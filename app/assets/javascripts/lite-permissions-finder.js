@@ -1,3 +1,3 @@
 $(document).ready(function (){
-  $('#destinationCountry').selectToAutocomplete();
+  $("[id^='destinationCountry']").selectToAutocomplete();
 });

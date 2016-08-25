@@ -2,52 +2,38 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import models.common.Country
+@(form: Form[_], countries: List[Country], numberOfDestinationCountries: Int)
 
-@(form: Form[_], countries: List[Country])
+
 @standardPage("Where are your items being sent to?", Some(Html("Where are your items being sent to?"))){
   @errorSummary(form)
 }{
 
   <form action="@routes.DestinationCountryController.handleSubmit()" method="POST">
+    <input type="hidden" name="numberOfDestinationCountries" value="@numberOfDestinationCountries"/>
+
+    @countrySelectGenerator(form, "destinationCountry", numberOfDestinationCountries, countries)
 
     <div class="form-group">
-      <div class="@if(form.field("destinationCountry").error.isDefined){ error }">
-        <div class="grid-row">
-          <div class="column-one-half">
-
-
-            @if(form.field("destinationCountry").error.isDefined) {
-              <p class="error-message">@Messages(form.field("destinationCountry").error.get.message)</p>
-            }
-
-            <span class="form-hint">Type your destination country or territory.</span>
-
-            <select name="destinationCountry" id="destinationCountry" class="ui-autocomplete-base" autofocus="autofocus" autocorrect="off" autocomplete="off">
-              <option value="" selected="selected"></option>
-              @for(country <- countries) {
-                <option value="@country.getCountryRef" data-alternative-spellings="" data-relevancy-booster="1">@country.getCountryName</option>
-              }
-            </select>
-          </div>
-        </div>
-      </div>
-
       @detailPanel("destination-help"){
         Can't find your destination?
       } {
+
         <p>
           If you can't find your destination, country to territory you can get help from the
           government's Export Control Organisation
         </p>
 
-        @helpInfoPanel()
+          @helpInfoPanel()
+
       }
-
     </div>
 
-    <div class="form-group">
-      <a href="#">Add another destination</a>
-    </div>
+    @if(numberOfDestinationCountries >= DestinationCountryController.MIN_NUMBER_OF_COUNTRIES && numberOfDestinationCountries < DestinationCountryController.MAX_NUMBER_OF_COUNTRIES) {
+      <div class="form-group">
+        <button type="submit" class="link" name="addAnotherDestination" value="true">Add another destination</button>
+      </div>
+    }
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>
