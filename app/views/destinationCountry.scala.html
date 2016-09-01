@@ -11,6 +11,8 @@
 
   <form action="@routes.DestinationCountryController.handleSubmit()" method="POST">
 
+    <input type="submit" class="hidden"></input>
+
     @countrySelectGenerator(form, "destinationCountry", numberOfDestinationCountries, countries)
 
     <div class="form-group">
