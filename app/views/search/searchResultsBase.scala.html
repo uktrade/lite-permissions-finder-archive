@@ -3,26 +3,26 @@
 @import views.html.common.page._
 @import views.html.common.form._
 
-@(form: Form[_], formAction: String, results: List[SearchServiceResult], showResults: Boolean)
+@(form: Form[_], formAction: String, results: List[SearchServiceResult], resultsDisplayCount: Int)
   @standardPage(
-    if (showResults) "Possible matches" else "Your search did not return any results",
-    Some(Html(if (showResults) "Possible matches" else "Your search did not return any results")),
+    if (!results.isEmpty()) "Possible matches" else "Your search did not return any results",
+    Some(Html(if (!results.isEmpty()) "Possible matches" else "Your search did not return any results")),
     backLinkText = "Edit description") {
     @errorSummary(form)
   }{
 
-    @if(showResults) {
+    @if(!results.isEmpty()) {
 
       <form action="@formAction" method="POST">
 
         <table class="search-results">
           <thead><tr><th></th></tr></thead>
           <tbody>
-          @for(result <- results) {
+          @for(i <- 0 until Math.min(results.size, resultsDisplayCount)) {
             <tr>
               <td>
                 <p>
-                  <button type="submit" class="link font-xsmall" name="result" value="@result.code">@Html(result.highlightedText)</button>
+                  <button type="submit" class="link font-xsmall" name="result" value="@results.get(i).code">@Html(results.get(i).highlightedText)</button>
                 </p>
               </td>
             </tr>
@@ -30,8 +30,11 @@
           </tbody>
         </table>
 
-        <div class="no-matched-result-wrapper">
-          <button type="submit" name="action" value="no-matched-result" class="link underlined font-small">None of these describe my export</button>
+        <div class="search-result-actions">
+          @if(resultsDisplayCount < results.size) {
+            <button type="submit" name="action" value="show-more-results" class="button secondary show-more-results-button">Show more results</button>
+          }
+          <button type="submit" name="action" value="no-matched-result" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
         </div>
 
       </form>

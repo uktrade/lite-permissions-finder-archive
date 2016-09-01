@@ -1,14 +1,19 @@
 package controllers.search;
 
+import components.services.controlcode.search.SearchServiceClient;
 import controllers.controlcode.ControlCodeController;
 import controllers.ErrorController;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import play.data.Form;
 import play.data.FormFactory;
 
+import java.util.Optional;
+
 public class SearchResultsController {
 
   private final FormFactory formFactory;
+
+  protected final SearchServiceClient searchServiceClient;
 
   protected final FrontendServiceClient frontendServiceClient;
 
@@ -16,9 +21,18 @@ public class SearchResultsController {
 
   protected final ErrorController errorController;
 
-  public SearchResultsController(FormFactory formFactory, FrontendServiceClient frontendServiceClient,
-                                 ControlCodeController controlCodeController, ErrorController errorController) {
+  public enum SearchResultAction{
+    NONE_MATCHED,
+    SHORE_MORE,
+  }
+
+  public SearchResultsController(FormFactory formFactory,
+                                 SearchServiceClient searchServiceClient,
+                                 FrontendServiceClient frontendServiceClient,
+                                 ControlCodeController controlCodeController,
+                                 ErrorController errorController) {
     this.formFactory = formFactory;
+    this.searchServiceClient = searchServiceClient;
     this.frontendServiceClient = frontendServiceClient;
     this.controlCodeController = controlCodeController;
     this.errorController = errorController;
@@ -38,27 +52,21 @@ public class SearchResultsController {
 
     public String action;
 
-    public String validate() {
-      if (isResultValid(result) || isActionValid(action)) {
-        return null;
-      }
-      else {
-        return "Please pick a button on this screen to continue";
-      }
+    public Optional<String> getResult() {
+      return !(result == null || result.isEmpty()) ? Optional.of(result) : Optional.empty();
     }
 
-    public static boolean isResultValid(String result){
-      return !(result == null || result.isEmpty());
-    }
-
-    public static boolean isActionValid(String action){
+    public Optional<SearchResultAction> getAction() {
       if (action == null || action.isEmpty()){
-        return false;
+        return Optional.empty();
       }
-      else if("no-matched-result".equals(action)){
-        return true;
+      if("no-matched-result".equals(action)){
+        return Optional.of(SearchResultAction.NONE_MATCHED);
       }
-      return false;
+      if("show-more-results".equals(action)){
+        return Optional.of(SearchResultAction.SHORE_MORE);
+      }
+      return Optional.empty();
     }
   }
 }
