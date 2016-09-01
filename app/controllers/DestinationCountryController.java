@@ -102,6 +102,7 @@ public class DestinationCountryController extends Controller{
             for (int i = 0; i < destinationCountries.size(); i++) {
               if (destinationCountries.get(i) == null || destinationCountries.get(i).isEmpty()) {
                 form.reject("destinationCountry[" + i + ']', "You must enter a destination or territory");
+                continue;
               }
               int countryCount = 0;
               for (int j = 0; j < destinationCountries.size(); j++) {
