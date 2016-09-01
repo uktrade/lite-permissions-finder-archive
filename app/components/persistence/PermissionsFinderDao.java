@@ -32,6 +32,10 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String MEMORABLE_WORD = "memorableWord";
 
+  public static final String PHYSICAL_GOOD_SEARCH_TERMS = "physicalGoodSearchTerms";
+
+  public static final String PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT = "physicalGoodSearchPaginationDisplayCount";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -109,4 +113,19 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readString(MEMORABLE_WORD);
   }
 
+  public void savePhysicalGoodSearchTerms(String physicalGoodSearchTerms) {
+    writeString(PHYSICAL_GOOD_SEARCH_TERMS, physicalGoodSearchTerms);
+  }
+
+  public String getPhysicalGoodSearchTerms() {
+    return readString(PHYSICAL_GOOD_SEARCH_TERMS);
+  }
+
+  public void savePhysicalGoodSearchPaginationDisplayCount(int physicalGoodSearchPaginationDisplayCount) {
+    writeString(PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT, Integer.toString(physicalGoodSearchPaginationDisplayCount));
+  }
+
+  public int getPhysicalGoodSearchPaginationDisplayCount() {
+    return Integer.parseInt(readString(PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT));
+  }
 }
