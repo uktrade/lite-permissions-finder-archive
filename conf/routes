@@ -9,49 +9,95 @@ POST    /                                     controllers.EntryPointController.h
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit
 
+GET     /start-application                    controllers.StartApplicationController.renderForm
+
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
+
+GET     /continue-application                 controllers.ContinueApplicationController.renderForm
 
 POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
 
+GET     /select-trade-type                    controllers.TradeTypeController.renderForm
+
 POST    /export-category/select               controllers.categories.ExportCategoryController.handleSubmit
+
+GET     /export-category/select               controllers.categories.ExportCategoryController.renderForm
 
 POST    /export-category/arts-cultural        controllers.categories.ArtsCulturalController.handleSubmit
 
+GET     /export-category/arts-cultural        controllers.categories.ArtsCulturalController.renderForm
+
 POST    /export-category/dual-use             controllers.categories.DualUseController.handleSubmit
+
+GET     /export-category/dual-use             controllers.categories.DualUseController.renderForm
 
 POST    /export-category/financial-technical-assistance   controllers.categories.FinancialTechnicalAssistanceController.handleSubmit
 
+GET     /export-category/financial-technical-assistance   controllers.categories.FinancialTechnicalAssistanceController.renderForm
+
 POST    /export-category/torture-restraint    controllers.categories.TortureRestraintController.handleSubmit
+
+GET     /export-category/torture-restraint    controllers.categories.TortureRestraintController.renderForm
 
 POST    /export-category/radioactive          controllers.categories.RadioactiveController.handleSubmit
 
+GET     /export-category/radioactive          controllers.categories.RadioactiveController.renderForm
+
 POST    /export-category/chemicals-cosmetics  controllers.categories.ChemicalsCosmeticsController.handleSubmit
+
+GET     /export-category/chemicals-cosmetics  controllers.categories.ChemicalsCosmeticsController.renderForm
 
 POST    /export-category/plants-animals       controllers.categories.PlantsAnimalsController.handleSubmit
 
+GET     /export-category/plants-animals       controllers.categories.PlantsAnimalsController.renderForm
+
 POST    /export-category/medicines-drugs      controllers.categories.MedicinesDrugsController.handleSubmit
+
+GET     /export-category/medicines-drugs      controllers.categories.MedicinesDrugsController.renderForm
 
 POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
 
+GET     /select-goods-type                    controllers.GoodsTypeController.renderForm
+
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
+
+GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.renderForm
 
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
 
+#GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderForm
+
 POST    /control-code                         controllers.controlcode.ControlCodeController.handleSubmit
+
+#GET     /control-code                         controllers.controlcode.ControlCodeController.renderForm
 
 POST    /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSubmit
 
+#GET     /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderForm
+
 POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSubmit
+
+#GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderForm
 
 POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSubmit
 
+#GET     /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.renderForm
+
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
+
+GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /export-questions                     controllers.ogel.OgelQuestionsController.handleSubmit
 
+GET     /export-questions                     controllers.ogel.OgelQuestionsController.renderForm
+
 POST    /export-open-general-export-licence-results   controllers.ogel.OgelResultsController.handleSubmit
 
+GET     /export-open-general-export-licence-results   controllers.ogel.OgelResultsController.renderForm
+
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
+
+GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
 
 
 # Map static resources from the /public folder to the /assets URL path
