@@ -46,4 +46,41 @@ public class StaticContentController extends Controller {
       throw new RuntimeException("Failed to read", e);
     }
   }
+
+  public Result renderNoLicenceCultural() {
+    return renderStaticHtml(StaticHtml.NO_LICENCE_CULTURAL);
+  }
+
+  public Result renderBrokering() {
+    return renderStaticHtml(StaticHtml.BROKERING_TRANSHIPMENT);
+  }
+
+  public Result renderTranshipment() {
+    return renderStaticHtml(StaticHtml.BROKERING_TRANSHIPMENT);
+  }
+
+  public Result renderImport() {
+    return renderStaticHtml(StaticHtml.IMPORT);
+  }
+
+  public Result renderCategoryFood() {
+    return renderStaticHtml(StaticHtml.CATEGORY_FOOD);
+  }
+
+  public Result renderCategoryEndangeredAnimal() {
+    return renderStaticHtml(StaticHtml.CATEGORY_ENDANGERED_ANIMAL);
+  }
+
+  public Result renderCategoryNonEndangeredAnimal() {
+    return renderStaticHtml(StaticHtml.CATEGORY_NON_ENDANGERED_ANIMAL);
+  }
+
+  public Result renderCategoryPlant() {
+    return renderStaticHtml(StaticHtml.CATEGORY_PLANT);
+  }
+
+  public Result renderCategoryMedicinesDrugs() {
+    return renderStaticHtml(StaticHtml.CATEGORY_MEDICINES_DRUGS);
+  }
+
 }

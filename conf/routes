@@ -19,6 +19,12 @@ POST    /select-trade-type                    controllers.TradeTypeController.ha
 
 GET     /select-trade-type                    controllers.TradeTypeController.renderForm
 
+GET     /select-trade-type/import             controllers.StaticContentController.renderImport()
+
+GET     /select-trade-type/brokering          controllers.StaticContentController.renderBrokering()
+
+GET     /select-trade-type/transhipment       controllers.StaticContentController.renderTranshipment()
+
 POST    /export-category/select               controllers.categories.ExportCategoryController.handleSubmit
 
 GET     /export-category/select               controllers.categories.ExportCategoryController.renderForm

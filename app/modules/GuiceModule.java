@@ -15,6 +15,7 @@ import components.common.journey.StandardEvents;
 import components.common.state.ContextParamManager;
 import controllers.routes;
 import journey.Events;
+import model.TradeType;
 import play.Configuration;
 import play.Environment;
 
@@ -88,6 +89,18 @@ public class GuiceModule extends AbstractModule{
     JourneyStage tradeType = jdb.defineStage("tradeType", "Where are your items going?",
         () -> cpm.addParamsAndRedirect(routes.TradeTypeController.renderForm()));
 
+    JourneyStage importStatic = jdb.defineStage("importStatic", "Import licences",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderImport()));
+
+    JourneyStage brokeringStatic = jdb.defineStage("brokeringStatic", "???",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderBrokering()));
+
+    JourneyStage transhipmentStatic = jdb.defineStage("transhipmentStatic", "???",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderTranshipment()));
+
+    JourneyStage exportCategory = jdb.defineStage("exportCategory", "What are you exporting?",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.ExportCategoryController.renderForm()));
+
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
         .then(moveTo(startApplication));
@@ -111,8 +124,17 @@ public class GuiceModule extends AbstractModule{
         .then(moveTo(tradeType));
 
     // TODO Add in additional screen catering for this condition IELS-606
-//    jdb.atStage(continueApplication)
-//        .onEvent(Events.APPLICATION_NOT_FOUND);
+    jdb.atStage(continueApplication)
+        .onEvent(Events.APPLICATION_NOT_FOUND)
+        .then(moveTo(null));
+
+    jdb.atStage(tradeType)
+        .onEvent(Events.TRADE_TYPE_SELECTED)
+        .branch()
+        .when(TradeType.EXPORT, moveTo(exportCategory))
+        .when(TradeType.IMPORT, moveTo(importStatic))
+        .when(TradeType.BROKERING, moveTo(brokeringStatic))
+        .when(TradeType.TRANSSHIPMENT, moveTo(transhipmentStatic));
 
     return new JourneyManager(jdb.build("default", index));
   }

@@ -4,13 +4,16 @@ import com.google.inject.Inject;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
+import controllers.TradeTypeController;
 import model.ExportCategory;
+import model.TradeType;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class PermissionsFinderDao extends CommonRedisDao {
 
@@ -35,6 +38,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String PHYSICAL_GOOD_SEARCH_TERMS = "physicalGoodSearchTerms";
 
   public static final String PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT = "physicalGoodSearchPaginationDisplayCount";
+
+  public static final String TRADE_TYPE = "tradeType";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -127,5 +132,13 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public int getPhysicalGoodSearchPaginationDisplayCount() {
     return Integer.parseInt(readString(PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT));
+  }
+
+  public void saveTradeType(TradeType tradeType) {
+    writeString(TRADE_TYPE, tradeType.value());
+  }
+
+  public Optional<TradeType> getTradeType() {
+    return TradeType.getMatched(readString(TRADE_TYPE));
   }
 }

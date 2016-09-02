@@ -1,7 +1,8 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
-@import utils.common.SelectOption
+@import views.html.common.state._
+@import model.TradeType
 
 @(form: Form[_])
 
@@ -11,11 +12,13 @@
 
   <form action="@routes.TradeTypeController.handleSubmit()" method="POST">
 
+    @contextFormParams()
+
     @fieldContainer(form("tradeType")) {
 
       <div class="form-group">
         @formRadio(form("tradeType"), Html("From the UK to another country"),
-          TradeTypeController.TradeTypeOption.EXPORT.toString, "label-trade-type")
+          TradeType.EXPORT.value, "label-trade-type")
         <p class="panel panel-border-wide">
           This is known as an export
         </p>
@@ -23,7 +26,7 @@
 
       <div class="form-group">
         @formRadio(form("tradeType"), Html("From another country to the UK "),
-          TradeTypeController.TradeTypeOption.IMPORT.toString, "label-trade-type")
+          TradeType.IMPORT.value, "label-trade-type")
         <p class="panel panel-border-wide">
           This is known as an import
         </p>
@@ -31,7 +34,7 @@
 
       <div class="form-group">
         @formRadio(form("tradeType"), Html("Between non-UK countries "),
-          TradeTypeController.TradeTypeOption.BROKERING.toString, "label-trade-type")
+          TradeType.BROKERING.value, "label-trade-type")
         <p class="panel panel-border-wide">
           This is known as trafficking or brokering
         </p>
@@ -39,7 +42,7 @@
 
       <div class="form-group">
         @formRadio(form("tradeType"), Html("Through the UK, from one non-UK country to another "),
-          TradeTypeController.TradeTypeOption.TRANSSHIPMENT.toString, "label-trade-type")
+          TradeType.TRANSSHIPMENT.value, "label-trade-type")
         <p class="panel panel-border-wide">
           This is known as transhipment
         </p>
