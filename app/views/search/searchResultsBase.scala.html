@@ -6,8 +6,7 @@
 @(form: Form[_], formAction: String, results: List[SearchServiceResult], resultsDisplayCount: Int)
   @standardPage(
     if (!results.isEmpty()) "Possible matches" else "Your search did not return any results",
-    Some(Html(if (!results.isEmpty()) "Possible matches" else "Your search did not return any results")),
-    backLinkText = "Edit description") {
+    Some(Html(if (!results.isEmpty()) "Possible matches" else "Your search did not return any results"))) {
     @errorSummary(form)
   }{
 

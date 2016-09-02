@@ -1,4 +1,5 @@
 @import util._
+@import views.html.common.state._
 @import controllers.routes.EntryPointController
 
 @govukTemplateDefaults("Import / export licensing service") {
@@ -37,6 +38,8 @@
         </div>
 
         <form action="@EntryPointController.handleSubmit" method="POST">
+
+          @contextFormParams()
 
           <button type="submit" class="button start-application" name="action" value="start">Start an application</button>
 

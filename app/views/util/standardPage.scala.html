@@ -1,6 +1,7 @@
 @import util._
+@import views.html.common.journey._
 
-@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", backLinkText: String = "Back")(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge")(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle + " - Import & Export Licensing") {
 
@@ -8,7 +9,7 @@
 
     @phaseBanner()
 
-    <a href="javascript:history.back();" class="link-back js-only">@backLinkText</a>
+    @journeyBackLink()
 
     <a id="contentStart"></a>
 

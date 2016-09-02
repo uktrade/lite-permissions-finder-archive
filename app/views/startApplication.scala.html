@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import controllers.routes.StartApplicationController
 
 @(form: Form[_], applicationCode: String)
@@ -19,6 +20,8 @@
   </p>
 
   <form action="@StartApplicationController.handleSubmit" method="POST">
+
+    @contextFormParams()
 
     @formInput(form("emailAddress")) {
       Enter your email address to receive your application number (optional)

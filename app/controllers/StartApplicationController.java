@@ -1,9 +1,12 @@
 package controllers;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.journey.JourneyManager;
+import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import play.data.Form;
 import play.data.FormFactory;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
@@ -24,27 +28,37 @@ public class StartApplicationController {
 
   private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'));
 
+  private final JourneyManager jm;
   private final FormFactory formFactory;
   private final PermissionsFinderDao dao;
-  private final TradeTypeController tradeTypeController;
 
   @Inject
-  public StartApplicationController(FormFactory formFactory, PermissionsFinderDao dao, TradeTypeController tradeTypeController) {
+  public StartApplicationController(JourneyManager jm,
+                                    FormFactory formFactory,
+                                    PermissionsFinderDao dao) {
+    this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
-    this.tradeTypeController = tradeTypeController;
   }
 
   public Result renderForm() {
-    String applicationCode = generateApplicationCode();
-    dao.saveApplicationCode(applicationCode);
-    return ok(startApplication.render(formFactory.form(StartApplicationForm.class), applicationCode));
+    String applicationCode = dao.getApplicationCode();
+    if (applicationCode == null || applicationCode.isEmpty()) {
+      applicationCode = generateApplicationCode();
+      dao.saveApplicationCode(applicationCode);
+    }
+
+    StartApplicationForm formTemplate = new StartApplicationForm();
+    formTemplate.memorableWord = dao.getMemorableWord();
+    formTemplate.emailAddress = dao.getEmailAddress();
+
+    return ok(startApplication.render(formFactory.form(StartApplicationForm.class).fill(formTemplate), applicationCode));
   }
 
-  public Result handleSubmit() {
+  public CompletionStage<Result> handleSubmit() {
     Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return ok(startApplication.render(form, dao.getApplicationCode()));
+      return completedFuture(ok(startApplication.render(form, dao.getApplicationCode())));
     }
     String emailAddress = form.get().emailAddress;
     String memorableWord = form.get().memorableWord;
@@ -53,9 +67,9 @@ public class StartApplicationController {
     }
     if (memorableWord != null && !memorableWord.isEmpty()) {
       dao.saveMemorableWord(memorableWord);
-      return tradeTypeController.renderForm();
+      return jm.performTransition(StandardEvents.NEXT);
     }
-    return badRequest("Unhandled form state");
+    return completedFuture(badRequest("Unhandled form state"));
   }
 
   /**

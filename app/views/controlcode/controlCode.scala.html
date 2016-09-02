@@ -5,7 +5,7 @@
 @import controllers.controlcode.routes.ControlCodeController
 
 @(form: Form[_], frontendServiceResult: FrontendServiceResult)
-@standardPage(frontendServiceResult.controlCodeData.title, Some(Html(frontendServiceResult.controlCodeData.title)), backLinkText = "Possible matches"){
+@standardPage(frontendServiceResult.controlCodeData.title, Some(Html(frontendServiceResult.controlCodeData.title))){
   @errorSummary(form)
 }{
 

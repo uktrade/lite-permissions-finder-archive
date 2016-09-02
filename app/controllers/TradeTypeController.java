@@ -1,5 +1,7 @@
 package controllers;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import controllers.categories.ExportCategoryController;
@@ -45,8 +47,8 @@ public class TradeTypeController extends Controller {
     this.ec = ec;
   }
 
-  public Result renderForm() {
-    return ok(tradeType.render(formFactory.form(TradeTypeForm.class)));
+  public CompletionStage<Result> renderForm() {
+    return completedFuture(ok(tradeType.render(formFactory.form(TradeTypeForm.class))));
   }
 
   public CompletionStage<Result> handleSubmit() {
