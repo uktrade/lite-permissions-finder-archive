@@ -2,6 +2,7 @@ package journey;
 
 import components.common.journey.JourneyEvent;
 import components.common.journey.ParameterisedJourneyEvent;
+import model.ExportCategory;
 import model.TradeType;
 
 public class Events {
@@ -16,5 +17,8 @@ public class Events {
 
   public static final ParameterisedJourneyEvent TRADE_TYPE_SELECTED =
       new ParameterisedJourneyEvent("TRADE_TYPE_SELECTED", TradeType.class);
+
+  public static final ParameterisedJourneyEvent EXPORT_CATEGORY_SELECTED =
+      new ParameterisedJourneyEvent("EXPORT_CATEGORY_SELECTED", ExportCategory.class);
 
 }

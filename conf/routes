@@ -25,9 +25,9 @@ GET     /select-trade-type/brokering          controllers.StaticContentControlle
 
 GET     /select-trade-type/transhipment       controllers.StaticContentController.renderTranshipment()
 
-POST    /export-category/select               controllers.categories.ExportCategoryController.handleSubmit
+POST    /export-category                     controllers.categories.ExportCategoryController.handleSubmit
 
-GET     /export-category/select               controllers.categories.ExportCategoryController.renderForm
+GET     /export-category                     controllers.categories.ExportCategoryController.renderForm
 
 POST    /export-category/arts-cultural        controllers.categories.ArtsCulturalController.handleSubmit
 
@@ -57,9 +57,19 @@ POST    /export-category/plants-animals       controllers.categories.PlantsAnima
 
 GET     /export-category/plants-animals       controllers.categories.PlantsAnimalsController.renderForm
 
+GET     /export-category/plants-animals/endangered-animals  controllers.StaticContentController.renderCategoryEndangeredAnimals()
+
+GET     /export-category/plants-animals/non-endangered-animals  controllers.StaticContentController.renderCategoryNonEndangeredAnimals()
+
+GET     /export-category/plants-animals/plants  controllers.StaticContentController.renderCategoryPlants()
+
 POST    /export-category/medicines-drugs      controllers.categories.MedicinesDrugsController.handleSubmit
 
 GET     /export-category/medicines-drugs      controllers.categories.MedicinesDrugsController.renderForm
+
+GET     /export-category/medicines-drugs/execution  controllers.StaticContentController.renderCategoryMedicinesDrugsForExecution()
+
+GET     /export-category/food                 controllers.StaticContentController.renderCategoryFood()
 
 POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
 

@@ -44,7 +44,7 @@ public class MedicinesDrugsController {
     }
     if ("false".equals(isUsedForExecutionTorture)) {
       dao.saveExportCategory(ExportCategory.MEDICINES_DRUGS);
-      return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_MEDICINES_DRUGS);
+      return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_MEDICINES_DRUGS_FOR_EXECUTION);
     }
     return badRequest("Unknown value for isUsedForExecutionTorture: \"" + isUsedForExecutionTorture + "\"");
   }

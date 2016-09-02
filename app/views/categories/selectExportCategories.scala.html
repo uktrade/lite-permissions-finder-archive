@@ -1,6 +1,6 @@
 @import util._
 @import views.html.common.page._
-@import controllers.categories.ExportCategoryController
+@import views.html.common.state._
 @import model.ExportCategory
 
 @(form: Form[_])
@@ -9,6 +9,8 @@
 }{
 
   <form action="@controllers.categories.routes.ExportCategoryController.handleSubmit()" method="POST">
+
+    @contextFormParams()
 
     @detailPanel("mil"){Firearms and military equipment} {
       <p>

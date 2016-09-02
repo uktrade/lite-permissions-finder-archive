@@ -19,10 +19,10 @@ public class StaticContentController extends Controller {
     BROKERING_TRANSHIPMENT("tradetypes/brokeringTranshipment.html","Trade controls, trafficking and brokering"),
     IMPORT("tradetypes/import.html","Import licences"),
     CATEGORY_FOOD("categories/food.html","You need to check the rules for your export destination"),
-    CATEGORY_ENDANGERED_ANIMAL("categories/endangeredAnimal.html", "You may need a CITES permit"),
-    CATEGORY_NON_ENDANGERED_ANIMAL("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
-    CATEGORY_PLANT("categories/plant.html", "You may need approval from the destination country"),
-    CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines");
+    CATEGORY_ENDANGERED_ANIMALS("categories/endangeredAnimal.html", "You may need a CITES permit"),
+    CATEGORY_NON_ENDANGERED_ANIMALS("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
+    CATEGORY_PLANTS("categories/plant.html", "You may need approval from the destination country"),
+    CATEGORY_MEDICINES_DRUGS_FOR_EXECUTION("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines");
 
     StaticHtml(String filename, String title) {
       this.filename = filename;
@@ -67,20 +67,20 @@ public class StaticContentController extends Controller {
     return renderStaticHtml(StaticHtml.CATEGORY_FOOD);
   }
 
-  public Result renderCategoryEndangeredAnimal() {
-    return renderStaticHtml(StaticHtml.CATEGORY_ENDANGERED_ANIMAL);
+  public Result renderCategoryEndangeredAnimals() {
+    return renderStaticHtml(StaticHtml.CATEGORY_ENDANGERED_ANIMALS);
   }
 
-  public Result renderCategoryNonEndangeredAnimal() {
-    return renderStaticHtml(StaticHtml.CATEGORY_NON_ENDANGERED_ANIMAL);
+  public Result renderCategoryNonEndangeredAnimals() {
+    return renderStaticHtml(StaticHtml.CATEGORY_NON_ENDANGERED_ANIMALS);
   }
 
-  public Result renderCategoryPlant() {
-    return renderStaticHtml(StaticHtml.CATEGORY_PLANT);
+  public Result renderCategoryPlants() {
+    return renderStaticHtml(StaticHtml.CATEGORY_PLANTS);
   }
 
-  public Result renderCategoryMedicinesDrugs() {
-    return renderStaticHtml(StaticHtml.CATEGORY_MEDICINES_DRUGS);
+  public Result renderCategoryMedicinesDrugsForExecution() {
+    return renderStaticHtml(StaticHtml.CATEGORY_MEDICINES_DRUGS_FOR_EXECUTION);
   }
 
 }

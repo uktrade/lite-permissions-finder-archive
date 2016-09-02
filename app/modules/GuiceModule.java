@@ -15,6 +15,7 @@ import components.common.journey.StandardEvents;
 import components.common.state.ContextParamManager;
 import controllers.routes;
 import journey.Events;
+import model.ExportCategory;
 import model.TradeType;
 import play.Configuration;
 import play.Environment;
@@ -92,14 +93,36 @@ public class GuiceModule extends AbstractModule{
     JourneyStage importStatic = jdb.defineStage("importStatic", "Import licences",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderImport()));
 
+    // TODO ???
     JourneyStage brokeringStatic = jdb.defineStage("brokeringStatic", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderBrokering()));
 
+    // TODO ???
     JourneyStage transhipmentStatic = jdb.defineStage("transhipmentStatic", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderTranshipment()));
 
     JourneyStage exportCategory = jdb.defineStage("exportCategory", "What are you exporting?",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ExportCategoryController.renderForm()));
+
+    // TODO ???
+    JourneyStage categoryFood = jdb.defineStage("categoryFood", "???",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryFood()));
+
+    // TODO ???
+    JourneyStage categoryEndangeredAnimal = jdb.defineStage("categoryEndangeredAnimal", "???",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryEndangeredAnimals()));
+
+    // TODO ???
+    JourneyStage categoryNonEndangeredAnimal = jdb.defineStage("categoryNonEndangeredAnimal", "???",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryNonEndangeredAnimals()));
+
+    // TODO ???
+    JourneyStage categoryPlant = jdb.defineStage("categoryPlant", "???",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryPlants()));
+
+    // TODO ???
+    JourneyStage categoryMedicinesDrugsForExecution = jdb.defineStage("categoryMedicinesDrugsForExecution", "???",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryMedicinesDrugsForExecution()));
 
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
@@ -135,6 +158,24 @@ public class GuiceModule extends AbstractModule{
         .when(TradeType.IMPORT, moveTo(importStatic))
         .when(TradeType.BROKERING, moveTo(brokeringStatic))
         .when(TradeType.TRANSSHIPMENT, moveTo(transhipmentStatic));
+
+
+    jdb.atStage(exportCategory)
+        .onEvent(Events.EXPORT_CATEGORY_SELECTED)
+        .branch()
+        .when(ExportCategory.ARTS_CULTURAL, moveTo(null))
+        .when(ExportCategory.CHEMICALS_COSMETICS, moveTo(null))
+        .when(ExportCategory.DUAL_USE, moveTo(null))
+        .when(ExportCategory.FINANCIAL_ASSISTANCE, moveTo(null))
+        .when(ExportCategory.FOOD, moveTo(categoryFood))
+        .when(ExportCategory.MEDICINES_DRUGS, moveTo(null))
+        .when(ExportCategory.MILITARY, moveTo(null))
+        .when(ExportCategory.NONE, moveTo(null))
+        .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlant))
+        .when(ExportCategory.RADIOACTIVE, moveTo(null))
+        .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(null))
+        .when(ExportCategory.TORTURE_RESTRAINT, moveTo(null));
+
 
     return new JourneyManager(jdb.build("default", index));
   }

@@ -68,11 +68,11 @@ public class PlantsAnimalsController {
     if(lifeTypeOptional.isPresent()) {
       switch (lifeTypeOptional.get()) {
         case ENDANGERED:
-          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_ENDANGERED_ANIMAL);
+          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_ENDANGERED_ANIMALS);
         case NON_ENDANGERED:
-          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_NON_ENDANGERED_ANIMAL);
+          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_NON_ENDANGERED_ANIMALS);
         case PLANT:
-          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_PLANT);
+          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_PLANTS);
       }
     }
     return badRequest("Unknown value for lifeType: \"" + form.get().lifeType + "\"");
