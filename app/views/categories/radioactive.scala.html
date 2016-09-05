@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import controllers.categories.routes.RadioactiveController
 
 @(form: Form[_])
@@ -21,6 +22,8 @@
   </p>
 
   <form action="@RadioactiveController.handleSubmit" method="POST">
+
+    @contextFormParams()
 
     <p>
       Continue to <button type="submit" class="link underlined font-small" name="goToSearch" value="true">use this service</button> if you want to register for the <span class="bold-small">open general export licence for radioactive sources</span>.

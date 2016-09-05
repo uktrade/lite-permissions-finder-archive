@@ -139,6 +139,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryTortureRestraint = jdb.defineStage("categoryTortureRestraint", "You may not be allowed to export your goods",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.TortureRestraintController.renderForm()));
 
+    JourneyStage categoryRadioactive = jdb.defineStage("categoryRadioactive", "You need a licence to export radioactive materials above certain activity thresholds",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.RadioactiveController.renderForm()));
+
     // TODO Finish this stubbed stage.
     JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technology?",
         () -> null);
@@ -193,7 +196,7 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.MILITARY, moveTo(goodsType))
         .when(ExportCategory.NONE, moveTo(categoryDualUse))
         .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlantsAnimals))
-        .when(ExportCategory.RADIOACTIVE, moveTo(null))
+        .when(ExportCategory.RADIOACTIVE, moveTo(categoryRadioactive))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
         .when(ExportCategory.TORTURE_RESTRAINT, moveTo(categoryTortureRestraint));
 
@@ -242,7 +245,9 @@ public class GuiceModule extends AbstractModule{
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(goodsType));
 
-
+    jdb.atStage(categoryRadioactive)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(goodsType));
 
     return new JourneyManager(jdb.build("default", index));
   }
