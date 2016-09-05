@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import controllers.categories.routes.DualUseController;
 
 @(form: Form[_])
@@ -31,6 +32,8 @@
   </p>
 
   <form action="@DualUseController.handleSubmit()" method="POST">
+
+    @contextFormParams()
 
     @formRadioBoolean(form("isDualUse"), Html("Could your items be dual use?"))
 

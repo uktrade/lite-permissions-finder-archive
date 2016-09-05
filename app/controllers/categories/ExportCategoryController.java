@@ -43,8 +43,7 @@ public class ExportCategoryController extends Controller {
       return jm.performTransition(Events.EXPORT_CATEGORY_SELECTED, exportCategoryOptional.get());
     } // TODO "Dual-use items" button link
     if ("true".equals(form.get().couldBeDualUse)) {
-      dao.saveExportCategory(ExportCategory.DUAL_USE);
-      return jm.performTransition(Events.EXPORT_CATEGORY_SELECTED, ExportCategory.DUAL_USE);
+      return jm.performTransition(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE);
     }
 
     return completedFuture(badRequest("Unknown export category: \"" + form.get().category + "\""));

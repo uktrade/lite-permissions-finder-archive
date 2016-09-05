@@ -43,6 +43,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String ARTS_CULTURAL_GOODS = "artsCulturalGoods";
 
+  public static final String IS_DUAL_USE_GOOD = "isDualUseGood";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -150,5 +152,17 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<ArtsCulturalForm> getArtsCulturalForm() {
     return readObject(ARTS_CULTURAL_GOODS, ArtsCulturalForm.class);
+  }
+
+  public void saveIsDualUseGood(boolean isDualUseGood) {
+    writeString(IS_DUAL_USE_GOOD, Boolean.toString(isDualUseGood));
+  }
+
+  public Optional<Boolean> getIsDualUseGood() {
+    String isDualUse = readString(IS_DUAL_USE_GOOD);
+    if (isDualUse == null || isDualUse.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(isDualUse.equalsIgnoreCase("true"));
   }
 }

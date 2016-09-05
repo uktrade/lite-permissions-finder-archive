@@ -104,11 +104,14 @@ public class GuiceModule extends AbstractModule{
     JourneyStage transhipmentStatic = jdb.defineStage("transhipmentStatic", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderTranshipment()));
 
+    JourneyStage exportCategory = jdb.defineStage("exportCategory", "What are you exporting?",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.ExportCategoryController.renderForm()));
+
     JourneyStage categoryArtsCultural = jdb.defineStage("categoryArtsCultural", "Arts and cultural goods",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ArtsCulturalController.renderForm()));
 
-    JourneyStage exportCategory = jdb.defineStage("exportCategory", "What are you exporting?",
-        () -> cpm.addParamsAndRedirect(controllers.categories.routes.ExportCategoryController.renderForm()));
+    JourneyStage categoryDualUse = jdb.defineStage("categoryDualUse", "Do your items have a dual use?",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.DualUseController.renderForm()));
 
     // TODO ???
     JourneyStage categoryFood = jdb.defineStage("categoryFood", "???",
@@ -133,6 +136,9 @@ public class GuiceModule extends AbstractModule{
     // TODO Finish this stubbed stage.
     JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technology?",
         () -> null);
+
+    JourneyStage noneDescribed = jdb.defineStage("noneDescribed", "You may not need a licence",
+        () -> cpm.addParamsAndRedirect(controllers.search.routes.NoneDescribedController.render()));
 
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
@@ -174,24 +180,36 @@ public class GuiceModule extends AbstractModule{
         .branch()
         .when(ExportCategory.ARTS_CULTURAL, moveTo(categoryArtsCultural))
         .when(ExportCategory.CHEMICALS_COSMETICS, moveTo(null))
-        .when(ExportCategory.DUAL_USE, moveTo(null))
+        .when(ExportCategory.DUAL_USE, moveTo(goodsType))
         .when(ExportCategory.FINANCIAL_ASSISTANCE, moveTo(null))
         .when(ExportCategory.FOOD, moveTo(categoryFood))
         .when(ExportCategory.MEDICINES_DRUGS, moveTo(null))
         .when(ExportCategory.MILITARY, moveTo(null))
-        .when(ExportCategory.NONE, moveTo(null))
+        .when(ExportCategory.NONE, moveTo(categoryDualUse))
         .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlant))
         .when(ExportCategory.RADIOACTIVE, moveTo(null))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(null))
         .when(ExportCategory.TORTURE_RESTRAINT, moveTo(null));
 
+    jdb.atStage(exportCategory)
+        .onEvent(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE)
+        .then(moveTo(categoryDualUse));
+
     jdb.atStage(categoryArtsCultural)
-        .onEvent(Events.ARTS_CULTURAL_CONTROLLED)
+        .onEvent(Events.GOOD_CONTROLLED)
         .then(moveTo(goodsType));
 
     jdb.atStage(categoryArtsCultural)
-        .onEvent(Events.ARTS_CULTURAL_NOT_CONTROLLED)
+        .onEvent(Events.GOOD_NOT_CONTROLLED)
         .then(moveTo(categoryArtsCulturalNoLicence));
+
+    jdb.atStage(categoryDualUse)
+        .onEvent(Events.GOOD_CONTROLLED)
+        .then(moveTo(goodsType));
+
+    jdb.atStage(categoryDualUse)
+        .onEvent(Events.GOOD_NOT_CONTROLLED)
+        .then(moveTo(noneDescribed));
 
     return new JourneyManager(jdb.build("default", index));
   }

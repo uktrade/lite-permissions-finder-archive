@@ -95,6 +95,7 @@ POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSe
 
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
 
+GET     /licence-may-not-be-required          controllers.search.NoneDescribedController.render
 
 GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
 

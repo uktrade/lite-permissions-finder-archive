@@ -21,8 +21,10 @@ public class Events {
   public static final ParameterisedJourneyEvent<ExportCategory> EXPORT_CATEGORY_SELECTED =
       new ParameterisedJourneyEvent<>("EXPORT_CATEGORY_SELECTED", ExportCategory.class);
 
-  public static final JourneyEvent ARTS_CULTURAL_CONTROLLED = new JourneyEvent("ARTS_CULTURAL_CONTROLLED");
+  public static final JourneyEvent EXPORT_CATEGORY_COULD_BE_DUAL_USE = new JourneyEvent("EXPORT_CATEGORY_COULD_BE_DUAL_USE");
 
-  public static final JourneyEvent ARTS_CULTURAL_NOT_CONTROLLED = new JourneyEvent("ARTS_CULTURAL_NOT_CONTROLLED");
+  public static final JourneyEvent GOOD_CONTROLLED = new JourneyEvent("GOOD_CONTROLLED");
+
+  public static final JourneyEvent GOOD_NOT_CONTROLLED = new JourneyEvent("GOOD_NOT_CONTROLLED");
 
 }

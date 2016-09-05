@@ -1,12 +1,12 @@
 package controllers.categories;
 
-import static play.mvc.Results.badRequest;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import controllers.GoodsTypeController;
-import controllers.search.NoneDescribedController;
+import journey.Events;
 import model.ExportCategory;
 import play.data.Form;
 import play.data.FormFactory;
@@ -14,43 +14,50 @@ import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import views.html.categories.dualUse;
 
+import java.util.Optional;
+import java.util.concurrent.CompletionStage;
+
 public class DualUseController {
 
+  private final JourneyManager jm;
   private final FormFactory formFactory;
   private final PermissionsFinderDao dao;
-  private final GoodsTypeController goodsTypeController;
-  private final NoneDescribedController noneDescribedController;
 
   @Inject
-  public DualUseController(FormFactory formFactory,
-                           PermissionsFinderDao dao,
-                           GoodsTypeController goodsTypeController,
-                           NoneDescribedController noneDescribedController) {
+  public DualUseController(JourneyManager jm,
+                           FormFactory formFactory,
+                           PermissionsFinderDao dao) {
+    this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
-    this.goodsTypeController = goodsTypeController;
-    this.noneDescribedController = noneDescribedController;
   }
 
   public Result renderForm() {
-    return ok(dualUse.render(formFactory.form(DualUseForm.class)));
+    DualUseForm formTemplate = new DualUseForm();
+    Optional<Boolean> isDualUse = dao.getIsDualUseGood();
+    if (isDualUse.isPresent()) {
+      formTemplate.isDualUse = isDualUse.get().toString();
+    }
+    return ok(dualUse.render(formFactory.form(DualUseForm.class).fill(formTemplate)));
   }
 
-  public Result handleSubmit() {
+  public CompletionStage<Result> handleSubmit() {
     Form<DualUseForm> form = formFactory.form(DualUseForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return ok(dualUse.render(form));
+      return completedFuture(ok(dualUse.render(form)));
     }
-    String isDualUse = form.get().isDualUse;
-    if ("true".equals(isDualUse)) {
+
+    boolean isDualUse = Boolean.parseBoolean(form.get().isDualUse);
+    dao.saveIsDualUseGood(isDualUse);
+
+    if (isDualUse) {
       dao.saveExportCategory(ExportCategory.DUAL_USE);
-      return goodsTypeController.renderForm();
+      return jm.performTransition(Events.GOOD_CONTROLLED);
     }
-    else if ("false".equals(isDualUse)) {
+    else {
       dao.saveExportCategory(ExportCategory.NONE);
-      return noneDescribedController.render();
+      return jm.performTransition(Events.GOOD_NOT_CONTROLLED);
     }
-    return badRequest("Unknown value for isDualUse: \"" + isDualUse + "\"");
   }
 
   public static class DualUseForm {
