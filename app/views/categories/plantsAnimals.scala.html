@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import controllers.categories.PlantsAnimalsController
 
 @(form: Form[_])
@@ -9,6 +10,8 @@
 }{
 
   <form action="@controllers.categories.routes.PlantsAnimalsController.handleSubmit" method="POST">
+
+    @contextFormParams()
 
     @formRadioGroup(form("lifeType"), PlantsAnimalsController.LIFE_TYPE_OPTIONS){ Which of the following best describes your export? }
 

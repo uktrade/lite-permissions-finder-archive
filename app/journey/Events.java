@@ -3,6 +3,7 @@ package journey;
 import components.common.journey.JourneyEvent;
 import components.common.journey.ParameterisedJourneyEvent;
 import model.ExportCategory;
+import model.LifeType;
 import model.TradeType;
 
 public class Events {
@@ -29,5 +30,8 @@ public class Events {
 
   public static final ParameterisedJourneyEvent<Boolean> IS_USED_FOR_EXECUTION_TORTURE =
       new ParameterisedJourneyEvent<>("IS_USED_FOR_EXECUTION_TORTURE", Boolean.class);
+
+  public static final ParameterisedJourneyEvent<LifeType> LIFE_TYPE_SELECTED =
+      new ParameterisedJourneyEvent<>("LIFE_TYPE_SELECTED", LifeType.class);
 
 }

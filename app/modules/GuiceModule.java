@@ -16,6 +16,7 @@ import components.common.state.ContextParamManager;
 import controllers.routes;
 import journey.Events;
 import model.ExportCategory;
+import model.LifeType;
 import model.TradeType;
 import play.Configuration;
 import play.Environment;
@@ -120,6 +121,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryMedicinesDrugs = jdb.defineStage("categoryMedicinesDrugs", "Medicines and drugs",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.MedicinesDrugsController.renderForm()));
 
+    JourneyStage categoryPlantsAnimals = jdb.defineStage("categoryPlantsAnimals", "Plants and animals",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.PlantsAnimalsController.renderForm()));
+
     JourneyStage categoryEndangeredAnimalStatic = jdb.defineStage("categoryEndangeredAnimal", "You may need a CITES permit",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryEndangeredAnimals()));
 
@@ -188,7 +192,7 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.MEDICINES_DRUGS, moveTo(categoryMedicinesDrugs))
         .when(ExportCategory.MILITARY, moveTo(goodsType))
         .when(ExportCategory.NONE, moveTo(categoryDualUse))
-        .when(ExportCategory.PLANTS_ANIMALS, moveTo(null))
+        .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlantsAnimals))
         .when(ExportCategory.RADIOACTIVE, moveTo(null))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
         .when(ExportCategory.TORTURE_RESTRAINT, moveTo(categoryTortureRestraint));
@@ -227,9 +231,18 @@ public class GuiceModule extends AbstractModule{
         .when(true, moveTo(categoryTortureRestraint))
         .when(false, moveTo(categoryMedicinesDrugsStatic));
 
+    jdb.atStage(categoryPlantsAnimals)
+        .onEvent(Events.LIFE_TYPE_SELECTED)
+        .branch()
+        .when(LifeType.ENDANGERED, moveTo(categoryEndangeredAnimalStatic))
+        .when(LifeType.NON_ENDANGERED, moveTo(categoryNonEndangeredAnimalStatic))
+        .when(LifeType.PLANT, moveTo(categoryPlantStatic));
+
     jdb.atStage(categoryTortureRestraint)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(goodsType));
+
+
 
     return new JourneyManager(jdb.build("default", index));
   }

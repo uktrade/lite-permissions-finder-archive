@@ -5,9 +5,8 @@ import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
-import controllers.categories.MedicinesDrugsController;
-import controllers.categories.MedicinesDrugsController.MedicinesDrugsForm;
 import model.ExportCategory;
+import model.LifeType;
 import model.TradeType;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
@@ -48,6 +47,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String IS_DUAL_USE_GOOD = "isDualUseGood";
 
   public static final String IS_USED_FOR_EXECUTION_TORTURE = "isUsedForExecutionTorture";
+
+  public static final String PLANTS_ANIMALS_LIFE_TYPE = "plantsAnimalsLifeType";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -184,6 +185,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
       return Optional.empty();
     }
     return Optional.of(value.equalsIgnoreCase("true"));
+  }
+
+  public void savePlantsAnimalsLifeType(LifeType lifeType) {
+    writeString(PLANTS_ANIMALS_LIFE_TYPE, lifeType.value());
+  }
+
+  public Optional<LifeType> getPlantsAnimalsLifeType() {
+    return LifeType.getMatched(readString(PLANTS_ANIMALS_LIFE_TYPE));
   }
 
 }

@@ -1,10 +1,14 @@
 package controllers.categories;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import controllers.StaticContentController;
+import components.common.journey.JourneyManager;
+import components.persistence.PermissionsFinderDao;
+import journey.Events;
+import model.LifeType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -13,35 +17,16 @@ import utils.common.SelectOption;
 import views.html.categories.plantsAnimals;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 
 
 public class PlantsAnimalsController {
 
+  private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final StaticContentController staticContentController;
-
-  public enum LifeType {
-    ENDANGERED("ENDANGERED"),
-    NON_ENDANGERED("NON_ENDANGERED"),
-    PLANT("PLANT");
-
-    private String value;
-
-    LifeType(String value) {
-      this.value = value;
-    }
-
-    public String value() {
-      return this.value;
-    }
-
-    public static Optional<LifeType> getMatched(String lifeType) {
-      return EnumSet.allOf(LifeType.class).stream().filter(e -> e.value().equals(lifeType)).findFirst();
-    }
-  }
+  private final PermissionsFinderDao dao;
 
   public static final List<SelectOption> LIFE_TYPE_OPTIONS = Arrays.asList(
       new SelectOption(LifeType.ENDANGERED.value(), "Endangered animal"),
@@ -50,32 +35,30 @@ public class PlantsAnimalsController {
   );
 
   @Inject
-  public PlantsAnimalsController(FormFactory formFactory, StaticContentController staticContentController) {
+  public PlantsAnimalsController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
+    this.jm = jm;
     this.formFactory = formFactory;
-    this.staticContentController = staticContentController;
+    this.dao = dao;
   }
 
   public Result renderForm() {
-    return ok(plantsAnimals.render(formFactory.form(PlantsAnimalsForm.class)));
+    PlantsAnimalsForm templateForm = new PlantsAnimalsForm();
+    Optional<LifeType> lifeTypeOptional = dao.getPlantsAnimalsLifeType();
+    templateForm.lifeType = lifeTypeOptional.isPresent() ? lifeTypeOptional.get().value() : "";
+    return ok(plantsAnimals.render(formFactory.form(PlantsAnimalsForm.class).fill(templateForm)));
   }
 
-  public Result handleSubmit() {
+  public CompletionStage<Result> handleSubmit() {
     Form<PlantsAnimalsForm> form = formFactory.form(PlantsAnimalsForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return ok(plantsAnimals.render(form));
+      return completedFuture(ok(plantsAnimals.render(form)));
     }
     Optional<LifeType> lifeTypeOptional = LifeType.getMatched(form.get().lifeType);
     if(lifeTypeOptional.isPresent()) {
-      switch (lifeTypeOptional.get()) {
-        case ENDANGERED:
-          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_ENDANGERED_ANIMALS);
-        case NON_ENDANGERED:
-          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_NON_ENDANGERED_ANIMALS);
-        case PLANT:
-          return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.CATEGORY_PLANTS);
-      }
+      dao.savePlantsAnimalsLifeType(lifeTypeOptional.get());
+      return jm.performTransition(Events.LIFE_TYPE_SELECTED, lifeTypeOptional.get());
     }
-    return badRequest("Unknown value for lifeType: \"" + form.get().lifeType + "\"");
+    return completedFuture(badRequest("Unknown value for lifeType: \"" + form.get().lifeType + "\""));
   }
 
   public static class PlantsAnimalsForm {
