@@ -116,6 +116,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryDualUse = jdb.defineStage("categoryDualUse", "Do your items have a dual use?",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.DualUseController.renderForm()));
 
+    JourneyStage categoryFinancialTechnicalAssistance = jdb.defineStage("categoryFinancialTechnicalAssistance", "You should contact the Export Control Organisation to find out if you need a licence",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.FinancialTechnicalAssistanceController.renderForm()));
+
     // TODO ???
     JourneyStage categoryFood = jdb.defineStage("categoryFood", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryFood()));
@@ -184,14 +187,14 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.ARTS_CULTURAL, moveTo(categoryArtsCultural))
         .when(ExportCategory.CHEMICALS_COSMETICS, moveTo(categoryChemicalsCosmetics))
         .when(ExportCategory.DUAL_USE, moveTo(goodsType))
-        .when(ExportCategory.FINANCIAL_ASSISTANCE, moveTo(null))
+        .when(ExportCategory.FINANCIAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
         .when(ExportCategory.FOOD, moveTo(categoryFood))
         .when(ExportCategory.MEDICINES_DRUGS, moveTo(null))
         .when(ExportCategory.MILITARY, moveTo(null))
         .when(ExportCategory.NONE, moveTo(categoryDualUse))
         .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlant))
         .when(ExportCategory.RADIOACTIVE, moveTo(null))
-        .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(null))
+        .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
         .when(ExportCategory.TORTURE_RESTRAINT, moveTo(null));
 
     jdb.atStage(exportCategory)
@@ -217,6 +220,10 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(categoryDualUse)
         .onEvent(Events.GOOD_NOT_CONTROLLED)
         .then(moveTo(noneDescribed));
+
+    jdb.atStage(categoryFinancialTechnicalAssistance)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(goodsType));
 
     return new JourneyManager(jdb.build("default", index));
   }

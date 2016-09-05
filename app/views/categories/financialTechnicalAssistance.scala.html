@@ -1,6 +1,8 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
+
 @import controllers.categories.routes.FinancialTechnicalAssistanceController;
 
 @(form: Form[_])
@@ -25,6 +27,8 @@
   </p>
 
   <form action="@FinancialTechnicalAssistanceController.handleSubmit" method="POST">
+
+    @contextFormParams()
 
     <p>
       If a service engineer takes documentation, such as manuals or blueprints, overseas in servicing goods or technology then the documentation may need a licence. If this applies to your export, or you are not sure, <button type="submit" class="link underlined font-small" name="goToSearch" value="true">use the search facility</button> to check whether your export needs a licence.
