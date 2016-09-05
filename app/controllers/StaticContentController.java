@@ -50,11 +50,7 @@ public class StaticContentController extends Controller {
     return renderStaticHtml(StaticHtml.NO_LICENCE_CULTURAL);
   }
 
-  public Result renderBrokering() {
-    return renderStaticHtml(StaticHtml.BROKERING_TRANSHIPMENT);
-  }
-
-  public Result renderTranshipment() {
+  public Result renderBrokeringTranshipment() {
     return renderStaticHtml(StaticHtml.BROKERING_TRANSHIPMENT);
   }
 

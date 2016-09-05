@@ -111,9 +111,7 @@ POST    /select-trade-type                    controllers.TradeTypeController.ha
 
 GET     /select-trade-type/import             controllers.StaticContentController.renderImport
 
-GET     /select-trade-type/brokering          controllers.StaticContentController.renderBrokering
-
-GET     /select-trade-type/transhipment       controllers.StaticContentController.renderTranshipment
+GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 
 GET     /start-application                    controllers.StartApplicationController.renderForm
 

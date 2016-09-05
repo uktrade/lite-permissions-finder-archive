@@ -96,13 +96,8 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryArtsCulturalNoLicence = jdb.defineStage("categoryArtsCulturalNoLicence", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderNoLicenceCultural()));
 
-    // TODO ???
-    JourneyStage brokeringStatic = jdb.defineStage("brokeringStatic", "???",
-        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderBrokering()));
-
-    // TODO ???
-    JourneyStage transhipmentStatic = jdb.defineStage("transhipmentStatic", "???",
-        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderTranshipment()));
+    JourneyStage brokeringTranshipmentStatic = jdb.defineStage("brokeringStatic", "Trade controls, trafficking and brokering",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderBrokeringTranshipment()));
 
     JourneyStage exportCategory = jdb.defineStage("exportCategory", "What are you exporting?",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ExportCategoryController.renderForm()));
@@ -119,8 +114,7 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryFinancialTechnicalAssistance = jdb.defineStage("categoryFinancialTechnicalAssistance", "You should contact the Export Control Organisation to find out if you need a licence",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.FinancialTechnicalAssistanceController.renderForm()));
 
-    // TODO ???
-    JourneyStage categoryFood = jdb.defineStage("categoryFood", "???",
+    JourneyStage categoryFood = jdb.defineStage("categoryFood", "You need to check the rules for your export destination",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryFood()));
 
     // TODO ???
@@ -131,8 +125,7 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryNonEndangeredAnimal = jdb.defineStage("categoryNonEndangeredAnimal", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryNonEndangeredAnimals()));
 
-    // TODO ???
-    JourneyStage categoryPlant = jdb.defineStage("categoryPlant", "???",
+    JourneyStage categoryPlant = jdb.defineStage("categoryPlant", "You may need approval from the destination country",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryPlants()));
 
     // TODO ???
@@ -178,8 +171,8 @@ public class GuiceModule extends AbstractModule{
         .branch()
         .when(TradeType.EXPORT, moveTo(exportCategory))
         .when(TradeType.IMPORT, moveTo(importStatic))
-        .when(TradeType.BROKERING, moveTo(brokeringStatic))
-        .when(TradeType.TRANSSHIPMENT, moveTo(transhipmentStatic));
+        .when(TradeType.BROKERING, moveTo(brokeringTranshipmentStatic))
+        .when(TradeType.TRANSSHIPMENT, moveTo(brokeringTranshipmentStatic));
 
     jdb.atStage(exportCategory)
         .onEvent(Events.EXPORT_CATEGORY_SELECTED)
@@ -190,9 +183,9 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.FINANCIAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
         .when(ExportCategory.FOOD, moveTo(categoryFood))
         .when(ExportCategory.MEDICINES_DRUGS, moveTo(null))
-        .when(ExportCategory.MILITARY, moveTo(null))
+        .when(ExportCategory.MILITARY, moveTo(goodsType))
         .when(ExportCategory.NONE, moveTo(categoryDualUse))
-        .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlant))
+        .when(ExportCategory.PLANTS_ANIMALS, moveTo(null))
         .when(ExportCategory.RADIOACTIVE, moveTo(null))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
         .when(ExportCategory.TORTURE_RESTRAINT, moveTo(null));
