@@ -98,8 +98,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
     writeString(EXPORT_CATEGORY, exportCategory.value());
   }
 
-  public ExportCategory getExportCategory() {
-    return ExportCategory.getMatched(readString(EXPORT_CATEGORY)).get();
+  public Optional<ExportCategory> getExportCategory() {
+    return ExportCategory.getMatched(readString(EXPORT_CATEGORY));
   }
 
   public void saveApplicationCode(String applicationCode) {

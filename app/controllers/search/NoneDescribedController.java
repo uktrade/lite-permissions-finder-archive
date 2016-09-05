@@ -8,6 +8,8 @@ import model.ExportCategory;
 import play.mvc.Result;
 import views.html.search.noneDescribed;
 
+import java.util.Optional;
+
 public class NoneDescribedController {
 
   private final PermissionsFinderDao dao;
@@ -18,7 +20,8 @@ public class NoneDescribedController {
   }
 
   public Result render() {
-    boolean showFirearmsOrMilitary = dao.getExportCategory() == ExportCategory.MILITARY;
+    Optional<ExportCategory> exportCategoryOptional = dao.getExportCategory();
+    boolean showFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
     return ok(noneDescribed.render(showFirearmsOrMilitary));
   }
 }

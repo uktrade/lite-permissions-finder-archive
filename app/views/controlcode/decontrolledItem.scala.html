@@ -3,7 +3,7 @@
 @import views.html.common.form._
 @import components.services.controlcode.frontend.FrontendServiceResult
 
-@(frontendServiceResult: FrontendServiceResult, showFirearmsAndMilitary: Boolean)
+@(frontendServiceResult: FrontendServiceResult, showFirearmsOrMilitary: Boolean)
 @standardPage(frontendServiceResult.controlCodeData.title, Some(Html(frontendServiceResult.controlCodeData.title))){ }{
   <!-- TODO Correct back link text -->
 
@@ -35,6 +35,6 @@
     If you have been unable to identify your items, you can contact the Export Control Organisation (ECO) to discuss your export. You can contact them by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help&commat;bis.gsi.gov.uk">eco.help&commat;bis.gsi.gov.uk</a>.
   </p>
 
-  @endUseControlsPanel(showFirearmsAndMilitary)
+  @endUseControlsPanel(showFirearmsOrMilitary)
 
 }

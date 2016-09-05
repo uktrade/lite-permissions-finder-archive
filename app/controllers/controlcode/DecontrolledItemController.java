@@ -9,6 +9,8 @@ import model.ExportCategory;
 import play.mvc.Result;
 import views.html.controlcode.decontrolledItem;
 
+import java.util.Optional;
+
 public class DecontrolledItemController {
 
   private final PermissionsFinderDao dao;
@@ -19,7 +21,8 @@ public class DecontrolledItemController {
   }
 
   public Result render(FrontendServiceResult frontendServiceResult) {
-    boolean showFirearmsAndMilitary =  dao.getExportCategory() == ExportCategory.MILITARY;
-    return ok(decontrolledItem.render(frontendServiceResult, showFirearmsAndMilitary));
+    Optional<ExportCategory> exportCategoryOptional = dao.getExportCategory();
+    boolean showFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
+    return ok(decontrolledItem.render(frontendServiceResult, showFirearmsOrMilitary));
   }
 }
