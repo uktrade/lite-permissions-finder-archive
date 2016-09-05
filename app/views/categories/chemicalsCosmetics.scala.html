@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import controllers.categories.routes.ChemicalsCosmeticsController
 
 @(form: Form[_])
@@ -9,6 +10,8 @@
 }{
 
   <form action="@ChemicalsCosmeticsController.handleSubmit" method="POST">
+
+    @contextFormParams()
 
     <p>
       Some chemicals are classed as dual use, meaning they can be used for both civil and military purposes. If you think this may apply to your export, or you are not sure, <button type="submit" class="link underlined font-small" name="goToSearch" value="true">use the search facility</button> to check whether your goods need a licence.

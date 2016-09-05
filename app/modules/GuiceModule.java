@@ -110,6 +110,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryArtsCultural = jdb.defineStage("categoryArtsCultural", "Arts and cultural goods",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ArtsCulturalController.renderForm()));
 
+    JourneyStage categoryChemicalsCosmetics = jdb.defineStage("categoryChemicalsCosmetics", "You may need a licence if you are exporting dual-use goods",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.ChemicalsCosmeticsController.renderForm()));
+
     JourneyStage categoryDualUse = jdb.defineStage("categoryDualUse", "Do your items have a dual use?",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.DualUseController.renderForm()));
 
@@ -179,7 +182,7 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.EXPORT_CATEGORY_SELECTED)
         .branch()
         .when(ExportCategory.ARTS_CULTURAL, moveTo(categoryArtsCultural))
-        .when(ExportCategory.CHEMICALS_COSMETICS, moveTo(null))
+        .when(ExportCategory.CHEMICALS_COSMETICS, moveTo(categoryChemicalsCosmetics))
         .when(ExportCategory.DUAL_USE, moveTo(goodsType))
         .when(ExportCategory.FINANCIAL_ASSISTANCE, moveTo(null))
         .when(ExportCategory.FOOD, moveTo(categoryFood))
@@ -202,6 +205,10 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(categoryArtsCultural)
         .onEvent(Events.GOOD_NOT_CONTROLLED)
         .then(moveTo(categoryArtsCulturalNoLicence));
+
+    jdb.atStage(categoryChemicalsCosmetics)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(goodsType));
 
     jdb.atStage(categoryDualUse)
         .onEvent(Events.GOOD_CONTROLLED)
