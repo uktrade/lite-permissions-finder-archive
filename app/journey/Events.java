@@ -24,9 +24,11 @@ public class Events {
 
   public static final JourneyEvent EXPORT_CATEGORY_COULD_BE_DUAL_USE = new JourneyEvent("EXPORT_CATEGORY_COULD_BE_DUAL_USE");
 
-  public static final JourneyEvent GOOD_CONTROLLED = new JourneyEvent("GOOD_CONTROLLED");
+  public static final ParameterisedJourneyEvent<Boolean> IS_CONTROLLED_HISTORIC_GOOD
+      = new ParameterisedJourneyEvent<>("IS_CONTROLLED_HISTORIC_GOOD", Boolean.class);
 
-  public static final JourneyEvent GOOD_NOT_CONTROLLED = new JourneyEvent("GOOD_NOT_CONTROLLED");
+  public static final ParameterisedJourneyEvent<Boolean> IS_DUAL_USE
+      = new ParameterisedJourneyEvent<>("IS_DUAL_USE", Boolean.class);
 
   public static final ParameterisedJourneyEvent<Boolean> IS_USED_FOR_EXECUTION_TORTURE =
       new ParameterisedJourneyEvent<>("IS_USED_FOR_EXECUTION_TORTURE", Boolean.class);

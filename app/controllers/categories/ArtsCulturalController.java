@@ -55,10 +55,10 @@ public class ArtsCulturalController extends Controller {
     dao.saveArtsCulturalForm(form.get());
 
     if (form.get().firearm && !"GT100".equals(form.get().itemAge)) {
-      return jm.performTransition(Events.GOOD_CONTROLLED);
+      return jm.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, true);
     }
     else {
-      return jm.performTransition(Events.GOOD_NOT_CONTROLLED);
+      return jm.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, false);
     }
   }
 

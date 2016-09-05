@@ -52,11 +52,11 @@ public class DualUseController {
 
     if (isDualUse) {
       dao.saveExportCategory(ExportCategory.DUAL_USE);
-      return jm.performTransition(Events.GOOD_CONTROLLED);
+      return jm.performTransition(Events.IS_DUAL_USE, true);
     }
     else {
       dao.saveExportCategory(ExportCategory.NONE);
-      return jm.performTransition(Events.GOOD_NOT_CONTROLLED);
+      return jm.performTransition(Events.IS_DUAL_USE, false);
     }
   }
 

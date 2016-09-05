@@ -205,24 +205,20 @@ public class GuiceModule extends AbstractModule{
         .then(moveTo(categoryDualUse));
 
     jdb.atStage(categoryArtsCultural)
-        .onEvent(Events.GOOD_CONTROLLED)
-        .then(moveTo(goodsType));
-
-    jdb.atStage(categoryArtsCultural)
-        .onEvent(Events.GOOD_NOT_CONTROLLED)
-        .then(moveTo(categoryArtsCulturalNoLicence));
+        .onEvent(Events.IS_CONTROLLED_HISTORIC_GOOD)
+        .branch()
+        .when(true, moveTo(goodsType))
+        .when(false, moveTo(categoryArtsCulturalNoLicence));
 
     jdb.atStage(categoryChemicalsCosmetics)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(goodsType));
 
     jdb.atStage(categoryDualUse)
-        .onEvent(Events.GOOD_CONTROLLED)
-        .then(moveTo(goodsType));
-
-    jdb.atStage(categoryDualUse)
-        .onEvent(Events.GOOD_NOT_CONTROLLED)
-        .then(moveTo(noneDescribed));
+        .onEvent(Events.IS_DUAL_USE)
+        .branch()
+        .when(true, moveTo(goodsType))
+        .when(false, moveTo(noneDescribed));
 
     jdb.atStage(categoryFinancialTechnicalAssistance)
         .onEvent(StandardEvents.NEXT)
