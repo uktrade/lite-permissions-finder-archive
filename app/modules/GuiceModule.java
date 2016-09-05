@@ -82,7 +82,7 @@ public class GuiceModule extends AbstractModule{
         () -> CompletableFuture.completedFuture(redirect(routes.EntryPointController.index())));
 
     JourneyStage startApplication = jdb.defineStage("startApplication", "Saving your application",
-        () -> cpm.addParamsAndRedirect(controllers.routes.StartApplicationController.renderForm()));
+        () -> cpm.addParamsAndRedirect(routes.StartApplicationController.renderForm()));
 
     JourneyStage continueApplication = jdb.defineStage("continueApplication", "Return to your application",
         () -> cpm.addParamsAndRedirect(routes.ContinueApplicationController.renderForm()));
@@ -93,6 +93,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage importStatic = jdb.defineStage("importStatic", "Import licences",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderImport()));
 
+    JourneyStage categoryArtsCulturalNoLicence = jdb.defineStage("categoryArtsCulturalNoLicence", "???",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderNoLicenceCultural()));
+
     // TODO ???
     JourneyStage brokeringStatic = jdb.defineStage("brokeringStatic", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderBrokering()));
@@ -100,6 +103,9 @@ public class GuiceModule extends AbstractModule{
     // TODO ???
     JourneyStage transhipmentStatic = jdb.defineStage("transhipmentStatic", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderTranshipment()));
+
+    JourneyStage categoryArtsCultural = jdb.defineStage("categoryArtsCultural", "Arts and cultural goods",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.ArtsCulturalController.renderForm()));
 
     JourneyStage exportCategory = jdb.defineStage("exportCategory", "What are you exporting?",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ExportCategoryController.renderForm()));
@@ -123,6 +129,10 @@ public class GuiceModule extends AbstractModule{
     // TODO ???
     JourneyStage categoryMedicinesDrugsForExecution = jdb.defineStage("categoryMedicinesDrugsForExecution", "???",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryMedicinesDrugsForExecution()));
+
+    // TODO Finish this stubbed stage.
+    JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technology?",
+        () -> null);
 
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
@@ -159,11 +169,10 @@ public class GuiceModule extends AbstractModule{
         .when(TradeType.BROKERING, moveTo(brokeringStatic))
         .when(TradeType.TRANSSHIPMENT, moveTo(transhipmentStatic));
 
-
     jdb.atStage(exportCategory)
         .onEvent(Events.EXPORT_CATEGORY_SELECTED)
         .branch()
-        .when(ExportCategory.ARTS_CULTURAL, moveTo(null))
+        .when(ExportCategory.ARTS_CULTURAL, moveTo(categoryArtsCultural))
         .when(ExportCategory.CHEMICALS_COSMETICS, moveTo(null))
         .when(ExportCategory.DUAL_USE, moveTo(null))
         .when(ExportCategory.FINANCIAL_ASSISTANCE, moveTo(null))
@@ -176,6 +185,13 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(null))
         .when(ExportCategory.TORTURE_RESTRAINT, moveTo(null));
 
+    jdb.atStage(categoryArtsCultural)
+        .onEvent(Events.ARTS_CULTURAL_CONTROLLED)
+        .then(moveTo(goodsType));
+
+    jdb.atStage(categoryArtsCultural)
+        .onEvent(Events.ARTS_CULTURAL_NOT_CONTROLLED)
+        .then(moveTo(categoryArtsCulturalNoLicence));
 
     return new JourneyManager(jdb.build("default", index));
   }

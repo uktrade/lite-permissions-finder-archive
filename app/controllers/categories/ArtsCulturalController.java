@@ -1,8 +1,11 @@
 package controllers.categories;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 import com.google.inject.Inject;
-import controllers.GoodsTypeController;
-import controllers.StaticContentController;
+import components.common.journey.JourneyManager;
+import components.persistence.PermissionsFinderDao;
+import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -13,6 +16,8 @@ import views.html.categories.artsCultural;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 
 public class ArtsCulturalController extends Controller {
 
@@ -22,40 +27,44 @@ public class ArtsCulturalController extends Controller {
       new SelectOption("GT100", "More than 100 years old")
   );
 
+  private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final GoodsTypeController goodsTypeController;
-  private final StaticContentController staticContentController;
+  private final PermissionsFinderDao dao;
 
   @Inject
-  public ArtsCulturalController(FormFactory formFactory, GoodsTypeController goodsTypeController, StaticContentController staticContentController) {
+  public ArtsCulturalController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
+    this.jm = jm;
     this.formFactory = formFactory;
-    this.goodsTypeController = goodsTypeController;
-    this.staticContentController = staticContentController;
+    this.dao = dao;
   }
 
   public Result renderForm() {
-    return ok(artsCultural.render(formFactory.form()));
+    Optional<ArtsCulturalForm> templateFormOptional = dao.getArtsCulturalForm();
+    ArtsCulturalForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new ArtsCulturalForm();
+    return ok(artsCultural.render(formFactory.form(ArtsCulturalForm.class).fill(templateForm)));
   }
 
-  public Result handleSubmit() {
+  public CompletionStage<Result> handleSubmit() {
 
-    Form<ArtsForm> form = formFactory.form(ArtsForm.class).bindFromRequest();
+    Form<ArtsCulturalForm> form = formFactory.form(ArtsCulturalForm.class).bindFromRequest();
 
     if (form.hasErrors()) {
-      return ok(artsCultural.render(form));
+      return completedFuture(ok(artsCultural.render(form)));
+    }
+
+    dao.saveArtsCulturalForm(form.get());
+
+    if (form.get().firearm && !"GT100".equals(form.get().itemAge)) {
+      return jm.performTransition(Events.ARTS_CULTURAL_CONTROLLED);
     }
     else {
-      if (form.get().firearm && !"GT100".equals(form.get().itemAge)) {
-        return goodsTypeController.renderForm();
-      }
+      return jm.performTransition(Events.ARTS_CULTURAL_NOT_CONTROLLED);
     }
-
-    return staticContentController.renderStaticHtml(StaticContentController.StaticHtml.NO_LICENCE_CULTURAL);
   }
 
-  public static class ArtsForm {
+  public static class ArtsCulturalForm {
 
-    @Required(message = "Please select the item's age")
+    @Required(message = "Please select the items age")
     public String itemAge;
 
     @Required(message = "Please specify if the item is a firearm")

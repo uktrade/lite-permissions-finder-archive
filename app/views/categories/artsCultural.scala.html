@@ -1,12 +1,15 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import controllers.categories.ArtsCulturalController
 
 @(form: Form[_])
 @standardPage("Arts and cultural goods", Some(Html("Arts and cultural goods"))){ @errorSummary(form, fieldOrder = scala.List("itemAge", "firearm")) }{
 
   <form action="@controllers.categories.routes.ArtsCulturalController.handleSubmit()" method="POST">
+
+    @contextFormParams()
 
     @formRadioGroup(form("itemAge"), ArtsCulturalController.AGE_OPTIONS){ How old is the item? }
 

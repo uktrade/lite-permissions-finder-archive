@@ -15,10 +15,14 @@ public class Events {
 
   public static final JourneyEvent APPLICATION_NOT_FOUND = new JourneyEvent("APPLICATION_NOT_FOUND");
 
-  public static final ParameterisedJourneyEvent TRADE_TYPE_SELECTED =
-      new ParameterisedJourneyEvent("TRADE_TYPE_SELECTED", TradeType.class);
+  public static final ParameterisedJourneyEvent<TradeType> TRADE_TYPE_SELECTED =
+      new ParameterisedJourneyEvent<>("TRADE_TYPE_SELECTED", TradeType.class);
 
-  public static final ParameterisedJourneyEvent EXPORT_CATEGORY_SELECTED =
-      new ParameterisedJourneyEvent("EXPORT_CATEGORY_SELECTED", ExportCategory.class);
+  public static final ParameterisedJourneyEvent<ExportCategory> EXPORT_CATEGORY_SELECTED =
+      new ParameterisedJourneyEvent<>("EXPORT_CATEGORY_SELECTED", ExportCategory.class);
+
+  public static final JourneyEvent ARTS_CULTURAL_CONTROLLED = new JourneyEvent("ARTS_CULTURAL_CONTROLLED");
+
+  public static final JourneyEvent ARTS_CULTURAL_NOT_CONTROLLED = new JourneyEvent("ARTS_CULTURAL_NOT_CONTROLLED");
 
 }

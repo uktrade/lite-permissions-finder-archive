@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
-import controllers.TradeTypeController;
+import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
 import model.ExportCategory;
 import model.TradeType;
 import play.libs.Json;
@@ -40,6 +40,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT = "physicalGoodSearchPaginationDisplayCount";
 
   public static final String TRADE_TYPE = "tradeType";
+
+  public static final String ARTS_CULTURAL_GOODS = "artsCulturalGoods";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -140,5 +142,13 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<TradeType> getTradeType() {
     return TradeType.getMatched(readString(TRADE_TYPE));
+  }
+
+  public void saveArtsCulturalForm (ArtsCulturalForm form) {
+    writeObject(ARTS_CULTURAL_GOODS, form);
+  }
+
+  public Optional<ArtsCulturalForm> getArtsCulturalForm() {
+    return readObject(ARTS_CULTURAL_GOODS, ArtsCulturalForm.class);
   }
 }

@@ -14,7 +14,6 @@ import java.net.URL;
 public class StaticContentController extends Controller {
 
   public enum StaticHtml {
-
     NO_LICENCE_CULTURAL("noLicenceCultural.html", "No licence required"),
     BROKERING_TRANSHIPMENT("tradetypes/brokeringTranshipment.html","Trade controls, trafficking and brokering"),
     IMPORT("tradetypes/import.html","Import licences"),
