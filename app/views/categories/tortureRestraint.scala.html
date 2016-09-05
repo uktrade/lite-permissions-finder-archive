@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import controllers.categories.routes.TortureRestraintController
 
 @(form: Form[_])
@@ -10,10 +11,11 @@
 
   <p>
     The EU Regulation on Products used for Capital Punishment and Torture (the Torture Regulation) includes a ban on the export and import of equipment that could only be used for torture or capital punishment and a ban on related technical assistance. Read more about <a href="https://www.gov.uk/guidance/controls-on-torture-goods" class="external" target="_blank" rel="external">controls on torture goods</a>.
-
   </p>
 
   <form action="@TortureRestraintController.handleSubmit" method="POST">
+
+    @contextFormParams()
 
     <p>
       You can export some goods that could be used for torture but that also have legitimate applications. If you think this may apply to your goods, or you are not sure, <button type="submit" class="link underlined font-small" name="goToSearch" value="true">use the search facility</button> to check whether your goods can be licensed for export.

@@ -132,6 +132,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryMedicinesDrugsStatic = jdb.defineStage("categoryMedicinesDrugsStatic", "You need a licence to export most drugs and medicines",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryMedicinesDrugs()));
 
+    JourneyStage categoryTortureRestraint = jdb.defineStage("categoryTortureRestraint", "You may not be allowed to export your goods",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.TortureRestraintController.renderForm()));
+
     // TODO Finish this stubbed stage.
     JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technology?",
         () -> null);
@@ -188,7 +191,7 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.PLANTS_ANIMALS, moveTo(null))
         .when(ExportCategory.RADIOACTIVE, moveTo(null))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
-        .when(ExportCategory.TORTURE_RESTRAINT, moveTo(null));
+        .when(ExportCategory.TORTURE_RESTRAINT, moveTo(categoryTortureRestraint));
 
     jdb.atStage(exportCategory)
         .onEvent(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE)
@@ -221,8 +224,12 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(categoryMedicinesDrugs)
         .onEvent(Events.IS_USED_FOR_EXECUTION_TORTURE)
         .branch()
-        .when(true, moveTo(null))
+        .when(true, moveTo(categoryTortureRestraint))
         .when(false, moveTo(categoryMedicinesDrugsStatic));
+
+    jdb.atStage(categoryTortureRestraint)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(goodsType));
 
     return new JourneyManager(jdb.build("default", index));
   }
