@@ -21,7 +21,7 @@ public class StaticContentController extends Controller {
     CATEGORY_ENDANGERED_ANIMALS("categories/endangeredAnimal.html", "You may need a CITES permit"),
     CATEGORY_NON_ENDANGERED_ANIMALS("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
     CATEGORY_PLANTS("categories/plant.html", "You may need approval from the destination country"),
-    CATEGORY_MEDICINES_DRUGS_FOR_EXECUTION("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines");
+    CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines");
 
     StaticHtml(String filename, String title) {
       this.filename = filename;
@@ -74,8 +74,8 @@ public class StaticContentController extends Controller {
     return renderStaticHtml(StaticHtml.CATEGORY_PLANTS);
   }
 
-  public Result renderCategoryMedicinesDrugsForExecution() {
-    return renderStaticHtml(StaticHtml.CATEGORY_MEDICINES_DRUGS_FOR_EXECUTION);
+  public Result renderCategoryMedicinesDrugs() {
+    return renderStaticHtml(StaticHtml.CATEGORY_MEDICINES_DRUGS);
   }
 
 }

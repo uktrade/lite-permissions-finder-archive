@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import controllers.categories.routes.MedicinesDrugsController
 
 @(form: Form[_])
@@ -9,6 +10,8 @@
 }{
 
   <form action="@MedicinesDrugsController.handleSubmit" method="POST">
+
+    @contextFormParams()
 
     @formRadioBoolean(form("isUsedForExecutionTorture"), Html("Are your drugs for execution or torture?"))
   

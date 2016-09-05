@@ -27,4 +27,7 @@ public class Events {
 
   public static final JourneyEvent GOOD_NOT_CONTROLLED = new JourneyEvent("GOOD_NOT_CONTROLLED");
 
+  public static final ParameterisedJourneyEvent<Boolean> IS_USED_FOR_EXECUTION_TORTURE =
+      new ParameterisedJourneyEvent<>("IS_USED_FOR_EXECUTION_TORTURE", Boolean.class);
+
 }

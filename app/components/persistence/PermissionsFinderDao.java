@@ -5,6 +5,8 @@ import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
+import controllers.categories.MedicinesDrugsController;
+import controllers.categories.MedicinesDrugsController.MedicinesDrugsForm;
 import model.ExportCategory;
 import model.TradeType;
 import play.libs.Json;
@@ -44,6 +46,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String ARTS_CULTURAL_GOODS = "artsCulturalGoods";
 
   public static final String IS_DUAL_USE_GOOD = "isDualUseGood";
+
+  public static final String IS_USED_FOR_EXECUTION_TORTURE = "isUsedForExecutionTorture";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -155,14 +159,31 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   public void saveIsDualUseGood(boolean isDualUseGood) {
-    writeString(IS_DUAL_USE_GOOD, Boolean.toString(isDualUseGood));
+    writeBoolean(IS_DUAL_USE_GOOD, isDualUseGood);
   }
 
   public Optional<Boolean> getIsDualUseGood() {
-    String isDualUse = readString(IS_DUAL_USE_GOOD);
-    if (isDualUse == null || isDualUse.isEmpty()) {
+    return readBoolean(IS_DUAL_USE_GOOD);
+  }
+
+  public void saveIsUsedForExecutionTorture(boolean isUsedForExecutionTorture) {
+    writeBoolean(IS_USED_FOR_EXECUTION_TORTURE, isUsedForExecutionTorture);
+  }
+
+  public Optional<Boolean> getIsUsedForExecutionTorture() {
+    return readBoolean(IS_USED_FOR_EXECUTION_TORTURE);
+  }
+
+  public void writeBoolean(String fieldName, boolean value){
+    writeString(fieldName, Boolean.toString(value));
+  }
+
+  public Optional<Boolean> readBoolean(String fieldName) {
+    String value = readString(fieldName);
+    if (value == null || value.isEmpty()) {
       return Optional.empty();
     }
-    return Optional.of(isDualUse.equalsIgnoreCase("true"));
+    return Optional.of(value.equalsIgnoreCase("true"));
   }
+
 }
