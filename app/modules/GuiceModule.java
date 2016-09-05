@@ -16,6 +16,7 @@ import components.common.state.ContextParamManager;
 import controllers.routes;
 import journey.Events;
 import model.ExportCategory;
+import model.GoodsType;
 import model.LifeType;
 import model.TradeType;
 import play.Configuration;
@@ -142,12 +143,11 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryRadioactive = jdb.defineStage("categoryRadioactive", "You need a licence to export radioactive materials above certain activity thresholds",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.RadioactiveController.renderForm()));
 
-    // TODO Finish this stubbed stage.
-    JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technology?",
-        () -> null);
-
     JourneyStage noneDescribed = jdb.defineStage("noneDescribed", "You may not need a licence",
         () -> cpm.addParamsAndRedirect(controllers.search.routes.NoneDescribedController.render()));
+
+    JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technology?",
+        () -> cpm.addParamsAndRedirect(routes.GoodsTypeController.renderForm()));
 
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
@@ -244,6 +244,13 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(categoryRadioactive)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(goodsType));
+
+    jdb.atStage(goodsType)
+        .onEvent(Events.GOODS_TYPE_SELECTED)
+        .branch()
+        .when(GoodsType.PHYSICAL, moveTo(null))
+        .when(GoodsType.SOFTWARE, moveTo(null))
+        .when(GoodsType.TECHNOLOGY, moveTo(null));
 
     return new JourneyManager(jdb.build("default", index));
   }

@@ -6,6 +6,7 @@ import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
 import model.ExportCategory;
+import model.GoodsType;
 import model.LifeType;
 import model.TradeType;
 import play.libs.Json;
@@ -49,6 +50,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String IS_USED_FOR_EXECUTION_TORTURE = "isUsedForExecutionTorture";
 
   public static final String PLANTS_ANIMALS_LIFE_TYPE = "plantsAnimalsLifeType";
+
+  public static final String GOODS_TYPE = "goodsType";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -193,6 +196,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<LifeType> getPlantsAnimalsLifeType() {
     return LifeType.getMatched(readString(PLANTS_ANIMALS_LIFE_TYPE));
+  }
+
+  public void saveGoodsType(GoodsType goodsType) {
+    writeString(GOODS_TYPE, goodsType.value());
+  }
+
+  public Optional<GoodsType> getGoodsType() {
+    return GoodsType.getMatched(readString(GOODS_TYPE));
   }
 
 }

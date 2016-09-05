@@ -1,6 +1,8 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
+@import model.GoodsType
 
 @(form: Form[_])
 @standardPage("Select goods type", Some(Html("Are you exporting goods, software or technology?"))){
@@ -9,11 +11,13 @@
 
   <form action="@routes.GoodsTypeController.handleSubmit()" method="POST">
 
+    @contextFormParams()
+
     @fieldContainer(form("goodsType")) {
 
       <div class="form-group">
         @formRadio(form("goodsType"), Html("I am exporting physical goods"),
-          GoodsTypeController.GoodsTypeOption.PHYSICAL.toString, "label-goods-type")
+          GoodsType.PHYSICAL.value(), "label-goods-type")
         <p class="panel panel-border-wide">
           For example vehicles, protective hardware, nuclear materials, electronic equipment, or any other physical items
         </p>
@@ -21,7 +25,7 @@
 
       <div class="form-group">
         @formRadio(form("goodsType"), Html("I am exporting software"),
-          GoodsTypeController.GoodsTypeOption.SOFTWARE.toString, "label-goods-type")
+          GoodsType.SOFTWARE.value(), "label-goods-type")
         <p class="panel panel-border-wide">
           For example programmes or source code to enable the use of goods that themselves require an export licence
         </p>
@@ -29,7 +33,7 @@
 
       <div class="form-group">
         @formRadio(form("goodsType"), Html("I am exporting technology"),
-          GoodsTypeController.GoodsTypeOption.TECHNOLOGY.toString, "label-goods-type")
+          GoodsType.TECHNOLOGY.value(), "label-goods-type")
         <p class="panel panel-border-wide">
           For example manuals, designs, models or blueprints for goods that themselves require an export licence, and also technical assistance in the form of training, consulting and other services. Read more about <a href="https://www.gov.uk/guidance/export-of-technology" rel="external" target="_blank">exporting technology</a>.
         </p>
