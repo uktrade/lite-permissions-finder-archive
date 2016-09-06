@@ -171,6 +171,8 @@ public class GuiceModule extends AbstractModule{
     JourneyStage decontrolledItem = jdb.defineStage("decontrolledItem", "Decontrolled item",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.DecontrolledItemController.renderForm()));
 
+    JourneyStage searchAgain = jdb.defineStage("searchAgain", "Search again",
+        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.SearchAgainController.renderForm()));
 
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
@@ -293,7 +295,7 @@ public class GuiceModule extends AbstractModule{
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
-        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null))
+        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
 
@@ -303,7 +305,7 @@ public class GuiceModule extends AbstractModule{
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
-        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null));
+        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain));
 
     jdb.atStage(decontrols)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -316,7 +318,7 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
-        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null));
+        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain));
 
     jdb.atStage(decontrolledItem)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -324,6 +326,11 @@ public class GuiceModule extends AbstractModule{
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
 
+    jdb.atStage(searchAgain)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
+        .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
 
     return new JourneyManager(jdb.build("default", index));
   }

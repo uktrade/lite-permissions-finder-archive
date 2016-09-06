@@ -27,6 +27,10 @@ GET     /control-code/decontrols              controllers.controlcode.Decontrols
 
 POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSubmit
 
+GET     /control-code/search-again            controllers.controlcode.SearchAgainController.renderForm
+
+POST    /control-code/search-again            controllers.controlcode.SearchAgainController.handleSubmit
+
 GET     /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.renderForm
 
 POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSubmit
