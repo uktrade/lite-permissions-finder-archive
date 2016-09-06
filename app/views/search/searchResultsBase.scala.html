@@ -2,6 +2,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 
 @(form: Form[_], formAction: String, results: List[SearchServiceResult], resultsDisplayCount: Int)
   @standardPage(
@@ -13,6 +14,8 @@
     @if(!results.isEmpty()) {
 
       <form action="@formAction" method="POST">
+
+        @contextFormParams()
 
         <table class="search-results">
           <thead><tr><th></th></tr></thead>

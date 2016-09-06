@@ -1,61 +1,51 @@
 package controllers.search;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import controllers.ErrorController;
 import components.services.controlcode.search.SearchServiceClient;
+import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.search.physicalGoodsSearch;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 
 public class PhysicalGoodsSearchController extends SearchController {
 
-  private PhysicalGoodsSearchResultsController physicalGoodsSearchResultsController;
-
   @Inject
-  public PhysicalGoodsSearchController(FormFactory formFactory,
+  public PhysicalGoodsSearchController(JourneyManager jm,
+                                       FormFactory formFactory,
                                        PermissionsFinderDao dao,
                                        HttpExecutionContext ec,
                                        SearchServiceClient searchServiceClient,
-                                       ErrorController errorController,
-                                       PhysicalGoodsSearchResultsController physicalGoodsSearchResultsController) {
-    super(formFactory, dao, ec, searchServiceClient, errorController);
-    this.physicalGoodsSearchResultsController = physicalGoodsSearchResultsController;
+                                       ErrorController errorController) {
+    super(jm, formFactory, dao, ec, searchServiceClient, errorController);
   }
 
   public Result renderForm() {
-    return ok(physicalGoodsSearch.render(searchForm()));
+    Optional<ControlCodeSearchForm> templateFormOptional = dao.getPhysicalGoodsSearchForm();
+    ControlCodeSearchForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new ControlCodeSearchForm();
+    return ok(physicalGoodsSearch.render(searchForm(templateForm)));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeSearchForm> form = bindSearchForm();
 
     if(form.hasErrors()){
-      return CompletableFuture.completedFuture(ok(physicalGoodsSearch.render(form)));
+      return completedFuture(ok(physicalGoodsSearch.render(form)));
     }
-
-    return physicalGoodsSearch(form)
-        .thenApplyAsync(response -> {
-          if (response.isOk()){
-            return physicalGoodsSearchResultsController.renderForm(response.getSearchResults());
-          }
-          else {
-            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
-          }
-        }, ec.current());
+    dao.savePhysicalGoodSearchForm(form.get());
+    return jm.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 
-  public CompletionStage<SearchServiceClient.Response> physicalGoodsSearch(Form<ControlCodeSearchForm> form) {
-    String searchTerms = getSearchTerms(form);
-    dao.savePhysicalGoodSearchTerms(searchTerms);
-    return searchServiceClient.get(searchTerms);
-  }
 }

@@ -149,6 +149,12 @@ public class GuiceModule extends AbstractModule{
     JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technology?",
         () -> cpm.addParamsAndRedirect(routes.GoodsTypeController.renderForm()));
 
+    JourneyStage physicalGoodsSearch = jdb.defineStage("physicalGoodsSearch", "Describe your goods",
+        () -> cpm.addParamsAndRedirect(controllers.search.routes.PhysicalGoodsSearchController.renderForm()));
+
+    JourneyStage physicalGoodsSearchResults = jdb.defineStage("physicalGoodsSearchResults", "Possible matches",
+        () -> cpm.addParamsAndRedirect(controllers.search.routes.PhysicalGoodsSearchResultsController.renderForm()));
+
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
         .then(moveTo(startApplication));
@@ -171,10 +177,9 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.APPLICATION_FOUND)
         .then(moveTo(tradeType));
 
-    // TODO Add in additional screen catering for this condition IELS-606
     jdb.atStage(continueApplication)
         .onEvent(Events.APPLICATION_NOT_FOUND)
-        .then(moveTo(null));
+        .then(moveTo(null)); // TODO Add in additional screen catering for this condition IELS-606
 
     jdb.atStage(tradeType)
         .onEvent(Events.TRADE_TYPE_SELECTED)
@@ -248,9 +253,21 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(goodsType)
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
-        .when(GoodsType.PHYSICAL, moveTo(null))
-        .when(GoodsType.SOFTWARE, moveTo(null))
-        .when(GoodsType.TECHNOLOGY, moveTo(null));
+        .when(GoodsType.PHYSICAL, moveTo(physicalGoodsSearch))
+        .when(GoodsType.SOFTWARE, moveTo(null)) //TODO Not implemented screen
+        .when(GoodsType.TECHNOLOGY, moveTo(null)); //TODO Not implemented screen
+
+    jdb.atStage(physicalGoodsSearch)
+        .onEvent(Events.SEARCH_PHYSICAL_GOODS)
+        .then(moveTo(physicalGoodsSearchResults));
+
+    jdb.atStage(physicalGoodsSearchResults)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
+        .then(moveTo(null));
+
+    jdb.atStage(physicalGoodsSearchResults)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(null));
 
     return new JourneyManager(jdb.build("default", index));
   }

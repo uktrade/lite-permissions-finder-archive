@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 
 @(form: Form[_], formAction: String, pageTitle: String)
 @standardPage(pageTitle, Some(Html(pageTitle)), headingCssClass = "heading-xlarge heading-tight"){
@@ -8,6 +9,8 @@
 }{
 
   <form action="@formAction" method="POST">
+
+    @contextFormParams()
 
     <span class="form-hint">Provide as much information as you can</span>
     @formTextarea(form("description"), cssClass = "form-control-wide") {

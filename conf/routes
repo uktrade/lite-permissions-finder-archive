@@ -91,7 +91,7 @@ GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSe
 
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
 
-#GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderForm
+GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderForm
 
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
 

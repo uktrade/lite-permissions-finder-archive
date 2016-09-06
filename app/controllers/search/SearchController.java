@@ -1,5 +1,6 @@
 package controllers.search;
 
+import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.search.SearchServiceClient;
 import controllers.ErrorController;
@@ -13,26 +14,29 @@ import java.util.stream.Collectors;
 
 public class SearchController {
 
+  protected final JourneyManager jm;
   private final FormFactory formFactory;
-
   protected final PermissionsFinderDao dao;
-
   protected final HttpExecutionContext ec;
-
   protected final SearchServiceClient searchServiceClient;
-
   protected final ErrorController errorController;
 
-  public SearchController(FormFactory formFactory,
+  public SearchController(JourneyManager jm,
+                          FormFactory formFactory,
                           PermissionsFinderDao dao,
                           HttpExecutionContext ec,
                           SearchServiceClient searchServiceClient,
                           ErrorController errorController) {
+    this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
     this.searchServiceClient = searchServiceClient;
     this.errorController = errorController;
+  }
+
+  public Form<ControlCodeSearchForm> searchForm(ControlCodeSearchForm templateForm){
+    return formFactory.form(ControlCodeSearchForm.class).fill(templateForm);
   }
 
   public Form<ControlCodeSearchForm> searchForm(){
@@ -43,13 +47,13 @@ public class SearchController {
     return searchForm().bindFromRequest();
   }
 
-  public String getSearchTerms(Form<ControlCodeSearchForm> form) {
+  public static String getSearchTerms(ControlCodeSearchForm form) {
     return Arrays.asList(
-        form.get().description,
-        form.get().component,
-        form.get().brand,
-        form.get().partNumber,
-        form.get().hsCode
+        form.description,
+        form.component,
+        form.brand,
+        form.partNumber,
+        form.hsCode
     ).stream()
         .filter(fv -> fv != null && !fv.isEmpty())
         .collect(Collectors.joining(", "));

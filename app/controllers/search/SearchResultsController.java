@@ -1,5 +1,6 @@
 package controllers.search;
 
+import components.common.journey.JourneyManager;
 import components.services.controlcode.search.SearchServiceClient;
 import controllers.controlcode.ControlCodeController;
 import controllers.ErrorController;
@@ -11,31 +12,31 @@ import java.util.Optional;
 
 public class SearchResultsController {
 
+  protected final JourneyManager jm;
   private final FormFactory formFactory;
-
   protected final SearchServiceClient searchServiceClient;
-
   protected final FrontendServiceClient frontendServiceClient;
-
   protected final ControlCodeController controlCodeController;
-
   protected final ErrorController errorController;
 
-  public enum SearchResultAction{
-    NONE_MATCHED,
-    SHORE_MORE,
-  }
 
-  public SearchResultsController(FormFactory formFactory,
+  public SearchResultsController(JourneyManager jm,
+                                 FormFactory formFactory,
                                  SearchServiceClient searchServiceClient,
                                  FrontendServiceClient frontendServiceClient,
                                  ControlCodeController controlCodeController,
                                  ErrorController errorController) {
+    this.jm = jm;
     this.formFactory = formFactory;
     this.searchServiceClient = searchServiceClient;
     this.frontendServiceClient = frontendServiceClient;
     this.controlCodeController = controlCodeController;
     this.errorController = errorController;
+  }
+
+  public enum SearchResultAction{
+    NONE_MATCHED,
+    SHORE_MORE,
   }
 
   public Form<ControlCodeSearchResultsForm> searchResultsForm() {
@@ -46,27 +47,28 @@ public class SearchResultsController {
     return searchResultsForm().bindFromRequest();
   }
 
+  public Optional<String> getResult(ControlCodeSearchResultsForm form) {
+    return !(form.result == null || form.result.isEmpty()) ? Optional.of(form.result) : Optional.empty();
+  }
+
+  public Optional<SearchResultAction> getAction(ControlCodeSearchResultsForm form) {
+    if (form.action == null || form.action.isEmpty()){
+      return Optional.empty();
+    }
+    if("no-matched-result".equals(form.action)){
+      return Optional.of(SearchResultAction.NONE_MATCHED);
+    }
+    if("show-more-results".equals(form.action)){
+      return Optional.of(SearchResultAction.SHORE_MORE);
+    }
+    return Optional.empty();
+  }
+
   public static class ControlCodeSearchResultsForm {
 
     public String result;
 
     public String action;
 
-    public Optional<String> getResult() {
-      return !(result == null || result.isEmpty()) ? Optional.of(result) : Optional.empty();
-    }
-
-    public Optional<SearchResultAction> getAction() {
-      if (action == null || action.isEmpty()){
-        return Optional.empty();
-      }
-      if("no-matched-result".equals(action)){
-        return Optional.of(SearchResultAction.NONE_MATCHED);
-      }
-      if("show-more-results".equals(action)){
-        return Optional.of(SearchResultAction.SHORE_MORE);
-      }
-      return Optional.empty();
-    }
   }
 }

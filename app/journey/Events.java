@@ -39,4 +39,11 @@ public class Events {
 
   public static final ParameterisedJourneyEvent<GoodsType> GOODS_TYPE_SELECTED =
       new ParameterisedJourneyEvent<>("GOODS_TYPE_SELECTED", GoodsType.class);
+
+  public static final JourneyEvent SEARCH_PHYSICAL_GOODS = new JourneyEvent("SEARCH_PHYSICAL_GOODS");
+
+  public static final JourneyEvent NONE_MATCHED = new JourneyEvent("NONE_MATCHED");
+
+  public static final JourneyEvent CONTROL_CODE_SELECTED = new JourneyEvent("CONTROL_CODE_SELECTED");
+
 }

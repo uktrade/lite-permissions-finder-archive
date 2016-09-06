@@ -5,6 +5,7 @@ import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
+import controllers.search.SearchController.ControlCodeSearchForm;
 import model.ExportCategory;
 import model.GoodsType;
 import model.LifeType;
@@ -52,6 +53,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String PLANTS_ANIMALS_LIFE_TYPE = "plantsAnimalsLifeType";
 
   public static final String GOODS_TYPE = "goodsType";
+
+  public static final String PHYSICAL_GOOD_SEARCH = "physicalGoodSearch";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -130,14 +133,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readString(MEMORABLE_WORD);
   }
 
-  public void savePhysicalGoodSearchTerms(String physicalGoodSearchTerms) {
-    writeString(PHYSICAL_GOOD_SEARCH_TERMS, physicalGoodSearchTerms);
-  }
-
-  public String getPhysicalGoodSearchTerms() {
-    return readString(PHYSICAL_GOOD_SEARCH_TERMS);
-  }
-
   public void savePhysicalGoodSearchPaginationDisplayCount(int physicalGoodSearchPaginationDisplayCount) {
     writeString(PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT, Integer.toString(physicalGoodSearchPaginationDisplayCount));
   }
@@ -204,6 +199,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<GoodsType> getGoodsType() {
     return GoodsType.getMatched(readString(GOODS_TYPE));
+  }
+
+  public void savePhysicalGoodSearchForm(ControlCodeSearchForm controlCodeSearchForm) {
+    writeObject(PHYSICAL_GOOD_SEARCH, controlCodeSearchForm);
+  }
+
+  public Optional<ControlCodeSearchForm> getPhysicalGoodsSearchForm() {
+    return readObject(PHYSICAL_GOOD_SEARCH, ControlCodeSearchForm.class);
   }
 
 }
