@@ -162,6 +162,10 @@ public class GuiceModule extends AbstractModule{
     JourneyStage additionalSpecifications = jdb.defineStage("additionalSpecifications", "Additional specifications",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.AdditionalSpecificationsController.renderForm()));
 
+    JourneyStage decontrols = jdb.defineStage("decontrols", "Decontrols",
+        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.DecontrolsController.renderForm()));
+
+
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
         .then(moveTo(startApplication));
@@ -290,10 +294,17 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(additionalSpecifications)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
-        .when(ControlCodeFlowStage.DECONTROLS, moveTo(null))
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(null))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
         .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null));
+
+    jdb.atStage(decontrols)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.DECONTROLLED_ITEM, moveTo(null))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(null))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(null));
 
 
     return new JourneyManager(jdb.build("default", index));

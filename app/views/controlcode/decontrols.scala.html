@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import components.services.controlcode.frontend.FrontendServiceResult
 @import controllers.controlcode.routes.DecontrolsController
 
@@ -38,6 +39,8 @@
   </ul>
 
   <form action="@DecontrolsController.handleSubmit()" method="POST">
+
+    @contextFormParams()
 
     @formRadioBoolean(form("decontrolsDescribeItem"), Html("Do any of these describe your items?"), "Yes", "No")
 

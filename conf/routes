@@ -19,7 +19,7 @@ GET     /control-code/additional-specifications   controllers.controlcode.Additi
 
 POST    /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSubmit
 
-#GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderForm
+GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderForm
 
 POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSubmit
 
