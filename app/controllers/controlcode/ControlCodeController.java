@@ -80,7 +80,7 @@ public class ControlCodeController extends Controller {
               return nextScreenTrue(response.getFrontendServiceResult());
             }
             if ("false".equals(couldDescribeItems)) {
-              return jm.performTransition(StandardEvents.NO);
+              return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
             }
           }
           return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
@@ -101,7 +101,7 @@ public class ControlCodeController extends Controller {
       }
     }
     else {
-      return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMATION);
+      return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
     }
   }
 

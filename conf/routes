@@ -15,7 +15,7 @@ GET     /control-code                         controllers.controlcode.ControlCod
 
 POST    /control-code                         controllers.controlcode.ControlCodeController.handleSubmit
 
-#GET     /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderForm
+GET     /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderForm
 
 POST    /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSubmit
 

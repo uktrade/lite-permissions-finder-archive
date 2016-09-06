@@ -159,6 +159,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage controlCode = jdb.defineStage("controlCode", "Summary",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.ControlCodeController.renderForm()));
 
+    JourneyStage additionalSpecifications = jdb.defineStage("additionalSpecifications", "Additional specifications",
+        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.AdditionalSpecificationsController.renderForm()));
+
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
         .then(moveTo(startApplication));
@@ -276,16 +279,22 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(controlCode)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
-        .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(null))
+        .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecifications))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(null))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(null))
-        .when(ControlCodeFlowStage.CONFIRMATION, moveTo(null))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
+        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
 
-    jdb.atStage(controlCode)
-        .onEvent(StandardEvents.NO)
-        .then(moveTo(null));
+    jdb.atStage(additionalSpecifications)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(null))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(null))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
+        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null));
+
 
     return new JourneyManager(jdb.build("default", index));
   }
