@@ -51,7 +51,7 @@ public class DestinationCountryController extends Controller{
   public Result renderForm() {
     return countryServiceClient.getCountries()
         .thenApplyAsync(response -> {
-          if (response.isOk()){
+          if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()){
             List<String> countries = Collections.singletonList("");
             dao.saveDestinationCountryList(countries);
             return ok(destinationCountry.render(formFactory.form(DestinationCountryForm.class), response.getCountries(), countries.size()));
@@ -66,7 +66,7 @@ public class DestinationCountryController extends Controller{
     return countryServiceClient.getCountries()
         .thenApplyAsync(response -> {
           Form <DestinationCountryForm> form = formFactory.form(DestinationCountryForm.class).bindFromRequest();
-          if (response.isOk()){
+          if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()){
             List<String> countries = dao.getDestinationCountryList();
             if(form.hasErrors()){
               return ok(destinationCountry.render(form, response.getCountries(), countries.size()));
