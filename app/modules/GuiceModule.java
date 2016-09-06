@@ -15,6 +15,7 @@ import components.common.journey.StandardEvents;
 import components.common.state.ContextParamManager;
 import controllers.routes;
 import journey.Events;
+import model.ControlCodeFlowStage;
 import model.ExportCategory;
 import model.GoodsType;
 import model.LifeType;
@@ -155,6 +156,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage physicalGoodsSearchResults = jdb.defineStage("physicalGoodsSearchResults", "Possible matches",
         () -> cpm.addParamsAndRedirect(controllers.search.routes.PhysicalGoodsSearchResultsController.renderForm()));
 
+    JourneyStage controlCode = jdb.defineStage("controlCode", "Summary",
+        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.ControlCodeController.renderForm()));
+
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
         .then(moveTo(startApplication));
@@ -263,10 +267,24 @@ public class GuiceModule extends AbstractModule{
 
     jdb.atStage(physicalGoodsSearchResults)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(null));
+        .then(moveTo(controlCode));
 
     jdb.atStage(physicalGoodsSearchResults)
         .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(noneDescribed));
+
+    jdb.atStage(controlCode)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(null))
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(null))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(null))
+        .when(ControlCodeFlowStage.CONFIRMATION, moveTo(null))
+        .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
+        .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
+
+    jdb.atStage(controlCode)
+        .onEvent(StandardEvents.NO)
         .then(moveTo(null));
 
     return new JourneyManager(jdb.build("default", index));

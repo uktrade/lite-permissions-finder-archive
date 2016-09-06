@@ -2,6 +2,7 @@
 @import util._
 @import views.html.common.form._
 @import views.html.common.page._
+@import views.html.common.state._
 @import controllers.controlcode.routes.ControlCodeController
 
 @(form: Form[_], frontendServiceResult: FrontendServiceResult)
@@ -65,6 +66,8 @@
 
   <form action="@ControlCodeController.handleSubmit()" method="POST">
 
+    @contextFormParams()
+
     @formRadioBoolean(form("couldDescribeItems"), Html("Could this describe your items?"), "Yes", "No")
 
     <div class="form-group">
@@ -75,8 +78,8 @@
       <p>
         If your item is not described above you can:
         <ul class="list list-bullet text">
-          <li><a href="javascript:parent.history.go(-1);">return to your search results</a> and choose again</li>
-          <li><a href="javascript:parent.history.go(-2);">edit your item description</a> to get a different set of results</li>
+          <li><button class="link underlined" name="action" value="backToSearchResults">return to your search results</button> and choose again</li>
+          <li><button class="link underlined" name="action" value="backToSearch">edit your item description</button> to get a different set of results</li>
         </ul>
       </p>
 

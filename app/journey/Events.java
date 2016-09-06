@@ -2,6 +2,7 @@ package journey;
 
 import components.common.journey.JourneyEvent;
 import components.common.journey.ParameterisedJourneyEvent;
+import model.ControlCodeFlowStage;
 import model.ExportCategory;
 import model.GoodsType;
 import model.LifeType;
@@ -45,5 +46,8 @@ public class Events {
   public static final JourneyEvent NONE_MATCHED = new JourneyEvent("NONE_MATCHED");
 
   public static final JourneyEvent CONTROL_CODE_SELECTED = new JourneyEvent("CONTROL_CODE_SELECTED");
+
+  public static final ParameterisedJourneyEvent<ControlCodeFlowStage> CONTROL_CODE_FLOW_NEXT
+      = new ParameterisedJourneyEvent<>("CONTROL_CODE_FLOW_NEXT", ControlCodeFlowStage.class);
 
 }

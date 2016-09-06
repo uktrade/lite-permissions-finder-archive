@@ -1,0 +1,10 @@
+package model;
+
+public enum ControlCodeFlowStage {
+  ADDITIONAL_SPECIFICATIONS,
+  DECONTROLS,
+  TECHNICAL_NOTES,
+  CONFIRMATION,
+  BACK_TO_SEARCH,
+  BACK_TO_SEARCH_RESULTS,
+}

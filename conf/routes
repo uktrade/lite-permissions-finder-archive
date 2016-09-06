@@ -11,7 +11,7 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-#GET     /control-code                         controllers.controlcode.ControlCodeController.renderForm
+GET     /control-code                         controllers.controlcode.ControlCodeController.renderForm
 
 POST    /control-code                         controllers.controlcode.ControlCodeController.handleSubmit
 
