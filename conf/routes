@@ -19,6 +19,10 @@ GET     /control-code/additional-specifications   controllers.controlcode.Additi
 
 POST    /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSubmit
 
+GET     /control-code/decontrolled-item       controllers.controlcode.DecontrolledItemController.renderForm
+
+POST    /control-code/decontrolled-item       controllers.controlcode.DecontrolledItemController.handleSubmit
+
 GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderForm
 
 POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSubmit
@@ -31,7 +35,7 @@ GET     /destination-country                  controllers.DestinationCountryCont
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
-GET     /export-category                     controllers.categories.ExportCategoryController.renderForm
+GET     /export-category                      controllers.categories.ExportCategoryController.renderForm
 
 POST    /export-category                      controllers.categories.ExportCategoryController.handleSubmit
 
