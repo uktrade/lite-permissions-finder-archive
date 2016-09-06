@@ -23,7 +23,7 @@ GET     /control-code/decontrols              controllers.controlcode.Decontrols
 
 POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSubmit
 
-#GET     /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.renderForm
+GET     /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.renderForm
 
 POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSubmit
 

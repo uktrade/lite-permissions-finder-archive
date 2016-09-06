@@ -165,6 +165,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage decontrols = jdb.defineStage("decontrols", "Decontrols",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.DecontrolsController.renderForm()));
 
+    JourneyStage technicalNotes = jdb.defineStage("technicalNotes", "Technical notes",
+        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.TechnicalNotesController.renderForm()));
+
 
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
@@ -284,8 +287,8 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecifications))
-        .when(ControlCodeFlowStage.DECONTROLS, moveTo(null))
-        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(null))
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
         .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
@@ -295,7 +298,7 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
-        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(null))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
         .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null));
 
@@ -303,8 +306,14 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.DECONTROLLED_ITEM, moveTo(null))
-        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(null))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(null));
+
+    jdb.atStage(technicalNotes)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
+        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(null));
 
 
     return new JourneyManager(jdb.build("default", index));

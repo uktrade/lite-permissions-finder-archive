@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import components.services.controlcode.frontend.FrontendServiceResult
 @import controllers.controlcode.routes.TechnicalNotesController
 
@@ -36,6 +37,8 @@
   </div>
 
   <form action="@TechnicalNotesController.handleSubmit()" method="POST">
+
+    @contextFormParams()
 
     @formRadioBoolean(form("stillDescribesItems"), Html("Does this still describe your items?"), "Yes", "No")
 

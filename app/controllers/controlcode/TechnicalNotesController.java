@@ -1,14 +1,15 @@
 package controllers.controlcode;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
-import components.services.controlcode.frontend.FrontendServiceResult;
-import controllers.DestinationCountryController;
-import controllers.ErrorController;
+import journey.Events;
+import model.ControlCodeFlowStage;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -17,84 +18,64 @@ import play.mvc.Result;
 import views.html.controlcode.technicalNotes;
 
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 public class TechnicalNotesController {
 
+  private final JourneyManager jm;
   private final FormFactory formFactory;
-
   private final PermissionsFinderDao dao;
-
   private final HttpExecutionContext ec;
-
   private final FrontendServiceClient frontendServiceClient;
 
-  private final ErrorController errorController;
-
-  private final SearchAgainController searchAgainController;
-
-  private final DestinationCountryController destinationCountryController;
-
   @Inject
-  public TechnicalNotesController(FormFactory formFactory,
+  public TechnicalNotesController(JourneyManager jm,
+                                  FormFactory formFactory,
                                   PermissionsFinderDao dao,
                                   HttpExecutionContext ec,
-                                  FrontendServiceClient frontendServiceClient,
-                                  ErrorController errorController,
-                                  SearchAgainController searchAgainController,
-                                  DestinationCountryController destinationCountryController) {
+                                  FrontendServiceClient frontendServiceClient) {
+    this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
     this.frontendServiceClient = frontendServiceClient;
-    this.errorController = errorController;
-    this.searchAgainController = searchAgainController;
-    this.destinationCountryController = destinationCountryController;
   }
 
-  public Result renderForm(FrontendServiceResult frontendServiceResult){
-    return ok(technicalNotes.render(formFactory.form(TechnicalNotesController.TechnicalNotesForm.class), frontendServiceResult));
-  }
-
-  public CompletionStage<Result> handleSubmit() {
-    return completedFuture(dao.getPhysicalGoodControlCode())
-        .thenComposeAsync(frontendServiceClient::get)
+  public CompletionStage<Result> renderForm(){
+    return frontendServiceClient.get(dao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
-          if (!response.isOk()) {
-            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+          if (response.isOk()) {
+            return ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class), response.getFrontendServiceResult()));
           }
-          else {
-            Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
-            if (form.hasErrors()) {
-              return ok(technicalNotes.render(form, response.getFrontendServiceResult()));
-            }
-
-            if ("true".equals(form.get().stillDescribesItems)) {
-              return nextScreenTrue(response.getFrontendServiceResult());
-            }
-            else if ("false".equals(form.get().stillDescribesItems)) {
-              return nextScreenFalse(response.getFrontendServiceResult());
-            }
-
-            // TODO Handle this branch condition better
-            return ok(technicalNotes.render(form, response.getFrontendServiceResult()));
-          }
+          return badRequest("An issue occurred while processing your request, please try again later.");
         }, ec.current());
   }
 
-  public Result nextScreenTrue(FrontendServiceResult frontendServiceResult) {
-    return destinationCountryController.renderForm();
-  }
-
-  public Result nextScreenFalse(FrontendServiceResult frontendServiceResult) {
-    return searchAgainController.render(frontendServiceResult);
+  public CompletionStage<Result> handleSubmit() {
+    Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
+    String code = dao.getPhysicalGoodControlCode();
+    return frontendServiceClient.get(code)
+        .thenApplyAsync(response -> {
+          if (response.isOk()) {
+            if (form.hasErrors()) {
+              return completedFuture(ok(technicalNotes.render(form, response.getFrontendServiceResult())));
+            }
+            String stillDescribesItems = form.get().stillDescribesItems;
+            if("true".equals(stillDescribesItems)) {
+              return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+            }
+            if ("false".equals(stillDescribesItems)) {
+              return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+            }
+          }
+          return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
+        }, ec.current()).thenCompose(Function.identity());
   }
 
   public static class TechnicalNotesForm {
 
     @Required(message = "You must answer this question")
     public String stillDescribesItems;
-
-    public TechnicalNotesForm(){}
 
   }
 
