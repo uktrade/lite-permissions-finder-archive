@@ -11,4 +11,4 @@ WORKDIR $SERVICE_DIR
 
 RUN unzip ${ARTEFACT_NAME}.zip
 
-CMD ${ARTEFACT_NAME}/bin/lite-permissions-finder -Dplay.crypto.secret=abcdefghijk
+CMD ${ARTEFACT_NAME}/bin/lite-permissions-finder -Dplay.crypto.secret=abcdefghijk -Dpidfile.path=~/permissions-finder-app.pid
