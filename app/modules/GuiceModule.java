@@ -177,6 +177,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage destinationCountries = jdb.defineStage("destinationCountries", "Where are your items being sent to?",
         () -> cpm.addParamsAndRedirect(routes.DestinationCountryController.renderForm()));
 
+    JourneyStage ogelQuestions = jdb.defineStage("ogelQuestions", "Are you exporting for any of these reasons",
+        () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelQuestionsController.renderForm()));
+
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
         .then(moveTo(startApplication));
@@ -337,7 +340,11 @@ public class GuiceModule extends AbstractModule{
 
     jdb.atStage(destinationCountries)
         .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
-        .then(moveTo(null)); //TODO Not implemented screen
+        .then(moveTo(ogelQuestions));
+
+    jdb.atStage(ogelQuestions)
+        .onEvent(Events.OGEL_QUESTIONS_ANSWERED)
+        .then(moveTo(null));
 
     return new JourneyManager(jdb.build("default", index));
   }

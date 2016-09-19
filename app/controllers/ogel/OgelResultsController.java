@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceResult;
+import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import controllers.ErrorController;
 import play.data.Form;
 import play.data.FormFactory;
@@ -13,7 +14,9 @@ import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import views.html.ogel.ogelResults;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class OgelResultsController {
@@ -54,7 +57,7 @@ public class OgelResultsController {
     String sourceCountry = dao.getSourceCountry();
     String controlCode = dao.getPhysicalGoodControlCode();
     List<String> destinationCountries = dao.getDestinationCountryList();
-    List<String> ogelActivities = dao.getOgelActivityList();
+    List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(dao.getOgelQuestionsForm());
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenApply(response -> {
           if (!response.isOk()) {

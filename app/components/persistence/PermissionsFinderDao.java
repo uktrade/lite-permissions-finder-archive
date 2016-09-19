@@ -5,6 +5,7 @@ import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
+import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import controllers.search.SearchController.ControlCodeSearchForm;
 import model.ExportCategory;
 import model.GoodsType;
@@ -27,8 +28,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String DESTINATION_COUNTRY_LIST = "destinationCountryList";
 
-  public static final String OGEL_ACTIVITY_LIST = "ogelActivityList";
-
   public static final String OGEL_ID = "ogelId";
 
   public static final String EXPORT_CATEGORY = "exportCategory";
@@ -38,8 +37,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String EMAIL_ADDRESS = "emailAddress";
 
   public static final String MEMORABLE_WORD = "memorableWord";
-
-  public static final String PHYSICAL_GOOD_SEARCH_TERMS = "physicalGoodSearchTerms";
 
   public static final String PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT = "physicalGoodSearchPaginationDisplayCount";
 
@@ -56,6 +53,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String GOODS_TYPE = "goodsType";
 
   public static final String PHYSICAL_GOOD_SEARCH = "physicalGoodSearch";
+
+  public static final String OGEL_QUESTIONS = "ogelQuestions";
 
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -90,14 +89,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
     else {
       return new LinkedList<String>(Arrays.asList(Json.fromJson(Json.parse(countriesJson), String[].class)));
     }
-  }
-
-  public void saveOgelActivityList(List<String> ogelActivities) {
-    writeString(OGEL_ACTIVITY_LIST, Json.stringify(Json.toJson(ogelActivities)));
-  }
-
-  public List<String> getOgelActivityList() {
-    return Arrays.asList(Json.fromJson(Json.parse(readString(OGEL_ACTIVITY_LIST)), String[].class));
   }
 
   public void saveOgelId(String ogelId) {
@@ -214,6 +205,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<ControlCodeSearchForm> getPhysicalGoodsSearchForm() {
     return readObject(PHYSICAL_GOOD_SEARCH, ControlCodeSearchForm.class);
+  }
+
+  public void saveOgelQuestionsForm(OgelQuestionsForm ogelQuestionsForm) {
+    writeObject(OGEL_QUESTIONS, ogelQuestionsForm);
+  }
+
+  public Optional<OgelQuestionsForm> getOgelQuestionsForm() {
+    return readObject(OGEL_QUESTIONS, OgelQuestionsForm.class);
   }
 
 }
