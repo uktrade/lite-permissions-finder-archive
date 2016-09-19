@@ -174,6 +174,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage searchAgain = jdb.defineStage("searchAgain", "Search again",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.SearchAgainController.renderForm()));
 
+    JourneyStage destinationCountries = jdb.defineStage("destinationCountries", "Where are your items being sent to?",
+        () -> cpm.addParamsAndRedirect(routes.DestinationCountryController.renderForm()));
+
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
         .then(moveTo(startApplication));
@@ -294,7 +297,7 @@ public class GuiceModule extends AbstractModule{
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecifications))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries))
         .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
@@ -304,7 +307,7 @@ public class GuiceModule extends AbstractModule{
         .branch()
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries))
         .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain));
 
     jdb.atStage(decontrols)
@@ -312,12 +315,12 @@ public class GuiceModule extends AbstractModule{
         .branch()
         .when(ControlCodeFlowStage.DECONTROLLED_ITEM, moveTo(decontrolledItem))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(null));
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     jdb.atStage(technicalNotes)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(null))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries))
         .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain));
 
     jdb.atStage(decontrolledItem)
@@ -331,6 +334,10 @@ public class GuiceModule extends AbstractModule{
         .branch()
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
+
+    jdb.atStage(destinationCountries)
+        .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
+        .then(moveTo(null)); //TODO Not implemented screen
 
     return new JourneyManager(jdb.build("default", index));
   }

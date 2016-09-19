@@ -1,9 +1,12 @@
 package controllers;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 import com.google.inject.Inject;
 import components.common.client.CountryServiceClient;
+import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import controllers.ogel.OgelQuestionsController;
+import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -14,52 +17,50 @@ import views.html.destinationCountry;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
-public class DestinationCountryController extends Controller{
+public class DestinationCountryController extends Controller {
 
+  private final JourneyManager jm;
   private final FormFactory formFactory;
-
   private final PermissionsFinderDao dao;
-
   private final HttpExecutionContext ec;
-
   private final CountryServiceClient countryServiceClient;
-
-  private final ErrorController errorController;
-
-  private final OgelQuestionsController ogelQuestionsController;
 
   public static final int MIN_NUMBER_OF_COUNTRIES = 1;
 
   public static final int MAX_NUMBER_OF_COUNTRIES = 5;
 
   @Inject
-  public DestinationCountryController(FormFactory formFactory,
+  public DestinationCountryController(JourneyManager jm,
+                                      FormFactory formFactory,
                                       PermissionsFinderDao dao,
                                       HttpExecutionContext ec,
-                                      CountryServiceClient countryServiceClient,
-                                      ErrorController errorController,
-                                      OgelQuestionsController ogelQuestionsController) {
+                                      CountryServiceClient countryServiceClient) {
+    this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
     this.ec = ec;
     this.countryServiceClient = countryServiceClient;
-    this.errorController = errorController;
-    this.ogelQuestionsController = ogelQuestionsController;
   }
 
-  public Result renderForm() {
+  public CompletionStage<Result> renderForm() {
     return countryServiceClient.getCountries()
         .thenApplyAsync(response -> {
-          if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()){
-            List<String> countries = Collections.singletonList("");
-            dao.saveDestinationCountryList(countries);
-            return ok(destinationCountry.render(formFactory.form(DestinationCountryForm.class), response.getCountries(), countries.size()));
+          if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()) {
+            List<String> countries = dao.getDestinationCountryList();
+            DestinationCountryForm templateForm = new DestinationCountryForm();
+            if (countries.isEmpty()) {
+              countries = Collections.singletonList("");
+              dao.saveDestinationCountryList(countries);
+            }
+            templateForm.destinationCountry = countries;
+            return ok(destinationCountry.render(formFactory.form(DestinationCountryForm.class).fill(templateForm), response.getCountries(), countries.size()));
           }
           else {
-            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+            return badRequest("An issue occurred while processing your request, please try again later.");
           }
-        }, ec.current()).toCompletableFuture().join();
+        }, ec.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -69,33 +70,33 @@ public class DestinationCountryController extends Controller{
           if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()){
             List<String> countries = dao.getDestinationCountryList();
             if(form.hasErrors()){
-              return ok(destinationCountry.render(form, response.getCountries(), countries.size()));
+              return completedFuture(ok(destinationCountry.render(form, response.getCountries(), countries.size())));
             }
 
-            String addAnotherDestination = form.get().addAnotherDestination;
-            if (addAnotherDestination != null) {
-              if ("true".equals(addAnotherDestination)) {
-                if (countries.size() == MAX_NUMBER_OF_COUNTRIES) {
-                  return badRequest("Unhandled form state, numberOfDestinationCountries already at maximum value");
+            DestinationCountryForm boundForm = form.get();
+
+            if (boundForm.addAnotherDestination != null) {
+              if ("true".equals(boundForm.addAnotherDestination)) {
+                if (countries.size() >= MAX_NUMBER_OF_COUNTRIES) {
+                  return completedFuture(badRequest("Unhandled form state, numberOfDestinationCountries already at maximum value"));
                 }
-                countries.add("");
-                dao.saveDestinationCountryList(countries);
-                return ok(destinationCountry.render(form, response.getCountries(), countries.size()));
+                boundForm.destinationCountry.add("");
+                dao.saveDestinationCountryList(boundForm.destinationCountry);
+                return completedFuture(ok(destinationCountry.render(form, response.getCountries(), boundForm.destinationCountry.size())));
               }
-              return badRequest("Unhandled value of addAnotherDestination: \"" + addAnotherDestination + "\"");
+              return completedFuture(badRequest("Unhandled value of addAnotherDestination: \"" + boundForm.addAnotherDestination + "\""));
             }
 
-            String removeLastDestination = form.get().removeLastDestination;
-            if (removeLastDestination != null) {
-              if ("true".equals(removeLastDestination)) {
-                if (countries.size() == MIN_NUMBER_OF_COUNTRIES) {
-                  return badRequest("Unhandled form state, numberOfDestinationCountries already at minimum value");
+            if (boundForm.removeLastDestination != null) {
+              if ("true".equals(boundForm.removeLastDestination)) {
+                if (countries.size() <= MIN_NUMBER_OF_COUNTRIES) {
+                  return completedFuture((badRequest("Unhandled form state, numberOfDestinationCountries already at minimum value")));
                 }
-                countries.remove(countries.size() - 1);
-                dao.saveDestinationCountryList(countries);
-                return ok(destinationCountry.render(form, response.getCountries(), countries.size()));
+                boundForm.destinationCountry = boundForm.destinationCountry.subList(0, Math.min(MAX_NUMBER_OF_COUNTRIES, boundForm.destinationCountry.size() -1));
+                dao.saveDestinationCountryList(boundForm.destinationCountry);
+                return completedFuture(ok(destinationCountry.render(form, response.getCountries(), boundForm.destinationCountry.size())));
               }
-              return badRequest("Unhandled value of removeLastDestination: \"" + addAnotherDestination + "\"");
+              return completedFuture(badRequest("Unhandled value of removeLastDestination: \"" + boundForm.addAnotherDestination + "\""));
             }
 
             List<String> destinationCountries = form.get().destinationCountry;
@@ -116,16 +117,17 @@ public class DestinationCountryController extends Controller{
             }
             // Check again for errors raised during manual validation
             if(form.hasErrors()){
-              return ok(destinationCountry.render(form, response.getCountries(), countries.size()));
+              return completedFuture(ok(destinationCountry.render(form, response.getCountries(), countries.size())));
             }
+
             // TODO server side validation of destinationCountry value
             dao.saveDestinationCountryList(destinationCountries);
-            return ogelQuestionsController.renderForm();
+            return jm.performTransition(Events.DESTINATION_COUNTRIES_SELECTED);
           }
           else {
-            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+            return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
           }
-        }, ec.current());
+        }, ec.current()).thenCompose(Function.identity());
   }
 
   public static class DestinationCountryForm {

@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import models.common.Country
 @(form: Form[_], countries: List[Country], numberOfDestinationCountries: Int)
 
@@ -10,6 +11,8 @@
 }{
 
   <form action="@routes.DestinationCountryController.handleSubmit()" method="POST">
+
+    @contextFormParams()
 
     <input type="submit" class="hidden"></input>
 
