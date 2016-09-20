@@ -1,5 +1,6 @@
 package controllers.ogel;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -10,33 +11,27 @@ import model.OgelActivityType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.ogel.ogelQuestions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 public class OgelQuestionsController {
 
   private final FormFactory formFactory;
   private final PermissionsFinderDao dao;
-  private final HttpExecutionContext ec;
   private final JourneyManager jm;
 
   @Inject
   public OgelQuestionsController(JourneyManager jm,
                                  FormFactory formFactory,
-                                 PermissionsFinderDao dao,
-                                 HttpExecutionContext ec) {
+                                 PermissionsFinderDao dao) {
     this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
-    this.ec = ec;
   }
 
   public Result renderForm() {
@@ -46,17 +41,15 @@ public class OgelQuestionsController {
   }
 
   public CompletionStage<Result> handleSubmit() {
-    return CompletableFuture.supplyAsync(() -> {
-      Form<OgelQuestionsForm> form = formFactory.form(OgelQuestionsForm.class).bindFromRequest();
-      if (form.hasErrors()) {
-        return CompletableFuture.completedFuture(ok(ogelQuestions.render(form)));
-      }
-      else {
-        OgelQuestionsForm ogelQuestionsForm = form.get();
-        dao.saveOgelQuestionsForm(ogelQuestionsForm);
-        return jm.performTransition(Events.OGEL_QUESTIONS_ANSWERED);
-      }
-    }, ec.current()).thenCompose(Function.identity());
+    Form<OgelQuestionsForm> form = formFactory.form(OgelQuestionsForm.class).bindFromRequest();
+    if (form.hasErrors()) {
+      return completedFuture(ok(ogelQuestions.render(form)));
+    }
+    else {
+      OgelQuestionsForm ogelQuestionsForm = form.get();
+      dao.saveOgelQuestionsForm(ogelQuestionsForm);
+      return jm.performTransition(Events.OGEL_QUESTIONS_ANSWERED);
+    }
   }
 
   public static class OgelQuestionsForm {

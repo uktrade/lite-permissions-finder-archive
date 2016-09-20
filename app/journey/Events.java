@@ -54,4 +54,6 @@ public class Events {
 
   public static final JourneyEvent OGEL_QUESTIONS_ANSWERED = new JourneyEvent("OGEL_QUESTIONS_ANSWERED");
 
+  public static final JourneyEvent OGEL_SELECTED = new JourneyEvent("OGEL_SELECTED");
+
 }

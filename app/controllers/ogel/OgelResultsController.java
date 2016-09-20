@@ -1,52 +1,50 @@
 package controllers.ogel;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.client.CountryServiceClient;
+import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
-import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
-import controllers.ErrorController;
+import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
+import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.ogel.ogelResults;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public class OgelResultsController {
 
+  private final JourneyManager jm;
   private final FormFactory formFactory;
-
   private final PermissionsFinderDao dao;
-
+  private final HttpExecutionContext ec;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
-
-  private final ErrorController errorController;
-
-  private final OgelSummaryController ogelSummaryController;
-
-  private final OgelNoResultsController ogelNoResultsController;
+  private final CountryServiceClient countryServiceClient;
 
   @Inject
-  public OgelResultsController(FormFactory formFactory,
+  public OgelResultsController(JourneyManager jm,
+                               FormFactory formFactory,
                                PermissionsFinderDao dao,
+                               HttpExecutionContext ec,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
-                               ErrorController errorController,
-                               OgelSummaryController ogelSummaryController,
-                               OgelNoResultsController ogelNoResultsController
-                               ) {
+                               CountryServiceClient countryServiceClient) {
+    this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
+    this.ec = ec;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
-    this.errorController = errorController;
-    this.ogelSummaryController = ogelSummaryController;
-    this.ogelNoResultsController = ogelNoResultsController;
+    this.countryServiceClient = countryServiceClient;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -58,26 +56,44 @@ public class OgelResultsController {
     String controlCode = dao.getPhysicalGoodControlCode();
     List<String> destinationCountries = dao.getDestinationCountryList();
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(dao.getOgelQuestionsForm());
+
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
-        .thenApply(response -> {
-          if (!response.isOk()) {
-            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+        .thenComposeAsync(r -> {
+          if (!r.isOk()) {
+            return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
           }
-          List<ApplicableOgelServiceResult> results = response.getResults();
-          if (results.isEmpty()) {
-            return ogelNoResultsController.render();
+          else if (!r.getResults().isEmpty()) {
+            return completedFuture(ok(ogelResults.render(form, r.getResults(), null, null)));
           }
-          return ok(ogelResults.render(form, results));
-        });
+          else {
+            return countryServiceClient.getCountries()
+                .thenApplyAsync(countryServiceResponse -> {
+                  String physicalGoodControlCode = dao.getPhysicalGoodControlCode();
+                  List<String> countryNames = countryServiceResponse.getCountries().stream()
+                      .filter(country -> destinationCountries.contains(country.getCountryRef()))
+                      .map(country -> "<strong class=\"bold-small\">" + country.getCountryName() + "</strong>")
+                      .collect(Collectors.toList());
+
+                  // Creates a string in the form "A, B and C"
+                  String destinationCountryNamesHtml = countryNames.size() == 1
+                      ? countryNames.get(0)
+                      : countryNames.subList(0, countryNames.size() -1).stream()
+                        .collect(Collectors.joining(", ", "", " "))
+                        .concat("and " + countryNames.get(countryNames.size() -1));
+
+                  return ok(ogelResults.render(form, Collections.emptyList(), physicalGoodControlCode, destinationCountryNamesHtml));
+                }, ec.current());
+          }
+        }, ec.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<OgelResultsForm> form = formFactory.form(OgelResultsForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      renderWithForm(form);
+      return renderWithForm(form);
     }
     dao.saveOgelId(form.get().chosenOgel);
-    return ogelSummaryController.renderForm();
+    return jm.performTransition(Events.OGEL_SELECTED);
   }
 
   public static class OgelResultsForm {
