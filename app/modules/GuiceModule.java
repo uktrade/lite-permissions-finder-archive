@@ -39,7 +39,7 @@ public class GuiceModule extends AbstractModule{
   @Override
   protected void configure() {
 
-    install(new CommonGuiceModule(environment, configuration));
+    install(new CommonGuiceModule(configuration));
 
     // controlCodeSearchService
     bindConstant().annotatedWith(Names.named("controlCodeSearchServiceHost"))
