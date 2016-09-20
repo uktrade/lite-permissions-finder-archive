@@ -183,6 +183,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage ogelResults = jdb.defineStage("ogelResults", "Licences applicable to your answers",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelResultsController.renderForm()));
 
+    JourneyStage ogelSummary = jdb.defineStage("ogelSummary", "OGEL summary",
+        () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelSummaryController.renderForm()));
+
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
         .then(moveTo(startApplication));
@@ -351,6 +354,10 @@ public class GuiceModule extends AbstractModule{
 
     jdb.atStage(ogelResults)
         .onEvent(Events.OGEL_SELECTED)
+        .then(moveTo(ogelSummary));
+
+    jdb.atStage(ogelSummary)
+        .onEvent(Events.OGEL_REGISTERED)
         .then(moveTo(null));
 
     return new JourneyManager(jdb.build("default", index));

@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 
 @import components.services.ogels.ogel.OgelServiceResult
 @import controllers.ogel.OgelSummaryController.OgelSummaryForm
@@ -54,6 +55,8 @@
   </p>
 
   <form action="@controllers.ogel.routes.OgelSummaryController.handleSubmit()" method="POST">
+
+    @contextFormParams()
 
     <div class="form-group @if(form.field("fullLicenceRead").hasErrors) { error }">
       @if(form.field("fullLicenceRead").error.isDefined) {

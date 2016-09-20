@@ -1,39 +1,41 @@
 package controllers.ogel;
 
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.ogel.OgelServiceClient;
-import components.services.ogels.ogel.OgelServiceResult;
-import controllers.ErrorController;
+import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
+import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.ogel.ogelSummary;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class OgelSummaryController {
+
+  private final JourneyManager jm;
   private final FormFactory formFactory;
-
   private final PermissionsFinderDao dao;
-
+  private final HttpExecutionContext ec;
   private final OgelServiceClient ogelServiceClient;
 
-  private final ErrorController errorController;
-
   @Inject
-  public OgelSummaryController(FormFactory formFactory,
+  public OgelSummaryController(JourneyManager jm,
+                               FormFactory formFactory,
                                PermissionsFinderDao dao,
-                               OgelServiceClient ogelServiceClient,
-                               ErrorController errorController) {
+                               HttpExecutionContext ec,
+                               OgelServiceClient ogelServiceClient) {
+    this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
+    this.ec = ec;
     this.ogelServiceClient = ogelServiceClient;
-    this.errorController = errorController;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -45,19 +47,17 @@ public class OgelSummaryController {
     if (form.hasErrors()) {
       return renderWithForm(form);
     }
-    return CompletableFuture.completedFuture(ok("REGISTERED FOR OGEL"));
+    return jm.performTransition(Events.OGEL_REGISTERED);
   }
 
   public CompletionStage<Result> renderWithForm(Form<OgelSummaryForm> form) {
-    String ogelId = dao.getOgelId();
-    return ogelServiceClient.get(ogelId)
-        .thenApply(response -> {
+    return ogelServiceClient.get(dao.getOgelId())
+        .thenApplyAsync(response -> {
           if (!response.isOk()) {
-            return errorController.renderForm("An issue occurred while processing your request, please try again later.");
+            return badRequest("An issue occurred while processing your request, please try again later.");
           }
-          OgelServiceResult result = response.getResult();
-          return ok(ogelSummary.render(form, result));
-        });
+          return ok(ogelSummary.render(form, response.getResult()));
+        }, ec.current());
   }
 
   public static class OgelSummaryForm {
