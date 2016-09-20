@@ -46,6 +46,9 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   public CompletionStage<Result> renderForm() {
     return physicalGoodsSearch()
         .thenApplyAsync(response -> {
+          if (!response.isOk()) {
+            return badRequest("An issue occurred while processing your request, please try again later.");
+          }
           List<SearchServiceResult> searchResults = response.getSearchResults();
           int displayCount = Math.min(searchResults.size(), PAGINATION_SIZE);
           dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
@@ -76,6 +79,9 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
         case SHORE_MORE:
           return physicalGoodsSearch()
               .thenApplyAsync(response -> {
+                if (!response.isOk()) {
+                  return badRequest("An issue occurred while processing your request, please try again later.");
+                }
                 int displayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
                 int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, response.getSearchResults().size());
                 if (displayCount != newDisplayCount) {
