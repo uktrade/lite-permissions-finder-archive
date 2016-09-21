@@ -51,9 +51,10 @@ public class ContinueApplicationController {
     String memorableWord = form.get().memorableWord;
     if (applicationNumber != null && !applicationNumber.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
       if (applicationNumber.equals(permissionsFinderDao.getApplicationCode()) && memorableWord.equals(permissionsFinderDao.getMemorableWord())) {
-        journeyManager.performTransition(Events.APPLICATION_FOUND);
+        return journeyManager.performTransition(Events.APPLICATION_FOUND);
       }
-      return journeyManager.performTransition(Events.APPLICATION_NOT_FOUND);
+      form.reject("applicationNumber", "You have entered an invalid claim number");
+      return completedFuture(ok(continueApplication.render(form)));
     }
     return completedFuture(badRequest("Unhandled form state"));
   }

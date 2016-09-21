@@ -41,7 +41,7 @@ public class ExportCategoryController extends Controller {
     if (exportCategoryOptional.isPresent()) {
       permissionsFinderDao.saveExportCategory(exportCategoryOptional.get());
       return journeyManager.performTransition(Events.EXPORT_CATEGORY_SELECTED, exportCategoryOptional.get());
-    } // TODO "Dual-use items" button link
+    }
     if ("true".equals(form.get().couldBeDualUse)) {
       return journeyManager.performTransition(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE);
     }

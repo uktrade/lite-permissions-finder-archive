@@ -211,10 +211,6 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.APPLICATION_FOUND)
         .then(moveTo(tradeType));
 
-    jdb.atStage(continueApplication)
-        .onEvent(Events.APPLICATION_NOT_FOUND)
-        .then(moveTo(null)); // TODO Add in additional screen catering for this condition IELS-606
-
     jdb.atStage(tradeType)
         .onEvent(Events.TRADE_TYPE_SELECTED)
         .branch()
