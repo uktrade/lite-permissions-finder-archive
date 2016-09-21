@@ -21,20 +21,20 @@ public class DualUseController {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
   public DualUseController(JourneyManager jm,
                            FormFactory formFactory,
-                           PermissionsFinderDao dao) {
+                           PermissionsFinderDao permissionsFinderDao) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
     DualUseForm formTemplate = new DualUseForm();
-    Optional<Boolean> isDualUse = dao.getIsDualUseGood();
+    Optional<Boolean> isDualUse = permissionsFinderDao.getIsDualUseGood();
     if (isDualUse.isPresent()) {
       formTemplate.isDualUse = isDualUse.get().toString();
     }
@@ -48,14 +48,14 @@ public class DualUseController {
     }
 
     boolean isDualUse = Boolean.parseBoolean(form.get().isDualUse);
-    dao.saveIsDualUseGood(isDualUse);
+    permissionsFinderDao.saveIsDualUseGood(isDualUse);
 
     if (isDualUse) {
-      dao.saveExportCategory(ExportCategory.DUAL_USE);
+      permissionsFinderDao.saveExportCategory(ExportCategory.DUAL_USE);
       return jm.performTransition(Events.IS_DUAL_USE, true);
     }
     else {
-      dao.saveExportCategory(ExportCategory.NONE);
+      permissionsFinderDao.saveExportCategory(ExportCategory.NONE);
       return jm.performTransition(Events.IS_DUAL_USE, false);
     }
   }

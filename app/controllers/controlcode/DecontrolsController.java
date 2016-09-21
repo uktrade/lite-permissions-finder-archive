@@ -24,25 +24,25 @@ public class DecontrolsController {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext ec;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
   public DecontrolsController(JourneyManager jm,
                               FormFactory formFactory,
-                              PermissionsFinderDao dao,
+                              PermissionsFinderDao permissionsFinderDao,
                               HttpExecutionContext ec,
                               FrontendServiceClient frontendServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.ec = ec;
     this.frontendServiceClient = frontendServiceClient;
   }
 
   public CompletionStage<Result> renderForm() {
-    return frontendServiceClient.get(dao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(decontrols.render(formFactory.form(DecontrolsForm.class), response.getFrontendServiceResult()));
@@ -53,7 +53,7 @@ public class DecontrolsController {
 
   public CompletionStage<Result> handleSubmit(){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
-    String code = dao.getPhysicalGoodControlCode();
+    String code = permissionsFinderDao.getPhysicalGoodControlCode();
     return frontendServiceClient.get(code)
         .thenApplyAsync(response -> {
           if (response.isOk()) {

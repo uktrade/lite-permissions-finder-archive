@@ -30,27 +30,27 @@ public class StartApplicationController {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
   public StartApplicationController(JourneyManager jm,
                                     FormFactory formFactory,
-                                    PermissionsFinderDao dao) {
+                                    PermissionsFinderDao permissionsFinderDao) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
-    String applicationCode = dao.getApplicationCode();
+    String applicationCode = permissionsFinderDao.getApplicationCode();
     if (applicationCode == null || applicationCode.isEmpty()) {
       applicationCode = generateApplicationCode();
-      dao.saveApplicationCode(applicationCode);
+      permissionsFinderDao.saveApplicationCode(applicationCode);
     }
 
     StartApplicationForm formTemplate = new StartApplicationForm();
-    formTemplate.memorableWord = dao.getMemorableWord();
-    formTemplate.emailAddress = dao.getEmailAddress();
+    formTemplate.memorableWord = permissionsFinderDao.getMemorableWord();
+    formTemplate.emailAddress = permissionsFinderDao.getEmailAddress();
 
     return ok(startApplication.render(formFactory.form(StartApplicationForm.class).fill(formTemplate), applicationCode));
   }
@@ -58,15 +58,15 @@ public class StartApplicationController {
   public CompletionStage<Result> handleSubmit() {
     Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(startApplication.render(form, dao.getApplicationCode())));
+      return completedFuture(ok(startApplication.render(form, permissionsFinderDao.getApplicationCode())));
     }
     String emailAddress = form.get().emailAddress;
     String memorableWord = form.get().memorableWord;
     if (emailAddress != null && !emailAddress.isEmpty()) {
-      dao.saveEmailAddress(emailAddress);
+      permissionsFinderDao.saveEmailAddress(emailAddress);
     }
     if (memorableWord != null && !memorableWord.isEmpty()) {
-      dao.saveMemorableWord(memorableWord);
+      permissionsFinderDao.saveMemorableWord(memorableWord);
       return jm.performTransition(StandardEvents.NEXT);
     }
     return completedFuture(badRequest("Unhandled form state"));

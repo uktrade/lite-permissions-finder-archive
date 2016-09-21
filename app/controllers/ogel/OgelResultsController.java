@@ -27,7 +27,7 @@ public class OgelResultsController {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext ec;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
   private final CountryServiceClient countryServiceClient;
@@ -35,13 +35,13 @@ public class OgelResultsController {
   @Inject
   public OgelResultsController(JourneyManager jm,
                                FormFactory formFactory,
-                               PermissionsFinderDao dao,
+                               PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext ec,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                CountryServiceClient countryServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.ec = ec;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.countryServiceClient = countryServiceClient;
@@ -52,10 +52,10 @@ public class OgelResultsController {
   }
 
   public CompletionStage<Result> renderWithForm(Form<OgelResultsForm> form) {
-    String sourceCountry = dao.getSourceCountry();
-    String controlCode = dao.getPhysicalGoodControlCode();
-    List<String> destinationCountries = dao.getDestinationCountryList();
-    List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(dao.getOgelQuestionsForm());
+    String sourceCountry = permissionsFinderDao.getSourceCountry();
+    String controlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+    List<String> destinationCountries = permissionsFinderDao.getDestinationCountryList();
+    List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenComposeAsync(r -> {
@@ -68,7 +68,7 @@ public class OgelResultsController {
           else {
             return countryServiceClient.getCountries()
                 .thenApplyAsync(countryServiceResponse -> {
-                  String physicalGoodControlCode = dao.getPhysicalGoodControlCode();
+                  String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
                   List<String> countryNames = countryServiceResponse.getCountriesByRef(destinationCountries).stream()
                       .map(country -> "<strong class=\"bold-small\">" + country.getCountryName() + "</strong>")
                       .collect(Collectors.toList());
@@ -91,7 +91,7 @@ public class OgelResultsController {
     if (form.hasErrors()) {
       return renderWithForm(form);
     }
-    dao.saveOgelId(form.get().chosenOgel);
+    permissionsFinderDao.saveOgelId(form.get().chosenOgel);
     return jm.performTransition(Events.OGEL_SELECTED);
   }
 

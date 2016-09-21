@@ -21,20 +21,20 @@ public class TradeTypeController extends Controller {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   private static final String UNITED_KINGDOM = "CTRY0";
 
   @Inject
-  public TradeTypeController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
+  public TradeTypeController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public CompletionStage<Result> renderForm() {
     TradeTypeForm formTemplate = new TradeTypeForm();
-    Optional<TradeType> tradeTypeOptional = dao.getTradeType();
+    Optional<TradeType> tradeTypeOptional = permissionsFinderDao.getTradeType();
     formTemplate.tradeType = tradeTypeOptional.isPresent() ? tradeTypeOptional.get().value() : "";
     return completedFuture(ok(tradeType.render(formFactory.form(TradeTypeForm.class).fill(formTemplate))));
   }
@@ -50,9 +50,9 @@ public class TradeTypeController extends Controller {
     Optional<TradeType> tradeTypeOption = TradeType.getMatched(tradeTypeParam);
 
     if(tradeTypeOption.isPresent()) {
-      dao.saveTradeType(tradeTypeOption.get());
+      permissionsFinderDao.saveTradeType(tradeTypeOption.get());
       if (tradeTypeOption.get() == TradeType.EXPORT) {
-        dao.saveSourceCountry(UNITED_KINGDOM);
+        permissionsFinderDao.saveSourceCountry(UNITED_KINGDOM);
       }
       return jm.performTransition(Events.TRADE_TYPE_SELECTED, tradeTypeOption.get());
     }

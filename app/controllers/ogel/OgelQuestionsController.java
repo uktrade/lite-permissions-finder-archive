@@ -22,20 +22,20 @@ import java.util.concurrent.CompletionStage;
 public class OgelQuestionsController {
 
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final JourneyManager jm;
 
   @Inject
   public OgelQuestionsController(JourneyManager jm,
                                  FormFactory formFactory,
-                                 PermissionsFinderDao dao) {
+                                 PermissionsFinderDao permissionsFinderDao) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
-    Optional<OgelQuestionsForm> templateFormOptional = dao.getOgelQuestionsForm();
+    Optional<OgelQuestionsForm> templateFormOptional = permissionsFinderDao.getOgelQuestionsForm();
     OgelQuestionsForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new OgelQuestionsForm();
     return ok(ogelQuestions.render(formFactory.form(OgelQuestionsForm.class).fill(templateForm)));
   }
@@ -47,7 +47,7 @@ public class OgelQuestionsController {
     }
     else {
       OgelQuestionsForm ogelQuestionsForm = form.get();
-      dao.saveOgelQuestionsForm(ogelQuestionsForm);
+      permissionsFinderDao.saveOgelQuestionsForm(ogelQuestionsForm);
       return jm.performTransition(Events.OGEL_QUESTIONS_ANSWERED);
     }
   }

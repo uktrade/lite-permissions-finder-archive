@@ -23,7 +23,7 @@ public class DestinationCountryController extends Controller {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext ec;
   private final CountryServiceClient countryServiceClient;
 
@@ -34,12 +34,12 @@ public class DestinationCountryController extends Controller {
   @Inject
   public DestinationCountryController(JourneyManager jm,
                                       FormFactory formFactory,
-                                      PermissionsFinderDao dao,
+                                      PermissionsFinderDao permissionsFinderDao,
                                       HttpExecutionContext ec,
                                       CountryServiceClient countryServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.ec = ec;
     this.countryServiceClient = countryServiceClient;
   }
@@ -48,11 +48,11 @@ public class DestinationCountryController extends Controller {
     return countryServiceClient.getCountries()
         .thenApplyAsync(response -> {
           if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()) {
-            List<String> countries = dao.getDestinationCountryList();
+            List<String> countries = permissionsFinderDao.getDestinationCountryList();
             DestinationCountryForm templateForm = new DestinationCountryForm();
             if (countries.isEmpty()) {
               countries = Collections.singletonList("");
-              dao.saveDestinationCountryList(countries);
+              permissionsFinderDao.saveDestinationCountryList(countries);
             }
             templateForm.destinationCountry = countries;
             return ok(destinationCountry.render(formFactory.form(DestinationCountryForm.class).fill(templateForm), response.getCountries(), countries.size()));
@@ -68,7 +68,7 @@ public class DestinationCountryController extends Controller {
         .thenApplyAsync(response -> {
           Form <DestinationCountryForm> form = formFactory.form(DestinationCountryForm.class).bindFromRequest();
           if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()){
-            List<String> countries = dao.getDestinationCountryList();
+            List<String> countries = permissionsFinderDao.getDestinationCountryList();
             if(form.hasErrors()){
               return completedFuture(ok(destinationCountry.render(form, response.getCountries(), countries.size())));
             }
@@ -81,7 +81,7 @@ public class DestinationCountryController extends Controller {
                   return completedFuture(badRequest("Unhandled form state, numberOfDestinationCountries already at maximum value"));
                 }
                 boundForm.destinationCountry.add("");
-                dao.saveDestinationCountryList(boundForm.destinationCountry);
+                permissionsFinderDao.saveDestinationCountryList(boundForm.destinationCountry);
                 return completedFuture(ok(destinationCountry.render(form, response.getCountries(), boundForm.destinationCountry.size())));
               }
               return completedFuture(badRequest("Unhandled value of addAnotherDestination: \"" + boundForm.addAnotherDestination + "\""));
@@ -93,7 +93,7 @@ public class DestinationCountryController extends Controller {
                   return completedFuture((badRequest("Unhandled form state, numberOfDestinationCountries already at minimum value")));
                 }
                 boundForm.destinationCountry = boundForm.destinationCountry.subList(0, Math.min(MAX_NUMBER_OF_COUNTRIES, boundForm.destinationCountry.size() -1));
-                dao.saveDestinationCountryList(boundForm.destinationCountry);
+                permissionsFinderDao.saveDestinationCountryList(boundForm.destinationCountry);
                 return completedFuture(ok(destinationCountry.render(form, response.getCountries(), boundForm.destinationCountry.size())));
               }
               return completedFuture(badRequest("Unhandled value of removeLastDestination: \"" + boundForm.addAnotherDestination + "\""));
@@ -121,7 +121,7 @@ public class DestinationCountryController extends Controller {
             }
 
             // TODO server side validation of destinationCountry value
-            dao.saveDestinationCountryList(destinationCountries);
+            permissionsFinderDao.saveDestinationCountryList(destinationCountries);
             return jm.performTransition(Events.DESTINATION_COUNTRIES_SELECTED);
           }
           else {

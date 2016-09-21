@@ -24,27 +24,27 @@ public class DecontrolledItemController {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext ec;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
   public DecontrolledItemController(JourneyManager jm,
                                     FormFactory formFactory,
-                                    PermissionsFinderDao dao,
+                                    PermissionsFinderDao permissionsFinderDao,
                                     HttpExecutionContext ec,
                                     FrontendServiceClient frontendServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.ec = ec;
     this.frontendServiceClient = frontendServiceClient;
   }
 
   public CompletionStage<Result> renderForm() {
-    Optional<ExportCategory> exportCategoryOptional = dao.getExportCategory();
+    Optional<ExportCategory> exportCategoryOptional = permissionsFinderDao.getExportCategory();
     boolean showFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
-    return frontendServiceClient.get(dao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(decontrolledItem.render(response.getFrontendServiceResult(), showFirearmsOrMilitary));

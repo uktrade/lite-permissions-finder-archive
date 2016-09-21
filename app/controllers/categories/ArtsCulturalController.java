@@ -29,17 +29,17 @@ public class ArtsCulturalController extends Controller {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public ArtsCulturalController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
+  public ArtsCulturalController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
-    Optional<ArtsCulturalForm> templateFormOptional = dao.getArtsCulturalForm();
+    Optional<ArtsCulturalForm> templateFormOptional = permissionsFinderDao.getArtsCulturalForm();
     ArtsCulturalForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new ArtsCulturalForm();
     return ok(artsCultural.render(formFactory.form(ArtsCulturalForm.class).fill(templateForm)));
   }
@@ -52,7 +52,7 @@ public class ArtsCulturalController extends Controller {
       return completedFuture(ok(artsCultural.render(form)));
     }
 
-    dao.saveArtsCulturalForm(form.get());
+    permissionsFinderDao.saveArtsCulturalForm(form.get());
 
     if (form.get().firearm && !"GT100".equals(form.get().itemAge)) {
       return jm.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, true);

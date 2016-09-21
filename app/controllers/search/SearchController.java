@@ -16,20 +16,20 @@ public class SearchController {
 
   protected final JourneyManager jm;
   private final FormFactory formFactory;
-  protected final PermissionsFinderDao dao;
+  protected final PermissionsFinderDao permissionsFinderDao;
   protected final HttpExecutionContext ec;
   protected final SearchServiceClient searchServiceClient;
   protected final ErrorController errorController;
 
   public SearchController(JourneyManager jm,
                           FormFactory formFactory,
-                          PermissionsFinderDao dao,
+                          PermissionsFinderDao permissionsFinderDao,
                           HttpExecutionContext ec,
                           SearchServiceClient searchServiceClient,
                           ErrorController errorController) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.ec = ec;
     this.searchServiceClient = searchServiceClient;
     this.errorController = errorController;

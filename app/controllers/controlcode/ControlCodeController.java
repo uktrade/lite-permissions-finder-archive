@@ -4,7 +4,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
-import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.ControlCodeData;
 import components.services.controlcode.frontend.FrontendServiceClient;
@@ -26,26 +25,26 @@ public class ControlCodeController extends Controller {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext ec;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
   public ControlCodeController(JourneyManager jm,
                                FormFactory formFactory,
-                               PermissionsFinderDao dao,
+                               PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext ec,
                                FrontendServiceClient frontendServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.ec = ec;
     this.frontendServiceClient = frontendServiceClient;
   }
 
 
   public CompletionStage<Result> renderForm() {
-    return frontendServiceClient.get(dao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(controlCode.render(formFactory.form(ControlCodeForm.class), response.getFrontendServiceResult()));
@@ -56,7 +55,7 @@ public class ControlCodeController extends Controller {
 
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
-    String code = dao.getPhysicalGoodControlCode();
+    String code = permissionsFinderDao.getPhysicalGoodControlCode();
     return frontendServiceClient.get(code)
         .thenApplyAsync(response -> {
           if (response.isOk()) {

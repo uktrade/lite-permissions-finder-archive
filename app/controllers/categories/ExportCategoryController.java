@@ -20,13 +20,13 @@ public class ExportCategoryController extends Controller {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public ExportCategoryController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
+  public ExportCategoryController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
@@ -39,7 +39,7 @@ public class ExportCategoryController extends Controller {
     Optional<ExportCategory> exportCategoryOptional = ExportCategory.getMatched(form.get().category);
 
     if (exportCategoryOptional.isPresent()) {
-      dao.saveExportCategory(exportCategoryOptional.get());
+      permissionsFinderDao.saveExportCategory(exportCategoryOptional.get());
       return jm.performTransition(Events.EXPORT_CATEGORY_SELECTED, exportCategoryOptional.get());
     } // TODO "Dual-use items" button link
     if ("true".equals(form.get().couldBeDualUse)) {

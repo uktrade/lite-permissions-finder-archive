@@ -21,19 +21,19 @@ public class OgelSummaryController {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext ec;
   private final OgelServiceClient ogelServiceClient;
 
   @Inject
   public OgelSummaryController(JourneyManager jm,
                                FormFactory formFactory,
-                               PermissionsFinderDao dao,
+                               PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext ec,
                                OgelServiceClient ogelServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.ec = ec;
     this.ogelServiceClient = ogelServiceClient;
   }
@@ -51,7 +51,7 @@ public class OgelSummaryController {
   }
 
   public CompletionStage<Result> renderWithForm(Form<OgelSummaryForm> form) {
-    return ogelServiceClient.get(dao.getOgelId())
+    return ogelServiceClient.get(permissionsFinderDao.getOgelId())
         .thenApplyAsync(response -> {
           if (!response.isOk()) {
             return badRequest("An issue occurred while processing your request, please try again later.");

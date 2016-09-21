@@ -24,25 +24,25 @@ public class TechnicalNotesController {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext ec;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
   public TechnicalNotesController(JourneyManager jm,
                                   FormFactory formFactory,
-                                  PermissionsFinderDao dao,
+                                  PermissionsFinderDao permissionsFinderDao,
                                   HttpExecutionContext ec,
                                   FrontendServiceClient frontendServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.ec = ec;
     this.frontendServiceClient = frontendServiceClient;
   }
 
   public CompletionStage<Result> renderForm(){
-    return frontendServiceClient.get(dao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class), response.getFrontendServiceResult()));
@@ -53,7 +53,7 @@ public class TechnicalNotesController {
 
   public CompletionStage<Result> handleSubmit() {
     Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
-    String code = dao.getPhysicalGoodControlCode();
+    String code = permissionsFinderDao.getPhysicalGoodControlCode();
     return frontendServiceClient.get(code)
         .thenApplyAsync(response -> {
           if (response.isOk()) {

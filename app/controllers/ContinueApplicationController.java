@@ -20,20 +20,20 @@ public class ContinueApplicationController {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public ContinueApplicationController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
+  public ContinueApplicationController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
     // TODO Do not restore this information after JourneyManager persistence is added
     ContinueApplicationForm formTemplate = new ContinueApplicationForm();
-    formTemplate.applicationNumber = dao.getApplicationCode();
-    formTemplate.memorableWord = dao.getMemorableWord();
+    formTemplate.applicationNumber = permissionsFinderDao.getApplicationCode();
+    formTemplate.memorableWord = permissionsFinderDao.getMemorableWord();
     return ok(continueApplication.render(formFactory.form(ContinueApplicationForm.class).fill(formTemplate)));
   }
 
@@ -49,7 +49,7 @@ public class ContinueApplicationController {
     String applicationNumber = form.get().applicationNumber;
     String memorableWord = form.get().memorableWord;
     if (applicationNumber != null && !applicationNumber.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
-      if (applicationNumber.equals(dao.getApplicationCode()) && memorableWord.equals(dao.getMemorableWord())) {
+      if (applicationNumber.equals(permissionsFinderDao.getApplicationCode()) && memorableWord.equals(permissionsFinderDao.getMemorableWord())) {
         jm.performTransition(Events.APPLICATION_FOUND);
       }
       return jm.performTransition(Events.APPLICATION_NOT_FOUND);

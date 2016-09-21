@@ -21,18 +21,18 @@ public class GoodsTypeController extends Controller {
 
   private final JourneyManager jm;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public GoodsTypeController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
+  public GoodsTypeController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
     this.jm = jm;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
     GoodsTypeForm templateForm = new GoodsTypeForm();
-    Optional<GoodsType> goodsTypeOptional = dao.getGoodsType();
+    Optional<GoodsType> goodsTypeOptional = permissionsFinderDao.getGoodsType();
     templateForm.goodsType = goodsTypeOptional.isPresent() ? goodsTypeOptional.get().value() : "";
     return ok(goodsType.render(formFactory.form(GoodsTypeForm.class).fill(templateForm)));
   }
@@ -49,7 +49,7 @@ public class GoodsTypeController extends Controller {
     Optional<GoodsType> goodsTypeOptional = GoodsType.getMatched(goodsTypeParam);
 
     if(goodsTypeOptional.isPresent()) {
-      dao.saveGoodsType(goodsTypeOptional.get());
+      permissionsFinderDao.saveGoodsType(goodsTypeOptional.get());
       return jm.performTransition(Events.GOODS_TYPE_SELECTED, goodsTypeOptional.get());
     }
 

@@ -12,15 +12,15 @@ import java.util.Optional;
 
 public class NoneDescribedController {
 
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public NoneDescribedController(PermissionsFinderDao dao) {
-    this.dao = dao;
+  public NoneDescribedController(PermissionsFinderDao permissionsFinderDao) {
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result render() {
-    Optional<ExportCategory> exportCategoryOptional = dao.getExportCategory();
+    Optional<ExportCategory> exportCategoryOptional = permissionsFinderDao.getExportCategory();
     boolean showFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
     return ok(noneDescribed.render(showFirearmsOrMilitary));
   }
