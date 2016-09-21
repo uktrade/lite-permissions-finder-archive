@@ -51,30 +51,14 @@
   </ul>
 
   <p class="bold-small">
-    This is only a summary of the licence conditions. You must <a class="external" href="@ogel.link" rel="external" target="_blank">read the licence in full</a> before registering for it.
+    <a class="external" href="@ogel.link" rel="external" target="_blank">Read the full licence</a> for more on how to use it, what you can export and permitted export destinations.
   </p>
 
   <form action="@controllers.ogel.routes.OgelSummaryController.handleSubmit()" method="POST">
 
     @contextFormParams()
 
-    <div class="form-group @if(form.field("fullLicenceRead").hasErrors) { error }">
-      @if(form.field("fullLicenceRead").error.isDefined) {
-        <span class="error-message">
-        @form.field("fullLicenceRead").error.get.message
-        </span>
-      }
-      <label class="block-label" for="full_licence_read">
-        <input type="checkbox" id="full_licence_read" name="fullLicenceRead" value="true"/>
-        I confirm that I have read the full licence text
-      </label>
-    </div>
-
-    <div class="form-group">
-      If this is your first registration for an open general licence, you will be contacted by the ECO within 2 weeks to make sure this is the right licence for your exports and to help with any questions you may have. If a different licence is more suitable you will then be able to register for that licence instead.
-    </div>
-
-    <div class="licence-options">
+    <div class="ogel-summary-confirmation">
       <button type="submit" class="button">Register for this licence</button>
       <a href="javascript:history.back();" class="link-next-to-button">Back</a>
     </div>

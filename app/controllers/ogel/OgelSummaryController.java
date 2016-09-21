@@ -54,16 +54,13 @@ public class OgelSummaryController {
     return ogelServiceClient.get(permissionsFinderDao.getOgelId())
         .thenApplyAsync(response -> {
           if (!response.isOk()) {
-            return badRequest("An issue occurred while processing your request, please try again later.");
+            return badRequest("Bad response from OGEL service");
           }
           return ok(ogelSummary.render(form, response.getResult()));
         }, httpExecutionContext.current());
   }
 
   public static class OgelSummaryForm {
-
-    @Required(message = "You must confirm you have read the full licence text before you can register")
-    public String fullLicenceRead;
 
   }
 
