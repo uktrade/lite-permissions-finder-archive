@@ -8,12 +8,14 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Email;
 import play.data.validation.Constraints.Required;
 import play.data.validation.ValidationError;
 import play.mvc.Result;
+import service.NotificationService;
 import views.html.startApplication;
 
 import java.util.ArrayList;
@@ -31,14 +33,17 @@ public class StartApplicationController {
   private final JourneyManager jm;
   private final FormFactory formFactory;
   private final PermissionsFinderDao dao;
+  private final NotificationService notificationService;
 
   @Inject
   public StartApplicationController(JourneyManager jm,
                                     FormFactory formFactory,
-                                    PermissionsFinderDao dao) {
+                                    PermissionsFinderDao dao,
+                                    NotificationService notificationService) {
     this.jm = jm;
     this.formFactory = formFactory;
     this.dao = dao;
+    this.notificationService = notificationService;
   }
 
   public Result renderForm() {
@@ -64,6 +69,7 @@ public class StartApplicationController {
     String memorableWord = form.get().memorableWord;
     if (emailAddress != null && !emailAddress.isEmpty()) {
       dao.saveEmailAddress(emailAddress);
+      notificationService.sendApplicationReferenceEmail(emailAddress, dao.getApplicationCode());
     }
     if (memorableWord != null && !memorableWord.isEmpty()) {
       dao.saveMemorableWord(memorableWord);

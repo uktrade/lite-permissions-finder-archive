@@ -73,6 +73,14 @@ public class GuiceModule extends AbstractModule{
     bindConstant().annotatedWith(Names.named("ogelServiceTimeout"))
         .to(configuration.getString("ogelService.timeout"));
 
+    // notificationService
+    bindConstant().annotatedWith(Names.named("notificationServiceHost"))
+        .to(configuration.getString("notificationService.hostname"));
+    bindConstant().annotatedWith(Names.named("notificationServicePort"))
+        .to(configuration.getString("notificationService.port"));
+    bindConstant().annotatedWith(Names.named("notificationServiceTimeout"))
+        .to(configuration.getString("notificationService.timeout"));
+
   }
 
   @Provides
