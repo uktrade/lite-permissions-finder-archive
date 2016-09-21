@@ -19,15 +19,15 @@ import java.util.concurrent.CompletionStage;
 
 public class DualUseController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public DualUseController(JourneyManager jm,
+  public DualUseController(JourneyManager journeyManager,
                            FormFactory formFactory,
                            PermissionsFinderDao permissionsFinderDao) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
   }
@@ -52,11 +52,11 @@ public class DualUseController {
 
     if (isDualUse) {
       permissionsFinderDao.saveExportCategory(ExportCategory.DUAL_USE);
-      return jm.performTransition(Events.IS_DUAL_USE, true);
+      return journeyManager.performTransition(Events.IS_DUAL_USE, true);
     }
     else {
       permissionsFinderDao.saveExportCategory(ExportCategory.NONE);
-      return jm.performTransition(Events.IS_DUAL_USE, false);
+      return journeyManager.performTransition(Events.IS_DUAL_USE, false);
     }
   }
 

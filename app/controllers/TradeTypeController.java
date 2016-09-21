@@ -19,15 +19,16 @@ import java.util.concurrent.CompletionStage;
 
 public class TradeTypeController extends Controller {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
 
   private static final String UNITED_KINGDOM = "CTRY0";
 
   @Inject
-  public TradeTypeController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
-    this.jm = jm;
+  public TradeTypeController(JourneyManager journeyManager, FormFactory formFactory,
+                             PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
   }
@@ -54,7 +55,7 @@ public class TradeTypeController extends Controller {
       if (tradeTypeOption.get() == TradeType.EXPORT) {
         permissionsFinderDao.saveSourceCountry(UNITED_KINGDOM);
       }
-      return jm.performTransition(Events.TRADE_TYPE_SELECTED, tradeTypeOption.get());
+      return journeyManager.performTransition(Events.TRADE_TYPE_SELECTED, tradeTypeOption.get());
     }
     return completedFuture(badRequest("Unknown trade type " + tradeTypeParam));
   }

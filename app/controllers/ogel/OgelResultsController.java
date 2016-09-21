@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 public class OgelResultsController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
@@ -33,13 +33,13 @@ public class OgelResultsController {
   private final CountryServiceClient countryServiceClient;
 
   @Inject
-  public OgelResultsController(JourneyManager jm,
+  public OgelResultsController(JourneyManager journeyManager,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                CountryServiceClient countryServiceClient) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -92,7 +92,7 @@ public class OgelResultsController {
       return renderWithForm(form);
     }
     permissionsFinderDao.saveOgelId(form.get().chosenOgel);
-    return jm.performTransition(Events.OGEL_SELECTED);
+    return journeyManager.performTransition(Events.OGEL_SELECTED);
   }
 
   public static class OgelResultsForm {

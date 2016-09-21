@@ -18,13 +18,13 @@ import java.util.concurrent.CompletionStage;
 
 public class ExportCategoryController extends Controller {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public ExportCategoryController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
-    this.jm = jm;
+  public ExportCategoryController(JourneyManager journeyManager, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
   }
@@ -40,10 +40,10 @@ public class ExportCategoryController extends Controller {
 
     if (exportCategoryOptional.isPresent()) {
       permissionsFinderDao.saveExportCategory(exportCategoryOptional.get());
-      return jm.performTransition(Events.EXPORT_CATEGORY_SELECTED, exportCategoryOptional.get());
+      return journeyManager.performTransition(Events.EXPORT_CATEGORY_SELECTED, exportCategoryOptional.get());
     } // TODO "Dual-use items" button link
     if ("true".equals(form.get().couldBeDualUse)) {
-      return jm.performTransition(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE);
+      return journeyManager.performTransition(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE);
     }
 
     return completedFuture(badRequest("Unknown export category: \"" + form.get().category + "\""));

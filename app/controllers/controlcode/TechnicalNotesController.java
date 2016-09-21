@@ -22,19 +22,19 @@ import java.util.function.Function;
 
 public class TechnicalNotesController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
-  public TechnicalNotesController(JourneyManager jm,
+  public TechnicalNotesController(JourneyManager journeyManager,
                                   FormFactory formFactory,
                                   PermissionsFinderDao permissionsFinderDao,
                                   HttpExecutionContext httpExecutionContext,
                                   FrontendServiceClient frontendServiceClient) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -62,10 +62,10 @@ public class TechnicalNotesController {
             }
             String stillDescribesItems = form.get().stillDescribesItems;
             if("true".equals(stillDescribesItems)) {
-              return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
             }
             if ("false".equals(stillDescribesItems)) {
-              return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
             }
           }
           return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));

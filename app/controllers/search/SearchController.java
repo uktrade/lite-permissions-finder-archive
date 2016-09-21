@@ -14,20 +14,20 @@ import java.util.stream.Collectors;
 
 public class SearchController {
 
-  protected final JourneyManager jm;
+  protected final JourneyManager journeyManager;
   private final FormFactory formFactory;
   protected final PermissionsFinderDao permissionsFinderDao;
   protected final HttpExecutionContext httpExecutionContext;
   protected final SearchServiceClient searchServiceClient;
   protected final ErrorController errorController;
 
-  public SearchController(JourneyManager jm,
+  public SearchController(JourneyManager journeyManager,
                           FormFactory formFactory,
                           PermissionsFinderDao permissionsFinderDao,
                           HttpExecutionContext httpExecutionContext,
                           SearchServiceClient searchServiceClient,
                           ErrorController errorController) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;

@@ -22,13 +22,13 @@ import java.util.concurrent.CompletionStage;
 public class PhysicalGoodsSearchController extends SearchController {
 
   @Inject
-  public PhysicalGoodsSearchController(JourneyManager jm,
+  public PhysicalGoodsSearchController(JourneyManager journeyManager,
                                        FormFactory formFactory,
                                        PermissionsFinderDao permissionsFinderDao,
                                        HttpExecutionContext httpExecutionContext,
                                        SearchServiceClient searchServiceClient,
                                        ErrorController errorController) {
-    super(jm, formFactory, permissionsFinderDao, httpExecutionContext, searchServiceClient, errorController);
+    super(journeyManager, formFactory, permissionsFinderDao, httpExecutionContext, searchServiceClient, errorController);
   }
 
   public Result renderForm() {
@@ -44,7 +44,7 @@ public class PhysicalGoodsSearchController extends SearchController {
       return completedFuture(ok(physicalGoodsSearch.render(form)));
     }
     permissionsFinderDao.savePhysicalGoodSearchForm(form.get());
-    return jm.performTransition(Events.SEARCH_PHYSICAL_GOODS);
+    return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 
 }

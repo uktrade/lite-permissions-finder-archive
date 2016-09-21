@@ -24,7 +24,7 @@ import java.util.concurrent.CompletionStage;
 
 public class PlantsAnimalsController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
 
@@ -35,8 +35,8 @@ public class PlantsAnimalsController {
   );
 
   @Inject
-  public PlantsAnimalsController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
-    this.jm = jm;
+  public PlantsAnimalsController(JourneyManager journeyManager, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
   }
@@ -56,7 +56,7 @@ public class PlantsAnimalsController {
     Optional<LifeType> lifeTypeOptional = LifeType.getMatched(form.get().lifeType);
     if(lifeTypeOptional.isPresent()) {
       permissionsFinderDao.savePlantsAnimalsLifeType(lifeTypeOptional.get());
-      return jm.performTransition(Events.LIFE_TYPE_SELECTED, lifeTypeOptional.get());
+      return journeyManager.performTransition(Events.LIFE_TYPE_SELECTED, lifeTypeOptional.get());
     }
     return completedFuture(badRequest("Unknown value for lifeType: \"" + form.get().lifeType + "\""));
   }

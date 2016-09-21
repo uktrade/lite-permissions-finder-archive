@@ -20,19 +20,19 @@ import java.util.concurrent.CompletionStage;
 
 public class SearchAgainController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
-  public SearchAgainController(JourneyManager jm,
+  public SearchAgainController(JourneyManager journeyManager,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext,
                                FrontendServiceClient frontendServiceClient) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -54,10 +54,10 @@ public class SearchAgainController {
     if (!form.hasErrors()) {
       String action = form.get().action;
       if ("backToSearch".equals(action)) {
-        return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
+        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
       }
       if ("backToSearchResults".equals(action)) {
-        return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
+        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
       }
     }
     return completedFuture(badRequest("Invalid form state"));

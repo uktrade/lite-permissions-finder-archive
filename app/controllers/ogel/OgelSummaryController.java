@@ -19,19 +19,19 @@ import java.util.concurrent.CompletionStage;
 
 public class OgelSummaryController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final OgelServiceClient ogelServiceClient;
 
   @Inject
-  public OgelSummaryController(JourneyManager jm,
+  public OgelSummaryController(JourneyManager journeyManager,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext,
                                OgelServiceClient ogelServiceClient) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -47,7 +47,7 @@ public class OgelSummaryController {
     if (form.hasErrors()) {
       return renderWithForm(form);
     }
-    return jm.performTransition(Events.OGEL_REGISTERED);
+    return journeyManager.performTransition(Events.OGEL_REGISTERED);
   }
 
   public CompletionStage<Result> renderWithForm(Form<OgelSummaryForm> form) {

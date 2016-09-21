@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 public class DestinationCountryController extends Controller {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
@@ -32,12 +32,12 @@ public class DestinationCountryController extends Controller {
   public static final int MAX_NUMBER_OF_COUNTRIES = 5;
 
   @Inject
-  public DestinationCountryController(JourneyManager jm,
+  public DestinationCountryController(JourneyManager journeyManager,
                                       FormFactory formFactory,
                                       PermissionsFinderDao permissionsFinderDao,
                                       HttpExecutionContext httpExecutionContext,
                                       CountryServiceClient countryServiceClient) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -122,7 +122,7 @@ public class DestinationCountryController extends Controller {
 
             // TODO server side validation of destinationCountry value
             permissionsFinderDao.saveDestinationCountryList(destinationCountries);
-            return jm.performTransition(Events.DESTINATION_COUNTRIES_SELECTED);
+            return journeyManager.performTransition(Events.DESTINATION_COUNTRIES_SELECTED);
           }
           else {
             return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));

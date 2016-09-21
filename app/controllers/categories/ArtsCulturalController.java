@@ -27,13 +27,14 @@ public class ArtsCulturalController extends Controller {
       new SelectOption("GT100", "More than 100 years old")
   );
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public ArtsCulturalController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
-    this.jm = jm;
+  public ArtsCulturalController(JourneyManager journeyManager, FormFactory formFactory,
+                                PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
   }
@@ -55,10 +56,10 @@ public class ArtsCulturalController extends Controller {
     permissionsFinderDao.saveArtsCulturalForm(form.get());
 
     if (form.get().firearm && !"GT100".equals(form.get().itemAge)) {
-      return jm.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, true);
+      return journeyManager.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, true);
     }
     else {
-      return jm.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, false);
+      return journeyManager.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, false);
     }
   }
 

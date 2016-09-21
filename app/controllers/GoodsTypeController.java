@@ -19,13 +19,14 @@ import java.util.concurrent.CompletionStage;
 
 public class GoodsTypeController extends Controller {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public GoodsTypeController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
-    this.jm = jm;
+  public GoodsTypeController(JourneyManager journeyManager, FormFactory formFactory,
+                             PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
   }
@@ -50,7 +51,7 @@ public class GoodsTypeController extends Controller {
 
     if(goodsTypeOptional.isPresent()) {
       permissionsFinderDao.saveGoodsType(goodsTypeOptional.get());
-      return jm.performTransition(Events.GOODS_TYPE_SELECTED, goodsTypeOptional.get());
+      return journeyManager.performTransition(Events.GOODS_TYPE_SELECTED, goodsTypeOptional.get());
     }
 
     return completedFuture(badRequest("Unknown goods type " + goodsTypeParam));

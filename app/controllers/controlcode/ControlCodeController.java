@@ -23,19 +23,19 @@ import java.util.function.Function;
 
 public class ControlCodeController extends Controller {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
-  public ControlCodeController(JourneyManager jm,
+  public ControlCodeController(JourneyManager journeyManager,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext,
                                FrontendServiceClient frontendServiceClient) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -63,10 +63,10 @@ public class ControlCodeController extends Controller {
             String action = form.field("action").value();
             if (action != null && !action.isEmpty()) {
               if ("backToSearch".equals(action)) {
-                return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
+                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
               }
               if ("backToSearchResults".equals(action)) {
-                return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
+                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
               }
               return completedFuture(badRequest("Invalid value for action: \"" + action + "\""));
             }
@@ -79,7 +79,7 @@ public class ControlCodeController extends Controller {
               return nextScreenTrue(response.getFrontendServiceResult());
             }
             if ("false".equals(couldDescribeItems)) {
-              return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
             }
           }
           return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
@@ -90,17 +90,17 @@ public class ControlCodeController extends Controller {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     if (controlCodeData.canShow()) {
       if (controlCodeData.canShowAdditionalSpecifications()) {
-        return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS);
+        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS);
       }
       else if (controlCodeData.canShowDecontrols()) {
-        return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLS);
+        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLS);
       }
       else {
-        return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
+        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
       }
     }
     else {
-      return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
     }
   }
 

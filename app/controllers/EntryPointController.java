@@ -18,20 +18,20 @@ import java.util.concurrent.CompletionStage;
 public class EntryPointController extends Controller {
 
   private final TransactionManager transactionManager;
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
 
   @Inject
   public EntryPointController(TransactionManager transactionManager,
-                              JourneyManager jm,
+                              JourneyManager journeyManager,
                               FormFactory formFactory) {
     this.transactionManager = transactionManager;
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
   }
 
   public Result index() {
-    jm.startJourney("default");
+    journeyManager.startJourney("default");
     return ok(index.render());
   }
 
@@ -40,10 +40,10 @@ public class EntryPointController extends Controller {
     Form<EntryPointForm> form = formFactory.form(EntryPointForm.class).bindFromRequest();
     String action = form.get().action;
     if ("start".equals(action)) {
-      return jm.performTransition(Events.START_APPLICATION);
+      return journeyManager.performTransition(Events.START_APPLICATION);
     }
     if ("continue".equals(action)) {
-      return jm.performTransition(Events.CONTINUE_APPLICATION);
+      return journeyManager.performTransition(Events.CONTINUE_APPLICATION);
     }
     return completedFuture(badRequest("Unknown value for action: \"" + action + "\""));
   }

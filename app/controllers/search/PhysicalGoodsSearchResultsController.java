@@ -30,7 +30,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   public static final int PAGINATION_SIZE = 5;
 
   @Inject
-  public PhysicalGoodsSearchResultsController(JourneyManager jm,
+  public PhysicalGoodsSearchResultsController(JourneyManager journeyManager,
                                               FormFactory formFactory,
                                               SearchServiceClient searchServiceClient,
                                               FrontendServiceClient frontendServiceClient,
@@ -38,7 +38,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                                               ErrorController errorController,
                                               HttpExecutionContext httpExecutionContext,
                                               PermissionsFinderDao dao) {
-    super(jm, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
+    super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
     this.httpExecutionContext = httpExecutionContext;
     this.dao = dao;
   }
@@ -75,7 +75,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     if (action.isPresent()){
       switch (action.get()) {
         case NONE_MATCHED:
-          return jm.performTransition(Events.NONE_MATCHED);
+          return journeyManager.performTransition(Events.NONE_MATCHED);
         case SHORE_MORE:
           return physicalGoodsSearch()
               .thenApplyAsync(response -> {
@@ -95,7 +95,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
       dao.savePhysicalGoodControlCode(result.get());
-      return jm.performTransition(Events.CONTROL_CODE_SELECTED);
+      return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
     return completedFuture(badRequest("Invalid form state"));

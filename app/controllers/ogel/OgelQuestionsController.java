@@ -23,13 +23,13 @@ public class OgelQuestionsController {
 
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
 
   @Inject
-  public OgelQuestionsController(JourneyManager jm,
+  public OgelQuestionsController(JourneyManager journeyManager,
                                  FormFactory formFactory,
                                  PermissionsFinderDao permissionsFinderDao) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
   }
@@ -48,7 +48,7 @@ public class OgelQuestionsController {
     else {
       OgelQuestionsForm ogelQuestionsForm = form.get();
       permissionsFinderDao.saveOgelQuestionsForm(ogelQuestionsForm);
-      return jm.performTransition(Events.OGEL_QUESTIONS_ANSWERED);
+      return journeyManager.performTransition(Events.OGEL_QUESTIONS_ANSWERED);
     }
   }
 

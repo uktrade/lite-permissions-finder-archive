@@ -19,13 +19,13 @@ import java.util.concurrent.CompletionStage;
 
 public class MedicinesDrugsController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public MedicinesDrugsController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
-    this.jm = jm;
+  public MedicinesDrugsController(JourneyManager journeyManager, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
   }
@@ -50,11 +50,11 @@ public class MedicinesDrugsController {
 
     if (isUsedForExecutionTorture) {
       permissionsFinderDao.saveExportCategory(ExportCategory.TORTURE_RESTRAINT);
-      return jm.performTransition(Events.IS_USED_FOR_EXECUTION_TORTURE, true);
+      return journeyManager.performTransition(Events.IS_USED_FOR_EXECUTION_TORTURE, true);
     }
     else {
       permissionsFinderDao.saveExportCategory(ExportCategory.MEDICINES_DRUGS);
-      return jm.performTransition(Events.IS_USED_FOR_EXECUTION_TORTURE, false);
+      return journeyManager.performTransition(Events.IS_USED_FOR_EXECUTION_TORTURE, false);
     }
   }
 
