@@ -69,8 +69,7 @@ public class OgelResultsController {
             return countryServiceClient.getCountries()
                 .thenApplyAsync(countryServiceResponse -> {
                   String physicalGoodControlCode = dao.getPhysicalGoodControlCode();
-                  List<String> countryNames = countryServiceResponse.getCountries().stream()
-                      .filter(country -> destinationCountries.contains(country.getCountryRef()))
+                  List<String> countryNames = countryServiceResponse.getCountriesByRef(destinationCountries).stream()
                       .map(country -> "<strong class=\"bold-small\">" + country.getCountryName() + "</strong>")
                       .collect(Collectors.toList());
 

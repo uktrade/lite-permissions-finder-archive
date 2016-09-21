@@ -183,8 +183,11 @@ public class GuiceModule extends AbstractModule{
     JourneyStage ogelResults = jdb.defineStage("ogelResults", "Licences applicable to your answers",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelResultsController.renderForm()));
 
-    JourneyStage ogelSummary = jdb.defineStage("ogelSummary", "OGEL summary",
+    JourneyStage ogelSummary = jdb.defineStage("ogelSummary", "Licence summary",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelSummaryController.renderForm()));
+
+    JourneyStage summary = jdb.defineStage("summary", "Check your answers so far",
+        () -> cpm.addParamsAndRedirect(routes.SummaryController.renderForm()));
 
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
@@ -285,8 +288,8 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(physicalGoodsSearch))
-        .when(GoodsType.SOFTWARE, moveTo(null)) //TODO Not implemented screen
-        .when(GoodsType.TECHNOLOGY, moveTo(null)); //TODO Not implemented screen
+        .when(GoodsType.SOFTWARE, moveTo(null)) // TODO Not implemented screen
+        .when(GoodsType.TECHNOLOGY, moveTo(null)); // TODO Not implemented screen
 
     jdb.atStage(physicalGoodsSearch)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
@@ -358,7 +361,23 @@ public class GuiceModule extends AbstractModule{
 
     jdb.atStage(ogelSummary)
         .onEvent(Events.OGEL_REGISTERED)
-        .then(moveTo(null));
+        .then(moveTo(summary));
+
+    jdb.atStage(summary)
+        .onEvent(Events.CHANGE_CONTROL_CODE)
+        .then(moveTo(physicalGoodsSearch));
+
+    jdb.atStage(summary)
+        .onEvent(Events.CHANGE_OGEL_TYPE)
+        .then(moveTo(ogelQuestions));
+
+    jdb.atStage(summary)
+        .onEvent(Events.CHANGE_DESTINATION_COUNTRIES)
+        .then(moveTo(destinationCountries));
+
+    jdb.atStage(summary)
+        .onEvent(Events.HANDOFF_TO_OGEL_REGISTRATION)
+        .then(moveTo(null)); // TODO handoff to OGEL registration
 
     return new JourneyManager(jdb.build("default", index));
   }
