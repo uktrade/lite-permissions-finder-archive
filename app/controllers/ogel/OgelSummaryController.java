@@ -22,19 +22,19 @@ public class OgelSummaryController {
   private final JourneyManager jm;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final HttpExecutionContext ec;
+  private final HttpExecutionContext httpExecutionContext;
   private final OgelServiceClient ogelServiceClient;
 
   @Inject
   public OgelSummaryController(JourneyManager jm,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
-                               HttpExecutionContext ec,
+                               HttpExecutionContext httpExecutionContext,
                                OgelServiceClient ogelServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.ec = ec;
+    this.httpExecutionContext = httpExecutionContext;
     this.ogelServiceClient = ogelServiceClient;
   }
 
@@ -57,7 +57,7 @@ public class OgelSummaryController {
             return badRequest("An issue occurred while processing your request, please try again later.");
           }
           return ok(ogelSummary.render(form, response.getResult()));
-        }, ec.current());
+        }, httpExecutionContext.current());
   }
 
   public static class OgelSummaryForm {

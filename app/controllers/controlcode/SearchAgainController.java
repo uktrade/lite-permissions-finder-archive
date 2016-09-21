@@ -23,19 +23,19 @@ public class SearchAgainController {
   private final JourneyManager jm;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final HttpExecutionContext ec;
+  private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
   public SearchAgainController(JourneyManager jm,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
-                               HttpExecutionContext ec,
+                               HttpExecutionContext httpExecutionContext,
                                FrontendServiceClient frontendServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.ec = ec;
+    this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
   }
 
@@ -46,7 +46,7 @@ public class SearchAgainController {
             return ok(searchAgain.render(response.getFrontendServiceResult()));
           }
           return badRequest("An issue occurred while processing your request, please try again later.");
-        }, ec.current());
+        }, httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {

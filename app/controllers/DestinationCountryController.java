@@ -24,7 +24,7 @@ public class DestinationCountryController extends Controller {
   private final JourneyManager jm;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final HttpExecutionContext ec;
+  private final HttpExecutionContext httpExecutionContext;
   private final CountryServiceClient countryServiceClient;
 
   public static final int MIN_NUMBER_OF_COUNTRIES = 1;
@@ -35,12 +35,12 @@ public class DestinationCountryController extends Controller {
   public DestinationCountryController(JourneyManager jm,
                                       FormFactory formFactory,
                                       PermissionsFinderDao permissionsFinderDao,
-                                      HttpExecutionContext ec,
+                                      HttpExecutionContext httpExecutionContext,
                                       CountryServiceClient countryServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.ec = ec;
+    this.httpExecutionContext = httpExecutionContext;
     this.countryServiceClient = countryServiceClient;
   }
 
@@ -60,7 +60,7 @@ public class DestinationCountryController extends Controller {
           else {
             return badRequest("An issue occurred while processing your request, please try again later.");
           }
-        }, ec.current());
+        }, httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -127,7 +127,7 @@ public class DestinationCountryController extends Controller {
           else {
             return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
           }
-        }, ec.current()).thenCompose(Function.identity());
+        }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 
   public static class DestinationCountryForm {

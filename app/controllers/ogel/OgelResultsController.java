@@ -28,7 +28,7 @@ public class OgelResultsController {
   private final JourneyManager jm;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final HttpExecutionContext ec;
+  private final HttpExecutionContext httpExecutionContext;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
   private final CountryServiceClient countryServiceClient;
 
@@ -36,13 +36,13 @@ public class OgelResultsController {
   public OgelResultsController(JourneyManager jm,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
-                               HttpExecutionContext ec,
+                               HttpExecutionContext httpExecutionContext,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                CountryServiceClient countryServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.ec = ec;
+    this.httpExecutionContext = httpExecutionContext;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.countryServiceClient = countryServiceClient;
   }
@@ -81,9 +81,9 @@ public class OgelResultsController {
                         .concat("and " + countryNames.get(countryNames.size() -1));
 
                   return ok(ogelResults.render(form, Collections.emptyList(), physicalGoodControlCode, destinationCountryNamesHtml));
-                }, ec.current());
+                }, httpExecutionContext.current());
           }
-        }, ec.current());
+        }, httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {

@@ -26,7 +26,7 @@ public class AdditionalSpecificationsController {
   private final JourneyManager jm;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final HttpExecutionContext ec;
+  private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
 
 
@@ -34,12 +34,12 @@ public class AdditionalSpecificationsController {
   public AdditionalSpecificationsController(JourneyManager jm,
                                             FormFactory formFactory,
                                             PermissionsFinderDao permissionsFinderDao,
-                                            HttpExecutionContext ec,
+                                            HttpExecutionContext httpExecutionContext,
                                             FrontendServiceClient frontendServiceClient) {
     this.jm = jm;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.ec = ec;
+    this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
   }
 
@@ -50,7 +50,7 @@ public class AdditionalSpecificationsController {
             return ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class), response.getFrontendServiceResult()));
           }
           return badRequest("An issue occurred while processing your request, please try again later.");
-        }, ec.current());
+        }, httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -71,7 +71,7 @@ public class AdditionalSpecificationsController {
             }
           }
           return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
-        }, ec.current()).thenCompose(Function.identity());
+        }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 
   public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult){

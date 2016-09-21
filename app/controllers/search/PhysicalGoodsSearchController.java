@@ -25,10 +25,10 @@ public class PhysicalGoodsSearchController extends SearchController {
   public PhysicalGoodsSearchController(JourneyManager jm,
                                        FormFactory formFactory,
                                        PermissionsFinderDao permissionsFinderDao,
-                                       HttpExecutionContext ec,
+                                       HttpExecutionContext httpExecutionContext,
                                        SearchServiceClient searchServiceClient,
                                        ErrorController errorController) {
-    super(jm, formFactory, permissionsFinderDao, ec, searchServiceClient, errorController);
+    super(jm, formFactory, permissionsFinderDao, httpExecutionContext, searchServiceClient, errorController);
   }
 
   public Result renderForm() {
