@@ -183,6 +183,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage ogelResults = jdb.defineStage("ogelResults", "Licences applicable to your answers",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelResultsController.renderForm()));
 
+    JourneyStage ogelRestrictions = jdb.defineStage("ogelConditions", "Conditions apply to your licence",
+        () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelConditionsController.renderForm()));
+
     JourneyStage ogelSummary = jdb.defineStage("ogelSummary", "Licence summary",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelSummaryController.renderForm()));
 
@@ -355,9 +358,21 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.OGEL_SELECTED)
         .then(moveTo(ogelSummary));
 
+    jdb.atStage(ogelResults)
+        .onEvent(Events.OGEL_RESTRICTIONS_APPLY)
+        .then(moveTo(ogelRestrictions));
+
+    jdb.atStage(ogelRestrictions)
+        .onEvent(Events.OGEL_DOES_RESTRICTION_APPLY)
+        .then(moveTo(ogelSummary));
+
     jdb.atStage(ogelSummary)
         .onEvent(Events.OGEL_REGISTERED)
         .then(moveTo(summary));
+
+    jdb.atStage(ogelSummary)
+        .onEvent(Events.OGEL_CHOOSE_AGAIN)
+        .then(moveTo(ogelResults));
 
     jdb.atStage(summary)
         .onEvent(Events.CHANGE_CONTROL_CODE)

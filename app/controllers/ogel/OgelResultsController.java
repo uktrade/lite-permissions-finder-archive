@@ -9,6 +9,7 @@ import components.common.client.CountryServiceClient;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
+import components.services.ogels.conditions.OgelConditionsServiceClient;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import journey.Events;
 import play.data.Form;
@@ -21,6 +22,7 @@ import views.html.ogel.ogelResults;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class OgelResultsController {
@@ -30,6 +32,7 @@ public class OgelResultsController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
+  private final OgelConditionsServiceClient ogelConditionsServiceClient;
   private final CountryServiceClient countryServiceClient;
 
   @Inject
@@ -38,12 +41,14 @@ public class OgelResultsController {
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
+                               OgelConditionsServiceClient ogelConditionsServiceClient,
                                CountryServiceClient countryServiceClient) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
+    this.ogelConditionsServiceClient = ogelConditionsServiceClient;
     this.countryServiceClient = countryServiceClient;
   }
 
@@ -52,8 +57,8 @@ public class OgelResultsController {
   }
 
   public CompletionStage<Result> renderWithForm(Form<OgelResultsForm> form) {
-    String sourceCountry = permissionsFinderDao.getSourceCountry();
     String controlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+    String sourceCountry = permissionsFinderDao.getSourceCountry();
     List<String> destinationCountries = permissionsFinderDao.getDestinationCountryList();
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
@@ -91,8 +96,36 @@ public class OgelResultsController {
     if (form.hasErrors()) {
       return renderWithForm(form);
     }
-    permissionsFinderDao.saveOgelId(form.get().chosenOgel);
-    return journeyManager.performTransition(Events.OGEL_SELECTED);
+    String chosenOgel = form.get().chosenOgel;
+    permissionsFinderDao.saveOgelId(chosenOgel);
+
+    String controlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+    String sourceCountry = permissionsFinderDao.getSourceCountry();
+    List<String> destinationCountries = permissionsFinderDao.getDestinationCountryList();
+    List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
+
+    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
+        .thenComposeAsync(applicableOgelResponse -> {
+          if (!applicableOgelResponse.isOk()) {
+            return completedFuture(badRequest("Invalid response from the applicable OGEL service"));
+          }
+          if (applicableOgelResponse.getResults().stream().noneMatch(ogel -> chosenOgel.equalsIgnoreCase(ogel.id))) {
+            return completedFuture(badRequest("Selected OGEL is not valid with the applicable OGEL service response"));
+          }
+          return ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getPhysicalGoodControlCode())
+              .thenApplyAsync(response -> {
+                if (!response.isOk()) {
+                  return completedFuture(badRequest("Invalid response from OGEL service"));
+                }
+                if (response.getResult().isPresent()) {
+                  return journeyManager.performTransition(Events.OGEL_RESTRICTIONS_APPLY);
+                }
+                else {
+                  return journeyManager.performTransition(Events.OGEL_SELECTED);
+                }
+              }, httpExecutionContext.current())
+              .thenCompose(Function.identity());
+        }, httpExecutionContext.current());
   }
 
   public static class OgelResultsForm {

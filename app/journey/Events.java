@@ -54,6 +54,14 @@ public class Events {
 
   public static final JourneyEvent OGEL_SELECTED = new JourneyEvent("OGEL_SELECTED");
 
+  public static final JourneyEvent OGEL_CONTINUE_TO_NON_APPLICABLE_LICENCE = new JourneyEvent("OGEL_CONTINUE_TO_NON_APPLICABLE_LICENCE");
+
+  public static final JourneyEvent OGEL_CHOOSE_AGAIN = new JourneyEvent("OGEL_CHOOSE_AGAIN");
+
+  public static final JourneyEvent OGEL_RESTRICTIONS_APPLY = new JourneyEvent("OGEL_RESTRICTIONS_APPLY");
+
+  public static final JourneyEvent OGEL_DOES_RESTRICTION_APPLY = new JourneyEvent("OGEL_DOES_RESTRICTION_APPLY");
+
   public static final JourneyEvent OGEL_REGISTERED = new JourneyEvent("OGEL_REGISTERED");
 
   public static final JourneyEvent CHANGE_CONTROL_CODE = new JourneyEvent("CHANGE_CONTROL_CODE");

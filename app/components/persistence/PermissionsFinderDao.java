@@ -56,6 +56,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String OGEL_QUESTIONS = "ogelQuestions";
 
+  public static final String OGEL_CONDITIONS_APPLY = "ogelConditionsApply";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -213,6 +215,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<OgelQuestionsForm> getOgelQuestionsForm() {
     return readObject(OGEL_QUESTIONS, OgelQuestionsForm.class);
+  }
+
+  public void saveOgelConditionsApply(boolean ogelConditionsApply) {
+    writeBoolean(OGEL_CONDITIONS_APPLY, ogelConditionsApply);
+  }
+
+  public Optional<Boolean> getOgelConditionsApply() {
+    return readBoolean(OGEL_CONDITIONS_APPLY);
   }
 
 }
