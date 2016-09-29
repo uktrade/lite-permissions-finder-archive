@@ -7,9 +7,11 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.client.CountryServiceClient;
 import components.common.journey.JourneyManager;
+import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
+import components.services.ogels.registration.OgelRegistrationServiceClient;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -22,6 +24,7 @@ import java.util.concurrent.CompletionStage;
 
 public class SummaryController {
 
+  private final TransactionManager transactionManager;
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -29,12 +32,19 @@ public class SummaryController {
   private final FrontendServiceClient frontendServiceClient;
   private final CountryServiceClient countryServiceClient;
   private final OgelServiceClient ogelServiceClient;
+  private final OgelRegistrationServiceClient ogelRegistrationServiceClient;
 
   @Inject
-  public SummaryController(JourneyManager journeyManager, FormFactory formFactory,
-                           PermissionsFinderDao permissionsFinderDao, HttpExecutionContext httpExecutionContext,
-                           FrontendServiceClient frontendServiceClient, CountryServiceClient countryServiceClient,
-                           OgelServiceClient ogelServiceClient) {
+  public SummaryController(TransactionManager transactionManager,
+                           JourneyManager journeyManager,
+                           FormFactory formFactory,
+                           PermissionsFinderDao permissionsFinderDao,
+                           HttpExecutionContext httpExecutionContext,
+                           FrontendServiceClient frontendServiceClient,
+                           CountryServiceClient countryServiceClient,
+                           OgelServiceClient ogelServiceClient,
+                           OgelRegistrationServiceClient ogelRegistrationServiceClient) {
+    this.transactionManager = transactionManager;
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -42,6 +52,7 @@ public class SummaryController {
     this.frontendServiceClient = frontendServiceClient;
     this.countryServiceClient = countryServiceClient;
     this.ogelServiceClient = ogelServiceClient;
+    this.ogelRegistrationServiceClient = ogelRegistrationServiceClient;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -64,7 +75,7 @@ public class SummaryController {
       return journeyManager.performTransition(Events.CHANGE_DESTINATION_COUNTRIES);
     }
     else if ("register".equals(action)) {
-      return journeyManager.performTransition(Events.HANDOFF_TO_OGEL_REGISTRATION);
+      return redirectToRegistration();
     }
     else {
       return completedFuture(badRequest("Unknown value for action: \"" + action + "\""));
@@ -92,8 +103,39 @@ public class SummaryController {
           if (!ogelServiceResponse.isOk()) {
             return completedFuture(badRequest("Bad OGEL service response"));
           }
+          // TODO Refactor duplicate code out of here and redirectToRegistration
           return completedFuture(ok(summary.render(form, frontendServiceResponse.getFrontendServiceResult().controlCodeData,
               countryServiceResponse.getCountriesByRef(destinationCountries), ogelServiceResponse.getResult())));
+        }, httpExecutionContext.current());
+      }, httpExecutionContext.current());
+    }, httpExecutionContext.current());
+  }
+
+  public CompletionStage<Result> redirectToRegistration() {
+    String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+    List<String> destinationCountries = permissionsFinderDao.getThroughDestinationCountries();
+
+    // Add "primary" country to the first position
+    destinationCountries.add(0, permissionsFinderDao.getFinalDestinationCountry());
+
+    String ogelId = permissionsFinderDao.getOgelId();
+    String transactionId = transactionManager.getTransactionId();
+
+    return frontendServiceClient.get(physicalGoodControlCode).thenComposeAsync(frontendServiceResponse -> {
+      if (!frontendServiceResponse.isOk()) {
+        return completedFuture(badRequest("Bad control code front end service response"));
+      }
+      return countryServiceClient.getCountries().thenComposeAsync(countryServiceResponse -> {
+        if (!countryServiceResponse.isOk()) {
+          return completedFuture(badRequest("Bad country service response"));
+        }
+        return ogelServiceClient.get(ogelId).thenComposeAsync(ogelServiceResponse -> {
+          if (!ogelServiceResponse.isOk()) {
+            return completedFuture(badRequest("Bad OGEL service response"));
+          }
+          return ogelRegistrationServiceClient.handOffToOgelRegistration(transactionId, ogelServiceResponse.getResult(),
+              countryServiceResponse.getCountriesByRef(destinationCountries),
+              frontendServiceResponse.getFrontendServiceResult().controlCodeData);
         }, httpExecutionContext.current());
       }, httpExecutionContext.current());
     }, httpExecutionContext.current());

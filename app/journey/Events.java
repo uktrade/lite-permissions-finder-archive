@@ -70,6 +70,4 @@ public class Events {
 
   public static final JourneyEvent CHANGE_DESTINATION_COUNTRIES = new JourneyEvent("CHANGE_DESTINATION_COUNTRIES");
 
-  public static final JourneyEvent HANDOFF_TO_OGEL_REGISTRATION =  new JourneyEvent("HANDOFF_TO_OGEL_REGISTRATION");
-
 }

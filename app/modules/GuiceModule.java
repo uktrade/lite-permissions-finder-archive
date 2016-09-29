@@ -396,10 +396,6 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.CHANGE_DESTINATION_COUNTRIES)
         .then(moveTo(destinationCountries));
 
-    jdb.atStage(summary)
-        .onEvent(Events.HANDOFF_TO_OGEL_REGISTRATION)
-        .then(moveTo(null)); // TODO handoff to OGEL registration
-
     return new JourneyManager(jdb.build("default", index));
   }
 
