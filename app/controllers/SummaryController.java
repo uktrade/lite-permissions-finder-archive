@@ -73,7 +73,11 @@ public class SummaryController {
 
   public CompletionStage<Result> renderWithForm(Form<SummaryForm> form) {
     String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
-    List<String> destinationCountries = permissionsFinderDao.getDestinationCountryList();
+    List<String> destinationCountries = permissionsFinderDao.getThroughDestinationCountries();
+
+    // Add "primary" country to the first position
+    destinationCountries.add(0, permissionsFinderDao.getFinalDestinationCountry());
+
     String ogelId = permissionsFinderDao.getOgelId();
 
     return frontendServiceClient.get(physicalGoodControlCode).thenComposeAsync(frontendServiceResponse -> {

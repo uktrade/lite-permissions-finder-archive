@@ -59,7 +59,11 @@ public class OgelResultsController {
   public CompletionStage<Result> renderWithForm(Form<OgelResultsForm> form) {
     String controlCode = permissionsFinderDao.getPhysicalGoodControlCode();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
-    List<String> destinationCountries = permissionsFinderDao.getDestinationCountryList();
+    List<String> destinationCountries = permissionsFinderDao.getThroughDestinationCountries();
+
+    // Add "primary" country to the first position
+    destinationCountries.add(0, permissionsFinderDao.getFinalDestinationCountry());
+
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
@@ -101,7 +105,11 @@ public class OgelResultsController {
 
     String controlCode = permissionsFinderDao.getPhysicalGoodControlCode();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
-    List<String> destinationCountries = permissionsFinderDao.getDestinationCountryList();
+    List<String> destinationCountries = permissionsFinderDao.getThroughDestinationCountries();
+
+    // Add "primary" country to the first position
+    destinationCountries.add(0, permissionsFinderDao.getFinalDestinationCountry());
+
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)

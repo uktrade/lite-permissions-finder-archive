@@ -26,8 +26,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String SOURCE_COUNTRY = "sourceCountry";
 
-  public static final String DESTINATION_COUNTRY_LIST = "destinationCountryList";
-
   public static final String OGEL_ID = "ogelId";
 
   public static final String EXPORT_CATEGORY = "exportCategory";
@@ -58,6 +56,12 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String OGEL_CONDITIONS_APPLY = "ogelConditionsApply";
 
+  public static final String ITEM_THROUGH_MULTIPLE_COUNTRIES = "itemThroughMultipleCountries";
+
+  public static final String FINAL_DESTINATION_COUNTRY = "finalDestinationCountry";
+
+  public static final String THROUGH_DESTINATION_COUNTRY_LIST = "throughDestinationCountryList";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -77,20 +81,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public String getSourceCountry() {
     return readString(SOURCE_COUNTRY);
-  }
-
-  public void saveDestinationCountryList(List<String> destinationCountries) {
-    writeString(DESTINATION_COUNTRY_LIST, Json.stringify(Json.toJson(destinationCountries)));
-  }
-
-  public List<String> getDestinationCountryList() {
-    String countriesJson = readString(DESTINATION_COUNTRY_LIST);
-    if (countriesJson == null || countriesJson.isEmpty()) {
-      return Collections.EMPTY_LIST;
-    }
-    else {
-      return new LinkedList<String>(Arrays.asList(Json.fromJson(Json.parse(countriesJson), String[].class)));
-    }
   }
 
   public void saveOgelId(String ogelId) {
@@ -223,6 +213,36 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<Boolean> getOgelConditionsApply() {
     return readBoolean(OGEL_CONDITIONS_APPLY);
+  }
+
+  public void saveItemThroughMultipleCountries (boolean itemThroughMultipleCountries) {
+    writeBoolean(ITEM_THROUGH_MULTIPLE_COUNTRIES, itemThroughMultipleCountries);
+  }
+
+  public Optional<Boolean> getItemThroughMultipleCountries() {
+    return readBoolean(ITEM_THROUGH_MULTIPLE_COUNTRIES);
+  }
+
+  public void saveFinalDestinationCountry(String finalDestinationCountry) {
+    writeString(FINAL_DESTINATION_COUNTRY, finalDestinationCountry);
+  }
+
+  public String getFinalDestinationCountry() {
+    return readString(FINAL_DESTINATION_COUNTRY);
+  }
+
+  public void saveThroughDestinationCountries(List<String> throughDestinationCountries) {
+    writeObject(THROUGH_DESTINATION_COUNTRY_LIST, throughDestinationCountries);
+  }
+
+  public List<String> getThroughDestinationCountries() {
+    String countriesJson = readString(THROUGH_DESTINATION_COUNTRY_LIST);
+    if (countriesJson == null || countriesJson.isEmpty()) {
+      return Collections.emptyList();
+    }
+    else {
+      return new LinkedList<>(Arrays.asList(Json.fromJson(Json.parse(countriesJson), String[].class)));
+    }
   }
 
 }
