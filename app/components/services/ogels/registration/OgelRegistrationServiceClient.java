@@ -32,10 +32,10 @@ public class OgelRegistrationServiceClient {
 
   @Inject
   public OgelRegistrationServiceClient(WSClient ws,
-                           @Named("ogelRegistrationHost") String webServiceHost,
-                           @Named("ogelRegistrationPort") int webServicePort,
-                           @Named("ogelRegistrationTimeout") int webServiceTimeout,
-                           @Named("ogelRegistrationSharedSecret") String webServiceSharedSecret) {
+                           @Named("ogelRegistrationServiceHost") String webServiceHost,
+                           @Named("ogelRegistrationServicePort") int webServicePort,
+                           @Named("ogelRegistrationServiceTimeout") int webServiceTimeout,
+                           @Named("ogelRegistrationServiceSharedSecret") String webServiceSharedSecret) {
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
