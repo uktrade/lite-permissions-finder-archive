@@ -1,5 +1,7 @@
 @import models.common.Country
-@(field: Field, removeButtonValue: Integer, showRemoveButton: Boolean, countries: List[Country])
+@import views.html.common.page._
+@import views.html.util._
+@(field: Field, removeButtonValue: Integer, showRemoveButton: Boolean, showDetailPanel: Boolean, countries: List[Country])
 <div class="form-group@if(field.error.isDefined) { error}">
   <div class="grid-row">
     <div class="column-one-half">
@@ -7,7 +9,22 @@
         <p class="error-message">@Messages(field.error.get.message)</p>
       }
 
-      <span class="form-hint">Type your destination country or territory.</span>
+      <span class="form-hint">Type your destination country or territory</span>
+
+      @if(showDetailPanel) {
+        @detailPanel("destination-help"){
+          Can't find your destination?
+        } {
+
+          <p>
+            If you can't find your destination, country or territory you can get help from the
+            government's Export Control Organisation
+          </p>
+
+          @helpInfoPanel()
+
+        }
+      }
 
       <select name="@field.name" id="@field.id" class="ui-autocomplete-base" autofocus="autofocus" autocorrect="off" autocomplete="off" ui-autocomplete="ui-autocomplete">
         <option value="" @if(!field.value.isDefined || (field.value.isDefined && "".equals(field.value.get))) {selected="selected"}></option>

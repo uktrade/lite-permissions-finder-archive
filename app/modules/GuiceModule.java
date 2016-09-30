@@ -184,7 +184,7 @@ public class GuiceModule extends AbstractModule{
     JourneyStage searchAgain = jdb.defineStage("searchAgain", "Search again",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.SearchAgainController.renderForm()));
 
-    JourneyStage destinationCountries = jdb.defineStage("destinationCountries", "Where are your items being sent to?",
+    JourneyStage destinationCountries = jdb.defineStage("destinationCountries", "Countries and territories",
         () -> cpm.addParamsAndRedirect(routes.DestinationCountryController.renderForm()));
 
     JourneyStage ogelQuestions = jdb.defineStage("ogelQuestions", "Are you exporting for any of these reasons",

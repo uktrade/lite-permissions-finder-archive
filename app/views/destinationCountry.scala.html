@@ -6,7 +6,7 @@
 @(form: Form[_], countries: List[Country], numberOfThroughDestinationCountries: Int)
 
 
-@standardPage("Where are your items being sent to?", Some(Html("Where are your items being sent to?"))){
+@standardPage("Countries and territories", Some(Html("Countries and territories"))){
   @errorSummary(form)
 }{
 
@@ -16,22 +16,9 @@
 
     <input type="submit" class="hidden"></input>
 
-    @countrySelect(form("finalDestinationCountry"), null, false, countries)
+    <h2 class="heading-medium">Where is the final destination of your items?</h2>
 
-    <div class="form-group">
-      @detailPanel("destination-help"){
-        Can't find your destination?
-      } {
-
-        <p>
-          If you can't find your destination, country or territory you can get help from the
-          government's Export Control Organisation
-        </p>
-
-          @helpInfoPanel()
-
-      }
-    </div>
+    @countrySelect(form("finalDestinationCountry"), null, false, true, countries)
 
     @formRadioBoolean(form("itemThroughMultipleCountries"), Html("Will your items pass through any other countries before they reach their final destination?"))
 
