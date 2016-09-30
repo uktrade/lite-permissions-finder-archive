@@ -55,9 +55,6 @@ public class OgelQuestionsController {
   public static class OgelQuestionsForm {
 
     @Required(message = "You must answer this question")
-    public String toGovernment;
-
-    @Required(message = "You must answer this question")
     public String forRepairReplacement;
 
     @Required(message = "You must answer this question")
@@ -73,9 +70,6 @@ public class OgelQuestionsController {
 
       if (ogelQuestionsFormOptional.isPresent()) {
         OgelQuestionsForm ogelQuestionsForm = ogelQuestionsFormOptional.get();
-        if ("true".equals(ogelQuestionsForm.toGovernment)) {
-          activityTypes.add(OgelActivityType.MIL_GOV.value());
-        }
         if ("true".equals(ogelQuestionsForm.forRepairReplacement)) {
           activityTypes.add(OgelActivityType.REPAIR.value());
         }
@@ -84,6 +78,7 @@ public class OgelQuestionsController {
         }
         // Always add these types
         activityTypes.add(OgelActivityType.MIL_ANY.value());
+        activityTypes.add(OgelActivityType.MIL_GOV.value());
         activityTypes.add(OgelActivityType.DU_ANY.value());
       }
 
