@@ -14,8 +14,6 @@ public class Events {
 
   public static final JourneyEvent CONTINUE_APPLICATION = new JourneyEvent("CONTINUE_APPLICATION");
 
-  public static final JourneyEvent APPLICATION_FOUND = new JourneyEvent("APPLICATION_FOUND");
-
   public static final ParameterisedJourneyEvent<TradeType> TRADE_TYPE_SELECTED =
       new ParameterisedJourneyEvent<>("TRADE_TYPE_SELECTED", TradeType.class);
 

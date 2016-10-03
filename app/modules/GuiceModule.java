@@ -1,7 +1,6 @@
 package modules;
 
 import static components.common.journey.JourneyDefinitionBuilder.moveTo;
-import static play.mvc.Results.redirect;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -22,8 +21,6 @@ import model.LifeType;
 import model.TradeType;
 import play.Configuration;
 import play.Environment;
-
-import java.util.concurrent.CompletableFuture;
 
 public class GuiceModule extends AbstractModule{
 
@@ -98,9 +95,6 @@ public class GuiceModule extends AbstractModule{
   public JourneyManager provideJourneyManager (ContextParamManager cpm) {
 
     JourneyDefinitionBuilder jdb = new JourneyDefinitionBuilder();
-
-    JourneyStage index = jdb.defineStage("index", "Import / export licensing service",
-        () -> CompletableFuture.completedFuture(redirect(routes.EntryPointController.index())));
 
     JourneyStage startApplication = jdb.defineStage("startApplication", "Saving your application",
         () -> cpm.addParamsAndRedirect(routes.StartApplicationController.renderForm()));
@@ -210,27 +204,14 @@ public class GuiceModule extends AbstractModule{
     JourneyStage summary = jdb.defineStage("summary", "Check your answers so far",
         () -> cpm.addParamsAndRedirect(routes.SummaryController.renderForm()));
 
-    jdb.atStage(index)
-        .onEvent(Events.START_APPLICATION)
-        .then(moveTo(startApplication));
-
-    jdb.atStage(index)
-        .onEvent(Events.CONTINUE_APPLICATION)
-        .then(moveTo(continueApplication));
-
     jdb.atStage(startApplication)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(tradeType));
-
-    // TODO Convert to injected link in view
-    jdb.atStage(continueApplication)
         .onEvent(Events.START_APPLICATION)
-        .then(moveTo(startApplication));
+        .then(moveTo(tradeType));
 
     // TODO Restore to last position, requires JourneyManager persistence
     jdb.atStage(continueApplication)
-        .onEvent(Events.APPLICATION_FOUND)
-        .then(moveTo(tradeType));
+        .onEvent(Events.CONTINUE_APPLICATION)
+        .then(moveTo(null));
 
     jdb.atStage(tradeType)
         .onEvent(Events.TRADE_TYPE_SELECTED)
@@ -404,7 +385,7 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.CHANGE_DESTINATION_COUNTRIES)
         .then(moveTo(destinationCountries));
 
-    return new JourneyManager(jdb.build("default", index));
+    return new JourneyManager(jdb.build("default", startApplication));
   }
 
 }

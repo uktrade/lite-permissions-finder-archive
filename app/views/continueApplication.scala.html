@@ -9,7 +9,7 @@
   @errorSummary(form)
 }{
 
-  <h2 class="heading-medium section">
+  <h2 class="heading-medium section" xmlns="http://www.w3.org/1999/html">
     Enter your details below
   </h2>
 
@@ -30,7 +30,7 @@
     </div>
 
     <p>
-      Don't have these details? <button class="link underlined" type="submit" name="startApplication" value="true">Start a new application</button>.
+      Don't have these details? <a href="@routes.StartApplicationController.renderForm()">Start a new application</a>.
     </p>
     
   </form>

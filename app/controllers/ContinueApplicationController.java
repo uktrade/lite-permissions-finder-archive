@@ -5,9 +5,6 @@ import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.journey.JourneyManager;
-import components.persistence.PermissionsFinderDao;
-import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -18,42 +15,27 @@ import java.util.concurrent.CompletionStage;
 
 public class ContinueApplicationController {
 
-  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public ContinueApplicationController(JourneyManager journeyManager, FormFactory formFactory,
-                                       PermissionsFinderDao permissionsFinderDao) {
-    this.journeyManager = journeyManager;
+  public ContinueApplicationController(FormFactory formFactory) {
     this.formFactory = formFactory;
-    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
-    // TODO Do not restore this information after JourneyManager persistence is added
-    ContinueApplicationForm formTemplate = new ContinueApplicationForm();
-    formTemplate.applicationNumber = permissionsFinderDao.getApplicationCode();
-    formTemplate.memorableWord = permissionsFinderDao.getMemorableWord();
-    return ok(continueApplication.render(formFactory.form(ContinueApplicationForm.class).fill(formTemplate)));
+    return ok(continueApplication.render(formFactory.form(ContinueApplicationForm.class)));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<ContinueApplicationForm> form = formFactory.form(ContinueApplicationForm.class).bindFromRequest();
-    if ("true".equals(form.field("startApplication").value())) {
-      // TODO Convert to injected link in view
-      return journeyManager.performTransition(Events.START_APPLICATION);
-    }
     if (form.hasErrors()) {
       return completedFuture(ok(continueApplication.render(form)));
     }
-    String applicationNumber = form.get().applicationNumber;
+    String applicationCode = form.get().applicationCode;
     String memorableWord = form.get().memorableWord;
-    if (applicationNumber != null && !applicationNumber.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
-      if (applicationNumber.equals(permissionsFinderDao.getApplicationCode()) && memorableWord.equals(permissionsFinderDao.getMemorableWord())) {
-        return journeyManager.performTransition(Events.APPLICATION_FOUND);
-      }
-      form.reject("applicationNumber", "You have entered an invalid claim number");
+    if (applicationCode != null && !applicationCode.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
+      // TODO start journey once journey manager persistence and application code lookup is implemented
+      form.reject("applicationCode", "You have entered an invalid claim number");
       return completedFuture(ok(continueApplication.render(form)));
     }
     return completedFuture(badRequest("Unhandled form state"));
@@ -62,7 +44,7 @@ public class ContinueApplicationController {
   public static class ContinueApplicationForm {
 
     @Required(message = "You must enter your application number")
-    public String applicationNumber;
+    public String applicationCode;
 
     @Required(message = "You must enter your memorable word")
     public String memorableWord;

@@ -1,51 +1,39 @@
 package controllers;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-
 import com.google.inject.Inject;
-import components.common.journey.JourneyManager;
-import components.common.transaction.TransactionManager;
-import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
-import play.mvc.*;
-
-import views.html.*;
-
-import java.util.concurrent.CompletionStage;
+import play.mvc.Controller;
+import play.mvc.Result;
+import views.html.index;
 
 
 public class EntryPointController extends Controller {
 
-  private final TransactionManager transactionManager;
-  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
 
   @Inject
-  public EntryPointController(TransactionManager transactionManager,
-                              JourneyManager journeyManager,
-                              FormFactory formFactory) {
-    this.transactionManager = transactionManager;
-    this.journeyManager = journeyManager;
+  public EntryPointController(FormFactory formFactory) {
     this.formFactory = formFactory;
   }
 
   public Result index() {
-    journeyManager.startJourney("default");
     return ok(index.render());
   }
 
-  public CompletionStage<Result> handleSubmit() {
-    transactionManager.createTransaction();
+  public Result handleSubmit() {
     Form<EntryPointForm> form = formFactory.form(EntryPointForm.class).bindFromRequest();
-    String action = form.get().action;
-    if ("start".equals(action)) {
-      return journeyManager.performTransition(Events.START_APPLICATION);
+    if (!form.hasErrors()) {
+      String action = form.get().action;
+      if ("start".equals(action)) {
+        return redirect(routes.StartApplicationController.renderForm());
+      }
+      if ("continue".equals(action)) {
+        return redirect(routes.ContinueApplicationController.renderForm());
+      }
+      return badRequest("Unknown value for action: \"" + action + "\"");
     }
-    if ("continue".equals(action)) {
-      return journeyManager.performTransition(Events.CONTINUE_APPLICATION);
-    }
-    return completedFuture(badRequest("Unknown value for action: \"" + action + "\""));
+    return badRequest("Invalid form state");
   }
 
   public static class EntryPointForm {

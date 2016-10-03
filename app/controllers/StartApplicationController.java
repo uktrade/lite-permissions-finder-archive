@@ -6,8 +6,9 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
-import components.common.journey.StandardEvents;
+import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
+import journey.Events;
 import components.services.PermissionsFinderNotificationClient;
 import play.data.Form;
 import play.data.FormFactory;
@@ -29,16 +30,19 @@ public class StartApplicationController {
 
   private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'));
 
+  private final TransactionManager transactionManager;
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final PermissionsFinderNotificationClient notificationClient;
 
   @Inject
-  public StartApplicationController(JourneyManager journeyManager,
+  public StartApplicationController(TransactionManager transactionManager,
+                                    JourneyManager journeyManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
                                     PermissionsFinderNotificationClient notificationClient) {
+	this.transactionManager = transactionManager;
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -46,17 +50,23 @@ public class StartApplicationController {
   }
 
   public Result renderForm() {
+    // Hack to test if a transaction Id has already been set.
+    // TODO JourneyManager getTransactionId() should return a named exception
+    try {
+      transactionManager.getTransactionId();
+    }
+    catch (RuntimeException e) {
+      transactionManager.createTransaction();
+      journeyManager.startJourney("default");
+    }
+
     String applicationCode = permissionsFinderDao.getApplicationCode();
     if (applicationCode == null || applicationCode.isEmpty()) {
       applicationCode = generateApplicationCode();
       permissionsFinderDao.saveApplicationCode(applicationCode);
     }
 
-    StartApplicationForm formTemplate = new StartApplicationForm();
-    formTemplate.memorableWord = permissionsFinderDao.getMemorableWord();
-    formTemplate.emailAddress = permissionsFinderDao.getEmailAddress();
-
-    return ok(startApplication.render(formFactory.form(StartApplicationForm.class).fill(formTemplate), applicationCode));
+    return ok(startApplication.render(formFactory.form(StartApplicationForm.class), applicationCode));
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -66,13 +76,11 @@ public class StartApplicationController {
     }
     String emailAddress = form.get().emailAddress;
     String memorableWord = form.get().memorableWord;
-    if (emailAddress != null && !emailAddress.isEmpty()) {
+    if (emailAddress != null && !emailAddress.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
       permissionsFinderDao.saveEmailAddress(emailAddress);
-      notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
-    }
-    if (memorableWord != null && !memorableWord.isEmpty()) {
       permissionsFinderDao.saveMemorableWord(memorableWord);
-      return journeyManager.performTransition(StandardEvents.NEXT);
+	  notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
+      return journeyManager.performTransition(Events.START_APPLICATION);
     }
     return completedFuture(badRequest("Unhandled form state"));
   }
