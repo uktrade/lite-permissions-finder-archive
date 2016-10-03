@@ -4,6 +4,6 @@
 
 @for(i <- 0 to count - 1) {
 
-  @countrySelect(form(fieldName + '[' + i + ']'), countries)
+  @countrySelect(form(fieldName + '[' + i + ']'), i, i != 0, false, countries)
 
 }

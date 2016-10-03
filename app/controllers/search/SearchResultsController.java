@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class SearchResultsController {
 
-  protected final JourneyManager jm;
+  protected final JourneyManager journeyManager;
   private final FormFactory formFactory;
   protected final SearchServiceClient searchServiceClient;
   protected final FrontendServiceClient frontendServiceClient;
@@ -20,13 +20,13 @@ public class SearchResultsController {
   protected final ErrorController errorController;
 
 
-  public SearchResultsController(JourneyManager jm,
+  public SearchResultsController(JourneyManager journeyManager,
                                  FormFactory formFactory,
                                  SearchServiceClient searchServiceClient,
                                  FrontendServiceClient frontendServiceClient,
                                  ControlCodeController controlCodeController,
                                  ErrorController errorController) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.searchServiceClient = searchServiceClient;
     this.frontendServiceClient = frontendServiceClient;

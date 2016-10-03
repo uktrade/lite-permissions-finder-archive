@@ -43,8 +43,9 @@ public class ApplicableOgelServiceClient {
     WSRequest req = ws.url(webServiceUrl)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("controlCode", controlCode)
-        .setQueryParameter("sourceCountry", sourceCountry)
-        .setQueryParameter("destinationCountry", destinationCountry);
+        // TODO remove the String.replace when the applicable-ogel-service can take this format
+        .setQueryParameter("sourceCountry", sourceCountry.replace("CTRY", ""))
+        .setQueryParameter("destinationCountry", destinationCountry.replace("CTRY", ""));
 
     activityTypes.stream().forEach(activityType -> req.setQueryParameter("activityType", activityType));
 

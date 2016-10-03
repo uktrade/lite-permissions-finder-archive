@@ -1,0 +1,54 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import components.services.controlcode.frontend.ControlCodeData
+@import components.services.ogels.ogel.OgelServiceResult
+@import models.common.Country;
+
+@(form: Form[_], controlCodeData: ControlCodeData, destinationCountries: List[Country], ogelServiceResult: OgelServiceResult)
+
+@standardPage("Check your answers so far", Some(Html("Check your answers so far"))) {
+  @errorSummary(form)
+}{
+
+  <form action="@routes.SummaryController.handleSubmit()" method="POST">
+
+    @contextFormParams()
+
+    <div class="form-group">
+      <table>
+        <thead>
+          <th colspan="3"> </th>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="summary-item-heading">Goods rating</td>
+            <td><strong class="bold-small">@controlCodeData.controlCode</strong> - @controlCodeData.title</td>
+            <td><button class="link underlined" type="submit" name="action" value="changeGoodsRating">Change</button></td>
+          </tr>
+          <tr>
+            <td class="summary-item-heading">Licence Type</td>
+            <td>@ogelServiceResult.name</td>
+            <td><button class="link underlined" type="submit" name="action" value="changeLicenceType">Change</button></td>
+          </tr>
+          <tr>
+            <td class="summary-item-heading">Destination Countries</td>
+            <td>
+              <ul>
+              @for(country <- destinationCountries) {
+                <li>@country.getCountryName</li>
+              }
+              </ul>
+            </td>
+            <td><button class="link underlined" type="submit" name="action" value="changeDestinationCountries">Change</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button class="button" type="submit" name="action" value="register">Continue to licence registration</button>
+
+  </form>
+
+}

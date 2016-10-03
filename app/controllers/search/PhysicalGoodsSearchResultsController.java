@@ -25,32 +25,35 @@ import java.util.concurrent.CompletionStage;
 
 public class PhysicalGoodsSearchResultsController extends SearchResultsController {
 
-  private final HttpExecutionContext ec;
+  private final HttpExecutionContext httpExecutionContext;
   private final PermissionsFinderDao dao;
   public static final int PAGINATION_SIZE = 5;
 
   @Inject
-  public PhysicalGoodsSearchResultsController(JourneyManager jm,
+  public PhysicalGoodsSearchResultsController(JourneyManager journeyManager,
                                               FormFactory formFactory,
                                               SearchServiceClient searchServiceClient,
                                               FrontendServiceClient frontendServiceClient,
                                               ControlCodeController controlCodeController,
                                               ErrorController errorController,
-                                              HttpExecutionContext ec,
+                                              HttpExecutionContext httpExecutionContext,
                                               PermissionsFinderDao dao) {
-    super(jm, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
-    this.ec = ec;
+    super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
+    this.httpExecutionContext = httpExecutionContext;
     this.dao = dao;
   }
 
   public CompletionStage<Result> renderForm() {
     return physicalGoodsSearch()
         .thenApplyAsync(response -> {
+          if (!response.isOk()) {
+            return badRequest("An issue occurred while processing your request, please try again later.");
+          }
           List<SearchServiceResult> searchResults = response.getSearchResults();
           int displayCount = Math.min(searchResults.size(), PAGINATION_SIZE);
           dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
           return ok(physicalGoodsSearchResults.render(searchResultsForm(), searchResults, displayCount));
-        }, ec.current());
+        }, httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -65,31 +68,34 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
               dao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
             }
             return ok(physicalGoodsSearchResults.render(form, response.getSearchResults(), newDisplayCount));
-          }, ec.current());
+          }, httpExecutionContext.current());
     }
 
     Optional<SearchResultAction> action = getAction(form.get());
     if (action.isPresent()){
       switch (action.get()) {
         case NONE_MATCHED:
-          return jm.performTransition(Events.NONE_MATCHED);
+          return journeyManager.performTransition(Events.NONE_MATCHED);
         case SHORE_MORE:
           return physicalGoodsSearch()
               .thenApplyAsync(response -> {
+                if (!response.isOk()) {
+                  return badRequest("An issue occurred while processing your request, please try again later.");
+                }
                 int displayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
                 int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, response.getSearchResults().size());
                 if (displayCount != newDisplayCount) {
                   dao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
                 }
                 return ok(physicalGoodsSearchResults.render(form, response.getSearchResults(), newDisplayCount));
-              }, ec.current());
+              }, httpExecutionContext.current());
       }
     }
 
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
       dao.savePhysicalGoodControlCode(result.get());
-      return jm.performTransition(Events.CONTROL_CODE_SELECTED);
+      return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
     return completedFuture(badRequest("Invalid form state"));

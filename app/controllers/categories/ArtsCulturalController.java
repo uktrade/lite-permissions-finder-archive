@@ -27,19 +27,20 @@ public class ArtsCulturalController extends Controller {
       new SelectOption("GT100", "More than 100 years old")
   );
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public ArtsCulturalController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
-    this.jm = jm;
+  public ArtsCulturalController(JourneyManager journeyManager, FormFactory formFactory,
+                                PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
-    Optional<ArtsCulturalForm> templateFormOptional = dao.getArtsCulturalForm();
+    Optional<ArtsCulturalForm> templateFormOptional = permissionsFinderDao.getArtsCulturalForm();
     ArtsCulturalForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new ArtsCulturalForm();
     return ok(artsCultural.render(formFactory.form(ArtsCulturalForm.class).fill(templateForm)));
   }
@@ -52,13 +53,13 @@ public class ArtsCulturalController extends Controller {
       return completedFuture(ok(artsCultural.render(form)));
     }
 
-    dao.saveArtsCulturalForm(form.get());
+    permissionsFinderDao.saveArtsCulturalForm(form.get());
 
     if (form.get().firearm && !"GT100".equals(form.get().itemAge)) {
-      return jm.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, true);
+      return journeyManager.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, true);
     }
     else {
-      return jm.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, false);
+      return journeyManager.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, false);
     }
   }
 

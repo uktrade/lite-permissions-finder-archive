@@ -12,7 +12,7 @@
 
   <table class="tree">
 
-    @if(frontendServiceResult.getGreatestAncestor.isDefined) {
+    @if(frontendServiceResult.greatestAncestor.isDefined) {
       <tr class="tree-row">
         <td class="tree-line-first">
           <div class="tree-wrapper-first">
@@ -20,17 +20,17 @@
           </div>
         </td>
         <td class="tree-desc">
-          <span class="font-small">@Html(frontendServiceResult.getGreatestAncestor.get.friendlyDescription)</span>
+          <span class="font-small">@Html(frontendServiceResult.greatestAncestor.get.friendlyDescription)</span>
         </td>
         <td class="tree-code">
           <div class="tree-code-wrapper">
-            <span class="font-small">@frontendServiceResult.getGreatestAncestor.get.controlCode</span>
+            <span class="font-small">@frontendServiceResult.greatestAncestor.get.controlCode</span>
           </div>
         </td>
       </tr>
     }
 
-    @for(otherAncestorCode <- frontendServiceResult.getOtherAncestors){
+    @for(otherAncestorCode <- frontendServiceResult.otherAncestors){
       <tr class="tree-row">
         <td class="tree-line" >
           <div class="tree-circle"></div>

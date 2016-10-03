@@ -24,9 +24,9 @@ import java.util.concurrent.CompletionStage;
 
 public class PlantsAnimalsController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   public static final List<SelectOption> LIFE_TYPE_OPTIONS = Arrays.asList(
       new SelectOption(LifeType.ENDANGERED.value(), "Endangered animal"),
@@ -35,15 +35,15 @@ public class PlantsAnimalsController {
   );
 
   @Inject
-  public PlantsAnimalsController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
-    this.jm = jm;
+  public PlantsAnimalsController(JourneyManager journeyManager, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
     PlantsAnimalsForm templateForm = new PlantsAnimalsForm();
-    Optional<LifeType> lifeTypeOptional = dao.getPlantsAnimalsLifeType();
+    Optional<LifeType> lifeTypeOptional = permissionsFinderDao.getPlantsAnimalsLifeType();
     templateForm.lifeType = lifeTypeOptional.isPresent() ? lifeTypeOptional.get().value() : "";
     return ok(plantsAnimals.render(formFactory.form(PlantsAnimalsForm.class).fill(templateForm)));
   }
@@ -55,8 +55,8 @@ public class PlantsAnimalsController {
     }
     Optional<LifeType> lifeTypeOptional = LifeType.getMatched(form.get().lifeType);
     if(lifeTypeOptional.isPresent()) {
-      dao.savePlantsAnimalsLifeType(lifeTypeOptional.get());
-      return jm.performTransition(Events.LIFE_TYPE_SELECTED, lifeTypeOptional.get());
+      permissionsFinderDao.savePlantsAnimalsLifeType(lifeTypeOptional.get());
+      return journeyManager.performTransition(Events.LIFE_TYPE_SELECTED, lifeTypeOptional.get());
     }
     return completedFuture(badRequest("Unknown value for lifeType: \"" + form.get().lifeType + "\""));
   }

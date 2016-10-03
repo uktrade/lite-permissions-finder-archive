@@ -18,22 +18,23 @@ import java.util.concurrent.CompletionStage;
 
 public class ContinueApplicationController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public ContinueApplicationController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
-    this.jm = jm;
+  public ContinueApplicationController(JourneyManager journeyManager, FormFactory formFactory,
+                                       PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
     // TODO Do not restore this information after JourneyManager persistence is added
     ContinueApplicationForm formTemplate = new ContinueApplicationForm();
-    formTemplate.applicationNumber = dao.getApplicationCode();
-    formTemplate.memorableWord = dao.getMemorableWord();
+    formTemplate.applicationNumber = permissionsFinderDao.getApplicationCode();
+    formTemplate.memorableWord = permissionsFinderDao.getMemorableWord();
     return ok(continueApplication.render(formFactory.form(ContinueApplicationForm.class).fill(formTemplate)));
   }
 
@@ -41,7 +42,7 @@ public class ContinueApplicationController {
     Form<ContinueApplicationForm> form = formFactory.form(ContinueApplicationForm.class).bindFromRequest();
     if ("true".equals(form.field("startApplication").value())) {
       // TODO Convert to injected link in view
-      return jm.performTransition(Events.START_APPLICATION);
+      return journeyManager.performTransition(Events.START_APPLICATION);
     }
     if (form.hasErrors()) {
       return completedFuture(ok(continueApplication.render(form)));
@@ -49,10 +50,11 @@ public class ContinueApplicationController {
     String applicationNumber = form.get().applicationNumber;
     String memorableWord = form.get().memorableWord;
     if (applicationNumber != null && !applicationNumber.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
-      if (applicationNumber.equals(dao.getApplicationCode()) && memorableWord.equals(dao.getMemorableWord())) {
-        jm.performTransition(Events.APPLICATION_FOUND);
+      if (applicationNumber.equals(permissionsFinderDao.getApplicationCode()) && memorableWord.equals(permissionsFinderDao.getMemorableWord())) {
+        return journeyManager.performTransition(Events.APPLICATION_FOUND);
       }
-      return jm.performTransition(Events.APPLICATION_NOT_FOUND);
+      form.reject("applicationNumber", "You have entered an invalid claim number");
+      return completedFuture(ok(continueApplication.render(form)));
     }
     return completedFuture(badRequest("Unhandled form state"));
   }

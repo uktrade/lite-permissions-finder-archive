@@ -18,15 +18,15 @@ import java.util.concurrent.CompletionStage;
 
 public class TortureRestraintController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public TortureRestraintController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
-    this.jm = jm;
+  public TortureRestraintController(JourneyManager journeyManager, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
@@ -36,8 +36,8 @@ public class TortureRestraintController {
   public CompletionStage<Result> handleSubmit() {
     Form<TortureRestraintForm> form = formFactory.form(TortureRestraintForm.class).bindFromRequest();
     if ("true".equals(form.get().goToSearch)) {
-      dao.saveExportCategory(ExportCategory.TORTURE_RESTRAINT);
-      return jm.performTransition(StandardEvents.NEXT);
+      permissionsFinderDao.saveExportCategory(ExportCategory.TORTURE_RESTRAINT);
+      return journeyManager.performTransition(StandardEvents.NEXT);
     }
     return completedFuture(badRequest("Unknown value of goToSearch: \"" + form.get().goToSearch + "\""));
   }

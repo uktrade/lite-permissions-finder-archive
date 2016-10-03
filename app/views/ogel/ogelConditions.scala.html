@@ -1,0 +1,51 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import components.services.ogels.ogel.OgelServiceResult
+@import components.services.ogels.conditions.OgelConditionsServiceResult
+
+@(form: Form[_], ogel: OgelServiceResult, ogelRestriction: OgelConditionsServiceResult, missingControlCodes: Boolean)
+@standardPage("Additional conditions apply", Some(Html("Additional conditions apply"))){
+  @errorSummary(form)
+}{
+
+  <form action="@controllers.ogel.routes.OgelConditionsController.handleSubmit" method="POST">
+
+    @contextFormParams()
+
+    <p>
+      Not all items within the classification <strong class="bold-small">@ogelRestriction.controlCode</strong> can be exported using @ogel.name
+    </p>
+
+    <h2 class="heading-medium">Are you exporting any of the following?</h2>
+
+    @Html(ogelRestriction.conditionDescription)
+
+    @if(ogelRestriction.conditionDescriptionControlCodes.isPresent && !ogelRestriction.conditionDescriptionControlCodes.get.controlCodes.isEmpty) {
+      <ul class="list list-bullet text">
+        @for(controlCode <- ogelRestriction.conditionDescriptionControlCodes.get.controlCodes) {
+          @Html(controlCode.friendlyDescription)
+        }
+      </ul>
+    }
+
+    @formRadioBoolean(form.field("doConditionsApply"), Html(""))
+
+    @if(missingControlCodes) {
+
+      <div class="form-group">
+        <button type="submit" class="button" disabled="disabled">Continue</button>
+      </div>
+
+    } else {
+
+      <div class="form-group">
+        <button type="submit" class="button">Continue</button>
+      </div>
+
+    }
+
+  </form>
+  
+}

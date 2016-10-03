@@ -39,7 +39,7 @@ public class GuiceModule extends AbstractModule{
   @Override
   protected void configure() {
 
-    install(new CommonGuiceModule(environment, configuration));
+    install(new CommonGuiceModule(configuration));
 
     // controlCodeSearchService
     bindConstant().annotatedWith(Names.named("controlCodeSearchServiceHost"))
@@ -80,6 +80,16 @@ public class GuiceModule extends AbstractModule{
         .to(configuration.getString("notificationService.port"));
     bindConstant().annotatedWith(Names.named("notificationServiceTimeout"))
         .to(configuration.getString("notificationService.timeout"));
+
+    // ogelRegistration
+    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceHost"))
+        .to(configuration.getString("ogelRegistrationService.hostname"));
+    bindConstant().annotatedWith(Names.named("ogelRegistrationServicePort"))
+        .to(configuration.getString("ogelRegistrationService.port"));
+    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceTimeout"))
+        .to(configuration.getString("ogelRegistrationService.timeout"));
+    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
+        .to(configuration.getString("ogelRegistrationService.sharedSecret"));
 
   }
 
@@ -182,8 +192,23 @@ public class GuiceModule extends AbstractModule{
     JourneyStage searchAgain = jdb.defineStage("searchAgain", "Search again",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.SearchAgainController.renderForm()));
 
-    JourneyStage destinationCountries = jdb.defineStage("destinationCountries", "Where are your items being sent to?",
+    JourneyStage destinationCountries = jdb.defineStage("destinationCountries", "Countries and territories",
         () -> cpm.addParamsAndRedirect(routes.DestinationCountryController.renderForm()));
+
+    JourneyStage ogelQuestions = jdb.defineStage("ogelQuestions", "Are you exporting for any of these reasons",
+        () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelQuestionsController.renderForm()));
+
+    JourneyStage ogelResults = jdb.defineStage("ogelResults", "Licences applicable to your answers",
+        () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelResultsController.renderForm()));
+
+    JourneyStage ogelRestrictions = jdb.defineStage("ogelConditions", "Conditions apply to your licence",
+        () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelConditionsController.renderForm()));
+
+    JourneyStage ogelSummary = jdb.defineStage("ogelSummary", "Licence summary",
+        () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelSummaryController.renderForm()));
+
+    JourneyStage summary = jdb.defineStage("summary", "Check your answers so far",
+        () -> cpm.addParamsAndRedirect(routes.SummaryController.renderForm()));
 
     jdb.atStage(index)
         .onEvent(Events.START_APPLICATION)
@@ -206,10 +231,6 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(continueApplication)
         .onEvent(Events.APPLICATION_FOUND)
         .then(moveTo(tradeType));
-
-    jdb.atStage(continueApplication)
-        .onEvent(Events.APPLICATION_NOT_FOUND)
-        .then(moveTo(null)); // TODO Add in additional screen catering for this condition IELS-606
 
     jdb.atStage(tradeType)
         .onEvent(Events.TRADE_TYPE_SELECTED)
@@ -284,8 +305,8 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(physicalGoodsSearch))
-        .when(GoodsType.SOFTWARE, moveTo(null)) //TODO Not implemented screen
-        .when(GoodsType.TECHNOLOGY, moveTo(null)); //TODO Not implemented screen
+        .when(GoodsType.SOFTWARE, moveTo(null)) // TODO Not implemented screen
+        .when(GoodsType.TECHNOLOGY, moveTo(null)); // TODO Not implemented screen
 
     jdb.atStage(physicalGoodsSearch)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
@@ -345,7 +366,43 @@ public class GuiceModule extends AbstractModule{
 
     jdb.atStage(destinationCountries)
         .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
-        .then(moveTo(null)); //TODO Not implemented screen
+        .then(moveTo(ogelQuestions));
+
+    jdb.atStage(ogelQuestions)
+        .onEvent(Events.OGEL_QUESTIONS_ANSWERED)
+        .then(moveTo(ogelResults));
+
+    jdb.atStage(ogelResults)
+        .onEvent(Events.OGEL_SELECTED)
+        .then(moveTo(ogelSummary));
+
+    jdb.atStage(ogelResults)
+        .onEvent(Events.OGEL_RESTRICTIONS_APPLY)
+        .then(moveTo(ogelRestrictions));
+
+    jdb.atStage(ogelRestrictions)
+        .onEvent(Events.OGEL_DOES_RESTRICTION_APPLY)
+        .then(moveTo(ogelSummary));
+
+    jdb.atStage(ogelSummary)
+        .onEvent(Events.OGEL_REGISTERED)
+        .then(moveTo(summary));
+
+    jdb.atStage(ogelSummary)
+        .onEvent(Events.OGEL_CHOOSE_AGAIN)
+        .then(moveTo(ogelResults));
+
+    jdb.atStage(summary)
+        .onEvent(Events.CHANGE_CONTROL_CODE)
+        .then(moveTo(physicalGoodsSearch));
+
+    jdb.atStage(summary)
+        .onEvent(Events.CHANGE_OGEL_TYPE)
+        .then(moveTo(ogelQuestions));
+
+    jdb.atStage(summary)
+        .onEvent(Events.CHANGE_DESTINATION_COUNTRIES)
+        .then(moveTo(destinationCountries));
 
     return new JourneyManager(jdb.build("default", index));
   }

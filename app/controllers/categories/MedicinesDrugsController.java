@@ -19,20 +19,20 @@ import java.util.concurrent.CompletionStage;
 
 public class MedicinesDrugsController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public MedicinesDrugsController(JourneyManager jm, FormFactory formFactory, PermissionsFinderDao dao) {
-    this.jm = jm;
+  public MedicinesDrugsController(JourneyManager journeyManager, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
     MedicinesDrugsForm templateForm = new MedicinesDrugsForm();
-    Optional<Boolean> isUsedForExecutionTorture = dao.getIsUsedForExecutionTorture();
+    Optional<Boolean> isUsedForExecutionTorture = permissionsFinderDao.getIsUsedForExecutionTorture();
     if (isUsedForExecutionTorture.isPresent()) {
       templateForm.isUsedForExecutionTorture= isUsedForExecutionTorture.get().toString();
     }
@@ -46,15 +46,15 @@ public class MedicinesDrugsController {
     }
 
     boolean isUsedForExecutionTorture = Boolean.parseBoolean(form.get().isUsedForExecutionTorture);
-    dao.saveIsUsedForExecutionTorture(isUsedForExecutionTorture);
+    permissionsFinderDao.saveIsUsedForExecutionTorture(isUsedForExecutionTorture);
 
     if (isUsedForExecutionTorture) {
-      dao.saveExportCategory(ExportCategory.TORTURE_RESTRAINT);
-      return jm.performTransition(Events.IS_USED_FOR_EXECUTION_TORTURE, true);
+      permissionsFinderDao.saveExportCategory(ExportCategory.TORTURE_RESTRAINT);
+      return journeyManager.performTransition(Events.IS_USED_FOR_EXECUTION_TORTURE, true);
     }
     else {
-      dao.saveExportCategory(ExportCategory.MEDICINES_DRUGS);
-      return jm.performTransition(Events.IS_USED_FOR_EXECUTION_TORTURE, false);
+      permissionsFinderDao.saveExportCategory(ExportCategory.MEDICINES_DRUGS);
+      return journeyManager.performTransition(Events.IS_USED_FOR_EXECUTION_TORTURE, false);
     }
   }
 

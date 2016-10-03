@@ -16,13 +16,13 @@ import java.util.concurrent.CompletionStage;
 
 public class FinancialTechnicalAssistanceController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
 
   @Inject
-  public FinancialTechnicalAssistanceController(FormFactory formFactory, JourneyManager jm) {
+  public FinancialTechnicalAssistanceController(FormFactory formFactory, JourneyManager journeyManager) {
     this.formFactory = formFactory;
-    this.jm = jm;
+    this.journeyManager = journeyManager;
   }
 
   public Result renderForm() {
@@ -32,7 +32,7 @@ public class FinancialTechnicalAssistanceController {
   public CompletionStage<Result> handleSubmit() {
     Form<FinancialTechnicalAssistanceForm> form = formFactory.form(FinancialTechnicalAssistanceForm.class).bindFromRequest();
     if ("true".equals(form.get().goToSearch)) {
-      return jm.performTransition(StandardEvents.NEXT);
+      return journeyManager.performTransition(StandardEvents.NEXT);
     }
     return completedFuture(badRequest("Unknown value of goToSearch: \"" + form.get().goToSearch + "\""));
   }

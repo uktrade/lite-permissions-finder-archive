@@ -5,6 +5,7 @@ import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.client.NotificationServiceClient;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
@@ -30,32 +31,32 @@ public class StartApplicationController {
 
   private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'));
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
-  private final NotificationService notificationService;
+  private final PermissionsFinderDao permissionsFinderDao;
+  private final NotificationServiceClient notificationService;
 
   @Inject
-  public StartApplicationController(JourneyManager jm,
+  public StartApplicationController(JourneyManager journeyManager,
                                     FormFactory formFactory,
-                                    PermissionsFinderDao dao,
-                                    NotificationService notificationService) {
-    this.jm = jm;
+                                    PermissionsFinderDao permissionsFinderDao,
+                                    NotificationServiceClient notificationService) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.notificationService = notificationService;
   }
 
   public Result renderForm() {
-    String applicationCode = dao.getApplicationCode();
+    String applicationCode = permissionsFinderDao.getApplicationCode();
     if (applicationCode == null || applicationCode.isEmpty()) {
       applicationCode = generateApplicationCode();
-      dao.saveApplicationCode(applicationCode);
+      permissionsFinderDao.saveApplicationCode(applicationCode);
     }
 
     StartApplicationForm formTemplate = new StartApplicationForm();
-    formTemplate.memorableWord = dao.getMemorableWord();
-    formTemplate.emailAddress = dao.getEmailAddress();
+    formTemplate.memorableWord = permissionsFinderDao.getMemorableWord();
+    formTemplate.emailAddress = permissionsFinderDao.getEmailAddress();
 
     return ok(startApplication.render(formFactory.form(StartApplicationForm.class).fill(formTemplate), applicationCode));
   }
@@ -63,17 +64,18 @@ public class StartApplicationController {
   public CompletionStage<Result> handleSubmit() {
     Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(startApplication.render(form, dao.getApplicationCode())));
+      return completedFuture(ok(startApplication.render(form, permissionsFinderDao.getApplicationCode())));
     }
     String emailAddress = form.get().emailAddress;
     String memorableWord = form.get().memorableWord;
     if (emailAddress != null && !emailAddress.isEmpty()) {
-      dao.saveEmailAddress(emailAddress);
-      notificationService.sendApplicationReferenceEmail(emailAddress, dao.getApplicationCode());
+      permissionsFinderDao.saveEmailAddress(emailAddress);
+      notificationService.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
+
     }
     if (memorableWord != null && !memorableWord.isEmpty()) {
-      dao.saveMemorableWord(memorableWord);
-      return jm.performTransition(StandardEvents.NEXT);
+      permissionsFinderDao.saveMemorableWord(memorableWord);
+      return journeyManager.performTransition(StandardEvents.NEXT);
     }
     return completedFuture(badRequest("Unhandled form state"));
   }

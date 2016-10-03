@@ -2,45 +2,65 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 
-@(form: Form[_], ogels: List[ApplicableOgelServiceResult])
-@standardPage("Based on your answers, you may be able to use one of the following licences?", Some(Html("Based on your answers, you may be able to use one of the following licences?"))){
+@(form: Form[_], ogels: List[ApplicableOgelServiceResult], physicalGoodControlCode: String, destinationCountryNamesHtml: String)
+@standardPage("Based on your answers, you may be able to use one of the following licences", Some(Html("Based on your answers, you may be able to use one of the following licences"))){
   @errorSummary(form)
 }{
 
   <form action="@controllers.ogel.routes.OgelResultsController.handleSubmit()" method="POST">
 
+    @contextFormParams()
 
-    <div class="form-group">
-      <table class="ogel-results">
-        <thead><tr><th></th></tr></thead>
-        <tbody>
-        @for(ogel <- ogels) {
-          <tr>
-            <td>
-              <div class="ogel-results-cell">
-                <button type="submit" class="link" name="chosenOgel" value="@ogel.id">@ogel.name</button>
-                <div class="ogel-usage-summary">
+    @if(ogels.length > 0) {
+
+      <div class="form-group">
+        <table class="ogel-results">
+          <thead><tr><th></th></tr></thead>
+          <tbody>
+          @for(ogel <- ogels) {
+            <tr>
+              <td>
+                <div class="ogel-results-cell">
+                  <button type="submit" class="link" name="chosenOgel" value="@ogel.id">@ogel.name</button>
+                  <div class="ogel-usage-summary">
                   @for(entry <- ogel.usageSummary) {
                     <span class="font-xsmall">@entry</span><br/>
                   }
+                  </div>
                 </div>
-              </div>
-            </td>
-          </tr>
-        }
-        </tbody>
-      </table>
-    </div>
+              </td>
+            </tr>
+          }
+          </tbody>
+        </table>
+      </div>
 
-    <div class="form-group">
-      @detailPanel("none-suitable")(Html("None of these are suitable for my export")){
-        <p>
-          You may be able to use a standard individual export licence (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
-        </p>
+      <div class="form-group">
+        @detailPanel("none-suitable")(Html("None of these are suitable for my export")){
+          <p>
+            You may be able to use a standard individual export licence (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
+          </p>
+          <a class="button font-medium" href="https://www.spire.bis.gov.uk/spire/fox/espire/LOGIN/login">Apply for a SIEL using SPIRE</a>
+        }
+      </div>
+
+    } else {
+
+      <p>
+        At the moment there are no open general export licences (OGELs) you can use to send or take items under the classification <strong class="bold-small">@physicalGoodControlCode</strong> to @Html(destinationCountryNamesHtml)
+      </p>
+
+      <p>
+        You may be able to use a standard individual export licence (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
+      </p>
+
+      <p>
         <a class="button font-medium" href="https://www.spire.bis.gov.uk/spire/fox/espire/LOGIN/login">Apply for a SIEL using SPIRE</a>
-      }
-    </div>
+      </p>
+
+    }
 
   </form>
 }

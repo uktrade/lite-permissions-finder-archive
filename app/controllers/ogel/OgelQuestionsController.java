@@ -1,92 +1,58 @@
 package controllers.ogel;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import journey.Events;
 import model.OgelActivityType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.ogel.ogelQuestions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 public class OgelQuestionsController {
 
   private final FormFactory formFactory;
-
-  private final PermissionsFinderDao dao;
-
-  private final HttpExecutionContext ec;
-
-  private final OgelResultsController ogelResultsController;
+  private final PermissionsFinderDao permissionsFinderDao;
+  private final JourneyManager journeyManager;
 
   @Inject
-  public OgelQuestionsController(FormFactory formFactory,
-                                 PermissionsFinderDao dao,
-                                 HttpExecutionContext ec,
-                                 OgelResultsController ogelResultsController) {
+  public OgelQuestionsController(JourneyManager journeyManager,
+                                 FormFactory formFactory,
+                                 PermissionsFinderDao permissionsFinderDao) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.dao = dao;
-    this.ec = ec;
-    this.ogelResultsController = ogelResultsController;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
-    dao.getPhysicalGoodControlCode();
-    return ok(ogelQuestions.render(formFactory.form(OgelQuestionsForm.class)));
+    Optional<OgelQuestionsForm> templateFormOptional = permissionsFinderDao.getOgelQuestionsForm();
+    OgelQuestionsForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new OgelQuestionsForm();
+    return ok(ogelQuestions.render(formFactory.form(OgelQuestionsForm.class).fill(templateForm)));
   }
 
   public CompletionStage<Result> handleSubmit() {
-    return CompletableFuture.supplyAsync(() -> {
-      Form<OgelQuestionsForm> form = formFactory.form(OgelQuestionsForm.class).bindFromRequest();
-      if (form.hasErrors()) {
-        return CompletableFuture.completedFuture(ok(ogelQuestions.render(form)));
-      }
-      else {
-        dao.saveOgelActivityList(formToActivityTypes(form));
-        return ogelResultsController.renderForm();
-      }
-    }, ec.current()).thenCompose(Function.identity());
-  }
-
-  public List<String> formToActivityTypes(Form<OgelQuestionsForm> form) {
-    // TODO before1897upto35k currently unused
-    // TODO account for TECH
-
-    OgelQuestionsForm questionsForm = form.get();
-    List<String> activityTypes = new ArrayList<>();
-
-    if ("true".equals(questionsForm.toGovernment)) {
-      activityTypes.add(OgelActivityType.MIL_GOV.value());
+    Form<OgelQuestionsForm> form = formFactory.form(OgelQuestionsForm.class).bindFromRequest();
+    if (form.hasErrors()) {
+      return completedFuture(ok(ogelQuestions.render(form)));
     }
-
-    if ("true".equals(questionsForm.forRepairReplacement)) {
-      activityTypes.add(OgelActivityType.REPAIR.value());
+    else {
+      OgelQuestionsForm ogelQuestionsForm = form.get();
+      permissionsFinderDao.saveOgelQuestionsForm(ogelQuestionsForm);
+      return journeyManager.performTransition(Events.OGEL_QUESTIONS_ANSWERED);
     }
-
-    if ("true".equals(questionsForm.forExhibitionDemonstration)) {
-      activityTypes.add(OgelActivityType.EXHIBITION.value());
-    }
-
-    // Always add these types
-    activityTypes.add(OgelActivityType.MIL_ANY.value());
-    activityTypes.add(OgelActivityType.DU_ANY.value());
-
-    return activityTypes;
   }
 
   public static class OgelQuestionsForm {
-
-    @Required(message = "You must answer this question")
-    public String toGovernment;
 
     @Required(message = "You must answer this question")
     public String forRepairReplacement;
@@ -96,6 +62,28 @@ public class OgelQuestionsController {
 
     @Required(message = "You must answer this question")
     public String before1897upto35k;
+
+    public static List<String> formToActivityTypes(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
+      // TODO before1897upto35k currently unused
+      // TODO account for TECH
+      List<String> activityTypes = new ArrayList<>();
+
+      if (ogelQuestionsFormOptional.isPresent()) {
+        OgelQuestionsForm ogelQuestionsForm = ogelQuestionsFormOptional.get();
+        if ("true".equals(ogelQuestionsForm.forRepairReplacement)) {
+          activityTypes.add(OgelActivityType.REPAIR.value());
+        }
+        if ("true".equals(ogelQuestionsForm.forExhibitionDemonstration)) {
+          activityTypes.add(OgelActivityType.EXHIBITION.value());
+        }
+        // Always add these types
+        activityTypes.add(OgelActivityType.MIL_ANY.value());
+        activityTypes.add(OgelActivityType.MIL_GOV.value());
+        activityTypes.add(OgelActivityType.DU_ANY.value());
+      }
+
+      return activityTypes;
+    }
 
   }
 

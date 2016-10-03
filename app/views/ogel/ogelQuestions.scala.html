@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
+@import views.html.common.state._
 @import models.common.Country
 
 @(form: Form[_])
@@ -10,7 +11,7 @@
 
   <form action="@controllers.ogel.routes.OgelQuestionsController.handleSubmit()" method="POST">
 
-    @formRadioBoolean(form("toGovernment"), Html("Are you exporting to a government?"))
+    @contextFormParams()
 
     @formRadioBoolean(form("forRepairReplacement"), Html("Are you exporting goods for or after repair or replacement?"))
 

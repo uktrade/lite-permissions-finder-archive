@@ -22,35 +22,35 @@ import java.util.concurrent.CompletionStage;
 
 public class DecontrolledItemController {
 
-  private final JourneyManager jm;
+  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao dao;
-  private final HttpExecutionContext ec;
+  private final PermissionsFinderDao permissionsFinderDao;
+  private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
-  public DecontrolledItemController(JourneyManager jm,
+  public DecontrolledItemController(JourneyManager journeyManager,
                                     FormFactory formFactory,
-                                    PermissionsFinderDao dao,
-                                    HttpExecutionContext ec,
+                                    PermissionsFinderDao permissionsFinderDao,
+                                    HttpExecutionContext httpExecutionContext,
                                     FrontendServiceClient frontendServiceClient) {
-    this.jm = jm;
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.dao = dao;
-    this.ec = ec;
+    this.permissionsFinderDao = permissionsFinderDao;
+    this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
   }
 
   public CompletionStage<Result> renderForm() {
-    Optional<ExportCategory> exportCategoryOptional = dao.getExportCategory();
+    Optional<ExportCategory> exportCategoryOptional = permissionsFinderDao.getExportCategory();
     boolean showFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
-    return frontendServiceClient.get(dao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(decontrolledItem.render(response.getFrontendServiceResult(), showFirearmsOrMilitary));
           }
           return badRequest("An issue occurred while processing your request, please try again later.");
-        }, ec.current());
+        }, httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -58,10 +58,10 @@ public class DecontrolledItemController {
     if (!form.hasErrors()) {
       String action = form.get().action;
       if ("backToSearch".equals(action)) {
-        return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
+        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
       }
       if ("backToSearchResults".equals(action)) {
-        return jm.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
+        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
       }
     }
     return completedFuture(badRequest("Invalid form state"));

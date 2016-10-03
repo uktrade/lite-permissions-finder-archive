@@ -87,6 +87,14 @@ GET     /export-category/torture-restraint    controllers.categories.TortureRest
 
 POST    /export-category/torture-restraint    controllers.categories.TortureRestraintController.handleSubmit
 
+GET     /export-licence-additional-conditions   controllers.ogel.OgelConditionsController.renderForm
+
+POST    /export-licence-additional-conditions   controllers.ogel.OgelConditionsController.handleSubmit
+
+GET     /export-licence-not-applicable                controllers.ogel.OgelNotApplicableController.renderForm
+
+POST     /export-licence-not-applicable                controllers.ogel.OgelNotApplicableController.handleSubmit
+
 GET     /export-open-general-export-licence-results   controllers.ogel.OgelResultsController.renderForm
 
 POST    /export-open-general-export-licence-results   controllers.ogel.OgelResultsController.handleSubmit
@@ -124,6 +132,10 @@ GET     /select-trade-type/brokering-transhipment   controllers.StaticContentCon
 GET     /start-application                    controllers.StartApplicationController.renderForm
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit
+
+GET     /summary                              controllers.SummaryController.renderForm
+
+POST    /summary                              controllers.SummaryController.handleSubmit
 
 
 # Map static resources from the /public folder to the /assets URL path
