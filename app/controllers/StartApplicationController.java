@@ -5,18 +5,16 @@ import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.client.NotificationServiceClient;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import play.Logger;
+import components.services.PermissionsFinderNotificationClient;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Email;
 import play.data.validation.Constraints.Required;
 import play.data.validation.ValidationError;
 import play.mvc.Result;
-import service.NotificationService;
 import views.html.startApplication;
 
 import java.util.ArrayList;
@@ -34,17 +32,17 @@ public class StartApplicationController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final NotificationServiceClient notificationService;
+  private final PermissionsFinderNotificationClient notificationClient;
 
   @Inject
   public StartApplicationController(JourneyManager journeyManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
-                                    NotificationServiceClient notificationService) {
+                                    PermissionsFinderNotificationClient notificationClient) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.notificationService = notificationService;
+    this.notificationClient = notificationClient;
   }
 
   public Result renderForm() {
@@ -70,8 +68,7 @@ public class StartApplicationController {
     String memorableWord = form.get().memorableWord;
     if (emailAddress != null && !emailAddress.isEmpty()) {
       permissionsFinderDao.saveEmailAddress(emailAddress);
-      notificationService.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
-
+      notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
     }
     if (memorableWord != null && !memorableWord.isEmpty()) {
       permissionsFinderDao.saveMemorableWord(memorableWord);
