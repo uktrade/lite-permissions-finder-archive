@@ -49,8 +49,6 @@ public class OgelRegistrationServiceClient {
                                          List<Country> destinationCountries, ControlCodeData controlCode){
     OgelRegistrationServiceRequest request = new OgelRegistrationServiceRequest(transactionId, ogel, destinationCountries, controlCode);
 
-    Logger.debug(Json.toJson(request).toString());
-
     return ws.url(webServiceUrl)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("securityToken", webServiceSharedSecret)

@@ -2,11 +2,9 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import components.services.controlcode.frontend.ControlCodeData
-@import components.services.ogels.ogel.OgelServiceResult
-@import models.common.Country;
+@import models.summary.Summary
 
-@(form: Form[_], controlCodeData: ControlCodeData, destinationCountries: List[Country], ogelServiceResult: OgelServiceResult)
+@(form: Form[_], summary: Summary)
 
 @standardPage("Check your answers so far", Some(Html("Check your answers so far"))) {
   @errorSummary(form)
@@ -16,36 +14,32 @@
 
     @contextFormParams()
 
-    <div class="form-group">
-      <table>
-        <thead>
-          <th colspan="3"> </th>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="summary-item-heading">Goods rating</td>
-            <td><strong class="bold-small">@controlCodeData.controlCode</strong> - @controlCodeData.title</td>
-            <td><button class="link underlined" type="submit" name="action" value="changeGoodsRating">Change</button></td>
-          </tr>
-          <tr>
-            <td class="summary-item-heading">Licence Type</td>
-            <td>@ogelServiceResult.name</td>
-            <td><button class="link underlined" type="submit" name="action" value="changeLicenceType">Change</button></td>
-          </tr>
-          <tr>
-            <td class="summary-item-heading">Destination Countries</td>
-            <td>
-              <ul>
-              @for(country <- destinationCountries) {
-                <li>@country.getCountryName</li>
+    @if(summary.summaryFields.isEmpty) {
+      <div class="form-group">
+        <table>
+          <thead>
+            <th colspan="3"> </th>
+          </thead>
+          <tbody>
+          @for(summaryField <- summary.summaryFields) {
+            <tr>
+              <td class="summary-item-heading">@summaryField.getHeading</td>
+              @if(summaryField.getIsContentHtml) {
+                <td>@Html(summaryField.getContent)</td>
+              } else {
+                <td>@summaryField.getContent</td>
               }
-              </ul>
-            </td>
-            <td><button class="link underlined" type="submit" name="action" value="changeDestinationCountries">Change</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              <td><button class="link underlined" type="submit" name="change" value="@summaryField.getFieldValue">Change</button></td>
+            </tr>
+          }
+          </tbody>
+        </table>
+      </div>
+    } else {
+
+      <h2 class="heading-medium">We've not found any answers so far, please continue with your application.</h2>
+
+    }
 
     <button class="button" type="submit" name="action" value="register">Continue to licence registration</button>
 
