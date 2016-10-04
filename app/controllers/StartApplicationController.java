@@ -7,8 +7,8 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.transaction.TransactionManager;
+import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
-import journey.Events;
 import components.services.PermissionsFinderNotificationClient;
 import play.data.Form;
 import play.data.FormFactory;
@@ -33,6 +33,7 @@ public class StartApplicationController {
   private final TransactionManager transactionManager;
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
+  private final ApplicationCodeDao applicationCodeDao;
   private final PermissionsFinderDao permissionsFinderDao;
   private final PermissionsFinderNotificationClient notificationClient;
 
@@ -41,11 +42,13 @@ public class StartApplicationController {
                                     JourneyManager journeyManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
+                                    ApplicationCodeDao applicationCodeDao,
                                     PermissionsFinderNotificationClient notificationClient) {
 	this.transactionManager = transactionManager;
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
+    this.applicationCodeDao = applicationCodeDao;
     this.notificationClient = notificationClient;
   }
 
@@ -57,12 +60,13 @@ public class StartApplicationController {
     }
     catch (RuntimeException e) {
       transactionManager.createTransaction();
-      journeyManager.startJourney("default");
     }
 
     String applicationCode = permissionsFinderDao.getApplicationCode();
     if (applicationCode == null || applicationCode.isEmpty()) {
       applicationCode = generateApplicationCode();
+      // TODO where should this be saved?
+      applicationCodeDao.writeTransactionId(applicationCode);
       permissionsFinderDao.saveApplicationCode(applicationCode);
     }
 
@@ -80,7 +84,7 @@ public class StartApplicationController {
       permissionsFinderDao.saveEmailAddress(emailAddress);
       permissionsFinderDao.saveMemorableWord(memorableWord);
 	  notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
-      return journeyManager.performTransition(Events.START_APPLICATION);
+      return journeyManager.startJourney("start");
     }
     return completedFuture(badRequest("Unhandled form state"));
   }

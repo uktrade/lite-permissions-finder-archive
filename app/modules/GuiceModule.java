@@ -88,6 +88,9 @@ public class GuiceModule extends AbstractModule{
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
         .to(configuration.getString("ogelRegistrationService.sharedSecret"));
 
+    bindConstant().annotatedWith(Names.named("redisLookupTtlSeconds"))
+        .to(configuration.getString("redis.lookup.ttlSeconds"));
+
   }
 
   @Provides
@@ -95,12 +98,6 @@ public class GuiceModule extends AbstractModule{
   public JourneyManager provideJourneyManager (ContextParamManager cpm) {
 
     JourneyDefinitionBuilder jdb = new JourneyDefinitionBuilder();
-
-    JourneyStage startApplication = jdb.defineStage("startApplication", "Saving your application",
-        () -> cpm.addParamsAndRedirect(routes.StartApplicationController.renderForm()));
-
-    JourneyStage continueApplication = jdb.defineStage("continueApplication", "Return to your application",
-        () -> cpm.addParamsAndRedirect(routes.ContinueApplicationController.renderForm()));
 
     JourneyStage tradeType = jdb.defineStage("tradeType", "Where are your items going?",
         () -> cpm.addParamsAndRedirect(routes.TradeTypeController.renderForm()));
@@ -203,15 +200,6 @@ public class GuiceModule extends AbstractModule{
 
     JourneyStage summary = jdb.defineStage("summary", "Check your answers so far",
         () -> cpm.addParamsAndRedirect(routes.SummaryController.renderForm()));
-
-    jdb.atStage(startApplication)
-        .onEvent(Events.START_APPLICATION)
-        .then(moveTo(tradeType));
-
-    // TODO Restore to last position, requires JourneyManager persistence
-    jdb.atStage(continueApplication)
-        .onEvent(Events.CONTINUE_APPLICATION)
-        .then(moveTo(null));
 
     jdb.atStage(tradeType)
         .onEvent(Events.TRADE_TYPE_SELECTED)
@@ -385,7 +373,7 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.CHANGE_DESTINATION_COUNTRIES)
         .then(moveTo(destinationCountries));
 
-    return new JourneyManager(jdb.build("default", startApplication));
+    return new JourneyManager(jdb.build("start", tradeType), jdb.build("continue", tradeType));
   }
 
 }
