@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import journey.Events;
-import model.OgelActivityType;
+import models.OgelActivityType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;

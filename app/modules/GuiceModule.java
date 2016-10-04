@@ -15,11 +15,11 @@ import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import controllers.routes;
 import journey.Events;
-import model.ControlCodeFlowStage;
-import model.ExportCategory;
-import model.GoodsType;
-import model.LifeType;
-import model.TradeType;
+import models.ControlCodeFlowStage;
+import models.ExportCategory;
+import models.GoodsType;
+import models.LifeType;
+import models.TradeType;
 import play.Configuration;
 import play.Environment;
 

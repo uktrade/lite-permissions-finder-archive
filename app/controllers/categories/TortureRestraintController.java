@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import model.ExportCategory;
+import models.ExportCategory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;

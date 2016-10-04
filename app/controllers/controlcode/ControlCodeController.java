@@ -9,7 +9,7 @@ import components.services.controlcode.frontend.ControlCodeData;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
 import journey.Events;
-import model.ControlCodeFlowStage;
+import models.ControlCodeFlowStage;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;

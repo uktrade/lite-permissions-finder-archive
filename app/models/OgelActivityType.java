@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import java.util.EnumSet;
 import java.util.Optional;

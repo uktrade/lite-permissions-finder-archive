@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import journey.Events;
-import model.ExportCategory;
+import models.ExportCategory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;

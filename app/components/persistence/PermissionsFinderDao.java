@@ -9,10 +9,10 @@ import components.common.transaction.TransactionManager;
 import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import controllers.search.SearchController.ControlCodeSearchForm;
-import model.ExportCategory;
-import model.GoodsType;
-import model.LifeType;
-import model.TradeType;
+import models.ExportCategory;
+import models.GoodsType;
+import models.LifeType;
+import models.TradeType;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
 

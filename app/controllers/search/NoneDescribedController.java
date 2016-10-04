@@ -4,7 +4,7 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
-import model.ExportCategory;
+import models.ExportCategory;
 import play.mvc.Result;
 import views.html.search.noneDescribed;
 

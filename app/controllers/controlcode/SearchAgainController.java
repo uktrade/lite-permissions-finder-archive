@@ -9,7 +9,7 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import journey.Events;
-import model.ControlCodeFlowStage;
+import models.ControlCodeFlowStage;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
