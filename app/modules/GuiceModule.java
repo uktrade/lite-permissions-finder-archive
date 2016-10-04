@@ -12,6 +12,7 @@ import components.common.journey.JourneyManager;
 import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
 import components.common.state.ContextParamManager;
+import components.persistence.PermissionsFinderDao;
 import controllers.routes;
 import journey.Events;
 import model.ControlCodeFlowStage;
@@ -95,7 +96,7 @@ public class GuiceModule extends AbstractModule{
 
   @Provides
   @Singleton
-  public JourneyManager provideJourneyManager (ContextParamManager cpm) {
+  public JourneyManager provideJourneyManager (ContextParamManager cpm, PermissionsFinderDao permissionsFinderDao) {
 
     JourneyDefinitionBuilder jdb = new JourneyDefinitionBuilder();
 
@@ -373,7 +374,7 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.CHANGE_DESTINATION_COUNTRIES)
         .then(moveTo(destinationCountries));
 
-    return new JourneyManager(jdb.build("start", tradeType), jdb.build("continue", tradeType));
+    return new JourneyManager(permissionsFinderDao, jdb.build("start", tradeType), jdb.build("continue", tradeType));
   }
 
 }

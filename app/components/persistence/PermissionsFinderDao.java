@@ -1,6 +1,8 @@
 package components.persistence;
 
 import com.google.inject.Inject;
+import components.common.journey.Journey;
+import components.common.journey.JourneySerialiser;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
@@ -20,7 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class PermissionsFinderDao extends CommonRedisDao {
+public class PermissionsFinderDao extends CommonRedisDao implements JourneySerialiser {
+
+  public static final String JOURNEY = "journey";
 
   public static final String PHYSICAL_GOOD_CONTROL_CODE = "physicalGoodControlCode";
 
@@ -243,6 +247,16 @@ public class PermissionsFinderDao extends CommonRedisDao {
     else {
       return new LinkedList<>(Arrays.asList(Json.fromJson(Json.parse(countriesJson), String[].class)));
     }
+  }
+
+  @Override
+  public Journey readJourney() {
+    return Journey.fromString(readString(JOURNEY));
+  }
+
+  @Override
+  public void writeJourney(Journey journey) {
+    writeString(JOURNEY, journey.serialiseToString());
   }
 
 }

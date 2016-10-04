@@ -49,7 +49,7 @@ public class ContinueApplicationController {
       String transactionId = applicationCodeDao.readTransactionId(applicationCode);
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.createTransaction(transactionId);
-        return journeyManager.startJourney("continue");
+        return journeyManager.restoreCurrentStage();
       }
       else {
         form.reject("applicationCode", "You have entered an invalid claim number");
