@@ -111,7 +111,12 @@ public class SummaryController {
       }
     }
     else if (isResumedApplication && StringUtils.equals("continue", action)) {
-      return journeyManager.restoreCurrentStage();
+      if (journeyManager.isJourneySerialised()) {
+        return journeyManager.restoreCurrentStage();
+      }
+      else {
+        return journeyManager.startJourney(JourneyDefinitionNames.DEFAULT);
+      }
     }
     else if (!isResumedApplication && StringUtils.equals("register", action)) {
       return redirectToRegistration();
