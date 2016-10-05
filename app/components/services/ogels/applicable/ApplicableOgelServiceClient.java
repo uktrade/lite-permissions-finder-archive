@@ -38,16 +38,15 @@ public class ApplicableOgelServiceClient {
   }
 
   public CompletionStage<Response> get(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes){
-    String destinationCountry = !destinationCountries.isEmpty() ? destinationCountries.get(0) : "";
 
     WSRequest req = ws.url(webServiceUrl)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("controlCode", controlCode)
-        // TODO remove the String.replace when the applicable-ogel-service can take this format
-        .setQueryParameter("sourceCountry", sourceCountry.replace("CTRY", ""))
-        .setQueryParameter("destinationCountry", destinationCountry.replace("CTRY", ""));
+        .setQueryParameter("sourceCountry", sourceCountry);
 
-    activityTypes.stream().forEach(activityType -> req.setQueryParameter("activityType", activityType));
+    destinationCountries.forEach(country -> req.setQueryParameter("destinationCountry", country));
+
+    activityTypes.forEach(activityType -> req.setQueryParameter("activityType", activityType));
 
     return req.get().handle((response, error) -> {
       if (error != null) {
