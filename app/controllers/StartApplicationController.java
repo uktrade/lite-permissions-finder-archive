@@ -17,6 +17,7 @@ import play.data.validation.Constraints.Required;
 import play.data.validation.ValidationError;
 import play.mvc.Result;
 import views.html.startApplication;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,12 +79,17 @@ public class StartApplicationController {
     if (form.hasErrors()) {
       return completedFuture(ok(startApplication.render(form, permissionsFinderDao.getApplicationCode())));
     }
+
     String emailAddress = form.get().emailAddress;
     String memorableWord = form.get().memorableWord;
-    if (emailAddress != null && !emailAddress.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
-      permissionsFinderDao.saveEmailAddress(emailAddress);
+
+    if (StringUtils.isNoneBlank(memorableWord)) {
       permissionsFinderDao.saveMemorableWord(memorableWord);
-      notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
+
+      if (StringUtils.isNoneBlank(emailAddress)) {
+        permissionsFinderDao.saveEmailAddress(emailAddress);
+        notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
+      }
       return journeyManager.startJourney("start");
     }
     return completedFuture(badRequest("Unhandled form state"));
