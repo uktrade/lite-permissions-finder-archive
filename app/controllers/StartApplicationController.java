@@ -44,7 +44,7 @@ public class StartApplicationController {
                                     PermissionsFinderDao permissionsFinderDao,
                                     ApplicationCodeDao applicationCodeDao,
                                     PermissionsFinderNotificationClient notificationClient) {
-	this.transactionManager = transactionManager;
+    this.transactionManager = transactionManager;
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -83,7 +83,7 @@ public class StartApplicationController {
     if (emailAddress != null && !emailAddress.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
       permissionsFinderDao.saveEmailAddress(emailAddress);
       permissionsFinderDao.saveMemorableWord(memorableWord);
-	  notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
+      notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
       return journeyManager.startJourney("start");
     }
     return completedFuture(badRequest("Unhandled form state"));
