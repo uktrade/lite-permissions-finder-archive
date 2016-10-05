@@ -58,10 +58,4 @@ public class Events {
 
   public static final JourneyEvent OGEL_REGISTERED = new JourneyEvent("OGEL_REGISTERED");
 
-  public static final JourneyEvent CHANGE_CONTROL_CODE = new JourneyEvent("CHANGE_CONTROL_CODE");
-
-  public static final JourneyEvent CHANGE_OGEL_TYPE = new JourneyEvent("CHANGE_OGEL_TYPE");
-
-  public static final JourneyEvent CHANGE_DESTINATION_COUNTRIES = new JourneyEvent("CHANGE_DESTINATION_COUNTRIES");
-
 }

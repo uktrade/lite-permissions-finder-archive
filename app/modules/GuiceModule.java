@@ -15,6 +15,7 @@ import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import controllers.routes;
 import journey.Events;
+import journey.JourneyDefinitionNames;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
 import models.GoodsType;
@@ -362,19 +363,11 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.OGEL_CHOOSE_AGAIN)
         .then(moveTo(ogelResults));
 
-    jdb.atStage(summary)
-        .onEvent(Events.CHANGE_CONTROL_CODE)
-        .then(moveTo(physicalGoodsSearch));
-
-    jdb.atStage(summary)
-        .onEvent(Events.CHANGE_OGEL_TYPE)
-        .then(moveTo(ogelQuestions));
-
-    jdb.atStage(summary)
-        .onEvent(Events.CHANGE_DESTINATION_COUNTRIES)
-        .then(moveTo(destinationCountries));
-
-    return new JourneyManager(permissionsFinderDao, jdb.build("start", tradeType), jdb.build("continue", tradeType));
+    return new JourneyManager(permissionsFinderDao,
+        jdb.build(JourneyDefinitionNames.DEFAULT, tradeType),
+        jdb.build(JourneyDefinitionNames.CHANGE_CONTROL_CODE, physicalGoodsSearch),
+        jdb.build(JourneyDefinitionNames.CHANGE_DESTINATION_COUNTRIES, destinationCountries),
+        jdb.build(JourneyDefinitionNames.CHANGE_OGEL_TYPE, ogelQuestions));
   }
 
 }

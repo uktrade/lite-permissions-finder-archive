@@ -10,6 +10,8 @@ import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
 import components.services.PermissionsFinderNotificationClient;
+import journey.JourneyDefinitionNames;
+import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Email;
@@ -17,7 +19,6 @@ import play.data.validation.Constraints.Required;
 import play.data.validation.ValidationError;
 import play.mvc.Result;
 import views.html.startApplication;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +67,6 @@ public class StartApplicationController {
     String applicationCode = permissionsFinderDao.getApplicationCode();
     if (applicationCode == null || applicationCode.isEmpty()) {
       applicationCode = generateApplicationCode();
-      // TODO where should this be saved?
       applicationCodeDao.writeTransactionId(applicationCode);
       permissionsFinderDao.saveApplicationCode(applicationCode);
     }
@@ -90,7 +90,7 @@ public class StartApplicationController {
         permissionsFinderDao.saveEmailAddress(emailAddress);
         notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
       }
-      return journeyManager.startJourney("start");
+      return journeyManager.startJourney(JourneyDefinitionNames.DEFAULT);
     }
     return completedFuture(badRequest("Unhandled form state"));
   }

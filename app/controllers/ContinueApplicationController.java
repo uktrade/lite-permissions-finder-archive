@@ -5,7 +5,7 @@ import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.journey.JourneyManager;
+import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import play.data.Form;
@@ -19,19 +19,19 @@ import java.util.concurrent.CompletionStage;
 public class ContinueApplicationController {
 
   private final TransactionManager transactionManager;
-  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final ApplicationCodeDao applicationCodeDao;
+  private final ContextParamManager contextParamManager;
 
   @Inject
   public ContinueApplicationController(TransactionManager transactionManager,
-                                       JourneyManager journeyManager,
                                        FormFactory formFactory,
-                                       ApplicationCodeDao applicationCodeDao) {
+                                       ApplicationCodeDao applicationCodeDao,
+                                       ContextParamManager contextParamManager) {
     this.transactionManager = transactionManager;
-    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.applicationCodeDao = applicationCodeDao;
+    this.contextParamManager = contextParamManager;
   }
 
   public Result renderForm() {
@@ -49,7 +49,7 @@ public class ContinueApplicationController {
       String transactionId = applicationCodeDao.readTransactionId(applicationCode);
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.createTransaction(transactionId);
-        return journeyManager.restoreCurrentStage();
+        return contextParamManager.addParamsAndRedirect(routes.SummaryController.renderFormContinue());
       }
       else {
         form.reject("applicationCode", "You have entered an invalid claim number");

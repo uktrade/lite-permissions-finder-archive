@@ -4,17 +4,18 @@
 @import views.html.common.state._
 @import models.summary.Summary
 
-@(form: Form[_], summary: Summary)
+@(form: Form[_], summary: Summary, isResumedApplication: Boolean)
 
 @standardPage("Check your answers so far", Some(Html("Check your answers so far"))) {
   @errorSummary(form)
 }{
 
-  <form action="@routes.SummaryController.handleSubmit()" method="POST">
+  <form action="@{if(isResumedApplication) routes.SummaryController.handleSubmitContinue() else routes.SummaryController.handleSubmit()}" method="POST">
 
     @contextFormParams()
 
-    @if(summary.summaryFields.isEmpty) {
+    @if(!summary.summaryFields.isEmpty) {
+
       <div class="form-group">
         <table>
           <thead>
@@ -35,13 +36,22 @@
           </tbody>
         </table>
       </div>
+
     } else {
 
       <h2 class="heading-medium">We've not found any answers so far, please continue with your application.</h2>
 
     }
 
-    <button class="button" type="submit" name="action" value="register">Continue to licence registration</button>
+    @if(isResumedApplication) {
+
+      <button class="button" type="submit" name="action" value="continue">Continue to your application</button>
+
+    } else {
+
+      <button class="button" type="submit" name="action" value="register">Continue to licence registration</button>
+
+    }
 
   </form>
 

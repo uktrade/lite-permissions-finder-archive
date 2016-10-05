@@ -12,23 +12,28 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import components.services.ogels.registration.OgelRegistrationServiceClient;
-import journey.Events;
+import journey.JourneyDefinitionNames;
 import models.summary.Summary;
 import models.summary.SummaryField;
 import models.summary.SummaryFieldType;
 import org.apache.commons.lang3.StringUtils;
-import play.data.Form;
+import play.Logger;
+import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.summary;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class SummaryController {
+
+  private static final String ACTION_FIELD = "action";
+  private static final String CHANGE_FIELD = "change";
 
   private final TransactionManager transactionManager;
   private final JourneyManager journeyManager;
@@ -62,29 +67,40 @@ public class SummaryController {
   }
 
   public CompletionStage<Result> renderForm() {
-    return renderWithForm(formFactory.form(SummaryForm.class));
+    return renderWithForm(formFactory.form(), false);
+  }
+
+  public CompletionStage<Result> renderFormContinue() {
+    return renderWithForm(formFactory.form(), true);
   }
 
   public CompletionStage<Result> handleSubmit() {
-    Form<SummaryForm> form = formFactory.form(SummaryForm.class).bindFromRequest();
+    return processSubmit(false);
+  }
+
+  public CompletionStage<Result> handleSubmitContinue() {
+    return processSubmit(true);
+  }
+
+  public CompletionStage<Result> processSubmit(boolean isResumedApplication) {
+    DynamicForm form = formFactory.form().bindFromRequest();
     if (form.hasErrors()){
-      return renderWithForm(form);
+      return renderWithForm(form, isResumedApplication);
     }
 
-    Optional<String> actionOptional = form.get().action;
-    Optional<String> changeOptional = form.get().change;
+    String action = form.field(ACTION_FIELD).valueOr(null);
+    String change = form.field(CHANGE_FIELD).valueOr(null);
 
-    if (changeOptional.isPresent()) {
-      String change = changeOptional.get();
+    if (StringUtils.isNoneBlank(change)) {
       Optional<SummaryFieldType> summaryFieldTypeOptional = SummaryFieldType.getMatchedByFieldValue(change);
       if (summaryFieldTypeOptional.isPresent()) {
         switch (summaryFieldTypeOptional.get()) {
           case CONTROL_CODE:
-            return journeyManager.performTransition(Events.CHANGE_CONTROL_CODE);
+            return journeyManager.startJourney(JourneyDefinitionNames.CHANGE_CONTROL_CODE);
           case OGEL_TYPE:
-            return journeyManager.performTransition(Events.CHANGE_OGEL_TYPE);
+            return journeyManager.startJourney(JourneyDefinitionNames.CHANGE_OGEL_TYPE);
           case DESTINATION_COUNTRIES:
-            return journeyManager.performTransition(Events.CHANGE_DESTINATION_COUNTRIES);
+            return journeyManager.startJourney(JourneyDefinitionNames.CHANGE_DESTINATION_COUNTRIES);
           default:
             throw new RuntimeException("Unhandled member of SummaryFieldType enum \"" +
                 summaryFieldTypeOptional.get().name() + "\"");
@@ -94,7 +110,10 @@ public class SummaryController {
         return completedFuture(badRequest("Unknown value for change: \"" + change + "\""));
       }
     }
-    else if (actionOptional.isPresent() && "register".equals(actionOptional.get())) {
+    else if (isResumedApplication && StringUtils.equals("continue", action)) {
+      return journeyManager.restoreCurrentStage();
+    }
+    else if (!isResumedApplication && StringUtils.equals("register", action)) {
       return redirectToRegistration();
     }
     else {
@@ -102,22 +121,33 @@ public class SummaryController {
     }
   }
 
-  public CompletionStage<Result> renderWithForm(Form<SummaryForm> form) {
+  public CompletionStage<Result> renderWithForm(DynamicForm form, boolean isResumedApplication) {
     return composeSummary()
-        .thenComposeAsync(s -> completedFuture(ok(summary.render(form, s))), httpExecutionContext.current())
-        .handleAsync((result, error) -> error != null ? badRequest("Invalid service response") : result);
+        .thenComposeAsync(summaryDetails -> completedFuture(ok(summary.render(form, summaryDetails, isResumedApplication))
+        ), httpExecutionContext.current())
+        .handleAsync((result, error) -> {
+          if (error != null) {
+            Logger.error(error.getMessage(), error);
+            return badRequest("Invalid service response");
+          }
+          else {
+            return result;
+          }
+        });
   }
 
   public CompletionStage<Summary> composeSummary() {
     String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
-    List<String> destinationCountries = permissionsFinderDao.getThroughDestinationCountries();
-
-    // Add "primary" country to the first position
-    destinationCountries.add(0, permissionsFinderDao.getFinalDestinationCountry());
-
+    List<String> throughDestinationCountries = permissionsFinderDao.getThroughDestinationCountries();
+    String finalDestinationCountry = permissionsFinderDao.getFinalDestinationCountry();
     String ogelId = permissionsFinderDao.getOgelId();
 
-    // TODO Lookup whether stage is in history or not, this should drive the
+    List<String> destinationCountries = new ArrayList<>(throughDestinationCountries);
+    if (StringUtils.isNoneBlank(finalDestinationCountry)) {
+      destinationCountries.add(0, finalDestinationCountry);
+    }
+
+    // TODO Drive fields to show by the journey history, not the dao
     CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary());
 
     if(StringUtils.isNoneBlank(physicalGoodControlCode)) {
@@ -174,11 +204,4 @@ public class SummaryController {
     }, httpExecutionContext.current());
   }
 
-  public static class SummaryForm {
-
-    public Optional<String> action;
-
-    public Optional<String> change;
-
-  }
 }
