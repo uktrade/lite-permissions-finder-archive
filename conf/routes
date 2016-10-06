@@ -7,6 +7,18 @@ GET     /                                     controllers.EntryPointController.i
 
 POST    /                                     controllers.EntryPointController.handleSubmit
 
+GET     /change-destinations                  controllers.ChangeController.changeDestinationCountries
+
+POST    /change-destinations                  controllers.ChangeController.changeDestinationCountries
+
+GET     /change-goods-rating                  controllers.ChangeController.changeControlCode
+
+POST    /change-goods-rating                  controllers.ChangeController.changeControlCode
+
+GET     /change-licence-type                  controllers.ChangeController.changeOgelType
+
+POST    /change-licence-type                  controllers.ChangeController.changeOgelType
+
 GET     /continue-application                 controllers.ContinueApplicationController.renderForm
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
@@ -93,7 +105,7 @@ POST    /export-licence-additional-conditions   controllers.ogel.OgelConditionsC
 
 GET     /export-licence-not-applicable                controllers.ogel.OgelNotApplicableController.renderForm
 
-POST     /export-licence-not-applicable                controllers.ogel.OgelNotApplicableController.handleSubmit
+POST    /export-licence-not-applicable                controllers.ogel.OgelNotApplicableController.handleSubmit
 
 GET     /export-open-general-export-licence-results   controllers.ogel.OgelResultsController.renderForm
 

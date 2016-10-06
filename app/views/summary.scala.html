@@ -24,13 +24,13 @@
           <tbody>
           @for(summaryField <- summary.summaryFields) {
             <tr>
-              <td class="summary-item-heading">@summaryField.getHeading</td>
-              @if(summaryField.getIsContentHtml) {
-                <td>@Html(summaryField.getContent)</td>
+              <td class="summary-item-heading">@summaryField.heading</td>
+              @if(summaryField.isContentHtml) {
+                <td>@Html(summaryField.content)</td>
               } else {
-                <td>@summaryField.getContent</td>
+                <td>@summaryField.content</td>
               }
-              <td><button class="link underlined" type="submit" name="change" value="@summaryField.getFieldValue">Change</button></td>
+              <td><a class="not-visited" href="@summaryField.editLinkUrl">Change</a></td>
             </tr>
           }
           </tbody>

@@ -10,55 +10,35 @@ import java.util.stream.Collectors;
 
 public class SummaryField {
 
-  private final String content;
+  public final String heading;
+  public final String content;
+  public final String editLinkUrl;
+  public final boolean isContentHtml;
 
-  private final boolean isContentHtml;
-
-  private final SummaryFieldType summaryFieldType;
-
-  public SummaryField(SummaryFieldType summaryFieldType, String content, boolean isContentHtml) {
-    this.summaryFieldType = summaryFieldType;
+  public SummaryField(String heading, String content, String editLinkUrl, boolean isContentHtml) {
+    this.heading = heading;
     this.content = content;
+    this.editLinkUrl = editLinkUrl;
     this.isContentHtml = isContentHtml;
   }
 
-  public String getFieldValue() {
-    return summaryFieldType.fieldValue;
-  }
-
-  public String getHeading() {
-    return this.summaryFieldType.heading;
-  }
-
-  public String getContent() {
-    return this.content;
-  }
-
-  public boolean getIsContentHtml() {
-    return this.isContentHtml;
-  }
-
-  public SummaryFieldType getSummaryFieldType() {
-    return this.summaryFieldType;
-  }
-
-  public static SummaryField fromFrontendServiceResult(FrontendServiceResult frontendServiceResult) {
+  public static SummaryField fromFrontendServiceResult(FrontendServiceResult frontendServiceResult, String editLinkUrl) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     String content =  "<strong class=\"bold-small\">" + controlCodeData.controlCode
         + "</strong> - " + controlCodeData.title;
-    return new SummaryField(SummaryFieldType.CONTROL_CODE, content, true);
+    return new SummaryField("Goods rating", content, editLinkUrl, true);
   }
 
-  public static SummaryField fromOgelServiceResult(OgelServiceResult ogelServiceResult) {
-    return new SummaryField(SummaryFieldType.OGEL_TYPE, ogelServiceResult.name, false);
+  public static SummaryField fromOgelServiceResult(OgelServiceResult ogelServiceResult, String editLinkUrl) {
+    return new SummaryField("Licence type", ogelServiceResult.name, editLinkUrl, false);
   }
 
-  public static SummaryField fromDestinationCountryList(List<Country> destinationCountries) {
+  public static SummaryField fromDestinationCountryList(List<Country> destinationCountries, String editLinkUrl) {
     // Create a <ul> with an <li> for each country
     String content = destinationCountries.stream()
         .map(country -> "<ul>" + country.getCountryName() + "</ul>")
         .collect(Collectors.joining("", "<ul>", "</ul>"));
-    return new SummaryField(SummaryFieldType.DESTINATION_COUNTRIES, content, true);
+    return new SummaryField("Destination countries", content, editLinkUrl, true);
   }
 
 }

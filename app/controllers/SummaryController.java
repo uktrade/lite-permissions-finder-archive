@@ -7,6 +7,7 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.client.CountryServiceClient;
 import components.common.journey.JourneyManager;
+import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
@@ -15,10 +16,9 @@ import components.services.ogels.registration.OgelRegistrationServiceClient;
 import journey.JourneyDefinitionNames;
 import models.summary.Summary;
 import models.summary.SummaryField;
-import models.summary.SummaryFieldType;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
-import play.data.DynamicForm;
+import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
@@ -26,16 +26,13 @@ import views.html.summary;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class SummaryController {
 
-  private static final String ACTION_FIELD = "action";
-  private static final String CHANGE_FIELD = "change";
-
   private final TransactionManager transactionManager;
+  private final ContextParamManager contextParamManager;
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -47,6 +44,7 @@ public class SummaryController {
 
   @Inject
   public SummaryController(TransactionManager transactionManager,
+                           ContextParamManager contextParamManager,
                            JourneyManager journeyManager,
                            FormFactory formFactory,
                            PermissionsFinderDao permissionsFinderDao,
@@ -54,8 +52,10 @@ public class SummaryController {
                            FrontendServiceClient frontendServiceClient,
                            CountryServiceClient countryServiceClient,
                            OgelServiceClient ogelServiceClient,
-                           OgelRegistrationServiceClient ogelRegistrationServiceClient) {
+                           OgelRegistrationServiceClient ogelRegistrationServiceClient
+  ) {
     this.transactionManager = transactionManager;
+    this.contextParamManager = contextParamManager;
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -67,11 +67,11 @@ public class SummaryController {
   }
 
   public CompletionStage<Result> renderForm() {
-    return renderWithForm(formFactory.form(), false);
+    return renderWithForm(formFactory.form(SummaryForm.class), false);
   }
 
   public CompletionStage<Result> renderFormContinue() {
-    return renderWithForm(formFactory.form(), true);
+    return renderWithForm(formFactory.form(SummaryForm.class), true);
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -83,34 +83,14 @@ public class SummaryController {
   }
 
   public CompletionStage<Result> processSubmit(boolean isResumedApplication) {
-    DynamicForm form = formFactory.form().bindFromRequest();
+    Form<SummaryForm> form = formFactory.form(SummaryForm.class).bindFromRequest();
     if (form.hasErrors()){
       return renderWithForm(form, isResumedApplication);
     }
 
-    String action = form.field(ACTION_FIELD).valueOr(null);
-    String change = form.field(CHANGE_FIELD).valueOr(null);
+    String action = form.get().action;
 
-    if (StringUtils.isNoneBlank(change)) {
-      Optional<SummaryFieldType> summaryFieldTypeOptional = SummaryFieldType.getMatchedByFieldValue(change);
-      if (summaryFieldTypeOptional.isPresent()) {
-        switch (summaryFieldTypeOptional.get()) {
-          case CONTROL_CODE:
-            return journeyManager.startJourney(JourneyDefinitionNames.CHANGE_CONTROL_CODE);
-          case OGEL_TYPE:
-            return journeyManager.startJourney(JourneyDefinitionNames.CHANGE_OGEL_TYPE);
-          case DESTINATION_COUNTRIES:
-            return journeyManager.startJourney(JourneyDefinitionNames.CHANGE_DESTINATION_COUNTRIES);
-          default:
-            throw new RuntimeException("Unhandled member of SummaryFieldType enum \"" +
-                summaryFieldTypeOptional.get().name() + "\"");
-        }
-      }
-      else {
-        return completedFuture(badRequest("Unknown value for change: \"" + change + "\""));
-      }
-    }
-    else if (isResumedApplication && StringUtils.equals("continue", action)) {
+    if (isResumedApplication && StringUtils.equals("continue", action)) {
       if (journeyManager.isJourneySerialised()) {
         return journeyManager.restoreCurrentStage();
       }
@@ -126,7 +106,7 @@ public class SummaryController {
     }
   }
 
-  public CompletionStage<Result> renderWithForm(DynamicForm form, boolean isResumedApplication) {
+  public CompletionStage<Result> renderWithForm(Form<SummaryForm> form, boolean isResumedApplication) {
     return composeSummary()
         .thenComposeAsync(summaryDetails -> completedFuture(ok(summary.render(form, summaryDetails, isResumedApplication))
         ), httpExecutionContext.current())
@@ -152,27 +132,34 @@ public class SummaryController {
       destinationCountries.add(0, finalDestinationCountry);
     }
 
-    // TODO Drive fields to show by the journey history, not the dao
+    // TODO Drive fields to shown by the journey history, not the dao
     CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary());
 
     if(StringUtils.isNoneBlank(physicalGoodControlCode)) {
       CompletionStage<FrontendServiceClient.Response> frontendStage = frontendServiceClient.get(physicalGoodControlCode);
+
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(frontendStage, (summary, response)
-          -> summary.addSummaryField(SummaryField.fromFrontendServiceResult(response.getFrontendServiceResult())
+          -> summary.addSummaryField(SummaryField.fromFrontendServiceResult(response.getFrontendServiceResult(),
+          contextParamManager.addParamsToCall(routes.ChangeController.changeControlCode()))
       ), httpExecutionContext.current());
     }
 
     if (destinationCountries.size() > 0) {
       CompletionStage<CountryServiceClient.CountryServiceResponse> countryStage = countryServiceClient.getCountries();
+
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(countryStage, (summary, response)
-          -> summary.addSummaryField(SummaryField.fromDestinationCountryList(response.getCountriesByRef(destinationCountries))
+          -> summary.addSummaryField(SummaryField.fromDestinationCountryList(response.getCountriesByRef(destinationCountries),
+          contextParamManager.addParamsToCall(routes.ChangeController.changeDestinationCountries()))
       ), httpExecutionContext.current());
     }
 
     if (StringUtils.isNoneBlank(ogelId)) {
       CompletionStage<OgelServiceClient.Response> ogelStage = ogelServiceClient.get(ogelId);
-      summaryCompletionStage = summaryCompletionStage.thenCombineAsync(ogelStage, (summary, response)
-          -> summary.addSummaryField(SummaryField.fromOgelServiceResult(response.getResult())
+
+      summaryCompletionStage = summaryCompletionStage
+          .thenCombineAsync(ogelStage, (summary, response)
+              -> summary.addSummaryField(SummaryField.fromOgelServiceResult(response.getResult(),
+              contextParamManager.addParamsToCall(routes.ChangeController.changeOgelType()))
       ), httpExecutionContext.current());
     }
 
@@ -207,6 +194,12 @@ public class SummaryController {
         }, httpExecutionContext.current());
       }, httpExecutionContext.current());
     }, httpExecutionContext.current());
+  }
+
+  public static class SummaryForm {
+
+    public String action;
+
   }
 
 }
