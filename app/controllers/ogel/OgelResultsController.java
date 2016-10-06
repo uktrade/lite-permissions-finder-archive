@@ -66,7 +66,7 @@ public class OgelResultsController {
 
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
-    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
+    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities, httpExecutionContext)
         .thenComposeAsync(r -> {
           if (!r.isOk()) {
             return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
@@ -112,7 +112,7 @@ public class OgelResultsController {
 
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
-    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
+    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities, httpExecutionContext)
         .thenComposeAsync(applicableOgelResponse -> {
           if (!applicableOgelResponse.isOk()) {
             return completedFuture(badRequest("Invalid response from the applicable OGEL service"));
@@ -120,7 +120,7 @@ public class OgelResultsController {
           if (applicableOgelResponse.getResults().stream().noneMatch(ogel -> chosenOgel.equalsIgnoreCase(ogel.id))) {
             return completedFuture(badRequest("Selected OGEL is not valid with the applicable OGEL service response"));
           }
-          return ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getPhysicalGoodControlCode())
+          return ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getPhysicalGoodControlCode(), httpExecutionContext)
               .thenApplyAsync(response -> {
                 if (!response.isOk()) {
                   return completedFuture(badRequest("Invalid response from OGEL service"));

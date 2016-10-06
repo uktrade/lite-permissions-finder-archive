@@ -3,9 +3,11 @@ package components.services.ogels.conditions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
 import java.util.Optional;
@@ -27,10 +29,11 @@ public class OgelConditionsServiceClient {
     this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/control-code-conditions";
   }
 
-  public CompletionStage<Response> get(String ogelId, String controlCode){
+  public CompletionStage<Response> get(String ogelId, String controlCode, HttpExecutionContext httpExecutionContext){
     return wsClient.url(webServiceUrl + "/" + ogelId + "/" + controlCode)
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
-        .get().handle((response, error) -> {
+        .get().handleAsync((response, error) -> {
           if (error != null) {
             Logger.error("Unchecked exception in OgelConditionsService");
             Logger.error(error.getMessage(), error);
@@ -50,7 +53,7 @@ public class OgelConditionsServiceClient {
             Logger.error("Invalid response state in OgelConditionsService");
             return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
           }
-        });
+        }, httpExecutionContext.current());
   }
 
   /**

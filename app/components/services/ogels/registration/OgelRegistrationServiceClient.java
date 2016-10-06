@@ -6,12 +6,14 @@ import static play.mvc.Results.redirect;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import components.services.controlcode.frontend.ControlCodeData;
 import components.services.ogels.ogel.OgelServiceResult;
 import models.common.Country;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
 
@@ -46,14 +48,16 @@ public class OgelRegistrationServiceClient {
   }
 
   public CompletionStage<Result> handOffToOgelRegistration(String transactionId, OgelServiceResult ogel,
-                                         List<Country> destinationCountries, ControlCodeData controlCode){
+                                                           List<Country> destinationCountries, ControlCodeData controlCode,
+                                                           HttpExecutionContext httpExecutionContext){
     OgelRegistrationServiceRequest request = new OgelRegistrationServiceRequest(transactionId, ogel, destinationCountries, controlCode);
 
     return ws.url(webServiceUrl)
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("securityToken", webServiceSharedSecret)
         .post(Json.toJson(request))
-        .handle((response, error) -> {
+        .handleAsync((response, error) -> {
           if (error != null) {
             Logger.error("Unchecked exception in OGEL registration service");
             Logger.error(error.getMessage(), error);
@@ -66,14 +70,15 @@ public class OgelRegistrationServiceClient {
           else {
             return Response.success(response.asJson());
           }
-        }).thenApplyAsync(response -> {
+        }, httpExecutionContext.current())
+        .thenApplyAsync(response -> {
           // TODO this entire handler isn't needed
           if (!response.isOk() && STATUS_CODE_OK.equals(response.getResult().status)
               && response.getResult().redirectUrl != null || response.getResult().redirectUrl.isEmpty()) {
             return badRequest("Invalid response from OGEL registration service");
           }
           return redirect(ogelRegistrationRootUrl + response.getResult().redirectUrl);
-        });
+        }, httpExecutionContext.current());
   }
 
   public static class Response {

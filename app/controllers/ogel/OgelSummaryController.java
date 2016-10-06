@@ -54,7 +54,7 @@ public class OgelSummaryController {
     }
     String action = form.get().action;
     return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-        permissionsFinderDao.getPhysicalGoodControlCode())
+        permissionsFinderDao.getPhysicalGoodControlCode(), httpExecutionContext)
         .thenApplyAsync(response -> {
           if (!response.isOk()) {
             return completedFuture(badRequest("Bad response from OGEL conditions service"));
@@ -85,12 +85,12 @@ public class OgelSummaryController {
     String ogelId = permissionsFinderDao.getOgelId();
     String physicalGoodsControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
 
-    return ogelConditionsServiceClient.get(ogelId, physicalGoodsControlCode)
+    return ogelConditionsServiceClient.get(ogelId, physicalGoodsControlCode, httpExecutionContext)
         .thenApplyAsync(ogelConditionsResponse -> {
           if (!ogelConditionsResponse.isOk()) {
             return completedFuture(badRequest("Bad response from OGEL conditions service"));
           }
-          return ogelServiceClient.get(permissionsFinderDao.getOgelId())
+          return ogelServiceClient.get(permissionsFinderDao.getOgelId(), httpExecutionContext)
               .thenApplyAsync(ogelResponse -> {
                 if (!ogelResponse.isOk()) {
                   return badRequest("Bad response from OGEL service");

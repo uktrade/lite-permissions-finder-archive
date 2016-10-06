@@ -170,7 +170,7 @@ public class SummaryController {
     }
 
     if (StringUtils.isNoneBlank(ogelId)) {
-      CompletionStage<OgelServiceClient.Response> ogelStage = ogelServiceClient.get(ogelId);
+      CompletionStage<OgelServiceClient.Response> ogelStage = ogelServiceClient.get(ogelId, httpExecutionContext);
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(ogelStage, (summary, response)
           -> summary.addSummaryField(SummaryField.fromOgelServiceResult(response.getResult())
       ), httpExecutionContext.current());
@@ -197,13 +197,13 @@ public class SummaryController {
         if (!countryServiceResponse.isOk()) {
           return completedFuture(badRequest("Bad country service response"));
         }
-        return ogelServiceClient.get(ogelId).thenComposeAsync(ogelServiceResponse -> {
+        return ogelServiceClient.get(ogelId, httpExecutionContext).thenComposeAsync(ogelServiceResponse -> {
           if (!ogelServiceResponse.isOk()) {
             return completedFuture(badRequest("Bad OGEL service response"));
           }
           return ogelRegistrationServiceClient.handOffToOgelRegistration(transactionId, ogelServiceResponse.getResult(),
               countryServiceResponse.getCountriesByRef(destinationCountries),
-              frontendServiceResponse.getFrontendServiceResult().controlCodeData);
+              frontendServiceResponse.getFrontendServiceResult().controlCodeData, httpExecutionContext);
         }, httpExecutionContext.current());
       }, httpExecutionContext.current());
     }, httpExecutionContext.current());

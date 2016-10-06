@@ -3,9 +3,11 @@ package components.services.ogels.applicable;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
@@ -37,9 +39,10 @@ public class ApplicableOgelServiceClient {
     this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/applicable-ogels";
   }
 
-  public CompletionStage<Response> get(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes){
+  public CompletionStage<Response> get(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes, HttpExecutionContext httpExecutionContext){
 
     WSRequest req = ws.url(webServiceUrl)
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("controlCode", controlCode)
         .setQueryParameter("sourceCountry", sourceCountry);
@@ -48,7 +51,7 @@ public class ApplicableOgelServiceClient {
 
     activityTypes.forEach(activityType -> req.setQueryParameter("activityType", activityType));
 
-    return req.get().handle((response, error) -> {
+    return req.get().handleAsync((response, error) -> {
       if (error != null) {
         Logger.error("Unchecked exception in ApplicableOgelService");
         Logger.error(error.getMessage(), error);
@@ -61,7 +64,7 @@ public class ApplicableOgelServiceClient {
       else {
         return Response.success(response.asJson());
       }
-    });
+    }, httpExecutionContext.current());
   }
 
   public static class Response {

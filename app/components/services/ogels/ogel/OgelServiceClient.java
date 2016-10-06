@@ -3,9 +3,11 @@ package components.services.ogels.ogel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
 import java.util.concurrent.CompletionStage;
@@ -33,23 +35,24 @@ public class OgelServiceClient {
     this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/ogels/";
   }
 
-  public CompletionStage<Response> get(String ogelId){
+  public CompletionStage<Response> get(String ogelId, HttpExecutionContext httpExecutionContext){
     return ws.url(webServiceUrl + ogelId)
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
-        .get().handle((response, error) -> {
-      if (error != null) {
-        Logger.error("Unchecked exception in OgelService");
-        Logger.error(error.getMessage(), error);
-        return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
-      }
-      else if (response.getStatus() != 200) {
-        Logger.error("Unexpected HTTP status code from OgelService: {}", response.getStatus());
-        return Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE);
-      }
-      else {
-        return Response.success(response.asJson());
-      }
-    });
+        .get().handleAsync((response, error) -> {
+          if (error != null) {
+            Logger.error("Unchecked exception in OgelService");
+            Logger.error(error.getMessage(), error);
+            return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
+          }
+          else if (response.getStatus() != 200) {
+            Logger.error("Unexpected HTTP status code from OgelService: {}", response.getStatus());
+            return Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE);
+          }
+          else {
+            return Response.success(response.asJson());
+          }
+        }, httpExecutionContext.current());
   }
 
   public static class Response {
