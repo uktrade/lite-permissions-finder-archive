@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
+import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -43,9 +44,10 @@ public class ContinueApplicationController {
     if (form.hasErrors()) {
       return completedFuture(ok(continueApplication.render(form)));
     }
+
     String applicationCode = form.get().applicationCode;
-    String memorableWord = form.get().memorableWord;
-    if (applicationCode != null && !applicationCode.isEmpty() && memorableWord != null && !memorableWord.isEmpty()) {
+
+    if (StringUtils.isNoneBlank(applicationCode)) {
       String transactionId = applicationCodeDao.readTransactionId(applicationCode);
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.createTransaction(transactionId);
@@ -63,9 +65,6 @@ public class ContinueApplicationController {
 
     @Required(message = "You must enter your application number")
     public String applicationCode;
-
-    @Required(message = "You must enter your memorable word")
-    public String memorableWord;
 
   }
 

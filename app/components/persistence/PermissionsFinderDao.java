@@ -38,8 +38,6 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public static final String EMAIL_ADDRESS = "emailAddress";
 
-  public static final String MEMORABLE_WORD = "memorableWord";
-
   public static final String PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT = "physicalGoodSearchPaginationDisplayCount";
 
   public static final String TRADE_TYPE = "tradeType";
@@ -117,14 +115,6 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public String getEmailAddress() {
     return readString(EMAIL_ADDRESS);
-  }
-
-  public void saveMemorableWord(String memorableWord) {
-    writeString(MEMORABLE_WORD, memorableWord);
-  }
-
-  public String getMemorableWord() {
-    return readString(MEMORABLE_WORD);
   }
 
   public void savePhysicalGoodSearchPaginationDisplayCount(int physicalGoodSearchPaginationDisplayCount) {

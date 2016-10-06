@@ -1,7 +1,6 @@
 package controllers;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -15,12 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Email;
-import play.data.validation.Constraints.Required;
-import play.data.validation.ValidationError;
 import play.mvc.Result;
 import views.html.startApplication;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -81,18 +77,13 @@ public class StartApplicationController {
     }
 
     String emailAddress = form.get().emailAddress;
-    String memorableWord = form.get().memorableWord;
 
-    if (StringUtils.isNoneBlank(memorableWord)) {
-      permissionsFinderDao.saveMemorableWord(memorableWord);
-
-      if (StringUtils.isNoneBlank(emailAddress)) {
-        permissionsFinderDao.saveEmailAddress(emailAddress);
-        notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
-      }
-      return journeyManager.startJourney(JourneyDefinitionNames.DEFAULT);
+    if (StringUtils.isNoneBlank(emailAddress)) {
+      permissionsFinderDao.saveEmailAddress(emailAddress);
+      notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
     }
-    return completedFuture(badRequest("Unhandled form state"));
+    return journeyManager.startJourney(JourneyDefinitionNames.DEFAULT);
+
   }
 
   /**
@@ -110,17 +101,6 @@ public class StartApplicationController {
 
     @Email()
     public String emailAddress;
-
-    @Required(message = "You must enter a memorable word")
-    public String memorableWord;
-
-    public List<ValidationError> validate() {
-      List<ValidationError> errors = new ArrayList<>();
-      if (memorableWord != null && memorableWord.trim().length() < 3) {
-        errors.add(new ValidationError("memorableWord", "Please make your word at least three letters in length"));
-      }
-      return errors.isEmpty() ? null : errors;
-    }
 
   }
 }
