@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public class Summary {
 
@@ -44,13 +45,21 @@ public class Summary {
                                                         CountryServiceClient countryServiceClient,
                                                         OgelServiceClient ogelServiceClient) {
     String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
-    List<String> throughDestinationCountries = permissionsFinderDao.getThroughDestinationCountries();
-    String finalDestinationCountry = permissionsFinderDao.getFinalDestinationCountry();
     String ogelId = permissionsFinderDao.getOgelId();
+    String finalDestinationCountry = permissionsFinderDao.getFinalDestinationCountry();
 
-    List<String> destinationCountries = new ArrayList<>(throughDestinationCountries);
-    if (StringUtils.isNoneBlank(finalDestinationCountry)) {
-      destinationCountries.add(0, finalDestinationCountry);
+    // Filter out empty countries (throughDestinationCountries is initialised to a single empty string).
+    List<String> throughDestinationCountries = permissionsFinderDao.getThroughDestinationCountries().stream()
+        .filter(countryRef -> StringUtils.isNotBlank(countryRef))
+        .collect(Collectors.toList());
+
+    List<String> destinationCountries = new ArrayList<>();
+
+    if (StringUtils.isNotBlank(finalDestinationCountry)) {
+      destinationCountries.add(finalDestinationCountry);
+      if (throughDestinationCountries.size() > 0) {
+        destinationCountries.addAll(throughDestinationCountries);
+      }
     }
 
     // TODO Drive fields to shown by the journey history, not the dao
