@@ -1,12 +1,13 @@
 package components.services.ogels.registration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import components.services.controlcode.frontend.ControlCodeData;
-import components.services.ogels.ogel.OgelServiceResult;
-import models.common.Country;
+import models.summary.Summary;
+import models.summary.SummaryField;
+import models.summary.SummaryFieldType;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class OgelRegistrationServiceRequest {
@@ -23,16 +24,21 @@ public class OgelRegistrationServiceRequest {
   @JsonProperty("editSummaryFields")
   public final List<EditSummaryField> editSummaryFields;
 
-  public OgelRegistrationServiceRequest(String transactionId, OgelServiceResult ogel,
-                                        List<Country> destinationCountries, ControlCodeData controlCode) {
+  public OgelRegistrationServiceRequest(String transactionId, Summary summary) {
+    // Find OGEL ID, throw RuntimeException if not found
+    Optional<SummaryField> fieldsummaryFieldOptional = summary.findSummaryField(SummaryFieldType.OGEL_TYPE);
+    if (!fieldsummaryFieldOptional.isPresent() || StringUtils.isBlank(fieldsummaryFieldOptional.get().data)) {
+      throw new RuntimeException("Attempted to build OgelRegistrationServiceRequest object without an OGEL ID");
+    }
     this.transactionId = transactionId;
-    this.transactionData = new TransactionData(ogel.id);
-    this.editSummaryFields = new ArrayList<>();
-    this.editSummaryFields.add(new EditSummaryField("Goods rating", "<strong class=\"bold-small\">" +
-        controlCode.controlCode + "</strong> " + controlCode.title, "#")); // TODO editLink
-    this.editSummaryFields.add(new EditSummaryField("Licence type", ogel.name, "#")); // TODO editLink
-    this.editSummaryFields.add(new EditSummaryField("Destination Countries",
-        destinationCountries.stream().map(c -> c.getCountryName()).collect(Collectors.joining(", ")), "#")); // TODO editLink
+    this.transactionData = new TransactionData(fieldsummaryFieldOptional.get().data);
+    this.editSummaryFields = summaryToFieldsList(summary);
+  }
+
+  public static List<EditSummaryField> summaryToFieldsList(Summary summary) {
+    return summary.summaryFields.stream()
+        .map(summaryField -> EditSummaryField.buildEditSummaryField(summaryField))
+        .collect(Collectors.toList());
   }
 
 }

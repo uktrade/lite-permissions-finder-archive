@@ -1,6 +1,7 @@
 package components.services.ogels.registration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import models.summary.SummaryField;
 
 public class EditSummaryField {
 
@@ -17,6 +18,10 @@ public class EditSummaryField {
     this.fieldName = fieldName;
     this.fieldValue = fieldValue;
     this.editLink = editLink;
+  }
+
+  public static EditSummaryField buildEditSummaryField (SummaryField summaryField) {
+    return new EditSummaryField(summaryField.heading, summaryField.content, summaryField.editLinkUrl);
   }
 
 }
