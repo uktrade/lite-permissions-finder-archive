@@ -83,7 +83,7 @@ public class SummaryField {
   public static SummaryField fromDestinationCountryList(List<Country> destinationCountries, String editLinkUrl) {
     // Create a <ul> with an <li> for each country
     String content = destinationCountries.stream()
-        .map(country -> "<ul>" + country.getCountryName() + "</ul>")
+        .map(country -> "<li>" + country.getCountryName() + "</li>")
         .collect(Collectors.joining("", "<ul>", "</ul>"));
     return new SummaryField(SummaryFieldType.DESTINATION_COUNTRIES, "Destination countries", content, null, editLinkUrl, true);
   }
