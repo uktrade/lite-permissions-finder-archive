@@ -75,7 +75,7 @@ public class OgelResultsController {
             return completedFuture(ok(ogelResults.render(form, r.getResults(), null, null)));
           }
           else {
-            return countryServiceClient.getCountries()
+            return countryServiceClient.getCountries(httpExecutionContext)
                 .thenApplyAsync(countryServiceResponse -> {
                   String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
                   List<String> countryNames = countryServiceResponse.getCountriesByRef(destinationCountries).stream()

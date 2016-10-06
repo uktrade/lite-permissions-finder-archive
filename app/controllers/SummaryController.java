@@ -163,7 +163,7 @@ public class SummaryController {
     }
 
     if (destinationCountries.size() > 0) {
-      CompletionStage<CountryServiceClient.CountryServiceResponse> countryStage = countryServiceClient.getCountries();
+      CompletionStage<CountryServiceClient.CountryServiceResponse> countryStage = countryServiceClient.getCountries(httpExecutionContext);
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(countryStage, (summary, response)
           -> summary.addSummaryField(SummaryField.fromDestinationCountryList(response.getCountriesByRef(destinationCountries))
       ), httpExecutionContext.current());
@@ -193,7 +193,7 @@ public class SummaryController {
       if (!frontendServiceResponse.isOk()) {
         return completedFuture(badRequest("Bad control code front end service response"));
       }
-      return countryServiceClient.getCountries().thenComposeAsync(countryServiceResponse -> {
+      return countryServiceClient.getCountries(httpExecutionContext).thenComposeAsync(countryServiceResponse -> {
         if (!countryServiceResponse.isOk()) {
           return completedFuture(badRequest("Bad country service response"));
         }

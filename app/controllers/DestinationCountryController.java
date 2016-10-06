@@ -49,7 +49,7 @@ public class DestinationCountryController extends Controller {
   }
 
   public CompletionStage<Result> renderForm() {
-    return countryServiceClient.getCountries()
+    return countryServiceClient.getCountries(httpExecutionContext)
         .thenApplyAsync(response -> {
           if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()) {
 
@@ -78,7 +78,7 @@ public class DestinationCountryController extends Controller {
   }
 
   public CompletionStage<Result> handleSubmit() {
-    return countryServiceClient.getCountries()
+    return countryServiceClient.getCountries(httpExecutionContext)
         .thenApplyAsync(response -> {
           if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()) {
 
