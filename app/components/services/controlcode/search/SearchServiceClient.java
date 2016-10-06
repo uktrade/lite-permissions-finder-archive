@@ -3,9 +3,11 @@ package components.services.controlcode.search;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
 import java.util.ArrayList;
@@ -38,11 +40,12 @@ public class SearchServiceClient {
     this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/search";
   }
 
-  public CompletionStage<Response> get(String searchTerm){
+  public CompletionStage<Response> get(String searchTerm, HttpExecutionContext httpExecutionContext){
     return ws.url(webServiceUrl)
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("term", searchTerm)
-        .get().handle((response, error) -> {
+        .get().handleAsync((response, error) -> {
           if (error != null) {
             Logger.error("Unchecked exception in ControlCodeSearchService");
             Logger.error(error.getMessage(), error);
@@ -55,7 +58,7 @@ public class SearchServiceClient {
           else {
             return Response.success(response.asJson());
           }
-        });
+        }, httpExecutionContext.current());
   }
 
   public static class Response {

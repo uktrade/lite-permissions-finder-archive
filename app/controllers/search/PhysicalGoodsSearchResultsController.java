@@ -103,7 +103,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
   public CompletionStage<SearchServiceClient.Response> physicalGoodsSearch() {
     String searchTerms = PhysicalGoodsSearchController.getSearchTerms(dao.getPhysicalGoodsSearchForm().get());
-    return searchServiceClient.get(searchTerms);
+    return searchServiceClient.get(searchTerms, httpExecutionContext);
   }
 
 }
