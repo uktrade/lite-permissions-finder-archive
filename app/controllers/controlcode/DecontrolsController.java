@@ -42,7 +42,7 @@ public class DecontrolsController {
   }
 
   public CompletionStage<Result> renderForm() {
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode(), httpExecutionContext)
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(decontrols.render(formFactory.form(DecontrolsForm.class), response.getFrontendServiceResult()));
@@ -54,7 +54,7 @@ public class DecontrolsController {
   public CompletionStage<Result> handleSubmit(){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();
-    return frontendServiceClient.get(code)
+    return frontendServiceClient.get(code, httpExecutionContext)
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             if (form.hasErrors()) {

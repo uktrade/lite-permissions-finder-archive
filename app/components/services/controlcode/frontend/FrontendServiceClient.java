@@ -3,9 +3,11 @@ package components.services.controlcode.frontend;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
 import java.util.concurrent.CompletionStage;
@@ -34,10 +36,12 @@ public class FrontendServiceClient {
     this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/frontend-control-codes";
   }
 
-  public CompletionStage<Response> get(String controlCode) {
+  public CompletionStage<Response> get(String controlCode, HttpExecutionContext httpExecutionContext) {
     return ws.url(webServiceUrl + "/" + controlCode)
-        .setRequestTimeout(webServiceTimeout).get()
-        .handle((response, error) -> {
+        .withRequestFilter(CorrelationId.requestFilter)
+        .setRequestTimeout(webServiceTimeout)
+        .get()
+        .handleAsync((response, error) -> {
           if (error != null) {
             Logger.error("Unchecked exception in ControlCodeFrontendService");
             Logger.error(error.getMessage(), error);
@@ -51,7 +55,7 @@ public class FrontendServiceClient {
           else {
             return Response.success(response.asJson());
           }
-        });
+        }, httpExecutionContext.current());
   }
 
   public static class Response {

@@ -44,7 +44,7 @@ public class AdditionalSpecificationsController {
   }
 
   public CompletionStage<Result> renderForm() {
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode(), httpExecutionContext)
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class), response.getFrontendServiceResult()));
@@ -56,7 +56,7 @@ public class AdditionalSpecificationsController {
   public CompletionStage<Result> handleSubmit() {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();
-    return frontendServiceClient.get(code)
+    return frontendServiceClient.get(code, httpExecutionContext)
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             if (form.hasErrors()) {

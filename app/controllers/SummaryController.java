@@ -156,7 +156,7 @@ public class SummaryController {
     CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary());
 
     if(StringUtils.isNoneBlank(physicalGoodControlCode)) {
-      CompletionStage<FrontendServiceClient.Response> frontendStage = frontendServiceClient.get(physicalGoodControlCode);
+      CompletionStage<FrontendServiceClient.Response> frontendStage = frontendServiceClient.get(physicalGoodControlCode, httpExecutionContext);
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(frontendStage, (summary, response)
           -> summary.addSummaryField(SummaryField.fromFrontendServiceResult(response.getFrontendServiceResult())
       ), httpExecutionContext.current());
@@ -189,7 +189,7 @@ public class SummaryController {
     String ogelId = permissionsFinderDao.getOgelId();
     String transactionId = transactionManager.getTransactionId();
 
-    return frontendServiceClient.get(physicalGoodControlCode).thenComposeAsync(frontendServiceResponse -> {
+    return frontendServiceClient.get(physicalGoodControlCode, httpExecutionContext).thenComposeAsync(frontendServiceResponse -> {
       if (!frontendServiceResponse.isOk()) {
         return completedFuture(badRequest("Bad control code front end service response"));
       }
