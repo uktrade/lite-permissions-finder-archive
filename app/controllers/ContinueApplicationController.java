@@ -48,7 +48,7 @@ public class ContinueApplicationController {
     String applicationCode = form.get().applicationCode;
 
     if (StringUtils.isNoneBlank(applicationCode)) {
-      String transactionId = applicationCodeDao.readTransactionId(applicationCode);
+      String transactionId = applicationCodeDao.readTransactionId(applicationCode.trim());
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.createTransaction(transactionId);
         return contextParamManager.addParamsAndRedirect(routes.SummaryController.renderFormContinue());

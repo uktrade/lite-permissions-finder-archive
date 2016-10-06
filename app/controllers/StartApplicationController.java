@@ -79,8 +79,8 @@ public class StartApplicationController {
     String emailAddress = form.get().emailAddress;
 
     if (StringUtils.isNoneBlank(emailAddress)) {
-      permissionsFinderDao.saveEmailAddress(emailAddress);
-      notificationClient.sendApplicationReferenceEmail(emailAddress, permissionsFinderDao.getApplicationCode());
+      permissionsFinderDao.saveEmailAddress(emailAddress.trim());
+      notificationClient.sendApplicationReferenceEmail(emailAddress.trim(), permissionsFinderDao.getApplicationCode());
     }
     return journeyManager.startJourney(JourneyDefinitionNames.DEFAULT);
 

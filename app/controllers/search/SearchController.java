@@ -4,12 +4,14 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.search.SearchServiceClient;
 import controllers.ErrorController;
+import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SearchController {
@@ -35,16 +37,26 @@ public class SearchController {
     this.errorController = errorController;
   }
 
-  public Form<ControlCodeSearchForm> searchForm(ControlCodeSearchForm templateForm){
+  public Form<ControlCodeSearchForm> searchForm(ControlCodeSearchForm templateForm) {
     return formFactory.form(ControlCodeSearchForm.class).fill(templateForm);
   }
 
-  public Form<ControlCodeSearchForm> searchForm(){
+  public Form<ControlCodeSearchForm> searchForm() {
     return formFactory.form(ControlCodeSearchForm.class);
   }
 
-  public Form<ControlCodeSearchForm> bindSearchForm(){
-    return searchForm().bindFromRequest();
+  public Form<ControlCodeSearchForm> bindSearchForm() {
+    // Trims whitespace from the form fields
+    Map<String, String> map = searchForm().bindFromRequest().data().entrySet()
+        .stream()
+        .map(entry -> {
+          if (entry.getValue() != null) {
+            entry.setValue(entry.getValue().trim());
+          }
+          return entry;
+        })
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    return searchForm().bind(map);
   }
 
   public static String getSearchTerms(ControlCodeSearchForm form) {
@@ -55,7 +67,7 @@ public class SearchController {
         form.partNumber,
         form.hsCode
     ).stream()
-        .filter(fv -> fv != null && !fv.isEmpty())
+        .filter(fieldValue -> StringUtils.isNoneBlank(fieldValue))
         .collect(Collectors.joining(", "));
   }
 
