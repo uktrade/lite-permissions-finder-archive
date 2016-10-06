@@ -1,6 +1,8 @@
 package modules;
 
 import static components.common.journey.JourneyDefinitionBuilder.moveTo;
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static play.mvc.Results.redirect;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -203,6 +205,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage summary = jdb.defineStage("summary", "Check your answers so far",
         () -> cpm.addParamsAndRedirect(routes.SummaryController.renderForm()));
 
+    JourneyStage notImplemented = jdb.defineStage("notImplemented", "This page has not been implemented yet" ,
+        () -> completedFuture(redirect(routes.StaticContentController.renderNotImplemented())));
+
     jdb.atStage(tradeType)
         .onEvent(Events.TRADE_TYPE_SELECTED)
         .branch()
@@ -276,8 +281,8 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(physicalGoodsSearch))
-        .when(GoodsType.SOFTWARE, moveTo(null)) // TODO Not implemented screen
-        .when(GoodsType.TECHNOLOGY, moveTo(null)); // TODO Not implemented screen
+        .when(GoodsType.SOFTWARE, moveTo(notImplemented))
+        .when(GoodsType.TECHNOLOGY, moveTo(notImplemented));
 
     jdb.atStage(physicalGoodsSearch)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
