@@ -8,6 +8,8 @@ import com.google.inject.Inject;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
+import components.persistence.PermissionsFinderDao;
+import components.services.ogels.registration.OgelRegistrationServiceClient;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -15,6 +17,7 @@ import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import views.html.continueApplication;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class ContinueApplicationController {
@@ -22,17 +25,23 @@ public class ContinueApplicationController {
   private final TransactionManager transactionManager;
   private final FormFactory formFactory;
   private final ApplicationCodeDao applicationCodeDao;
+  private final PermissionsFinderDao permissionsFinderDao;
   private final ContextParamManager contextParamManager;
+  private final OgelRegistrationServiceClient ogelRegistrationServiceClient;
 
   @Inject
   public ContinueApplicationController(TransactionManager transactionManager,
                                        FormFactory formFactory,
                                        ApplicationCodeDao applicationCodeDao,
-                                       ContextParamManager contextParamManager) {
+                                       PermissionsFinderDao permissionsFinderDao,
+                                       ContextParamManager contextParamManager,
+                                       OgelRegistrationServiceClient ogelRegistrationServiceClient) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
+    this.permissionsFinderDao = permissionsFinderDao;
     this.applicationCodeDao = applicationCodeDao;
     this.contextParamManager = contextParamManager;
+    this.ogelRegistrationServiceClient = ogelRegistrationServiceClient;
   }
 
   public Result renderForm() {
@@ -51,7 +60,13 @@ public class ContinueApplicationController {
       String transactionId = applicationCodeDao.readTransactionId(applicationCode.trim());
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.createTransaction(transactionId);
-        return contextParamManager.addParamsAndRedirect(routes.SummaryController.renderFormContinue());
+        Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
+        if (ogelRegistrationExists.isPresent() && ogelRegistrationExists.get()) {
+          return ogelRegistrationServiceClient.updateTransaction(transactionId);
+        }
+        else {
+          return contextParamManager.addParamsAndRedirect(routes.SummaryController.renderFormContinue());
+        }
       }
       else {
         form.reject("applicationCode", "You have entered an invalid claim number");

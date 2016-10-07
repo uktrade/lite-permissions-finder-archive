@@ -1,6 +1,8 @@
 package components.services.ogels.registration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import play.libs.Json;
 
 public class OgelRegistrationServiceResult {
 
@@ -12,6 +14,10 @@ public class OgelRegistrationServiceResult {
                                        @JsonProperty("redirectUrl") String redirectUrl) {
     this.status = status;
     this.redirectUrl = redirectUrl;
+  }
+
+  public static OgelRegistrationServiceResult buildFromJson(JsonNode jsonNode){
+    return Json.fromJson(jsonNode, OgelRegistrationServiceResult.class);
   }
 
 }

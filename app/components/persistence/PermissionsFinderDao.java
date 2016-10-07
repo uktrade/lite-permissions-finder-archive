@@ -64,6 +64,8 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public static final String THROUGH_DESTINATION_COUNTRY_LIST = "throughDestinationCountryList";
 
+  public static final String OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS = "ogelRegistrationServiceTransactionExists";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -249,4 +251,11 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     writeString(JOURNEY, journey.serialiseToString());
   }
 
+  public void saveOgelRegistrationServiceTransactionExists (boolean transactionCreated) {
+    writeBoolean(OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS, transactionCreated);
+  }
+
+  public Optional<Boolean> getOgelRegistrationServiceTransactionExists() {
+    return readBoolean(OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS);
+  }
 }

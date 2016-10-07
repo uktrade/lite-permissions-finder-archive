@@ -23,7 +23,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.summary;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class SummaryController {
@@ -120,31 +120,15 @@ public class SummaryController {
   }
 
   public CompletionStage<Result> redirectToRegistration() {
-    String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
-    List<String> destinationCountries = permissionsFinderDao.getThroughDestinationCountries();
-
-    // Add "primary" country to the first position
-    destinationCountries.add(0, permissionsFinderDao.getFinalDestinationCountry());
-
-    String ogelId = permissionsFinderDao.getOgelId();
+    Optional<Boolean> ogelTransactionExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
     String transactionId = transactionManager.getTransactionId();
 
-    return frontendServiceClient.get(physicalGoodControlCode).thenComposeAsync(frontendServiceResponse -> {
-      if (!frontendServiceResponse.isOk()) {
-        return completedFuture(badRequest("Bad control code front end service response"));
-      }
-      return countryServiceClient.getCountries().thenComposeAsync(countryServiceResponse -> {
-        if (!countryServiceResponse.isOk()) {
-          return completedFuture(badRequest("Bad country service response"));
-        }
-        return ogelServiceClient.get(ogelId).thenComposeAsync(ogelServiceResponse -> {
-          if (!ogelServiceResponse.isOk()) {
-            return completedFuture(badRequest("Bad OGEL service response"));
-          }
-          return ogelRegistrationServiceClient.handOffToOgelRegistration(transactionId);
-        }, httpExecutionContext.current());
-      }, httpExecutionContext.current());
-    }, httpExecutionContext.current());
+    if (ogelTransactionExists.isPresent() && ogelTransactionExists.get()) {
+      return ogelRegistrationServiceClient.updateTransaction(transactionId);
+    }
+    else {
+      return ogelRegistrationServiceClient.createTransaction(transactionId);
+    }
   }
 
   public static class SummaryForm {

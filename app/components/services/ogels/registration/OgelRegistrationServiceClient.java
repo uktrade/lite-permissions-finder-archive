@@ -1,19 +1,16 @@
 package components.services.ogels.registration;
 
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.redirect;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.client.CountryServiceClient;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.ServiceResponseStatus;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import models.summary.Summary;
-import play.Logger;
+import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -27,12 +24,11 @@ public class OgelRegistrationServiceClient {
 
   public final static String STATUS_CODE_OK = "ok";
 
-  private final WSClient ws;
-  private final String webServiceHost;
-  private final int webServicePort;
+  private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceSharedSecret;
-  private final String webServiceUrl;
+  private final String createTransactionUrl;
+  private final String updateTransactionUrl;
   private final String ogelRegistrationRootUrl;
   private final ContextParamManager contextParamManager;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -42,7 +38,7 @@ public class OgelRegistrationServiceClient {
   private final OgelServiceClient ogelServiceClient;
 
   @Inject
-  public OgelRegistrationServiceClient(WSClient ws,
+  public OgelRegistrationServiceClient(WSClient wsClient,
                                        @Named("ogelRegistrationServiceHost") String webServiceHost,
                                        @Named("ogelRegistrationServicePort") int webServicePort,
                                        @Named("ogelRegistrationServiceTimeout") int webServiceTimeout,
@@ -53,13 +49,12 @@ public class OgelRegistrationServiceClient {
                                        FrontendServiceClient frontendServiceClient,
                                        CountryServiceClient countryServiceClient,
                                        OgelServiceClient ogelServiceClient) {
-    this.ws = ws;
-    this.webServiceHost = webServiceHost;
-    this.webServicePort = webServicePort;
+    this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceSharedSecret = webServiceSharedSecret;
     this.ogelRegistrationRootUrl = "http://" + webServiceHost + ":" + webServicePort;
-    this.webServiceUrl = ogelRegistrationRootUrl + "/create-transaction";
+    this.createTransactionUrl = ogelRegistrationRootUrl + "/create-transaction";
+    this.updateTransactionUrl = ogelRegistrationRootUrl + "/update-transaction";
     this.contextParamManager = contextParamManager;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -68,9 +63,16 @@ public class OgelRegistrationServiceClient {
     this.ogelServiceClient = ogelServiceClient;
   }
 
-  public CompletionStage<Result> handOffToOgelRegistration(String transactionId){
+  public CompletionStage<Result> createTransaction(String transactionId) {
+    return sendWebServiceRequest(transactionId, createTransactionUrl);
+  }
 
-    WSRequest wsRequest = ws.url(webServiceUrl)
+  public CompletionStage<Result> updateTransaction(String transactionId) {
+    return sendWebServiceRequest(transactionId, updateTransactionUrl);
+  }
+
+  private CompletionStage<Result> sendWebServiceRequest(String transactionId, String webServiceUrl) {
+    WSRequest wsRequest = wsClient.url(webServiceUrl)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("securityToken", webServiceSharedSecret);
 
@@ -82,64 +84,24 @@ public class OgelRegistrationServiceClient {
 
     return requestStage.thenApply(request -> wsRequest.post(Json.toJson(request)))
         .thenCompose(Function.identity())
-        .handle((response, error) -> {
-          if (error != null) {
-            Logger.error("Unchecked exception in OGEL registration service");
-            Logger.error(error.getMessage(), error);
-            return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
-          }
-          else if (response.getStatus() != 200) {
-            Logger.error("Unexpected HTTP status code from OGEL registration service: {}", response.getStatus());
-            return Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE);
+        .thenApplyAsync(wsResponse -> {
+          if (wsResponse.getStatus() != 200) {
+            throw new OgelRegistrationServiceException(String.format("Unexpected HTTP status code: %s", wsResponse.getStatus()));
           }
           else {
-            return Response.success(response.asJson());
+            OgelRegistrationServiceResult result = OgelRegistrationServiceResult.buildFromJson(wsResponse.asJson());
+            if (!StringUtils.isNotBlank(result.redirectUrl)) {
+              throw new OgelRegistrationServiceException("Empty redirect URL supplied");
+            }
+            else if (!StringUtils.equals(result.status, STATUS_CODE_OK)) {
+              throw new OgelRegistrationServiceException(String.format("Bad status code returned: %s", result.status));
+            }
+            else {
+              permissionsFinderDao.saveOgelRegistrationServiceTransactionExists(true);
+              return redirect(ogelRegistrationRootUrl + result.redirectUrl);
+            }
           }
-        }).thenApplyAsync(response -> {
-          // TODO this entire handler isn't needed
-          if (!response.isOk() && STATUS_CODE_OK.equals(response.getResult().status)
-              && response.getResult().redirectUrl != null || response.getResult().redirectUrl.isEmpty()) {
-            return badRequest("Invalid response from OGEL registration service");
-          }
-          return redirect(ogelRegistrationRootUrl + response.getResult().redirectUrl);
-        });
-  }
-
-  public static class Response {
-
-    private final OgelRegistrationServiceResult result;
-
-    private final ServiceResponseStatus status;
-
-    private Response(ServiceResponseStatus status, JsonNode responseJson) {
-      this.status = status;
-      this.result = Json.fromJson(responseJson, OgelRegistrationServiceResult.class);
-    }
-
-    private Response(ServiceResponseStatus status) {
-      this.status = status;
-      this.result = null;
-    }
-
-    public static Response success(JsonNode responseJson){
-      return new Response(ServiceResponseStatus.SUCCESS, responseJson);
-    }
-
-    public static Response failure(ServiceResponseStatus status){
-      return new Response(status);
-    }
-
-    public ServiceResponseStatus getStatus() {
-      return status;
-    }
-
-    public OgelRegistrationServiceResult getResult() {
-      return this.result;
-    }
-
-    public boolean isOk() {
-      return this.status == ServiceResponseStatus.SUCCESS;
-    }
+        }, httpExecutionContext.current());
   }
 
 }
