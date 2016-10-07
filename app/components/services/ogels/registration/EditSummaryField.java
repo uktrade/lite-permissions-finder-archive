@@ -14,18 +14,23 @@ public class EditSummaryField {
   @JsonProperty("isHtml")
   public final boolean isHtml;
 
+  @JsonProperty("isValid")
+  public final boolean isValid;
+
   @JsonProperty("editLink")
   public final String editLink;
 
-  public EditSummaryField(String fieldName, String fieldValue, boolean isHtml, String editLink) {
+  public EditSummaryField(String fieldName, String fieldValue, boolean isHtml, boolean isValid, String editLink) {
     this.fieldName = fieldName;
     this.fieldValue = fieldValue;
     this.isHtml = isHtml;
+    this.isValid = isValid;
     this.editLink = editLink;
   }
 
   public static EditSummaryField buildEditSummaryField (SummaryField summaryField) {
-    return new EditSummaryField(summaryField.heading, summaryField.content, summaryField.isContentHtml, summaryField.editLinkUrl);
+    return new EditSummaryField(summaryField.heading, summaryField.content, summaryField.isContentHtml,
+        summaryField.isValid, summaryField.editLinkUrl);
   }
 
 }

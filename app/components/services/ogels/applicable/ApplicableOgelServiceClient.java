@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.services.ServiceResponseStatus;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.libs.Json;
 import play.libs.ws.WSClient;
@@ -12,6 +13,7 @@ import play.libs.ws.WSRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class ApplicableOgelServiceClient {
@@ -94,6 +96,15 @@ public class ApplicableOgelServiceClient {
 
     public List<ApplicableOgelServiceResult> getResults() {
       return this.results;
+    }
+
+    public Optional<ApplicableOgelServiceResult> findResultById(String ogelId) {
+      if (StringUtils.isBlank(ogelId) || this.results == null || this.results.isEmpty()) {
+        return Optional.empty();
+      }
+      return this.results.stream()
+          .filter(result -> StringUtils.equals(result.id, ogelId))
+          .findFirst();
     }
 
     public boolean isOk() {

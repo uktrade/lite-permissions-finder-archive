@@ -11,6 +11,7 @@ import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import components.services.ogels.registration.OgelRegistrationServiceClient;
 import journey.JourneyDefinitionNames;
@@ -37,6 +38,7 @@ public class SummaryController {
   private final FrontendServiceClient frontendServiceClient;
   private final CountryServiceClient countryServiceClient;
   private final OgelServiceClient ogelServiceClient;
+  private final ApplicableOgelServiceClient applicableOgelServiceClient;
   private final OgelRegistrationServiceClient ogelRegistrationServiceClient;
 
   @Inject
@@ -49,6 +51,7 @@ public class SummaryController {
                            FrontendServiceClient frontendServiceClient,
                            CountryServiceClient countryServiceClient,
                            OgelServiceClient ogelServiceClient,
+                           ApplicableOgelServiceClient applicableOgelServiceClient,
                            OgelRegistrationServiceClient ogelRegistrationServiceClient
   ) {
     this.transactionManager = transactionManager;
@@ -60,6 +63,7 @@ public class SummaryController {
     this.frontendServiceClient = frontendServiceClient;
     this.countryServiceClient = countryServiceClient;
     this.ogelServiceClient = ogelServiceClient;
+    this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.ogelRegistrationServiceClient = ogelRegistrationServiceClient;
   }
 
@@ -105,7 +109,7 @@ public class SummaryController {
 
   public CompletionStage<Result> renderWithForm(Form<SummaryForm> form, boolean isResumedApplication) {
     return Summary.composeSummary(contextParamManager, permissionsFinderDao, httpExecutionContext,
-        frontendServiceClient, countryServiceClient, ogelServiceClient)
+        frontendServiceClient, countryServiceClient, ogelServiceClient, applicableOgelServiceClient)
         .thenComposeAsync(summaryDetails -> completedFuture(ok(summary.render(form, summaryDetails, isResumedApplication))
         ), httpExecutionContext.current())
         .handleAsync((result, error) -> {

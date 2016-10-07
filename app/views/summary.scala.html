@@ -23,7 +23,7 @@
           </thead>
           <tbody>
           @for(summaryField <- summary.summaryFields) {
-            <tr>
+            <tr class="@{if (!summaryField.isValid) "invalid-field"}">
               <td class="summary-item-heading">@summaryField.heading</td>
               @if(summaryField.isContentHtml) {
                 <td>@Html(summaryField.content)</td>

@@ -4,7 +4,10 @@ import components.common.client.CountryServiceClient;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
+import components.services.ogels.ogel.OgelServiceResult;
+import controllers.ogel.OgelQuestionsController;
 import controllers.routes;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
@@ -43,7 +46,8 @@ public class Summary {
                                                         HttpExecutionContext httpExecutionContext,
                                                         FrontendServiceClient frontendServiceClient,
                                                         CountryServiceClient countryServiceClient,
-                                                        OgelServiceClient ogelServiceClient) {
+                                                        OgelServiceClient ogelServiceClient,
+                                                        ApplicableOgelServiceClient applicableOgelServiceClient) {
     String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
     String ogelId = permissionsFinderDao.getOgelId();
     String finalDestinationCountry = permissionsFinderDao.getFinalDestinationCountry();
@@ -84,16 +88,38 @@ public class Summary {
     }
 
     if (StringUtils.isNoneBlank(ogelId)) {
+      String sourceCountry = permissionsFinderDao.getSourceCountry();
+
       CompletionStage<OgelServiceClient.Response> ogelStage = ogelServiceClient.get(ogelId);
 
+      List<String> ogelActivities = OgelQuestionsController.OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
+
+      CompletionStage<ApplicableOgelServiceClient.Response> applicableOgelStage = applicableOgelServiceClient.get(
+          physicalGoodControlCode, sourceCountry, destinationCountries, ogelActivities);
+
+      CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombine(applicableOgelStage,
+          (ogelResponse, applicableOgelResponse) ->
+              new ValidatedOgel(ogelResponse.getResult(),
+                  applicableOgelResponse.findResultById(ogelResponse.getResult().id).isPresent()));
+
       summaryCompletionStage = summaryCompletionStage
-          .thenCombineAsync(ogelStage, (summary, response)
-              -> summary.addSummaryField(SummaryField.fromOgelServiceResult(response.getResult(),
-              contextParamManager.addParamsToCall(routes.ChangeController.changeOgelType()))
+          .thenCombineAsync(validatedStage, (summary, validatedOgel)
+              -> summary.addSummaryField(SummaryField.fromOgelServiceResult(validatedOgel.ogelServiceResult,
+              contextParamManager.addParamsToCall(routes.ChangeController.changeOgelType()), validatedOgel.isValid)
           ), httpExecutionContext.current());
     }
 
     return summaryCompletionStage;
+  }
+
+  private static class ValidatedOgel {
+    public final OgelServiceResult ogelServiceResult;
+    public final boolean isValid;
+
+    public ValidatedOgel(OgelServiceResult ogelServiceResult, boolean isValid) {
+      this.ogelServiceResult = ogelServiceResult;
+      this.isValid = isValid;
+    }
   }
   
 }

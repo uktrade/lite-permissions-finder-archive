@@ -41,51 +41,61 @@ public class SummaryField {
   public final boolean isContentHtml;
 
 
+  /**
+   * State whether the data associated with this field is valid
+   */
+  public final boolean isValid;
+
   public SummaryField(SummaryFieldType summaryFieldType, String heading, String content, String data,
-                      String editLinkUrl, boolean isContentHtml) {
+                      String editLinkUrl, boolean isContentHtml, boolean isValid) {
     this.summaryFieldType = summaryFieldType;
     this.heading = heading;
     this.content = content;
     this.data = data;
     this.editLinkUrl = editLinkUrl;
     this.isContentHtml = isContentHtml;
+    this.isValid = isValid;
   }
 
   /**
    * Creates a SummaryField from a frontend service result and an edit link URL
-   * @param frontendServiceResult
-   * @param editLinkUrl
+   * @param frontendServiceResult The frontend control code service result
+   * @param editLinkUrl The edit link URL for the OGEL ID
    * @return a SummaryField for the control code
    */
   public static SummaryField fromFrontendServiceResult(FrontendServiceResult frontendServiceResult, String editLinkUrl) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     String content =  "<strong class=\"bold-small\">" + controlCodeData.controlCode
         + "</strong> - " + controlCodeData.title;
-    return new SummaryField(SummaryFieldType.CONTROL_CODE, "Goods rating", content, null, editLinkUrl, true);
+    return new SummaryField(SummaryFieldType.CONTROL_CODE, "Goods rating", content, null, editLinkUrl, true, true);
   }
 
   /**
    * Creates SummaryField from an OGEL service result and an edit link URL
-   * @param ogelServiceResult
-   * @param editLinkUrl
+   * @param ogelServiceResult The OGEL service result
+   * @param editLinkUrl The edit link URL for the OGEL ID
+   * @param isValid Is the OGEL ID associated with this field valid?
    * @return a Summary field for the OGEL type
    */
-  public static SummaryField fromOgelServiceResult(OgelServiceResult ogelServiceResult, String editLinkUrl) {
-    return new SummaryField(SummaryFieldType.OGEL_TYPE, "Licence type", ogelServiceResult.name, ogelServiceResult.id, editLinkUrl, false);
+  public static SummaryField fromOgelServiceResult(OgelServiceResult ogelServiceResult,
+                                                   String editLinkUrl, boolean isValid) {
+    return new SummaryField(SummaryFieldType.OGEL_TYPE, "Licence type", ogelServiceResult.name, ogelServiceResult.id,
+        editLinkUrl, false, isValid);
   }
 
   /**
    * Create a SummmaryField from a list of destination countries and an edit link URL
-   * @param destinationCountries
-   * @param editLinkUrl
-   * @return
+   * @param destinationCountries The destination countries list
+   * @param editLinkUrl The edit URL for the destination countries
+   * @return a SummaryField for the destination countries
    */
   public static SummaryField fromDestinationCountryList(List<Country> destinationCountries, String editLinkUrl) {
     // Create a <ul> with an <li> for each country
     String content = destinationCountries.stream()
         .map(country -> "<li>" + country.getCountryName() + "</li>")
         .collect(Collectors.joining("", "<ul>", "</ul>"));
-    return new SummaryField(SummaryFieldType.DESTINATION_COUNTRIES, "Destination countries", content, null, editLinkUrl, true);
+    return new SummaryField(SummaryFieldType.DESTINATION_COUNTRIES, "Destination countries", content, null,
+        editLinkUrl, true, true);
   }
 
 }
