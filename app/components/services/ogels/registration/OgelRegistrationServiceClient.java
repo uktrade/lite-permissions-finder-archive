@@ -29,8 +29,7 @@ public class OgelRegistrationServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceSharedSecret;
-  private final String createTransactionUrl;
-  private final String updateTransactionUrl;
+  private final String webServiceUrl;
   private final String ogelRegistrationRootUrl;
   private final ContextParamManager contextParamManager;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -57,8 +56,7 @@ public class OgelRegistrationServiceClient {
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceSharedSecret = webServiceSharedSecret;
     this.ogelRegistrationRootUrl = "http://" + webServiceHost + ":" + webServicePort;
-    this.createTransactionUrl = ogelRegistrationRootUrl + "/create-transaction";
-    this.updateTransactionUrl = ogelRegistrationRootUrl + "/update-transaction";
+    this.webServiceUrl = ogelRegistrationRootUrl + "/update-transaction";
     this.contextParamManager = contextParamManager;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -68,15 +66,7 @@ public class OgelRegistrationServiceClient {
     this.applicableOgelServiceClient = applicableOgelServiceClient;
   }
 
-  public CompletionStage<Result> createTransaction(String transactionId) {
-    return sendWebServiceRequest(transactionId, createTransactionUrl);
-  }
-
-  public CompletionStage<Result> updateTransaction(String transactionId) {
-    return sendWebServiceRequest(transactionId, updateTransactionUrl);
-  }
-
-  private CompletionStage<Result> sendWebServiceRequest(String transactionId, String webServiceUrl) {
+  public CompletionStage<Result> updateTransactionAndRedirect(String transactionId) {
     WSRequest wsRequest = wsClient.url(webServiceUrl)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("securityToken", webServiceSharedSecret);

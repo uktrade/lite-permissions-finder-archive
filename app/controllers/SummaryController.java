@@ -124,15 +124,8 @@ public class SummaryController {
   }
 
   public CompletionStage<Result> redirectToRegistration() {
-    Optional<Boolean> ogelTransactionExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
     String transactionId = transactionManager.getTransactionId();
-
-    if (ogelTransactionExists.isPresent() && ogelTransactionExists.get()) {
-      return ogelRegistrationServiceClient.updateTransaction(transactionId);
-    }
-    else {
-      return ogelRegistrationServiceClient.createTransaction(transactionId);
-    }
+    return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
   }
 
   public static class SummaryForm {

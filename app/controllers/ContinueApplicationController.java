@@ -62,7 +62,7 @@ public class ContinueApplicationController {
         transactionManager.createTransaction(transactionId);
         Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
         if (ogelRegistrationExists.isPresent() && ogelRegistrationExists.get()) {
-          return ogelRegistrationServiceClient.updateTransaction(transactionId);
+          return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
         }
         else {
           return contextParamManager.addParamsAndRedirect(routes.SummaryController.renderFormContinue());
