@@ -11,13 +11,13 @@ import controllers.ogel.OgelQuestionsController;
 import controllers.routes;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
+import utils.CountryUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 
 public class Summary {
 
@@ -50,21 +50,8 @@ public class Summary {
                                                         ApplicableOgelServiceClient applicableOgelServiceClient) {
     String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
     String ogelId = permissionsFinderDao.getOgelId();
-    String finalDestinationCountry = permissionsFinderDao.getFinalDestinationCountry();
-
-    // Filter out empty countries (throughDestinationCountries is initialised to a single empty string).
-    List<String> throughDestinationCountries = permissionsFinderDao.getThroughDestinationCountries().stream()
-        .filter(countryRef -> StringUtils.isNotBlank(countryRef))
-        .collect(Collectors.toList());
-
-    List<String> destinationCountries = new ArrayList<>();
-
-    if (StringUtils.isNotBlank(finalDestinationCountry)) {
-      destinationCountries.add(finalDestinationCountry);
-      if (throughDestinationCountries.size() > 0) {
-        destinationCountries.addAll(throughDestinationCountries);
-      }
-    }
+    List<String> destinationCountries = CountryUtils.getDestinationCountries(
+        permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
 
     // TODO Drive fields to shown by the journey history, not the dao
     CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary());
