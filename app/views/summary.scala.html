@@ -10,6 +10,17 @@
   @errorSummary(form)
 }{
 
+  @if(!isResumedApplication) {
+
+    <p>
+      Your code to return to this service later is:
+    </p>
+
+    <div class="panel panel-border-wide">
+      <span class="bold-xlarge">@summary.applicationCode</span>
+    </div>
+  }
+
   <form action="@{if(isResumedApplication) routes.SummaryController.handleSubmitContinue() else routes.SummaryController.handleSubmit()}" method="POST">
 
     @contextFormParams()

@@ -21,9 +21,12 @@ import java.util.concurrent.CompletionStage;
 
 public class Summary {
 
+  public final String applicationCode;
+
   public final List<SummaryField> summaryFields;
 
-  public Summary() {
+  public Summary(String applicationCode) {
+    this.applicationCode = applicationCode;
     this.summaryFields = new ArrayList<>();
   }
 
@@ -48,13 +51,14 @@ public class Summary {
                                                         CountryServiceClient countryServiceClient,
                                                         OgelServiceClient ogelServiceClient,
                                                         ApplicableOgelServiceClient applicableOgelServiceClient) {
+    String applicationCode = permissionsFinderDao.getApplicationCode();
     String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
     String ogelId = permissionsFinderDao.getOgelId();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
 
     // TODO Drive fields to shown by the journey history, not the dao
-    CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary());
+    CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary(applicationCode));
 
     if(StringUtils.isNoneBlank(physicalGoodControlCode)) {
       CompletionStage<FrontendServiceClient.Response> frontendStage = frontendServiceClient.get(physicalGoodControlCode);
