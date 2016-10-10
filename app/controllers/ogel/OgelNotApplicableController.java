@@ -1,13 +1,13 @@
 package controllers.ogel;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.ogel.OgelServiceClient;
+import exceptions.FormStateException;
+import exceptions.ServiceResponseException;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -55,7 +55,7 @@ public class OgelNotApplicableController {
       return journeyManager.performTransition(Events.OGEL_CHOOSE_AGAIN);
     }
     else {
-      return completedFuture(badRequest("Unknown value for action: \"" + action + "\""));
+      throw new FormStateException("Unknown value for action: \"" + action + "\"");
     }
   }
 
@@ -63,7 +63,7 @@ public class OgelNotApplicableController {
     return ogelServiceClient.get(permissionsFinderDao.getOgelId())
         .thenApplyAsync(response -> {
           if (!response.isOk()) {
-            return badRequest("Invalid response from the OGEL service");
+            throw new ServiceResponseException("Invalid response from the OGEL service");
           }
           return ok(ogelNotApplicable.render(form, response.getResult(),
               permissionsFinderDao.getPhysicalGoodControlCode()));

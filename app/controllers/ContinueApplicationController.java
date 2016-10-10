@@ -1,7 +1,6 @@
 package controllers;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -10,6 +9,7 @@ import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.registration.OgelRegistrationServiceClient;
+import exceptions.FormStateException;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -73,7 +73,7 @@ public class ContinueApplicationController {
         return completedFuture(ok(continueApplication.render(form)));
       }
     }
-    return completedFuture(badRequest("Unhandled form state"));
+    throw new FormStateException("Unhandled form state");
   }
 
   public static class ContinueApplicationForm {

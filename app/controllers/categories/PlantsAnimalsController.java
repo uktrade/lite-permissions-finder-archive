@@ -1,12 +1,12 @@
 package controllers.categories;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import exceptions.FormStateException;
 import journey.Events;
 import models.LifeType;
 import play.data.Form;
@@ -58,7 +58,7 @@ public class PlantsAnimalsController {
       permissionsFinderDao.savePlantsAnimalsLifeType(lifeTypeOptional.get());
       return journeyManager.performTransition(Events.LIFE_TYPE_SELECTED, lifeTypeOptional.get());
     }
-    return completedFuture(badRequest("Unknown value for lifeType: \"" + form.get().lifeType + "\""));
+    throw new FormStateException("Unknown value for lifeType: \"" + form.get().lifeType + "\"");
   }
 
   public static class PlantsAnimalsForm {

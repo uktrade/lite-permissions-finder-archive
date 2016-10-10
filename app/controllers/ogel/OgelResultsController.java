@@ -1,7 +1,6 @@
 package controllers.ogel;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -11,6 +10,8 @@ import components.persistence.PermissionsFinderDao;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
+import exceptions.FormStateException;
+import exceptions.ServiceResponseException;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -70,7 +71,7 @@ public class OgelResultsController {
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenComposeAsync(r -> {
           if (!r.isOk()) {
-            return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
+            throw new ServiceResponseException("Applicable OGEL service returned an invalid response");
           }
           else if (!r.getResults().isEmpty()) {
             return completedFuture(ok(ogelResults.render(form, r.getResults(), null, null)));
@@ -114,15 +115,15 @@ public class OgelResultsController {
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenComposeAsync(applicableOgelResponse -> {
           if (!applicableOgelResponse.isOk()) {
-            return completedFuture(badRequest("Invalid response from the applicable OGEL service"));
+            throw new ServiceResponseException("Invalid response from the applicable OGEL service");
           }
           if (applicableOgelResponse.getResults().stream().noneMatch(ogel -> chosenOgel.equalsIgnoreCase(ogel.id))) {
-            return completedFuture(badRequest("Selected OGEL is not valid with the applicable OGEL service response"));
+            throw new FormStateException("Selected OGEL is not valid with the applicable OGEL service response");
           }
           return ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getPhysicalGoodControlCode())
               .thenApplyAsync(response -> {
                 if (!response.isOk()) {
-                  return completedFuture(badRequest("Invalid response from OGEL service"));
+                  throw new ServiceResponseException("Invalid response from OGEL service");
                 }
                 if (response.getResult().isPresent()) {
                   return journeyManager.performTransition(Events.OGEL_RESTRICTIONS_APPLY);

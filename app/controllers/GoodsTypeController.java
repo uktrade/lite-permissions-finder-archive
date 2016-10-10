@@ -5,6 +5,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import exceptions.FormStateException;
 import journey.Events;
 import models.GoodsType;
 import play.data.Form;
@@ -54,7 +55,7 @@ public class GoodsTypeController extends Controller {
       return journeyManager.performTransition(Events.GOODS_TYPE_SELECTED, goodsTypeOptional.get());
     }
 
-    return completedFuture(badRequest("Unknown goods type " + goodsTypeParam));
+    throw new FormStateException("Unknown goods type " + goodsTypeParam);
   }
 
   public static class GoodsTypeForm {

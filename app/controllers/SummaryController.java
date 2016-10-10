@@ -1,7 +1,6 @@
 package controllers;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -14,17 +13,16 @@ import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import components.services.ogels.registration.OgelRegistrationServiceClient;
+import exceptions.FormStateException;
 import journey.JourneyDefinitionNames;
 import models.summary.Summary;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.summary;
 
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class SummaryController {
@@ -103,7 +101,7 @@ public class SummaryController {
       return redirectToRegistration();
     }
     else {
-      return completedFuture(badRequest("Invalid form state"));
+      throw new FormStateException("Unhandled form state");
     }
   }
 
@@ -111,16 +109,7 @@ public class SummaryController {
     return Summary.composeSummary(contextParamManager, permissionsFinderDao, httpExecutionContext,
         frontendServiceClient, countryServiceClient, ogelServiceClient, applicableOgelServiceClient)
         .thenComposeAsync(summaryDetails -> completedFuture(ok(summary.render(form, summaryDetails, isResumedApplication))
-        ), httpExecutionContext.current())
-        .handleAsync((result, error) -> {
-          if (error != null) {
-            Logger.error(error.getMessage(), error);
-            return badRequest("Invalid service response");
-          }
-          else {
-            return result;
-          }
-        });
+        ), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> redirectToRegistration() {

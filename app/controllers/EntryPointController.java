@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import exceptions.FormStateException;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -31,9 +32,9 @@ public class EntryPointController extends Controller {
       if ("continue".equals(action)) {
         return redirect(routes.ContinueApplicationController.renderForm());
       }
-      return badRequest("Unknown value for action: \"" + action + "\"");
+      throw new FormStateException("Unknown value for action: \"" + action + "\"");
     }
-    return badRequest("Invalid form state");
+    throw new FormStateException("Unhandled form state");
   }
 
   public static class EntryPointForm {

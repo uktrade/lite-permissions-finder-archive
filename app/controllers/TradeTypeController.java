@@ -5,6 +5,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import exceptions.FormStateException;
 import journey.Events;
 import models.TradeType;
 import play.data.Form;
@@ -57,7 +58,7 @@ public class TradeTypeController extends Controller {
       }
       return journeyManager.performTransition(Events.TRADE_TYPE_SELECTED, tradeTypeOption.get());
     }
-    return completedFuture(badRequest("Unknown trade type " + tradeTypeParam));
+    throw new FormStateException("Unknown trade type " + tradeTypeParam);
   }
 
   public static class TradeTypeForm {

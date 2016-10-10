@@ -1,13 +1,13 @@
 package controllers.controlcode;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
+import exceptions.FormStateException;
+import exceptions.ServiceResponseException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
@@ -49,7 +49,7 @@ public class DecontrolledItemController {
           if (response.isOk()) {
             return ok(decontrolledItem.render(response.getFrontendServiceResult(), showFirearmsOrMilitary));
           }
-          return badRequest("An issue occurred while processing your request, please try again later.");
+          throw new ServiceResponseException("Control code frontend service returned an invalid response");
         }, httpExecutionContext.current());
   }
 
@@ -64,7 +64,7 @@ public class DecontrolledItemController {
         return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
       }
     }
-    return completedFuture(badRequest("Invalid form state"));
+    throw new FormStateException("Unhandled form state");
   }
 
   public static class DecontrolledItemForm {

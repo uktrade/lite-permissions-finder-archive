@@ -1,10 +1,9 @@
 package controllers.categories;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import exceptions.FormStateException;
 import journey.Events;
 import models.ExportCategory;
 import play.data.Form;
@@ -46,7 +45,7 @@ public class ExportCategoryController extends Controller {
       return journeyManager.performTransition(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE);
     }
 
-    return completedFuture(badRequest("Unknown export category: \"" + form.get().category + "\""));
+    throw new FormStateException("Unknown export category: \"" + form.get().category + "\"");
   }
 
   public static class ExportCategoryForm {

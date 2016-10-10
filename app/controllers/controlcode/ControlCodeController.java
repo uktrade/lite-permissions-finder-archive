@@ -8,6 +8,8 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.ControlCodeData;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
+import exceptions.FormStateException;
+import exceptions.ServiceResponseException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import play.data.Form;
@@ -49,7 +51,7 @@ public class ControlCodeController extends Controller {
           if (response.isOk()) {
             return ok(controlCode.render(formFactory.form(ControlCodeForm.class), response.getFrontendServiceResult()));
           }
-          return badRequest("An issue occurred while processing your request, please try again later.");
+          throw new ServiceResponseException("Control code frontend service returned an invalid response");
         }, httpExecutionContext.current());
   }
 
@@ -68,7 +70,7 @@ public class ControlCodeController extends Controller {
               if ("backToSearchResults".equals(action)) {
                 return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
               }
-              return completedFuture(badRequest("Invalid value for action: \"" + action + "\""));
+              throw new FormStateException("Invalid value for action: \"" + action + "\"");
             }
 
             if (form.hasErrors()) {
@@ -82,7 +84,7 @@ public class ControlCodeController extends Controller {
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
             }
           }
-          return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
+          throw new FormStateException("Unhandled form state");
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 

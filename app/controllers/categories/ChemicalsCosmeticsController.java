@@ -1,12 +1,11 @@
 package controllers.categories;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
+import exceptions.FormStateException;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -34,7 +33,7 @@ public class ChemicalsCosmeticsController {
     if ("true".equals(form.get().goToSearch)) {
       return journeyManager.performTransition(StandardEvents.NEXT);
     }
-    return completedFuture(badRequest("Unknown value of goToSearch: \"" + form.get().goToSearch + "\""));
+    throw new FormStateException("Unknown value of goToSearch: \"" + form.get().goToSearch + "\"");
   }
 
   public static class ChemicalsCosmeticsForm {

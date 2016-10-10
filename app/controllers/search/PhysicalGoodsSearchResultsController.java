@@ -1,7 +1,5 @@
 package controllers.search;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -12,6 +10,8 @@ import components.services.controlcode.search.SearchServiceClient;
 import components.services.controlcode.search.SearchServiceResult;
 import controllers.ErrorController;
 import controllers.controlcode.ControlCodeController;
+import exceptions.FormStateException;
+import exceptions.ServiceResponseException;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -47,7 +47,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     return physicalGoodsSearch()
         .thenApplyAsync(response -> {
           if (!response.isOk()) {
-            return badRequest("An issue occurred while processing your request, please try again later.");
+            throw new ServiceResponseException("Control code search service returned an invalid response");
           }
           List<SearchServiceResult> searchResults = response.getSearchResults();
           int displayCount = Math.min(searchResults.size(), PAGINATION_SIZE);
@@ -80,7 +80,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
           return physicalGoodsSearch()
               .thenApplyAsync(response -> {
                 if (!response.isOk()) {
-                  return badRequest("An issue occurred while processing your request, please try again later.");
+                  throw new ServiceResponseException("Control code search service returned an invalid response");
                 }
                 int displayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
                 int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, response.getSearchResults().size());
@@ -98,7 +98,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
-    return completedFuture(badRequest("Invalid form state"));
+    throw new FormStateException("Unhandled form state");
   }
 
   public CompletionStage<SearchServiceClient.Response> physicalGoodsSearch() {

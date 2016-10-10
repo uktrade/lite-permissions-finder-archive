@@ -1,13 +1,13 @@
 package controllers.controlcode;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
+import exceptions.ServiceResponseException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import play.data.Form;
@@ -47,7 +47,7 @@ public class DecontrolsController {
           if (response.isOk()) {
             return ok(decontrols.render(formFactory.form(DecontrolsForm.class), response.getFrontendServiceResult()));
           }
-          return badRequest("An issue occurred while processing your request, please try again later.");
+          throw new ServiceResponseException("Control code frontend service returned an invalid response");
         }, httpExecutionContext.current());
   }
 
@@ -73,7 +73,7 @@ public class DecontrolsController {
               }
             }
           }
-          return completedFuture(badRequest("An issue occurred while processing your request, please try again later."));
+          throw new ServiceResponseException("Control code frontend service returned an invalid response");
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 

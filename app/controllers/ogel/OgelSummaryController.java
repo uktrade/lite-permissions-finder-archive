@@ -1,14 +1,15 @@
 package controllers.ogel;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.ogels.ogel.OgelServiceClient;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
+import components.services.ogels.ogel.OgelServiceClient;
+import exceptions.BusinessRuleException;
+import exceptions.FormStateException;
+import exceptions.ServiceResponseException;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -57,7 +58,7 @@ public class OgelSummaryController {
         permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
           if (!response.isOk()) {
-            return completedFuture(badRequest("Bad response from OGEL conditions service"));
+            throw new ServiceResponseException("OGEL conditions service returned an invalid response");
           }
           if ("register".equals(action)) {
             if (!response.getResult().isPresent()) {
@@ -68,14 +69,14 @@ public class OgelSummaryController {
             }
             else {
               // Should not be able to register when the item is not allowed
-              return completedFuture(badRequest("Can not register for OGEL with applicable conditinos"));
+              throw new BusinessRuleException("Can not register for OGEL with applicable conditions");
             }
           }
           else if ("chooseAgain".equals(action)) {
             return journeyManager.performTransition(Events.OGEL_CHOOSE_AGAIN);
           }
           else {
-            return completedFuture(badRequest("Invalid form state"));
+            throw new FormStateException("Unhandled form state");
           }
         }, httpExecutionContext.current())
         .thenCompose(Function.identity());
@@ -88,12 +89,12 @@ public class OgelSummaryController {
     return ogelConditionsServiceClient.get(ogelId, physicalGoodsControlCode)
         .thenApplyAsync(ogelConditionsResponse -> {
           if (!ogelConditionsResponse.isOk()) {
-            return completedFuture(badRequest("Bad response from OGEL conditions service"));
+            throw new ServiceResponseException("OGEL conditions service returned an invalid response");
           }
           return ogelServiceClient.get(permissionsFinderDao.getOgelId())
               .thenApplyAsync(ogelResponse -> {
                 if (!ogelResponse.isOk()) {
-                  return badRequest("Bad response from OGEL service");
+                  throw new ServiceResponseException("OGEL service returned an invalid response");
                 }
 
                 // True when no restriction service result, otherwise check with isItemAllowed.

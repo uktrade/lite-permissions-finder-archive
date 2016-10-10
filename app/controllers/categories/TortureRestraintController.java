@@ -1,13 +1,12 @@
 package controllers.categories;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
+import exceptions.FormStateException;
 import models.ExportCategory;
 import play.data.Form;
 import play.data.FormFactory;
@@ -39,7 +38,7 @@ public class TortureRestraintController {
       permissionsFinderDao.saveExportCategory(ExportCategory.TORTURE_RESTRAINT);
       return journeyManager.performTransition(StandardEvents.NEXT);
     }
-    return completedFuture(badRequest("Unknown value of goToSearch: \"" + form.get().goToSearch + "\""));
+    throw new FormStateException("Unknown value of goToSearch: \"" + form.get().goToSearch + "\"");
   }
 
   public static class TortureRestraintForm {

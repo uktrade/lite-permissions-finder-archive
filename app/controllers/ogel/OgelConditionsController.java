@@ -1,15 +1,16 @@
 package controllers.ogel;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import components.services.ogels.conditions.OgelConditionsServiceClient;
 import components.services.ogels.conditions.OgelConditionsServiceResult;
 import components.services.ogels.ogel.OgelServiceClient;
-import components.services.ogels.conditions.OgelConditionsServiceClient;
+import exceptions.BusinessRuleException;
+import exceptions.FormStateException;
+import exceptions.ServiceResponseException;
 import journey.Events;
 import play.Logger;
 import play.data.Form;
@@ -73,12 +74,12 @@ public class OgelConditionsController {
           .thenApplyAsync(response -> {
             // To view this screen the additional conditions service should have returned a result
             if(!response.isOk() || !response.getResult().isPresent()) {
-              return completedFuture(badRequest("Invalid response from OGEL conditions service"));
+              throw new ServiceResponseException("Invalid response from OGEL conditions service");
             }
             else {
               OgelConditionsServiceResult result = response.getResult().get();
               if (result.conditionDescriptionControlCodes.isPresent() && !result.conditionDescription.isEmpty()) {
-                return completedFuture(badRequest("Invalid form state, should not be able to progress with missing control codes"));
+                throw new BusinessRuleException("Should not be able to progress with missing control codes");
               }
               else {
                 return journeyManager.performTransition(Events.OGEL_DOES_RESTRICTION_APPLY);
@@ -88,7 +89,7 @@ public class OgelConditionsController {
           .thenCompose(Function.identity());
     }
     else {
-      return completedFuture(badRequest("Invalid value for doConditionsApply: \"" + doesRestrictionApply + "\""));
+      throw new FormStateException("Invalid value for doConditionsApply: \"" + doesRestrictionApply + "\"");
     }
   }
 
@@ -97,7 +98,7 @@ public class OgelConditionsController {
         permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(ogelConditionsResponse -> {
           if (!ogelConditionsResponse.isOk() || !ogelConditionsResponse.getResult().isPresent()) {
-            return completedFuture(badRequest("Invalid response from OGEL conditions service"));
+            throw new ServiceResponseException("Invalid response from OGEL conditions service");
           }
           OgelConditionsServiceResult result = ogelConditionsResponse.getResult().get();
           boolean missingControlCodes = result.conditionDescriptionControlCodes.isPresent()
@@ -112,7 +113,7 @@ public class OgelConditionsController {
           return ogelServiceClient.get(permissionsFinderDao.getOgelId())
               .thenApplyAsync(ogelResponse -> {
                 if (!ogelResponse.isOk()) {
-                  return badRequest("Invalid response from OGEL service");
+                  throw new ServiceResponseException("Invalid response from OGEL service");
                 }
                 return ok(ogelConditions.render(form, ogelResponse.getResult(), ogelConditionsResponse.getResult().get(), missingControlCodes));
               }, httpExecutionContext.current());
