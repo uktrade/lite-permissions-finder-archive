@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
-import exceptions.ServiceResponseException;
+import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import play.data.Form;
@@ -43,37 +43,31 @@ public class DecontrolsController {
 
   public CompletionStage<Result> renderForm() {
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(response -> {
-          if (response.isOk()) {
-            return ok(decontrols.render(formFactory.form(DecontrolsForm.class), response.getFrontendServiceResult()));
-          }
-          throw new ServiceResponseException("Control code frontend service returned an invalid response");
-        }, httpExecutionContext.current());
+        .thenApplyAsync(result -> ok(decontrols.render(formFactory.form(DecontrolsForm.class), result))
+            , httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit(){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();
     return frontendServiceClient.get(code)
-        .thenApplyAsync(response -> {
-          if (response.isOk()) {
-            if (form.hasErrors()) {
-              return completedFuture(ok(decontrols.render(form, response.getFrontendServiceResult())));
+        .thenApplyAsync(result -> {
+          if (form.hasErrors()) {
+            return completedFuture(ok(decontrols.render(form, result)));
+          }
+          String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
+          if("true".equals(decontrolsDescribeItem)) {
+            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLLED_ITEM);
+          }
+          if ("false".equals(decontrolsDescribeItem)) {
+            if (result.controlCodeData.canShowTechnicalNotes()) {
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
             }
-            String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
-            if("true".equals(decontrolsDescribeItem)) {
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLLED_ITEM);
-            }
-            if ("false".equals(decontrolsDescribeItem)) {
-              if (response.getFrontendServiceResult().controlCodeData.canShowTechnicalNotes()) {
-                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
-              }
-              else {
-                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
-              }
+            else {
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
             }
           }
-          throw new ServiceResponseException("Control code frontend service returned an invalid response");
+          throw new FormStateException("Unhandled form state");
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 

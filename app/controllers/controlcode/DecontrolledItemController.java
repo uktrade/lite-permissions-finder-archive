@@ -7,7 +7,6 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import exceptions.FormStateException;
-import exceptions.ServiceResponseException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
@@ -45,12 +44,8 @@ public class DecontrolledItemController {
     Optional<ExportCategory> exportCategoryOptional = permissionsFinderDao.getExportCategory();
     boolean showFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(response -> {
-          if (response.isOk()) {
-            return ok(decontrolledItem.render(response.getFrontendServiceResult(), showFirearmsOrMilitary));
-          }
-          throw new ServiceResponseException("Control code frontend service returned an invalid response");
-        }, httpExecutionContext.current());
+        .thenApplyAsync(result -> ok(decontrolledItem.render(result, showFirearmsOrMilitary))
+            , httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {

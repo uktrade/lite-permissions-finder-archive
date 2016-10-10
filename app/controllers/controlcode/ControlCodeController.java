@@ -9,7 +9,6 @@ import components.services.controlcode.frontend.ControlCodeData;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
 import exceptions.FormStateException;
-import exceptions.ServiceResponseException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import play.data.Form;
@@ -47,43 +46,40 @@ public class ControlCodeController extends Controller {
 
   public CompletionStage<Result> renderForm() {
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(response -> {
-          if (response.isOk()) {
-            return ok(controlCode.render(formFactory.form(ControlCodeForm.class), response.getFrontendServiceResult()));
-          }
-          throw new ServiceResponseException("Control code frontend service returned an invalid response");
-        }, httpExecutionContext.current());
+        .thenApplyAsync(result ->
+            ok(controlCode.render(formFactory.form(ControlCodeForm.class), result))
+        , httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();
     return frontendServiceClient.get(code)
-        .thenApplyAsync(response -> {
-          if (response.isOk()) {
-            // Outside of form binding to preserve @Required validation for couldDescribeItems
-            String action = form.field("action").value();
-            if (action != null && !action.isEmpty()) {
-              if ("backToSearch".equals(action)) {
-                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
-              }
-              if ("backToSearchResults".equals(action)) {
-                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
-              }
-              throw new FormStateException("Invalid value for action: \"" + action + "\"");
-            }
+        .thenApplyAsync(result -> {
 
-            if (form.hasErrors()) {
-              return completedFuture(ok(controlCode.render(form, response.getFrontendServiceResult())));
+          // Outside of form binding to preserve @Required validation for couldDescribeItems
+          String action = form.field("action").value();
+          if (action != null && !action.isEmpty()) {
+            if ("backToSearch".equals(action)) {
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
             }
-            String couldDescribeItems = form.get().couldDescribeItems;
-            if("true".equals(couldDescribeItems)) {
-              return nextScreenTrue(response.getFrontendServiceResult());
+            if ("backToSearchResults".equals(action)) {
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
             }
-            if ("false".equals(couldDescribeItems)) {
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
-            }
+            throw new FormStateException("Invalid value for action: \"" + action + "\"");
           }
+
+          if (form.hasErrors()) {
+            return completedFuture(ok(controlCode.render(form, result)));
+          }
+          String couldDescribeItems = form.get().couldDescribeItems;
+          if("true".equals(couldDescribeItems)) {
+            return nextScreenTrue(result);
+          }
+          if ("false".equals(couldDescribeItems)) {
+            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+          }
+
           throw new FormStateException("Unhandled form state");
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }

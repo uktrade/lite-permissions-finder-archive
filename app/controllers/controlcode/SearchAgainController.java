@@ -7,7 +7,6 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import exceptions.FormStateException;
-import exceptions.ServiceResponseException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import play.data.Form;
@@ -41,12 +40,7 @@ public class SearchAgainController {
 
   public CompletionStage<Result> renderForm() {
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(response -> {
-          if (response.isOk()) {
-            return ok(searchAgain.render(response.getFrontendServiceResult()));
-          }
-          throw new ServiceResponseException("Control code frontend service returned an invalid response");
-        }, httpExecutionContext.current());
+        .thenApplyAsync(result -> ok(searchAgain.render(result)), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {

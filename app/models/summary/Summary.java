@@ -4,6 +4,7 @@ import components.common.client.CountryServiceClient;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import components.services.ogels.ogel.OgelServiceResult;
@@ -61,10 +62,10 @@ public class Summary {
     CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary(applicationCode));
 
     if(StringUtils.isNoneBlank(physicalGoodControlCode)) {
-      CompletionStage<FrontendServiceClient.Response> frontendStage = frontendServiceClient.get(physicalGoodControlCode);
+      CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(physicalGoodControlCode);
 
-      summaryCompletionStage = summaryCompletionStage.thenCombineAsync(frontendStage, (summary, response)
-          -> summary.addSummaryField(SummaryField.fromFrontendServiceResult(response.getFrontendServiceResult(),
+      summaryCompletionStage = summaryCompletionStage.thenCombineAsync(frontendStage, (summary, result)
+          -> summary.addSummaryField(SummaryField.fromFrontendServiceResult(result,
           contextParamManager.addParamsToCall(routes.ChangeController.changeControlCode()))
       ), httpExecutionContext.current());
     }

@@ -8,7 +8,7 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
-import exceptions.ServiceResponseException;
+import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import play.data.Form;
@@ -45,32 +45,27 @@ public class AdditionalSpecificationsController {
 
   public CompletionStage<Result> renderForm() {
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(response -> {
-          if (response.isOk()) {
-            return ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class), response.getFrontendServiceResult()));
-          }
-          throw new ServiceResponseException("Control code frontend service returned an invalid response");
-        }, httpExecutionContext.current());
+        .thenApplyAsync(result ->
+            ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class), result))
+            , httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();
     return frontendServiceClient.get(code)
-        .thenApplyAsync(response -> {
-          if (response.isOk()) {
-            if (form.hasErrors()) {
-              return completedFuture(ok(additionalSpecifications.render(form, response.getFrontendServiceResult())));
-            }
-            String stillDescribesItems = form.get().stillDescribesItems;
-            if("true".equals(stillDescribesItems)) {
-              return nextScreenTrue(response.getFrontendServiceResult());
-            }
-            if ("false".equals(stillDescribesItems)) {
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
-            }
+        .thenApplyAsync(result -> {
+          if (form.hasErrors()) {
+            return completedFuture(ok(additionalSpecifications.render(form, result)));
           }
-          throw new ServiceResponseException("Control code frontend service returned an invalid response");
+          String stillDescribesItems = form.get().stillDescribesItems;
+          if("true".equals(stillDescribesItems)) {
+            return nextScreenTrue(result);
+          }
+          if ("false".equals(stillDescribesItems)) {
+            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+          }
+          throw new FormStateException("Unhandled form state");
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 
