@@ -5,6 +5,7 @@ import static play.mvc.Results.redirect;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.client.CountryServiceClient;
+import components.common.logging.CorrelationId;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
@@ -68,7 +69,7 @@ public class OgelRegistrationServiceClient {
 
   public CompletionStage<Result> updateTransactionAndRedirect(String transactionId) {
     WSRequest wsRequest = wsClient.url(webServiceUrl)
-        .withRequestFilter()
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("securityToken", webServiceSharedSecret);
 
