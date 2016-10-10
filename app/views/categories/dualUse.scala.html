@@ -11,24 +11,27 @@
 
 
   <p>
-    Some things exported for civilian purposes can also have a military use and therefore need a licence. They are typically high-tech, advanced products, often with military standard specifications. These are called dual-use items.
+    You need a licence to export some items mainly used for civilian purposes but which also have a military use.
+  </p>
+
+  <p>
+    They are typically high-tech, advanced products, often with military standard specifications (ie not specifically designed for military use but with performance levels comparable to an equivalent military item). These are called dual-use items.
   </p>
 
   <p>
     Many items you might not think need a licence may in fact have a dual use, such as:
     <ul class="list list-bullet text">
-      <li>protective suits, gloves and shoes</li>
-      <li>machine tools</li>
+      <li>nuclear facilities, equipment and materials</li>
+      <li>telecommunications and information security</li>
+      <li>non-nuclear materials and chemicals</li>
+      <li>equipment for processing materials into finished goods</li>
+      <li>marine vehicles, vessels and non-navigation equipment</li>
+      <li>navigation systems</li>
+      <li>propulsion systems</li>
       <li>computers</li>
-      <li>capacitors</li>
-      <li>microchips</li>
-      <li>telecommunications equipment</li>
-      <li>underwater equipment</li>
+      <li>sensors, lasers and real-time data processing</li>
+      <li>other electronic equipment</li>
     </ul>
-  </p>
-
-  <p>
-    There are many other examples of dual-use items, and not all of the items listed above will require a licence. Watch a short video about dual-use items: <a href="#">[video]</a>
   </p>
 
   <form action="@DualUseController.handleSubmit()" method="POST">
@@ -39,7 +42,7 @@
 
     <div class="form-group">
       @detailPanel("im-not-sure") { I'm not sure } {
-        If there is a chance your items are dual use, you should choose <span class="bold-small">Yes</span> above and continue to find out whether you need a licence.
+        If there is a chance your items are dual use, you should choose <span class="bold-small">Yes</span> above and continue using this service to find out whether you need a licence.
       }
     </div>
 
