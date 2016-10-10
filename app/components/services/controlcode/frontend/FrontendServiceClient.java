@@ -3,30 +3,31 @@ package components.services.controlcode.frontend;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
 import java.util.concurrent.CompletionStage;
 
 public class FrontendServiceClient {
 
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient ws;
-
   private final String webServiceHost;
-
   private final String webServicePort;
-
   private final int webServiceTimeout;
-
   private final String webServiceUrl;
 
   @Inject
-  public FrontendServiceClient(WSClient ws,
+  public FrontendServiceClient(HttpExecutionContext httpExecutionContext,
+                               WSClient ws,
                                @Named("controlCodeFrontendServiceHost") String webServiceHost,
                                @Named("controlCodeFrontendServicePort") String webServicePort,
                                @Named("controlCodeFrontendServiceTimeout") int webServiceTimeout){
+    this.httpExecutionContext = httpExecutionContext;
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
@@ -36,8 +37,11 @@ public class FrontendServiceClient {
 
   public CompletionStage<Response> get(String controlCode) {
     return ws.url(webServiceUrl + "/" + controlCode)
-        .setRequestTimeout(webServiceTimeout).get()
-        .handle((response, error) -> {
+        .withRequestFilter(CorrelationId.requestFilter)
+        .setRequestTimeout(webServiceTimeout)
+        .get()
+        .handleAsync((response, error) -> {
+          Logger.debug("test-message");
           if (error != null) {
             Logger.error("Unchecked exception in ControlCodeFrontendService");
             Logger.error(error.getMessage(), error);
@@ -51,7 +55,7 @@ public class FrontendServiceClient {
           else {
             return Response.success(response.asJson());
           }
-        });
+        }, httpExecutionContext.current());
   }
 
   public static class Response {

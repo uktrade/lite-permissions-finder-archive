@@ -2,6 +2,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import components.auth.AuthManager;
 import components.common.CommonContextActionSetup;
+import components.common.logging.CorrelationId;
 import org.pac4j.core.config.Config;
 import org.pac4j.play.java.SecureAction;
 import play.mvc.Action;
@@ -25,6 +26,9 @@ public class ActionCreator implements play.http.ActionCreator {
 
   @Override
   public Action createAction(Http.Request request, Method actionMethod) {
+    // Set up the Correlation ID for this request
+    CorrelationId.setUp(request);
+
     //Ensure a new action instance is created for each request (Play requirement)
     return secureActionProvider.get();
   }

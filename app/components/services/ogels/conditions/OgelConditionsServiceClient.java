@@ -3,9 +3,11 @@ package components.services.ogels.conditions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
 import java.util.Optional;
@@ -13,15 +15,18 @@ import java.util.concurrent.CompletionStage;
 
 public class OgelConditionsServiceClient {
 
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
 
   @Inject
-  public OgelConditionsServiceClient(WSClient wsClient,
+  public OgelConditionsServiceClient(HttpExecutionContext httpExecutionContext,
+                                     WSClient wsClient,
                                      @Named("ogelServiceHost") String webServiceHost,
                                      @Named("ogelServicePort") int webServicePort,
                                      @Named("ogelServiceTimeout") int webServiceTimeout) {
+    this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/control-code-conditions";
@@ -29,8 +34,9 @@ public class OgelConditionsServiceClient {
 
   public CompletionStage<Response> get(String ogelId, String controlCode){
     return wsClient.url(webServiceUrl + "/" + ogelId + "/" + controlCode)
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
-        .get().handle((response, error) -> {
+        .get().handleAsync((response, error) -> {
           if (error != null) {
             Logger.error("Unchecked exception in OgelConditionsService");
             Logger.error(error.getMessage(), error);
@@ -50,7 +56,7 @@ public class OgelConditionsServiceClient {
             Logger.error("Invalid response state in OgelConditionsService");
             return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
           }
-        });
+        }, httpExecutionContext.current());
   }
 
   /**

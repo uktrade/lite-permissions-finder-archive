@@ -3,10 +3,12 @@ package components.services.ogels.applicable;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
@@ -17,21 +19,21 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class ApplicableOgelServiceClient {
+
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient ws;
-
   private final String webServiceHost;
-
   private final int webServicePort;
-
   private final int webServiceTimeout;
-
   private final String webServiceUrl;
 
   @Inject
-  public ApplicableOgelServiceClient(WSClient ws,
+  public ApplicableOgelServiceClient(HttpExecutionContext httpExecutionContext,
+                                     WSClient ws,
                                      @Named("ogelServiceHost") String webServiceHost,
                                      @Named("ogelServicePort") int webServicePort,
                                      @Named("ogelServiceTimeout") int webServiceTimeout) {
+    this.httpExecutionContext = httpExecutionContext;
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
@@ -42,6 +44,7 @@ public class ApplicableOgelServiceClient {
   public CompletionStage<Response> get(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes){
 
     WSRequest req = ws.url(webServiceUrl)
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("controlCode", controlCode)
         .setQueryParameter("sourceCountry", sourceCountry);
@@ -50,7 +53,7 @@ public class ApplicableOgelServiceClient {
 
     activityTypes.forEach(activityType -> req.setQueryParameter("activityType", activityType));
 
-    return req.get().handle((response, error) -> {
+    return req.get().handleAsync((response, error) -> {
       if (error != null) {
         Logger.error("Unchecked exception in ApplicableOgelService");
         Logger.error(error.getMessage(), error);
@@ -63,7 +66,7 @@ public class ApplicableOgelServiceClient {
       else {
         return Response.success(response.asJson());
       }
-    });
+    }, httpExecutionContext.current());
   }
 
   public static class Response {

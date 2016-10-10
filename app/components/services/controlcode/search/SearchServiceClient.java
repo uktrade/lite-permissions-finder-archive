@@ -3,9 +3,11 @@ package components.services.controlcode.search;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.logging.CorrelationId;
 import components.services.ServiceResponseStatus;
 import play.Logger;
 import play.libs.Json;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
 import java.util.ArrayList;
@@ -15,22 +17,21 @@ import java.util.concurrent.CompletionStage;
 
 public class SearchServiceClient {
 
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient ws;
-
   private final String webServiceHost;
-
   private final int webServicePort;
-
   private final int webServiceTimeout;
-
   private final String webServiceUrl;
 
   @Inject
-  public SearchServiceClient(WSClient ws,
+  public SearchServiceClient(HttpExecutionContext httpExecutionContext,
+                             WSClient ws,
                              @Named("controlCodeSearchServiceHost") String webServiceHost,
                              @Named("controlCodeSearchServicePort") int webServicePort,
                              @Named("controlCodeSearchServiceTimeout") int webServiceTimeout
   ){
+    this.httpExecutionContext = httpExecutionContext;
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
@@ -40,9 +41,10 @@ public class SearchServiceClient {
 
   public CompletionStage<Response> get(String searchTerm){
     return ws.url(webServiceUrl)
+        .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("term", searchTerm)
-        .get().handle((response, error) -> {
+        .get().handleAsync((response, error) -> {
           if (error != null) {
             Logger.error("Unchecked exception in ControlCodeSearchService");
             Logger.error(error.getMessage(), error);
@@ -55,7 +57,7 @@ public class SearchServiceClient {
           else {
             return Response.success(response.asJson());
           }
-        });
+        }, httpExecutionContext.current());
   }
 
   public static class Response {
