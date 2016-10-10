@@ -78,7 +78,9 @@ public class OgelConditionsController {
             }
             else {
               OgelConditionsServiceResult result = response.getResult().get();
-              if (result.conditionDescriptionControlCodes.isPresent() && !result.conditionDescription.isEmpty()) {
+              // Check for missing control codes
+              if (result.conditionDescriptionControlCodes.isPresent()
+                  && !result.conditionDescriptionControlCodes.get().missingControlCodes.isEmpty()) {
                 throw new BusinessRuleException("Should not be able to progress with missing control codes");
               }
               else {
