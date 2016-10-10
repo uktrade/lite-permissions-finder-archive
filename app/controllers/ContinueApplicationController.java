@@ -69,7 +69,7 @@ public class ContinueApplicationController {
         }
       }
       else {
-        form.reject("applicationCode", "You have entered an invalid claim number");
+        form.reject("applicationCode", "You have entered an invalid application code");
         return completedFuture(ok(continueApplication.render(form)));
       }
     }
@@ -78,7 +78,7 @@ public class ContinueApplicationController {
 
   public static class ContinueApplicationForm {
 
-    @Required(message = "You must enter your application number")
+    @Required(message = "You must enter your application code")
     public String applicationCode;
 
   }

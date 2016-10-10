@@ -5,28 +5,24 @@
 @import controllers.routes.ContinueApplicationController;
 
 @(form: Form[_])
-@standardPage("Return to your application", Some(Html("Return to your application"))){
+@standardPage("Returning to this service", Some(Html("Returning to this service"))){
   @errorSummary(form)
 }{
-
-  <h2 class="heading-medium section" xmlns="http://www.w3.org/1999/html">
-    Enter your details below
-  </h2>
 
   <form action="@ContinueApplicationController.handleSubmit" method="POST">
 
     @contextFormParams()
 
-    @formInput(form("applicationCode"), Some(Html("This was emailed to you (if you entered your email address)"))) {
-      Application number
+    @formInput(form("applicationCode"), Some(Html(""))) {
+      Enter the code you received when you saved your progress
     }
 
     <div class="form-group">
-      <button type="submit" class="button">Find my application</button>
+      <button type="submit" class="button">Find and resume</button>
     </div>
 
     <p>
-      Don't have these details? <a href="@routes.StartApplicationController.renderForm()">Start a new application</a>.
+      Don't have these details? <a href="@routes.StartApplicationController.renderForm()">Start again</a>.
     </p>
     
   </form>
