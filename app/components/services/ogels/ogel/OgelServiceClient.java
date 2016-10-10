@@ -13,21 +13,21 @@ import play.libs.ws.WSClient;
 import java.util.concurrent.CompletionStage;
 
 public class OgelServiceClient {
+
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient ws;
-
   private final String webServiceHost;
-
   private final int webServicePort;
-
   private final int webServiceTimeout;
-
   private final String webServiceUrl;
 
   @Inject
-  public OgelServiceClient(WSClient ws,
-                                     @Named("ogelServiceHost") String webServiceHost,
-                                     @Named("ogelServicePort") int webServicePort,
-                                     @Named("ogelServiceTimeout") int webServiceTimeout) {
+  public OgelServiceClient(HttpExecutionContext httpExecutionContext,
+                           WSClient ws,
+                           @Named("ogelServiceHost") String webServiceHost,
+                           @Named("ogelServicePort") int webServicePort,
+                           @Named("ogelServiceTimeout") int webServiceTimeout) {
+    this.httpExecutionContext = httpExecutionContext;
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
@@ -35,7 +35,7 @@ public class OgelServiceClient {
     this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/ogels/";
   }
 
-  public CompletionStage<Response> get(String ogelId, HttpExecutionContext httpExecutionContext){
+  public CompletionStage<Response> get(String ogelId){
     return ws.url(webServiceUrl + ogelId)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)

@@ -21,6 +21,6 @@ public class PermissionsFinderNotificationClient {
 
   public void sendApplicationReferenceEmail(String emailAddress, String applicationReference) {
     Map<String, String> params = ImmutableMap.of("applicationReference", applicationReference);
-    notificationServiceClient.sendEmail("permissionsFinder:applicationReference", emailAddress, params, httpExecutionContext);
+    notificationServiceClient.sendEmail("permissionsFinder:applicationReference", emailAddress, params);
   }
 }

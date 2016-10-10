@@ -24,6 +24,7 @@ public class OgelRegistrationServiceClient {
 
   public final static String STATUS_CODE_OK = "ok";
 
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient ws;
   private final String webServiceHost;
   private final int webServicePort;
@@ -33,11 +34,13 @@ public class OgelRegistrationServiceClient {
   private final String ogelRegistrationRootUrl;
 
   @Inject
-  public OgelRegistrationServiceClient(WSClient ws,
-                           @Named("ogelRegistrationServiceHost") String webServiceHost,
-                           @Named("ogelRegistrationServicePort") int webServicePort,
-                           @Named("ogelRegistrationServiceTimeout") int webServiceTimeout,
-                           @Named("ogelRegistrationServiceSharedSecret") String webServiceSharedSecret) {
+  public OgelRegistrationServiceClient(HttpExecutionContext httpExecutionContext,
+                                       WSClient ws,
+                                       @Named("ogelRegistrationServiceHost") String webServiceHost,
+                                       @Named("ogelRegistrationServicePort") int webServicePort,
+                                       @Named("ogelRegistrationServiceTimeout") int webServiceTimeout,
+                                       @Named("ogelRegistrationServiceSharedSecret") String webServiceSharedSecret) {
+    this.httpExecutionContext = httpExecutionContext;
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
@@ -48,8 +51,7 @@ public class OgelRegistrationServiceClient {
   }
 
   public CompletionStage<Result> handOffToOgelRegistration(String transactionId, OgelServiceResult ogel,
-                                                           List<Country> destinationCountries, ControlCodeData controlCode,
-                                                           HttpExecutionContext httpExecutionContext){
+                                                           List<Country> destinationCountries, ControlCodeData controlCode){
     OgelRegistrationServiceRequest request = new OgelRegistrationServiceRequest(transactionId, ogel, destinationCountries, controlCode);
 
     return ws.url(webServiceUrl)

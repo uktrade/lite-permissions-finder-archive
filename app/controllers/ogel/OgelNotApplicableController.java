@@ -60,7 +60,7 @@ public class OgelNotApplicableController {
   }
 
   public CompletionStage<Result> renderWithForm(Form<OgelNotApplicableForm> form) {
-    return ogelServiceClient.get(permissionsFinderDao.getOgelId(), httpExecutionContext)
+    return ogelServiceClient.get(permissionsFinderDao.getOgelId())
         .thenApplyAsync(response -> {
           if (!response.isOk()) {
             return badRequest("Invalid response from the OGEL service");

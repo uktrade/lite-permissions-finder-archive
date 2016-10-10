@@ -17,21 +17,21 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 public class ApplicableOgelServiceClient {
+
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient ws;
-
   private final String webServiceHost;
-
   private final int webServicePort;
-
   private final int webServiceTimeout;
-
   private final String webServiceUrl;
 
   @Inject
-  public ApplicableOgelServiceClient(WSClient ws,
+  public ApplicableOgelServiceClient(HttpExecutionContext httpExecutionContext,
+                                     WSClient ws,
                                      @Named("ogelServiceHost") String webServiceHost,
                                      @Named("ogelServicePort") int webServicePort,
                                      @Named("ogelServiceTimeout") int webServiceTimeout) {
+    this.httpExecutionContext = httpExecutionContext;
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
@@ -39,7 +39,7 @@ public class ApplicableOgelServiceClient {
     this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/applicable-ogels";
   }
 
-  public CompletionStage<Response> get(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes, HttpExecutionContext httpExecutionContext){
+  public CompletionStage<Response> get(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes){
 
     WSRequest req = ws.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)

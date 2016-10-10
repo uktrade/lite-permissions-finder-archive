@@ -14,21 +14,20 @@ import java.util.concurrent.CompletionStage;
 
 public class FrontendServiceClient {
 
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient ws;
-
   private final String webServiceHost;
-
   private final String webServicePort;
-
   private final int webServiceTimeout;
-
   private final String webServiceUrl;
 
   @Inject
-  public FrontendServiceClient(WSClient ws,
+  public FrontendServiceClient(HttpExecutionContext httpExecutionContext,
+                               WSClient ws,
                                @Named("controlCodeFrontendServiceHost") String webServiceHost,
                                @Named("controlCodeFrontendServicePort") String webServicePort,
                                @Named("controlCodeFrontendServiceTimeout") int webServiceTimeout){
+    this.httpExecutionContext = httpExecutionContext;
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
@@ -36,12 +35,13 @@ public class FrontendServiceClient {
     this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/frontend-control-codes";
   }
 
-  public CompletionStage<Response> get(String controlCode, HttpExecutionContext httpExecutionContext) {
+  public CompletionStage<Response> get(String controlCode) {
     return ws.url(webServiceUrl + "/" + controlCode)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get()
         .handleAsync((response, error) -> {
+          Logger.debug("test-message");
           if (error != null) {
             Logger.error("Unchecked exception in ControlCodeFrontendService");
             Logger.error(error.getMessage(), error);

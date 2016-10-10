@@ -44,7 +44,7 @@ public class ControlCodeController extends Controller {
 
 
   public CompletionStage<Result> renderForm() {
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode(), httpExecutionContext)
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(controlCode.render(formFactory.form(ControlCodeForm.class), response.getFrontendServiceResult()));
@@ -56,7 +56,7 @@ public class ControlCodeController extends Controller {
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();
-    return frontendServiceClient.get(code, httpExecutionContext)
+    return frontendServiceClient.get(code)
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             // Outside of form binding to preserve @Required validation for couldDescribeItems

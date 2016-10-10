@@ -69,7 +69,7 @@ public class OgelConditionsController {
     if ("true".equals(doesRestrictionApply) || "false".equals(doesRestrictionApply)) {
       permissionsFinderDao.saveOgelConditionsApply(Boolean.parseBoolean(doesRestrictionApply));
       return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-          permissionsFinderDao.getPhysicalGoodControlCode(), httpExecutionContext)
+          permissionsFinderDao.getPhysicalGoodControlCode())
           .thenApplyAsync(response -> {
             // To view this screen the additional conditions service should have returned a result
             if(!response.isOk() || !response.getResult().isPresent()) {
@@ -94,7 +94,7 @@ public class OgelConditionsController {
 
   private CompletionStage<Result> renderWithForm(Form<OgelConditionsForm> form) {
     return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-        permissionsFinderDao.getPhysicalGoodControlCode(), httpExecutionContext)
+        permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(ogelConditionsResponse -> {
           if (!ogelConditionsResponse.isOk() || !ogelConditionsResponse.getResult().isPresent()) {
             return completedFuture(badRequest("Invalid response from OGEL conditions service"));
@@ -109,7 +109,7 @@ public class OgelConditionsController {
                 "able to progress through the service any further with the requested licence. This issue has been logged, " +
                 "we thank your for your patience.");
           }
-          return ogelServiceClient.get(permissionsFinderDao.getOgelId(), httpExecutionContext)
+          return ogelServiceClient.get(permissionsFinderDao.getOgelId())
               .thenApplyAsync(ogelResponse -> {
                 if (!ogelResponse.isOk()) {
                   return badRequest("Invalid response from OGEL service");

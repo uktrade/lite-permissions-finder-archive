@@ -17,22 +17,21 @@ import java.util.concurrent.CompletionStage;
 
 public class SearchServiceClient {
 
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient ws;
-
   private final String webServiceHost;
-
   private final int webServicePort;
-
   private final int webServiceTimeout;
-
   private final String webServiceUrl;
 
   @Inject
-  public SearchServiceClient(WSClient ws,
+  public SearchServiceClient(HttpExecutionContext httpExecutionContext,
+                             WSClient ws,
                              @Named("controlCodeSearchServiceHost") String webServiceHost,
                              @Named("controlCodeSearchServicePort") int webServicePort,
                              @Named("controlCodeSearchServiceTimeout") int webServiceTimeout
   ){
+    this.httpExecutionContext = httpExecutionContext;
     this.ws = ws;
     this.webServiceHost = webServiceHost;
     this.webServicePort = webServicePort;
@@ -40,7 +39,7 @@ public class SearchServiceClient {
     this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/search";
   }
 
-  public CompletionStage<Response> get(String searchTerm, HttpExecutionContext httpExecutionContext){
+  public CompletionStage<Response> get(String searchTerm){
     return ws.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)

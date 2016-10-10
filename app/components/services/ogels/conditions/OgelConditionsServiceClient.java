@@ -15,21 +15,24 @@ import java.util.concurrent.CompletionStage;
 
 public class OgelConditionsServiceClient {
 
+  private final HttpExecutionContext httpExecutionContext;
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
 
   @Inject
-  public OgelConditionsServiceClient(WSClient wsClient,
+  public OgelConditionsServiceClient(HttpExecutionContext httpExecutionContext,
+                                     WSClient wsClient,
                                      @Named("ogelServiceHost") String webServiceHost,
                                      @Named("ogelServicePort") int webServicePort,
                                      @Named("ogelServiceTimeout") int webServiceTimeout) {
+    this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/control-code-conditions";
   }
 
-  public CompletionStage<Response> get(String ogelId, String controlCode, HttpExecutionContext httpExecutionContext){
+  public CompletionStage<Response> get(String ogelId, String controlCode){
     return wsClient.url(webServiceUrl + "/" + ogelId + "/" + controlCode)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)

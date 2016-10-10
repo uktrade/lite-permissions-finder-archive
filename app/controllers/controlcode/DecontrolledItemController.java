@@ -44,7 +44,7 @@ public class DecontrolledItemController {
   public CompletionStage<Result> renderForm() {
     Optional<ExportCategory> exportCategoryOptional = permissionsFinderDao.getExportCategory();
     boolean showFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode(), httpExecutionContext)
+    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(response -> {
           if (response.isOk()) {
             return ok(decontrolledItem.render(response.getFrontendServiceResult(), showFirearmsOrMilitary));

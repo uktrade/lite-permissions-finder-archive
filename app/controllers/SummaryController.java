@@ -156,21 +156,21 @@ public class SummaryController {
     CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary());
 
     if(StringUtils.isNoneBlank(physicalGoodControlCode)) {
-      CompletionStage<FrontendServiceClient.Response> frontendStage = frontendServiceClient.get(physicalGoodControlCode, httpExecutionContext);
+      CompletionStage<FrontendServiceClient.Response> frontendStage = frontendServiceClient.get(physicalGoodControlCode);
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(frontendStage, (summary, response)
           -> summary.addSummaryField(SummaryField.fromFrontendServiceResult(response.getFrontendServiceResult())
       ), httpExecutionContext.current());
     }
 
     if (destinationCountries.size() > 0) {
-      CompletionStage<CountryServiceClient.CountryServiceResponse> countryStage = countryServiceClient.getCountries(httpExecutionContext);
+      CompletionStage<CountryServiceClient.CountryServiceResponse> countryStage = countryServiceClient.getCountries();
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(countryStage, (summary, response)
           -> summary.addSummaryField(SummaryField.fromDestinationCountryList(response.getCountriesByRef(destinationCountries))
       ), httpExecutionContext.current());
     }
 
     if (StringUtils.isNoneBlank(ogelId)) {
-      CompletionStage<OgelServiceClient.Response> ogelStage = ogelServiceClient.get(ogelId, httpExecutionContext);
+      CompletionStage<OgelServiceClient.Response> ogelStage = ogelServiceClient.get(ogelId);
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(ogelStage, (summary, response)
           -> summary.addSummaryField(SummaryField.fromOgelServiceResult(response.getResult())
       ), httpExecutionContext.current());
@@ -189,21 +189,21 @@ public class SummaryController {
     String ogelId = permissionsFinderDao.getOgelId();
     String transactionId = transactionManager.getTransactionId();
 
-    return frontendServiceClient.get(physicalGoodControlCode, httpExecutionContext).thenComposeAsync(frontendServiceResponse -> {
+    return frontendServiceClient.get(physicalGoodControlCode).thenComposeAsync(frontendServiceResponse -> {
       if (!frontendServiceResponse.isOk()) {
         return completedFuture(badRequest("Bad control code front end service response"));
       }
-      return countryServiceClient.getCountries(httpExecutionContext).thenComposeAsync(countryServiceResponse -> {
+      return countryServiceClient.getCountries().thenComposeAsync(countryServiceResponse -> {
         if (!countryServiceResponse.isOk()) {
           return completedFuture(badRequest("Bad country service response"));
         }
-        return ogelServiceClient.get(ogelId, httpExecutionContext).thenComposeAsync(ogelServiceResponse -> {
+        return ogelServiceClient.get(ogelId).thenComposeAsync(ogelServiceResponse -> {
           if (!ogelServiceResponse.isOk()) {
             return completedFuture(badRequest("Bad OGEL service response"));
           }
           return ogelRegistrationServiceClient.handOffToOgelRegistration(transactionId, ogelServiceResponse.getResult(),
               countryServiceResponse.getCountriesByRef(destinationCountries),
-              frontendServiceResponse.getFrontendServiceResult().controlCodeData, httpExecutionContext);
+              frontendServiceResponse.getFrontendServiceResult().controlCodeData);
         }, httpExecutionContext.current());
       }, httpExecutionContext.current());
     }, httpExecutionContext.current());
