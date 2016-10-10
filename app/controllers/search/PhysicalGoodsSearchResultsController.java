@@ -11,7 +11,6 @@ import components.services.controlcode.search.SearchServiceResult;
 import controllers.ErrorController;
 import controllers.controlcode.ControlCodeController;
 import exceptions.FormStateException;
-import exceptions.ServiceResponseException;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -19,7 +18,6 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.search.physicalGoodsSearchResults;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
@@ -45,14 +43,10 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
   public CompletionStage<Result> renderForm() {
     return physicalGoodsSearch()
-        .thenApplyAsync(response -> {
-          if (!response.isOk()) {
-            throw new ServiceResponseException("Control code search service returned an invalid response");
-          }
-          List<SearchServiceResult> searchResults = response.getSearchResults();
-          int displayCount = Math.min(searchResults.size(), PAGINATION_SIZE);
+        .thenApplyAsync(result -> {
+          int displayCount = Math.min(result.results.size(), PAGINATION_SIZE);
           dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
-          return ok(physicalGoodsSearchResults.render(searchResultsForm(), searchResults, displayCount));
+          return ok(physicalGoodsSearchResults.render(searchResultsForm(), result.results, displayCount));
         }, httpExecutionContext.current());
   }
 
@@ -61,13 +55,13 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
     if (form.hasErrors()) {
       return physicalGoodsSearch()
-          .thenApplyAsync(response -> {
+          .thenApplyAsync(result -> {
             int displayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
-            int newDisplayCount = Math.min(displayCount, response.getSearchResults().size());
+            int newDisplayCount = Math.min(displayCount, result.results.size());
             if (displayCount != newDisplayCount) {
               dao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
             }
-            return ok(physicalGoodsSearchResults.render(form, response.getSearchResults(), newDisplayCount));
+            return ok(physicalGoodsSearchResults.render(form, result.results, newDisplayCount));
           }, httpExecutionContext.current());
     }
 
@@ -78,16 +72,13 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
           return journeyManager.performTransition(Events.NONE_MATCHED);
         case SHORE_MORE:
           return physicalGoodsSearch()
-              .thenApplyAsync(response -> {
-                if (!response.isOk()) {
-                  throw new ServiceResponseException("Control code search service returned an invalid response");
-                }
+              .thenApplyAsync(result -> {
                 int displayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
-                int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, response.getSearchResults().size());
+                int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, result.results.size());
                 if (displayCount != newDisplayCount) {
                   dao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
                 }
-                return ok(physicalGoodsSearchResults.render(form, response.getSearchResults(), newDisplayCount));
+                return ok(physicalGoodsSearchResults.render(form, result.results, newDisplayCount));
               }, httpExecutionContext.current());
       }
     }
@@ -101,7 +92,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     throw new FormStateException("Unhandled form state");
   }
 
-  public CompletionStage<SearchServiceClient.Response> physicalGoodsSearch() {
+  public CompletionStage<SearchServiceResult> physicalGoodsSearch() {
     String searchTerms = PhysicalGoodsSearchController.getSearchTerms(dao.getPhysicalGoodsSearchForm().get());
     return searchServiceClient.get(searchTerms);
   }

@@ -2,16 +2,15 @@ package components.services.controlcode.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SearchServiceResult {
 
-  public final String highlightedText;
+  public final List<Result> results;
 
-  public final String code;
-
-  public SearchServiceResult(@JsonProperty("highlightedText") String highlightedText,
-                             @JsonProperty("code") String code) {
-    this.highlightedText = highlightedText;
-    this.code = code;
+  public SearchServiceResult(@JsonProperty("results") Result[] results) {
+    this.results = Arrays.asList(results);
   }
 
 }
