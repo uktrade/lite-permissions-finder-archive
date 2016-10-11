@@ -42,15 +42,21 @@ public class OgelConditionsServiceClient {
             Logger.error(error.getMessage(), error);
             return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
           }
-          else if (response.getStatus() != 200 && response.getStatus() != 204) {
+          else if (response.getStatus() != 200 && response.getStatus() != 204 && response.getStatus() != 206) {
             Logger.error("Unexpected HTTP status code from OgelConditionsService: {}", response.getStatus());
             return Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE);
           }
           else if (response.getStatus() == 200) {
+            // Condition apply
             return Response.success(response.asJson());
           }
           else if (response.getStatus() == 204) {
+            // No conditions apply
             return Response.success();
+          }
+          else if (response.getStatus() == 206) {
+            // Conditions apply, but with missing control codes
+            return Response.success(response.asJson());
           }
           else {
             Logger.error("Invalid response state in OgelConditionsService");
