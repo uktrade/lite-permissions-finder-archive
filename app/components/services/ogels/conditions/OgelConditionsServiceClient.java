@@ -72,8 +72,8 @@ public class OgelConditionsServiceClient {
    * @param conditionsApply Whether the conditions in the result apply to the users item
    * @return Business logic result of the OGEL, control code and answer tuple
    */
-  public static boolean isItemAllowed(Optional<OgelConditionsServiceResult> result, boolean conditionsApply) {
-    return !result.isPresent() || (Boolean.parseBoolean(result.get().itemsAllowed) && conditionsApply);
+  public static boolean isItemAllowed(OgelConditionsServiceResult result, boolean conditionsApply) {
+    return Boolean.parseBoolean(result.itemsAllowed) == conditionsApply;
   }
 
   public static class Response {
@@ -114,6 +114,26 @@ public class OgelConditionsServiceClient {
 
     public boolean isOk() {
       return this.status == ServiceResponseStatus.SUCCESS;
+    }
+
+    public boolean doConditionApply() {
+      return result.isPresent();
+    }
+
+    public boolean isMissingControlCodes() {
+      if (result.isPresent()) {
+        OgelConditionsServiceResult ogelConditionsServiceResult = result.get();
+        if (ogelConditionsServiceResult.conditionDescriptionControlCodes.isPresent()) {
+          ConditionDescriptionControlCodes conditionDescriptionControlCodes = ogelConditionsServiceResult.conditionDescriptionControlCodes.get();
+          return !conditionDescriptionControlCodes.missingControlCodes.isEmpty();
+        }
+        else {
+          return false;
+        }
+      }
+      else {
+        return false;
+      }
     }
 
   }

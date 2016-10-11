@@ -61,10 +61,16 @@ public class OgelSummaryController {
             throw new ServiceResponseException("OGEL conditions service returned an invalid response");
           }
           if ("register".equals(action)) {
-            if (!response.getResult().isPresent()) {
+            if (!response.doConditionApply()) {
+              // No conditions apply
               return journeyManager.performTransition(Events.OGEL_REGISTERED);
             }
-            else if (OgelConditionsServiceClient.isItemAllowed(response.getResult(), permissionsFinderDao.getOgelConditionsApply().get())) {
+            else if (response.isMissingControlCodes()) {
+              throw new BusinessRuleException("Can not apply for OGEL with missing control codes");
+            }
+            else if (response.doConditionApply() && OgelConditionsServiceClient.isItemAllowed(response.getResult().get(),
+                permissionsFinderDao.getOgelConditionsApply().get())) {
+              // ogelConditionsApply question should have been answered if this is the case
               return journeyManager.performTransition(Events.OGEL_REGISTERED);
             }
             else {
@@ -98,9 +104,9 @@ public class OgelSummaryController {
                 }
 
                 // True when no restriction service result, otherwise check with isItemAllowed.
-                // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service
-                boolean allowedToProceed = !ogelConditionsResponse.getResult().isPresent() ||
-                    OgelConditionsServiceClient.isItemAllowed(ogelConditionsResponse.getResult(), permissionsFinderDao.getOgelConditionsApply().get());
+                // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service or the re are missing control codes
+                boolean allowedToProceed = (!ogelConditionsResponse.doConditionApply() && !ogelConditionsResponse.isMissingControlCodes())
+                    || OgelConditionsServiceClient.isItemAllowed(ogelConditionsResponse.getResult().get(), permissionsFinderDao.getOgelConditionsApply().get());
 
                 return ok(ogelSummary.render(form, ogelResponse.getResult(), physicalGoodsControlCode, allowedToProceed));
               }, httpExecutionContext.current());

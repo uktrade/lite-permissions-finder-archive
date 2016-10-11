@@ -77,10 +77,8 @@ public class OgelConditionsController {
               throw new ServiceResponseException("Invalid response from OGEL conditions service");
             }
             else {
-              OgelConditionsServiceResult result = response.getResult().get();
               // Check for missing control codes
-              if (result.conditionDescriptionControlCodes.isPresent()
-                  && !result.conditionDescriptionControlCodes.get().missingControlCodes.isEmpty()) {
+              if (response.isMissingControlCodes()) {
                 throw new BusinessRuleException("Should not be able to progress with missing control codes");
               }
               else {
@@ -96,18 +94,17 @@ public class OgelConditionsController {
   }
 
   private CompletionStage<Result> renderWithForm(Form<OgelConditionsForm> form) {
-    return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-        permissionsFinderDao.getPhysicalGoodControlCode())
+    String ogelId = permissionsFinderDao.getOgelId();
+    String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+    return ogelConditionsServiceClient.get(ogelId, physicalGoodControlCode)
         .thenApplyAsync(ogelConditionsResponse -> {
           if (!ogelConditionsResponse.isOk() || !ogelConditionsResponse.getResult().isPresent()) {
             throw new ServiceResponseException("Invalid response from OGEL conditions service");
           }
-          OgelConditionsServiceResult result = ogelConditionsResponse.getResult().get();
-          boolean missingControlCodes = result.conditionDescriptionControlCodes.isPresent()
-              && !result.conditionDescriptionControlCodes.get().missingControlCodes.isEmpty();
-          if (missingControlCodes) {
+          boolean isMissingControlCode = ogelConditionsResponse.isMissingControlCodes();
+          if (isMissingControlCode) {
             Logger.error("OGEL conditions service returned a response with missing control codes. " +
-                "OGEL ID: {}, control code: {}.", ogelConditionsResponse.getResult().get().ogelID, ogelConditionsResponse.getResult().get().controlCode);
+                "OGEL ID: {}, control code: {}.", ogelId, physicalGoodControlCode);
             form.reject("We have encountered a problem with this particular licence. Unfortunately you will not be " +
                 "able to progress through the service any further with the requested licence. This issue has been logged, " +
                 "we thank your for your patience.");
@@ -117,7 +114,7 @@ public class OgelConditionsController {
                 if (!ogelResponse.isOk()) {
                   throw new ServiceResponseException("Invalid response from OGEL service");
                 }
-                return ok(ogelConditions.render(form, ogelResponse.getResult(), ogelConditionsResponse.getResult().get(), missingControlCodes));
+                return ok(ogelConditions.render(form, ogelResponse.getResult(), ogelConditionsResponse.getResult().get(), isMissingControlCode));
               }, httpExecutionContext.current());
         }, httpExecutionContext.current())
         .thenCompose(Function.identity());
