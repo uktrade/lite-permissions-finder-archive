@@ -11,7 +11,6 @@ import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import exceptions.FormStateException;
-import exceptions.ServiceResponseException;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -67,14 +66,10 @@ public class OgelResultsController {
 
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
-
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
-        .thenComposeAsync(r -> {
-          if (!r.isOk()) {
-            throw new ServiceResponseException("Applicable OGEL service returned an invalid response");
-          }
-          else if (!r.getResults().isEmpty()) {
-            return completedFuture(ok(ogelResults.render(form, r.getResults(), null, null)));
+        .thenComposeAsync(result -> {
+          if (!result.results.isEmpty()) {
+            return completedFuture(ok(ogelResults.render(form, result.results, null, null)));
           }
           else {
             return countryServiceClient.getCountries()
@@ -112,28 +107,26 @@ public class OgelResultsController {
 
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
-    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
-        .thenComposeAsync(applicableOgelResponse -> {
-          if (!applicableOgelResponse.isOk()) {
-            throw new ServiceResponseException("Invalid response from the applicable OGEL service");
+    CompletionStage<Void> checkOgelStage = applicableOgelServiceClient
+        .get(controlCode, sourceCountry, destinationCountries, ogelActivities)
+        .thenAcceptAsync(result -> {
+          if (!result.findResultById(chosenOgel).isPresent()) {
+            throw new FormStateException(String.format("Chosen OGEL %s is not valid according to the applicable OGEL service response", chosenOgel));
           }
-          if (applicableOgelResponse.getResults().stream().noneMatch(ogel -> chosenOgel.equalsIgnoreCase(ogel.id))) {
-            throw new FormStateException("Selected OGEL is not valid with the applicable OGEL service response");
-          }
-          return ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getPhysicalGoodControlCode())
-              .thenApplyAsync(response -> {
-                if (!response.isOk()) {
-                  throw new ServiceResponseException("Invalid response from OGEL service");
-                }
-                if (response.getResult().isPresent()) {
-                  return journeyManager.performTransition(Events.OGEL_RESTRICTIONS_APPLY);
-                }
-                else {
-                  return journeyManager.performTransition(Events.OGEL_SELECTED);
-                }
-              }, httpExecutionContext.current())
-              .thenCompose(Function.identity());
-        }, httpExecutionContext.current());
+        });
+
+    // Combines with the stage above, allowing any exceptions to propagate
+    return checkOgelStage
+        .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getPhysicalGoodControlCode()),
+            (empty, result) -> {
+              if (result.getResult().isPresent()) {
+                return journeyManager.performTransition(Events.OGEL_RESTRICTIONS_APPLY);
+              }
+              else {
+                return journeyManager.performTransition(Events.OGEL_SELECTED);
+              }
+            }).thenCompose(Function.identity());
+
   }
 
   public static class OgelResultsForm {

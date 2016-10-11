@@ -1,10 +1,10 @@
-@import components.services.ogels.applicable.ApplicableOgelServiceResult
+@import components.services.ogels.applicable.Result
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
 
-@(form: Form[_], ogels: List[ApplicableOgelServiceResult], physicalGoodControlCode: String, destinationCountryNamesHtml: String)
+@(form: Form[_], ogels: List[Result], physicalGoodControlCode: String, destinationCountryNamesHtml: String)
 @standardPage("Based on your answers, you may be able to use one of the following licences", Some(Html("Based on your answers, you may be able to use one of the following licences"))){
   @errorSummary(form)
 }{

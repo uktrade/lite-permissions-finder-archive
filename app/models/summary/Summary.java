@@ -6,6 +6,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
+import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import components.services.ogels.ogel.OgelServiceClient;
 import components.services.ogels.ogel.OgelServiceResult;
 import controllers.ogel.OgelQuestionsController;
@@ -86,7 +87,7 @@ public class Summary {
 
       List<String> ogelActivities = OgelQuestionsController.OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
-      CompletionStage<ApplicableOgelServiceClient.Response> applicableOgelStage = applicableOgelServiceClient.get(
+      CompletionStage<ApplicableOgelServiceResult> applicableOgelStage = applicableOgelServiceClient.get(
           physicalGoodControlCode, sourceCountry, destinationCountries, ogelActivities);
 
       CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombine(applicableOgelStage,

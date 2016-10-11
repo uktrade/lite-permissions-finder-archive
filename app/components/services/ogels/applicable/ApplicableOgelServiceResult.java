@@ -1,23 +1,28 @@
 package components.services.ogels.applicable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.lang.StringUtils;
+import play.libs.Json;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class ApplicableOgelServiceResult {
 
-  public final String name;
+  public final List<Result> results;
 
-  public final String id;
+  public ApplicableOgelServiceResult(JsonNode responseJson) {
+    this.results = Arrays.asList(Json.fromJson(responseJson, Result[].class));
+  }
 
-  public final List<String> usageSummary;
-
-  public ApplicableOgelServiceResult(@JsonProperty("name") String name,
-                                     @JsonProperty("id") String id,
-                                     @JsonProperty("usageSummary") List<String> usageSummary) {
-    this.name = name;
-    this.id = id;
-    this.usageSummary = usageSummary;
+  public Optional<Result> findResultById(String ogelId) {
+    if (StringUtils.isBlank(ogelId) || this.results == null || this.results.isEmpty()) {
+      return Optional.empty();
+    }
+    return this.results.stream()
+        .filter(result -> StringUtils.equals(result.id, ogelId))
+        .findFirst();
   }
 
 }
