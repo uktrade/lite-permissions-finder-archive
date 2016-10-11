@@ -30,11 +30,9 @@
 
   </table>
 
-  <h2 class="heading-medium">There are further technical notes regarding this classification:</h2>
+  <h2 class="heading-small">The following technical notes can help you choose the right classification:</h2>
 
-  <div class="panel panel-border-wide">
-    @Html(frontendServiceResult.controlCodeData.technicalNotes)
-  </div>
+  @Html(frontendServiceResult.controlCodeData.technicalNotes)
 
   <form action="@TechnicalNotesController.handleSubmit()" method="POST">
 

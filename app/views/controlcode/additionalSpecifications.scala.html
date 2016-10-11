@@ -30,12 +30,9 @@
 
   </table>
 
-  <h2 class="heading-medium">The specific equipment referred to above is:</h2>
+  <p>@Html(frontendServiceResult.controlCodeData.additionalSpecifications.clauseText)</p>
 
   <ul class="list list-bullet">
-    @if(frontendServiceResult.controlCodeData.additionalSpecifications.canShowClauseText) {
-      <li>@Html(frontendServiceResult.controlCodeData.additionalSpecifications.clauseText)</li>
-    }
     @for(text <- frontendServiceResult.controlCodeData.additionalSpecifications.specificationText) {
       <li>@Html(text.text)</li>
     }
