@@ -113,7 +113,7 @@ public class OgelResultsController {
           if (!result.findResultById(chosenOgel).isPresent()) {
             throw new FormStateException(String.format("Chosen OGEL %s is not valid according to the applicable OGEL service response", chosenOgel));
           }
-        });
+        }, httpExecutionContext.current());
 
     // Combines with the stage above, allowing any exceptions to propagate
     return checkOgelStage
