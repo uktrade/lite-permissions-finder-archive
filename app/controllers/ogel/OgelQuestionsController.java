@@ -109,7 +109,6 @@ public class OgelQuestionsController {
     public String before1897upto35k;
 
     public static List<String> formToActivityTypes(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
-      // TODO before1897upto35k currently unused
       // TODO account for TECH
       List<String> activityTypes = new ArrayList<>();
 
@@ -128,6 +127,11 @@ public class OgelQuestionsController {
       }
 
       return activityTypes;
+    }
+
+    public static boolean isGoodHistoric(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
+      // Return false if not present, otherwise parse value from form
+      return ogelQuestionsFormOptional.isPresent() && Boolean.parseBoolean(ogelQuestionsFormOptional.get().before1897upto35k);
     }
 
   }

@@ -31,7 +31,8 @@ public class ApplicableOgelServiceClient {
   }
 
   public CompletionStage<ApplicableOgelServiceResult> get(String controlCode, String sourceCountry,
-                                                          List<String> destinationCountries, List<String> activityTypes){
+                                                          List<String> destinationCountries, List<String> activityTypes,
+                                                          boolean showHistoricOgel){
 
     WSRequest req = wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
@@ -49,7 +50,7 @@ public class ApplicableOgelServiceClient {
             response.getStatus()));
       }
       else {
-        return new ApplicableOgelServiceResult(response.asJson());
+        return new ApplicableOgelServiceResult(response.asJson(), showHistoricOgel);
       }
     }, httpExecutionContext.current());
   }

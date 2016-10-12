@@ -22,6 +22,7 @@ import views.html.ogel.ogelResults;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -64,9 +65,11 @@ public class OgelResultsController {
     List<String> destinationCountries = CountryUtils.getDestinationCountries(permissionsFinderDao.getFinalDestinationCountry(),
         permissionsFinderDao.getThroughDestinationCountries());
 
-    List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
+    Optional<OgelQuestionsForm> ogelQuestionsFormOptional = permissionsFinderDao.getOgelQuestionsForm();
+    List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
+    boolean isGoodHistoric =  OgelQuestionsForm.isGoodHistoric(ogelQuestionsFormOptional);
 
-    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
+    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric)
         .thenComposeAsync(result -> {
           if (!result.results.isEmpty()) {
             return completedFuture(ok(ogelResults.render(form, result.results, null, null)));
@@ -104,11 +107,12 @@ public class OgelResultsController {
     String sourceCountry = permissionsFinderDao.getSourceCountry();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
-
-    List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
+    Optional<OgelQuestionsForm> ogelQuestionsFormOptional = permissionsFinderDao.getOgelQuestionsForm();
+    List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
+    boolean isGoodHistoric =  OgelQuestionsForm.isGoodHistoric(ogelQuestionsFormOptional);
 
     CompletionStage<Void> checkOgelStage = applicableOgelServiceClient
-        .get(controlCode, sourceCountry, destinationCountries, ogelActivities)
+        .get(controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric)
         .thenAcceptAsync(result -> {
           if (!result.findResultById(chosenOgel).isPresent()) {
             throw new FormStateException(String.format("Chosen OGEL %s is not valid according to the applicable OGEL service response", chosenOgel));

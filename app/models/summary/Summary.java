@@ -85,10 +85,16 @@ public class Summary {
 
       CompletionStage<OgelServiceClient.Response> ogelStage = ogelServiceClient.get(ogelId);
 
-      List<String> ogelActivities = OgelQuestionsController.OgelQuestionsForm.formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
+      Optional<OgelQuestionsController.OgelQuestionsForm> ogelQuestionsFormOptional =
+          permissionsFinderDao.getOgelQuestionsForm();
+
+      List<String> ogelActivities =
+          OgelQuestionsController.OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
+
+      boolean isGoodHistoric = OgelQuestionsController.OgelQuestionsForm.isGoodHistoric(ogelQuestionsFormOptional);
 
       CompletionStage<ApplicableOgelServiceResult> applicableOgelStage = applicableOgelServiceClient.get(
-          physicalGoodControlCode, sourceCountry, destinationCountries, ogelActivities);
+          physicalGoodControlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric);
 
       CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombine(applicableOgelStage,
           (ogelResponse, applicableOgelResponse) ->
