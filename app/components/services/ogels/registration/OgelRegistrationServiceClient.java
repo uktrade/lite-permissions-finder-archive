@@ -13,7 +13,6 @@ import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import models.summary.Summary;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -25,7 +24,7 @@ import java.util.function.Function;
 
 public class OgelRegistrationServiceClient {
 
-  public final static String STATUS_CODE_OK = "ok";
+  public static final String STATUS_CODE_OK = "ok";
 
   private final WSClient wsClient;
   private final int webServiceTimeout;
