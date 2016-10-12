@@ -7,6 +7,7 @@ import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
+import models.VirtualEUOgelStage;
 
 public class Events {
 
@@ -44,7 +45,8 @@ public class Events {
 
   public static final JourneyEvent DESTINATION_COUNTRIES_SELECTED = new JourneyEvent("DESTINATION_COUNTRIES_SELECTED");
 
-  public static final JourneyEvent OGEL_QUESTIONS_ANSWERED = new JourneyEvent("OGEL_QUESTIONS_ANSWERED");
+  public static final ParameterisedJourneyEvent<VirtualEUOgelStage> VIRTUAL_EU_OGEL_STAGE
+      = new ParameterisedJourneyEvent<>("VIRTUAL_EU_OGEL_STAGE", VirtualEUOgelStage.class);
 
   public static final JourneyEvent OGEL_SELECTED = new JourneyEvent("OGEL_SELECTED");
 
@@ -52,9 +54,9 @@ public class Events {
 
   public static final JourneyEvent OGEL_CHOOSE_AGAIN = new JourneyEvent("OGEL_CHOOSE_AGAIN");
 
-  public static final JourneyEvent OGEL_RESTRICTIONS_APPLY = new JourneyEvent("OGEL_RESTRICTIONS_APPLY");
+  public static final JourneyEvent OGEL_CONDITIONS_APPLY = new JourneyEvent("OGEL_CONDITIONS_APPLY");
 
-  public static final JourneyEvent OGEL_DOES_RESTRICTION_APPLY = new JourneyEvent("OGEL_DOES_RESTRICTION_APPLY");
+  public static final JourneyEvent OGEL_DO_CONDITIONS_APPLY = new JourneyEvent("OGEL_DO_CONDITIONS_APPLY");
 
   public static final JourneyEvent OGEL_REGISTERED = new JourneyEvent("OGEL_REGISTERED");
 

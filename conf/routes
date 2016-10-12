@@ -123,6 +123,10 @@ GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSe
 
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
 
+GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
+
+POST    /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
+
 GET     /licence-may-not-be-required          controllers.search.NoneDescribedController.render
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented

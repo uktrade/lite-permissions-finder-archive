@@ -120,7 +120,7 @@ public class OgelResultsController {
         .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getPhysicalGoodControlCode()),
             (empty, response) -> {
               if (response.doConditionApply()) {
-                return journeyManager.performTransition(Events.OGEL_RESTRICTIONS_APPLY);
+                return journeyManager.performTransition(Events.OGEL_CONDITIONS_APPLY);
               }
               else {
                 return journeyManager.performTransition(Events.OGEL_SELECTED);

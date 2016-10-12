@@ -22,7 +22,8 @@ public class StaticContentController extends Controller {
     CATEGORY_NON_ENDANGERED_ANIMALS("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
     CATEGORY_PLANTS("categories/plant.html", "You may need approval from the destination country"),
     CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines"),
-    NOT_IMPLEMENTED("notImplemented.html", "This page has not been implemented yet");
+    NOT_IMPLEMENTED("notImplemented.html", "This page has not been implemented yet"),
+    VIRTUAL_EU("virtualEU.html", "EU intra-community trade");
 
     StaticHtml(String filename, String title) {
       this.filename = filename;
@@ -81,6 +82,10 @@ public class StaticContentController extends Controller {
 
   public Result renderNotImplemented() {
     return renderStaticHtml(StaticHtml.NOT_IMPLEMENTED);
+  }
+
+  public Result renderVirtualEU() {
+    return renderStaticHtml(StaticHtml.VIRTUAL_EU);
   }
 
 }

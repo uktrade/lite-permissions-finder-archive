@@ -77,12 +77,10 @@ public class OgelRegistrationServiceClient {
         httpExecutionContext, frontendServiceClient, countryServiceClient, ogelServiceClient, applicableOgelServiceClient);
 
     CompletionStage<OgelRegistrationServiceRequest> requestStage =
-        summaryStage.thenApply(summary -> new OgelRegistrationServiceRequest(transactionId, summary));
+        summaryStage.thenApplyAsync(summary -> new OgelRegistrationServiceRequest(transactionId, summary),
+            httpExecutionContext.current());
 
-    return requestStage.thenApply(request -> {
-      Logger.debug(Json.toJson(request).toString());
-      return wsRequest.post(Json.toJson(request));
-    })
+    return requestStage.thenApplyAsync(request -> wsRequest.post(Json.toJson(request)), httpExecutionContext.current())
         .thenCompose(Function.identity())
         .thenApplyAsync(wsResponse -> {
           if (wsResponse.getStatus() != 200) {

@@ -6,20 +6,23 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
-import components.services.ogels.conditions.OgelConditionsServiceResult;
 import components.services.ogels.ogel.OgelServiceClient;
+import components.services.ogels.virtualeu.VirtualEUOgelClient;
 import exceptions.BusinessRuleException;
 import exceptions.FormStateException;
 import exceptions.ServiceResponseException;
 import journey.Events;
+import models.VirtualEUOgelStage;
 import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
+import utils.CountryUtils;
 import views.html.ogel.ogelConditions;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -32,6 +35,7 @@ public class OgelConditionsController {
   private final HttpExecutionContext httpExecutionContext;
   private final OgelServiceClient ogelServiceClient;
   private final OgelConditionsServiceClient ogelConditionsServiceClient;
+  private final VirtualEUOgelClient virtualEUOgelClient;
 
   @Inject
   public OgelConditionsController(JourneyManager journeyManager,
@@ -39,13 +43,15 @@ public class OgelConditionsController {
                                   PermissionsFinderDao permissionsFinderDao,
                                   HttpExecutionContext httpExecutionContext,
                                   OgelServiceClient ogelServiceClient,
-                                  OgelConditionsServiceClient ogelConditionsServiceClient) {
+                                  OgelConditionsServiceClient ogelConditionsServiceClient,
+                                  VirtualEUOgelClient virtualEUOgelClient) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.ogelServiceClient = ogelServiceClient;
     this.ogelConditionsServiceClient = ogelConditionsServiceClient;
+    this.virtualEUOgelClient = virtualEUOgelClient;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -64,32 +70,61 @@ public class OgelConditionsController {
       return renderWithForm(form);
     }
 
-    String doesRestrictionApply = form.get().doConditionsApply;
+    String doConditionsApplyText = form.get().doConditionsApply;
 
     // Check for missing control codes
-    if ("true".equals(doesRestrictionApply) || "false".equals(doesRestrictionApply)) {
-      permissionsFinderDao.saveOgelConditionsApply(Boolean.parseBoolean(doesRestrictionApply));
+    if ("true".equals(doConditionsApplyText) || "false".equals(doConditionsApplyText)) {
+      boolean doConditionsApply = Boolean.parseBoolean(doConditionsApplyText);
+      permissionsFinderDao.saveOgelConditionsApply(doConditionsApply);
+      String physicalGoodsControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+
+      // Check this ogel required conditions
       return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
           permissionsFinderDao.getPhysicalGoodControlCode())
-          .thenApplyAsync(response -> {
-            // To view this screen the additional conditions service should have returned a result
-            if(!response.isOk() || !response.getResult().isPresent()) {
+          .thenApplyAsync(conditionsResult -> {
+            if(!conditionsResult.isOk()) {
               throw new ServiceResponseException("Invalid response from OGEL conditions service");
             }
+            else if (!conditionsResult.doConditionApply()) {
+              throw new BusinessRuleException("Should not be able to progress without conditions");
+            }
+            else if (conditionsResult.isMissingControlCodes()) {
+              throw new BusinessRuleException("Should not be able to progress with missing control codes");
+            }
             else {
-              // Check for missing control codes
-              if (response.isMissingControlCodes()) {
-                throw new BusinessRuleException("Should not be able to progress with missing control codes");
-              }
-              else {
-                return journeyManager.performTransition(Events.OGEL_DOES_RESTRICTION_APPLY);
-              }
+
+              String sourceCountry = permissionsFinderDao.getSourceCountry();
+              List<String> destinationCountries = CountryUtils.getDestinationCountries(
+                  permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
+              List<String> activityTypes = OgelQuestionsController.OgelQuestionsForm
+                  .formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
+
+              // branch on this ogel being a virtual eu or not
+              return virtualEUOgelClient.sendServiceRequest(physicalGoodsControlCode, sourceCountry,
+                  destinationCountries, activityTypes)
+                  .thenApplyAsync(virtualEUResult -> {
+                    if(virtualEUResult.virtualEu) {
+                      // Optional.get() should be fine, doConditionApply checks the state of this optional
+                      if (OgelConditionsServiceClient.isItemAllowed(conditionsResult.getResult().get(), doConditionsApply)) {
+                        return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
+                            VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_APPLY);
+                      }
+                      else {
+                        return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
+                            VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_NOT_APPLY);
+                      }
+                    }
+                    else {
+                      return journeyManager.performTransition(Events.OGEL_DO_CONDITIONS_APPLY);
+                    }
+                  }, httpExecutionContext.current())
+                  .thenCompose(Function.identity());
             }
           }, httpExecutionContext.current())
           .thenCompose(Function.identity());
     }
     else {
-      throw new FormStateException("Invalid value for doConditionsApply: \"" + doesRestrictionApply + "\"");
+      throw new FormStateException("Invalid value for doConditionsApply: \"" + doConditionsApplyText + "\"");
     }
   }
 
@@ -98,7 +133,7 @@ public class OgelConditionsController {
     String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
     return ogelConditionsServiceClient.get(ogelId, physicalGoodControlCode)
         .thenApplyAsync(ogelConditionsResponse -> {
-          if (!ogelConditionsResponse.isOk() || !ogelConditionsResponse.getResult().isPresent()) {
+          if (!ogelConditionsResponse.isOk() || !ogelConditionsResponse.doConditionApply()) {
             throw new ServiceResponseException("Invalid response from OGEL conditions service");
           }
           boolean isMissingControlCode = ogelConditionsResponse.isMissingControlCodes();

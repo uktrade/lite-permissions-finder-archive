@@ -23,6 +23,7 @@ import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
+import models.VirtualEUOgelStage;
 import play.Configuration;
 import play.Environment;
 
@@ -196,8 +197,11 @@ public class GuiceModule extends AbstractModule{
     JourneyStage ogelResults = jdb.defineStage("ogelResults", "Licences applicable to your answers",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelResultsController.renderForm()));
 
-    JourneyStage ogelRestrictions = jdb.defineStage("ogelConditions", "Conditions apply to your licence",
+    JourneyStage ogelConditions = jdb.defineStage("ogelConditions", "Conditions apply to your licence",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelConditionsController.renderForm()));
+
+    JourneyStage virtualEU = jdb.defineStage("virtualEU", "EU intra-community trade",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderVirtualEU()));
 
     JourneyStage ogelSummary = jdb.defineStage("ogelSummary", "Licence summary",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelSummaryController.renderForm()));
@@ -345,20 +349,29 @@ public class GuiceModule extends AbstractModule{
         .then(moveTo(ogelQuestions));
 
     jdb.atStage(ogelQuestions)
-        .onEvent(Events.OGEL_QUESTIONS_ANSWERED)
-        .then(moveTo(ogelResults));
+        .onEvent(Events.VIRTUAL_EU_OGEL_STAGE)
+        .branch()
+        .when(VirtualEUOgelStage.NO_VIRTUAL_EU, moveTo(ogelResults))
+        .when(VirtualEUOgelStage.VIRTUAL_EU_WITH_CONDITIONS, moveTo(ogelConditions))
+        .when(VirtualEUOgelStage.VIRTUAL_EU_WITHOUT_CONDITIONS, moveTo(virtualEU));
 
     jdb.atStage(ogelResults)
         .onEvent(Events.OGEL_SELECTED)
         .then(moveTo(ogelSummary));
 
     jdb.atStage(ogelResults)
-        .onEvent(Events.OGEL_RESTRICTIONS_APPLY)
-        .then(moveTo(ogelRestrictions));
+        .onEvent(Events.OGEL_CONDITIONS_APPLY)
+        .then(moveTo(ogelConditions));
 
-    jdb.atStage(ogelRestrictions)
-        .onEvent(Events.OGEL_DOES_RESTRICTION_APPLY)
+    jdb.atStage(ogelConditions)
+        .onEvent(Events.OGEL_DO_CONDITIONS_APPLY)
         .then(moveTo(ogelSummary));
+
+    jdb.atStage(ogelConditions)
+        .onEvent(Events.VIRTUAL_EU_OGEL_STAGE)
+        .branch()
+        .when(VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_APPLY, moveTo(virtualEU))
+        .when(VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_NOT_APPLY, moveTo(ogelResults));
 
     jdb.atStage(ogelSummary)
         .onEvent(Events.OGEL_REGISTERED)
