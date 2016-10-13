@@ -200,7 +200,7 @@ public class GuiceModule extends AbstractModule{
     JourneyStage ogelConditions = jdb.defineStage("ogelConditions", "Conditions apply to your licence",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelConditionsController.renderForm()));
 
-    JourneyStage virtualEU = jdb.defineStage("virtualEU", "EU intra-community trade",
+    JourneyStage virtualEU = jdb.defineStage("virtualEU", "You do not need a licence",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderVirtualEU()));
 
     JourneyStage ogelSummary = jdb.defineStage("ogelSummary", "Licence summary",

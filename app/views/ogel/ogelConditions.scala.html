@@ -5,7 +5,7 @@
 @import components.services.ogels.ogel.OgelServiceResult
 @import components.services.ogels.conditions.OgelConditionsServiceResult
 
-@(form: Form[_], ogel: OgelServiceResult, ogelRestriction: OgelConditionsServiceResult, missingControlCodes: Boolean)
+@(form: Form[_], ogel: OgelServiceResult, ogelRestriction: OgelConditionsServiceResult, missingControlCodes: Boolean, isVirtualEUOgel: Boolean)
 @standardPage("Additional conditions apply", Some(Html("Additional conditions apply"))){
   @errorSummary(form)
 }{
@@ -14,9 +14,15 @@
 
     @contextFormParams()
 
-    <p>
-      Not all items within the classification <strong class="bold-small">@ogelRestriction.controlCode</strong> can be exported using @ogel.name
-    </p>
+    @if(isVirtualEUOgel) {
+      <p>
+        Not all items within the classification <strong class="bold-small">@ogelRestriction.controlCode</strong> can be exported without a licence to an EU country
+      </p>
+    } else {
+      <p>
+        Not all items within the classification <strong class="bold-small">@ogelRestriction.controlCode</strong> can be exported using @ogel.name
+      </p>
+    }
 
     <h2 class="heading-medium">Are you exporting any of the following?</h2>
 

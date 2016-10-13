@@ -149,8 +149,21 @@ public class OgelConditionsController {
                 if (!ogelResponse.isOk()) {
                   throw new ServiceResponseException("Invalid response from OGEL service");
                 }
-                return ok(ogelConditions.render(form, ogelResponse.getResult(), ogelConditionsResponse.getResult().get(), isMissingControlCode));
-              }, httpExecutionContext.current());
+                String sourceCountry = permissionsFinderDao.getSourceCountry();
+                List<String> destinationCountries = CountryUtils.getDestinationCountries(
+                    permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
+                List<String> activityTypes = OgelQuestionsController.OgelQuestionsForm
+                    .formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
+
+                return virtualEUOgelClient.sendServiceRequest(physicalGoodControlCode, sourceCountry,
+                    destinationCountries, activityTypes)
+                    .thenApplyAsync(result -> ok(ogelConditions.render(form, ogelResponse.getResult(),
+                        ogelConditionsResponse.getResult().get(), isMissingControlCode, result.virtualEu)),
+                        httpExecutionContext.current());
+
+              }, httpExecutionContext.current())
+              .thenCompose(Function.identity());
+
         }, httpExecutionContext.current())
         .thenCompose(Function.identity());
   }
