@@ -35,6 +35,7 @@ public class SearchServiceClient {
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("term", searchTerm)
+        .setQueryParameter("goodsType", "physical") // Hard coded to physical search for now
         .get()
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {
