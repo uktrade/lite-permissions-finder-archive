@@ -11,6 +11,7 @@ import components.services.controlcode.frontend.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
+import models.controlcode.AdditionalSpecificationsDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -46,7 +47,8 @@ public class AdditionalSpecificationsController {
   public CompletionStage<Result> renderForm() {
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(result ->
-            ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class), result))
+            ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class),
+                new AdditionalSpecificationsDisplay(result)))
             , httpExecutionContext.current());
   }
 
@@ -56,7 +58,8 @@ public class AdditionalSpecificationsController {
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
-            return completedFuture(ok(additionalSpecifications.render(form, result)));
+            return completedFuture(ok(additionalSpecifications.render(form,
+                new AdditionalSpecificationsDisplay(result))));
           }
           String stillDescribesItems = form.get().stillDescribesItems;
           if("true".equals(stillDescribesItems)) {
