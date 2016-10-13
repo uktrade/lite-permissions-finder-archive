@@ -122,7 +122,7 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryArtsCultural = jdb.defineStage("categoryArtsCultural", "Arts and cultural goods",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ArtsCulturalController.renderForm()));
 
-    JourneyStage categoryChemicalsCosmetics = jdb.defineStage("categoryChemicalsCosmetics", "You may need a licence if you are exporting dual-use goods",
+    JourneyStage categoryChemicalsCosmetics = jdb.defineStage("categoryChemicalsCosmetics", "Cosmetics, chemicals and pesticides",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ChemicalsCosmeticsController.renderForm()));
 
     JourneyStage categoryDualUse = jdb.defineStage("categoryDualUse", "Do your items have a dual use?",
@@ -247,8 +247,8 @@ public class GuiceModule extends AbstractModule{
         .when(false, moveTo(categoryArtsCulturalNoLicence));
 
     jdb.atStage(categoryChemicalsCosmetics)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(goodsType));
+        .onEvent(Events.SEARCH_PHYSICAL_GOODS)
+        .then(moveTo(physicalGoodsSearch));
 
     jdb.atStage(categoryDualUse)
         .onEvent(Events.IS_DUAL_USE)
