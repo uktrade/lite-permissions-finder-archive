@@ -14,7 +14,8 @@ import java.net.URL;
 public class StaticContentController extends Controller {
 
   public enum StaticHtml {
-    NO_LICENCE_CULTURAL("noLicenceCultural.html", "No licence required"),
+    ARTS_CULTURAL_NON_HISTORIC("artsCulturalNonHistoric.html", "No licence required"),
+    ARTS_CULTURAL_HISTORIC("artsCulturalHistoric.html", "You may need a licence to export certain goods over 50 years old"),
     BROKERING_TRANSHIPMENT("tradetypes/brokeringTranshipment.html","Trade controls, trafficking and brokering"),
     IMPORT("tradetypes/import.html","Import licences"),
     CATEGORY_FOOD("categories/food.html","You need to check the rules for your export destination"),
@@ -48,8 +49,12 @@ public class StaticContentController extends Controller {
     }
   }
 
-  public Result renderNoLicenceCultural() {
-    return renderStaticHtml(StaticHtml.NO_LICENCE_CULTURAL);
+  public Result renderArtsCulturalNonHistoric() {
+    return renderStaticHtml(StaticHtml.ARTS_CULTURAL_NON_HISTORIC);
+  }
+
+  public Result renderArtsCulturalHistoric() {
+    return renderStaticHtml(StaticHtml.ARTS_CULTURAL_HISTORIC);
   }
 
   public Result renderBrokeringTranshipment() {

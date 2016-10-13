@@ -2,6 +2,7 @@ package journey;
 
 import components.common.journey.JourneyEvent;
 import components.common.journey.ParameterisedJourneyEvent;
+import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
 import models.GoodsType;
@@ -19,8 +20,8 @@ public class Events {
 
   public static final JourneyEvent EXPORT_CATEGORY_COULD_BE_DUAL_USE = new JourneyEvent("EXPORT_CATEGORY_COULD_BE_DUAL_USE");
 
-  public static final ParameterisedJourneyEvent<Boolean> IS_CONTROLLED_HISTORIC_GOOD
-      = new ParameterisedJourneyEvent<>("IS_CONTROLLED_HISTORIC_GOOD", Boolean.class);
+  public static final ParameterisedJourneyEvent<ArtsCulturalGoodsType> ARTS_CULTURAL_CATEGORY_SELECTED
+      = new ParameterisedJourneyEvent<>("ARTS_CULTURAL_CATEGORY_SELECTED", ArtsCulturalGoodsType.class);
 
   public static final ParameterisedJourneyEvent<Boolean> IS_DUAL_USE
       = new ParameterisedJourneyEvent<>("IS_DUAL_USE", Boolean.class);

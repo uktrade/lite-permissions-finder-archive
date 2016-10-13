@@ -18,6 +18,7 @@ import components.persistence.PermissionsFinderDao;
 import controllers.routes;
 import journey.Events;
 import journey.JourneyDefinitionNames;
+import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
 import models.GoodsType;
@@ -110,8 +111,11 @@ public class GuiceModule extends AbstractModule{
     JourneyStage importStatic = jdb.defineStage("importStatic", "Import licences",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderImport()));
 
-    JourneyStage categoryArtsCulturalNoLicence = jdb.defineStage("categoryArtsCulturalNoLicence", "???",
-        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderNoLicenceCultural()));
+    JourneyStage categoryArtsCulturalNonHistoric = jdb.defineStage("categoryArtsCulturalNonHistoric", "You may not need an export licence",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderArtsCulturalNonHistoric()));
+
+    JourneyStage categoryArtsCulturalHistoric = jdb.defineStage("categoryArtsCulturalHistoric", "You may need an export licence",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderArtsCulturalHistoric()));
 
     JourneyStage brokeringTranshipmentStatic = jdb.defineStage("brokeringStatic", "Trade controls, trafficking and brokering",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderBrokeringTranshipment()));
@@ -241,10 +245,11 @@ public class GuiceModule extends AbstractModule{
         .then(moveTo(categoryDualUse));
 
     jdb.atStage(categoryArtsCultural)
-        .onEvent(Events.IS_CONTROLLED_HISTORIC_GOOD)
+        .onEvent(Events.ARTS_CULTURAL_CATEGORY_SELECTED)
         .branch()
-        .when(true, moveTo(goodsType))
-        .when(false, moveTo(categoryArtsCulturalNoLicence));
+        .when(ArtsCulturalGoodsType.HISTORIC, moveTo(categoryArtsCulturalHistoric))
+        .when(ArtsCulturalGoodsType.NON_HISTORIC, moveTo(categoryArtsCulturalNonHistoric))
+        .when(ArtsCulturalGoodsType.CONTROLLED, moveTo(goodsType));
 
     jdb.atStage(categoryChemicalsCosmetics)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)

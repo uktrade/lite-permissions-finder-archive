@@ -5,7 +5,9 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import exceptions.FormStateException;
 import journey.Events;
+import models.ArtsCulturalGoodsType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -54,12 +56,20 @@ public class ArtsCulturalController extends Controller {
     }
 
     permissionsFinderDao.saveArtsCulturalForm(form.get());
+    boolean firearm = form.get().firearm;
+    String itemAge = form.get().itemAge;
 
-    if (form.get().firearm && !"GT100".equals(form.get().itemAge)) {
-      return journeyManager.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, true);
+    if (firearm && ("LT50".equals(itemAge) || "GT50LT100".equals(itemAge))) {
+      return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.CONTROLLED);
+    }
+    else if ((!firearm && ("GT50LT100".equals(itemAge) || "GT100".equals(itemAge))) || (firearm && "GT100".equals(itemAge))) {
+      return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.HISTORIC);
+    }
+    else if (!firearm && "LT50".equals(itemAge)) {
+      return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.NON_HISTORIC);
     }
     else {
-      return journeyManager.performTransition(Events.IS_CONTROLLED_HISTORIC_GOOD, false);
+      throw new FormStateException("Unhandled tuple of itemAge: \"" + itemAge + "\" and firearm: \"" + Boolean.toString(firearm) + "\"");
     }
   }
 
