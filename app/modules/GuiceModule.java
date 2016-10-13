@@ -209,7 +209,7 @@ public class GuiceModule extends AbstractModule{
     JourneyStage summary = jdb.defineStage("summary", "Check your answers so far",
         () -> cpm.addParamsAndRedirect(routes.SummaryController.renderForm()));
 
-    JourneyStage notImplemented = jdb.defineStage("notImplemented", "This page has not been implemented yet" ,
+    JourneyStage notImplemented = jdb.defineStage("notImplemented", "This section is currently under development" ,
         () -> completedFuture(redirect(routes.StaticContentController.renderNotImplemented())));
 
     jdb.atStage(tradeType)
