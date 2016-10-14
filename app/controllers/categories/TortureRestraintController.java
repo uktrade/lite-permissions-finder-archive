@@ -4,10 +4,11 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
-import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
+import journey.Events;
 import models.ExportCategory;
+import models.GoodsType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -36,7 +37,8 @@ public class TortureRestraintController {
     Form<TortureRestraintForm> form = formFactory.form(TortureRestraintForm.class).bindFromRequest();
     if ("true".equals(form.get().goToSearch)) {
       permissionsFinderDao.saveExportCategory(ExportCategory.TORTURE_RESTRAINT);
-      return journeyManager.performTransition(StandardEvents.NEXT);
+      permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
+      return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
     }
     throw new FormStateException("Unknown value of goToSearch: \"" + form.get().goToSearch + "\"");
   }

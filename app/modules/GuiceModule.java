@@ -271,7 +271,7 @@ public class GuiceModule extends AbstractModule{
 
     jdb.atStage(categoryFinancialTechnicalAssistance)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(goodsType));
+        .then(moveTo(notImplemented)); // TODO This should go through to the technical information search (when implemented)
 
     jdb.atStage(categoryMedicinesDrugs)
         .onEvent(Events.IS_USED_FOR_EXECUTION_TORTURE)
@@ -291,12 +291,12 @@ public class GuiceModule extends AbstractModule{
         .when(LifeType.PLANT, moveTo(categoryPlantStatic));
 
     jdb.atStage(categoryTortureRestraint)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(goodsType));
+        .onEvent(Events.SEARCH_PHYSICAL_GOODS)
+        .then(moveTo(physicalGoodsSearch));
 
     jdb.atStage(categoryRadioactive)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(goodsType));
+        .then(moveTo(notImplemented)); // TODO this should preselect the CONTROLLED RADIOACTIVE SOURCES control code and move straight to country select
 
     jdb.atStage(goodsType)
         .onEvent(Events.GOODS_TYPE_SELECTED)
