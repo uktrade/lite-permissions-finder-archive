@@ -5,7 +5,7 @@
 @import models.GoodsType
 
 @(form: Form[_])
-@standardPage("Select goods type", Some(Html("Are you exporting goods, software or technology?"))){
+@standardPage("Are you exporting goods, software or technical information?", Some(Html("Are you exporting goods, software or technical information?"))){
   @errorSummary(form)
 }{
 
@@ -32,7 +32,7 @@
       </div>
 
       <div class="form-group">
-        @formRadio(form("goodsType"), Html("I am exporting technology"),
+        @formRadio(form("goodsType"), Html("I am exporting technical information"),
           GoodsType.TECHNOLOGY.value(), "label-goods-type")
         <p class="panel panel-border-wide">
           For example manuals, designs, models or blueprints for goods that themselves require an export licence, and also technical assistance in the form of training, consulting and other services. Read more about <a href="https://www.gov.uk/guidance/export-of-technology" rel="external" target="_blank">exporting technology</a>.
