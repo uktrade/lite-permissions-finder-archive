@@ -235,10 +235,12 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.MEDICINES_DRUGS, moveTo(categoryMedicinesDrugs))
         .when(ExportCategory.MILITARY, moveTo(goodsType))
         .when(ExportCategory.NONE, moveTo(categoryDualUse))
+        .when(ExportCategory.NON_MILITARY_FIREARMS, moveTo(notImplemented)) // TODO Go to non military firearms screen
         .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlantsAnimals))
         .when(ExportCategory.RADIOACTIVE, moveTo(categoryRadioactive))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
-        .when(ExportCategory.TORTURE_RESTRAINT, moveTo(categoryTortureRestraint));
+        .when(ExportCategory.TORTURE_RESTRAINT, moveTo(categoryTortureRestraint))
+        .when(ExportCategory.WASTE, moveTo(notImplemented)); // TODO go to waste screen
 
     jdb.atStage(exportCategory)
         .onEvent(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE)

@@ -8,11 +8,19 @@
   @errorSummary(form)
 }{
 
+  <p>
+    You can expand each item below for more details.
+  </p>
+
+  <p>
+    If you are exporting components, choose the category that contains the item that your component is designed to be part of.
+  </p>
+
   <form action="@controllers.categories.routes.ExportCategoryController.handleSubmit()" method="POST">
 
     @contextFormParams()
 
-    @detailPanel("mil"){Firearms and military equipment} {
+    @detailPanel("mil"){Military weapons and equipment} {
       <p>
         This covers all military items, such as weapons, weapon-delivery systems, explosives, munitions, ammunition and ordnance, and military vehicles.
         It also includes software and source code to enable the use of military goods, and technology such as manuals, designs, models or blueprints for goods that themselves require an export licence.
@@ -20,9 +28,16 @@
       <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.MILITARY.value()">Continue</button>
     }
 
-    @detailPanel("dual-use"){Dual-use goods, software and technology}{
+    @detailPanel("non-mil"){Non-military firearms} {
       <p>
-        <button type="submit" class="link underlined font-small" name="couldBeDualUse" value="true">Dual-use items</button> are civilian goods, equipment, technology, documents or diagrams that can also be used for military purposes. They can be raw materials, components or finished systems.
+        This includes personal-use firearms for which you have a valid certificate, such as shotguns and sporting rifles.
+      </p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.NON_MILITARY_FIREARMS.value()">Continue</button>
+    }
+
+    @detailPanel("dual-use"){Dual-use goods, software and technical information}{
+      <p>
+        <button type="submit" class="link underlined font-small" name="couldBeDualUse" value="true">Dual-use items</button> are civilian goods, equipment, technical information, documents or diagrams that can also be used for military purposes. They can be raw materials, components or finished systems.
       </p>
       <p>
         Dual-use items are typically high-tech, advanced products, often with military standard specifications.
@@ -47,7 +62,16 @@
       <p>
       Read guidance on <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources" class="external" target="_blank" rel="external">controls on radioactive sources</a> for more information on the items covered in this category.
       </p>
+      <p>
+        For radioactive waste, use the Waste category below.
+      </p>
       <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.RADIOACTIVE.value()">Continue</button>
+    }
+    @detailPanel("waste"){Waste}{
+      <p>
+        This includes household and commercial waste, hazardous, non-hazardous and green-list waste, and radioactive waste.
+      <p>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.WASTE.value()">Continue</button>
     }
 
     @detailPanel("chemicals-cosmetics"){Cosmetics, chemicals, and pesticides}{
