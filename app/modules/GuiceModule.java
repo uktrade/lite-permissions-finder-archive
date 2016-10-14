@@ -391,10 +391,6 @@ public class GuiceModule extends AbstractModule{
         .when(VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_NOT_APPLY, moveTo(ogelResults));
 
     jdb.atStage(ogelSummary)
-        .onEvent(Events.OGEL_REGISTERED)
-        .then(moveTo(summary));
-
-    jdb.atStage(ogelSummary)
         .onEvent(Events.OGEL_CHOOSE_AGAIN)
         .then(moveTo(ogelResults));
 

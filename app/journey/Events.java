@@ -59,6 +59,5 @@ public class Events {
 
   public static final JourneyEvent OGEL_DO_CONDITIONS_APPLY = new JourneyEvent("OGEL_DO_CONDITIONS_APPLY");
 
-  public static final JourneyEvent OGEL_REGISTERED = new JourneyEvent("OGEL_REGISTERED");
 
 }

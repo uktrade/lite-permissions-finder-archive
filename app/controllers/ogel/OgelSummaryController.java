@@ -4,6 +4,7 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
+import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
@@ -28,6 +29,7 @@ public class OgelSummaryController {
   private final HttpExecutionContext httpExecutionContext;
   private final OgelServiceClient ogelServiceClient;
   private final OgelConditionsServiceClient ogelConditionsServiceClient;
+  private final ContextParamManager contextParamManager;
 
   @Inject
   public OgelSummaryController(JourneyManager journeyManager,
@@ -35,13 +37,15 @@ public class OgelSummaryController {
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext,
                                OgelServiceClient ogelServiceClient,
-                               OgelConditionsServiceClient ogelConditionsServiceClient) {
+                               OgelConditionsServiceClient ogelConditionsServiceClient,
+                               ContextParamManager contextParamManager) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.ogelServiceClient = ogelServiceClient;
     this.ogelConditionsServiceClient = ogelConditionsServiceClient;
+    this.contextParamManager = contextParamManager;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -63,7 +67,7 @@ public class OgelSummaryController {
           if ("register".equals(action)) {
             if (!response.doConditionApply()) {
               // No conditions apply
-              return journeyManager.performTransition(Events.OGEL_REGISTERED);
+              return contextParamManager.addParamsAndRedirect(controllers.routes.SummaryController.renderForm());
             }
             else if (response.isMissingControlCodes()) {
               throw new BusinessRuleException("Can not apply for OGEL with missing control codes");
@@ -71,7 +75,7 @@ public class OgelSummaryController {
             else if (response.doConditionApply() && OgelConditionsServiceClient.isItemAllowed(response.getResult().get(),
                 permissionsFinderDao.getOgelConditionsApply().get())) {
               // ogelConditionsApply question should have been answered if this is the case
-              return journeyManager.performTransition(Events.OGEL_REGISTERED);
+              return contextParamManager.addParamsAndRedirect(controllers.routes.SummaryController.renderForm());
             }
             else {
               // Should not be able to register when the item is not allowed
