@@ -168,7 +168,7 @@ public class GuiceModule extends AbstractModule{
     JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technical information?",
         () -> cpm.addParamsAndRedirect(routes.GoodsTypeController.renderForm()));
 
-    JourneyStage physicalGoodsSearch = jdb.defineStage("physicalGoodsSearch", "Describe your goods",
+    JourneyStage physicalGoodsSearch = jdb.defineStage("physicalGoodsSearch", "Describe your items",
         () -> cpm.addParamsAndRedirect(controllers.search.routes.PhysicalGoodsSearchController.renderForm()));
 
     JourneyStage physicalGoodsSearchResults = jdb.defineStage("physicalGoodsSearchResults", "Possible matches",

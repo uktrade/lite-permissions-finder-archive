@@ -64,8 +64,7 @@ public class SearchController {
         form.description,
         form.component,
         form.brand,
-        form.partNumber,
-        form.hsCode
+        form.partNumber
     ).stream()
         .filter(fieldValue -> StringUtils.isNoneBlank(fieldValue))
         .collect(Collectors.joining(", "));
@@ -82,6 +81,5 @@ public class SearchController {
 
     public String partNumber;
 
-    public String hsCode;
   }
 }
