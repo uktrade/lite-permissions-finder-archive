@@ -105,6 +105,10 @@ GET     /export-category/torture-restraint    controllers.categories.TortureRest
 
 POST    /export-category/torture-restraint    controllers.categories.TortureRestraintController.handleSubmit
 
+GET     /export-category/waste    controllers.StaticContentController.renderCategoryWaste
+
+POST    /export-category/waste    controllers.StaticContentController.renderCategoryWaste
+
 GET     /export-licence-additional-conditions   controllers.ogel.OgelConditionsController.renderForm
 
 POST    /export-licence-additional-conditions   controllers.ogel.OgelConditionsController.handleSubmit

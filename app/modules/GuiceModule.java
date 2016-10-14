@@ -162,6 +162,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryRadioactive = jdb.defineStage("categoryRadioactive", "You need a licence to export radioactive materials above certain activity thresholds",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.RadioactiveController.renderForm()));
 
+    JourneyStage categoryWaste = jdb.defineStage("categoryWaste", "You must have a licence to export most types of waste",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryWaste()));
+
     JourneyStage noneDescribed = jdb.defineStage("noneDescribed", "You may not need a licence",
         () -> cpm.addParamsAndRedirect(controllers.search.routes.NoneDescribedController.render()));
 
@@ -240,7 +243,7 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.RADIOACTIVE, moveTo(categoryRadioactive))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
         .when(ExportCategory.TORTURE_RESTRAINT, moveTo(categoryTortureRestraint))
-        .when(ExportCategory.WASTE, moveTo(notImplemented)); // TODO go to waste screen
+        .when(ExportCategory.WASTE, moveTo(categoryWaste));
 
     jdb.atStage(exportCategory)
         .onEvent(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE)

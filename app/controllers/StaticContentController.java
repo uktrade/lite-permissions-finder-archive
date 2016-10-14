@@ -23,6 +23,7 @@ public class StaticContentController extends Controller {
     CATEGORY_NON_ENDANGERED_ANIMALS("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
     CATEGORY_PLANTS("categories/plant.html", "You may need approval from the destination country"),
     CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines"),
+    CATEGORY_WASTE("categories/waste.html", "You must have a licence to export most types of waste"),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
 
@@ -83,6 +84,10 @@ public class StaticContentController extends Controller {
 
   public Result renderCategoryMedicinesDrugs() {
     return renderStaticHtml(StaticHtml.CATEGORY_MEDICINES_DRUGS);
+  }
+
+  public Result renderCategoryWaste() {
+    return renderStaticHtml(StaticHtml.CATEGORY_WASTE);
   }
 
   public Result renderNotImplemented() {
