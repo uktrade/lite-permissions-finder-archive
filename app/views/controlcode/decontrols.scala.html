@@ -30,19 +30,19 @@
 
   </table>
 
-  <p>The following items are <strong class="bold-small">not</strong> controlled within @frontendServiceResult.controlCodeData.controlCode:</p>
+  <h2 class="heading-medium">Do any of these describe your items?</h2>
 
   <ul class="list list-bullet">
-    @for(decontrol <- frontendServiceResult.controlCodeData.decontrols) {
-      <li>@Html(decontrol.text)</li>
-    }
+  @for(decontrol <- frontendServiceResult.controlCodeData.decontrols) {
+    <li>@Html(decontrol.text)</li>
+  }
   </ul>
 
   <form action="@DecontrolsController.handleSubmit()" method="POST">
 
     @contextFormParams()
 
-    @formRadioBoolean(form("decontrolsDescribeItem"), Html("Do any of these describe your items?"), "Yes", "No")
+    @formRadioBoolean(form("decontrolsDescribeItem"), Html("Do any of these describe your items?"), "Yes", "No", hideHeading = true)
 
     <div class="form-group">
       <button type="submit" class="button">Save and continue</button>
