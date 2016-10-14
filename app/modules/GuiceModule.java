@@ -141,6 +141,9 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryMedicinesDrugs = jdb.defineStage("categoryMedicinesDrugs", "Medicines and drugs",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.MedicinesDrugsController.renderForm()));
 
+    JourneyStage categoryNonMilitary = jdb.defineStage("categoryNonMilitary", "You need to check whether you are covered by the European Firearms Pass",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.NonMilitaryController.renderForm()));
+
     JourneyStage categoryPlantsAnimals = jdb.defineStage("categoryPlantsAnimals", "Plants and animals",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.PlantsAnimalsController.renderForm()));
 
@@ -238,7 +241,7 @@ public class GuiceModule extends AbstractModule{
         .when(ExportCategory.MEDICINES_DRUGS, moveTo(categoryMedicinesDrugs))
         .when(ExportCategory.MILITARY, moveTo(goodsType))
         .when(ExportCategory.NONE, moveTo(categoryDualUse))
-        .when(ExportCategory.NON_MILITARY_FIREARMS, moveTo(notImplemented)) // TODO Go to non military firearms screen
+        .when(ExportCategory.NON_MILITARY, moveTo(categoryNonMilitary))
         .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlantsAnimals))
         .when(ExportCategory.RADIOACTIVE, moveTo(categoryRadioactive))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
@@ -275,6 +278,10 @@ public class GuiceModule extends AbstractModule{
         .branch()
         .when(true, moveTo(categoryTortureRestraint))
         .when(false, moveTo(categoryMedicinesDrugsStatic));
+
+    jdb.atStage(categoryNonMilitary)
+        .onEvent(Events.SEARCH_PHYSICAL_GOODS)
+        .then(moveTo(physicalGoodsSearch));
 
     jdb.atStage(categoryPlantsAnimals)
         .onEvent(Events.LIFE_TYPE_SELECTED)
