@@ -18,7 +18,7 @@
 
     <h2 class="heading-medium">Where is the final destination of your items?</h2>
 
-    @countrySelect(form("finalDestinationCountry"), null, false, true, countries)
+    @countrySelect(form("finalDestinationCountry"), "Type your destination country or territory", null, false, true, countries)
 
     @formRadioBoolean(form("itemThroughMultipleCountries"), Html("Will your items pass through any other countries before they reach their final destination?"))
 
@@ -39,7 +39,7 @@
     </div>
 
     <div class="form-group">
-      <button type="submit" class="button">Continue</button>
+      <button type="submit" class="button">Save and continue</button>
     </div>
   </form>
 

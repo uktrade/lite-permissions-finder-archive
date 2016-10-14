@@ -4,6 +4,6 @@
 
 @for(i <- 0 to count - 1) {
 
-  @countrySelect(form(fieldName + '[' + i + ']'), i, i != 0, false, countries)
+  @countrySelect(form(fieldName + '[' + i + ']'),"Type your destination country or territory your items will pass through", i, i != 0, false, countries)
 
 }
