@@ -195,7 +195,7 @@ public class GuiceModule extends AbstractModule{
     JourneyStage destinationCountries = jdb.defineStage("destinationCountries", "Countries and territories",
         () -> cpm.addParamsAndRedirect(routes.DestinationCountryController.renderForm()));
 
-    JourneyStage ogelQuestions = jdb.defineStage("ogelQuestions", "Are you exporting for any of these reasons",
+    JourneyStage ogelQuestions = jdb.defineStage("ogelQuestions", "Refining your licence results",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelQuestionsController.renderForm()));
 
     JourneyStage ogelResults = jdb.defineStage("ogelResults", "Licences applicable to your answers",

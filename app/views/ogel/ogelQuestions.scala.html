@@ -2,10 +2,9 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import models.common.Country
 
 @(form: Form[_])
-@standardPage("Are you exporting for any of these reasons?", Some(Html("Are you exporting for any of these reasons?"))){
+@standardPage("Refining your licence results", Some(Html("Refining your licence results"))){
   @errorSummary(form)
 }{
 
@@ -17,10 +16,10 @@
 
     @formRadioBoolean(form("forExhibitionDemonstration"), Html("Are you exporting goods for or after exhibition or demonstration? "))
 
-    @formRadioBoolean(form("before1897upto35k"), Html("Were your goods manufactured before 1897 and up to value of £35,000? "))
+    @formRadioBoolean(form("before1897upto35k"), Html("Are you exporting items manufactured before 1987 with a value of no more than £35,000"))
 
     <div class="form-group">
-      <button type="submit" class="button">Continue</button>
+      <button type="submit" class="button">Save and continue</button>
     </div>
 
   </form>
