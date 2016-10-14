@@ -77,7 +77,7 @@ public class OgelResultsController {
           else {
             return countryServiceClient.getCountries()
                 .thenApplyAsync(countryServiceResponse -> {
-                  String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+
                   List<String> countryNames = countryServiceResponse.getCountriesByRef(destinationCountries).stream()
                       .map(country -> "<strong class=\"bold-small\">" + country.getCountryName() + "</strong>")
                       .collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class OgelResultsController {
                         .collect(Collectors.joining(", ", "", " "))
                         .concat("and " + countryNames.get(countryNames.size() -1));
 
-                  return ok(ogelResults.render(form, Collections.emptyList(), physicalGoodControlCode, destinationCountryNamesHtml));
+                  return ok(ogelResults.render(form, Collections.emptyList(), controlCode, destinationCountryNamesHtml));
                 }, httpExecutionContext.current());
           }
         }, httpExecutionContext.current());

@@ -5,7 +5,8 @@
 @import views.html.common.state._
 
 @(form: Form[_], ogels: List[Result], physicalGoodControlCode: String, destinationCountryNamesHtml: String)
-@standardPage("Based on your answers, you may be able to use one of the following licences", Some(Html("Based on your answers, you may be able to use one of the following licences"))){
+@standardPage(if (ogels.length > 0) "Based on your answers, you may be able to use one of the following licences" else "No open licence available"
+  , Some(Html(if (ogels.length > 0) "Based on your answers, you may be able to use one of the following licences" else "No open licence available"))){
   @errorSummary(form)
 }{
 
@@ -40,8 +41,13 @@
       <div class="form-group">
         @detailPanel("none-suitable")(Html("None of these are suitable for my export")){
           <p>
-            You may be able to use a standard individual export licence (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
+            If you cannot use one of the open licences above, you should apply for a standard individual export licence (SIEL).
           </p>
+
+          <p>
+            SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
+          </p>
+
           <a class="button font-medium" href="https://www.spire.bis.gov.uk/spire/fox/espire/LOGIN/login">Apply for a SIEL using SPIRE</a>
         }
       </div>
@@ -53,7 +59,7 @@
       </p>
 
       <p>
-        You may be able to use a standard individual export licence (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
+        You should use a standard individual export licence (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
       </p>
 
       <p>
