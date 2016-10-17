@@ -10,6 +10,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
+import models.controlcode.DecontrolledItemDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -42,9 +43,9 @@ public class DecontrolledItemController {
 
   public CompletionStage<Result> renderForm() {
     Optional<ExportCategory> exportCategoryOptional = permissionsFinderDao.getExportCategory();
-    boolean showFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
+    boolean isFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(result -> ok(decontrolledItem.render(result, showFirearmsOrMilitary))
+        .thenApplyAsync(result -> ok(decontrolledItem.render(new DecontrolledItemDisplay(result, isFirearmsOrMilitary)))
             , httpExecutionContext.current());
   }
 
