@@ -11,6 +11,7 @@ import components.services.controlcode.frontend.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
+import models.controlcode.ControlCodeDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -47,7 +48,7 @@ public class ControlCodeController extends Controller {
   public CompletionStage<Result> renderForm() {
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(result ->
-            ok(controlCode.render(formFactory.form(ControlCodeForm.class), result))
+            ok(controlCode.render(formFactory.form(ControlCodeForm.class), new ControlCodeDisplay(result)))
         , httpExecutionContext.current());
   }
 
@@ -70,7 +71,7 @@ public class ControlCodeController extends Controller {
           }
 
           if (form.hasErrors()) {
-            return completedFuture(ok(controlCode.render(form, result)));
+            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(result))));
           }
           String couldDescribeItems = form.get().couldDescribeItems;
           if("true".equals(couldDescribeItems)) {
