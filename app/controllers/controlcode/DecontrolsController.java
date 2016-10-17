@@ -10,6 +10,7 @@ import components.services.controlcode.frontend.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
+import models.controlcode.DecontrolsDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -43,7 +44,7 @@ public class DecontrolsController {
 
   public CompletionStage<Result> renderForm() {
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(result -> ok(decontrols.render(formFactory.form(DecontrolsForm.class), result))
+        .thenApplyAsync(result -> ok(decontrols.render(formFactory.form(DecontrolsForm.class), new DecontrolsDisplay(result)))
             , httpExecutionContext.current());
   }
 
@@ -53,7 +54,7 @@ public class DecontrolsController {
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
-            return completedFuture(ok(decontrols.render(form, result)));
+            return completedFuture(ok(decontrols.render(form, new DecontrolsDisplay(result))));
           }
           String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
           if("true".equals(decontrolsDescribeItem)) {
