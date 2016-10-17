@@ -28,7 +28,7 @@
 
     <div id="through-destination-countries-wrapper">
 
-      @countrySelectGenerator(form, "throughDestinationCountries", numberOfThroughDestinationCountries, countries)
+      @countrySelectGenerator(form, "throughDestinationCountries", numberOfThroughDestinationCountries, "Type the country or territory your items will pass through", countries)
 
       @if(numberOfThroughDestinationCountries < DestinationCountryController.MAX_NUMBER_OF_THROUGH_COUNTRIES) {
         <div class="form-group">
