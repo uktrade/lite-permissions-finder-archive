@@ -2,11 +2,10 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import components.services.controlcode.frontend.FrontendServiceResult
 @import controllers.controlcode.routes.SearchAgainController
 
-@(frontendServiceResult: FrontendServiceResult)
-@standardPage(frontendServiceResult.controlCodeData.controlCode + " is not applicable to your items", Some(Html(frontendServiceResult.controlCodeData.controlCode + " is not applicable to your items"))){ }{
+@(controlCode: String)
+@standardPage(controlCode + " is not applicable to your items", Some(Html(controlCode + " is not applicable to your items"))){ }{
 
   <p>
     You should select another item type from your search results, or edit your description to get a new set of results:

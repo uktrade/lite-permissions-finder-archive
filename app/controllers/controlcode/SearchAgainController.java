@@ -40,7 +40,7 @@ public class SearchAgainController {
 
   public CompletionStage<Result> renderForm() {
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(result -> ok(searchAgain.render(result)), httpExecutionContext.current());
+        .thenApplyAsync(result -> ok(searchAgain.render(result.controlCodeData.controlCode)), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
