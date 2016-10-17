@@ -79,7 +79,7 @@ public class OgelResultsController {
                 .thenApplyAsync(countryServiceResponse -> {
 
                   List<String> countryNames = countryServiceResponse.getCountriesByRef(destinationCountries).stream()
-                      .map(country -> "<strong class=\"bold-small\">" + country.getCountryName() + "</strong>")
+                      .map(country -> country.getCountryName())
                       .collect(Collectors.toList());
 
                   // Creates a string in the form "A, B and C"
