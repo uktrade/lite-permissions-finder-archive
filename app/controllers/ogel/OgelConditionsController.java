@@ -145,10 +145,7 @@ public class OgelConditionsController {
                 "we thank your for your patience.");
           }
           return ogelServiceClient.get(permissionsFinderDao.getOgelId())
-              .thenApplyAsync(ogelResponse -> {
-                if (!ogelResponse.isOk()) {
-                  throw new ServiceResponseException("Invalid response from OGEL service");
-                }
+              .thenApplyAsync(ogelResult -> {
                 String sourceCountry = permissionsFinderDao.getSourceCountry();
                 List<String> destinationCountries = CountryUtils.getDestinationCountries(
                     permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
@@ -157,7 +154,7 @@ public class OgelConditionsController {
 
                 return virtualEUOgelClient.sendServiceRequest(physicalGoodControlCode, sourceCountry,
                     destinationCountries, activityTypes)
-                    .thenApplyAsync(result -> ok(ogelConditions.render(form, ogelResponse.getResult(),
+                    .thenApplyAsync(result -> ok(ogelConditions.render(form, ogelResult,
                         ogelConditionsResponse.getResult().get(), isMissingControlCode, result.virtualEu)),
                         httpExecutionContext.current());
 

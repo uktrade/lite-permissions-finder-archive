@@ -83,7 +83,7 @@ public class Summary {
     if (StringUtils.isNoneBlank(ogelId)) {
       String sourceCountry = permissionsFinderDao.getSourceCountry();
 
-      CompletionStage<OgelServiceClient.Response> ogelStage = ogelServiceClient.get(ogelId);
+      CompletionStage<OgelServiceResult> ogelStage = ogelServiceClient.get(ogelId);
 
       Optional<OgelQuestionsController.OgelQuestionsForm> ogelQuestionsFormOptional =
           permissionsFinderDao.getOgelQuestionsForm();
@@ -97,9 +97,8 @@ public class Summary {
           physicalGoodControlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric);
 
       CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombine(applicableOgelStage,
-          (ogelResponse, applicableOgelResponse) ->
-              new ValidatedOgel(ogelResponse.getResult(),
-                  applicableOgelResponse.findResultById(ogelResponse.getResult().id).isPresent()));
+          (ogelResult, applicableOgelResult) ->
+              new ValidatedOgel(ogelResult, applicableOgelResult.findResultById(ogelResult.id).isPresent()));
 
       summaryCompletionStage = summaryCompletionStage
           .thenCombineAsync(validatedStage, (summary, validatedOgel)

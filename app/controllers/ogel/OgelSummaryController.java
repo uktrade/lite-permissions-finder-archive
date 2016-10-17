@@ -102,17 +102,13 @@ public class OgelSummaryController {
             throw new ServiceResponseException("OGEL conditions service returned an invalid response");
           }
           return ogelServiceClient.get(permissionsFinderDao.getOgelId())
-              .thenApplyAsync(ogelResponse -> {
-                if (!ogelResponse.isOk()) {
-                  throw new ServiceResponseException("OGEL service returned an invalid response");
-                }
-
+              .thenApplyAsync(ogelResult -> {
                 // True when no restriction service result, otherwise check with isItemAllowed.
                 // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service or the re are missing control codes
                 boolean allowedToProceed = (!ogelConditionsResponse.doConditionApply() && !ogelConditionsResponse.isMissingControlCodes())
                     || OgelConditionsServiceClient.isItemAllowed(ogelConditionsResponse.getResult().get(), permissionsFinderDao.getOgelConditionsApply().get());
 
-                return ok(ogelSummary.render(form, ogelResponse.getResult(), physicalGoodsControlCode, allowedToProceed));
+                return ok(ogelSummary.render(form, ogelResult, physicalGoodsControlCode, allowedToProceed));
               }, httpExecutionContext.current());
         }, httpExecutionContext.current())
         .thenCompose(Function.identity());

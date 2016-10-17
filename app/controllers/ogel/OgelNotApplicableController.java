@@ -61,13 +61,8 @@ public class OgelNotApplicableController {
 
   public CompletionStage<Result> renderWithForm(Form<OgelNotApplicableForm> form) {
     return ogelServiceClient.get(permissionsFinderDao.getOgelId())
-        .thenApplyAsync(response -> {
-          if (!response.isOk()) {
-            throw new ServiceResponseException("Invalid response from the OGEL service");
-          }
-          return ok(ogelNotApplicable.render(form, response.getResult(),
-              permissionsFinderDao.getPhysicalGoodControlCode()));
-        }, httpExecutionContext.current());
+        .thenApplyAsync(ogelResult -> ok(ogelNotApplicable.render(form, ogelResult,
+              permissionsFinderDao.getPhysicalGoodControlCode())), httpExecutionContext.current());
   }
 
   public static class OgelNotApplicableForm {

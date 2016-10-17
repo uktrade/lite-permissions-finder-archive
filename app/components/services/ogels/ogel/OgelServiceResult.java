@@ -1,6 +1,8 @@
 package components.services.ogels.ogel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import play.libs.Json;
 
 public class OgelServiceResult {
 
@@ -25,6 +27,10 @@ public class OgelServiceResult {
     this.description = description;
     this.link = link;
     this.summary = summary;
+  }
+
+  public static OgelServiceResult build(JsonNode responseJson) {
+    return Json.fromJson(responseJson, OgelServiceResult.class);
   }
 
 }
