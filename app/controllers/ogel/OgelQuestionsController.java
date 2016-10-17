@@ -19,11 +19,13 @@ import play.mvc.Result;
 import utils.CountryUtils;
 import views.html.ogel.ogelQuestions;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class OgelQuestionsController {
 
@@ -110,25 +112,34 @@ public class OgelQuestionsController {
 
     public static List<String> formToActivityTypes(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
       // TODO account for TECH
-      List<String> activityTypes = new ArrayList<>();
+      Map<OgelActivityType, String> activityMap = new HashMap<>();
+      activityMap.put(OgelActivityType.DU_ANY, OgelActivityType.DU_ANY.value());
+      activityMap.put(OgelActivityType.EXHIBITION, OgelActivityType.EXHIBITION.value());
+      activityMap.put(OgelActivityType.MIL_ANY, OgelActivityType.MIL_ANY.value());
+      activityMap.put(OgelActivityType.MIL_GOV, OgelActivityType.MIL_GOV.value());
+      activityMap.put(OgelActivityType.REPAIR, OgelActivityType.REPAIR.value());
 
       if (ogelQuestionsFormOptional.isPresent()) {
         OgelQuestionsForm ogelQuestionsForm = ogelQuestionsFormOptional.get();
-        if ("true".equals(ogelQuestionsForm.forRepairReplacement)) {
-          activityTypes.add(OgelActivityType.REPAIR.value());
+        if ("false".equals(ogelQuestionsForm.forRepairReplacement)) {
+          activityMap.remove(OgelActivityType.REPAIR);
         }
-        if ("true".equals(ogelQuestionsForm.forExhibitionDemonstration)) {
-          activityTypes.add(OgelActivityType.EXHIBITION.value());
+        if ("false".equals(ogelQuestionsForm.forExhibitionDemonstration)) {
+          activityMap.remove(OgelActivityType.EXHIBITION);
         }
-        // Always add these types
-        activityTypes.add(OgelActivityType.MIL_ANY.value());
-        activityTypes.add(OgelActivityType.MIL_GOV.value());
-        activityTypes.add(OgelActivityType.DU_ANY.value());
       }
 
-      return activityTypes;
+      // Returns a list of values
+      return activityMap.entrySet().stream()
+          .map(es -> es.getValue())
+          .collect(Collectors.toList());
     }
 
+    /**
+     * Whether the goods is historic. This is temporary due to pending enhancements with the OGEL service.
+     * @param ogelQuestionsFormOptional the OGEL Questions form
+     * @return A list of OGEL activity types
+     */
     public static boolean isGoodHistoric(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
       // Return false if not present, otherwise parse value from form
       return ogelQuestionsFormOptional.isPresent() && Boolean.parseBoolean(ogelQuestionsFormOptional.get().before1897upto35k);

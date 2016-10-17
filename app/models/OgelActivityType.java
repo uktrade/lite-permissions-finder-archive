@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public enum OgelActivityType {
-  ANTIQUE("ANTIQUE"),
   DU_ANY("DU_ANY"),
   EXHIBITION("EXHIBITION"),
   MIL_ANY("MIL_ANY"),
