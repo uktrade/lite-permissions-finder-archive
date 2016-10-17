@@ -8,6 +8,7 @@ import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ArtsCulturalGoodsType;
+import models.GoodsType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -60,6 +61,7 @@ public class ArtsCulturalController extends Controller {
     String itemAge = form.get().itemAge;
 
     if (firearm && ("LT50".equals(itemAge) || "GT50LT100".equals(itemAge))) {
+      permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
       return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.CONTROLLED);
     }
     else if ((!firearm && ("GT50LT100".equals(itemAge) || "GT100".equals(itemAge))) || (firearm && "GT100".equals(itemAge))) {

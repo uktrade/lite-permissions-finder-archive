@@ -216,9 +216,6 @@ public class GuiceModule extends AbstractModule{
     JourneyStage ogelSummary = jdb.defineStage("ogelSummary", "Licence summary",
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelSummaryController.renderForm()));
 
-    JourneyStage summary = jdb.defineStage("summary", "Check your answers so far",
-        () -> cpm.addParamsAndRedirect(routes.SummaryController.renderForm()));
-
     JourneyStage notImplemented = jdb.defineStage("notImplemented", "This section is currently under development" ,
         () -> completedFuture(redirect(routes.StaticContentController.renderNotImplemented())));
 
@@ -257,7 +254,7 @@ public class GuiceModule extends AbstractModule{
         .branch()
         .when(ArtsCulturalGoodsType.HISTORIC, moveTo(categoryArtsCulturalHistoric))
         .when(ArtsCulturalGoodsType.NON_HISTORIC, moveTo(categoryArtsCulturalNonHistoric))
-        .when(ArtsCulturalGoodsType.CONTROLLED, moveTo(goodsType));
+        .when(ArtsCulturalGoodsType.CONTROLLED, moveTo(physicalGoodsSearch));
 
     jdb.atStage(categoryChemicalsCosmetics)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
