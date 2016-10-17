@@ -9,6 +9,7 @@ import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.registration.OgelRegistrationServiceClient;
+import controllers.search.SearchController;
 import exceptions.FormStateException;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
@@ -60,6 +61,8 @@ public class ContinueApplicationController {
       String transactionId = applicationCodeDao.readTransactionId(applicationCode.trim());
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.createTransaction(transactionId);
+        // Overwrite stored search form data
+        permissionsFinderDao.savePhysicalGoodSearchForm(new SearchController.ControlCodeSearchForm());
         Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
         if (ogelRegistrationExists.isPresent() && ogelRegistrationExists.get()) {
           return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
