@@ -2,11 +2,11 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import components.services.controlcode.frontend.FrontendServiceResult
 @import controllers.controlcode.routes.TechnicalNotesController
+@import models.controlcode.TechnicalNotesDisplay
 
-@(form: Form[_], frontendServiceResult: FrontendServiceResult)
-@standardPage(frontendServiceResult.controlCodeData.title, Some(Html(frontendServiceResult.controlCodeData.title))){
+@(form: Form[_], display: TechnicalNotesDisplay)
+@standardPage(display.title, Some(Html(display.title))){
   @errorSummary(form)
 } {
 
@@ -19,11 +19,11 @@
         </div>
       </td>
       <td class="tree-desc-last">
-        <span class="font-small">@Html(frontendServiceResult.controlCodeData.friendlyDescription)</span>
+        <span class="font-small">@Html(display.friendlyDescription)</span>
       </td>
       <td class="tree-code-last">
         <div class="tree-code-wrapper-last">
-          <span class="font-small">@frontendServiceResult.controlCodeData.controlCode</span>
+          <span class="font-small">@display.controlCode</span>
         </div>
       </td>
     </tr>
@@ -32,7 +32,7 @@
 
   <h2 class="heading-small">The following technical notes can help you choose the right classification:</h2>
 
-  @Html(frontendServiceResult.controlCodeData.technicalNotes)
+  @Html(display.technicalNotes)
 
   <form action="@TechnicalNotesController.handleSubmit()" method="POST">
 

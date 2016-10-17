@@ -10,6 +10,7 @@ import components.services.controlcode.frontend.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
+import models.controlcode.TechnicalNotesDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -43,7 +44,8 @@ public class TechnicalNotesController {
 
   public CompletionStage<Result> renderForm(){
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(result -> ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class), result))
+        .thenApplyAsync(result -> ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class),
+            new TechnicalNotesDisplay(result)))
             , httpExecutionContext.current());
   }
 
@@ -53,7 +55,7 @@ public class TechnicalNotesController {
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
-            return completedFuture(ok(technicalNotes.render(form, result)));
+            return completedFuture(ok(technicalNotes.render(form, new TechnicalNotesDisplay(result))));
           }
           String stillDescribesItems = form.get().stillDescribesItems;
           if("true".equals(stillDescribesItems)) {
