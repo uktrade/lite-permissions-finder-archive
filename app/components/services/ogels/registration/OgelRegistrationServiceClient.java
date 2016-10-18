@@ -11,6 +11,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
+import exceptions.ServiceException;
 import models.summary.Summary;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
@@ -81,17 +82,20 @@ public class OgelRegistrationServiceClient {
 
     return requestStage.thenApplyAsync(request -> wsRequest.post(Json.toJson(request)), httpExecutionContext.current())
         .thenCompose(Function.identity())
-        .thenApplyAsync(wsResponse -> {
-          if (wsResponse.getStatus() != 200) {
-            throw new OgelRegistrationServiceException(String.format("Unexpected HTTP status code: %s", wsResponse.getStatus()));
+        .thenApplyAsync(response -> {
+          if (response.getStatus() != 200) {
+            throw new ServiceException(String.format("Unexpected HTTP status code from OgelRegistrationService: %s",
+                response.getStatus()));
           }
           else {
-            OgelRegistrationServiceResult result = OgelRegistrationServiceResult.buildFromJson(wsResponse.asJson());
+            OgelRegistrationServiceResult result = OgelRegistrationServiceResult.buildFromJson(response.asJson());
             if (!StringUtils.isNotBlank(result.redirectUrl)) {
-              throw new OgelRegistrationServiceException("Empty redirect URL supplied");
+              throw new ServiceException("Unexpected redirect URL supplied from OgelRegistrationService");
             }
             else if (!StringUtils.equals(result.status, STATUS_CODE_OK)) {
-              throw new OgelRegistrationServiceException(String.format("Bad status code returned: %s", result.status));
+              // This is not the HTTP status code
+              throw new ServiceException(String.format("Bad status code returned from OgelRegistrationService: %s",
+                  result.status));
             }
             else {
               permissionsFinderDao.saveOgelRegistrationServiceTransactionExists(true);
