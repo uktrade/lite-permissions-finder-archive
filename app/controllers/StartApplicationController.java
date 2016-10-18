@@ -8,7 +8,7 @@ import components.common.journey.JourneyManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
-import components.services.PermissionsFinderNotificationClient;
+import components.services.notification.PermissionsFinderNotificationClient;
 import journey.JourneyDefinitionNames;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;

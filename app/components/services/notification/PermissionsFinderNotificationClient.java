@@ -1,4 +1,4 @@
-package components.services;
+package components.services.notification;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
