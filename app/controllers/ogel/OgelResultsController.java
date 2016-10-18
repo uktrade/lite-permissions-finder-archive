@@ -122,8 +122,8 @@ public class OgelResultsController {
     // Combines with the stage above, allowing any exceptions to propagate
     return checkOgelStage
         .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getPhysicalGoodControlCode()),
-            (empty, response) -> {
-              if (response.doConditionApply()) {
+            (empty, conditionsResult) -> {
+              if (!conditionsResult.isEmpty) {
                 return journeyManager.performTransition(Events.OGEL_CONDITIONS_APPLY);
               }
               else {

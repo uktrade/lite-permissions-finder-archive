@@ -1,16 +1,12 @@
 package components.services.ogels.conditions;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
-import components.services.ServiceResponseStatus;
-import play.Logger;
-import play.libs.Json;
+import exceptions.ServiceException;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class OgelConditionsServiceClient {
@@ -32,35 +28,22 @@ public class OgelConditionsServiceClient {
     this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/control-code-conditions";
   }
 
-  public CompletionStage<Response> get(String ogelId, String controlCode){
+  public CompletionStage<OgelConditionsServiceResult> get(String ogelId, String controlCode){
     return wsClient.url(webServiceUrl + "/" + ogelId + "/" + controlCode)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get().handleAsync((response, error) -> {
-          if (error != null) {
-            Logger.error("Unchecked exception in OgelConditionsService");
-            Logger.error(error.getMessage(), error);
-            return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
-          }
-          else if (response.getStatus() != 200 && response.getStatus() != 204 && response.getStatus() != 206) {
-            Logger.error("Unexpected HTTP status code from OgelConditionsService: {}", response.getStatus());
-            return Response.failure(ServiceResponseStatus.UNEXPECTED_HTTP_STATUS_CODE);
-          }
-          else if (response.getStatus() == 200) {
-            // Condition apply
-            return Response.success(response.asJson());
+          if (response.getStatus() == 200 || response.getStatus() == 206) {
+            // Condition apply (204) or conditions apply, but with missing control codes (206)
+            return OgelConditionsServiceResult.buildFromJson(response.asJson());
           }
           else if (response.getStatus() == 204) {
             // No conditions apply
-            return Response.success();
-          }
-          else if (response.getStatus() == 206) {
-            // Conditions apply, but with missing control codes
-            return Response.success(response.asJson());
+            return OgelConditionsServiceResult.buildEmpty();
           }
           else {
-            Logger.error("Invalid response state in OgelConditionsService");
-            return Response.failure(ServiceResponseStatus.UNCHECKED_EXCEPTION);
+            throw new ServiceException(String.format("Unexpected HTTP status code from OgelConditionsService: %s",
+                response.getStatus()));
           }
         }, httpExecutionContext.current());
   }
@@ -76,65 +59,4 @@ public class OgelConditionsServiceClient {
     return Boolean.parseBoolean(result.itemsAllowed) == conditionsApply;
   }
 
-  public static class Response {
-
-    private final Optional<OgelConditionsServiceResult> result;
-
-    private final ServiceResponseStatus status;
-
-    private Response(ServiceResponseStatus status, JsonNode responseJson) {
-      this.status = status;
-      this.result = Optional.of(Json.fromJson(responseJson, OgelConditionsServiceResult.class));
-    }
-
-    private Response(ServiceResponseStatus status) {
-      this.status = status;
-      this.result = Optional.empty();
-    }
-
-    public static Response success(JsonNode responseJson){
-      return new Response(ServiceResponseStatus.SUCCESS, responseJson);
-    }
-
-    public static Response success(){
-      return new Response(ServiceResponseStatus.SUCCESS);
-    }
-
-    public static Response failure(ServiceResponseStatus status){
-      return new Response(status);
-    }
-
-    public ServiceResponseStatus getStatus() {
-      return status;
-    }
-
-    public Optional<OgelConditionsServiceResult> getResult() {
-      return this.result;
-    }
-
-    public boolean isOk() {
-      return this.status == ServiceResponseStatus.SUCCESS;
-    }
-
-    public boolean doConditionApply() {
-      return result.isPresent();
-    }
-
-    public boolean isMissingControlCodes() {
-      if (result.isPresent()) {
-        OgelConditionsServiceResult ogelConditionsServiceResult = result.get();
-        if (ogelConditionsServiceResult.conditionDescriptionControlCodes.isPresent()) {
-          ConditionDescriptionControlCodes conditionDescriptionControlCodes = ogelConditionsServiceResult.conditionDescriptionControlCodes.get();
-          return !conditionDescriptionControlCodes.missingControlCodes.isEmpty();
-        }
-        else {
-          return false;
-        }
-      }
-      else {
-        return false;
-      }
-    }
-
-  }
 }

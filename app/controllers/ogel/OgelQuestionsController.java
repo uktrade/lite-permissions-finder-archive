@@ -81,8 +81,8 @@ public class OgelQuestionsController {
           if (result.virtualEu) {
             permissionsFinderDao.saveOgelId(result.ogelId);
             return ogelConditionsServiceClient.get(result.ogelId, physicalGoodControlCode)
-                .thenApplyAsync(response -> {
-                  if (response.doConditionApply()) {
+                .thenApplyAsync(conditionsResult -> {
+                  if (!conditionsResult.isEmpty) {
                     return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
                         VirtualEUOgelStage.VIRTUAL_EU_WITH_CONDITIONS);
                   }

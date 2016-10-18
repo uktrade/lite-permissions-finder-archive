@@ -10,7 +10,6 @@ import components.services.ogels.conditions.OgelConditionsServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import exceptions.BusinessRuleException;
 import exceptions.FormStateException;
-import exceptions.ServiceResponseException;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -60,19 +59,16 @@ public class OgelSummaryController {
     String action = form.get().action;
     return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
         permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(response -> {
-          if (!response.isOk()) {
-            throw new ServiceResponseException("OGEL conditions service returned an invalid response");
-          }
+        .thenApplyAsync(conditionsResult -> {
           if ("register".equals(action)) {
-            if (!response.doConditionApply()) {
+            if (conditionsResult.isEmpty) {
               // No conditions apply
               return contextParamManager.addParamsAndRedirect(controllers.routes.SummaryController.renderForm());
             }
-            else if (response.isMissingControlCodes()) {
+            else if (conditionsResult.isMissingControlCodes) {
               throw new BusinessRuleException("Can not apply for OGEL with missing control codes");
             }
-            else if (response.doConditionApply() && OgelConditionsServiceClient.isItemAllowed(response.getResult().get(),
+            else if (!conditionsResult.isEmpty && OgelConditionsServiceClient.isItemAllowed(conditionsResult,
                 permissionsFinderDao.getOgelConditionsApply().get())) {
               // ogelConditionsApply question should have been answered if this is the case
               return contextParamManager.addParamsAndRedirect(controllers.routes.SummaryController.renderForm());
@@ -97,16 +93,13 @@ public class OgelSummaryController {
     String physicalGoodsControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
 
     return ogelConditionsServiceClient.get(ogelId, physicalGoodsControlCode)
-        .thenApplyAsync(ogelConditionsResponse -> {
-          if (!ogelConditionsResponse.isOk()) {
-            throw new ServiceResponseException("OGEL conditions service returned an invalid response");
-          }
+        .thenApplyAsync(conditionsResult -> {
           return ogelServiceClient.get(permissionsFinderDao.getOgelId())
               .thenApplyAsync(ogelResult -> {
                 // True when no restriction service result, otherwise check with isItemAllowed.
                 // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service or the re are missing control codes
-                boolean allowedToProceed = (!ogelConditionsResponse.doConditionApply() && !ogelConditionsResponse.isMissingControlCodes())
-                    || OgelConditionsServiceClient.isItemAllowed(ogelConditionsResponse.getResult().get(), permissionsFinderDao.getOgelConditionsApply().get());
+                boolean allowedToProceed = conditionsResult.isEmpty || (!conditionsResult.isMissingControlCodes
+                    && OgelConditionsServiceClient.isItemAllowed(conditionsResult, permissionsFinderDao.getOgelConditionsApply().get()));
 
                 return ok(ogelSummary.render(form, ogelResult, physicalGoodsControlCode, allowedToProceed));
               }, httpExecutionContext.current());
