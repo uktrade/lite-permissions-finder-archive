@@ -37,7 +37,7 @@ public class FrontendServiceClient {
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {
             String errorMessage = response.asJson() != null ? errorMessage = response.asJson().get("message").asText() : "";
-            throw new ServiceException(String.format("Unexpected HTTP status code from ControlCodeFrontendService: %s %s", response.getStatus(), errorMessage));
+            throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /frontend-control-codes: %s %s", response.getStatus(), errorMessage));
           }
           else {
             return Json.fromJson(response.asJson(), FrontendServiceResult.class);

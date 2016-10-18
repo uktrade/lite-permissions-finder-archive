@@ -34,8 +34,8 @@ public class OgelServiceClient {
         .setRequestTimeout(webServiceTimeout)
         .get().handleAsync((response, error) -> {
           if (response.getStatus() != 200) {
-            throw new ServiceException(String.format("Unexpected HTTP status code from OgelService: %s",
-                response.getStatus()));
+            throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /ogels/%s: %s",
+                ogelId, response.getStatus()));
           }
           else {
             return OgelServiceResult.build(response.asJson());

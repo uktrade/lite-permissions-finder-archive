@@ -39,7 +39,7 @@ public class SearchServiceClient {
         .get()
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {
-            throw new ServiceException(String.format("Unexpected HTTP status code from ControlCodeSearchService: %s", response.getStatus()));
+            throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
           }
           else {
             return Json.fromJson(response.asJson(), SearchServiceResult.class);

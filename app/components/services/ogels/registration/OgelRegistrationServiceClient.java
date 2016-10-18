@@ -84,17 +84,17 @@ public class OgelRegistrationServiceClient {
         .thenCompose(Function.identity())
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {
-            throw new ServiceException(String.format("Unexpected HTTP status code from OgelRegistrationService: %s",
+            throw new ServiceException(String.format("Unexpected HTTP status code from OGEL Registration service /update-transaction: %s",
                 response.getStatus()));
           }
           else {
             OgelRegistrationServiceResult result = OgelRegistrationServiceResult.buildFromJson(response.asJson());
             if (!StringUtils.isNotBlank(result.redirectUrl)) {
-              throw new ServiceException("Unexpected redirect URL supplied from OgelRegistrationService");
+              throw new ServiceException("Unexpected redirect URL supplied from OGEL Registration service /update-transaction:");
             }
             else if (!StringUtils.equals(result.status, STATUS_CODE_OK)) {
               // This is not the HTTP status code
-              throw new ServiceException(String.format("Bad status code returned from OgelRegistrationService: %s",
+              throw new ServiceException(String.format("Bad status code returned from OGEL Registration service /update-transaction: %s",
                   result.status));
             }
             else {

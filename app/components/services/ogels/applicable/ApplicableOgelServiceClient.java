@@ -46,7 +46,7 @@ public class ApplicableOgelServiceClient {
 
     return req.get().thenApplyAsync(response -> {
       if (response.getStatus() != 200) {
-        throw new ServiceException(String.format("Unexpected HTTP status code from ApplicableOgelService: %s",
+        throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /applicable-ogels: %s",
             response.getStatus()));
       }
       else {

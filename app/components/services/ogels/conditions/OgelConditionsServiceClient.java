@@ -42,7 +42,7 @@ public class OgelConditionsServiceClient {
             return OgelConditionsServiceResult.buildEmpty();
           }
           else {
-            throw new ServiceException(String.format("Unexpected HTTP status code from OgelConditionsService: %s",
+            throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /control-code-conditions: %s",
                 response.getStatus()));
           }
         }, httpExecutionContext.current());
