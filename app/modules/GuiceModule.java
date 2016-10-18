@@ -52,13 +52,13 @@ public class GuiceModule extends AbstractModule{
     bindConstant().annotatedWith(Names.named("controlCodeSearchServiceTimeout"))
         .to(configuration.getString("controlCodeSearchService.timeout"));
 
-    // controlCodeFrontendService
-    bindConstant().annotatedWith(Names.named("controlCodeFrontendServiceHost"))
-        .to(configuration.getString("controlCodeFrontendService.hostname"));
-    bindConstant().annotatedWith(Names.named("controlCodeFrontendServicePort"))
-        .to(configuration.getString("controlCodeFrontendService.port"));
-    bindConstant().annotatedWith(Names.named("controlCodeFrontendServiceTimeout"))
-        .to(configuration.getString("controlCodeFrontendService.timeout"));
+    // controlCodeService
+    bindConstant().annotatedWith(Names.named("controlCodeServiceHost"))
+        .to(configuration.getString("controlCodeService.hostname"));
+    bindConstant().annotatedWith(Names.named("controlCodeServicePort"))
+        .to(configuration.getString("controlCodeService.port"));
+    bindConstant().annotatedWith(Names.named("controlCodeServiceTimeout"))
+        .to(configuration.getString("controlCodeService.timeout"));
 
     // countryService
     bindConstant().annotatedWith(Names.named("countryServiceHost"))

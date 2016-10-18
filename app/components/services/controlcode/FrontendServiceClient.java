@@ -20,9 +20,9 @@ public class FrontendServiceClient {
   @Inject
   public FrontendServiceClient(HttpExecutionContext httpExecutionContext,
                                WSClient wsClient,
-                               @Named("controlCodeFrontendServiceHost") String webServiceHost,
-                               @Named("controlCodeFrontendServicePort") String webServicePort,
-                               @Named("controlCodeFrontendServiceTimeout") int webServiceTimeout){
+                               @Named("controlCodeServiceHost") String webServiceHost,
+                               @Named("controlCodeServicePort") String webServicePort,
+                               @Named("controlCodeServiceTimeout") int webServiceTimeout){
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
