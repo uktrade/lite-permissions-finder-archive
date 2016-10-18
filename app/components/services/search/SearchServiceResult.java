@@ -1,4 +1,4 @@
-package components.services.controlcode.search;
+package components.services.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import controllers.ErrorController;
-import components.services.controlcode.search.SearchServiceClient;
+import components.services.search.SearchServiceClient;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;

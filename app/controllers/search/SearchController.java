@@ -2,7 +2,7 @@ package controllers.search;
 
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.search.SearchServiceClient;
+import components.services.search.SearchServiceClient;
 import controllers.ErrorController;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;

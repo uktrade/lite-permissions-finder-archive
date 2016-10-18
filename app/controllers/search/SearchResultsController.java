@@ -1,7 +1,7 @@
 package controllers.search;
 
 import components.common.journey.JourneyManager;
-import components.services.controlcode.search.SearchServiceClient;
+import components.services.search.SearchServiceClient;
 import controllers.controlcode.ControlCodeController;
 import controllers.ErrorController;
 import components.services.controlcode.frontend.FrontendServiceClient;
