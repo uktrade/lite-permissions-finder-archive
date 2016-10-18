@@ -1,6 +1,6 @@
 package models.controlcode;
 
-import components.services.controlcode.frontend.FrontendServiceResult;
+import components.services.controlcode.FrontendServiceResult;
 
 public class DecontrolledItemDisplay {
 

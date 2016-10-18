@@ -4,7 +4,7 @@ import components.common.journey.JourneyManager;
 import components.services.search.SearchServiceClient;
 import controllers.controlcode.ControlCodeController;
 import controllers.ErrorController;
-import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.controlcode.FrontendServiceClient;
 import play.data.Form;
 import play.data.FormFactory;
 

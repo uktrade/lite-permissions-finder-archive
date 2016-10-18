@@ -1,7 +1,7 @@
 package models.controlcode;
 
-import components.services.controlcode.frontend.ControlCodeData;
-import components.services.controlcode.frontend.FrontendServiceResult;
+import components.services.controlcode.ControlCodeData;
+import components.services.controlcode.FrontendServiceResult;
 
 public class TechnicalNotesDisplay {
 

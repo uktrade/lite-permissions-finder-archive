@@ -11,7 +11,7 @@ import components.common.journey.JourneyManager;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.controlcode.FrontendServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import components.services.registration.OgelRegistrationServiceClient;

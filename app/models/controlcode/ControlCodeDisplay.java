@@ -1,11 +1,10 @@
 package models.controlcode;
 
-import components.services.controlcode.frontend.Ancestor;
-import components.services.controlcode.frontend.ControlCodeData;
-import components.services.controlcode.frontend.FrontendServiceResult;
+import components.services.controlcode.Ancestor;
+import components.services.controlcode.ControlCodeData;
+import components.services.controlcode.FrontendServiceResult;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ControlCodeDisplay {
   public final String title;

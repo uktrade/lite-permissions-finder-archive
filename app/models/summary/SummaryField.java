@@ -1,7 +1,7 @@
 package models.summary;
 
-import components.services.controlcode.frontend.ControlCodeData;
-import components.services.controlcode.frontend.FrontendServiceResult;
+import components.services.controlcode.ControlCodeData;
+import components.services.controlcode.FrontendServiceResult;
 import components.services.ogels.ogel.OgelServiceResult;
 import models.common.Country;
 
