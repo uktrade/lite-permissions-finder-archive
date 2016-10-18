@@ -8,7 +8,7 @@ import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
-import components.services.ogels.registration.OgelRegistrationServiceClient;
+import components.services.registration.OgelRegistrationServiceClient;
 import controllers.search.SearchController;
 import exceptions.FormStateException;
 import org.apache.commons.lang3.StringUtils;

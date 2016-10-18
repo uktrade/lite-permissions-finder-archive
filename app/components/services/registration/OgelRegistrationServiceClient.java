@@ -1,4 +1,4 @@
-package components.services.ogels.registration;
+package components.services.registration;
 
 import static play.mvc.Results.redirect;
 

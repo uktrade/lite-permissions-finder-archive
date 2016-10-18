@@ -14,7 +14,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
-import components.services.ogels.registration.OgelRegistrationServiceClient;
+import components.services.registration.OgelRegistrationServiceClient;
 import exceptions.FormStateException;
 import journey.JourneyDefinitionNames;
 import models.summary.Summary;
