@@ -44,13 +44,13 @@ public class GuiceModule extends AbstractModule{
 
     install(new CommonGuiceModule(configuration));
 
-    // controlCodeSearchService
-    bindConstant().annotatedWith(Names.named("controlCodeSearchServiceHost"))
-        .to(configuration.getString("controlCodeSearchService.hostname"));
-    bindConstant().annotatedWith(Names.named("controlCodeSearchServicePort"))
-        .to(configuration.getString("controlCodeSearchService.port"));
-    bindConstant().annotatedWith(Names.named("controlCodeSearchServiceTimeout"))
-        .to(configuration.getString("controlCodeSearchService.timeout"));
+    // searchService
+    bindConstant().annotatedWith(Names.named("searchServiceHost"))
+        .to(configuration.getString("searchService.hostname"));
+    bindConstant().annotatedWith(Names.named("searchServicePort"))
+        .to(configuration.getString("searchService.port"));
+    bindConstant().annotatedWith(Names.named("searchServiceTimeout"))
+        .to(configuration.getString("searchService.timeout"));
 
     // controlCodeService
     bindConstant().annotatedWith(Names.named("controlCodeServiceHost"))

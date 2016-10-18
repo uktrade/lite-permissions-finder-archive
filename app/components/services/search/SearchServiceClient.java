@@ -20,9 +20,9 @@ public class SearchServiceClient {
   @Inject
   public SearchServiceClient(HttpExecutionContext httpExecutionContext,
                              WSClient wsClient,
-                             @Named("controlCodeSearchServiceHost") String webServiceHost,
-                             @Named("controlCodeSearchServicePort") int webServicePort,
-                             @Named("controlCodeSearchServiceTimeout") int webServiceTimeout
+                             @Named("searchServiceHost") String webServiceHost,
+                             @Named("searchServicePort") int webServicePort,
+                             @Named("searchServiceTimeout") int webServiceTimeout
   ){
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
