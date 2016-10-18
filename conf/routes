@@ -176,5 +176,8 @@ GET     /summary-continue                     controllers.SummaryController.rend
 POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
 
 
+# JavaScript routes
+GET     /js-routes                            controllers.JavaScriptRoutesController.jsRoutes
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)
