@@ -25,7 +25,6 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
   private final HttpExecutionContext httpExecutionContext;
   private final PermissionsFinderDao dao;
-  public static final int PAGINATION_SIZE = 5;
 
   @Inject
   public PhysicalGoodsSearchResultsController(JourneyManager journeyManager,
@@ -44,6 +43,12 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   public CompletionStage<Result> renderForm() {
     return physicalGoodsSearch()
         .thenApplyAsync(result -> {
+          // TODO Bug here regarding back-link behaviour. This currently will always render the view with PAGINATION_SIZE
+          // results. However, going via the back-link, this should really be the DAO PhysicalGoodSearchPaginationDisplayCount
+          // This method falls over if the user visits the page again, not going via a back-link, as it will then use the value
+          // stored in the DAO and not the default PAGINATION_SIZE. The solution is to clear
+          // PhysicalGoodSearchPaginationDisplayCount from the DAO and use PAGINATION_SIZE when visiting the page while progressing forward
+          // through the journey, and restore from the DAO if via a back-link.
           int displayCount = Math.min(result.results.size(), PAGINATION_SIZE);
           dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
           return ok(physicalGoodsSearchResults.render(searchResultsForm(), result.results, displayCount));
@@ -56,7 +61,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     if (form.hasErrors()) {
       return physicalGoodsSearch()
           .thenApplyAsync(result -> {
-            int displayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
+            int displayCount = Integer.parseInt(form.field("resultsDisplayCount").value());
             int newDisplayCount = Math.min(displayCount, result.results.size());
             if (displayCount != newDisplayCount) {
               dao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
@@ -73,7 +78,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
         case SHORE_MORE:
           return physicalGoodsSearch()
               .thenApplyAsync(result -> {
-                int displayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
+                int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
                 int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, result.results.size());
                 if (displayCount != newDisplayCount) {
                   dao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);

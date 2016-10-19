@@ -4,7 +4,7 @@
 @import views.html.common.form._
 @import views.html.common.state._
 
-@(form: Form[_], formAction: String, results: List[Result], resultsDisplayCount: Int)
+@(form: Form[_], goodsType: GoodsType, formAction: String,  results: List[Result], resultsDisplayCount: Int)
   @standardPage(
     if (!results.isEmpty()) "Possible matches" else "Your search did not return any results",
     Some(Html(if (!results.isEmpty()) "Possible matches" else "Your search did not return any results"))) {
@@ -16,8 +16,11 @@
       <form action="@formAction" method="POST">
 
         @contextFormParams()
+        <input id="goodsTypeHiddenInput" type="hidden" name="goodsType" value="@goodsType.value()">
 
-        <table class="search-results">
+        <input id="resultsDisplayCountHiddenInput" type="hidden" name="resultsDisplayCount" value="@resultsDisplayCount">
+
+        <table id="searchResults" class="search-results">
           <thead><tr><th></th></tr></thead>
           <tbody>
           @for(i <- 0 until Math.min(results.size, resultsDisplayCount)) {
@@ -34,7 +37,12 @@
 
         <div class="search-result-actions">
           @if(resultsDisplayCount < results.size) {
-            <button type="submit" name="action" value="show-more-results" class="button secondary show-more-results-button">Show more results</button>
+            <p class="js-hidden">
+              <button type="submit" name="action" value="show-more-results" class="button secondary show-more-results-button">Show more results</button>
+            </p>
+            <p id="showMoreResultsWrapper" class="js-only">
+              <button type="button" id="showMoreResultsButton" class="button secondary show-more-results-button">Show more results</button>
+            </p>
           }
           <button type="submit" name="action" value="no-matched-result" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
         </div>

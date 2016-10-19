@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.search.SearchServiceClient;
+import models.GoodsType;
 import play.Logger;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
@@ -21,10 +22,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 public class AjaxSearchResultsController {
-
-  public static String PHYSICAL_GOODS = "PHYSICAL_GOODS";
-  public static String SOFTWARE = "SOFTWARE";
-  public static String TECHNOLOGY = "TECHNOLOGY";
 
   private final TransactionManager transactionManager;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -40,39 +37,55 @@ public class AjaxSearchResultsController {
 
   private final SearchServiceClient searchServiceClient;
 
-  public CompletionStage<Result> getResults(String searchType, int currentCount, String transactionId) {
+  /**
+   * AJAX request handler, creating a JSON object of the additional results to show.
+   * <br/><br/>
+   * Example OK response:
+   * <code>{"status": "ok", "results": [{ "code": "ML1a", "highlightedText": "Some text"}], "moreResults": true}</code>
+   * <br/><br/>
+   * Example ERROR response:
+   * <code>{"status": "error", "message": "Some error message"}</code>
+   *
+   * @param goodsType the type of goods to search over, should be the {@link GoodsType#value()} of a {@link models.GoodsType} entry
+   * @param currentResultCount the current count of results being shown
+   * @param transactionId the transaction ID
+   * @return a Result with JSON content of the additional results to show
+   */
+  public CompletionStage<Result> getResults(String goodsType, int currentResultCount, String transactionId) {
 
     if (transactionId == null || transactionId.isEmpty()) {
-      return completedFuture(ok(buildErrorJsonAndLog(String.format("TransactionId cannot be null or empty %s", transactionId))));
+      return completedFuture(ok(buildErrorJsonAndLog(
+          String.format("TransactionId cannot be null or empty %s", transactionId))));
     }
     else {
       transactionManager.createTransaction(transactionId);
     }
 
-    if (currentCount < 0 || currentCount > 100) {
-      return completedFuture(ok(buildErrorJsonAndLog(String.format("currentCount must be between 0 and 100 (inclusive) %s", currentCount))));
+    if (currentResultCount < 0 || currentResultCount > 100) {
+      return completedFuture(ok(buildErrorJsonAndLog(
+          String.format("currentCount must be between 0 and 100 (inclusive) %s", currentResultCount))));
     }
 
-    if (PHYSICAL_GOODS.equals(searchType)) {
-      Optional<SearchController.ControlCodeSearchForm> optionalForm = permissionsFinderDao.getPhysicalGoodsSearchForm();
-      if (optionalForm.isPresent()) {
-        return searchServiceClient.get(SearchController.getSearchTerms(optionalForm.get()))
-            .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, currentCount)), httpExecutionContext.current());
+    Optional<GoodsType> goodsTypeOptional = GoodsType.getMatched(goodsType);
+
+    if (goodsTypeOptional.isPresent()) {
+      if (goodsTypeOptional.get() == GoodsType.PHYSICAL) {
+        Optional<SearchController.ControlCodeSearchForm> optionalForm = permissionsFinderDao.getPhysicalGoodsSearchForm();
+        if (optionalForm.isPresent()) {
+          return searchServiceClient.get(SearchController.getSearchTerms(optionalForm.get()))
+              .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, currentResultCount))
+                  , httpExecutionContext.current());
+        }
+        else {
+          return completedFuture(ok(buildErrorJsonAndLog("Unable to lookup search terms")));
+        }
       }
       else {
-        return completedFuture(ok(buildErrorJsonAndLog("Unable to lookup search terms")));
+        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unhandled goodsType %s", goodsType))));
       }
     }
-    else if (SOFTWARE.equals(searchType)) {
-      // Return an error for now
-      return completedFuture(ok(buildErrorJsonAndLog(String.format("Invalid searchType %s", searchType))));
-    }
-    else if (TECHNOLOGY.equals(searchType)) {
-      // Return an error for now
-      return completedFuture(ok(buildErrorJsonAndLog(String.format("Invalid searchType %s", searchType))));
-    }
     else {
-      return completedFuture(ok(buildErrorJsonAndLog("Unhandled request state")));
+      return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for goodsType %s", goodsType))));
     }
 
   }
@@ -83,17 +96,21 @@ public class AjaxSearchResultsController {
     ArrayNode resultsNode = json.putArray("results");
 
     if (results != null && !results.isEmpty()) {
-      int fromIdx = Math.max(Math.min(currentCount, results.size()), 0);
-      int toIdx = Math.min(Math.max(currentCount + 5, 0), results.size());
-      List<ObjectNode> list = results.subList(fromIdx, toIdx)
+      int fromIndex = Math.max(Math.min(currentCount, results.size()), 0);
+      int toIndex = Math.min(Math.max(currentCount + SearchResultsController.PAGINATION_SIZE, 0), results.size());
+
+      List<ObjectNode> list = results.subList(fromIndex, toIndex)
           .stream()
-          .map(r -> {
+          .map(result -> {
             ObjectNode resultJson = Json.newObject();
-            resultJson.put("code", r.code);
-            resultJson.put("highlightedText", r.highlightedText);
+            resultJson.put("code", result.code);
+            resultJson.put("highlightedText", result.highlightedText);
             return resultJson;
           }).collect(Collectors.toList());
+
       resultsNode.addAll(list);
+
+      json.put("moreResults", !(list.isEmpty() || toIndex == results.size()));
     }
 
     return json;

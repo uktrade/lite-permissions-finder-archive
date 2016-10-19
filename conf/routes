@@ -139,7 +139,7 @@ GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSe
 
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
 
-GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(searchType: String, currentCount: Int ?= 0, transactionId: String)
+GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(goodsType: String, currentResultCount: Int ?= 0, transactionId: String)
 
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 

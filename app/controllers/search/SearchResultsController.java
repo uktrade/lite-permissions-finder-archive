@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public class SearchResultsController {
 
+  public static final int PAGINATION_SIZE = 5;
+
   protected final JourneyManager journeyManager;
   private final FormFactory formFactory;
   protected final SearchServiceClient searchServiceClient;
@@ -69,6 +71,10 @@ public class SearchResultsController {
     public String result;
 
     public String action;
+
+    public String goodsType;
+
+    public String resultsDisplayCount;
 
   }
 }
