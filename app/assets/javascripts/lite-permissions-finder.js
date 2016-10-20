@@ -48,7 +48,7 @@ $(document).ready(function (){
                 $("<td/>").append(
                   $("<p/>").append(
                     $("<button/>")
-                      .attr("type", "button")
+                      .attr("type", "submit")
                       .attr("name", "result")
                       .attr("value", result.code)
                       .addClass("link font-xsmall")
