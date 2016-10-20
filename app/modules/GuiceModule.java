@@ -112,12 +112,6 @@ public class GuiceModule extends AbstractModule{
     JourneyStage importStatic = jdb.defineStage("importStatic", "Import licences",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderImport()));
 
-    JourneyStage categoryArtsCulturalNonHistoric = jdb.defineStage("categoryArtsCulturalNonHistoric", "You may not need an export licence",
-        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderArtsCulturalNonHistoric()));
-
-    JourneyStage categoryArtsCulturalHistoric = jdb.defineStage("categoryArtsCulturalHistoric", "You may need an export licence",
-        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderArtsCulturalHistoric()));
-
     JourneyStage brokeringTranshipmentStatic = jdb.defineStage("brokeringStatic", "Trade controls, trafficking and brokering",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderBrokeringTranshipment()));
 
@@ -126,6 +120,15 @@ public class GuiceModule extends AbstractModule{
 
     JourneyStage categoryArtsCultural = jdb.defineStage("categoryArtsCultural", "Arts and cultural goods",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ArtsCulturalController.renderForm()));
+
+    JourneyStage categoryArtsCulturalHistoric = jdb.defineStage("categoryArtsCulturalHistoric", "You may need an Arts Council licence",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryArtsCulturalHistoric()));
+
+    JourneyStage categoryArtsCulturalNonHistoric = jdb.defineStage("categoryArtsCulturalNonHistoric", "You need an Arts Council licence to export specific items",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryArtsCulturalNonHistoric()));
+
+    JourneyStage categoryArtsCulturalFirearmHistoric = jdb.defineStage("categoryArtsCulturalFirearmHistoric", "You may need an Arts Council licence, and an export licence",
+        () -> cpm.addParamsAndRedirect(controllers.categories.routes.ArtsCulturalFirearmHistoricController.renderForm()));
 
     JourneyStage categoryChemicalsCosmetics = jdb.defineStage("categoryChemicalsCosmetics", "Cosmetics, chemicals and pesticides",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.ChemicalsCosmeticsController.renderForm()));
@@ -261,7 +264,14 @@ public class GuiceModule extends AbstractModule{
         .branch()
         .when(ArtsCulturalGoodsType.HISTORIC, moveTo(categoryArtsCulturalHistoric))
         .when(ArtsCulturalGoodsType.NON_HISTORIC, moveTo(categoryArtsCulturalNonHistoric))
-        .when(ArtsCulturalGoodsType.CONTROLLED, moveTo(physicalGoodsSearch));
+        .when(ArtsCulturalGoodsType.FIREARM_HISTORIC, moveTo(categoryArtsCulturalFirearmHistoric))
+        .when(ArtsCulturalGoodsType.FIREARM_NON_HISTORIC, moveTo(categoryNonMilitary));
+
+    // Note use of EXPORT_CATEGORY_SELECTED for single value
+    jdb.atStage(categoryArtsCulturalFirearmHistoric)
+        .onEvent(Events.EXPORT_CATEGORY_SELECTED)
+        .branch()
+        .when(ExportCategory.NON_MILITARY, moveTo(categoryNonMilitary));
 
     jdb.atStage(categoryChemicalsCosmetics)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)

@@ -1,7 +1,8 @@
 package models;
 
 public enum ArtsCulturalGoodsType {
-  NON_HISTORIC,
   HISTORIC,
-  CONTROLLED,
+  NON_HISTORIC,
+  FIREARM_NON_HISTORIC,
+  FIREARM_HISTORIC,
 }

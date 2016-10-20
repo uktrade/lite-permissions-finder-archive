@@ -14,10 +14,10 @@ import java.net.URL;
 public class StaticContentController extends Controller {
 
   public enum StaticHtml {
-    ARTS_CULTURAL_NON_HISTORIC("artsCulturalNonHistoric.html", "No licence required"),
-    ARTS_CULTURAL_HISTORIC("artsCulturalHistoric.html", "You may need a licence to export certain goods over 50 years old"),
     BROKERING_TRANSHIPMENT("tradetypes/brokeringTranshipment.html","Trade controls, trafficking and brokering"),
     IMPORT("tradetypes/import.html","Import licences"),
+    CATEGORY_ARTS_CULTURAL_HISTORIC("categories/artsCultural/historic.html", "You may need an Arts Council licence"),
+    CATEGORY_ARTS_CULTURAL_NON_HISTORIC("categories/artsCultural/nonHistoric.html", "You need an Arts Council licence to export specific items"),
     CATEGORY_FOOD("categories/food.html","You need to check the rules for your export destination"),
     CATEGORY_ENDANGERED_ANIMALS("categories/endangeredAnimal.html", "You may need a CITES permit"),
     CATEGORY_NON_ENDANGERED_ANIMALS("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
@@ -52,20 +52,20 @@ public class StaticContentController extends Controller {
     }
   }
 
-  public Result renderArtsCulturalNonHistoric() {
-    return renderStaticHtml(StaticHtml.ARTS_CULTURAL_NON_HISTORIC);
-  }
-
-  public Result renderArtsCulturalHistoric() {
-    return renderStaticHtml(StaticHtml.ARTS_CULTURAL_HISTORIC);
-  }
-
   public Result renderBrokeringTranshipment() {
     return renderStaticHtml(StaticHtml.BROKERING_TRANSHIPMENT);
   }
 
   public Result renderImport() {
     return renderStaticHtml(StaticHtml.IMPORT);
+  }
+
+  public Result renderCategoryArtsCulturalHistoric() {
+    return renderStaticHtml(StaticHtml.CATEGORY_ARTS_CULTURAL_HISTORIC);
+  }
+
+  public Result renderCategoryArtsCulturalNonHistoric() {
+    return renderStaticHtml(StaticHtml.CATEGORY_ARTS_CULTURAL_NON_HISTORIC);
   }
 
   public Result renderCategoryFood() {

@@ -7,8 +7,8 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
+import models.ArtsCulturalGoodsAgeRange;
 import models.ArtsCulturalGoodsType;
-import models.GoodsType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -25,9 +25,9 @@ import java.util.concurrent.CompletionStage;
 public class ArtsCulturalController extends Controller {
 
   public static final List<SelectOption> AGE_OPTIONS = Arrays.asList(
-      new SelectOption("LT50", "Less than 50 years old"),
-      new SelectOption("GT50LT100", "Between 50 and 100 years old"),
-      new SelectOption("GT100", "More than 100 years old")
+      new SelectOption(ArtsCulturalGoodsAgeRange.LESS_THAN_50.value(), "Less than 50 years old"),
+      new SelectOption(ArtsCulturalGoodsAgeRange.BETWEEN_50_AND_100.value(), "Between 50 and 100 years old"),
+      new SelectOption(ArtsCulturalGoodsAgeRange.GREATER_THAN_100.value(), "More than 100 years old")
   );
 
   private final JourneyManager journeyManager;
@@ -60,15 +60,19 @@ public class ArtsCulturalController extends Controller {
     boolean firearm = form.get().firearm;
     String itemAge = form.get().itemAge;
 
-    if (firearm && ("LT50".equals(itemAge) || "GT50LT100".equals(itemAge))) {
-      permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
-      return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.CONTROLLED);
+    if (firearm && ArtsCulturalGoodsAgeRange.LESS_THAN_50.equals(itemAge)) {
+      return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.FIREARM_NON_HISTORIC);
     }
-    else if ((!firearm && ("GT50LT100".equals(itemAge) || "GT100".equals(itemAge))) || (firearm && "GT100".equals(itemAge))) {
-      return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.HISTORIC);
+    else if (firearm && ArtsCulturalGoodsAgeRange.BETWEEN_50_AND_100.equals(itemAge)) {
+      return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.FIREARM_HISTORIC);
     }
-    else if (!firearm && "LT50".equals(itemAge)) {
+    else if (!firearm && ArtsCulturalGoodsAgeRange.LESS_THAN_50.equals(itemAge)) {
       return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.NON_HISTORIC);
+    }
+    else if ((firearm && ArtsCulturalGoodsAgeRange.GREATER_THAN_100.equals(itemAge)) ||
+        (!firearm && (ArtsCulturalGoodsAgeRange.BETWEEN_50_AND_100.equals(itemAge)
+            || ArtsCulturalGoodsAgeRange.GREATER_THAN_100.equals(itemAge)))) {
+      return journeyManager.performTransition(Events.ARTS_CULTURAL_CATEGORY_SELECTED, ArtsCulturalGoodsType.HISTORIC);
     }
     else {
       throw new FormStateException("Unhandled tuple of itemAge: \"" + itemAge + "\" and firearm: \"" + Boolean.toString(firearm) + "\"");
