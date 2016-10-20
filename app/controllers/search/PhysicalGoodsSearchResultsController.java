@@ -43,14 +43,14 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   public CompletionStage<Result> renderForm() {
     return physicalGoodsSearch()
         .thenApplyAsync(result -> {
-          // TODO Bug here regarding back-link behaviour. This currently will always render the view with PAGINATION_SIZE
-          // results. However, going via the back-link, this should really be the DAO PhysicalGoodSearchPaginationDisplayCount
-          // This method falls over if the user visits the page again, not going via a back-link, as it will then use the value
-          // stored in the DAO and not the default PAGINATION_SIZE. The solution is to clear
-          // PhysicalGoodSearchPaginationDisplayCount from the DAO and use PAGINATION_SIZE when visiting the page while progressing forward
-          // through the journey, and restore from the DAO if via a back-link.
           int displayCount = Math.min(result.results.size(), PAGINATION_SIZE);
-          dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
+          Optional<Integer> optionalDisplayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
+          if (optionalDisplayCount.isPresent()) {
+            displayCount = Math.min(result.results.size(), optionalDisplayCount.get());
+          }
+          else {
+            dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
+          }
           return ok(physicalGoodsSearchResults.render(searchResultsForm(), result.results, displayCount));
         }, httpExecutionContext.current());
   }
@@ -90,6 +90,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
+      int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
+      dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
       dao.savePhysicalGoodControlCode(result.get());
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }

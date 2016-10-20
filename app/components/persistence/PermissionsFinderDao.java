@@ -125,8 +125,14 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     writeString(PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT, Integer.toString(physicalGoodSearchPaginationDisplayCount));
   }
 
-  public int getPhysicalGoodSearchPaginationDisplayCount() {
-    return Integer.parseInt(readString(PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT));
+  public Optional<Integer> getPhysicalGoodSearchPaginationDisplayCount() {
+    String count = readString(PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT);
+    if (count != null) {
+      return Optional.of(Integer.parseInt(count));
+    }
+    else {
+      return Optional.empty();
+    }
   }
 
   public void saveTradeType(TradeType tradeType) {

@@ -44,6 +44,8 @@ public class PhysicalGoodsSearchController extends SearchController {
       return completedFuture(ok(physicalGoodsSearch.render(form)));
     }
     permissionsFinderDao.savePhysicalGoodSearchForm(form.get());
+    permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(
+        PhysicalGoodsSearchResultsController.PAGINATION_SIZE);
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 
