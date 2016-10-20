@@ -24,7 +24,7 @@ import java.util.concurrent.CompletionStage;
 public class PhysicalGoodsSearchResultsController extends SearchResultsController {
 
   private final HttpExecutionContext httpExecutionContext;
-  private final PermissionsFinderDao dao;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
   public PhysicalGoodsSearchResultsController(JourneyManager journeyManager,
@@ -34,22 +34,22 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                                               ControlCodeController controlCodeController,
                                               ErrorController errorController,
                                               HttpExecutionContext httpExecutionContext,
-                                              PermissionsFinderDao dao) {
+                                              PermissionsFinderDao permissionsFinderDao) {
     super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
     this.httpExecutionContext = httpExecutionContext;
-    this.dao = dao;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public CompletionStage<Result> renderForm() {
     return physicalGoodsSearch()
         .thenApplyAsync(result -> {
           int displayCount = Math.min(result.results.size(), PAGINATION_SIZE);
-          Optional<Integer> optionalDisplayCount = dao.getPhysicalGoodSearchPaginationDisplayCount();
+          Optional<Integer> optionalDisplayCount = permissionsFinderDao.getPhysicalGoodSearchPaginationDisplayCount();
           if (optionalDisplayCount.isPresent()) {
             displayCount = Math.min(result.results.size(), optionalDisplayCount.get());
           }
           else {
-            dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
+            permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
           }
           return ok(physicalGoodsSearchResults.render(searchResultsForm(), result.results, displayCount));
         }, httpExecutionContext.current());
@@ -64,7 +64,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
             int displayCount = Integer.parseInt(form.field("resultsDisplayCount").value());
             int newDisplayCount = Math.min(displayCount, result.results.size());
             if (displayCount != newDisplayCount) {
-              dao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
+              permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
             }
             return ok(physicalGoodsSearchResults.render(form, result.results, newDisplayCount));
           }, httpExecutionContext.current());
@@ -81,7 +81,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                 int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
                 int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, result.results.size());
                 if (displayCount != newDisplayCount) {
-                  dao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
+                  permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
                 }
                 return ok(physicalGoodsSearchResults.render(form, result.results, newDisplayCount));
               }, httpExecutionContext.current());
@@ -91,8 +91,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
-      dao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
-      dao.savePhysicalGoodControlCode(result.get());
+      permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
+      permissionsFinderDao.savePhysicalGoodControlCode(result.get());
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
@@ -100,7 +100,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   }
 
   public CompletionStage<SearchServiceResult> physicalGoodsSearch() {
-    String searchTerms = PhysicalGoodsSearchController.getSearchTerms(dao.getPhysicalGoodsSearchForm().get());
+    String searchTerms = PhysicalGoodsSearchController.getSearchTerms(permissionsFinderDao.getPhysicalGoodsSearchForm().get());
     return searchServiceClient.get(searchTerms);
   }
 
