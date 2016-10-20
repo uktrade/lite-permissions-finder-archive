@@ -93,6 +93,14 @@ GET     /export-category/non-military-firearms    controllers.categories.NonMili
 
 POST    /export-category/non-military-firearms    controllers.categories.NonMilitaryController.handleSubmit
 
+GET     /export-category/non-military-firearms/check-destination-country      controllers.StaticContentController.renderCategoryNonMilitaryFirearmsCheckDestination
+
+POST    /export-category/non-military-firearms/check-destination-country      controllers.StaticContentController.renderCategoryNonMilitaryFirearmsCheckDestination
+
+GET     /export-category/non-military-firearms/need-export-licence            controllers.StaticContentController.renderCategoryNonMilitaryFirearmsNeedExportLicence
+
+POST    /export-category/non-military-firearms/need-export-licence            controllers.StaticContentController.renderCategoryNonMilitaryFirearmsNeedExportLicence
+
 GET     /export-category/plants-animals       controllers.categories.PlantsAnimalsController.renderForm
 
 POST    /export-category/plants-animals       controllers.categories.PlantsAnimalsController.handleSubmit

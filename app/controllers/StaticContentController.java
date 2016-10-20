@@ -21,6 +21,8 @@ public class StaticContentController extends Controller {
     CATEGORY_FOOD("categories/food.html","You need to check the rules for your export destination"),
     CATEGORY_ENDANGERED_ANIMALS("categories/endangeredAnimal.html", "You may need a CITES permit"),
     CATEGORY_NON_ENDANGERED_ANIMALS("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
+    CATEGORY_NON_MILITARY_FIREARMS_CHECK_DESTINATION("categories/nonMilitaryFirearms/needToCheckDestination.html", "You need to check the rules for your destination country"),
+    CATEGORY_NON_MILITARY_FIREARMS_NEED_EXPORT_LICENCE("categories/nonMilitaryFirearms/needExportLicence.html", "You need an export licence"),
     CATEGORY_PLANTS("categories/plant.html", "You may need approval from the destination country"),
     CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines"),
     CATEGORY_WASTE("categories/waste.html", "You must have a licence to export most types of waste"),
@@ -76,6 +78,14 @@ public class StaticContentController extends Controller {
 
   public Result renderCategoryNonEndangeredAnimals() {
     return renderStaticHtml(StaticHtml.CATEGORY_NON_ENDANGERED_ANIMALS);
+  }
+
+  public Result renderCategoryNonMilitaryFirearmsCheckDestination() {
+    return renderStaticHtml(StaticHtml.CATEGORY_NON_MILITARY_FIREARMS_CHECK_DESTINATION);
+  }
+
+  public Result renderCategoryNonMilitaryFirearmsNeedExportLicence() {
+    return renderStaticHtml(StaticHtml.CATEGORY_NON_MILITARY_FIREARMS_NEED_EXPORT_LICENCE);
   }
 
   public Result renderCategoryPlants() {

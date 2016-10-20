@@ -7,6 +7,7 @@ import models.ControlCodeFlowStage;
 import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
+import models.NonMilitaryFirearmExportBySelfType;
 import models.TradeType;
 import models.VirtualEUOgelStage;
 
@@ -59,5 +60,7 @@ public class Events {
 
   public static final JourneyEvent OGEL_DO_CONDITIONS_APPLY = new JourneyEvent("OGEL_DO_CONDITIONS_APPLY");
 
+  public static final ParameterisedJourneyEvent<NonMilitaryFirearmExportBySelfType> NON_MILITARY_FIREARMS_QUESTION_ANSWERERD =
+      new ParameterisedJourneyEvent<>("NON_MILITARY_FIREARMS_QUESTION_ANSWERERD", NonMilitaryFirearmExportBySelfType.class);
 
 }

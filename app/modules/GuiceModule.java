@@ -23,6 +23,7 @@ import models.ControlCodeFlowStage;
 import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
+import models.NonMilitaryFirearmExportBySelfType;
 import models.TradeType;
 import models.VirtualEUOgelStage;
 import play.Configuration;
@@ -141,8 +142,14 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryMedicinesDrugs = jdb.defineStage("categoryMedicinesDrugs", "Medicines and drugs",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.MedicinesDrugsController.renderForm()));
 
-    JourneyStage categoryNonMilitary = jdb.defineStage("categoryNonMilitary", "You need to check whether you are covered by the European Firearms Pass",
+    JourneyStage categoryNonMilitary = jdb.defineStage("categoryNonMilitary", "Will you be taking the firearms or ammunition out of the UK yourself?",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.NonMilitaryController.renderForm()));
+
+    JourneyStage categoryNonMilitaryCheckDestination = jdb.defineStage("categoryNonMilitaryCheckDestination", "You need to check the rules for your destination country",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryNonMilitaryFirearmsCheckDestination()));
+
+    JourneyStage categoryNonMilitaryNeedExportLicence = jdb.defineStage("categoryNonMilitaryNeedExportLicence", "You need an export licence",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryNonMilitaryFirearmsNeedExportLicence()));
 
     JourneyStage categoryPlantsAnimals = jdb.defineStage("categoryPlantsAnimals", "Plants and animals",
         () -> cpm.addParamsAndRedirect(controllers.categories.routes.PlantsAnimalsController.renderForm()));
@@ -277,8 +284,11 @@ public class GuiceModule extends AbstractModule{
         .when(false, moveTo(categoryMedicinesDrugsStatic));
 
     jdb.atStage(categoryNonMilitary)
-        .onEvent(Events.SEARCH_PHYSICAL_GOODS)
-        .then(moveTo(physicalGoodsSearch));
+        .onEvent(Events.NON_MILITARY_FIREARMS_QUESTION_ANSWERERD)
+        .branch()
+        .when(NonMilitaryFirearmExportBySelfType.YES, moveTo(categoryNonMilitaryCheckDestination))
+        .when(NonMilitaryFirearmExportBySelfType.NO_INCLUDED_IN_PERSONAL_EFFECTS, moveTo(categoryNonMilitaryCheckDestination))
+        .when(NonMilitaryFirearmExportBySelfType.NO_TRANSFER_TO_THIRD_PARTY, moveTo(categoryNonMilitaryNeedExportLicence));
 
     jdb.atStage(categoryPlantsAnimals)
         .onEvent(Events.LIFE_TYPE_SELECTED)

@@ -2,39 +2,22 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.categories.routes.NonMilitaryController
+@import controllers.categories.NonMilitaryController
 
 @(form: Form[_])
-@standardPage("You need to check whether you are covered by the European Firearms Pass", Some(Html("You need to check whether you are covered by the European Firearms Pass"))){
+@standardPage("Will you be taking the firearms or ammunition out of the UK yourself?", Some(Html("Will you be taking the firearms or ammunition out of the UK yourself?"))){
   @errorSummary(form)
 }{
 
-  <p>
-    If you have a valid UK firearm or shotgun certificate, you don’t normally need an export licence to take or send the following items overseas:
-  </p>
-
-  <ul class="list list-bullet text">
-    <li>firearms</li>
-    <li>shotguns</li>
-    <li>related ammunition</li>
-    <li>sights using non-electronic image enhancement</li>
-  </ul>
-
-  <p>
-    A European Firearms Pass (EFP) acts as proof that you can legally possess firearms and ammunition in the EU. You can normally use an EFP to temporarily or permanently export items outside of the EU.
-  </p>
-
-  <p>
-    Read more about <a href="https://www.gov.uk/guidance/firearms-and-export-control-forms#efp-and-personal-effects-exemption-for-firearms-exports" class="external" target="_blank" rel="external">the EFP and how to get one</a>.
-  </p>
-
-  <form action="@NonMilitaryController.handleSubmit" method="POST">
+  <form action="@controllers.categories.routes.NonMilitaryController.handleSubmit" method="POST">
 
     @contextFormParams()
 
-    <p>
-      You are likely to need an export licence to take or send your items abroad if they are not covered by the EFP. Continue to <button type="submit" class="link underlined font-small" name="goToSearch" value="true">use this service</button> to find out which licences apply.
-    </p>
+    @formRadioGroup(form("nonMilitaryFirearmsExportedBySelf"), NonMilitaryController.FIREARMS_EXPORTED_BY_SELF_OPTIONS) { }
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
 
   </form>
 

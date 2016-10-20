@@ -66,6 +66,8 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public static final String OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS = "ogelRegistrationServiceTransactionExists";
 
+  public static final String NON_MILITARY_FIREARMS_EXPORTED_BY_SELF = "nonMilitaryFirearmsExportedBySelf";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -258,4 +260,13 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public Optional<Boolean> getOgelRegistrationServiceTransactionExists() {
     return readBoolean(OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS);
   }
+
+  public void saveNonMilitaryFirearmsExportedBySelf(String nonMilitaryFirearmsExportedBySelf) {
+    writeString(NON_MILITARY_FIREARMS_EXPORTED_BY_SELF, nonMilitaryFirearmsExportedBySelf);
+  }
+
+  public String readNonMilitaryFirearmsExportedBySelf() {
+    return readString(NON_MILITARY_FIREARMS_EXPORTED_BY_SELF);
+  }
+
 }
