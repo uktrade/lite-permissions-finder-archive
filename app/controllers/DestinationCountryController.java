@@ -122,10 +122,10 @@ public class DestinationCountryController extends Controller {
                   .forEach(i -> {
                     String country = boundForm.throughDestinationCountries.get(i);
                     if (country == null || country.isEmpty()) {
-                      form.reject("throughDestinationCountry[" + i + ']', "You must enter a destination or territory");
+                      form.reject("throughDestinationCountries[" + i + ']', "You must enter a destination or territory");
                     }  // Set.add() returns false if the item was already in the set
                     else if (!allCountries.add(country) || country.equals(boundForm.finalDestinationCountry)) {
-                      form.reject("throughDestinationCountry[" + i + ']', "You cannot have duplicate destination, country or territories. Please change or remove one");
+                      form.reject("throughDestinationCountries[" + i + ']', "You cannot have duplicate destination, country or territories. Please change or remove one");
                     }
                   });
 
