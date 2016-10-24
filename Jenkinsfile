@@ -1,6 +1,6 @@
 node('jdk8') {
 
-  sh "oc login https://ukbliteaom01.int.licensing.service.trade.gov.uk:8443 ${OC_CREDS} --insecure-skip-tls-verify=true"
+  sh "oc login ${OC_CREDS} --insecure-skip-tls-verify=true"
 
   sh "oc project lite"
 
