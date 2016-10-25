@@ -58,7 +58,7 @@ public class AjaxSearchResultsController {
           String.format("TransactionId cannot be null or empty %s", transactionId))));
     }
     else {
-      transactionManager.createTransaction(transactionId);
+      transactionManager.setTransaction(transactionId);
     }
 
     if (currentResultCount < 0 || currentResultCount > 100) {

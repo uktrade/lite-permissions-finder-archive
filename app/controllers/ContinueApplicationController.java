@@ -60,7 +60,7 @@ public class ContinueApplicationController {
     if (StringUtils.isNoneBlank(applicationCode)) {
       String transactionId = applicationCodeDao.readTransactionId(applicationCode.trim());
       if (transactionId != null && !transactionId.isEmpty()) {
-        transactionManager.createTransaction(transactionId);
+        transactionManager.setTransaction(transactionId);
         // Overwrite stored search form data
         permissionsFinderDao.savePhysicalGoodSearchForm(new SearchController.ControlCodeSearchForm());
         Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
