@@ -16,6 +16,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.destinationCountry;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -34,8 +35,11 @@ public class DestinationCountryController extends Controller {
   private final CountryServiceClient countryServiceClient;
 
   public static final int MIN_NUMBER_OF_THROUGH_COUNTRIES = 1;
-
   public static final int MAX_NUMBER_OF_THROUGH_COUNTRIES = 4;
+  public static final String FINAL_DESTINATION_COUNTRY_FIELD_NAME = "finalDestinationCountry";
+  public static final String THROUGH_DESTINATION_COUNTRIES_FIELD_NAME = "throughDestinationCountries";
+  public static final String ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME = "itemThroughMultipleCountries";
+  public static final String ADD_ANOTHER_THROUGH_DESTINATION = "addAnotherThroughDestination";
 
   @Inject
   public DestinationCountryController(JourneyManager journeyManager,
@@ -70,8 +74,7 @@ public class DestinationCountryController extends Controller {
             templateForm.itemThroughMultipleCountries = itemThroughMultipleCountries.isPresent()
                 ? Boolean.toString(itemThroughMultipleCountries.get())
                 : "";
-
-            return ok(destinationCountry.render(formFactory.form(DestinationCountryForm.class).fill(templateForm), response.getCountries(), throughDestinationCountries.size()));
+            return ok(destinationCountry.render(formFactory.form(DestinationCountryForm.class).fill(templateForm), response.getCountries(), throughDestinationCountries.size(), getFieldOrder(templateForm)));
           }
           else {
             throw new ServiceResponseException("Country service supplied an invalid response");
@@ -91,22 +94,27 @@ public class DestinationCountryController extends Controller {
             if (boundForm.addAnotherThroughDestination != null) {
               if ("true".equals(boundForm.addAnotherThroughDestination)) {
                 if (boundForm.throughDestinationCountries.size() >= MAX_NUMBER_OF_THROUGH_COUNTRIES) {
-                  throw new FormStateException("Unhandled form state, number of through destination countries already at maximum value");
+                  throw new FormStateException("Unhandled form state, number of " + THROUGH_DESTINATION_COUNTRIES_FIELD_NAME +
+                      " already at maximum value");
                 }
                 boundForm.throughDestinationCountries.add("");
                 permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
-                return completedFuture(ok(destinationCountry.render(form.fill(boundForm), response.getCountries(), boundForm.throughDestinationCountries.size())));
+                return completedFuture(ok(destinationCountry.render(form.fill(boundForm), response.getCountries(),
+                    boundForm.throughDestinationCountries.size(), getFieldOrder(boundForm))));
               }
-              throw new FormStateException("Unhandled value of addAnotherDestination: \"" + boundForm.addAnotherThroughDestination + "\"");
+              throw new FormStateException("Unhandled value of " + ADD_ANOTHER_THROUGH_DESTINATION + ": \"" +
+                  boundForm.addAnotherThroughDestination + "\"");
             }
             else if (boundForm.removeThroughDestination != null) {
               int removeIndex = Integer.parseInt(boundForm.removeThroughDestination);
               if (boundForm.throughDestinationCountries.size() <= MIN_NUMBER_OF_THROUGH_COUNTRIES) {
-                throw new FormStateException("Unhandled form state, numberOfDestinationCountries already at minimum value");
+                throw new FormStateException("Unhandled form state, number of " + THROUGH_DESTINATION_COUNTRIES_FIELD_NAME +
+                    " already at minimum value");
               }
               boundForm.throughDestinationCountries.remove(removeIndex);
               permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
-              return completedFuture(ok(destinationCountry.render(form.fill(boundForm), response.getCountries(), boundForm.throughDestinationCountries.size())));
+              return completedFuture(ok(destinationCountry.render(form.fill(boundForm), response.getCountries(),
+                  boundForm.throughDestinationCountries.size(), getFieldOrder(boundForm))));
             }
 
             /*
@@ -122,10 +130,11 @@ public class DestinationCountryController extends Controller {
                   .forEach(i -> {
                     String country = boundForm.throughDestinationCountries.get(i);
                     if (country == null || country.isEmpty()) {
-                      form.reject("throughDestinationCountries[" + i + ']', "You must enter a destination or territory");
+                      form.reject(throughDestinationCountriesIndexedFieldName(i), "You must enter a destination or territory");
                     }  // Set.add() returns false if the item was already in the set
                     else if (!allCountries.add(country) || country.equals(boundForm.finalDestinationCountry)) {
-                      form.reject("throughDestinationCountries[" + i + ']', "You cannot have duplicate destination, country or territories. Please change or remove one");
+                      form.reject(throughDestinationCountriesIndexedFieldName(i), "You cannot have duplicate destination, " +
+                          "country or territories. Please change or remove one");
                     }
                   });
 
@@ -139,30 +148,33 @@ public class DestinationCountryController extends Controller {
               permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
             }
             else if (boundForm.itemThroughMultipleCountries == null || boundForm.itemThroughMultipleCountries.isEmpty()) {
-              form.reject("itemThroughMultipleCountries", "You must answer this question");
+              form.reject(ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME, "You must answer this question");
             }
             else {
-              throw new FormStateException("Unknown value for itemThroughMultipleCountries \"" + boundForm.itemThroughMultipleCountries + "\"");
+              throw new FormStateException("Unknown value for " + ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME + " \""
+                  + boundForm.itemThroughMultipleCountries + "\"");
             }
 
             if (boundForm.finalDestinationCountry == null || boundForm.finalDestinationCountry.isEmpty()) {
-              form.reject("finalDestinationCountry", "You must enter a destination or territory");
+              form.reject(FINAL_DESTINATION_COUNTRY_FIELD_NAME, "You must enter a destination or territory");
             }
 
             // Check again for errors raised during manual validation
             if (form.hasErrors()) {
-              return completedFuture(ok(destinationCountry.render(form, response.getCountries(), boundForm.throughDestinationCountries.size())));
+              return completedFuture(ok(destinationCountry.render(form, response.getCountries(),
+                  boundForm.throughDestinationCountries.size(), getFieldOrder(boundForm))));
             }
 
             if (Boolean.parseBoolean(boundForm.itemThroughMultipleCountries)
                 && boundForm.throughDestinationCountries.stream()
                 .anyMatch(throughCountry ->  response.getCountries().stream()
                     .noneMatch(country -> country.getCountryRef().equals(throughCountry)))){
-              throw new FormStateException("Invalid value for a throughDestinationCountries item");
+              throw new FormStateException("Invalid value for a " + THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + " item");
             }
 
             if (response.getCountries().stream().noneMatch(country -> country.getCountryRef().equals(boundForm.finalDestinationCountry))) {
-              throw new FormStateException("Invalid value for finalDestinationCountry \"" + boundForm.finalDestinationCountry + "\"");
+              throw new FormStateException("Invalid value for " + FINAL_DESTINATION_COUNTRY_FIELD_NAME + " \""
+                  + boundForm.finalDestinationCountry + "\"");
             }
 
             permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
@@ -173,6 +185,20 @@ public class DestinationCountryController extends Controller {
             throw new FormStateException("An issue occurred while processing your request, please try again later.");
           }
         }, httpExecutionContext.current()).thenCompose(Function.identity());
+  }
+
+  private List<String> getFieldOrder(DestinationCountryForm destinationCountryForm) {
+    List<String> fieldOrder = new ArrayList<>();
+    fieldOrder.add(FINAL_DESTINATION_COUNTRY_FIELD_NAME);
+    fieldOrder.add(ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME);
+    for (int i = 0; i < destinationCountryForm.throughDestinationCountries.size(); i++) {
+      fieldOrder.add(throughDestinationCountriesIndexedFieldName(i));
+    }
+    return fieldOrder;
+  }
+
+  private String throughDestinationCountriesIndexedFieldName(int index) {
+    return THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + "[" + index + "]";
   }
 
   public static class DestinationCountryForm {

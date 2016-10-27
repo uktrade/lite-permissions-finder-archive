@@ -3,11 +3,11 @@
 @import views.html.common.form._
 @import views.html.common.state._
 @import models.common.Country
-@(form: Form[_], countries: List[Country], numberOfThroughDestinationCountries: Int)
+@import controllers.DestinationCountryController
 
-
+@(form: Form[_], countries: List[Country], numberOfThroughDestinationCountries: Int, fieldOrderList: List[String])
 @standardPage("Countries and territories", Some(Html("Countries and territories"))){
-  @errorSummary(form)
+  @errorSummary(form, fieldOrder = fieldOrderList)
 }{
 
   <form action="@routes.DestinationCountryController.handleSubmit()" method="POST">
@@ -18,9 +18,9 @@
 
     <h2 class="heading-medium">Where is the final destination of your items?</h2>
 
-    @countrySelect(form("finalDestinationCountry"), "Type your destination country or territory", null, false, true, countries)
+    @countrySelect(form(DestinationCountryController.FINAL_DESTINATION_COUNTRY_FIELD_NAME), "Type your destination country or territory", null, false, true, countries)
 
-    @formRadioBoolean(form("itemThroughMultipleCountries"), Html("Will your items pass through any other countries before they reach their final destination?"))
+    @formRadioBoolean(form(DestinationCountryController.ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME), Html("Will your items pass through any other countries before they reach their final destination?"))
 
     <p class="js-hidden">
       <span class="bold-medium">If yes, please add the countries below</span>
@@ -28,7 +28,7 @@
 
     <div id="through-destination-countries-wrapper">
 
-      @countrySelectGenerator(form, "throughDestinationCountries", numberOfThroughDestinationCountries, "Type the country or territory your items will pass through", countries)
+      @countrySelectGenerator(form, DestinationCountryController.THROUGH_DESTINATION_COUNTRIES_FIELD_NAME, numberOfThroughDestinationCountries, "Type the country or territory your items will pass through", countries)
 
       @if(numberOfThroughDestinationCountries < DestinationCountryController.MAX_NUMBER_OF_THROUGH_COUNTRIES) {
         <div class="form-group">
