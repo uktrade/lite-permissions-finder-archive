@@ -18,6 +18,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.controlcode.technicalNotes;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -43,10 +44,12 @@ public class TechnicalNotesController {
   }
 
   public CompletionStage<Result> renderForm(){
+    Optional<Boolean> technicalNotesApply = permissionsFinderDao.getControlCodeTechnicalNotesApply();
+    TechnicalNotesForm templateForm = new TechnicalNotesForm();
+    templateForm.stillDescribesItems = technicalNotesApply.isPresent() ? technicalNotesApply.get().toString() : "";
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(result -> ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class),
-            new TechnicalNotesDisplay(result)))
-            , httpExecutionContext.current());
+        .thenApplyAsync(result -> ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class).fill(templateForm),
+            new TechnicalNotesDisplay(result))), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -57,14 +60,20 @@ public class TechnicalNotesController {
           if (form.hasErrors()) {
             return completedFuture(ok(technicalNotes.render(form, new TechnicalNotesDisplay(result))));
           }
-          String stillDescribesItems = form.get().stillDescribesItems;
-          if("true".equals(stillDescribesItems)) {
-            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+          else {
+            String stillDescribesItems = form.get().stillDescribesItems;
+            if("true".equals(stillDescribesItems)) {
+              permissionsFinderDao.saveControlCodeTechnicalNotesApply(true);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+            }
+            else if ("false".equals(stillDescribesItems)) {
+              permissionsFinderDao.saveControlCodeTechnicalNotesApply(false);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+            }
+            else {
+              throw new FormStateException("Unhandled form state");
+            }
           }
-          if ("false".equals(stillDescribesItems)) {
-            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
-          }
-          throw new FormStateException("Unhandled form state");
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 

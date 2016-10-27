@@ -19,6 +19,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.controlcode.additionalSpecifications;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -45,11 +46,15 @@ public class AdditionalSpecificationsController {
   }
 
   public CompletionStage<Result> renderForm() {
+    Optional<Boolean> additionalSpecificationsApply = permissionsFinderDao.getControlCodeAdditionalSpecificationsApply();
+    AdditionalSpecificationsForm templateForm = new AdditionalSpecificationsForm();
+    templateForm.stillDescribesItems = additionalSpecificationsApply.isPresent()
+        ? additionalSpecificationsApply.get().toString()
+        : "";
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(result ->
-            ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class),
-                new AdditionalSpecificationsDisplay(result)))
-            , httpExecutionContext.current());
+            ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class).fill(templateForm),
+                new AdditionalSpecificationsDisplay(result))), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -61,14 +66,20 @@ public class AdditionalSpecificationsController {
             return completedFuture(ok(additionalSpecifications.render(form,
                 new AdditionalSpecificationsDisplay(result))));
           }
-          String stillDescribesItems = form.get().stillDescribesItems;
-          if("true".equals(stillDescribesItems)) {
-            return nextScreenTrue(result);
+          else {
+            String stillDescribesItems = form.get().stillDescribesItems;
+            if("true".equals(stillDescribesItems)) {
+              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(true);
+              return nextScreenTrue(result);
+            }
+            else if ("false".equals(stillDescribesItems)) {
+              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(false);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+            }
+            else {
+              throw new FormStateException("Unhandled form state");
+            }
           }
-          if ("false".equals(stillDescribesItems)) {
-            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
-          }
-          throw new FormStateException("Unhandled form state");
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 

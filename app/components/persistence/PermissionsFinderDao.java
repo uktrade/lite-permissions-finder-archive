@@ -68,6 +68,14 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public static final String NON_MILITARY_FIREARMS_EXPORTED_BY_SELF = "nonMilitaryFirearmsExportedBySelf";
 
+  public static final String CONTROL_CODE_APPLIES = "controlCodeAdditionalApplies";
+
+  public static final String CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY = "controlCodeAdditionalSpecificationsApply";
+
+  public static final String CONTROL_CODE_DECONTROLS_APPLY = "controlCodeDecontrolsApply";
+
+  public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
+
   @Inject
   public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -273,6 +281,54 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public String readNonMilitaryFirearmsExportedBySelf() {
     return readString(NON_MILITARY_FIREARMS_EXPORTED_BY_SELF);
+  }
+
+  public void saveControlCodeApplies(boolean controlCodeApplies) {
+    writeBoolean(CONTROL_CODE_APPLIES, controlCodeApplies);
+  }
+
+  public Optional<Boolean> getControlCodeApplies() {
+    return readBoolean(CONTROL_CODE_APPLIES);
+  }
+
+  public void clearControlCodeApplies() {
+    deleteString(CONTROL_CODE_APPLIES);
+  }
+
+  public void saveControlCodeDecontrolsApply(boolean decontrolsApply) {
+    writeBoolean(CONTROL_CODE_DECONTROLS_APPLY, decontrolsApply);
+  }
+
+  public Optional<Boolean> getControlCodeDecontrolsApply() {
+    return readBoolean(CONTROL_CODE_DECONTROLS_APPLY);
+  }
+
+  public void clearControlCodeDecontrolsApply() {
+    deleteString(CONTROL_CODE_DECONTROLS_APPLY);
+  }
+
+  public void saveControlCodeAdditionalSpecificationsApply(boolean additionalSpecificationsApply) {
+    writeBoolean(CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY, additionalSpecificationsApply);
+  }
+
+  public Optional<Boolean> getControlCodeAdditionalSpecificationsApply() {
+    return readBoolean(CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY);
+  }
+
+  public void clearControlCodeAdditionalSpecificationsApply() {
+    deleteString(CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY);
+  }
+
+  public void saveControlCodeTechnicalNotesApply(boolean technicalNotesApply) {
+    writeBoolean(CONTROL_CODE_TECHNICAL_NOTES_APPLY, technicalNotesApply);
+  }
+
+  public Optional<Boolean> getControlCodeTechnicalNotesApply() {
+    return readBoolean(CONTROL_CODE_TECHNICAL_NOTES_APPLY);
+  }
+
+  public void clearControlCodeTechnicalNotesApply() {
+    deleteString(CONTROL_CODE_TECHNICAL_NOTES_APPLY);
   }
 
 }

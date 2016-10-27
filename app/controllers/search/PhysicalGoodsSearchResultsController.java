@@ -93,6 +93,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
       permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
       permissionsFinderDao.savePhysicalGoodControlCode(result.get());
+      clearControlCodeDaoFields();
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
@@ -102,6 +103,13 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   public CompletionStage<SearchServiceResult> physicalGoodsSearch() {
     String searchTerms = PhysicalGoodsSearchController.getSearchTerms(permissionsFinderDao.getPhysicalGoodsSearchForm().get());
     return searchServiceClient.get(searchTerms);
+  }
+
+  private void clearControlCodeDaoFields() {
+    permissionsFinderDao.clearControlCodeApplies();
+    permissionsFinderDao.clearControlCodeDecontrolsApply();
+    permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply();
+    permissionsFinderDao.clearControlCodeTechnicalNotesApply();
   }
 
 }

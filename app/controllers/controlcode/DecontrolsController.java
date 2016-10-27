@@ -18,6 +18,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.controlcode.decontrols;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -43,9 +44,12 @@ public class DecontrolsController {
   }
 
   public CompletionStage<Result> renderForm() {
+    Optional<Boolean> decontrolsApply = permissionsFinderDao.getControlCodeDecontrolsApply();
+    DecontrolsForm templateForm = new DecontrolsForm();
+    templateForm.decontrolsDescribeItem = decontrolsApply.isPresent() ? decontrolsApply.get().toString() : "";
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(result -> ok(decontrols.render(formFactory.form(DecontrolsForm.class), new DecontrolsDisplay(result)))
-            , httpExecutionContext.current());
+        .thenApplyAsync(result -> ok(decontrols.render(formFactory.form(DecontrolsForm.class).fill(templateForm),
+            new DecontrolsDisplay(result))), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit(){
@@ -56,19 +60,25 @@ public class DecontrolsController {
           if (form.hasErrors()) {
             return completedFuture(ok(decontrols.render(form, new DecontrolsDisplay(result))));
           }
-          String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
-          if("true".equals(decontrolsDescribeItem)) {
-            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLLED_ITEM);
-          }
-          if ("false".equals(decontrolsDescribeItem)) {
-            if (result.controlCodeData.canShowTechnicalNotes()) {
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
+          else {
+            String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
+            if("true".equals(decontrolsDescribeItem)) {
+              permissionsFinderDao.saveControlCodeDecontrolsApply(true);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLLED_ITEM);
+            }
+            else if ("false".equals(decontrolsDescribeItem)) {
+              permissionsFinderDao.saveControlCodeDecontrolsApply(false);
+              if (result.controlCodeData.canShowTechnicalNotes()) {
+                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
+              }
+              else {
+                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+              }
             }
             else {
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+              throw new FormStateException("Unhandled form state");
             }
           }
-          throw new FormStateException("Unhandled form state");
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 

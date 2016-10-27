@@ -20,6 +20,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.controlcode.controlCode;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -46,10 +47,13 @@ public class ControlCodeController extends Controller {
 
 
   public CompletionStage<Result> renderForm() {
+    Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies();
+    ControlCodeForm templateForm = new ControlCodeForm();
+    templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(result ->
-            ok(controlCode.render(formFactory.form(ControlCodeForm.class), new ControlCodeDisplay(result)))
-        , httpExecutionContext.current());
+            ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
+                new ControlCodeDisplay(result))), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -64,24 +68,30 @@ public class ControlCodeController extends Controller {
             if ("backToSearch".equals(action)) {
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
             }
-            if ("backToSearchResults".equals(action)) {
+            else if ("backToSearchResults".equals(action)) {
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
             }
-            throw new FormStateException("Invalid value for action: \"" + action + "\"");
+            else {
+              throw new FormStateException("Invalid value for action: \"" + action + "\"");
+            }
           }
 
           if (form.hasErrors()) {
             return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(result))));
           }
+
           String couldDescribeItems = form.get().couldDescribeItems;
           if("true".equals(couldDescribeItems)) {
+            permissionsFinderDao.saveControlCodeApplies(true);
             return nextScreenTrue(result);
           }
-          if ("false".equals(couldDescribeItems)) {
+          else if ("false".equals(couldDescribeItems)) {
+            permissionsFinderDao.saveControlCodeApplies(false);
             return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
           }
-
-          throw new FormStateException("Unhandled form state");
+          else {
+            throw new FormStateException("Unhandled form state");
+          }
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 
