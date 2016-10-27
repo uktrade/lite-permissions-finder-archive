@@ -39,6 +39,9 @@ public class ExportCategoryController extends Controller {
 
     if (exportCategoryOptional.isPresent()) {
       permissionsFinderDao.saveExportCategory(exportCategoryOptional.get());
+      // This is cleared as both CHEMICALS_COSMETICS and TORTURE_RESTRAINT saves to the goodsType dao field and skips
+      // the goodsType view. Clearing prevents the goodsType view being erroneously pre-populated in some scenarios
+      permissionsFinderDao.clearGoodsType();
       return journeyManager.performTransition(Events.EXPORT_CATEGORY_SELECTED, exportCategoryOptional.get());
     }
     if ("true".equals(form.get().couldBeDualUse)) {

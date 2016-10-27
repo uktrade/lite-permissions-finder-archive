@@ -203,6 +203,10 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return GoodsType.getMatched(readString(GOODS_TYPE));
   }
 
+  public void clearGoodsType() {
+    deleteString(GOODS_TYPE);
+  }
+
   public void savePhysicalGoodSearchForm(ControlCodeSearchForm controlCodeSearchForm) {
     writeObject(PHYSICAL_GOOD_SEARCH, controlCodeSearchForm);
   }
