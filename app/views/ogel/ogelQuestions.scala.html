@@ -5,7 +5,7 @@
 
 @(form: Form[_])
 @standardPage("Refining your licence results", Some(Html("Refining your licence results"))){
-  @errorSummary(form)
+  @errorSummary(form, fieldOrder = scala.List("forRepairReplacement", "forExhibitionDemonstration", "before1897upto35k"))
 }{
 
   <form action="@controllers.ogel.routes.OgelQuestionsController.handleSubmit()" method="POST">
