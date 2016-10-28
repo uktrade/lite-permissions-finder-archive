@@ -47,11 +47,12 @@ public class AjaxSearchResultsController {
    * <code>{"status": "error", "message": "Some error message"}</code>
    *
    * @param goodsType the type of goods to search over, should be the {@link GoodsType#value()} of a {@link models.GoodsType} entry
-   * @param currentResultCount the current count of results being shown
+   * @param fromIndex the low endpoint (inclusive) of the results list
+   * @param toIndex the high endpoint (exclusive) of the results list
    * @param transactionId the transaction ID
    * @return a Result with JSON content of the additional results to show
    */
-  public CompletionStage<Result> getResults(String goodsType, int currentResultCount, String transactionId) {
+  public CompletionStage<Result> getResults(String goodsType, int fromIndex, int toIndex, String transactionId) {
 
     if (transactionId == null || transactionId.isEmpty()) {
       return completedFuture(ok(buildErrorJsonAndLog(
@@ -61,11 +62,6 @@ public class AjaxSearchResultsController {
       transactionManager.setTransaction(transactionId);
     }
 
-    if (currentResultCount < 0 || currentResultCount > 100) {
-      return completedFuture(ok(buildErrorJsonAndLog(
-          String.format("currentCount must be between 0 and 100 (inclusive) %s", currentResultCount))));
-    }
-
     Optional<GoodsType> goodsTypeOptional = GoodsType.getMatched(goodsType);
 
     if (goodsTypeOptional.isPresent()) {
@@ -73,7 +69,7 @@ public class AjaxSearchResultsController {
         Optional<SearchController.ControlCodeSearchForm> optionalForm = permissionsFinderDao.getPhysicalGoodsSearchForm();
         if (optionalForm.isPresent()) {
           return searchServiceClient.get(SearchController.getSearchTerms(optionalForm.get()))
-              .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, currentResultCount))
+              .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, fromIndex, toIndex))
                   , httpExecutionContext.current());
         }
         else {
@@ -90,16 +86,16 @@ public class AjaxSearchResultsController {
 
   }
 
-  private ObjectNode buildResponseJson(List<components.services.search.Result> results, int currentCount) {
+  private ObjectNode buildResponseJson(List<components.services.search.Result> results, int fromIndex, int toIndex) {
     ObjectNode json = Json.newObject();
     json.put("status", "ok");
     ArrayNode resultsNode = json.putArray("results");
 
     if (results != null && !results.isEmpty()) {
-      int fromIndex = Math.max(Math.min(currentCount, results.size()), 0);
-      int toIndex = Math.min(Math.max(currentCount + SearchResultsController.PAGINATION_SIZE, 0), results.size());
+      int newFromIndex = Math.max(Math.min(fromIndex, results.size()), 0);
+      int newToIndex = Math.min(Math.max(toIndex, 0), results.size());
 
-      List<ObjectNode> list = results.subList(fromIndex, toIndex)
+      List<ObjectNode> list = results.subList(newFromIndex, newToIndex)
           .stream()
           .map(result -> {
             ObjectNode resultJson = Json.newObject();
@@ -110,7 +106,7 @@ public class AjaxSearchResultsController {
 
       resultsNode.addAll(list);
 
-      json.put("moreResults", !(list.isEmpty() || toIndex == results.size()));
+      json.put("moreResults", !(list.isEmpty() || newToIndex == results.size()));
     }
 
     return json;

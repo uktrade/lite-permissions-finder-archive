@@ -76,5 +76,7 @@ public class SearchResultsController {
 
     public String resultsDisplayCount;
 
+    public String paginationSize;
+
   }
 }
