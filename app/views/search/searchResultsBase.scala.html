@@ -3,11 +3,12 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
+@import controllers.search.SearchResultsController
 
 @(form: Form[_], goodsType: GoodsType, formAction: String,  results: List[Result], resultsDisplayCount: Int)
   @standardPage(
     if (!results.isEmpty()) "Possible matches" else "Your search did not return any results",
-    Some(Html(if (!results.isEmpty()) "Possible matches" else "Your search did not return any results"))) {
+    Some(Html(if (!results.isEmpty()) "Possible matches" else "Your search did not return any results")), pageName = Some("searchResultsBase")) {
     @errorSummary(form)
   }{
 
@@ -19,6 +20,8 @@
         <input id="goodsTypeHiddenInput" type="hidden" name="goodsType" value="@goodsType.value()">
 
         <input id="resultsDisplayCountHiddenInput" type="hidden" name="resultsDisplayCount" value="@resultsDisplayCount">
+
+        <input id="paginationSizeHiddenInput" type="hidden" name="paginationSize" value="@SearchResultsController.PAGINATION_SIZE">
 
         <table id="searchResults" class="search-results">
           <thead><tr><th></th></tr></thead>

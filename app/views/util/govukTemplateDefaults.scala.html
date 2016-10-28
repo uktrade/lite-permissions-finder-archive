@@ -1,8 +1,11 @@
 @import views.html.common.page.govukTemplate
 
-@(htmlTitle: String, propositionHeading: Option[Html] = None)(content: Html)
+@(htmlTitle: String, propositionHeading: Option[Html] = None, pageName: Option[String] = None)(content: Html)
 
 @head = {
+  @if(pageName.isDefined){
+    <meta property="LITEPermissionsFinder:pageName" content="@pageName"/>
+  }
   <link href="@controllers.routes.Assets.versioned("stylesheets/permissions-finder.css")" media="screen" rel="stylesheet" type="text/css" />
   <script src="@controllers.routes.JavaScriptRoutesController.jsRoutes"></script>
   <script src="@controllers.routes.Assets.versioned("javascripts/lite-permissions-finder.js")"></script>
