@@ -1,8 +1,6 @@
 package modules;
 
 import static components.common.journey.JourneyDefinitionBuilder.moveTo;
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.redirect;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -227,7 +225,7 @@ public class GuiceModule extends AbstractModule{
         () -> cpm.addParamsAndRedirect(controllers.ogel.routes.OgelSummaryController.renderForm()));
 
     JourneyStage notImplemented = jdb.defineStage("notImplemented", "This section is currently under development" ,
-        () -> completedFuture(redirect(routes.StaticContentController.renderNotImplemented())));
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderNotImplemented()));
 
     jdb.atStage(tradeType)
         .onEvent(Events.TRADE_TYPE_SELECTED)
