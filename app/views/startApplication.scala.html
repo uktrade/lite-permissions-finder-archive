@@ -5,12 +5,16 @@
 @import controllers.routes.StartApplicationController
 
 @(form: Form[_], applicationCode: String)
-@standardPage("Saving your progress", Some(Html("Saving your progress"))){
+@standardPage("Before you begin", Some(Html("Before you begin"))){
   @errorSummary(form)
 }{
 
   <p>
-    You can save your progress and return to this service later. Enter your email address below and we will send you a code that you can use to return at any time.
+    You don't have to complete everything in one go. If you enter your email address below we will send you a code that you can use to return at any time.
+  </p>
+
+  <p>
+    If you would rather not enter your email address, you can just write the code down.
   </p>
 
   <form action="@StartApplicationController.handleSubmit" method="POST">
@@ -18,7 +22,7 @@
     @contextFormParams()
 
     @formInput(form("emailAddress")) {
-      Your email address
+      Your email address (optional)
     }
 
     <p>
