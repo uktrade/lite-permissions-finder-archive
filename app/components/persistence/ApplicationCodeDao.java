@@ -3,6 +3,7 @@ package components.persistence;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import play.Logger;
 import redis.clients.jedis.Jedis;
@@ -13,16 +14,15 @@ import java.util.concurrent.TimeUnit;
 
 public class ApplicationCodeDao {
 
-  public static final String KEY_PREFIX = "transactionLookup";
-  public static final String FIELD_NAME = "transactionId";
+  private static final String FIELD_NAME = "transactionId";
 
-  public final int ttlSeconds;
-  public final JedisPool jedisPool;
-  public final TransactionManager transactionManager;
+  private final RedisKeyConfig redisKeyConfig;
+  private final JedisPool jedisPool;
+  private final TransactionManager transactionManager;
 
   @Inject
-  public ApplicationCodeDao(@Named("redisLookupTtlSeconds") int ttlSeconds, JedisPool jedisPool, TransactionManager transactionManager) {
-    this.ttlSeconds = ttlSeconds;
+  public ApplicationCodeDao(@Named("applicationCodeDaoHash") RedisKeyConfig redisKeyConfig, JedisPool jedisPool, TransactionManager transactionManager) {
+    this.redisKeyConfig = redisKeyConfig;
     this.jedisPool = jedisPool;
     this.transactionManager = transactionManager;
   }
@@ -41,7 +41,7 @@ public class ApplicationCodeDao {
       }
       Transaction multi = jedis.multi();
       multi.hset(hashKey(applicationCode), FIELD_NAME, transactionManager.getTransactionId());
-      multi.expire(hashKey(applicationCode), ttlSeconds);
+      multi.expire(hashKey(applicationCode), redisKeyConfig.getHashTtlSeconds());
       multi.exec();
     }
     finally {
@@ -67,7 +67,7 @@ public class ApplicationCodeDao {
   }
 
   public String hashKey(String applicationCode) {
-    return KEY_PREFIX + ":" + applicationCode;
+    return redisKeyConfig.getHashName() + ":" + applicationCode;
   }
 
 }

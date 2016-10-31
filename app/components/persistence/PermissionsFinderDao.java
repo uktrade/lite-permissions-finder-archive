@@ -78,7 +78,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
 
   @Inject
-  public PermissionsFinderDao(@Named("permissionData") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
+  public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
   }
 

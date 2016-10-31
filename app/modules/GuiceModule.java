@@ -93,9 +93,6 @@ public class GuiceModule extends AbstractModule{
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
         .to(configuration.getString("ogelRegistrationService.sharedSecret"));
 
-    bindConstant().annotatedWith(Names.named("redisLookupTtlSeconds"))
-        .to(configuration.getString("redis.lookup.ttlSeconds"));
-
   }
 
   @Provides
