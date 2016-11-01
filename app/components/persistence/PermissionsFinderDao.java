@@ -1,6 +1,7 @@
 package components.persistence;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import components.common.journey.Journey;
 import components.common.journey.JourneySerialiser;
 import components.common.persistence.CommonRedisDao;
@@ -77,7 +78,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
 
   @Inject
-  public PermissionsFinderDao(RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
+  public PermissionsFinderDao(@Named("permissionData") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
   }
 
