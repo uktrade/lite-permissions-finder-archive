@@ -56,7 +56,7 @@ public class OgelRegistrationServiceClient {
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceSharedSecret = webServiceSharedSecret;
-    this.ogelRegistrationRootUrl = "http://" + webServiceHost + ":" + webServicePort;
+    this.ogelRegistrationRootUrl = webServiceHost;// + ":" + webServicePort;
     this.webServiceUrl = ogelRegistrationRootUrl + "/update-transaction";
     this.contextParamManager = contextParamManager;
     this.permissionsFinderDao = permissionsFinderDao;
