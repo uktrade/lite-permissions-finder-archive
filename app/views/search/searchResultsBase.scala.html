@@ -1,36 +1,39 @@
-@import components.services.search.Result
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
 @import controllers.search.SearchResultsController
 
-@(form: Form[_], goodsType: GoodsType, formAction: String,  results: List[Result], resultsDisplayCount: Int)
+@(display: SearchResultsBaseDisplay)
   @standardPage(
-    if (!results.isEmpty()) "Possible matches" else "Your search did not return any results",
-    Some(Html(if (!results.isEmpty()) "Possible matches" else "Your search did not return any results")), pageName = Some("searchResultsBase")) {
-    @errorSummary(form)
+    if (!display.results.isEmpty()) "Possible matches" else "Your search did not return any results",
+    Some(Html(if (!display.results.isEmpty()) "Possible matches" else "Your search did not return any results")), pageName = Some("searchResultsBase")) {
+    @errorSummary(display.form)
   }{
 
-    @if(!results.isEmpty()) {
+    @if(!display.results.isEmpty()) {
 
-      <form action="@formAction" method="POST">
+      <form action="@display.formAction" method="POST">
 
         @contextFormParams()
-        <input id="goodsTypeHiddenInput" type="hidden" name="goodsType" value="@goodsType.value()">
+        <input id="goodsTypeHiddenInput" type="hidden" name="goodsType" value="@display.goodsType.value">
 
-        <input id="resultsDisplayCountHiddenInput" type="hidden" name="resultsDisplayCount" value="@resultsDisplayCount">
+        <input id="resultsDisplayCountHiddenInput" type="hidden" name="resultsDisplayCount" value="@display.resultsDisplayCount">
 
         <input id="paginationSizeHiddenInput" type="hidden" name="paginationSize" value="@SearchResultsController.PAGINATION_SIZE">
+
+        @if(display.lastChosenControlCode != null && !"".equals(display.lastChosenControlCode)) {
+          <input id="lastChosenControlCodeHiddenInput" type="hidden" name="lastChosenControlCode" value="@display.lastChosenControlCode">
+        }
 
         <table id="searchResults" class="search-results">
           <thead><tr><th></th></tr></thead>
           <tbody>
-          @for(i <- 0 until Math.min(results.size, resultsDisplayCount)) {
+          @for(i <- 0 until Math.min(display.results.size, display.resultsDisplayCount)) {
             <tr>
               <td>
                 <p>
-                  <button type="submit" class="link font-xsmall" name="result" value="@results.get(i).code">@Html(results.get(i).highlightedText)</button>
+                  <button id="@display.results.get(i).code-button" type="submit" class="link font-xsmall" name="result" value="@display.results.get(i).code">@Html(display.results.get(i).highlightedText)</button>
                 </p>
               </td>
             </tr>
@@ -39,7 +42,7 @@
         </table>
 
         <div class="search-result-actions">
-          @if(resultsDisplayCount < results.size) {
+          @if(display.resultsDisplayCount < display.results.size) {
             <p class="js-hidden">
               <button type="submit" name="action" value="show-more-results" class="button secondary show-more-results-button">Show more results</button>
             </p>

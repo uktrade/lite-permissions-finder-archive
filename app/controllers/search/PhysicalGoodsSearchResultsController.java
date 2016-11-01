@@ -12,6 +12,8 @@ import controllers.ErrorController;
 import controllers.controlcode.ControlCodeController;
 import exceptions.FormStateException;
 import journey.Events;
+import models.GoodsType;
+import models.SearchResultsBaseDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -51,7 +53,10 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
           else {
             permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
           }
-          return ok(physicalGoodsSearchResults.render(searchResultsForm(), result.results, displayCount));
+          String lastChosenControlCode = permissionsFinderDao.getPhysicalGoodSearchLastChosenControlCode();
+          SearchResultsBaseDisplay display = new SearchResultsBaseDisplay(searchResultsForm(), GoodsType.PHYSICAL,
+              result.results, displayCount, lastChosenControlCode);
+          return ok(physicalGoodsSearchResults.render(display));
         }, httpExecutionContext.current());
   }
 
@@ -66,7 +71,9 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
             if (displayCount != newDisplayCount) {
               permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
             }
-            return ok(physicalGoodsSearchResults.render(form, result.results, newDisplayCount));
+            SearchResultsBaseDisplay display = new SearchResultsBaseDisplay(form, GoodsType.PHYSICAL,
+                result.results, newDisplayCount);
+            return ok(physicalGoodsSearchResults.render(display));
           }, httpExecutionContext.current());
     }
 
@@ -83,7 +90,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                 if (displayCount != newDisplayCount) {
                   permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(newDisplayCount);
                 }
-                return ok(physicalGoodsSearchResults.render(form, result.results, newDisplayCount));
+                SearchResultsBaseDisplay display = new SearchResultsBaseDisplay(form, GoodsType.PHYSICAL, result.results, newDisplayCount);
+                return ok(physicalGoodsSearchResults.render(display));
               }, httpExecutionContext.current());
       }
     }
@@ -93,6 +101,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
       permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(displayCount);
       permissionsFinderDao.savePhysicalGoodControlCode(result.get());
+      permissionsFinderDao.savePhysicalGoodSearchLastChosenControlCode(result.get());
       clearControlCodeDaoFields();
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }

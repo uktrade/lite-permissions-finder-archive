@@ -41,6 +41,8 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public static final String PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT = "physicalGoodSearchPaginationDisplayCount";
 
+  public static final String PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE = "physicalGoodSearchLastChosenControlCode";
+
   public static final String TRADE_TYPE = "tradeType";
 
   public static final String ARTS_CULTURAL_GOODS = "artsCulturalGoods";
@@ -142,6 +144,18 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     else {
       return Optional.empty();
     }
+  }
+
+  public void savePhysicalGoodSearchLastChosenControlCode(String controlCode) {
+    writeString(PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE, controlCode);
+  }
+
+  public String getPhysicalGoodSearchLastChosenControlCode() {
+    return readString(PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE);
+  }
+
+  public void clearPhysicalGoodSearchLastChosenControlCode() {
+    deleteString(PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE);
   }
 
   public void saveTradeType(TradeType tradeType) {

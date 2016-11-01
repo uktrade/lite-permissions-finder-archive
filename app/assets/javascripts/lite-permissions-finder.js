@@ -59,6 +59,11 @@ LITEPermissionsFinder.SearchResults = {
   setupPage: function() {
     var showMoreResultsButton = LITEPermissionsFinder.SearchResults._showMoreResultsButton();
     showMoreResultsButton.click(LITEPermissionsFinder.SearchResults._showMoreResults);
+    // Focus the last chosen control code (triggered using the back link)
+    var lastChosenControlCode = $('#lastChosenControlCodeHiddenInput').val();
+    if (lastChosenControlCode !== null && lastChosenControlCode != "undefined") {
+      $('#' + lastChosenControlCode + '-button').focus();
+    }
   },
   onload: function() {
     var resultsDisplayCountHiddenInput = LITEPermissionsFinder.SearchResults._resultsDisplayCountHiddenInput();
@@ -98,6 +103,7 @@ LITEPermissionsFinder.SearchResults = {
                 $("<td/>").append(
                   $("<p/>").append(
                     $("<button/>")
+                      .attr("id", result.code + "-button")
                       .attr("type", "submit")
                       .attr("name", "result")
                       .attr("value", result.code)

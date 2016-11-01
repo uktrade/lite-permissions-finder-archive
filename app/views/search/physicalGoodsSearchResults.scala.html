@@ -1,4 +1,2 @@
-@import components.services.search.Result
-@(form: Form[_], results: List[Result], resultsDisplayCount: Int)
-@formAction = {@controllers.search.routes.PhysicalGoodsSearchResultsController.handleSubmit()}
-@searchResultsBase(form, GoodsType.PHYSICAL, formAction.toString(), results, resultsDisplayCount)
+@(display: SearchResultsBaseDisplay)
+@searchResultsBase(display)
