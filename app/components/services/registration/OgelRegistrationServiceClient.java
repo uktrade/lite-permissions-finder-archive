@@ -30,8 +30,8 @@ public class OgelRegistrationServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceSharedSecret;
+  private final String webServiceAddress;
   private final String webServiceUrl;
-  private final String ogelRegistrationRootUrl;
   private final ContextParamManager contextParamManager;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
@@ -42,8 +42,7 @@ public class OgelRegistrationServiceClient {
 
   @Inject
   public OgelRegistrationServiceClient(WSClient wsClient,
-                                       @Named("ogelRegistrationServiceHost") String webServiceHost,
-                                       @Named("ogelRegistrationServicePort") int webServicePort,
+                                       @Named("ogelRegistrationServiceAddress") String webServiceAddress,
                                        @Named("ogelRegistrationServiceTimeout") int webServiceTimeout,
                                        @Named("ogelRegistrationServiceSharedSecret") String webServiceSharedSecret,
                                        ContextParamManager contextParamManager,
@@ -56,8 +55,8 @@ public class OgelRegistrationServiceClient {
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceSharedSecret = webServiceSharedSecret;
-    this.ogelRegistrationRootUrl = webServiceHost;// + ":" + webServicePort;
-    this.webServiceUrl = ogelRegistrationRootUrl + "/update-transaction";
+    this.webServiceAddress = webServiceAddress;
+    this.webServiceUrl = webServiceAddress + "/update-transaction";
     this.contextParamManager = contextParamManager;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -99,7 +98,7 @@ public class OgelRegistrationServiceClient {
             }
             else {
               permissionsFinderDao.saveOgelRegistrationServiceTransactionExists(true);
-              return redirect(ogelRegistrationRootUrl + result.redirectUrl);
+              return redirect(webServiceAddress + result.redirectUrl);
             }
           }
         }, httpExecutionContext.current());

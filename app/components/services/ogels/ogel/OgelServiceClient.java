@@ -19,17 +19,16 @@ public class OgelServiceClient {
   @Inject
   public OgelServiceClient(HttpExecutionContext httpExecutionContext,
                            WSClient wsClient,
-                           @Named("ogelServiceHost") String webServiceHost,
-                           @Named("ogelServicePort") int webServicePort,
+                           @Named("ogelServiceAddress") String webServiceAddress,
                            @Named("ogelServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/ogels/";
+    this.webServiceUrl = webServiceAddress + "/ogels";
   }
 
   public CompletionStage<OgelServiceResult> get(String ogelId){
-    return wsClient.url(webServiceUrl + ogelId)
+    return wsClient.url(webServiceUrl + "/" + ogelId)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get().handleAsync((response, error) -> {

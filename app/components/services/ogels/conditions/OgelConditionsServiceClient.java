@@ -19,13 +19,12 @@ public class OgelConditionsServiceClient {
   @Inject
   public OgelConditionsServiceClient(HttpExecutionContext httpExecutionContext,
                                      WSClient wsClient,
-                                     @Named("ogelServiceHost") String webServiceHost,
-                                     @Named("ogelServicePort") int webServicePort,
+                                     @Named("ogelServiceAddress") String webServiceAddress,
                                      @Named("ogelServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/control-code-conditions";
+    this.webServiceUrl = webServiceAddress + "/control-code-conditions";
   }
 
   public CompletionStage<OgelConditionsServiceResult> get(String ogelId, String controlCode){

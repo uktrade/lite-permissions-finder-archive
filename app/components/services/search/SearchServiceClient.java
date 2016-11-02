@@ -20,14 +20,13 @@ public class SearchServiceClient {
   @Inject
   public SearchServiceClient(HttpExecutionContext httpExecutionContext,
                              WSClient wsClient,
-                             @Named("searchServiceHost") String webServiceHost,
-                             @Named("searchServicePort") int webServicePort,
+                             @Named("searchServiceAddress") String webServiceAddress,
                              @Named("searchServiceTimeout") int webServiceTimeout
   ){
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/search";
+    this.webServiceUrl = webServiceAddress + "/search";
   }
 
   public CompletionStage<SearchServiceResult> get(String searchTerm){

@@ -20,13 +20,12 @@ public class FrontendServiceClient {
   @Inject
   public FrontendServiceClient(HttpExecutionContext httpExecutionContext,
                                WSClient wsClient,
-                               @Named("controlCodeServiceHost") String webServiceHost,
-                               @Named("controlCodeServicePort") String webServicePort,
+                               @Named("controlCodeServiceAddress") String webServiceAddress,
                                @Named("controlCodeServiceTimeout") int webServiceTimeout){
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/frontend-control-codes";
+    this.webServiceUrl = webServiceAddress + "/frontend-control-codes";
   }
 
   public CompletionStage<FrontendServiceResult> get(String controlCode) {

@@ -44,18 +44,14 @@ public class GuiceModule extends AbstractModule{
     install(new CommonGuiceModule(configuration));
 
     // searchService
-    bindConstant().annotatedWith(Names.named("searchServiceHost"))
-        .to(configuration.getString("searchService.hostname"));
-    bindConstant().annotatedWith(Names.named("searchServicePort"))
-        .to(configuration.getString("searchService.port"));
+    bindConstant().annotatedWith(Names.named("searchServiceAddress"))
+        .to(configuration.getString("searchService.address"));
     bindConstant().annotatedWith(Names.named("searchServiceTimeout"))
         .to(configuration.getString("searchService.timeout"));
 
     // controlCodeService
-    bindConstant().annotatedWith(Names.named("controlCodeServiceHost"))
-        .to(configuration.getString("controlCodeService.hostname"));
-    bindConstant().annotatedWith(Names.named("controlCodeServicePort"))
-        .to(configuration.getString("controlCodeService.port"));
+    bindConstant().annotatedWith(Names.named("controlCodeServiceAddress"))
+        .to(configuration.getString("controlCodeService.address"));
     bindConstant().annotatedWith(Names.named("controlCodeServiceTimeout"))
         .to(configuration.getString("controlCodeService.timeout"));
 
@@ -68,10 +64,8 @@ public class GuiceModule extends AbstractModule{
         .to(configuration.getString("countryService.timeout"));
 
     // ogelService
-    bindConstant().annotatedWith(Names.named("ogelServiceHost"))
-        .to(configuration.getString("ogelService.hostname"));
-    bindConstant().annotatedWith(Names.named("ogelServicePort"))
-        .to(configuration.getString("ogelService.port"));
+    bindConstant().annotatedWith(Names.named("ogelServiceAddress"))
+        .to(configuration.getString("ogelService.address"));
     bindConstant().annotatedWith(Names.named("ogelServiceTimeout"))
         .to(configuration.getString("ogelService.timeout"));
 
@@ -84,10 +78,8 @@ public class GuiceModule extends AbstractModule{
         .to(configuration.getString("notificationService.timeout"));
 
     // ogelRegistration
-    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceHost"))
-        .to(configuration.getString("ogelRegistrationService.hostname"));
-    bindConstant().annotatedWith(Names.named("ogelRegistrationServicePort"))
-        .to(configuration.getString("ogelRegistrationService.port"));
+    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceAddress"))
+        .to(configuration.getString("ogelRegistrationService.address"));
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceTimeout"))
         .to(configuration.getString("ogelRegistrationService.timeout"));
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))

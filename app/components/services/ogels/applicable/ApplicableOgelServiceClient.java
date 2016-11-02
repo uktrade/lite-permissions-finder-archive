@@ -21,13 +21,12 @@ public class ApplicableOgelServiceClient {
   @Inject
   public ApplicableOgelServiceClient(HttpExecutionContext httpExecutionContext,
                                      WSClient wsClient,
-                                     @Named("ogelServiceHost") String webServiceHost,
-                                     @Named("ogelServicePort") int webServicePort,
+                                     @Named("ogelServiceAddress") String webServiceAddress,
                                      @Named("ogelServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl= "http://" + webServiceHost + ":" + webServicePort + "/applicable-ogels";
+    this.webServiceUrl= webServiceAddress + "/applicable-ogels";
   }
 
   public CompletionStage<ApplicableOgelServiceResult> get(String controlCode, String sourceCountry,

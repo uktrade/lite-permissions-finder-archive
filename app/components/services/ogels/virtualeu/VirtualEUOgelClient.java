@@ -21,12 +21,11 @@ public class VirtualEUOgelClient {
   @Inject
   public VirtualEUOgelClient(HttpExecutionContext httpExecutionContext,
                              WSClient wsClient,
-                             @Named("ogelServiceHost") String webServiceHost,
-                             @Named("ogelServicePort") int webServicePort,
+                             @Named("ogelServiceAddress") String webServiceAddress,
                              @Named("ogelServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
-    this.webServiceUrl = "http://" + webServiceHost + ":" + webServicePort + "/virtual-eu";
+    this.webServiceUrl = webServiceAddress + "/virtual-eu";
     this.webServiceTimeout = webServiceTimeout;
   }
 
