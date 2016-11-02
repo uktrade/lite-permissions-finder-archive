@@ -56,10 +56,8 @@ public class GuiceModule extends AbstractModule{
         .to(configuration.getString("controlCodeService.timeout"));
 
     // countryService
-    bindConstant().annotatedWith(Names.named("countryServiceHost"))
-        .to(configuration.getString("countryService.hostname"));
-    bindConstant().annotatedWith(Names.named("countryServicePort"))
-        .to(configuration.getString("countryService.port"));
+    bindConstant().annotatedWith(Names.named("countryServiceAddress"))
+        .to(configuration.getString("countryService.address"));
     bindConstant().annotatedWith(Names.named("countryServiceTimeout"))
         .to(configuration.getString("countryService.timeout"));
 
@@ -70,10 +68,8 @@ public class GuiceModule extends AbstractModule{
         .to(configuration.getString("ogelService.timeout"));
 
     // notificationService
-    bindConstant().annotatedWith(Names.named("notificationServiceHost"))
-        .to(configuration.getString("notificationService.hostname"));
-    bindConstant().annotatedWith(Names.named("notificationServicePort"))
-        .to(configuration.getString("notificationService.port"));
+    bindConstant().annotatedWith(Names.named("notificationServiceAddress"))
+        .to(configuration.getString("notificationService.address"));
     bindConstant().annotatedWith(Names.named("notificationServiceTimeout"))
         .to(configuration.getString("notificationService.timeout"));
 
