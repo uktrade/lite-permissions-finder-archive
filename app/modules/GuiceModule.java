@@ -11,6 +11,7 @@ import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyManager;
 import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
+import components.common.persistence.RedisKeyConfig;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import controllers.routes;
@@ -81,6 +82,15 @@ public class GuiceModule extends AbstractModule{
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
         .to(configuration.getString("ogelRegistrationService.sharedSecret"));
 
+    bind(RedisKeyConfig.class)
+        .annotatedWith(Names.named("applicationCodeDaoHash"))
+        .toInstance(createApplicationCodeKeyConfig());
+  }
+
+  private RedisKeyConfig createApplicationCodeKeyConfig() {
+    Configuration daoConfig = configuration.getConfig("redis.applicationCodeDaoHash");
+    return new RedisKeyConfig(daoConfig.getString("keyPrefix"), daoConfig.getString("hashName"),
+        daoConfig.getInt("ttlSeconds"));
   }
 
   @Provides

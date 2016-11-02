@@ -67,7 +67,7 @@ public class ApplicationCodeDao {
   }
 
   public String hashKey(String applicationCode) {
-    return redisKeyConfig.getHashName() + ":" + applicationCode;
+    return redisKeyConfig.getKeyPrefix() + ":" + redisKeyConfig.getHashName() + ":" + applicationCode;
   }
 
 }
