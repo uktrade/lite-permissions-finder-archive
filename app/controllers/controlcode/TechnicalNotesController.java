@@ -68,7 +68,7 @@ public class TechnicalNotesController {
             }
             else if ("false".equals(stillDescribesItems)) {
               permissionsFinderDao.saveControlCodeTechnicalNotesApply(false);
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
             }
             else {
               throw new FormStateException("Unhandled form state");

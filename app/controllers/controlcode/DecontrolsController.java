@@ -64,7 +64,7 @@ public class DecontrolsController {
             String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
             if("true".equals(decontrolsDescribeItem)) {
               permissionsFinderDao.saveControlCodeDecontrolsApply(true);
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLLED_ITEM);
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
             }
             else if ("false".equals(decontrolsDescribeItem)) {
               permissionsFinderDao.saveControlCodeDecontrolsApply(false);

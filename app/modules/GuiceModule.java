@@ -186,6 +186,12 @@ public class GuiceModule extends AbstractModule{
     JourneyStage controlCode = jdb.defineStage("controlCode", "Summary",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.ControlCodeController.renderForm()));
 
+    JourneyStage controlCodeNotApplicable = jdb.defineStage("controlCodeNotApplicable", "Rating is not applicable",
+        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.NotApplicableController.renderForm(Boolean.FALSE.toString())));
+
+    JourneyStage controlCodeNotApplicableExtended = jdb.defineStage("controlCodeNotApplicableExtended", "Rating is not applicable",
+        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.NotApplicableController.renderForm(Boolean.TRUE.toString())));
+
     JourneyStage additionalSpecifications = jdb.defineStage("additionalSpecifications", "Additional specifications",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.AdditionalSpecificationsController.renderForm()));
 
@@ -194,12 +200,6 @@ public class GuiceModule extends AbstractModule{
 
     JourneyStage technicalNotes = jdb.defineStage("technicalNotes", "Technical notes",
         () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.TechnicalNotesController.renderForm()));
-
-    JourneyStage decontrolledItem = jdb.defineStage("decontrolledItem", "Decontrolled item",
-        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.DecontrolledItemController.renderForm()));
-
-    JourneyStage searchAgain = jdb.defineStage("searchAgain", "Search again",
-        () -> cpm.addParamsAndRedirect(controllers.controlcode.routes.SearchAgainController.renderForm()));
 
     JourneyStage destinationCountries = jdb.defineStage("destinationCountries", "Countries and territories",
         () -> cpm.addParamsAndRedirect(routes.DestinationCountryController.renderForm()));
@@ -330,42 +330,42 @@ public class GuiceModule extends AbstractModule{
     jdb.atStage(controlCode)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
+        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicable)) //4
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecifications))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries))
-        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
 
     jdb.atStage(additionalSpecifications)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
+        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtended))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries))
-        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain));
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     jdb.atStage(decontrols)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
-        .when(ControlCodeFlowStage.DECONTROLLED_ITEM, moveTo(decontrolledItem))
+        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtended)) // 5
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     jdb.atStage(technicalNotes)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries))
-        .when(ControlCodeFlowStage.SEARCH_AGAIN, moveTo(searchAgain));
+        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtended))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
-    jdb.atStage(decontrolledItem)
+    jdb.atStage(controlCodeNotApplicable)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
 
-    jdb.atStage(searchAgain)
+    jdb.atStage(controlCodeNotApplicableExtended)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))

@@ -87,7 +87,7 @@ public class ControlCodeController extends Controller {
           }
           else if ("false".equals(couldDescribeItems)) {
             permissionsFinderDao.saveControlCodeApplies(false);
-            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.SEARCH_AGAIN);
+            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
           }
           else {
             throw new FormStateException("Unhandled form state");

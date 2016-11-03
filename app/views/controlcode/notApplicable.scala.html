@@ -1,0 +1,115 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import controllers.controlcode.routes.NotApplicableController
+
+@(form: Form[_], controlCodeAlias: String, showExtendedContent: Boolean)
+@standardPage(controlCodeAlias + " is not applicable to your item", Some(Html(controlCodeAlias + " is not applicable to your item"))){
+  @errorSummary(form)
+}{
+  <form action="@NotApplicableController.handleSubmit" method="POST">
+
+    @contextFormParams()
+
+    @if(showExtendedContent) {
+
+      <p>
+        This may be because either:
+      </p>
+
+      <ul class="list list-bullet text">
+        <li>
+          your item is listed under another classification, or
+        </li>
+        <li>
+          you do not need a licence to export your item
+        </li>
+      </ul>
+
+      <p>
+        It's not possible to say for certain that you do not need a licence - it is still your responsibility to make sure.
+      </p>
+
+      <p>
+        To find out if your item is listed under another classification, you can either:
+      </p>
+
+      <ul class="list list-bullet text">
+        <li>
+          <button class="link underlined" name="action" value="backToSearchResults">return to your search results and select another item type</button>, or
+        </li>
+        <li>
+          <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
+        </li>
+      </ul>
+
+      <h2 class="heading-medium">
+        Need some help?
+      </h2>
+
+      <p>
+        You can contact the Export Control Organisation (ECO) to discuss your export, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@beis.gsi.gov.uk">eco.help@@beis.gsi.gov.uk</a>.
+      </p>
+
+      <h2 class="heading-medium">
+        End-use controls
+      </h2>
+
+      <p>
+        You cannot export your item without a licence if either of the following is true:
+      </p>
+
+      <ul class="list list-bullet text">
+        <li>
+          you know or suspect that your item will be used in a weapons of mass destruction (WMD) programme or delivery system
+        </li>
+        <li>
+          you are exporting dual-use items that do not usually need an export licence, but you know or suspect that they might be incorporated into military equipment for use in an embargoed country
+        </li>
+      </ul>
+
+      <p>
+        You must contact the ECO to discuss your export in each of these cases.
+      </p>
+
+      <p>
+        Read more about <a href="https://www.gov.uk/browse/business/imports-exports" class="external" rel="external" target="_blank">WMD and military end-use controls</a>.
+      </p>
+
+      <h2 class="heading-medium">
+        Sanctions and embargoes
+      </h2>
+
+      <p>
+        You should also check that no sanctions or embargoes apply to your export destination. See a <a href="https://www.gov.uk/browse/business/imports-exports" class="external" rel="external" target="_blank">list of embargoed countries</a>.
+      </p>
+
+    } else {
+
+      <p>
+        You should select another item type from your search results, or edit your description to get a new set of results:
+      </p>
+
+      <ul class="list list-bullet text">
+        <li>
+          <button class="link underlined" name="action" value="backToSearchResults">return to your search results</button> and choose again
+        </li>
+        <li>
+          <button class="link underlined" name="action" value="backToSearch">edit your item description</button> to get a different set of results
+        </li>
+      </ul>
+
+      <h2 class="heading-medium">
+        Need some help?
+      </h2>
+
+      <p>
+        You can contact the Export Control Organisation (ECO) to discuss your export, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@beis.gsi.gov.uk">eco.help@@beis.gsi.gov.uk</a>.
+      </p>
+
+    }
+
+  </form>
+
+}

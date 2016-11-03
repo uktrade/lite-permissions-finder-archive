@@ -31,17 +31,13 @@ GET     /control-code/additional-specifications   controllers.controlcode.Additi
 
 POST    /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSubmit
 
-GET     /control-code/decontrolled-item       controllers.controlcode.DecontrolledItemController.renderForm
-
-POST    /control-code/decontrolled-item       controllers.controlcode.DecontrolledItemController.handleSubmit
-
 GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderForm
 
 POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSubmit
 
-GET     /control-code/search-again            controllers.controlcode.SearchAgainController.renderForm
+GET     /control-code/not-applicable          controllers.controlcode.NotApplicableController.renderForm(extended)
 
-POST    /control-code/search-again            controllers.controlcode.SearchAgainController.handleSubmit
+POST    /control-code/not-applicable          controllers.controlcode.NotApplicableController.handleSubmit
 
 GET     /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.renderForm
 

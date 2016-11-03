@@ -9,64 +9,60 @@ import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
-import models.ExportCategory;
-import models.controlcode.DecontrolledItemDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.controlcode.decontrolledItem;
+import views.html.controlcode.notApplicable;
 
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
-public class DecontrolledItemController {
+public class NotApplicableController {
 
-  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
+  private final JourneyManager journeyManager;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
 
   @Inject
-  public DecontrolledItemController(JourneyManager journeyManager,
-                                    FormFactory formFactory,
-                                    PermissionsFinderDao permissionsFinderDao,
-                                    HttpExecutionContext httpExecutionContext,
-                                    FrontendServiceClient frontendServiceClient) {
-    this.journeyManager = journeyManager;
+  public NotApplicableController(FormFactory formFactory, JourneyManager journeyManager, PermissionsFinderDao permissionsFinderDao, HttpExecutionContext httpExecutionContext, FrontendServiceClient frontendServiceClient) {
     this.formFactory = formFactory;
+    this.journeyManager = journeyManager;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
   }
 
-  public CompletionStage<Result> renderForm() {
-    Optional<ExportCategory> exportCategoryOptional = permissionsFinderDao.getExportCategory();
-    boolean isFirearmsOrMilitary = exportCategoryOptional.isPresent() && exportCategoryOptional.get() == ExportCategory.MILITARY;
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
-        .thenApplyAsync(result -> ok(decontrolledItem.render(new DecontrolledItemDisplay(result, isFirearmsOrMilitary)))
+  public CompletionStage<Result> renderForm(String showExtendedContent) {
+    return frontendServiceClient
+        .get(permissionsFinderDao.getPhysicalGoodControlCode())
+        .thenApplyAsync(result ->
+            ok(notApplicable.render(formFactory.form(NotApplicableForm.class), result.controlCodeData.controlCode,
+                Boolean.parseBoolean(showExtendedContent)))
             , httpExecutionContext.current());
   }
 
   public CompletionStage<Result> handleSubmit() {
-    Form<DecontrolledItemForm> form = formFactory.form(DecontrolledItemForm.class).bindFromRequest();
+    Form<NotApplicableForm> form = formFactory.form(NotApplicableForm.class).bindFromRequest();
     if (!form.hasErrors()) {
       String action = form.get().action;
       if ("backToSearch".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
       }
-      if ("backToSearchResults".equals(action)) {
+      else if ("backToSearchResults".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
+      }
+      else {
+        throw new FormStateException("Unknown value for action: \"" + action + "\"");
       }
     }
     throw new FormStateException("Unhandled form state");
   }
 
-  public static class DecontrolledItemForm {
+  public static class NotApplicableForm {
 
     public String action;
 
   }
-
 }
