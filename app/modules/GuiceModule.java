@@ -306,7 +306,7 @@ public class GuiceModule extends AbstractModule{
 
     jdb.atStage(categoryRadioactive)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(notImplemented)); // TODO this should preselect the CONTROLLED RADIOACTIVE SOURCES control code and move straight to country select
+        .then(moveTo(destinationCountries));
 
     jdb.atStage(goodsType)
         .onEvent(Events.GOODS_TYPE_SELECTED)

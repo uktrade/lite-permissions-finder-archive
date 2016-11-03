@@ -5,7 +5,9 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
+import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
+import models.GoodsType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -17,11 +19,16 @@ public class RadioactiveController {
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
+  private final PermissionsFinderDao permissionsFinderDao;
+
+  public static final String CONTROLLED_RADIOACTIVE_SOURCES = "Controlled Radioactive Sources";
 
   @Inject
-  public RadioactiveController(JourneyManager journeyManager, FormFactory formFactory) {
+  public RadioactiveController(JourneyManager journeyManager, FormFactory formFactory,
+                               PermissionsFinderDao permissionsFinderDao) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
@@ -30,15 +37,18 @@ public class RadioactiveController {
 
   public CompletionStage<Result> handleSubmit() {
     Form<RadioactiveForm> form = formFactory.form(RadioactiveForm.class).bindFromRequest();
-    if ("true".equals(form.get().goToSearch)) {
+    if ("continue".equals(form.get().action)) {
+      // Setup DAO state for Destination Country journey stage.
+      permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
+      permissionsFinderDao.savePhysicalGoodControlCode(CONTROLLED_RADIOACTIVE_SOURCES);
       return journeyManager.performTransition(StandardEvents.NEXT);
     }
-    throw new FormStateException("Unknown value of goToSearch: \"" + form.get().goToSearch + "\"");
+    throw new FormStateException("Unknown value of action: \"" + form.get().action + "\"");
   }
 
   public static class RadioactiveForm {
 
-    public String goToSearch;
+    public String action;
 
   }
 }
