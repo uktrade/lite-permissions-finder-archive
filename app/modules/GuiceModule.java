@@ -171,8 +171,8 @@ public class GuiceModule extends AbstractModule{
     JourneyStage categoryWaste = jdb.defineStage("categoryWaste", "You must have a licence to export most types of waste",
         () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderCategoryWaste()));
 
-    JourneyStage noneDescribed = jdb.defineStage("noneDescribed", "You may not need a licence",
-        () -> cpm.addParamsAndRedirect(controllers.search.routes.NoneDescribedController.render()));
+    JourneyStage notApplicable = jdb.defineStage("notApplicable", "You cannot use this service to get an export licence",
+        () -> cpm.addParamsAndRedirect(routes.StaticContentController.renderNotApplicable()));
 
     JourneyStage goodsType = jdb.defineStage("goodsType", "Are you exporting goods, software or technical information?",
         () -> cpm.addParamsAndRedirect(routes.GoodsTypeController.renderForm()));
@@ -274,7 +274,7 @@ public class GuiceModule extends AbstractModule{
         .onEvent(Events.IS_DUAL_USE)
         .branch()
         .when(true, moveTo(goodsType))
-        .when(false, moveTo(noneDescribed));
+        .when(false, moveTo(notApplicable));
 
     jdb.atStage(categoryFinancialTechnicalAssistance)
         .onEvent(StandardEvents.NEXT)
@@ -325,7 +325,7 @@ public class GuiceModule extends AbstractModule{
 
     jdb.atStage(physicalGoodsSearchResults)
         .onEvent(Events.NONE_MATCHED)
-        .then(moveTo(noneDescribed));
+        .then(moveTo(notApplicable));
 
     jdb.atStage(controlCode)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)

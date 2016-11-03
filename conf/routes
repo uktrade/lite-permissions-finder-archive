@@ -157,7 +157,7 @@ GET     /eu-intra-community-trade             controllers.StaticContentControlle
 
 POST    /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 
-GET     /licence-may-not-be-required          controllers.search.NoneDescribedController.render
+GET     /licence-not-available-through-this-service   controllers.StaticContentController.renderNotApplicable
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
 
