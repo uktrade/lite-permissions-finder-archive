@@ -32,7 +32,9 @@
 
   <h2 class="heading-small">The following technical notes can help you choose the right classification:</h2>
 
-  @Html(display.technicalNotes)
+  <div class="stored-content-container">
+    @Html(display.technicalNotes)
+  </div>
 
   <form action="@TechnicalNotesController.handleSubmit()" method="POST">
 
