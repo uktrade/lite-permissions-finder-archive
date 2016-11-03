@@ -11,7 +11,7 @@ public class ControlCodeDisplay {
 
   public final String friendlyDescription;
 
-  public final String controlCode;
+  public final String controlCodeAlias;
 
   public final Ancestor greatestAncestor;
 
@@ -23,7 +23,7 @@ public class ControlCodeDisplay {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
-    this.controlCode = controlCodeData.controlCode;
+    this.controlCodeAlias = controlCodeData.alias;
     if (frontendServiceResult.greatestAncestor.isPresent()) {
       this.greatestAncestor = frontendServiceResult.greatestAncestor.get();
       showGreatestAncestor = true;

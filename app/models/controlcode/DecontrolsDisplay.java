@@ -12,7 +12,7 @@ public class DecontrolsDisplay {
 
   public final String friendlyDescription;
 
-  public final String controlCode;
+  public final String controlCodeAlias;
 
   public final List<String> decontrols;
 
@@ -20,7 +20,7 @@ public class DecontrolsDisplay {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
-    this.controlCode = controlCodeData.controlCode;
+    this.controlCodeAlias = controlCodeData.alias;
     this.decontrols = controlCodeData.decontrols.stream()
         .map(decontrol -> decontrol.text)
         .collect(Collectors.toList());

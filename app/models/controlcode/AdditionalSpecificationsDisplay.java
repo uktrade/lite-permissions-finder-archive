@@ -14,7 +14,7 @@ public class AdditionalSpecificationsDisplay {
 
   public final String friendlyDescription;
 
-  public final String controlCode;
+  public final String controlCodeAlias;
 
   public final String clauseText;
 
@@ -24,7 +24,7 @@ public class AdditionalSpecificationsDisplay {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
-    this.controlCode = controlCodeData.controlCode;
+    this.controlCodeAlias = controlCodeData.alias;
     AdditionalSpecifications additionalSpecifications = frontendServiceResult.controlCodeData.additionalSpecifications;
     if (additionalSpecifications != null) {
       this.clauseText = additionalSpecifications.clauseText;
@@ -34,7 +34,8 @@ public class AdditionalSpecificationsDisplay {
       else {
         this.specifications = Collections.emptyList();
       }
-    } else {
+    }
+    else {
       this.clauseText = null;
       this.specifications = Collections.emptyList();
     }

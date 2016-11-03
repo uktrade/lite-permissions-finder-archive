@@ -38,7 +38,7 @@ public class NotApplicableController {
     return frontendServiceClient
         .get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(result ->
-            ok(notApplicable.render(formFactory.form(NotApplicableForm.class), result.controlCodeData.controlCode,
+            ok(notApplicable.render(formFactory.form(NotApplicableForm.class), result.controlCodeData.alias,
                 Boolean.parseBoolean(showExtendedContent)))
             , httpExecutionContext.current());
   }

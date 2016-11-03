@@ -12,6 +12,8 @@ public class ControlCodeData {
 
   public final String title;
 
+  public final String alias;
+
   public final String technicalNotes;
 
   public final String friendlyDescription;
@@ -21,12 +23,14 @@ public class ControlCodeData {
   public ControlCodeData(@JsonProperty("decontrols") List<Decontrol> decontrols,
                          @JsonProperty("controlCode") String controlCode,
                          @JsonProperty("title") String title,
+                         @JsonProperty("alias") String alias,
                          @JsonProperty("technicalNotes") String technicalNotes,
                          @JsonProperty("friendlyDescription") String friendlyDescription,
                          @JsonProperty("additionalSpecifications") AdditionalSpecifications additionalSpecifications) {
     this.decontrols = decontrols;
     this.controlCode = controlCode;
     this.title = title;
+    this.alias = alias;
     this.technicalNotes = technicalNotes;
     this.friendlyDescription = friendlyDescription;
     this.additionalSpecifications = additionalSpecifications;
