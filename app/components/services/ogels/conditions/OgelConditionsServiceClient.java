@@ -1,5 +1,6 @@
 package components.services.ogels.conditions;
 
+import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
@@ -27,8 +28,9 @@ public class OgelConditionsServiceClient {
     this.webServiceUrl = webServiceAddress + "/control-code-conditions";
   }
 
-  public CompletionStage<OgelConditionsServiceResult> get(String ogelId, String controlCode){
-    return wsClient.url(webServiceUrl + "/" + ogelId + "/" + controlCode)
+  public CompletionStage<OgelConditionsServiceResult> get(String ogelId, String controlCode) {
+    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId) + "/" +
+        UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get().handleAsync((response, error) -> {

@@ -1,5 +1,6 @@
 package components.services.controlcode;
 
+import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
@@ -29,7 +30,7 @@ public class FrontendServiceClient {
   }
 
   public CompletionStage<FrontendServiceResult> get(String controlCode) {
-    return wsClient.url(webServiceUrl + "/" + controlCode)
+    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get()

@@ -1,5 +1,6 @@
 package components.services.ogels.ogel;
 
+import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
@@ -27,8 +28,8 @@ public class OgelServiceClient {
     this.webServiceUrl = webServiceAddress + "/ogels";
   }
 
-  public CompletionStage<OgelServiceResult> get(String ogelId){
-    return wsClient.url(webServiceUrl + "/" + ogelId)
+  public CompletionStage<OgelServiceResult> get(String ogelId) {
+    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId))
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get().handleAsync((response, error) -> {
