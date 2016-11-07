@@ -4,7 +4,7 @@
 @(field: Form.Field, hintText:String, removeButtonValue: Integer, showRemoveButton: Boolean, showDetailPanel: Boolean, countries: List[Country])
 <div id="@field.id" class="form-group @if(field.error.isDefined) { error}">
   <div class="grid-row">
-    <div class="column-one-half">
+    <div class="column-two-thirds">
       @if(field.error.isDefined) {
         <p class="error-message">@Messages(field.error.get.message)</p>
       }
@@ -20,7 +20,7 @@
 
       @if(showRemoveButton) {
 
-        <button type="submit" class="link underlined" name="removeThroughDestination" value="@removeButtonValue">Remove</button>
+        <button type="submit" class="link" name="removeThroughDestination" value="@removeButtonValue">Remove</button>
 
       }
 

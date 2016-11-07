@@ -76,17 +76,17 @@
 
     @detailPanel("im-not-sure")(Html("I'm not sure")) {
       <p>
-        If your item is not described above you can:
+        If your item is not described above, you can:
       </p>
 
       <ul class="list list-bullet text">
-        <li><button class="link underlined" name="action" value="backToSearchResults">return to your search results</button> and choose again</li>
-        <li><button class="link underlined" name="action" value="backToSearch">edit your item description</button> to get a different set of results</li>
+        <li>
+          <button class="link underlined" name="action" value="backToSearchResults">return to your search results and select another item type</button>, or
+        </li>
+        <li>
+          <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
+        </li>
       </ul>
-
-      <p>
-        If you have been unable to identify your items using this service you can get help from the government's Export Control Organisation, who will be able to help you find the correct licence.
-      </p>
 
       @helpInfoPanel()
 
