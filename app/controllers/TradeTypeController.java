@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
-import journey.Events;
+import journey.JourneyDefinitionNames;
 import models.TradeType;
 import play.data.Form;
 import play.data.FormFactory;
@@ -37,7 +37,7 @@ public class TradeTypeController extends Controller {
   public CompletionStage<Result> renderForm() {
     TradeTypeForm formTemplate = new TradeTypeForm();
     Optional<TradeType> tradeTypeOptional = permissionsFinderDao.getTradeType();
-    formTemplate.tradeType = tradeTypeOptional.isPresent() ? tradeTypeOptional.get().value() : "";
+    tradeTypeOptional.ifPresent((e) -> formTemplate.tradeType = e.toString());
     return completedFuture(ok(tradeType.render(formFactory.form(TradeTypeForm.class).fill(formTemplate))));
   }
 
@@ -49,16 +49,22 @@ public class TradeTypeController extends Controller {
     }
 
     String tradeTypeParam = form.get().tradeType;
-    Optional<TradeType> tradeTypeOption = TradeType.getMatched(tradeTypeParam);
+    TradeType tradeType = TradeType.valueOf(tradeTypeParam);
 
-    if(tradeTypeOption.isPresent()) {
-      permissionsFinderDao.saveTradeType(tradeTypeOption.get());
-      if (tradeTypeOption.get() == TradeType.EXPORT) {
+    permissionsFinderDao.saveTradeType(tradeType);
+    switch (tradeType) {
+      case EXPORT:
         permissionsFinderDao.saveSourceCountry(UNITED_KINGDOM);
-      }
-      return journeyManager.performTransition(Events.TRADE_TYPE_SELECTED, tradeTypeOption.get());
+        return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
+      case IMPORT:
+        //TODO: start import journey
+        return completedFuture(redirect(routes.StaticContentController.renderImport()));
+      case TRANSSHIPMENT:
+      case BROKERING:
+        return completedFuture(redirect(routes.StaticContentController.renderBrokeringTranshipment()));
+      default:
+        throw new FormStateException("Unknown trade type " + tradeType);
     }
-    throw new FormStateException("Unknown trade type " + tradeTypeParam);
   }
 
   public static class TradeTypeForm {

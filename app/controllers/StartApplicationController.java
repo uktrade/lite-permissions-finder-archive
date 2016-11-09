@@ -4,12 +4,11 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.journey.JourneyManager;
+import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
 import components.services.notification.PermissionsFinderNotificationClient;
-import journey.JourneyDefinitionNames;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -29,7 +28,7 @@ public class StartApplicationController {
   private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'));
 
   private final TransactionManager transactionManager;
-  private final JourneyManager journeyManager;
+  private final ContextParamManager contextParamManager;
   private final FormFactory formFactory;
   private final ApplicationCodeDao applicationCodeDao;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -37,13 +36,13 @@ public class StartApplicationController {
 
   @Inject
   public StartApplicationController(TransactionManager transactionManager,
-                                    JourneyManager journeyManager,
+                                    ContextParamManager contextParamManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
                                     ApplicationCodeDao applicationCodeDao,
                                     PermissionsFinderNotificationClient notificationClient) {
     this.transactionManager = transactionManager;
-    this.journeyManager = journeyManager;
+    this.contextParamManager = contextParamManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.applicationCodeDao = applicationCodeDao;
@@ -51,12 +50,11 @@ public class StartApplicationController {
   }
 
   public Result renderForm() {
-    // Hack to test if a transaction Id has already been set.
-    // TODO JourneyManager getTransactionId() should return a named exception
-    try {
+    // Only set transaction ID if not already set
+    if (transactionManager.isTransactionIdAvailable()){
       transactionManager.getTransactionId();
     }
-    catch (RuntimeException e) {
+    else {
       transactionManager.createTransaction();
     }
 
@@ -82,8 +80,8 @@ public class StartApplicationController {
       permissionsFinderDao.saveEmailAddress(emailAddress.trim());
       notificationClient.sendApplicationReferenceEmail(emailAddress.trim(), permissionsFinderDao.getApplicationCode());
     }
-    return journeyManager.startJourney(JourneyDefinitionNames.DEFAULT);
 
+    return contextParamManager.addParamsAndRedirect(routes.TradeTypeController.renderForm());
   }
 
   /**

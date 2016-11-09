@@ -18,7 +18,7 @@
 
       <div class="form-group">
         @formRadio(form("tradeType"), Html("From the UK to another country"),
-          TradeType.EXPORT.value, "label-trade-type")
+          TradeType.EXPORT.toString, "label-trade-type")
         <p class="panel panel-border-wide">
           This is known as an export
         </p>
@@ -26,7 +26,7 @@
 
       <div class="form-group">
         @formRadio(form("tradeType"), Html("From another country to the UK "),
-          TradeType.IMPORT.value, "label-trade-type")
+          TradeType.IMPORT.toString, "label-trade-type")
         <p class="panel panel-border-wide">
           This is known as an import
         </p>
@@ -34,7 +34,7 @@
 
       <div class="form-group">
         @formRadio(form("tradeType"), Html("Between non-UK countries "),
-          TradeType.BROKERING.value, "label-trade-type")
+          TradeType.BROKERING.toString, "label-trade-type")
         <p class="panel panel-border-wide">
           This is known as trafficking or brokering
         </p>
@@ -42,7 +42,7 @@
 
       <div class="form-group">
         @formRadio(form("tradeType"), Html("Through the UK, from one non-UK country to another "),
-          TradeType.TRANSSHIPMENT.value, "label-trade-type")
+          TradeType.TRANSSHIPMENT.toString, "label-trade-type")
         <p class="panel panel-border-wide">
           This is known as transhipment
         </p>

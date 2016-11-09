@@ -1,5 +1,5 @@
 @import util._
-@import views.html.common.journey._
+@import views.html.common.page._
 
 @(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None)(beforeHeader: Html)(content: Html)
 
@@ -9,7 +9,7 @@
 
     @phaseBanner()
 
-    @journeyBackLink()
+    @backLink()
 
     <a id="contentStart"></a>
 

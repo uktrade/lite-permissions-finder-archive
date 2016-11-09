@@ -98,7 +98,7 @@ public class SummaryController {
         return journeyManager.restoreCurrentStage();
       }
       else {
-        return journeyManager.startJourney(JourneyDefinitionNames.DEFAULT);
+        return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
       }
     }
     else if (!isResumedApplication && StringUtils.equals("register", action)) {

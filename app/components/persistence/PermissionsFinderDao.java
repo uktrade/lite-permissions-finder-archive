@@ -14,6 +14,7 @@ import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
+import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
 
@@ -159,11 +160,12 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public void saveTradeType(TradeType tradeType) {
-    writeString(TRADE_TYPE, tradeType.value());
+    writeString(TRADE_TYPE, tradeType.toString());
   }
 
   public Optional<TradeType> getTradeType() {
-    return TradeType.getMatched(readString(TRADE_TYPE));
+    String tradeType = readString(TRADE_TYPE);
+    return StringUtils.isBlank(tradeType) ? Optional.empty() : Optional.of(TradeType.valueOf(tradeType));
   }
 
   public void saveArtsCulturalForm (ArtsCulturalForm form) {

@@ -8,13 +8,9 @@ import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
-import models.TradeType;
 import models.VirtualEUOgelStage;
 
 public class Events {
-
-  public static final ParameterisedJourneyEvent<TradeType> TRADE_TYPE_SELECTED =
-      new ParameterisedJourneyEvent<>("TRADE_TYPE_SELECTED", TradeType.class);
 
   public static final ParameterisedJourneyEvent<ExportCategory> EXPORT_CATEGORY_SELECTED =
       new ParameterisedJourneyEvent<>("EXPORT_CATEGORY_SELECTED", ExportCategory.class);
