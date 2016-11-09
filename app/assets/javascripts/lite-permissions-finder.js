@@ -7,8 +7,17 @@ LITEPermissionsFinder.Utils = {
       if (pageName == "destinationCountry") {
         LITEPermissionsFinder.DestinationCountry.setupPage();
       }
+      else if (pageName == "searchBase") {
+        LITEPermissionsFinder.Search.setupPage();
+      }
       else if (pageName == "searchResultsBase") {
         LITEPermissionsFinder.SearchResults.setupPage();
+      }
+      else if (pageName == "selectExportCategories") {
+        LITEPermissionsFinder.ExportCategories.setupPage();
+      }
+      else if (pageName == "ogelQuestions") {
+        LITEPermissionsFinder.OgelQuestions.setupPage();
       }
     }
   },
@@ -51,6 +60,28 @@ LITEPermissionsFinder.DestinationCountry = {
       if ($(this).is(":checked")) {
         $("#through-destination-countries-wrapper").hide();
       }
+    });
+  }
+};
+
+LITEPermissionsFinder.Search = {
+  setupPage: function() {
+    LITEPermissionsFinder.Search._bindAnalyticsTriggers();
+  },
+  _bindAnalyticsTriggers: function() {
+    $('form:last').submit(function(event) {
+      var textareas = $(this).find("textarea");
+      var inputs = $(this).find("input[type='text']");
+      var description = textareas.filter("[name='description']").val();
+      var component = textareas.filter("[name='component']").val();
+      var brand = inputs.filter("[name='brand']").val();
+      var partNumber = inputs.filter("[name='partNumber']").val();
+      var eventValue = "description: " + description + ";" +
+        " component: " + component + ";" +
+        " brand: " + brand + ";" +
+        " partNumber: " + partNumber + ";";
+
+      _paq.push(['trackSiteSearch', eventValue, "physical", false]);
     });
   }
 };
@@ -139,6 +170,49 @@ LITEPermissionsFinder.SearchResults = {
   },
   _showMoreResultsButton: function() {
     return $("#showMoreResultsButton");
+  }
+};
+
+LITEPermissionsFinder.ExportCategories = {
+  setupPage: function() {
+    LITEPermissionsFinder.ExportCategories._bindAnalyticsTriggers();
+  },
+  _bindAnalyticsTriggers: function() {
+    $("button[name='category']").parents('details').children('summary').click(function () {
+      if (!$(this).parent("details").is("[open]")) {
+        var category = $(this).siblings().find("button[name='category']").first().val();
+        _paq.push(['trackEvent', 'exportCategories', 'openedCategory', category]);
+      }
+    });
+  }
+};
+
+LITEPermissionsFinder.OgelQuestions = {
+  setupPage: function() {
+    LITEPermissionsFinder.OgelQuestions._bindAnalyticsTriggers();
+  },
+  _bindAnalyticsTriggers: function() {
+    function boolToYesNo (bool){
+      if (bool == "true") {
+        return "yes";
+      }
+      else if (bool == "false") {
+        return "no";
+      }
+      else {
+        return "";
+      }
+    }
+    var form = $('form:last');
+    form.submit(function (event) {
+      var forRepairReplacement = boolToYesNo($("input[name='forRepairReplacement']:checked", form).val());
+      var forExhibitionDemonstration = boolToYesNo($("input[name='forExhibitionDemonstration']:checked", form).val());
+      var before1897upto35k = boolToYesNo($("input[name='before1897upto35k']:checked", form).val());
+      _paq.push(['trackEvent', 'ogelQuestions', 'forRepairReplacement', forRepairReplacement]);
+      _paq.push(['trackEvent', 'ogelQuestions', 'forExhibitionDemonstration', forExhibitionDemonstration]);
+      _paq.push(['trackEvent', 'ogelQuestions', 'before1897upto35k', before1897upto35k]);
+    });
+
   }
 };
 
