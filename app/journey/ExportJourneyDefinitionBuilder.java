@@ -351,6 +351,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   }
 
   private void softwareStages() {
+    JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftwareCategories", "What is your software for?",
+        controllers.software.routes.DualUseSoftwareCategories.renderForm());
+
     atStage(softwareExemptions)
         .onEvent(StandardEvents.YES)
         .then(moveTo(notApplicable)); // TODO check this is the correct NLR to show
@@ -358,10 +361,16 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(softwareExemptions)
         .onEvent(StandardEvents.NO)
         .branchWith(() -> softwareExemptionsFlow(permissionsFinderDao.getExportCategory().get()))
-        .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(notImplemented))
+        .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
         .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(notImplemented))
         .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(notImplemented))
         .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(notImplemented));
+
+    atStage(dualUseSoftwareCategories)
+        .onEvent(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED)
+        .branch()
+        .when(SoftwareCategory.DUMMY, moveTo(notImplemented))
+        .when(SoftwareCategory.RADIOACTIVE, moveTo(notImplemented));
 
   }
 

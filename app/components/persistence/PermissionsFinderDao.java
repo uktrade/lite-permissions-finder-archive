@@ -2,7 +2,6 @@ package components.persistence;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.common.journey.Journey;
 import components.common.journey.JourneySerialiser;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
@@ -14,6 +13,7 @@ import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
+import models.software.SoftwareCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
@@ -81,6 +81,8 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
 
   public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
+
+  public static final String DUAL_USE_SOFTWARE_CATEGORY = "dualUseSoftwareCategory";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -360,6 +362,25 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public String getDoExemptionsApply() {
     return readString(DO_EXEMPTIONS_APPLY);
+  }
+
+  public void saveDualUseSoftwareCategory(SoftwareCategory softwareCategory) {
+    writeString(DUAL_USE_SOFTWARE_CATEGORY, softwareCategory.toString());
+  }
+
+  public Optional<SoftwareCategory> getDualUseSoftwareCategory() {
+    String dualUseSoftwareCategoryText = readString(DUAL_USE_SOFTWARE_CATEGORY);
+    if (StringUtils.isEmpty(dualUseSoftwareCategoryText)) {
+      return Optional.empty();
+    }
+    else {
+      try {
+        return Optional.of(SoftwareCategory.valueOf(dualUseSoftwareCategoryText));
+      }
+      catch (IllegalArgumentException e) {
+        return Optional.empty();
+      }
+    }
   }
 
 }

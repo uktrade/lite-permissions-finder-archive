@@ -47,6 +47,10 @@ GET     /destination-country                  controllers.DestinationCountryCont
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
+GET     /dual-use-software-categories         controllers.software.DualUseSoftwareCategories.renderForm
+
+POST    /dual-use-software-categories         controllers.software.DualUseSoftwareCategories.handleSubmit
+
 GET     /exempt-software                      controllers.software.ExemptionsController.renderForm
 
 POST    /exempt-software                      controllers.software.ExemptionsController.handleSubmit

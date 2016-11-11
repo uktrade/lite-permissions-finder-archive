@@ -9,6 +9,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
 import models.VirtualEUOgelStage;
+import models.software.SoftwareCategory;
 
 public class Events {
 
@@ -58,5 +59,8 @@ public class Events {
 
   public static final ParameterisedJourneyEvent<NonMilitaryFirearmExportBySelfType> NON_MILITARY_FIREARMS_QUESTION_ANSWERERD =
       new ParameterisedJourneyEvent<>("NON_MILITARY_FIREARMS_QUESTION_ANSWERERD", NonMilitaryFirearmExportBySelfType.class);
+
+  public static final ParameterisedJourneyEvent<SoftwareCategory> DUAL_USE_SOFTWARE_CATEGORY_SELECTED =
+      new ParameterisedJourneyEvent<>("DUAL_USE_SOFTWARE_CATEGORY_SELECTED", SoftwareCategory.class);
 
 }
