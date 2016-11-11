@@ -352,7 +352,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private void softwareStages() {
     JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftwareCategories", "What is your software for?",
-        controllers.software.routes.DualUseSoftwareCategories.renderForm());
+        controllers.software.routes.DualUseSoftwareCategoriesController.renderForm());
 
     atStage(softwareExemptions)
         .onEvent(StandardEvents.YES)

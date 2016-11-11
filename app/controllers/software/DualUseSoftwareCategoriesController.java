@@ -15,14 +15,14 @@ import views.html.software.dualUseSoftwareCategories;
 
 import java.util.concurrent.CompletionStage;
 
-public class DualUseSoftwareCategories {
+public class DualUseSoftwareCategoriesController {
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public DualUseSoftwareCategories(FormFactory formFactory, PermissionsFinderDao permissionsFinderDao, JourneyManager journeyManager) {
+  public DualUseSoftwareCategoriesController(FormFactory formFactory, PermissionsFinderDao permissionsFinderDao, JourneyManager journeyManager) {
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.journeyManager = journeyManager;
