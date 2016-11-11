@@ -368,14 +368,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(dualUseSoftwareCategories)
         .onEvent(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED)
-        .branch()
-        .when(SoftwareCategory.DUMMY, moveTo(notImplemented))
-        .when(SoftwareCategory.RADIOACTIVE, moveTo(notImplemented));
+        .branchWith(() -> checkSoftwareControls(permissionsFinderDao.getDualUseSoftwareCategory().get()))
+        .when(ApplicableSoftwareControls.ZERO, moveTo(notImplemented))
+        .when(ApplicableSoftwareControls.ONE, moveTo(notImplemented))
+        .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(notImplemented));
 
   }
 
-  private SoftwareExemptionsFlow softwareExemptionsFlow(ExportCategory category) {
-    if (category == ExportCategory.MILITARY) {
+  private SoftwareExemptionsFlow softwareExemptionsFlow(ExportCategory exportCategory) {
+    if (exportCategory == ExportCategory.MILITARY) {
       ApplicableSoftwareControls controls = checkSoftwareControls(SoftwareCategory.MILITARY);
       if (controls == ApplicableSoftwareControls.ZERO) {
         return SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS;
@@ -391,23 +392,28 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
             , controls.toString()));
       }
     }
-    else if (category == ExportCategory.DUAL_USE) {
+    else if (exportCategory == ExportCategory.DUAL_USE) {
       return SoftwareExemptionsFlow.DUAL_USE;
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ExportCategory enum: \"%s\""
-          , category.toString()));
+          , exportCategory.toString()));
     }
   }
+
 
   private ApplicableSoftwareControls checkSoftwareControls(SoftwareCategory softwareCategory) {
     if (softwareCategory == SoftwareCategory.MILITARY) {
       // TODO Call software controls client
-      return ApplicableSoftwareControls.ONE;
+      return ApplicableSoftwareControls.ZERO;
     }
     else if (softwareCategory == SoftwareCategory.DUMMY) {
       // TODO Call software controls client
       return ApplicableSoftwareControls.ONE;
+    }
+    else if (softwareCategory == SoftwareCategory.RADIOACTIVE) {
+      // TODO Call software controls client
+      return ApplicableSoftwareControls.GREATER_THAN_ONE;
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of SoftwareCategory enum: \"%s\""

@@ -41,9 +41,9 @@ public class DualUseSoftwareCategories {
     SoftwareCategory softwareCategory = SoftwareCategory.valueOf(dualUseSoftwareCategoryText);
 
     // MILITARY is a member of SoftwareCategory but is not dual use
-    if (softwareCategory == SoftwareCategory.RADIOACTIVE || softwareCategory == SoftwareCategory.DUMMY) {
+    if (SoftwareCategory.isDualUseSoftwareCategory(softwareCategory)) {
       permissionsFinderDao.saveDualUseSoftwareCategory(softwareCategory);
-      return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED, softwareCategory);
+      return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED);
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of SoftwareCategory enum: \"%s\""
