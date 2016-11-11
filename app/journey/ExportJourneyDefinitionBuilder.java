@@ -1,9 +1,11 @@
 package journey;
 
+import com.google.inject.Inject;
 import components.common.journey.BackLink;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
+import components.persistence.PermissionsFinderDao;
 import controllers.routes;
 import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
@@ -12,6 +14,9 @@ import models.GoodsType;
 import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
 import models.VirtualEUOgelStage;
+import models.software.ApplicableSoftwareControls;
+import models.software.SoftwareCategory;
+import models.software.SoftwareExemptionsFlow;
 
 public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
@@ -32,7 +37,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage softwareExemptions = defineStage("softwareExemptions", "Some types of software do not need a licence",
       controllers.software.routes.ExemptionsController.renderForm());
 
-  public ExportJourneyDefinitionBuilder() {
+  private final PermissionsFinderDao permissionsFinderDao;
+
+  @Inject
+  public ExportJourneyDefinitionBuilder(PermissionsFinderDao permissionsFinderDao) {
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   @Override
@@ -344,11 +353,57 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private void softwareStages() {
     atStage(softwareExemptions)
         .onEvent(StandardEvents.YES)
-        .then(moveTo(notImplemented));
+        .then(moveTo(notApplicable)); // TODO check this is the correct NLR to show
 
     atStage(softwareExemptions)
         .onEvent(StandardEvents.NO)
-        .then(moveTo(notImplemented));
+        .branchWith(() -> softwareExemptionsFlow(permissionsFinderDao.getExportCategory().get()))
+        .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(notImplemented))
+        .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(notImplemented))
+        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(notImplemented))
+        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(notImplemented));
+
+  }
+
+  private SoftwareExemptionsFlow softwareExemptionsFlow(ExportCategory category) {
+    if (category == ExportCategory.MILITARY) {
+      ApplicableSoftwareControls controls = checkSoftwareControls(SoftwareCategory.MILITARY);
+      if (controls == ApplicableSoftwareControls.ZERO) {
+        return SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS;
+      }
+      else if (controls == ApplicableSoftwareControls.ONE) {
+        return SoftwareExemptionsFlow.MILITARY_ONE_CONTROL;
+      }
+      else if (controls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+        return SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL;
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+            , controls.toString()));
+      }
+    }
+    else if (category == ExportCategory.DUAL_USE) {
+      return SoftwareExemptionsFlow.DUAL_USE;
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ExportCategory enum: \"%s\""
+          , category.toString()));
+    }
+  }
+
+  private ApplicableSoftwareControls checkSoftwareControls(SoftwareCategory softwareCategory) {
+    if (softwareCategory == SoftwareCategory.MILITARY) {
+      // TODO Call software controls client
+      return ApplicableSoftwareControls.ONE;
+    }
+    else if (softwareCategory == SoftwareCategory.DUMMY) {
+      // TODO Call software controls client
+      return ApplicableSoftwareControls.ONE;
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of SoftwareCategory enum: \"%s\""
+          , softwareCategory.toString()));
+    }
   }
 
 }

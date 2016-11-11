@@ -83,7 +83,11 @@ public class GuiceModule extends AbstractModule{
   }
 
   @Provides
-  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders() {
-    return Collections.singleton(new ExportJourneyDefinitionBuilder());
+  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportJourneyDefinitionBuilder) {
+    return Collections.singleton(exportJourneyDefinitionBuilder);
+  }
+
+  @Provides ExportJourneyDefinitionBuilder provideExportJourneyDefinitionBuilder(PermissionsFinderDao permissionsFinderDao) {
+    return new ExportJourneyDefinitionBuilder(permissionsFinderDao);
   }
 }
