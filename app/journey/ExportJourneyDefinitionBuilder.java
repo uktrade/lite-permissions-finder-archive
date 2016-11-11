@@ -29,6 +29,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.StaticContentController.renderNotImplemented());
   private final JourneyStage notApplicable = defineStage("notApplicable", "You cannot use this service to get an export licence",
       routes.StaticContentController.renderNotApplicable());
+  private final JourneyStage softwareExemptions = defineStage("softwareExemptions", "Some types of software do not need a licence",
+      controllers.software.routes.ExemptionsController.renderForm());
 
   public ExportJourneyDefinitionBuilder() {
   }
@@ -43,12 +45,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(physicalGoodsSearch))
-        .when(GoodsType.SOFTWARE, moveTo(notImplemented))
+        .when(GoodsType.SOFTWARE, moveTo(softwareExemptions))
         .when(GoodsType.TECHNOLOGY, moveTo(notImplemented));
 
     physicalGoodsStages();
 
-    //TODO: software/technology
+    softwareStages();
 
     // *** Journeys ***
 
@@ -338,4 +340,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.OGEL_CHOOSE_AGAIN)
         .then(moveTo(ogelResults));
   }
+
+  private void softwareStages() {
+    atStage(softwareExemptions)
+        .onEvent(StandardEvents.YES)
+        .then(moveTo(notImplemented));
+
+    atStage(softwareExemptions)
+        .onEvent(StandardEvents.NO)
+        .then(moveTo(notImplemented));
+  }
+
 }

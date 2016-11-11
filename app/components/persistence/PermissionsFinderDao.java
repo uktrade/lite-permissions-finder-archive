@@ -80,6 +80,8 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
 
+  public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
+
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
@@ -350,6 +352,14 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public void clearControlCodeTechnicalNotesApply() {
     deleteString(CONTROL_CODE_TECHNICAL_NOTES_APPLY);
+  }
+
+  public void saveDoExemptionsApply(String doExemptionsApply) {
+    writeString(DO_EXEMPTIONS_APPLY, doExemptionsApply);
+  }
+
+  public String getDoExemptionsApply() {
+    return readString(DO_EXEMPTIONS_APPLY);
   }
 
 }

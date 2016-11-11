@@ -47,6 +47,10 @@ GET     /destination-country                  controllers.DestinationCountryCont
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
+GET     /exempt-software                      controllers.software.ExemptionsController.renderForm
+
+POST    /exempt-software                      controllers.software.ExemptionsController.handleSubmit
+
 GET     /export-category                      controllers.categories.ExportCategoryController.renderForm
 
 POST    /export-category                      controllers.categories.ExportCategoryController.handleSubmit
@@ -184,7 +188,6 @@ POST    /summary                              controllers.SummaryController.hand
 GET     /summary-continue                     controllers.SummaryController.renderFormContinue
 
 POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
-
 
 # JavaScript routes
 GET     /js-routes                            controllers.JavaScriptRoutesController.jsRoutes
