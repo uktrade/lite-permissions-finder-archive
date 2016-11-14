@@ -13,9 +13,15 @@
     
     @contextFormParams()
 
-    @formRadioBoolean(form("doExemptionsApply"), Html("Is your software any of the following?"))
+    @*TODO Content*@
 
-    @*TODO Add content here *@
+    <h2 class="heading-medium">Is your software any of the following?</h2>
+
+    <ul class="list list-bullet text">
+      <li>CONTENT</li>
+    </ul>
+
+    @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html("Is your software any of the following?"), hideHeading = true)
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

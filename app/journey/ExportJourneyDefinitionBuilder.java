@@ -6,6 +6,7 @@ import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
+import components.services.controlcode.category.controls.CategoryControlsServiceClient;
 import controllers.routes;
 import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
@@ -38,10 +39,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.software.routes.ExemptionsController.renderForm());
 
   private final PermissionsFinderDao permissionsFinderDao;
+  private final CategoryControlsServiceClient categoryControlsServiceClient;
 
   @Inject
-  public ExportJourneyDefinitionBuilder(PermissionsFinderDao permissionsFinderDao) {
+  public ExportJourneyDefinitionBuilder(PermissionsFinderDao permissionsFinderDao, CategoryControlsServiceClient categoryControlsServiceClient) {
     this.permissionsFinderDao = permissionsFinderDao;
+    this.categoryControlsServiceClient = categoryControlsServiceClient;
   }
 
   @Override
@@ -412,16 +415,14 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
 
   private ApplicableSoftwareControls checkSoftwareControls(SoftwareCategory softwareCategory) {
+    categoryControlsServiceClient.get(softwareCategory); // TODO Stubbed call, do nothing for now.
     if (softwareCategory == SoftwareCategory.MILITARY) {
-      // TODO Call software controls client
       return ApplicableSoftwareControls.ZERO;
     }
     else if (softwareCategory == SoftwareCategory.DUMMY) {
-      // TODO Call software controls client
       return ApplicableSoftwareControls.ONE;
     }
     else if (softwareCategory == SoftwareCategory.RADIOACTIVE) {
-      // TODO Call software controls client
       return ApplicableSoftwareControls.GREATER_THAN_ONE;
     }
     else {
