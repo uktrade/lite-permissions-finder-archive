@@ -55,6 +55,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
   public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
   public static final String DUAL_USE_SOFTWARE_CATEGORY = "dualUseSoftwareCategory";
+  public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -353,6 +354,14 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
         return Optional.empty();
       }
     }
+  }
+
+  public void saveRelatedToEquipmentOrMaterials(Boolean relatedToEquipmentOrMaterials) {
+    writeString(RELATED_TO_EQUIPMENT_OR_MATERIALS, relatedToEquipmentOrMaterials.toString());
+  }
+
+  public Optional<Boolean> getRelatedToEquipmentOrMaterials() {
+    return readBoolean(RELATED_TO_EQUIPMENT_OR_MATERIALS);
   }
 
 }

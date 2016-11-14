@@ -169,6 +169,10 @@ GET     /register-for-open-general-export-licence     controllers.ogel.OgelSumma
 
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
 
+GET     /related-to-equipment-or-materials      controllers.software.RelatedEquipmentController.renderForm
+
+POST    /related-to-equipment-or-materials      controllers.software.RelatedEquipmentController.handleSubmit
+
 GET     /select-goods-type                    controllers.GoodsTypeController.renderForm
 
 POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
