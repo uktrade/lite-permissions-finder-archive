@@ -27,61 +27,33 @@ import java.util.Optional;
 public class PermissionsFinderDao extends CommonRedisDao implements JourneySerialiser {
 
   public static final String JOURNEY = "journey";
-
   public static final String PHYSICAL_GOOD_CONTROL_CODE = "physicalGoodControlCode";
-
   public static final String SOURCE_COUNTRY = "sourceCountry";
-
   public static final String OGEL_ID = "ogelId";
-
   public static final String EXPORT_CATEGORY = "exportCategory";
-
   public static final String APPLICATION_CODE = "applicationCode";
-
   public static final String EMAIL_ADDRESS = "emailAddress";
-
   public static final String PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT = "physicalGoodSearchPaginationDisplayCount";
-
   public static final String PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE = "physicalGoodSearchLastChosenControlCode";
-
   public static final String TRADE_TYPE = "tradeType";
-
   public static final String ARTS_CULTURAL_GOODS = "artsCulturalGoods";
-
   public static final String IS_DUAL_USE_GOOD = "isDualUseGood";
-
   public static final String IS_USED_FOR_EXECUTION_TORTURE = "isUsedForExecutionTorture";
-
   public static final String PLANTS_ANIMALS_LIFE_TYPE = "plantsAnimalsLifeType";
-
   public static final String GOODS_TYPE = "goodsType";
-
   public static final String PHYSICAL_GOOD_SEARCH = "physicalGoodSearch";
-
   public static final String OGEL_QUESTIONS = "ogelQuestions";
-
   public static final String OGEL_CONDITIONS_APPLY = "ogelConditionsApply";
-
   public static final String ITEM_THROUGH_MULTIPLE_COUNTRIES = "itemThroughMultipleCountries";
-
   public static final String FINAL_DESTINATION_COUNTRY = "finalDestinationCountry";
-
   public static final String THROUGH_DESTINATION_COUNTRY_LIST = "throughDestinationCountryList";
-
   public static final String OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS = "ogelRegistrationServiceTransactionExists";
-
   public static final String NON_MILITARY_FIREARMS_EXPORTED_BY_SELF = "nonMilitaryFirearmsExportedBySelf";
-
   public static final String CONTROL_CODE_APPLIES = "controlCodeAdditionalApplies";
-
   public static final String CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY = "controlCodeAdditionalSpecificationsApply";
-
   public static final String CONTROL_CODE_DECONTROLS_APPLY = "controlCodeDecontrolsApply";
-
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
-
   public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
-
   public static final String DUAL_USE_SOFTWARE_CATEGORY = "dualUseSoftwareCategory";
 
   @Inject
