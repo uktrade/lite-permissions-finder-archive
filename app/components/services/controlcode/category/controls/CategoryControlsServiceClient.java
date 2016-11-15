@@ -8,7 +8,7 @@ import models.software.SoftwareCategory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletionStage;
 
 public class CategoryControlsServiceClient {
 
@@ -28,34 +28,20 @@ public class CategoryControlsServiceClient {
     this.webServiceUrl = webServiceAddress + "/category-controls";
   }
 
-  public CategoryControlsServiceResult get(SoftwareCategory softwareCategory) {
-    try {
-      return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softwareCategory.toString()))
-          .withRequestFilter(CorrelationId.requestFilter)
-          .setRequestTimeout(webServiceTimeout)
-          .get()
-          .thenApplyAsync(response -> (CategoryControlsServiceResult) null, httpExecutionContext.current())
-          .toCompletableFuture()
-          .get();
-    }
-    catch (InterruptedException|ExecutionException e) {
-      throw new RuntimeException(e);
-    }
+  public CompletionStage<CategoryControlsServiceResult> get(SoftwareCategory softwareCategory) {
+    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softwareCategory.toString()))
+        .withRequestFilter(CorrelationId.requestFilter)
+        .setRequestTimeout(webServiceTimeout)
+        .get()
+        .thenApplyAsync(response -> (CategoryControlsServiceResult) null, httpExecutionContext.current());
   }
 
-  public CategoryControlsServiceResult get(SoftwareCategory softwareCategory, int count) {
-    try {
-      return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softwareCategory.toString()))
-          .withRequestFilter(CorrelationId.requestFilter)
-          .setRequestTimeout(webServiceTimeout)
-          .get()
-          .thenApplyAsync(response -> new CategoryControlsServiceResult(count), httpExecutionContext.current())
-          .toCompletableFuture()
-          .get();
-    }
-    catch (InterruptedException|ExecutionException e) {
-      throw new RuntimeException(e);
-    }
+  public CompletionStage<CategoryControlsServiceResult> get(SoftwareCategory softwareCategory, int count) {
+    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softwareCategory.toString()))
+        .withRequestFilter(CorrelationId.requestFilter)
+        .setRequestTimeout(webServiceTimeout)
+        .get()
+        .thenApplyAsync(response -> new CategoryControlsServiceResult(count), httpExecutionContext.current());
   }
 
 }

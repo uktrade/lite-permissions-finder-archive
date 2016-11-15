@@ -1,0 +1,39 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import models.software.controls.ControlsBaseDisplay
+
+@(form: Form[_], formAction: String, pageTitle: String, display: ControlsBaseDisplay)
+@standardPage(pageTitle, Some(Html(pageTitle))){
+  @errorSummary(form)
+}{
+
+  <form action="@formAction" method="POST">
+    
+    @contextFormParams()
+
+    @*TODO update styling and ID*@
+    <table id="searchResults" class="search-results">
+      <thead><tr><th></th></tr></thead>
+      <tbody>
+      @for(i <- 0 until display.controlCodes.size) {
+        <tr>
+          <td>
+            <p>
+              <button id="@display.controlCodes.get(i).code-button" type="submit" class="link font-xsmall" name="controlCode" value="@display.controlCodes.get(i).code">@Html(display.controlCodes.get(i).highlightedText)</button>
+            </p>
+          </td>
+        </tr>
+      }
+      </tbody>
+    </table>
+
+    @*TODO update styling and ID*@
+    <div class="search-result-actions">
+      <button type="submit" name="action" value="noMatchedControlCode" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
+    </div>
+    
+  </form>
+  
+}

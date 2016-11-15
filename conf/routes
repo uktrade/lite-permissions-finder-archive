@@ -7,6 +7,10 @@ GET     /                                     controllers.EntryPointController.i
 
 POST    /                                     controllers.EntryPointController.handleSubmit
 
+GET     /category-controls                    controllers.software.controls.CategoryControlsController.renderForm
+
+POST    /category-controls                    controllers.software.controls.CategoryControlsController.handleSubmit
+
 GET     /change-destinations                  controllers.ChangeController.changeDestinationCountries
 
 POST    /change-destinations                  controllers.ChangeController.changeDestinationCountries

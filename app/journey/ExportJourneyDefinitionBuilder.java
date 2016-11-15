@@ -360,6 +360,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage relatedToEquipmentOrMaterials = defineStage("relatedToEquipmentOrMaterials", "Is your software any of the following?",
         controllers.software.routes.RelatedEquipmentController.renderForm());
 
+    JourneyStage categoryControls = defineStage("categoryControls", "Showing controls related to software category",
+        controllers.software.controls.routes.CategoryControlsController.renderForm());
+
     atStage(softwareExemptions)
         .onEvent(StandardEvents.YES)
         .then(moveTo(notApplicable)); // TODO check this is the correct NLR to show
@@ -370,14 +373,14 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
         .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
         .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(notImplemented))
-        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(notImplemented));
+        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(categoryControls));
 
     atStage(dualUseSoftwareCategories)
         .onEvent(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED)
         .branchWith(() -> checkSoftwareControls(permissionsFinderDao.getDualUseSoftwareCategory().get()))
         .when(ApplicableSoftwareControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
         .when(ApplicableSoftwareControls.ONE, moveTo(notImplemented))
-        .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(notImplemented));
+        .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(categoryControls));
 
     atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.YES).then(moveTo(notImplemented));
@@ -385,6 +388,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.NO).then(moveTo(notImplemented));
 
+    atStage(categoryControls)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
+        .then(moveTo(notImplemented));
+
+    atStage(categoryControls)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(relatedToEquipmentOrMaterials));
   }
 
   private SoftwareExemptionsFlow softwareExemptionsFlow(ExportCategory exportCategory) {
@@ -415,7 +425,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
 
   private ApplicableSoftwareControls checkSoftwareControls(SoftwareCategory softwareCategory) {
-    categoryControlsServiceClient.get(softwareCategory); // TODO Stubbed call, do nothing for now.
+    // TODO Move to Utility class, call in controllers and use CategoryControlsServiceClient
     if (softwareCategory == SoftwareCategory.MILITARY) {
       return ApplicableSoftwareControls.ZERO;
     }

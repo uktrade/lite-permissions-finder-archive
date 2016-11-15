@@ -1,0 +1,4 @@
+@import models.software.controls.ControlsBaseDisplay
+
+@(form: Form[_], display: ControlsBaseDisplay)
+@controlsBase(form, controllers.software.controls.routes.CategoryControlsController.handleSubmit.toString, "Showing controls related to software category", display)
