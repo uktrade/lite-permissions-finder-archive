@@ -6,10 +6,12 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import exceptions.FormStateException;
 import journey.Events;
 import journey.SoftwareJourneyHelper;
 import models.software.ApplicableSoftwareControls;
 import models.software.SoftwareCategory;
+import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -46,17 +48,31 @@ public class DualUseSoftwareCategoriesController {
       return completedFuture(ok(dualUseSoftwareCategories.render(form)));
     }
     String dualUseSoftwareCategoryText = form.get().dualUseSoftwareCategory;
-    SoftwareCategory softwareCategory = SoftwareCategory.valueOf(dualUseSoftwareCategoryText);
+    String action = form.get().action;
 
+    if (StringUtils.isNotEmpty(action)) {
+      if ("noneOfTheAbove".equals(action)) {
+        return journeyManager.performTransition(Events.NONE_MATCHED);
+      }
+      else {
+        throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
+      }
+    }
     // MILITARY is a member of SoftwareCategory but is not dual use
-    if (SoftwareCategory.isDualUseSoftwareCategory(softwareCategory)) {
-      permissionsFinderDao.saveSoftwareCategory(softwareCategory);
-      return softwareJourneyHelper.checkSoftwareControls(softwareCategory)
-          .thenComposeAsync(this::dualUseSoftwareCategorySelected, httpExecutionContext.current());
+    else if (StringUtils.isNotEmpty(dualUseSoftwareCategoryText)) {
+      SoftwareCategory softwareCategory = SoftwareCategory.valueOf(dualUseSoftwareCategoryText);
+      if (SoftwareCategory.isDualUseSoftwareCategory(softwareCategory)) {
+        permissionsFinderDao.saveSoftwareCategory(softwareCategory);
+        return softwareJourneyHelper.checkSoftwareControls(softwareCategory)
+            .thenComposeAsync(this::dualUseSoftwareCategorySelected, httpExecutionContext.current());
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of SoftwareCategory enum: \"%s\""
+            , softwareCategory.toString()));
+      }
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of SoftwareCategory enum: \"%s\""
-          , softwareCategory.toString()));
+      throw new FormStateException("Unhandled form state");
     }
   }
 
@@ -68,6 +84,8 @@ public class DualUseSoftwareCategoriesController {
   public static class DualUseSoftwareCategoriesForm {
 
     public String dualUseSoftwareCategory;
+
+    public String action;
 
   }
 }

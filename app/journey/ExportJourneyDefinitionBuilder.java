@@ -369,6 +369,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ApplicableSoftwareControls.ONE, moveTo(notImplemented))
         .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(categoryControls));
 
+    atStage(dualUseSoftwareCategories)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(relatedToEquipmentOrMaterials));
+
     atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.YES).then(moveTo(notImplemented));
 
