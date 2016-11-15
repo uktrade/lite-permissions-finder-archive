@@ -9,7 +9,8 @@ import models.GoodsType;
 import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
 import models.VirtualEUOgelStage;
-import models.software.SoftwareCategory;
+import models.software.ApplicableSoftwareControls;
+import models.software.SoftwareExemptionsFlow;
 
 public class Events {
 
@@ -18,11 +19,11 @@ public class Events {
 
   public static final JourneyEvent EXPORT_CATEGORY_COULD_BE_DUAL_USE = new JourneyEvent("EXPORT_CATEGORY_COULD_BE_DUAL_USE");
 
-  public static final ParameterisedJourneyEvent<ArtsCulturalGoodsType> ARTS_CULTURAL_CATEGORY_SELECTED
-      = new ParameterisedJourneyEvent<>("ARTS_CULTURAL_CATEGORY_SELECTED", ArtsCulturalGoodsType.class);
+  public static final ParameterisedJourneyEvent<ArtsCulturalGoodsType> ARTS_CULTURAL_CATEGORY_SELECTED =
+      new ParameterisedJourneyEvent<>("ARTS_CULTURAL_CATEGORY_SELECTED", ArtsCulturalGoodsType.class);
 
-  public static final ParameterisedJourneyEvent<Boolean> IS_DUAL_USE
-      = new ParameterisedJourneyEvent<>("IS_DUAL_USE", Boolean.class);
+  public static final ParameterisedJourneyEvent<Boolean> IS_DUAL_USE =
+      new ParameterisedJourneyEvent<>("IS_DUAL_USE", Boolean.class);
 
   public static final ParameterisedJourneyEvent<Boolean> IS_USED_FOR_EXECUTION_TORTURE =
       new ParameterisedJourneyEvent<>("IS_USED_FOR_EXECUTION_TORTURE", Boolean.class);
@@ -39,13 +40,13 @@ public class Events {
 
   public static final JourneyEvent CONTROL_CODE_SELECTED = new JourneyEvent("CONTROL_CODE_SELECTED");
 
-  public static final ParameterisedJourneyEvent<ControlCodeFlowStage> CONTROL_CODE_FLOW_NEXT
-      = new ParameterisedJourneyEvent<>("CONTROL_CODE_FLOW_NEXT", ControlCodeFlowStage.class);
+  public static final ParameterisedJourneyEvent<ControlCodeFlowStage> CONTROL_CODE_FLOW_NEXT =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_FLOW_NEXT", ControlCodeFlowStage.class);
 
   public static final JourneyEvent DESTINATION_COUNTRIES_SELECTED = new JourneyEvent("DESTINATION_COUNTRIES_SELECTED");
 
-  public static final ParameterisedJourneyEvent<VirtualEUOgelStage> VIRTUAL_EU_OGEL_STAGE
-      = new ParameterisedJourneyEvent<>("VIRTUAL_EU_OGEL_STAGE", VirtualEUOgelStage.class);
+  public static final ParameterisedJourneyEvent<VirtualEUOgelStage> VIRTUAL_EU_OGEL_STAGE =
+      new ParameterisedJourneyEvent<>("VIRTUAL_EU_OGEL_STAGE", VirtualEUOgelStage.class);
 
   public static final JourneyEvent OGEL_SELECTED = new JourneyEvent("OGEL_SELECTED");
 
@@ -60,6 +61,10 @@ public class Events {
   public static final ParameterisedJourneyEvent<NonMilitaryFirearmExportBySelfType> NON_MILITARY_FIREARMS_QUESTION_ANSWERERD =
       new ParameterisedJourneyEvent<>("NON_MILITARY_FIREARMS_QUESTION_ANSWERERD", NonMilitaryFirearmExportBySelfType.class);
 
-  public static final JourneyEvent DUAL_USE_SOFTWARE_CATEGORY_SELECTED = new JourneyEvent("DUAL_USE_SOFTWARE_CATEGORY_SELECTED");
+  public static final ParameterisedJourneyEvent<SoftwareExemptionsFlow> SOFTWARE_EXEMPTIONS_FLOW =
+      new ParameterisedJourneyEvent<>("SOFTWARE_EXEMPTIONS_FLOW", SoftwareExemptionsFlow.class);
+
+  public static final ParameterisedJourneyEvent<ApplicableSoftwareControls> DUAL_USE_SOFTWARE_CATEGORY_SELECTED =
+      new ParameterisedJourneyEvent<>("DUAL_USE_SOFTWARE_CATEGORY_SELECTED", ApplicableSoftwareControls.class);
 
 }

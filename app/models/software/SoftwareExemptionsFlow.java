@@ -1,6 +1,7 @@
 package models.software;
 
 public enum SoftwareExemptionsFlow {
+  EXEMPTIONS_APPLY,
   DUAL_USE,
   MILITARY_ZERO_CONTROLS,
   MILITARY_ONE_CONTROL,

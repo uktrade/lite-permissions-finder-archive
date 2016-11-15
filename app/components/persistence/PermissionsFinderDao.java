@@ -54,7 +54,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_DECONTROLS_APPLY = "controlCodeDecontrolsApply";
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
   public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
-  public static final String DUAL_USE_SOFTWARE_CATEGORY = "dualUseSoftwareCategory";
+  public static final String SOFTWARE_CATEGORY = "softwareCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
 
   @Inject
@@ -337,18 +337,18 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readString(DO_EXEMPTIONS_APPLY);
   }
 
-  public void saveDualUseSoftwareCategory(SoftwareCategory softwareCategory) {
-    writeString(DUAL_USE_SOFTWARE_CATEGORY, softwareCategory.toString());
+  public void saveSoftwareCategory(SoftwareCategory softwareCategory) {
+    writeString(SOFTWARE_CATEGORY, softwareCategory.toString());
   }
 
-  public Optional<SoftwareCategory> getDualUseSoftwareCategory() {
-    String dualUseSoftwareCategoryText = readString(DUAL_USE_SOFTWARE_CATEGORY);
-    if (StringUtils.isEmpty(dualUseSoftwareCategoryText)) {
+  public Optional<SoftwareCategory> getSoftwareCategory() {
+    String softwareCategory = readString(SOFTWARE_CATEGORY);
+    if (StringUtils.isEmpty(softwareCategory)) {
       return Optional.empty();
     }
     else {
       try {
-        return Optional.of(SoftwareCategory.valueOf(dualUseSoftwareCategoryText));
+        return Optional.of(SoftwareCategory.valueOf(softwareCategory));
       }
       catch (IllegalArgumentException e) {
         return Optional.empty();

@@ -8,7 +8,6 @@ import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneySerialiser;
 import components.common.persistence.RedisKeyConfig;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.category.controls.CategoryControlsServiceClient;
 import journey.ExportJourneyDefinitionBuilder;
 import play.Configuration;
 import play.Environment;
@@ -84,11 +83,7 @@ public class GuiceModule extends AbstractModule{
   }
 
   @Provides
-  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportJourneyDefinitionBuilder) {
-    return Collections.singleton(exportJourneyDefinitionBuilder);
-  }
-
-  @Provides ExportJourneyDefinitionBuilder provideExportJourneyDefinitionBuilder(PermissionsFinderDao permissionsFinderDao, CategoryControlsServiceClient categoryControlsServiceClient) {
-    return new ExportJourneyDefinitionBuilder(permissionsFinderDao, categoryControlsServiceClient);
+  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders() {
+    return Collections.singleton(new ExportJourneyDefinitionBuilder());
   }
 }

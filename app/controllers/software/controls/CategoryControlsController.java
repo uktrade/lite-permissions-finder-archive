@@ -67,8 +67,10 @@ public class CategoryControlsController {
   }
 
   public CompletionStage<Result> renderWithForm(Form<ControlsBaseForm> form) {
-    // Software category is a requirement for this stage in the journey
-    SoftwareCategory softwareCategory = permissionsFinderDao.getDualUseSoftwareCategory().get();
+    // Software category is expected at this stage of the journey
+    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+
+    // Count is specific to stubbed CategoryControlsServiceClient
     int count =
         softwareCategory == SoftwareCategory.MILITARY ? 0
             : softwareCategory == SoftwareCategory.DUMMY ? 1
