@@ -57,6 +57,10 @@ public class AdditionalSpecificationsController {
                 new AdditionalSpecificationsDisplay(result))), httpExecutionContext.current());
   }
 
+  public CompletionStage<Result> renderRelatedToSoftwareForm() {
+    return renderForm();
+  }
+
   public CompletionStage<Result> handleSubmit() {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();

@@ -43,13 +43,17 @@ public class TechnicalNotesController {
     this.frontendServiceClient = frontendServiceClient;
   }
 
-  public CompletionStage<Result> renderForm(){
+  public CompletionStage<Result> renderForm() {
     Optional<Boolean> technicalNotesApply = permissionsFinderDao.getControlCodeTechnicalNotesApply();
     TechnicalNotesForm templateForm = new TechnicalNotesForm();
     templateForm.stillDescribesItems = technicalNotesApply.isPresent() ? technicalNotesApply.get().toString() : "";
     return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
         .thenApplyAsync(result -> ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class).fill(templateForm),
             new TechnicalNotesDisplay(result))), httpExecutionContext.current());
+  }
+
+  public CompletionStage<Result> renderRelatedToSoftwareForm() {
+    return renderForm();
   }
 
   public CompletionStage<Result> handleSubmit() {

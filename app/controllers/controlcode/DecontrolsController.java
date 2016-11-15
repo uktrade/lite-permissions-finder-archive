@@ -52,6 +52,10 @@ public class DecontrolsController {
             new DecontrolsDisplay(result))), httpExecutionContext.current());
   }
 
+  public CompletionStage<Result> renderRelatedToSoftwareForm() {
+    return renderForm();
+  }
+
   public CompletionStage<Result> handleSubmit(){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();

@@ -37,6 +37,10 @@ public class PhysicalGoodsSearchController extends SearchController {
     return ok(physicalGoodsSearch.render(searchForm(templateForm)));
   }
 
+  public Result renderRelatedToSoftwareForm() {
+    return renderForm();
+  }
+
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeSearchForm> form = bindSearchForm();
 

@@ -60,6 +60,10 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
         }, httpExecutionContext.current());
   }
 
+  public CompletionStage<Result> renderRelatedToSoftwareForm() {
+    return renderForm();
+  }
+
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeSearchResultsForm> form = bindSearchResultsForm();
 

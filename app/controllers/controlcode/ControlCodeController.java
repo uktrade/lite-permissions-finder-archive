@@ -56,6 +56,10 @@ public class ControlCodeController extends Controller {
                 new ControlCodeDisplay(result))), httpExecutionContext.current());
   }
 
+  public CompletionStage<Result> renderRelatedToSoftwareForm() {
+    return renderForm();
+  }
+
   public CompletionStage<Result> handleSubmit() {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
     String code = permissionsFinderDao.getPhysicalGoodControlCode();

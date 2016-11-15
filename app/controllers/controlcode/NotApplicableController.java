@@ -43,6 +43,10 @@ public class NotApplicableController {
             , httpExecutionContext.current());
   }
 
+  public CompletionStage<Result> renderRelatedToSoftwareForm(String showExtendedContent) {
+    return renderForm(showExtendedContent);
+  }
+
   public CompletionStage<Result> handleSubmit() {
     Form<NotApplicableForm> form = formFactory.form(NotApplicableForm.class).bindFromRequest();
     if (!form.hasErrors()) {

@@ -47,6 +47,16 @@ GET     /control-code/technical-notes         controllers.controlcode.TechnicalN
 
 POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSubmit
 
+GET     /control-code-related-to-software                             controllers.controlcode.ControlCodeController.renderRelatedToSoftwareForm
+
+GET     /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderRelatedToSoftwareForm
+
+GET     /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.renderRelatedToSoftwareForm
+
+GET     /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.renderRelatedToSoftwareForm(extended)
+
+GET     /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.renderRelatedToSoftwareForm
+
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
@@ -153,9 +163,13 @@ POST    /export-questions                     controllers.ogel.OgelQuestionsCont
 
 GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.renderForm
 
+GET     /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.renderRelatedToSoftwareForm
+
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
 
 GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderForm
+
+GET     /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.renderRelatedToSoftwareForm
 
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
 
