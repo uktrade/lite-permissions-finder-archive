@@ -10,25 +10,17 @@
   @errorSummary(form)
 } {
 
-  <table class="tree">
+  <ul class="tree">
 
-    <tr class="tree-row-last">
-      <td class="tree-line-last">
-        <div class="tree-wrapper-last">
-          <span class="bold-medium">&#10003;<span class="font-small"></span></span>
-        </div>
-      </td>
-      <td class="tree-desc-last">
-        <span class="font-small">@Html(display.friendlyDescription)</span>
-      </td>
-      <td class="tree-code-last">
-        <div class="tree-code-wrapper-last">
-          <span class="font-small">@display.controlCodeAlias</span>
-        </div>
-      </td>
-    </tr>
+    <li class="last">
+      <span class="tree-dot"></span>
+      <span class="tree-desc">
+        <span class="tree-desc-wrapper">@Html(display.friendlyDescription)</span>
+      </span>
+      <span class="tree-code">@display.controlCodeAlias</span>
+    </li>
 
-  </table>
+  </ul>
 
   <h2 class="heading-medium">Do any of these describe your items?</h2>
 
