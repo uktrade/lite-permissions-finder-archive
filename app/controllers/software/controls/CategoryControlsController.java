@@ -15,7 +15,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.search.controls.categoryControls;
+import views.html.software.controls.categoryControls;
 
 import java.util.concurrent.CompletionStage;
 
