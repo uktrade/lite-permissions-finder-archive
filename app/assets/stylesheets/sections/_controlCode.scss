@@ -35,6 +35,10 @@
         background: #000;
         left: 21px;
       }
+
+      @include ie-lte(8) {
+        background: url(../images/tree-black-dot-line.png);
+      }
     }
 
     .tree-desc {
@@ -67,6 +71,12 @@
           color: white;
           height: 100%;
           font-size: 25px;
+        }
+
+        @include ie-lte(8) {
+          background-image: url(../images/small-white-tick.png);
+          background-repeat: no-repeat;
+          background-position: center center;
         }
       }
 
