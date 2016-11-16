@@ -1,3 +1,9 @@
 button.start-application {
   margin-right: 30px;
 }
+
+// Start now buttons
+button.button-resume {
+  @include bold-24;
+  padding: .36842em .84211em .21053em .84211em;
+}
