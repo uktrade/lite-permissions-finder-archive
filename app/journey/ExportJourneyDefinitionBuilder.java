@@ -49,7 +49,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(physicalGoodsSearch))
-        .when(GoodsType.SOFTWARE, moveTo(softwareExemptions))
+        .when(GoodsType.SOFTWARE, moveTo(notImplemented))
         .when(GoodsType.TECHNOLOGY, moveTo(notImplemented));
 
     physicalGoodsStages();
