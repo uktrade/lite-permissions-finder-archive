@@ -36,6 +36,9 @@ public class ControlCodeDisplay {
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.ControlCodeController.handleRelatedToSoftwareSubmit().url();
     }
+    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
+      this.formAction = routes.ControlCodeController.handleSoftwareControlsSubmit().url();
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));

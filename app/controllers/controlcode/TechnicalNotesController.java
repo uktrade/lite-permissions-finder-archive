@@ -48,7 +48,7 @@ public class TechnicalNotesController {
     Optional<Boolean> technicalNotesApply = permissionsFinderDao.getControlCodeTechnicalNotesApply(controlCodeJourney);
     TechnicalNotesForm templateForm = new TechnicalNotesForm();
     templateForm.stillDescribesItems = technicalNotesApply.isPresent() ? technicalNotesApply.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
         .thenApplyAsync(result -> ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class).fill(templateForm),
             new TechnicalNotesDisplay(controlCodeJourney, result))), httpExecutionContext.current());
   }
@@ -61,9 +61,13 @@ public class TechnicalNotesController {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
+  public CompletionStage<Result> renderSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getControlCode();
+    String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
@@ -73,6 +77,7 @@ public class TechnicalNotesController {
             String stillDescribesItems = form.get().stillDescribesItems;
             if("true".equals(stillDescribesItems)) {
               permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeJourney, true);
+              permissionsFinderDao.saveConfirmedControlCode(code);
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
             }
             else if ("false".equals(stillDescribesItems)) {
@@ -92,6 +97,10 @@ public class TechnicalNotesController {
 
   public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  }
+
+  public CompletionStage<Result> handleSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
   }
 
   public static class TechnicalNotesForm {

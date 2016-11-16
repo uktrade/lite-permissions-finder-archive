@@ -51,7 +51,7 @@ public class ControlCodeController extends Controller {
     Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies(controlCodeJourney);
     ControlCodeForm templateForm = new ControlCodeForm();
     templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
         .thenApplyAsync(result ->
             ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
                 new ControlCodeDisplay(controlCodeJourney, result))), httpExecutionContext.current());
@@ -65,9 +65,13 @@ public class ControlCodeController extends Controller {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
+  public CompletionStage<Result> renderSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getControlCode();
+    String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
 
@@ -112,6 +116,10 @@ public class ControlCodeController extends Controller {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
+  public CompletionStage<Result> handleSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
   public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     if (controlCodeData.canShow()) {
@@ -126,6 +134,7 @@ public class ControlCodeController extends Controller {
       }
     }
     else {
+      permissionsFinderDao.saveConfirmedControlCode(controlCodeData.controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
     }
   }

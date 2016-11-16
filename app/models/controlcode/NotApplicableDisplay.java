@@ -19,6 +19,9 @@ public class NotApplicableDisplay {
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.NotApplicableController.handleRelatedToSoftwareSubmit().url();
     }
+    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
+      this.formAction = routes.NotApplicableController.handleSoftwareControlsSubmit().url();
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));

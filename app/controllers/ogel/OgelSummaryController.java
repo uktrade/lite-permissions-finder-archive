@@ -11,6 +11,7 @@ import components.services.ogels.ogel.OgelServiceClient;
 import exceptions.BusinessRuleException;
 import exceptions.FormStateException;
 import journey.Events;
+import models.controlcode.ControlCodeJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -58,7 +59,7 @@ public class OgelSummaryController {
     }
     String action = form.get().action;
     return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-        permissionsFinderDao.getControlCode())
+        permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH))
         .thenApplyAsync(conditionsResult -> {
           if ("register".equals(action)) {
             if (conditionsResult.isEmpty) {
@@ -90,7 +91,8 @@ public class OgelSummaryController {
 
   public CompletionStage<Result> renderWithForm(Form<OgelSummaryForm> form) {
     String ogelId = permissionsFinderDao.getOgelId();
-    String physicalGoodsControlCode = permissionsFinderDao.getControlCode();
+    // TODO This will need to take account of control codes generated via the Software journey
+    String physicalGoodsControlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
 
     return ogelConditionsServiceClient.get(ogelId, physicalGoodsControlCode)
         .thenApplyAsync(conditionsResult -> {

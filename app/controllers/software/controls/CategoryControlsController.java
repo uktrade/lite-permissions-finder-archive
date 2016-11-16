@@ -8,6 +8,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.category.controls.CategoryControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
+import models.controlcode.ControlCodeJourney;
 import models.software.SoftwareCategory;
 import models.software.controls.ControlsBaseDisplay;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +60,7 @@ public class CategoryControlsController {
       }
     }
     else if (StringUtils.isNotEmpty(controlCode)) {
+      permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
     else {

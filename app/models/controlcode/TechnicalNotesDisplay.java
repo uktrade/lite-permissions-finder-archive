@@ -23,6 +23,9 @@ public class TechnicalNotesDisplay {
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.TechnicalNotesController.handleRelatedToSoftwareSubmit().url();
     }
+    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
+      this.formAction = routes.TechnicalNotesController.handleSoftwareControlsSubmit().url();
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));

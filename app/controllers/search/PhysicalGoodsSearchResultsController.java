@@ -109,7 +109,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     if (result.isPresent()) {
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
       permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeJourney, displayCount);
-      permissionsFinderDao.saveControlCode(result.get());
+      permissionsFinderDao.saveSelectedControlCode(controlCodeJourney, result.get());
       permissionsFinderDao.savePhysicalGoodSearchLastChosenControlCode(controlCodeJourney, result.get());
       clearControlCodeDaoFields(controlCodeJourney);
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);

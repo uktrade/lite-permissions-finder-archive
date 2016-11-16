@@ -28,8 +28,9 @@ import java.util.Optional;
 public class PermissionsFinderDao extends CommonRedisDao implements JourneySerialiser {
 
   public static final String JOURNEY = "journey";
-  public static final String CONTROL_CODE = "controlCode";
   public static final String SOURCE_COUNTRY = "sourceCountry";
+  public static final String SELECTED_CONTROL_CODE = "selectedControlCode";
+  public static final String CONFIRMED_CONTROL_CODE = "confirmedControlCode";
   public static final String OGEL_ID = "ogelId";
   public static final String EXPORT_CATEGORY = "exportCategory";
   public static final String APPLICATION_CODE = "applicationCode";
@@ -63,12 +64,20 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     super(keyConfig, pool, transactionManager);
   }
 
-  public void saveControlCode(String physicalGoodControlCode) {
-    writeString(CONTROL_CODE, physicalGoodControlCode);
+  public void saveSelectedControlCode(ControlCodeJourney controlCodeJourney, String selectedControlCode) {
+    writeString(prependFieldName(controlCodeJourney, SELECTED_CONTROL_CODE), selectedControlCode);
   }
 
-  public String getControlCode() {
-    return readString(CONTROL_CODE);
+  public String getSelectedControlCode(ControlCodeJourney controlCodeJourney) {
+    return readString(prependFieldName(controlCodeJourney, SELECTED_CONTROL_CODE));
+  }
+
+  public void saveConfirmedControlCode(String confirmedControlCode) {
+    writeString(CONFIRMED_CONTROL_CODE, confirmedControlCode);
+  }
+
+  public String getConfirmedControlCode() {
+    return readString(CONFIRMED_CONTROL_CODE);
   }
 
   public void saveSourceCountry(String sourceCountry) {

@@ -38,7 +38,7 @@ public class NotApplicableController {
 
   private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney, String showExtendedContent) {
     return frontendServiceClient
-        .get(permissionsFinderDao.getControlCode())
+        .get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
         .thenApplyAsync(result ->
             ok(notApplicable.render(
                 new NotApplicableDisplay(controlCodeJourney,
@@ -54,6 +54,10 @@ public class NotApplicableController {
 
   public CompletionStage<Result> renderRelatedToSoftwareForm(String showExtendedContent) {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE, showExtendedContent);
+  }
+
+  public CompletionStage<Result> renderSoftwareControlsForm(String showExtendedContent) {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS, showExtendedContent);
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -74,6 +78,10 @@ public class NotApplicableController {
   }
 
   public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+    return handleSubmit();
+  }
+
+  public CompletionStage<Result> handleSoftwareControlsSubmit() {
     return handleSubmit();
   }
 

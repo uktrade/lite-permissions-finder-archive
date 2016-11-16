@@ -6,6 +6,7 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
@@ -52,7 +53,7 @@ public class AdditionalSpecificationsController {
     templateForm.stillDescribesItems = additionalSpecificationsApply.isPresent()
         ? additionalSpecificationsApply.get().toString()
         : "";
-    return frontendServiceClient.get(permissionsFinderDao.getControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
         .thenApplyAsync(result ->
             ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class).fill(templateForm),
                 new AdditionalSpecificationsDisplay(controlCodeJourney, result))), httpExecutionContext.current());
@@ -66,9 +67,13 @@ public class AdditionalSpecificationsController {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
+  public CompletionStage<Result> renderSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getControlCode();
+    String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
@@ -100,14 +105,22 @@ public class AdditionalSpecificationsController {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
-  public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult){
-    if (frontendServiceResult.controlCodeData.canShowDecontrols()) {
+  public CompletionStage<Result> handleSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
+  public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult) {
+    ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
+    if (controlCodeData.canShowDecontrols()) {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLS);
     }
-    else if (frontendServiceResult.controlCodeData.canShowTechnicalNotes()) {
+    else if (controlCodeData.canShowTechnicalNotes()) {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
     }
-    return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+    else {
+      permissionsFinderDao.saveConfirmedControlCode(controlCodeData.controlCode);
+      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+    }
   }
 
   public static class AdditionalSpecificationsForm {

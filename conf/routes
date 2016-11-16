@@ -217,6 +217,26 @@ GET     /select-trade-type/import             controllers.StaticContentControlle
 
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 
+GET     /software-controls                             controllers.controlcode.ControlCodeController.renderSoftwareControlsForm
+
+POST    /software-controls                             controllers.controlcode.ControlCodeController.handleSoftwareControlsSubmit
+
+GET     /software-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSoftwareControlsForm
+
+POST    /software-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSoftwareControlsSubmit
+
+GET     /software-controls/decontrols                  controllers.controlcode.DecontrolsController.renderSoftwareControlsForm
+
+POST    /software-controls/decontrols                  controllers.controlcode.DecontrolsController.handleSoftwareControlsSubmit
+
+GET     /software-controls/not-applicable              controllers.controlcode.NotApplicableController.renderSoftwareControlsForm(extended)
+
+POST    /software-controls/not-applicable              controllers.controlcode.NotApplicableController.handleSoftwareControlsSubmit
+
+GET     /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.renderSoftwareControlsForm
+
+POST    /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareControlsSubmit
+
 GET     /start-application                    controllers.StartApplicationController.renderForm
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit

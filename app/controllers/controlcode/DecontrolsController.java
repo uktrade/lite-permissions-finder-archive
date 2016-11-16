@@ -48,7 +48,7 @@ public class DecontrolsController {
     Optional<Boolean> decontrolsApply = permissionsFinderDao.getControlCodeDecontrolsApply(controlCodeJourney);
     DecontrolsForm templateForm = new DecontrolsForm();
     templateForm.decontrolsDescribeItem = decontrolsApply.isPresent() ? decontrolsApply.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
         .thenApplyAsync(result -> ok(decontrols.render(formFactory.form(DecontrolsForm.class).fill(templateForm),
             new DecontrolsDisplay(controlCodeJourney, result))), httpExecutionContext.current());
   }
@@ -61,9 +61,13 @@ public class DecontrolsController {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
+  public CompletionStage<Result> renderSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getControlCode();
+    String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
@@ -81,6 +85,7 @@ public class DecontrolsController {
                 return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
               }
               else {
+                permissionsFinderDao.saveConfirmedControlCode(code);
                 return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
               }
             }
@@ -97,6 +102,10 @@ public class DecontrolsController {
 
   public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  }
+
+  public CompletionStage<Result> handleSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
   }
 
   public static class DecontrolsForm {

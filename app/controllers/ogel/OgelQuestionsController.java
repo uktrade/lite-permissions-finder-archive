@@ -71,7 +71,7 @@ public class OgelQuestionsController {
 
   private CompletionStage<Result> getNextStage(List<String> activityTypes) {
 
-    String physicalGoodControlCode = permissionsFinderDao.getControlCode();
+    String physicalGoodControlCode = permissionsFinderDao.getConfirmedControlCode();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
