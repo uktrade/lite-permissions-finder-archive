@@ -10,6 +10,7 @@ import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
+import models.controlcode.ControlCodeJourney;
 import models.controlcode.DecontrolsDisplay;
 import play.data.Form;
 import play.data.FormFactory;
@@ -43,35 +44,39 @@ public class DecontrolsController {
     this.frontendServiceClient = frontendServiceClient;
   }
 
-  public CompletionStage<Result> renderForm() {
-    Optional<Boolean> decontrolsApply = permissionsFinderDao.getControlCodeDecontrolsApply();
+  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
+    Optional<Boolean> decontrolsApply = permissionsFinderDao.getControlCodeDecontrolsApply(controlCodeJourney);
     DecontrolsForm templateForm = new DecontrolsForm();
     templateForm.decontrolsDescribeItem = decontrolsApply.isPresent() ? decontrolsApply.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getControlCode())
         .thenApplyAsync(result -> ok(decontrols.render(formFactory.form(DecontrolsForm.class).fill(templateForm),
-            new DecontrolsDisplay(result))), httpExecutionContext.current());
+            new DecontrolsDisplay(controlCodeJourney, result))), httpExecutionContext.current());
+  }
+
+  public CompletionStage<Result> renderForm() {
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> renderRelatedToSoftwareForm() {
-    return renderForm();
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
-  public CompletionStage<Result> handleSubmit(){
+  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getPhysicalGoodControlCode();
+    String code = permissionsFinderDao.getControlCode();
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
-            return completedFuture(ok(decontrols.render(form, new DecontrolsDisplay(result))));
+            return completedFuture(ok(decontrols.render(form, new DecontrolsDisplay(controlCodeJourney, result))));
           }
           else {
             String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
             if("true".equals(decontrolsDescribeItem)) {
-              permissionsFinderDao.saveControlCodeDecontrolsApply(true);
+              permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeJourney, true);
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
             }
             else if ("false".equals(decontrolsDescribeItem)) {
-              permissionsFinderDao.saveControlCodeDecontrolsApply(false);
+              permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeJourney, false);
               if (result.controlCodeData.canShowTechnicalNotes()) {
                 return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
               }
@@ -84,6 +89,14 @@ public class DecontrolsController {
             }
           }
         }, httpExecutionContext.current()).thenCompose(Function.identity());
+  }
+
+  public CompletionStage<Result> handleSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+  }
+
+  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
   public static class DecontrolsForm {

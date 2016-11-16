@@ -58,7 +58,7 @@ public class OgelSummaryController {
     }
     String action = form.get().action;
     return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-        permissionsFinderDao.getPhysicalGoodControlCode())
+        permissionsFinderDao.getControlCode())
         .thenApplyAsync(conditionsResult -> {
           if ("register".equals(action)) {
             if (conditionsResult.isEmpty) {
@@ -90,7 +90,7 @@ public class OgelSummaryController {
 
   public CompletionStage<Result> renderWithForm(Form<OgelSummaryForm> form) {
     String ogelId = permissionsFinderDao.getOgelId();
-    String physicalGoodsControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+    String physicalGoodsControlCode = permissionsFinderDao.getControlCode();
 
     return ogelConditionsServiceClient.get(ogelId, physicalGoodsControlCode)
         .thenApplyAsync(conditionsResult -> {

@@ -3,17 +3,18 @@
 @import views.html.common.form._
 @import views.html.common.state._
 
-@(form: Form[_], formAction: String, pageTitle: String)
-@standardPage(pageTitle, Some(Html(pageTitle)), headingCssClass = "heading-xlarge heading-tight"){
-  @errorSummary(form)
+@import models.search.SearchBaseDisplay
+@(display: SearchBaseDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle)), headingCssClass = "heading-xlarge heading-tight"){
+  @errorSummary(display.form)
 }{
 
-  <form action="@formAction" method="POST">
+  <form action="@display.formAction" method="POST">
 
     @contextFormParams()
 
     <span class="form-hint">Provide as much information as you can</span>
-    @formTextarea(form("description"), cssClass = "form-control-wide") {
+    @formTextarea(display.form("description"), cssClass = "form-control-wide") {
 
     }
 
@@ -21,15 +22,15 @@
     <p>
       You don't have to complete these, but they can help to narrow your results.
     </p>
-    @formTextarea(form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide"){
+    @formTextarea(display.form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide"){
       If the item is a component, attachment or part for another item, describe its use.
     }
 
-    @formInput(form("brand")){
+    @formInput(display.form("brand")){
       Brand or manufacturer
     }
 
-    @formInput(form("partNumber")){
+    @formInput(display.form("partNumber")){
       Part or model number
     }
 

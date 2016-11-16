@@ -1,3 +1,3 @@
-@(form: Form[_])
-@formAction = {@controllers.search.routes.PhysicalGoodsSearchController.handleSubmit()}
-@searchBase(form, formAction.toString(), "Describe your items")
+@import models.search.SearchBaseDisplay
+@(display: SearchBaseDisplay)
+@searchBase(display)

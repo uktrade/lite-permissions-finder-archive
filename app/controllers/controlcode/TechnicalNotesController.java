@@ -10,6 +10,7 @@ import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
+import models.controlcode.ControlCodeJourney;
 import models.controlcode.TechnicalNotesDisplay;
 import play.data.Form;
 import play.data.FormFactory;
@@ -43,35 +44,39 @@ public class TechnicalNotesController {
     this.frontendServiceClient = frontendServiceClient;
   }
 
-  public CompletionStage<Result> renderForm() {
-    Optional<Boolean> technicalNotesApply = permissionsFinderDao.getControlCodeTechnicalNotesApply();
+  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
+    Optional<Boolean> technicalNotesApply = permissionsFinderDao.getControlCodeTechnicalNotesApply(controlCodeJourney);
     TechnicalNotesForm templateForm = new TechnicalNotesForm();
     templateForm.stillDescribesItems = technicalNotesApply.isPresent() ? technicalNotesApply.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getControlCode())
         .thenApplyAsync(result -> ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class).fill(templateForm),
-            new TechnicalNotesDisplay(result))), httpExecutionContext.current());
+            new TechnicalNotesDisplay(controlCodeJourney, result))), httpExecutionContext.current());
+  }
+
+  public CompletionStage<Result> renderForm() {
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> renderRelatedToSoftwareForm() {
-    return renderForm();
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getPhysicalGoodControlCode();
+    String code = permissionsFinderDao.getControlCode();
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
-            return completedFuture(ok(technicalNotes.render(form, new TechnicalNotesDisplay(result))));
+            return completedFuture(ok(technicalNotes.render(form, new TechnicalNotesDisplay(controlCodeJourney, result))));
           }
           else {
             String stillDescribesItems = form.get().stillDescribesItems;
             if("true".equals(stillDescribesItems)) {
-              permissionsFinderDao.saveControlCodeTechnicalNotesApply(true);
+              permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeJourney, true);
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
             }
             else if ("false".equals(stillDescribesItems)) {
-              permissionsFinderDao.saveControlCodeTechnicalNotesApply(false);
+              permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeJourney, false);
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
             }
             else {
@@ -79,6 +84,14 @@ public class TechnicalNotesController {
             }
           }
         }, httpExecutionContext.current()).thenCompose(Function.identity());
+  }
+
+  public CompletionStage<Result> handleSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+  }
+
+  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
   public static class TechnicalNotesForm {

@@ -9,6 +9,8 @@ import components.persistence.PermissionsFinderDao;
 import controllers.ErrorController;
 import components.services.search.SearchServiceClient;
 import journey.Events;
+import models.search.SearchBaseDisplay;
+import models.controlcode.ControlCodeJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -31,27 +33,39 @@ public class PhysicalGoodsSearchController extends SearchController {
     super(journeyManager, formFactory, permissionsFinderDao, httpExecutionContext, searchServiceClient, errorController);
   }
 
-  public Result renderForm() {
-    Optional<ControlCodeSearchForm> templateFormOptional = permissionsFinderDao.getPhysicalGoodsSearchForm();
+  private Result renderForm(ControlCodeJourney controlCodeJourney) {
+    Optional<ControlCodeSearchForm> templateFormOptional = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeJourney);
     ControlCodeSearchForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new ControlCodeSearchForm();
-    return ok(physicalGoodsSearch.render(searchForm(templateForm)));
+    return ok(physicalGoodsSearch.render(new SearchBaseDisplay(controlCodeJourney, searchForm(templateForm))));
+  }
+
+  public Result renderForm() {
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public Result renderRelatedToSoftwareForm() {
-    return renderForm();
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<ControlCodeSearchForm> form = bindSearchForm();
 
     if(form.hasErrors()){
-      return completedFuture(ok(physicalGoodsSearch.render(form)));
+      return completedFuture(ok(physicalGoodsSearch.render(new SearchBaseDisplay(controlCodeJourney, form))));
     }
-    permissionsFinderDao.savePhysicalGoodSearchForm(form.get());
-    permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(
+    permissionsFinderDao.savePhysicalGoodSearchForm(controlCodeJourney, form.get());
+    permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeJourney,
         PhysicalGoodsSearchResultsController.PAGINATION_SIZE);
-    permissionsFinderDao.clearPhysicalGoodSearchLastChosenControlCode();
+    permissionsFinderDao.clearPhysicalGoodSearchLastChosenControlCode(controlCodeJourney);
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
+  }
+
+  public CompletionStage<Result> handleSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+  }
+
+  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
 }

@@ -40,7 +40,7 @@ public class RadioactiveController {
     if ("continue".equals(form.get().action)) {
       // Setup DAO state for Destination Country journey stage.
       permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
-      permissionsFinderDao.savePhysicalGoodControlCode(CONTROLLED_RADIOACTIVE_SOURCES);
+      permissionsFinderDao.saveControlCode(CONTROLLED_RADIOACTIVE_SOURCES);
       return journeyManager.performTransition(StandardEvents.NEXT);
     }
     throw new FormStateException("Unknown value of action: \"" + form.get().action + "\"");

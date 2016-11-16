@@ -12,6 +12,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeDisplay;
+import models.controlcode.ControlCodeJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -46,23 +47,27 @@ public class ControlCodeController extends Controller {
   }
 
 
-  public CompletionStage<Result> renderForm() {
-    Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies();
+  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
+    Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies(controlCodeJourney);
     ControlCodeForm templateForm = new ControlCodeForm();
     templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getControlCode())
         .thenApplyAsync(result ->
             ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
-                new ControlCodeDisplay(result))), httpExecutionContext.current());
+                new ControlCodeDisplay(controlCodeJourney, result))), httpExecutionContext.current());
+  }
+
+  public CompletionStage<Result> renderForm() {
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> renderRelatedToSoftwareForm() {
-    return renderForm();
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getPhysicalGoodControlCode();
+    String code = permissionsFinderDao.getControlCode();
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
 
@@ -81,22 +86,30 @@ public class ControlCodeController extends Controller {
           }
 
           if (form.hasErrors()) {
-            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(result))));
+            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeJourney, result))));
           }
 
           String couldDescribeItems = form.get().couldDescribeItems;
           if("true".equals(couldDescribeItems)) {
-            permissionsFinderDao.saveControlCodeApplies(true);
+            permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, true);
             return nextScreenTrue(result);
           }
           else if ("false".equals(couldDescribeItems)) {
-            permissionsFinderDao.saveControlCodeApplies(false);
+            permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, false);
             return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
           }
           else {
             throw new FormStateException("Unhandled form state");
           }
         }, httpExecutionContext.current()).thenCompose(Function.identity());
+  }
+
+  public CompletionStage<Result> handleSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+  }
+
+  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
   public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult) {

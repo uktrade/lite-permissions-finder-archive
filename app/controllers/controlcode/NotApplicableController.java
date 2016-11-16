@@ -9,6 +9,8 @@ import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
+import models.controlcode.ControlCodeJourney;
+import models.controlcode.NotApplicableDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -34,17 +36,24 @@ public class NotApplicableController {
     this.frontendServiceClient = frontendServiceClient;
   }
 
-  public CompletionStage<Result> renderForm(String showExtendedContent) {
+  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney, String showExtendedContent) {
     return frontendServiceClient
-        .get(permissionsFinderDao.getPhysicalGoodControlCode())
+        .get(permissionsFinderDao.getControlCode())
         .thenApplyAsync(result ->
-            ok(notApplicable.render(formFactory.form(NotApplicableForm.class), result.controlCodeData.alias,
-                Boolean.parseBoolean(showExtendedContent)))
+            ok(notApplicable.render(
+                new NotApplicableDisplay(controlCodeJourney,
+                    formFactory.form(NotApplicableForm.class),
+                    result.controlCodeData.alias,
+                    Boolean.parseBoolean(showExtendedContent))))
             , httpExecutionContext.current());
   }
 
+  public CompletionStage<Result> renderForm(String showExtendedContent) {
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH, showExtendedContent);
+  }
+
   public CompletionStage<Result> renderRelatedToSoftwareForm(String showExtendedContent) {
-    return renderForm(showExtendedContent);
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE, showExtendedContent);
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -62,6 +71,10 @@ public class NotApplicableController {
       }
     }
     throw new FormStateException("Unhandled form state");
+  }
+
+  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+    return handleSubmit();
   }
 
   public static class NotApplicableForm {

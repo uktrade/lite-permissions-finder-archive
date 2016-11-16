@@ -75,11 +75,11 @@ public class OgelConditionsController {
     if ("true".equals(doConditionsApplyText) || "false".equals(doConditionsApplyText)) {
       boolean doConditionsApply = Boolean.parseBoolean(doConditionsApplyText);
       permissionsFinderDao.saveOgelConditionsApply(doConditionsApply);
-      String physicalGoodsControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+      String physicalGoodsControlCode = permissionsFinderDao.getControlCode();
 
       // Check this ogel required conditions
       return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-          permissionsFinderDao.getPhysicalGoodControlCode())
+          permissionsFinderDao.getControlCode())
           .thenApplyAsync(conditionsResult -> {
             if (conditionsResult.isEmpty) {
               throw new BusinessRuleException("Should not be able to progress without conditions");
@@ -126,7 +126,7 @@ public class OgelConditionsController {
 
   private CompletionStage<Result> renderWithForm(Form<OgelConditionsForm> form) {
     String ogelId = permissionsFinderDao.getOgelId();
-    String physicalGoodControlCode = permissionsFinderDao.getPhysicalGoodControlCode();
+    String physicalGoodControlCode = permissionsFinderDao.getControlCode();
     return ogelConditionsServiceClient.get(ogelId, physicalGoodControlCode)
         .thenApplyAsync(conditionsResult -> {
           if (conditionsResult.isMissingControlCodes) {

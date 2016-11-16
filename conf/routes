@@ -49,13 +49,23 @@ POST    /control-code/technical-notes         controllers.controlcode.TechnicalN
 
 GET     /control-code-related-to-software                             controllers.controlcode.ControlCodeController.renderRelatedToSoftwareForm
 
+POST    /control-code-related-to-software                             controllers.controlcode.ControlCodeController.handleRelatedToSoftwareSubmit
+
 GET     /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderRelatedToSoftwareForm
+
+POST    /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleRelatedToSoftwareSubmit
 
 GET     /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.renderRelatedToSoftwareForm
 
+POST    /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.handleRelatedToSoftwareSubmit
+
 GET     /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.renderRelatedToSoftwareForm(extended)
 
+POST    /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.handleRelatedToSoftwareSubmit
+
 GET     /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.renderRelatedToSoftwareForm
+
+POST    /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedToSoftwareSubmit
 
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
@@ -163,17 +173,21 @@ POST    /export-questions                     controllers.ogel.OgelQuestionsCont
 
 GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.renderForm
 
+POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
+
 GET     /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.renderRelatedToSoftwareForm
 
-POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
+POST    /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.handleRelatedToSoftwareSubmit
 
 GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderForm
 
-GET     /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.renderRelatedToSoftwareForm
-
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
 
-GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(goodsType: String, fromIndex: Int, toIndex: Int, transactionId: String)
+GET     /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.renderRelatedToSoftwareForm
+
+POST    /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.handleRelatedToSoftwareSubmit
+
+GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeJourney: String, goodsType: String, fromIndex: Int, toIndex: Int, transactionId: String)
 
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 

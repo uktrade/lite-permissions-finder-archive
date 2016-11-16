@@ -72,6 +72,8 @@ public class SearchResultsController {
 
     public String action;
 
+    public String controlCodeJourney;
+
     public String goodsType;
 
     public String resultsDisplayCount;

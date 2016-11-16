@@ -4,6 +4,7 @@
 @import views.html.common.state._
 @import controllers.search.SearchResultsController
 
+@import models.search.SearchResultsBaseDisplay
 @(display: SearchResultsBaseDisplay)
   @standardPage(
     if (!display.results.isEmpty()) "Possible matches" else "Your search did not return any results",
@@ -16,6 +17,8 @@
       <form action="@display.formAction" method="POST">
 
         @contextFormParams()
+        <input id="controlCodeJourneyHiddenInput" type="hidden" name="controlCodeJourney" value="@display.controlCodeJourney.value">
+
         <input id="goodsTypeHiddenInput" type="hidden" name="goodsType" value="@display.goodsType.value">
 
         <input id="resultsDisplayCountHiddenInput" type="hidden" name="resultsDisplayCount" value="@display.resultsDisplayCount">

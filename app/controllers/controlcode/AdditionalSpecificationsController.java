@@ -12,6 +12,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import models.controlcode.AdditionalSpecificationsDisplay;
+import models.controlcode.ControlCodeJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -45,39 +46,43 @@ public class AdditionalSpecificationsController {
     this.frontendServiceClient = frontendServiceClient;
   }
 
-  public CompletionStage<Result> renderForm() {
-    Optional<Boolean> additionalSpecificationsApply = permissionsFinderDao.getControlCodeAdditionalSpecificationsApply();
+  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
+    Optional<Boolean> additionalSpecificationsApply = permissionsFinderDao.getControlCodeAdditionalSpecificationsApply(controlCodeJourney);
     AdditionalSpecificationsForm templateForm = new AdditionalSpecificationsForm();
     templateForm.stillDescribesItems = additionalSpecificationsApply.isPresent()
         ? additionalSpecificationsApply.get().toString()
         : "";
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getControlCode())
         .thenApplyAsync(result ->
             ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class).fill(templateForm),
-                new AdditionalSpecificationsDisplay(result))), httpExecutionContext.current());
+                new AdditionalSpecificationsDisplay(controlCodeJourney, result))), httpExecutionContext.current());
+  }
+
+  public CompletionStage<Result> renderForm() {
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> renderRelatedToSoftwareForm() {
-    return renderForm();
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getPhysicalGoodControlCode();
+    String code = permissionsFinderDao.getControlCode();
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
             return completedFuture(ok(additionalSpecifications.render(form,
-                new AdditionalSpecificationsDisplay(result))));
+                new AdditionalSpecificationsDisplay(controlCodeJourney, result))));
           }
           else {
             String stillDescribesItems = form.get().stillDescribesItems;
             if("true".equals(stillDescribesItems)) {
-              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(true);
+              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeJourney, true);
               return nextScreenTrue(result);
             }
             else if ("false".equals(stillDescribesItems)) {
-              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(false);
+              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeJourney, false);
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
             }
             else {
@@ -85,6 +90,14 @@ public class AdditionalSpecificationsController {
             }
           }
         }, httpExecutionContext.current()).thenCompose(Function.identity());
+  }
+
+  public CompletionStage<Result> handleSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+  }
+
+  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
   public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult){

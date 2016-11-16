@@ -4,15 +4,16 @@
 @import views.html.common.state._
 @import controllers.controlcode.routes.NotApplicableController
 
-@(form: Form[_], controlCodeAlias: String, showExtendedContent: Boolean)
-@standardPage(controlCodeAlias + " is not applicable to your item", Some(Html(controlCodeAlias + " is not applicable to your item"))){
-  @errorSummary(form)
+@import models.controlcode.NotApplicableDisplay
+@(display: NotApplicableDisplay)
+@standardPage(display.controlCodeAlias + " is not applicable to your item", Some(Html(display.controlCodeAlias + " is not applicable to your item"))){
+  @errorSummary(display.form)
 }{
   <form action="@NotApplicableController.handleSubmit" method="POST">
 
     @contextFormParams()
 
-    @if(showExtendedContent) {
+    @if(display.showExtendedContent) {
 
       <p>
         This may be because either:
