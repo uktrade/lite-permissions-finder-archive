@@ -1,3 +1,15 @@
+.search-results {
+  td {
+    padding: 0;
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 1em 0 0.9em 0;
+    }
+  }
+}
+
 .hs-code-wrapper {
   margin-bottom: 30px;
 }

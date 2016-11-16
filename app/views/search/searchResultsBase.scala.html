@@ -32,9 +32,7 @@
           @for(i <- 0 until Math.min(display.results.size, display.resultsDisplayCount)) {
             <tr>
               <td>
-                <p>
-                  <button id="@display.results.get(i).code-button" type="submit" class="link font-xsmall" name="result" value="@display.results.get(i).code">@Html(display.results.get(i).highlightedText)</button>
-                </p>
+                <button id="@display.results.get(i).code-button" type="submit" class="link font-medium" name="result" value="@display.results.get(i).code">@Html(display.results.get(i).highlightedText)</button>
               </td>
             </tr>
           }
