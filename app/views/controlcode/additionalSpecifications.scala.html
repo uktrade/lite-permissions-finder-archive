@@ -6,7 +6,7 @@
 @import models.controlcode.AdditionalSpecificationsDisplay
 
 @(form: Form[_], display: AdditionalSpecificationsDisplay)
-@standardPage(display.title, Some(Html(display.title))){
+@standardPage(display.title, Some(Html(display.title)), twoThirdsColumn = false){
   @errorSummary(form)
 } {
 
@@ -22,26 +22,28 @@
 
   </ul>
 
-  <p>@Html(display.clauseText)</p>
+  @twoThirdsColumn {
+    <p>@Html(display.clauseText)</p>
 
-  @if(!display.specifications.isEmpty) {
-    <ul class="list list-bullet">
-    @for(spec <- display.specifications) {
-      <li>@Html(spec)</li>
+    @if(!display.specifications.isEmpty) {
+      <ul class="list list-bullet">
+      @for(spec <- display.specifications) {
+        <li>@Html(spec)</li>
+      }
+      </ul>
     }
-    </ul>
+
+    <form action="@AdditionalSpecificationsController.handleSubmit()" method="POST">
+
+      @contextFormParams()
+
+      @formRadioBoolean(form("stillDescribesItems"), Html("Does this still describe your items?"), "Yes", "No")
+
+      <div class="form-group">
+        <button type="submit" class="button">Save and continue</button>
+      </div>
+
+    </form>
   }
-
-  <form action="@AdditionalSpecificationsController.handleSubmit()" method="POST">
-
-    @contextFormParams()
-
-    @formRadioBoolean(form("stillDescribesItems"), Html("Does this still describe your items?"), "Yes", "No")
-
-    <div class="form-group">
-      <button type="submit" class="button">Save and continue</button>
-    </div>
-
-  </form>
 
 }

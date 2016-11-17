@@ -6,7 +6,7 @@
 @import models.controlcode.ControlCodeDisplay
 
 @(form: Form[_], display: ControlCodeDisplay)
-@standardPage(display.title, Some(Html(display.title))){
+@standardPage(display.title, Some(Html(display.title)), twoThirdsColumn = false){
   @errorSummary(form)
 }{
 
@@ -41,35 +41,38 @@
     </li>
 
   </ul>
+  @twoThirdsColumn {
+    <form action="@ControlCodeController.handleSubmit()" method="POST">
 
-  <form action="@ControlCodeController.handleSubmit()" method="POST">
+      @contextFormParams()
 
-    @contextFormParams()
+      @formRadioBoolean(form("couldDescribeItems"), Html("Could this describe your items?"), "Yes", "No")
 
-    @formRadioBoolean(form("couldDescribeItems"), Html("Could this describe your items?"), "Yes", "No")
+      <div class="form-group">
+        <button type="submit" class="button">Continue</button>
+      </div>
 
-    <div class="form-group">
-      <button type="submit" class="button">Continue</button>
-    </div>
+      @detailPanel("im-not-sure")(Html("I'm not sure")) {
+        <p>
+          If your item is not described above, you can:
+        </p>
 
-    @detailPanel("im-not-sure")(Html("I'm not sure")) {
-      <p>
-        If your item is not described above, you can:
-      </p>
+        <ul class="list list-bullet text">
+          <li>
+            <button class="link underlined" name="action" value="backToSearchResults">
+              return to your search results and select another item type</button>, or
+          </li>
+          <li>
+            <button class="link underlined" name="action" value="backToSearch">
+              edit your item description to get a different set of results</button>
+          </li>
+        </ul>
 
-      <ul class="list list-bullet text">
-        <li>
-          <button class="link underlined" name="action" value="backToSearchResults">return to your search results and select another item type</button>, or
-        </li>
-        <li>
-          <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
-        </li>
-      </ul>
+        @helpInfoPanel()
 
-      @helpInfoPanel()
+      }
 
-    }
-
-  </form>
+    </form>
+  }
 
 }
