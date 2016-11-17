@@ -9,6 +9,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.TechnicalNotesDisplay;
@@ -30,18 +31,21 @@ public class TechnicalNotesController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
+  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
 
   @Inject
   public TechnicalNotesController(JourneyManager journeyManager,
                                   FormFactory formFactory,
                                   PermissionsFinderDao permissionsFinderDao,
                                   HttpExecutionContext httpExecutionContext,
-                                  FrontendServiceClient frontendServiceClient) {
+                                  FrontendServiceClient frontendServiceClient,
+                                  ControlCodeJourneyHelper controlCodeJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
+    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
@@ -82,7 +86,7 @@ public class TechnicalNotesController {
             }
             else if ("false".equals(stillDescribesItems)) {
               permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeJourney, false);
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
+              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeJourney);
             }
             else {
               throw new FormStateException("Unhandled form state");

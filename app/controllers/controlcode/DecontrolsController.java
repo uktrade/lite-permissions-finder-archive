@@ -9,9 +9,12 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.SoftwareJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.DecontrolsDisplay;
+import models.software.SoftwareCategory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -30,18 +33,21 @@ public class DecontrolsController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
+  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
 
   @Inject
   public DecontrolsController(JourneyManager journeyManager,
                               FormFactory formFactory,
                               PermissionsFinderDao permissionsFinderDao,
                               HttpExecutionContext httpExecutionContext,
-                              FrontendServiceClient frontendServiceClient) {
+                              FrontendServiceClient frontendServiceClient,
+                              ControlCodeJourneyHelper controlCodeJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
+    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
@@ -77,7 +83,7 @@ public class DecontrolsController {
             String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
             if("true".equals(decontrolsDescribeItem)) {
               permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeJourney, true);
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
+              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeJourney);
             }
             else if ("false".equals(decontrolsDescribeItem)) {
               permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeJourney, false);

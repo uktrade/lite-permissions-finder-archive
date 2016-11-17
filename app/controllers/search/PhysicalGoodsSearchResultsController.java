@@ -12,6 +12,7 @@ import controllers.ErrorController;
 import controllers.controlcode.ControlCodeController;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeJourneyHelper;
 import models.GoodsType;
 import models.search.SearchResultsBaseDisplay;
 import models.controlcode.ControlCodeJourney;
@@ -28,6 +29,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
   private final HttpExecutionContext httpExecutionContext;
   private final PermissionsFinderDao permissionsFinderDao;
+  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
 
   @Inject
   public PhysicalGoodsSearchResultsController(JourneyManager journeyManager,
@@ -37,10 +39,12 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                                               ControlCodeController controlCodeController,
                                               ErrorController errorController,
                                               HttpExecutionContext httpExecutionContext,
-                                              PermissionsFinderDao permissionsFinderDao) {
+                                              PermissionsFinderDao permissionsFinderDao,
+                                              ControlCodeJourneyHelper controlCodeJourneyHelper) {
     super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
     this.httpExecutionContext = httpExecutionContext;
     this.permissionsFinderDao = permissionsFinderDao;
+    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
@@ -108,10 +112,10 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
+      controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(controlCodeJourney, result.get());
       permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeJourney, displayCount);
       permissionsFinderDao.saveSelectedControlCode(controlCodeJourney, result.get());
       permissionsFinderDao.savePhysicalGoodSearchLastChosenControlCode(controlCodeJourney, result.get());
-      clearControlCodeDaoFields(controlCodeJourney);
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
@@ -129,13 +133,6 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   public CompletionStage<SearchServiceResult> physicalGoodsSearch(ControlCodeJourney controlCodeJourney) {
     String searchTerms = PhysicalGoodsSearchController.getSearchTerms(permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeJourney).get());
     return searchServiceClient.get(searchTerms);
-  }
-
-  private void clearControlCodeDaoFields(ControlCodeJourney controlCodeJourney) {
-    permissionsFinderDao.clearControlCodeApplies(controlCodeJourney);
-    permissionsFinderDao.clearControlCodeDecontrolsApply(controlCodeJourney);
-    permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(controlCodeJourney);
-    permissionsFinderDao.clearControlCodeTechnicalNotesApply(controlCodeJourney);
   }
 
 }

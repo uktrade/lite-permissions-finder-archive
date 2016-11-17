@@ -10,6 +10,7 @@ import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
 import models.VirtualEUOgelStage;
 import models.software.ApplicableSoftwareControls;
+import models.software.SoftwareControlsNotApplicableFlow;
 import models.software.SoftwareExemptionsFlow;
 
 public class Events {
@@ -66,5 +67,11 @@ public class Events {
 
   public static final ParameterisedJourneyEvent<ApplicableSoftwareControls> DUAL_USE_SOFTWARE_CATEGORY_SELECTED =
       new ParameterisedJourneyEvent<>("DUAL_USE_SOFTWARE_CATEGORY_SELECTED", ApplicableSoftwareControls.class);
+
+  public static final ParameterisedJourneyEvent<ApplicableSoftwareControls> CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE", ApplicableSoftwareControls.class);
+
+  public static final ParameterisedJourneyEvent<SoftwareControlsNotApplicableFlow> CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW =
+      new ParameterisedJourneyEvent("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW", SoftwareControlsNotApplicableFlow.class);
 
 }

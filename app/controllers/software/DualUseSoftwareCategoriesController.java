@@ -8,7 +8,7 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.SoftwareJourneyHelper;
+import journey.helpers.SoftwareJourneyHelper;
 import models.software.ApplicableSoftwareControls;
 import models.software.SoftwareCategory;
 import org.apache.commons.lang3.StringUtils;
@@ -63,7 +63,7 @@ public class DualUseSoftwareCategoriesController {
       SoftwareCategory softwareCategory = SoftwareCategory.valueOf(dualUseSoftwareCategoryText);
       if (SoftwareCategory.isDualUseSoftwareCategory(softwareCategory)) {
         permissionsFinderDao.saveSoftwareCategory(softwareCategory);
-        return softwareJourneyHelper.checkSoftwareControls(softwareCategory)
+        return softwareJourneyHelper.checkSoftwareControls(softwareCategory, true) // Save to DAO
             .thenComposeAsync(this::dualUseSoftwareCategorySelected, httpExecutionContext.current());
       }
       else {

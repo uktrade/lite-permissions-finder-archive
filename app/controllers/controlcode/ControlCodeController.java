@@ -10,6 +10,7 @@ import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeDisplay;
 import models.controlcode.ControlCodeJourney;
@@ -32,18 +33,21 @@ public class ControlCodeController extends Controller {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
+  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
 
   @Inject
   public ControlCodeController(JourneyManager journeyManager,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext,
-                               FrontendServiceClient frontendServiceClient) {
+                               FrontendServiceClient frontendServiceClient,
+                               ControlCodeJourneyHelper controlCodeJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
+    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
 
@@ -100,7 +104,7 @@ public class ControlCodeController extends Controller {
           }
           else if ("false".equals(couldDescribeItems)) {
             permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, false);
-            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
+            return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeJourney);
           }
           else {
             throw new FormStateException("Unhandled form state");

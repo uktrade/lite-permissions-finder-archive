@@ -8,7 +8,7 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.SoftwareJourneyHelper;
+import journey.helpers.SoftwareJourneyHelper;
 import models.ExportCategory;
 import models.software.ApplicableSoftwareControls;
 import models.software.SoftwareCategory;

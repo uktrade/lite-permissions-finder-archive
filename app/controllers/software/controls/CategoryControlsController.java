@@ -8,6 +8,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.category.controls.CategoryControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeJourneyHelper;
 import models.controlcode.ControlCodeJourney;
 import models.software.SoftwareCategory;
 import models.software.controls.ControlsBaseDisplay;
@@ -26,18 +27,21 @@ public class CategoryControlsController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final CategoryControlsServiceClient categoryControlsServiceClient;
   private final HttpExecutionContext httpExecutionContext;
+  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
 
   @Inject
   public CategoryControlsController(JourneyManager journeyManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
                                     CategoryControlsServiceClient categoryControlsServiceClient,
-                                    HttpExecutionContext httpExecutionContext) {
+                                    HttpExecutionContext httpExecutionContext,
+                                    ControlCodeJourneyHelper controlCodeJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.categoryControlsServiceClient = categoryControlsServiceClient;
     this.httpExecutionContext = httpExecutionContext;
+    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -60,6 +64,7 @@ public class CategoryControlsController {
       }
     }
     else if (StringUtils.isNotEmpty(controlCode)) {
+      controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
       permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
