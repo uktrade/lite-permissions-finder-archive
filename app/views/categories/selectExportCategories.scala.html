@@ -4,7 +4,7 @@
 @import models.ExportCategory
 
 @(form: Form[_])
-@standardPage("Your exports", Some(Html("What are you exporting?"))){
+@standardPage(htmlTitle = "Your exports", pageHeading = Some(Html("What are you exporting?")), pageName = Some("selectExportCategories")){
   @errorSummary(form)
 }{
 

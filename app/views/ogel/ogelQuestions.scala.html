@@ -4,7 +4,7 @@
 @import views.html.common.state._
 
 @(form: Form[_])
-@standardPage("Refining your licence results", Some(Html("Refining your licence results"))){
+@standardPage(htmlTitle = "Refining your licence results", pageHeading = Some(Html("Refining your licence results")), pageName = Some("ogelQuestions")){
   @errorSummary(form, fieldOrder = scala.List("forRepairReplacement", "forExhibitionDemonstration", "before1897upto35k"))
 }{
 
