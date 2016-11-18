@@ -6,6 +6,7 @@ import components.persistence.PermissionsFinderDao;
 import journey.Events;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
+import models.software.ApplicableSoftwareControls;
 import models.software.SoftwareCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
@@ -49,6 +50,30 @@ public class ControlCodeJourneyHelper {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));
     }
+  }
+
+  public CompletionStage<Result> confirmedJourneyTransition(ControlCodeJourney controlCodeJourney, String controlCode) {
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+      permissionsFinderDao.saveConfirmedControlCode(controlCode);
+      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+      return softwareJourneyHelper.checkRelatedSoftwareControls(softwareCategory, controlCode, false)
+          .thenComposeAsync(this::controlsReleatedToPhysicalGoodTransition, httpExecutionContext.current());
+    }
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
+      permissionsFinderDao.saveConfirmedControlCode(controlCode);
+      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
+          , controlCodeJourney.toString()));
+    }
+  }
+
+  private CompletionStage<Result> controlsReleatedToPhysicalGoodTransition(ApplicableSoftwareControls applicableSoftwareControls) {
+    return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD, applicableSoftwareControls);
   }
 
   public void clearControlCodeJourneyDaoFields(ControlCodeJourney controlCodeJourney) {

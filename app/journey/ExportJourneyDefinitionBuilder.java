@@ -429,6 +429,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(controlCodeforRelatedToSoftware));
 
+    atStage(physicalGoodsSearchResultsRelatedToSoftware)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(notImplemented));
+
     atStage(controlCodeforRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
@@ -436,30 +440,34 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationsRelatedToSoftware))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsRelatedToSoftware))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(notImplemented)) // TODO
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearchRelatedToSoftware))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
+
+    bindControlsRelatedToPhysicalGoods(controlCodeforRelatedToSoftware);
 
     atStage(additionalSpecificationsRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtendedRelatedToSoftware))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsRelatedToSoftware))
-        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(notImplemented)); // TODO
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware));
+
+    bindControlsRelatedToPhysicalGoods(additionalSpecificationsRelatedToSoftware);
 
     atStage(decontrolsRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtendedRelatedToSoftware))
-        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(notImplemented)); // TODO
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware));
+
+    bindControlsRelatedToPhysicalGoods(decontrolsRelatedToSoftware);
 
     atStage(technicalNotesRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
-        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtendedRelatedToSoftware))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(notImplemented)); // TODO
+        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtendedRelatedToSoftware));
+
+    bindControlsRelatedToPhysicalGoods(technicalNotesRelatedToSoftware);
 
     atStage(controlCodeNotApplicableRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -552,7 +560,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .branch()
         .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(categoryControls))
         .when(SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS, moveTo(relatedToEquipmentOrMaterials));
+  }
 
+  private void bindControlsRelatedToPhysicalGoods(JourneyStage journeyStage) {
+    atStage(journeyStage)
+        .onEvent(Events.CONTROLS_RELATED_PHYSICAL_GOOD)
+        .branch()
+        .when(ApplicableSoftwareControls.ZERO, moveTo(notImplemented))
+        .when(ApplicableSoftwareControls.ONE, moveTo(notImplemented))
+        .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(notImplemented));
   }
 
 }

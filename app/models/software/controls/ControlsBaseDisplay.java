@@ -1,6 +1,6 @@
 package models.software.controls;
 
-import components.services.controlcode.category.controls.ControlCode;
+import components.services.controlcode.controls.ControlCode;
 
 import java.util.List;
 

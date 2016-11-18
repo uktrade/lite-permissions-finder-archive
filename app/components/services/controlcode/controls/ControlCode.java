@@ -1,4 +1,4 @@
-package components.services.controlcode.category.controls;
+package components.services.controlcode.controls;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

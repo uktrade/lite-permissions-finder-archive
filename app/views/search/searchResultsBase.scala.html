@@ -5,6 +5,7 @@
 @import controllers.search.SearchResultsController
 
 @import models.search.SearchResultsBaseDisplay
+@import models.controlcode.ControlCodeJourney
 @(display: SearchResultsBaseDisplay)
   @standardPage(
     if (!display.results.isEmpty()) "Possible matches" else "Your search did not return any results",
@@ -12,11 +13,12 @@
     @errorSummary(display.form)
   }{
 
+    <form action="@display.formAction" method="POST">
+
+    @contextFormParams()
+
     @if(!display.results.isEmpty()) {
 
-      <form action="@display.formAction" method="POST">
-
-        @contextFormParams()
         <input id="controlCodeJourneyHiddenInput" type="hidden" name="controlCodeJourney" value="@display.controlCodeJourney.value">
 
         <input id="goodsTypeHiddenInput" type="hidden" name="goodsType" value="@display.goodsType.value">
@@ -56,8 +58,6 @@
           <button type="submit" name="action" value="no-matched-result" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
         </div>
 
-      </form>
-
     } else {
 
       <p>
@@ -69,6 +69,13 @@
         <li>try different terms</li>
         <li>if you are searching for components of larger items, widen your search to include those larger items</li>
       </ul>
+
+      @if(display.controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+
+        <button type="submit" name="action" value="no-matched-result" class="link underlined font-small no-matched-result-link">CONTINUE JOURNEY</button>
+
+      }
+    </form>
 
     }
 

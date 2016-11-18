@@ -72,6 +72,9 @@ public class Events {
       new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE", ApplicableSoftwareControls.class);
 
   public static final ParameterisedJourneyEvent<SoftwareControlsNotApplicableFlow> CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW =
-      new ParameterisedJourneyEvent("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW", SoftwareControlsNotApplicableFlow.class);
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW", SoftwareControlsNotApplicableFlow.class);
+
+  public static final ParameterisedJourneyEvent<ApplicableSoftwareControls> CONTROLS_RELATED_PHYSICAL_GOOD =
+      new ParameterisedJourneyEvent<>("CONTROLS_RELATED_PHYSICAL_GOOD", ApplicableSoftwareControls.class);
 
 }

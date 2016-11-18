@@ -5,7 +5,7 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.category.controls.CategoryControlsServiceClient;
+import components.services.controlcode.controls.category.CategoryControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;

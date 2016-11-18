@@ -76,7 +76,7 @@ public class DualUseSoftwareCategoriesController {
     }
   }
 
-  public CompletionStage<Result> dualUseSoftwareCategorySelected(ApplicableSoftwareControls applicableSoftwareControls) {
+  private CompletionStage<Result> dualUseSoftwareCategorySelected(ApplicableSoftwareControls applicableSoftwareControls) {
     return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED, applicableSoftwareControls);
   }
 

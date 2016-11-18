@@ -1,4 +1,4 @@
-package components.services.controlcode.category.controls;
+package components.services.controlcode.controls.category;
 
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;

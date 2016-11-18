@@ -1,20 +1,21 @@
-package components.services.controlcode.category.controls;
+package components.services.controlcode.controls.related;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import components.services.controlcode.controls.ControlCode;
 import play.libs.Json;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CategoryControlsServiceResult {
+public class RelatedControlsServiceResult {
   public final List<ControlCode> controlCodes;
 
-  public CategoryControlsServiceResult(JsonNode responseJson) {
+  public RelatedControlsServiceResult(JsonNode responseJson) {
     this.controlCodes = Arrays.asList(Json.fromJson(responseJson, ControlCode[].class));
   }
 
-  public CategoryControlsServiceResult(int count) {
+  public RelatedControlsServiceResult(int count) {
     this.controlCodes = new ArrayList<>();
     if (count > 0) {
       this.controlCodes.add(new ControlCode("Sound suppressors or moderators, special gun-mountings, optical weapon sights and flash suppressors for smooth-bore weapons", "ML1d"));

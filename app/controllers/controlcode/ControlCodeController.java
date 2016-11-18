@@ -100,7 +100,7 @@ public class ControlCodeController extends Controller {
           String couldDescribeItems = form.get().couldDescribeItems;
           if("true".equals(couldDescribeItems)) {
             permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, true);
-            return nextScreenTrue(result);
+            return nextScreenTrue(controlCodeJourney, result);
           }
           else if ("false".equals(couldDescribeItems)) {
             permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, false);
@@ -124,7 +124,7 @@ public class ControlCodeController extends Controller {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
   }
 
-  public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult) {
+  public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     if (controlCodeData.canShow()) {
       if (controlCodeData.canShowAdditionalSpecifications()) {
@@ -138,8 +138,7 @@ public class ControlCodeController extends Controller {
       }
     }
     else {
-      permissionsFinderDao.saveConfirmedControlCode(controlCodeData.controlCode);
-      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+      return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCodeData.controlCode);
     }
   }
 

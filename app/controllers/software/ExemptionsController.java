@@ -61,6 +61,7 @@ public class ExemptionsController {
       // Expecting an export category at this stage of the journey
       ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
       if (exportCategory == ExportCategory.MILITARY) {
+        permissionsFinderDao.saveSoftwareCategory(SoftwareCategory.MILITARY);
         return softwareJourneyHelper.checkSoftwareControls(SoftwareCategory.MILITARY)
             .thenComposeAsync(this::softwareExemptionsFlow, httpExecutionContext.current());
       }

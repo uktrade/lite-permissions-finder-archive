@@ -88,7 +88,7 @@ public class AdditionalSpecificationsController {
             String stillDescribesItems = form.get().stillDescribesItems;
             if("true".equals(stillDescribesItems)) {
               permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeJourney, true);
-              return nextScreenTrue(result);
+              return nextScreenTrue(controlCodeJourney, result);
             }
             else if ("false".equals(stillDescribesItems)) {
               permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeJourney, false);
@@ -113,7 +113,7 @@ public class AdditionalSpecificationsController {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
   }
 
-  public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult) {
+  public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     if (controlCodeData.canShowDecontrols()) {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLS);
@@ -122,8 +122,7 @@ public class AdditionalSpecificationsController {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
     }
     else {
-      permissionsFinderDao.saveConfirmedControlCode(controlCodeData.controlCode);
-      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+      return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCodeData.controlCode);
     }
   }
 

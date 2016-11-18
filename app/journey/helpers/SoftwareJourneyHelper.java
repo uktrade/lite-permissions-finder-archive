@@ -2,7 +2,8 @@ package journey.helpers;
 
 import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.category.controls.CategoryControlsServiceClient;
+import components.services.controlcode.controls.category.CategoryControlsServiceClient;
+import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import models.controlcode.ControlCodeJourney;
 import models.software.ApplicableSoftwareControls;
 import models.software.SoftwareCategory;
@@ -14,14 +15,17 @@ import java.util.concurrent.CompletionStage;
 public class SoftwareJourneyHelper {
 
   private final CategoryControlsServiceClient categoryControlsServiceClient;
+  private final RelatedControlsServiceClient relatedControlsServiceClient;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
   public SoftwareJourneyHelper(CategoryControlsServiceClient categoryControlsServiceClient,
+                               RelatedControlsServiceClient relatedControlsServiceClient,
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext) {
     this.categoryControlsServiceClient = categoryControlsServiceClient;
+    this.relatedControlsServiceClient = relatedControlsServiceClient;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
   }
@@ -81,5 +85,45 @@ public class SoftwareJourneyHelper {
   public CompletionStage<ApplicableSoftwareControls> checkSoftwareControls(SoftwareCategory softwareCategory) {
     return checkSoftwareControls(softwareCategory, false);
   }
+
+
+  public CompletionStage<ApplicableSoftwareControls> checkRelatedSoftwareControls(SoftwareCategory softwareCategory, String controlCode, boolean saveToDao) {
+    // Count is specific to stubbed CategoryControlsServiceClient
+    int count =
+        softwareCategory == SoftwareCategory.MILITARY ? 0
+            : softwareCategory == SoftwareCategory.DUMMY ? 1
+            : softwareCategory == SoftwareCategory.RADIOACTIVE ? 2
+            : 0;
+
+    return relatedControlsServiceClient.get(softwareCategory, controlCode, count)
+        .thenApplyAsync(result -> {
+          int size = result.controlCodes.size();
+          if (size == 0) {
+            return ApplicableSoftwareControls.ZERO;
+          }
+          else if (size == 1) {
+            // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
+            if (saveToDao) {
+              // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, "PL9009a2g");
+              // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
+              if (StringUtils.equals("PL9009a2g", permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_PHYSICAL_GOODS))) {
+                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_PHYSICAL_GOODS, "PL9009a2g");
+                permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_PHYSICAL_GOODS);
+                permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_PHYSICAL_GOODS);
+                permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_PHYSICAL_GOODS);
+                permissionsFinderDao.clearControlCodeTechnicalNotesApply(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_PHYSICAL_GOODS);
+              }
+            }
+            return ApplicableSoftwareControls.ONE;
+          }
+          else if (size > 1) {
+            return ApplicableSoftwareControls.GREATER_THAN_ONE;
+          }
+          else {
+            throw new RuntimeException(String.format("Invalid value for size: \"%d\"", size));
+          }
+        }, httpExecutionContext.current());
+  }
+
 
 }

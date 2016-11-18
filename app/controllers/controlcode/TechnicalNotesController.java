@@ -71,8 +71,8 @@ public class TechnicalNotesController {
 
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
-    return frontendServiceClient.get(code)
+    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
+    return frontendServiceClient.get(controlCode)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
             return completedFuture(ok(technicalNotes.render(form, new TechnicalNotesDisplay(controlCodeJourney, result))));
@@ -81,8 +81,7 @@ public class TechnicalNotesController {
             String stillDescribesItems = form.get().stillDescribesItems;
             if("true".equals(stillDescribesItems)) {
               permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeJourney, true);
-              permissionsFinderDao.saveConfirmedControlCode(code);
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+              return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCode);
             }
             else if ("false".equals(stillDescribesItems)) {
               permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeJourney, false);
