@@ -5,5 +5,5 @@ button.start-application {
 // Start now buttons
 button.button-resume {
   @include bold-24;
-  padding: .36842em .84211em .21053em .84211em;
+  padding: em(7) em(16) em(4) em(16);
 }
