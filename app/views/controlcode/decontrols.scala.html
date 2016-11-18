@@ -6,48 +6,42 @@
 @import models.controlcode.DecontrolsDisplay
 
 @(form: Form[_], display: DecontrolsDisplay)
-@standardPage(display.title, Some(Html(display.title))){
+@standardPage(display.title, Some(Html(display.title)), twoThirdsColumn = false){
   @errorSummary(form)
 } {
 
-  <table class="tree">
+  <ul class="tree">
 
-    <tr class="tree-row-last">
-      <td class="tree-line-last">
-        <div class="tree-wrapper-last">
-          <span class="bold-medium">&#10003;<span class="font-small"></span></span>
-        </div>
-      </td>
-      <td class="tree-desc-last">
-        <span class="font-small">@Html(display.friendlyDescription)</span>
-      </td>
-      <td class="tree-code-last">
-        <div class="tree-code-wrapper-last">
-          <span class="font-small">@display.controlCodeAlias</span>
-        </div>
-      </td>
-    </tr>
+    <li class="last">
+      <span class="tree-dot"></span>
+      <span class="tree-desc">
+        <span class="tree-desc-wrapper">@Html(display.friendlyDescription)</span>
+      </span>
+      <span class="tree-code">@display.controlCodeAlias</span>
+    </li>
 
-  </table>
-
-  <h2 class="heading-medium">Do any of these describe your items?</h2>
-
-  <ul class="list list-bullet">
-  @for(decontrol <- display.decontrols) {
-    <li>@Html(decontrol)</li>
-  }
   </ul>
 
-  <form action="@DecontrolsController.handleSubmit()" method="POST">
+  @twoThirdsColumn {
+    <h2 class="heading-medium">Do any of these describe your items?</h2>
 
-    @contextFormParams()
+    <ul class="list list-bullet">
+    @for(decontrol <- display.decontrols) {
+        <li>@Html(decontrol)</li>
+    }
+    </ul>
 
-    @formRadioBoolean(form("decontrolsDescribeItem"), Html("Do any of these describe your items?"), "Yes", "No", hideHeading = true)
+    <form action="@DecontrolsController.handleSubmit()" method="POST">
 
-    <div class="form-group">
-      <button type="submit" class="button">Save and continue</button>
-    </div>
+        @contextFormParams()
 
-  </form>
+        @formRadioBoolean(form("decontrolsDescribeItem"), Html("Do any of these describe your items?"), "Yes", "No", hideHeading = true)
+
+        <div class="form-group">
+            <button type="submit" class="button">Save and continue</button>
+        </div>
+
+    </form>
+  }
 
 }

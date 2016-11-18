@@ -6,46 +6,40 @@
 @import models.controlcode.TechnicalNotesDisplay
 
 @(form: Form[_], display: TechnicalNotesDisplay)
-@standardPage(display.title, Some(Html(display.title))){
+@standardPage(display.title, Some(Html(display.title)), twoThirdsColumn = false){
   @errorSummary(form)
 } {
 
-  <table class="tree">
+  <ul class="tree">
 
-    <tr class="tree-row-last">
-      <td class="tree-line-last">
-        <div class="tree-wrapper-last">
-          <span class="bold-medium">&#10003;<span class="font-small"></span></span>
-        </div>
-      </td>
-      <td class="tree-desc-last">
-        <span class="font-small">@Html(display.friendlyDescription)</span>
-      </td>
-      <td class="tree-code-last">
-        <div class="tree-code-wrapper-last">
-          <span class="font-small">@display.controlCodeAlias</span>
-        </div>
-      </td>
-    </tr>
+    <li class="last">
+      <span class="tree-dot"></span>
+      <span class="tree-desc">
+        <span class="tree-desc-wrapper">@Html(display.friendlyDescription)</span>
+      </span>
+      <span class="tree-code">@display.controlCodeAlias</span>
+    </li>
 
-  </table>
+  </ul>
 
-  <h2 class="heading-small">The following technical notes can help you choose the right classification:</h2>
+  @twoThirdsColumn {
+    <h2 class="heading-small">The following technical notes can help you choose the right classification:</h2>
 
-  <div class="stored-content-container">
+    <div class="stored-content-container">
     @Html(display.technicalNotes)
-  </div>
-
-  <form action="@TechnicalNotesController.handleSubmit()" method="POST">
-
-    @contextFormParams()
-
-    @formRadioBoolean(form("stillDescribesItems"), Html("Does this still describe your items?"), "Yes", "No")
-
-    <div class="form-group">
-      <button type="submit" class="button">Save and continue</button>
     </div>
 
-  </form>
+    <form action="@TechnicalNotesController.handleSubmit()" method="POST">
+
+      @contextFormParams()
+
+      @formRadioBoolean(form("stillDescribesItems"), Html("Does this still describe your items?"), "Yes", "No")
+
+      <div class="form-group">
+        <button type="submit" class="button">Save and continue</button>
+      </div>
+
+    </form>
+  }
 
 }

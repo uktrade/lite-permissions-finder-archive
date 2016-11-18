@@ -22,55 +22,45 @@
           <h1 class="heading-xlarge">Find out if you need a licence to move items internationally</h1>
         </header>
 
-        <span class="lede">Use this service to:</span>
+        <p>Use this service to:</p>
         <ul class="list list-bullet">
           <li>find out if you need a licence to move or send goods, software or technology between countries</li>
           <li>apply and register for import and export licences and permissions</li>
           <li>find the export control classification of an item</li>
         </ul>
 
-        <div style="padding-top:10px;">
-          <span class="lede">You will need to know:</span>
-          <ul class="list list-bullet">
-            <li>where items are being sent to and from</li>
-            <li>a description of the items</li>
-          </ul>
-        </div>
+        <p>You will need to know:</p>
+        <ul class="list list-bullet">
+          <li>where items are being sent to and from</li>
+          <li>a description of the items</li>
+        </ul>
 
         <form action="@EntryPointController.handleSubmit" method="POST">
 
           @contextFormParams()
 
-          <button type="submit" class="button start-application" name="action" value="start">Start</button>
+          <button type="submit" class="button button-start start-application" name="action" value="start">Start now</button>
 
-          <button type="submit" class="button secondary" name="action" value="continue">Resume</button>
+          <button type="submit" class="button secondary button-resume" name="action" value="continue">Resume</button>
 
         </form>
 
       </div>
 
       <div class="column-third">
-
-        <div class="related-links">
+        <div class="govuk-related-items">
           <h2 class="heading-medium">Ready to make an application?</h2>
 
           <ul class="font-xsmall">
             <li><a href="#">Quick links</a></li>
           </ul>
 
-        </div>
-
-        <div class="related-links">
           <h2 class="heading-medium">Need some help?</h2>
 
-          <p>
-            Telephone helpline: 0207 123 4567
-          </p>
-
           <ul class="font-xsmall">
+            <li>Telephone helpline: 0207 123 4567</li>
             <li><a href="#">Email helpline</a></li>
           </ul>
-
         </div>
       </div>
 
