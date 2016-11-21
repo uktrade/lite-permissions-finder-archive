@@ -7,6 +7,7 @@ import journey.Events;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
 import models.software.ApplicableSoftwareControls;
+import models.software.ControlsRelatedToPhysicalGoodsFlow;
 import models.software.SoftwareCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
@@ -60,7 +61,7 @@ public class ControlCodeJourneyHelper {
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
       return softwareJourneyHelper.checkRelatedSoftwareControls(softwareCategory, controlCode, false)
-          .thenComposeAsync(this::controlsReleatedToPhysicalGoodTransition, httpExecutionContext.current());
+          .thenComposeAsync(this::controlsRelatedToPhysicalGoodTransition, httpExecutionContext.current());
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       permissionsFinderDao.saveConfirmedControlCode(controlCode);
@@ -72,8 +73,37 @@ public class ControlCodeJourneyHelper {
     }
   }
 
-  private CompletionStage<Result> controlsReleatedToPhysicalGoodTransition(ApplicableSoftwareControls applicableSoftwareControls) {
-    return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD, applicableSoftwareControls);
+  private CompletionStage<Result> controlsRelatedToPhysicalGoodTransition(ApplicableSoftwareControls applicableSoftwareControls) {
+    if (applicableSoftwareControls == ApplicableSoftwareControls.ZERO) {
+      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+      return softwareJourneyHelper.checkCatchtallSoftwareControls(softwareCategory)
+          .thenComposeAsync(controls -> {
+            if (controls == ApplicableSoftwareControls.ZERO) {
+              return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
+                  ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_ZERO);
+            }
+            else if (controls == ApplicableSoftwareControls.ONE || controls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+              return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
+                  ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_CONTROL_GREATER_THAN_ZERO);
+            }
+            else {
+              throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+                  , controls.toString()));
+            }
+          }, httpExecutionContext.current());
+    }
+    else if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
+      return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
+          ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_ONE);
+    }
+    else if (applicableSoftwareControls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+      return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
+          ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_GREATER_THAN_ONE);
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+          , applicableSoftwareControls.toString()));
+    }
   }
 
   public void clearControlCodeJourneyDaoFields(ControlCodeJourney controlCodeJourney) {

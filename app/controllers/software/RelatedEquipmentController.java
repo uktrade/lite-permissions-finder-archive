@@ -8,6 +8,7 @@ import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
+import journey.helpers.SoftwareJourneyHelper;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -20,13 +21,17 @@ public class RelatedEquipmentController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
+  private final SoftwareJourneyHelper softwareJourneyHelper;
 
   @Inject
-  public RelatedEquipmentController(FormFactory formFactory, PermissionsFinderDao permissionsFinderDao,
-                                    JourneyManager journeyManager) {
+  public RelatedEquipmentController(JourneyManager journeyManager,
+                                    FormFactory formFactory,
+                                    PermissionsFinderDao permissionsFinderDao,
+                                    SoftwareJourneyHelper softwareJourneyHelper) {
+    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.journeyManager = journeyManager;
+    this.softwareJourneyHelper = softwareJourneyHelper;
   }
 
   public Result renderForm() {
@@ -52,7 +57,7 @@ public class RelatedEquipmentController {
     }
     else if ("false".equals(relatedToEquipmentOrMaterials)) {
       permissionsFinderDao.saveRelatedToEquipmentOrMaterials(false);
-      return journeyManager.performTransition(StandardEvents.NO);
+      return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
     }
     else {
       throw new FormStateException(String.format("Unknown value for relatedToEquipmentOrMaterials: \"%s\"",

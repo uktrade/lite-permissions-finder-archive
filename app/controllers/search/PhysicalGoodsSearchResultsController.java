@@ -13,6 +13,7 @@ import controllers.controlcode.ControlCodeController;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.SoftwareJourneyHelper;
 import models.GoodsType;
 import models.search.SearchResultsBaseDisplay;
 import models.controlcode.ControlCodeJourney;
@@ -30,6 +31,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   private final HttpExecutionContext httpExecutionContext;
   private final PermissionsFinderDao permissionsFinderDao;
   private final ControlCodeJourneyHelper controlCodeJourneyHelper;
+  private final SoftwareJourneyHelper softwareJourneyHelper;
 
   @Inject
   public PhysicalGoodsSearchResultsController(JourneyManager journeyManager,
@@ -40,11 +42,13 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                                               ErrorController errorController,
                                               HttpExecutionContext httpExecutionContext,
                                               PermissionsFinderDao permissionsFinderDao,
-                                              ControlCodeJourneyHelper controlCodeJourneyHelper) {
+                                              ControlCodeJourneyHelper controlCodeJourneyHelper,
+                                              SoftwareJourneyHelper softwareJourneyHelper) {
     super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
     this.httpExecutionContext = httpExecutionContext;
     this.permissionsFinderDao = permissionsFinderDao;
     this.controlCodeJourneyHelper = controlCodeJourneyHelper;
+    this.softwareJourneyHelper = softwareJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
@@ -94,7 +98,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     if (action.isPresent()){
       switch (action.get()) {
         case NONE_MATCHED:
-          return journeyManager.performTransition(Events.NONE_MATCHED);
+          return noneMatched(controlCodeJourney);
         case SHORE_MORE:
           return physicalGoodsSearch(controlCodeJourney)
               .thenApplyAsync(result -> {
@@ -133,6 +137,21 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   public CompletionStage<SearchServiceResult> physicalGoodsSearch(ControlCodeJourney controlCodeJourney) {
     String searchTerms = PhysicalGoodsSearchController.getSearchTerms(permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeJourney).get());
     return searchServiceClient.get(searchTerms);
+  }
+
+  private CompletionStage<Result> noneMatched(ControlCodeJourney controlCodeJourney){
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH ||
+        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
+        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_PHYSICAL_GOODS) {
+      return journeyManager.performTransition(Events.NONE_MATCHED);
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+      return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
+          , controlCodeJourney.toString()));
+    }
   }
 
 }

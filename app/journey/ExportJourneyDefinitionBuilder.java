@@ -13,6 +13,8 @@ import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
 import models.VirtualEUOgelStage;
 import models.software.ApplicableSoftwareControls;
+import models.software.CatchallSoftwareControlsFlow;
+import models.software.ControlsRelatedToPhysicalGoodsFlow;
 import models.software.SoftwareControlsNotApplicableFlow;
 import models.software.SoftwareExemptionsFlow;
 
@@ -364,7 +366,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(SoftwareExemptionsFlow.EXEMPTIONS_APPLY, moveTo(notApplicable)) // TODO check this is the correct NLR to show
         .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
         .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
-        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(notImplemented))
+        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeforSoftwareControls))
         .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(categoryControls));
 
     atStage(dualUseSoftwareCategories)
@@ -381,8 +383,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.YES).then(moveTo(physicalGoodsSearchRelatedToSoftware));
 
-    atStage(relatedToEquipmentOrMaterials)
-        .onEvent(StandardEvents.NO).then(moveTo(notImplemented));
+    bindCatchallSoftwareControls(relatedToEquipmentOrMaterials);
 
     atStage(categoryControls)
         .onEvent(Events.CONTROL_CODE_SELECTED)
@@ -429,9 +430,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(controlCodeforRelatedToSoftware));
 
-    atStage(physicalGoodsSearchResultsRelatedToSoftware)
-        .onEvent(Events.NONE_MATCHED)
-        .then(moveTo(notImplemented));
+    bindCatchallSoftwareControls(physicalGoodsSearchResultsRelatedToSoftware); // None matched
 
     atStage(controlCodeforRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -506,7 +505,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsSoftwareControls))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareControls))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
-
     atStage(controlCodeforSoftwareControls)
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
         .branch()
@@ -566,9 +564,20 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(journeyStage)
         .onEvent(Events.CONTROLS_RELATED_PHYSICAL_GOOD)
         .branch()
-        .when(ApplicableSoftwareControls.ZERO, moveTo(notImplemented))
-        .when(ApplicableSoftwareControls.ONE, moveTo(notImplemented))
-        .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(notImplemented));
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_ONE, moveTo(notImplemented))
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_GREATER_THAN_ONE, moveTo(notImplemented))
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_ZERO, moveTo(notImplemented))
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_CONTROL_GREATER_THAN_ZERO, moveTo(notImplemented));
+  }
+
+  private void bindCatchallSoftwareControls(JourneyStage journeyStage) {
+    atStage(journeyStage)
+        .onEvent(Events.CATCHALL_SOFTWARE_CONTROLS)
+        .branch()
+        .when(CatchallSoftwareControlsFlow.CATCHALL_ONE, moveTo(notImplemented))
+        .when(CatchallSoftwareControlsFlow.CATCHALL_GREATER_THAN_ONE, moveTo(notImplemented))
+        .when(CatchallSoftwareControlsFlow.RELATIONSHIP_EXISTS, moveTo(notImplemented))
+        .when(CatchallSoftwareControlsFlow.RELATIONSHIP_DOES_NOT_EXIST, moveTo(notImplemented));
   }
 
 }

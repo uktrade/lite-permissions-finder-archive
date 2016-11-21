@@ -10,6 +10,8 @@ import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
 import models.VirtualEUOgelStage;
 import models.software.ApplicableSoftwareControls;
+import models.software.CatchallSoftwareControlsFlow;
+import models.software.ControlsRelatedToPhysicalGoodsFlow;
 import models.software.SoftwareControlsNotApplicableFlow;
 import models.software.SoftwareExemptionsFlow;
 
@@ -74,7 +76,10 @@ public class Events {
   public static final ParameterisedJourneyEvent<SoftwareControlsNotApplicableFlow> CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW =
       new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW", SoftwareControlsNotApplicableFlow.class);
 
-  public static final ParameterisedJourneyEvent<ApplicableSoftwareControls> CONTROLS_RELATED_PHYSICAL_GOOD =
-      new ParameterisedJourneyEvent<>("CONTROLS_RELATED_PHYSICAL_GOOD", ApplicableSoftwareControls.class);
+  public static final ParameterisedJourneyEvent<ControlsRelatedToPhysicalGoodsFlow> CONTROLS_RELATED_PHYSICAL_GOOD =
+      new ParameterisedJourneyEvent<>("CONTROLS_RELATED_PHYSICAL_GOOD", ControlsRelatedToPhysicalGoodsFlow.class);
+
+  public static final ParameterisedJourneyEvent<CatchallSoftwareControlsFlow> CATCHALL_SOFTWARE_CONTROLS =
+      new ParameterisedJourneyEvent<>("CATCHALL_SOFTWARE_CONTROLS", CatchallSoftwareControlsFlow.class);
 
 }

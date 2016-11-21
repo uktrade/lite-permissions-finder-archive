@@ -62,7 +62,7 @@ public class ExemptionsController {
       ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
       if (exportCategory == ExportCategory.MILITARY) {
         permissionsFinderDao.saveSoftwareCategory(SoftwareCategory.MILITARY);
-        return softwareJourneyHelper.checkSoftwareControls(SoftwareCategory.MILITARY)
+        return softwareJourneyHelper.checkSoftwareControls(SoftwareCategory.MILITARY, true) // MILITARY_ONE_CONTROL will set DAO state
             .thenComposeAsync(this::softwareExemptionsFlow, httpExecutionContext.current());
       }
       else if (exportCategory == ExportCategory.DUAL_USE) {
