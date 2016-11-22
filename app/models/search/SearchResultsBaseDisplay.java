@@ -25,10 +25,10 @@ public class SearchResultsBaseDisplay {
     this.resultsDisplayCount = resultsDisplayCount;
     this.lastChosenControlCode = lastChosenControlCode;
     if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSubmit().url();
+      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.PhysicalGoodsSearchResultsController.renderRelatedToSoftwareForm().url();
+      this.formAction = routes.PhysicalGoodsSearchResultsController.renderSearchRelatedToSoftwareForm().url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

@@ -23,10 +23,10 @@ public class DecontrolsDisplay {
         .map(decontrol -> decontrol.text)
         .collect(Collectors.toList());
     if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.DecontrolsController.handleSubmit().url();
+      this.formAction = routes.DecontrolsController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.DecontrolsController.handleRelatedToSoftwareSubmit().url();
+      this.formAction = routes.DecontrolsController.handleSearchRelatedToSoftwareSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleSoftwareControlsSubmit().url();

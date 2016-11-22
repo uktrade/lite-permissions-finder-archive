@@ -31,10 +31,10 @@ public class ControlCodeDisplay {
     }
     this.otherAncestors = frontendServiceResult.otherAncestors;
     if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.ControlCodeController.handleSubmit().url();
+      this.formAction = routes.ControlCodeController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.ControlCodeController.handleRelatedToSoftwareSubmit().url();
+      this.formAction = routes.ControlCodeController.handleSearchRelatedToSoftwareSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.ControlCodeController.handleSoftwareControlsSubmit().url();

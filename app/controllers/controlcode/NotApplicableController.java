@@ -79,11 +79,11 @@ public class NotApplicableController {
     }
   }
 
-  public CompletionStage<Result> renderForm(String showExtendedContent) {
+  public CompletionStage<Result> renderSearchForm(String showExtendedContent) {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH, showExtendedContent);
   }
 
-  public CompletionStage<Result> renderRelatedToSoftwareForm(String showExtendedContent) {
+  public CompletionStage<Result> renderSearchRelatedToSoftwareForm(String showExtendedContent) {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE, showExtendedContent);
   }
 
@@ -148,11 +148,11 @@ public class NotApplicableController {
     throw new FormStateException("Unhandled form state");
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  public CompletionStage<Result> handleSearchSubmit() {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 

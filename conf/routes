@@ -27,45 +27,45 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-GET     /control-code                         controllers.controlcode.ControlCodeController.renderForm
+GET     /control-code                         controllers.controlcode.ControlCodeController.renderSearchForm
 
-POST    /control-code                         controllers.controlcode.ControlCodeController.handleSubmit
+POST    /control-code                         controllers.controlcode.ControlCodeController.handleSearchSubmit
 
-GET     /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderForm
+GET     /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSearchForm
 
-POST    /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSubmit
+POST    /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSearchSubmit
 
-GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderForm
+GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderSearchForm
 
-POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSubmit
+POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSearchSubmit
 
-GET     /control-code/not-applicable          controllers.controlcode.NotApplicableController.renderForm(extended)
+GET     /control-code/not-applicable          controllers.controlcode.NotApplicableController.renderSearchForm(extended)
 
-POST    /control-code/not-applicable          controllers.controlcode.NotApplicableController.handleSubmit
+POST    /control-code/not-applicable          controllers.controlcode.NotApplicableController.handleSearchSubmit
 
-GET     /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.renderForm
+GET     /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.renderSearchForm
 
-POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSubmit
+POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSearchSubmit
 
-GET     /control-code-related-to-software                             controllers.controlcode.ControlCodeController.renderRelatedToSoftwareForm
+GET     /control-code-related-to-software                             controllers.controlcode.ControlCodeController.renderSearchRelatedToSoftwareForm
 
-POST    /control-code-related-to-software                             controllers.controlcode.ControlCodeController.handleRelatedToSoftwareSubmit
+POST    /control-code-related-to-software                             controllers.controlcode.ControlCodeController.handleSearchRelatedToSoftwareSubmit
 
-GET     /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderRelatedToSoftwareForm
+GET     /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSearchRelatedToSoftwareForm
 
-POST    /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleRelatedToSoftwareSubmit
+POST    /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSearchRelatedToSoftwareSubmit
 
-GET     /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.renderRelatedToSoftwareForm
+GET     /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.renderSearchRelatedToSoftwareForm
 
-POST    /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.handleRelatedToSoftwareSubmit
+POST    /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.handleSearchRelatedToSoftwareSubmit
 
-GET     /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.renderRelatedToSoftwareForm(extended)
+GET     /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.renderSearchRelatedToSoftwareForm(extended)
 
-POST    /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.handleRelatedToSoftwareSubmit
+POST    /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.handleSearchRelatedToSoftwareSubmit
 
-GET     /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.renderRelatedToSoftwareForm
+GET     /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.renderSearchRelatedToSoftwareForm
 
-POST    /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedToSoftwareSubmit
+POST    /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.handleSearchRelatedToSoftwareSubmit
 
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
@@ -171,21 +171,21 @@ GET     /export-questions                     controllers.ogel.OgelQuestionsCont
 
 POST    /export-questions                     controllers.ogel.OgelQuestionsController.handleSubmit
 
-GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.renderForm
+GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.renderSearchForm
 
-POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSubmit
+POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSearchSubmit
 
-GET     /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.renderRelatedToSoftwareForm
+GET     /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.renderSearchRelatedToSoftwareForm
 
-POST    /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.handleRelatedToSoftwareSubmit
+POST    /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.handleSearchRelatedToSoftwareSubmit
 
-GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderForm
+GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderSearchForm
 
-POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSubmit
+POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSearchSubmit
 
-GET     /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.renderRelatedToSoftwareForm
+GET     /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.renderSearchRelatedToSoftwareForm
 
-POST    /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.handleRelatedToSoftwareSubmit
+POST    /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.handleSearchRelatedToSoftwareSubmit
 
 GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeJourney: String, goodsType: String, fromIndex: Int, toIndex: Int, transactionId: String)
 

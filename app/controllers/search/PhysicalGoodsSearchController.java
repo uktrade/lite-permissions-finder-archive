@@ -39,11 +39,11 @@ public class PhysicalGoodsSearchController extends SearchController {
     return ok(physicalGoodsSearch.render(new SearchBaseDisplay(controlCodeJourney, searchForm(templateForm))));
   }
 
-  public Result renderForm() {
+  public Result renderSearchForm() {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public Result renderRelatedToSoftwareForm() {
+  public Result renderSearchRelatedToSoftwareForm() {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
@@ -60,11 +60,11 @@ public class PhysicalGoodsSearchController extends SearchController {
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  public CompletionStage<Result> handleSearchSubmit() {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 

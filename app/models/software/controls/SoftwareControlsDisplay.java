@@ -12,7 +12,7 @@ public class SoftwareControlsDisplay {
 
   public SoftwareControlsDisplay(SoftwareControlsJourney softwareControlsJourney, List<ControlCode> controlCodes) {
     if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATEGORY) {
-      this.formAction = routes.SoftwareControlsController.handleSoftwareCategorySubmit().url().toString();
+      this.formAction = routes.SoftwareControlsController.handleSoftwareCategorySubmit().url();
       this.pageTitle = "Showing controls related to software category";
     }
     else {

@@ -24,11 +24,11 @@ public class NotApplicableDisplay {
     this.controlCodeAlias = controlCodeAlias;
     this.showExtendedContent = showExtendedContent;
     if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.NotApplicableController.handleSubmit().url();
+      this.formAction = routes.NotApplicableController.handleSearchSubmit().url();
       this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.NotApplicableController.handleRelatedToSoftwareSubmit().url();
+      this.formAction = routes.NotApplicableController.handleSearchRelatedToSoftwareSubmit().url();
       this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS || controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {

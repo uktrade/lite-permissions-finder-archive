@@ -15,11 +15,11 @@ public class SearchBaseDisplay {
     this.form = form;
     if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
       this.pageTitle = "Describe your items";
-      this.formAction = routes.PhysicalGoodsSearchController.handleSubmit().url();
+      this.formAction = routes.PhysicalGoodsSearchController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.pageTitle = "Describe your items";
-      this.formAction = routes.PhysicalGoodsSearchController.renderRelatedToSoftwareForm().url();
+      this.formAction = routes.PhysicalGoodsSearchController.renderSearchRelatedToSoftwareForm().url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

@@ -69,11 +69,11 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> renderForm() {
+  public CompletionStage<Result> renderSearchForm() {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> renderRelatedToSoftwareForm() {
+  public CompletionStage<Result> renderSearchRelatedToSoftwareForm() {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 
@@ -126,11 +126,11 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     throw new FormStateException("Unhandled form state");
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  public CompletionStage<Result> handleSearchSubmit() {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleRelatedToSoftwareSubmit() {
+  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
   }
 

@@ -37,10 +37,10 @@ public class AdditionalSpecificationsDisplay {
       this.specifications = Collections.emptyList();
     }
     if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.AdditionalSpecificationsController.handleSubmit().url();
+      this.formAction = routes.AdditionalSpecificationsController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.AdditionalSpecificationsController.handleRelatedToSoftwareSubmit().url();
+      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSoftwareSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleSoftwareControlsSubmit().url();

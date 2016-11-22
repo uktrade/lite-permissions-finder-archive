@@ -18,10 +18,10 @@ public class TechnicalNotesDisplay {
     this.controlCodeAlias = controlCodeData.alias;
     this.technicalNotes = controlCodeData.technicalNotes;
     if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.TechnicalNotesController.handleSubmit().url();
+      this.formAction = routes.TechnicalNotesController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.TechnicalNotesController.handleRelatedToSoftwareSubmit().url();
+      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSoftwareSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.TechnicalNotesController.handleSoftwareControlsSubmit().url();
