@@ -11,17 +11,18 @@ import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
 import models.controlcode.ControlCodeJourney;
 import models.software.SoftwareCategory;
-import models.software.controls.ControlsBaseDisplay;
+import models.software.controls.SoftwareControlsDisplay;
+import models.software.controls.SoftwareControlsJourney;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.software.controls.categoryControls;
+import views.html.software.controls.softwareControls;
 
 import java.util.concurrent.CompletionStage;
 
-public class CategoryControlsController {
+public class SoftwareControlsController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -30,7 +31,7 @@ public class CategoryControlsController {
   private final ControlCodeJourneyHelper controlCodeJourneyHelper;
 
   @Inject
-  public CategoryControlsController(JourneyManager journeyManager,
+  public SoftwareControlsController(JourneyManager journeyManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
                                     CategoryControlsServiceClient categoryControlsServiceClient,
@@ -44,14 +45,18 @@ public class CategoryControlsController {
     this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
-  public CompletionStage<Result> renderForm() {
-    return renderWithForm(formFactory.form(ControlsBaseForm.class));
+  private CompletionStage<Result> renderForm(SoftwareControlsJourney softwareControlsJourney) {
+    return renderWithForm(softwareControlsJourney, formFactory.form(ControlsBaseForm.class));
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  public CompletionStage<Result> renderSofwareCategoryForm() {
+    return renderForm(SoftwareControlsJourney.SOFTWARE_CATEGORY);
+  }
+
+  private CompletionStage<Result> handleSubmit(SoftwareControlsJourney softwareControlsJourney) {
     Form<ControlsBaseForm> form = formFactory.form(ControlsBaseForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      renderWithForm(form);
+      renderWithForm(softwareControlsJourney, form);
     }
     String action = form.get().action;
     String controlCode = form.get().controlCode;
@@ -73,7 +78,11 @@ public class CategoryControlsController {
     }
   }
 
-  public CompletionStage<Result> renderWithForm(Form<ControlsBaseForm> form) {
+  public CompletionStage<Result> handleSoftwareCategorySubmit() {
+    return handleSubmit(SoftwareControlsJourney.SOFTWARE_CATEGORY);
+  }
+
+  private CompletionStage<Result> renderWithForm(SoftwareControlsJourney softwareControlsJourney, Form<ControlsBaseForm> form) {
     // Software category is expected at this stage of the journey
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
 
@@ -86,8 +95,8 @@ public class CategoryControlsController {
 
     return categoryControlsServiceClient.get(softwareCategory, count)
         .thenApplyAsync(result -> {
-          ControlsBaseDisplay display = new ControlsBaseDisplay(result.controlCodes);
-          return ok(categoryControls.render(form, display));
+          SoftwareControlsDisplay display = new SoftwareControlsDisplay(softwareControlsJourney, result.controlCodes);
+          return ok(softwareControls.render(form, display));
         }, httpExecutionContext.current());
   }
 

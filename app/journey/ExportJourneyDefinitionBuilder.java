@@ -44,8 +44,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.controlcode.routes.ControlCodeController.renderSoftwareControlsForm());
   private final JourneyStage controlCodeForRelatedSoftwareControls = defineStage("controlCodeForRelatedSoftwareControls", "Summary",
       controllers.controlcode.routes.ControlCodeController.renderRelatedSoftwareControlsForm());
-  private final JourneyStage categoryControls = defineStage("categoryControls", "Showing controls related to software category",
-      controllers.software.controls.routes.CategoryControlsController.renderForm());
+  private final JourneyStage softwareCategoryControls = defineStage("softwareCategoryControls", "Showing controls related to software category",
+      controllers.software.controls.routes.SoftwareControlsController.renderSofwareCategoryForm());
   private JourneyStage relatedToEquipmentOrMaterials = defineStage("relatedToEquipmentOrMaterials", "Is your software any of the following?",
       controllers.software.routes.RelatedEquipmentController.renderForm());
 
@@ -369,14 +369,14 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
         .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
         .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))
-        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(categoryControls));
+        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(softwareCategoryControls));
 
     atStage(dualUseSoftwareCategories)
         .onEvent(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED)
         .branch()
         .when(ApplicableSoftwareControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
         .when(ApplicableSoftwareControls.ONE, moveTo(controlCodeForSoftwareControls))
-        .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(categoryControls));
+        .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(softwareCategoryControls));
 
     atStage(dualUseSoftwareCategories)
         .onEvent(Events.NONE_MATCHED)
@@ -387,11 +387,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindCatchallSoftwareControls(relatedToEquipmentOrMaterials);
 
-    atStage(categoryControls)
+    atStage(softwareCategoryControls)
         .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(controlCodeForSoftwareControls));
 
-    atStage(categoryControls)
+    atStage(softwareCategoryControls)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(relatedToEquipmentOrMaterials));
 
@@ -555,13 +555,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(controlCodeNotApplicableSoftwareControls)
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW)
         .branch()
-        .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(categoryControls))
+        .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(softwareCategoryControls))
         .when(SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS, moveTo(relatedToEquipmentOrMaterials));
 
     atStage(controlCodeNotApplicableExtendedSoftwareControls)
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW)
         .branch()
-        .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(categoryControls))
+        .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(softwareCategoryControls))
         .when(SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS, moveTo(relatedToEquipmentOrMaterials));
   }
 
