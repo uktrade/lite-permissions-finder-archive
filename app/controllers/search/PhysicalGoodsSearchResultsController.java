@@ -142,7 +142,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   private CompletionStage<Result> noneMatched(ControlCodeJourney controlCodeJourney){
     if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH ||
         controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
-        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_PHYSICAL_GOODS) {
+        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       return journeyManager.performTransition(Events.NONE_MATCHED);
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {

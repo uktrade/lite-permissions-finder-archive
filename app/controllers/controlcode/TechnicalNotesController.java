@@ -8,9 +8,7 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
-import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
-import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.TechnicalNotesDisplay;
 import play.data.Form;
@@ -69,6 +67,10 @@ public class TechnicalNotesController {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
   }
 
+  public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
     String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
@@ -104,6 +106,10 @@ public class TechnicalNotesController {
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
+  public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
   public static class TechnicalNotesForm {

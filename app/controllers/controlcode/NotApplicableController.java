@@ -91,6 +91,10 @@ public class NotApplicableController {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS, showExtendedContent);
   }
 
+  public CompletionStage<Result> renderRelatedSoftwareControlsForm(String showExtendedContent) {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, showExtendedContent);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<NotApplicableForm> form = formFactory.form(NotApplicableForm.class).bindFromRequest();
     if (!form.hasErrors()) {
@@ -114,7 +118,8 @@ public class NotApplicableController {
             .thenApplyAsync(controls -> {
               if (controls == ApplicableSoftwareControls.ONE) {
                 if ("continue".equals(action)) {
-                  return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW, SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
+                  return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
+                      SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS);
                 }
                 else {
                   throw new FormStateException("Unknown value for action: \"" + action + "\"");
@@ -122,7 +127,8 @@ public class NotApplicableController {
               }
               else if (controls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
                 if ("returnToControls".equals(action)) {
-                  return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW, SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
+                  return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
+                      SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
                 }
                 else {
                   throw new FormStateException("Unknown value for action: \"" + action + "\"");
@@ -152,6 +158,10 @@ public class NotApplicableController {
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
+  public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
   public static class NotApplicableForm {

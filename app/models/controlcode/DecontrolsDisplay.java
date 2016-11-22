@@ -31,6 +31,9 @@ public class DecontrolsDisplay {
     else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleSoftwareControlsSubmit().url();
     }
+    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      this.formAction = routes.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit().url();
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));

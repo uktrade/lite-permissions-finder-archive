@@ -75,6 +75,10 @@ public class AdditionalSpecificationsController {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
   }
 
+  public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
     String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
@@ -111,6 +115,10 @@ public class AdditionalSpecificationsController {
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
+  public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
   public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {

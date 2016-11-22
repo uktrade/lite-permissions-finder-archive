@@ -23,17 +23,23 @@ public class NotApplicableDisplay {
     this.form = form;
     this.controlCodeAlias = controlCodeAlias;
     this.showExtendedContent = showExtendedContent;
-    if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
       this.formAction = routes.NotApplicableController.handleSubmit().url();
       this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
     }
-    else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.NotApplicableController.handleRelatedToSoftwareSubmit().url();
       this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
     }
-    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS || controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       if (applicableSoftwareControls != null) {
-        this.formAction = routes.NotApplicableController.handleSoftwareControlsSubmit().url();
+        if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
+          this.formAction = routes.NotApplicableController.handleSoftwareControlsSubmit().url();
+        }
+        else {
+          // TODO check that this button configuration is correct for software controls related to a physical good
+          this.formAction = routes.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit().url();
+        }
         if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
           buttonConfiguration = ButtonConfiguration.CONTINUE_NO_SOFTWARE_CONTROLS;
         }

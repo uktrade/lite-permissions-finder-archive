@@ -10,11 +10,9 @@ import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
-import journey.helpers.SoftwareJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.DecontrolsDisplay;
-import models.software.SoftwareCategory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -71,6 +69,10 @@ public class DecontrolsController {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
   }
 
+  public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
     String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
@@ -111,6 +113,10 @@ public class DecontrolsController {
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
+  public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
   public static class DecontrolsForm {

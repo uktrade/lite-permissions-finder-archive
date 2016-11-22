@@ -237,6 +237,26 @@ GET     /software-controls/technical-notes             controllers.controlcode.T
 
 POST    /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareControlsSubmit
 
+GET     /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.renderRelatedSoftwareControlsForm
+
+POST    /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.handleRelatedSoftwareControlsSubmit
+
+GET     /software-controls-related-to-a-physical-good/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderRelatedSoftwareControlsForm
+
+POST    /software-controls-related-to-a-physical-good/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit
+
+GET     /software-controls-related-to-a-physical-good/decontrols                  controllers.controlcode.DecontrolsController.renderRelatedSoftwareControlsForm
+
+POST    /software-controls-related-to-a-physical-good/decontrols                  controllers.controlcode.DecontrolsController.handleRelatedSoftwareControlsSubmit
+
+GET     /software-controls-related-to-a-physical-good/not-applicable              controllers.controlcode.NotApplicableController.renderRelatedSoftwareControlsForm(extended)
+
+POST    /software-controls-related-to-a-physical-good/not-applicable              controllers.controlcode.NotApplicableController.handleRelatedSoftwareControlsSubmit
+
+GET     /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.renderRelatedSoftwareControlsForm
+
+POST    /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedSoftwareControlsSubmit
+
 GET     /start-application                    controllers.StartApplicationController.renderForm
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit

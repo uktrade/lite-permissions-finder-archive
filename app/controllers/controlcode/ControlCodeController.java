@@ -73,6 +73,10 @@ public class ControlCodeController extends Controller {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
   }
 
+  public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
     String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
@@ -122,6 +126,10 @@ public class ControlCodeController extends Controller {
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
+  public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
   public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
