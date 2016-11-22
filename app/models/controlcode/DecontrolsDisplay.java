@@ -22,17 +22,17 @@ public class DecontrolsDisplay {
     this.decontrols = controlCodeData.decontrols.stream()
         .map(decontrol -> decontrol.text)
         .collect(Collectors.toList());
-    if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
       this.formAction = routes.DecontrolsController.handleSearchSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.DecontrolsController.handleSearchRelatedToSoftwareSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleSoftwareControlsSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit().url();
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      this.formAction = routes.DecontrolsController.handleRelatedSoftwareControlsSubmit().url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

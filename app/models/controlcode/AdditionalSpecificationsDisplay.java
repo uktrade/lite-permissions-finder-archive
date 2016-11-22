@@ -36,16 +36,16 @@ public class AdditionalSpecificationsDisplay {
       this.clauseText = null;
       this.specifications = Collections.emptyList();
     }
-    if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
       this.formAction = routes.AdditionalSpecificationsController.handleSearchSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSoftwareSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleSoftwareControlsSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit().url();
     }
     else {

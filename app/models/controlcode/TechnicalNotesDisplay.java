@@ -17,17 +17,17 @@ public class TechnicalNotesDisplay {
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
     this.technicalNotes = controlCodeData.technicalNotes;
-    if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
       this.formAction = routes.TechnicalNotesController.handleSearchSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSoftwareSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS) {
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.TechnicalNotesController.handleSoftwareControlsSubmit().url();
     }
-    else if (controlCodeJourney== ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit().url();
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      this.formAction = routes.TechnicalNotesController.handleRelatedSoftwareControlsSubmit().url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

@@ -6,9 +6,11 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.controls.category.CategoryControlsServiceClient;
+import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.SoftwareJourneyHelper;
 import models.controlcode.ControlCodeJourney;
 import models.software.SoftwareCategory;
 import models.software.controls.SoftwareControlsDisplay;
@@ -27,34 +29,44 @@ public class SoftwareControlsController {
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final CategoryControlsServiceClient categoryControlsServiceClient;
+  private final RelatedControlsServiceClient relatedControlsServiceClient;
   private final HttpExecutionContext httpExecutionContext;
   private final ControlCodeJourneyHelper controlCodeJourneyHelper;
+  private final SoftwareJourneyHelper softwareJourneyHelper;
 
   @Inject
   public SoftwareControlsController(JourneyManager journeyManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
                                     CategoryControlsServiceClient categoryControlsServiceClient,
+                                    RelatedControlsServiceClient relatedControlsServiceClient,
                                     HttpExecutionContext httpExecutionContext,
-                                    ControlCodeJourneyHelper controlCodeJourneyHelper) {
+                                    ControlCodeJourneyHelper controlCodeJourneyHelper,
+                                    SoftwareJourneyHelper softwareJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.categoryControlsServiceClient = categoryControlsServiceClient;
+    this.relatedControlsServiceClient = relatedControlsServiceClient;
     this.httpExecutionContext = httpExecutionContext;
     this.controlCodeJourneyHelper = controlCodeJourneyHelper;
+    this.softwareJourneyHelper = softwareJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(SoftwareControlsJourney softwareControlsJourney) {
-    return renderWithForm(softwareControlsJourney, formFactory.form(ControlsBaseForm.class));
+    return renderWithForm(softwareControlsJourney, formFactory.form(SoftwareControlsForm.class));
   }
 
   public CompletionStage<Result> renderSofwareCategoryForm() {
     return renderForm(SoftwareControlsJourney.SOFTWARE_CATEGORY);
   }
 
+  public CompletionStage<Result> renderRelatedToPhysicalGoodForm() {
+    return renderForm(SoftwareControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
   private CompletionStage<Result> handleSubmit(SoftwareControlsJourney softwareControlsJourney) {
-    Form<ControlsBaseForm> form = formFactory.form(ControlsBaseForm.class).bindFromRequest();
+    Form<SoftwareControlsForm> form = formFactory.form(SoftwareControlsForm.class).bindFromRequest();
     if (form.hasErrors()) {
       renderWithForm(softwareControlsJourney, form);
     }
@@ -62,15 +74,35 @@ public class SoftwareControlsController {
     String controlCode = form.get().controlCode;
     if (StringUtils.isNotEmpty(action)) {
       if ("noMatchedControlCode".equals(action)) {
-        return journeyManager.performTransition(Events.NONE_MATCHED);
+        if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATEGORY) {
+          return journeyManager.performTransition(Events.NONE_MATCHED);
+        }
+        else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD){
+          return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
+        }
+        else {
+          throw new RuntimeException(String.format("Unexpected member of SoftwareControlsJourney enum: \"%s\""
+              , softwareControlsJourney.toString()));
+        }
       }
       else {
         throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
       }
     }
     else if (StringUtils.isNotEmpty(controlCode)) {
-      controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
-      permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
+      // Setup DAO state based on view variant
+      if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATEGORY) {
+        controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
+        permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
+      }
+      else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
+        controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
+        permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of SoftwareControlsJourney enum: \"%s\""
+            , softwareControlsJourney.toString()));
+      }
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
     else {
@@ -82,7 +114,11 @@ public class SoftwareControlsController {
     return handleSubmit(SoftwareControlsJourney.SOFTWARE_CATEGORY);
   }
 
-  private CompletionStage<Result> renderWithForm(SoftwareControlsJourney softwareControlsJourney, Form<ControlsBaseForm> form) {
+  public CompletionStage<Result> handleRelatedToPhysicalGoodSubmit() {
+    return handleSubmit(SoftwareControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
+  private CompletionStage<Result> renderWithForm(SoftwareControlsJourney softwareControlsJourney, Form<SoftwareControlsForm> form) {
     // Software category is expected at this stage of the journey
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
 
@@ -93,11 +129,47 @@ public class SoftwareControlsController {
             : softwareCategory == SoftwareCategory.RADIOACTIVE ? 2
             : 0;
 
-    return categoryControlsServiceClient.get(softwareCategory, count)
-        .thenApplyAsync(result -> {
-          SoftwareControlsDisplay display = new SoftwareControlsDisplay(softwareControlsJourney, result.controlCodes);
-          return ok(softwareControls.render(form, display));
-        }, httpExecutionContext.current());
+    // Setup DAO state based on view variant
+    if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATEGORY) {
+      return categoryControlsServiceClient.get(softwareCategory, count)
+          .thenApplyAsync(result -> {
+            SoftwareControlsDisplay display = new SoftwareControlsDisplay(softwareControlsJourney, result.controlCodes);
+            return ok(softwareControls.render(form, display));
+          }, httpExecutionContext.current());
+    }
+    else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
+
+      // Note, this is looking at the selected physical good control code which is related to their physical good
+      String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+
+      return relatedControlsServiceClient.get(softwareCategory, controlCode, count)
+          .thenApplyAsync(result -> {
+            int size = result.controlCodes.size();
+            if (size > 1) {
+              /**
+               * Expecting more than one control code here. 1 or 0 control codes should not reach this point (and should
+               * have prompted a different transition)
+               */
+              SoftwareControlsDisplay display = new SoftwareControlsDisplay(softwareControlsJourney, result.controlCodes);
+              return ok(softwareControls.render(form, display));
+            }
+            else {
+              throw new RuntimeException(String.format("Invalid value for size: \"%d\"", size));
+            }
+          }, httpExecutionContext.current());
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of SoftwareControlsJourney enum: \"%s\""
+          , softwareControlsJourney.toString()));
+    }
+  }
+
+  public static class SoftwareControlsForm {
+
+    public String controlCode;
+
+    public String action;
+
   }
 
 }

@@ -7,10 +7,6 @@ GET     /                                     controllers.EntryPointController.i
 
 POST    /                                     controllers.EntryPointController.handleSubmit
 
-GET     /category-controls                    controllers.software.controls.SoftwareControlsController.renderSofwareCategoryForm
-
-POST    /category-controls                    controllers.software.controls.SoftwareControlsController.handleSoftwareCategorySubmit
-
 GET     /change-destinations                  controllers.ChangeController.changeDestinationCountries
 
 POST    /change-destinations                  controllers.ChangeController.changeDestinationCountries
@@ -237,6 +233,10 @@ GET     /software-controls/technical-notes             controllers.controlcode.T
 
 POST    /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareControlsSubmit
 
+GET     /software-controls/show-controls               controllers.software.controls.SoftwareControlsController.renderSofwareCategoryForm
+
+POST    /software-controls/show-controls               controllers.software.controls.SoftwareControlsController.handleSoftwareCategorySubmit
+
 GET     /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.renderRelatedSoftwareControlsForm
 
 POST    /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.handleRelatedSoftwareControlsSubmit
@@ -256,6 +256,10 @@ POST    /software-controls-related-to-a-physical-good/not-applicable            
 GET     /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.renderRelatedSoftwareControlsForm
 
 POST    /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedSoftwareControlsSubmit
+
+GET     /software-controls-related-to-a-physical-good/show-controls               controllers.software.controls.SoftwareControlsController.renderRelatedToPhysicalGoodForm
+
+POST    /software-controls-related-to-a-physical-good/show-controls               controllers.software.controls.SoftwareControlsController.handleRelatedToPhysicalGoodSubmit
 
 GET     /start-application                    controllers.StartApplicationController.renderForm
 

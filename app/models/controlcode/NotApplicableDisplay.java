@@ -31,14 +31,15 @@ public class NotApplicableDisplay {
       this.formAction = routes.NotApplicableController.handleSearchRelatedToSoftwareSubmit().url();
       this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS || controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
+        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       if (applicableSoftwareControls != null) {
         if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
           this.formAction = routes.NotApplicableController.handleSoftwareControlsSubmit().url();
         }
         else {
           // TODO check that this button configuration is correct for software controls related to a physical good
-          this.formAction = routes.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit().url();
+          this.formAction = routes.NotApplicableController.handleRelatedSoftwareControlsSubmit().url();
         }
         if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
           buttonConfiguration = ButtonConfiguration.CONTINUE_NO_SOFTWARE_CONTROLS;

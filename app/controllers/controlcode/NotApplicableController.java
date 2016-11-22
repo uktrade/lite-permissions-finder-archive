@@ -73,6 +73,18 @@ public class NotApplicableController {
                       result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
           ), httpExecutionContext.current());
     }
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
+      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+      String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
+      CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
+      return softwareJourneyHelper.checkRelatedSoftwareControls(softwareCategory, selectedControlCode, false)
+          .thenCombineAsync(frontendStage, (controls, result) -> ok(
+              notApplicable.render(
+                  new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
+                      result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
+          ), httpExecutionContext.current());
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));
@@ -115,30 +127,16 @@ public class NotApplicableController {
         // A different action is expected for each valid member of ApplicableSoftwareControls
         SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
         return softwareJourneyHelper.checkSoftwareControls(softwareCategory)
-            .thenApplyAsync(controls -> {
-              if (controls == ApplicableSoftwareControls.ONE) {
-                if ("continue".equals(action)) {
-                  return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
-                      SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS);
-                }
-                else {
-                  throw new FormStateException("Unknown value for action: \"" + action + "\"");
-                }
-              }
-              else if (controls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
-                if ("returnToControls".equals(action)) {
-                  return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
-                      SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
-                }
-                else {
-                  throw new FormStateException("Unknown value for action: \"" + action + "\"");
-                }
-              }
-              else {
-                throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
-                    , controls.toString()));
-              }
-            }, httpExecutionContext.current()).thenCompose(Function.identity());
+            .thenApplyAsync(controls -> softwareControls(controls, action),
+                httpExecutionContext.current()).thenCompose(Function.identity());
+      }
+      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+        // A different action is expected for each valid member of ApplicableSoftwareControls
+        SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+        String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+        return softwareJourneyHelper.checkRelatedSoftwareControls(softwareCategory, controlCode, false)
+            .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(controls, action),
+                httpExecutionContext.current()).thenCompose(Function.identity());
       }
       else {
         throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
@@ -146,6 +144,57 @@ public class NotApplicableController {
       }
     }
     throw new FormStateException("Unhandled form state");
+  }
+
+  private CompletionStage<Result> softwareControls(ApplicableSoftwareControls applicableSoftwareControls, String action) {
+    // TODO remove duplicate code
+    if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
+      if ("continue".equals(action)) {
+        return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
+            SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS);
+      }
+      else {
+        throw new FormStateException("Unknown value for action: \"" + action + "\"");
+      }
+    }
+    else if (applicableSoftwareControls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+      if ("returnToControls".equals(action)) {
+        return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
+            SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
+      }
+      else {
+        throw new FormStateException("Unknown value for action: \"" + action + "\"");
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+          , applicableSoftwareControls.toString()));
+    }
+  }
+
+  private CompletionStage<Result> softwareControlsRelatedToPhysicalGood(ApplicableSoftwareControls applicableSoftwareControls, String action) {
+    // TODO remove duplicate code
+    if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
+      if ("continue".equals(action)) {
+        return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
+      }
+      else {
+        throw new FormStateException("Unknown value for action: \"" + action + "\"");
+      }
+    }
+    else if (applicableSoftwareControls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+      if ("returnToControls".equals(action)) {
+        return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
+            SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
+      }
+      else {
+        throw new FormStateException("Unknown value for action: \"" + action + "\"");
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+          , applicableSoftwareControls.toString()));
+    }
   }
 
   public CompletionStage<Result> handleSearchSubmit() {
