@@ -28,6 +28,7 @@ public class StaticContentController extends Controller {
     CATEGORY_WASTE("categories/waste.html", "You must have a licence to export most types of waste"),
     NOT_APPLICABLE("notApplicable.html", "You cannot use this service to get an export licence"),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
+    SOFTWARE_CONTROLS_NLR("software/controls/noLicenceRequired.html", "No software controls exist for the selected item"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
 
     StaticHtml(String filename, String title) {
@@ -107,6 +108,10 @@ public class StaticContentController extends Controller {
 
   public Result renderNotImplemented() {
     return renderStaticHtml(StaticHtml.NOT_IMPLEMENTED);
+  }
+
+  public Result renderSoftwareControlsNLR() {
+    return renderStaticHtml(StaticHtml.SOFTWARE_CONTROLS_NLR);
   }
 
   public Result renderVirtualEU() {

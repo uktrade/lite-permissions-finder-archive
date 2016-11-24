@@ -50,7 +50,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.software.controls.routes.SoftwareControlsController.renderRelatedToPhysicalGoodForm());
   private JourneyStage relatedToEquipmentOrMaterials = defineStage("relatedToEquipmentOrMaterials", "Is your software any of the following?",
       controllers.software.routes.RelatedEquipmentController.renderForm());
-
+  private JourneyStage noSoftwareControlsExist = defineStage("noSoftwareControlsExist", "No software controls exist for item",
+      controllers.software.controls.routes.NoSoftwareControlsExistController.renderForm());
+  private JourneyStage softwareControlsNLR = defineStage("softwareControlsNLR", "No software controls exist for the selected item",
+      routes.StaticContentController.renderSoftwareControlsNLR());
 
   public ExportJourneyDefinitionBuilder() {}
 
@@ -662,6 +665,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindCatchallSoftwareControls(controlCodeNotApplicableExtendedRelatedSoftwareControls);
 
+    // Expecting CatchallSoftwareControlsFlow.CATCHALL_ONE or CatchallSoftwareControlsFlow.CATCHALL_GREATER_THAN_ONE
+    bindCatchallSoftwareControls(noSoftwareControlsExist);
+
   }
 
   /**
@@ -672,10 +678,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(journeyStage)
         .onEvent(Events.CONTROLS_RELATED_PHYSICAL_GOOD)
         .branch()
-        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_ONE, moveTo(controlCodeForRelatedSoftwareControls)) // TODO, dao has been saved, need to implement transition
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_ONE, moveTo(controlCodeForRelatedSoftwareControls))
         .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_GREATER_THAN_ONE, moveTo(softwareRelatedToPhysicalGoodControls))
-        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_ZERO, moveTo(notImplemented))
-        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_CONTROL_GREATER_THAN_ZERO, moveTo(notImplemented));
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_ZERO, moveTo(softwareControlsNLR))
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_CONTROL_GREATER_THAN_ZERO, moveTo(noSoftwareControlsExist));
   }
 
   /**
