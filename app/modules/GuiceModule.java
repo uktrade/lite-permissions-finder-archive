@@ -8,12 +8,15 @@ import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneySerialiser;
 import components.common.persistence.RedisKeyConfig;
 import components.persistence.PermissionsFinderDao;
+import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
 import play.Configuration;
 import play.Environment;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class GuiceModule extends AbstractModule{
 
@@ -84,6 +87,6 @@ public class GuiceModule extends AbstractModule{
 
   @Provides
   public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders() {
-    return Collections.singleton(new ExportJourneyDefinitionBuilder());
+    return Arrays.asList(new ExportJourneyDefinitionBuilder(), new ImportJourneyDefinitionBuilder());
   }
 }

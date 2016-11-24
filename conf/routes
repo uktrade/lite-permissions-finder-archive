@@ -1,3 +1,9 @@
+# routes-import
+
+GET         /import-content        controllers.importcontent.ImportController.renderForm(stageKey: String)
+POST        /import-content        controllers.importcontent.ImportController.handleSubmit
+GET         /import-static         controllers.importcontent.StaticController.render(importHtmlName: String)
+
 # Routes
 # ~~~~
 ->      /common                     common.Routes
@@ -198,8 +204,6 @@ POST    /select-goods-type                    controllers.GoodsTypeController.ha
 GET     /select-trade-type                    controllers.TradeTypeController.renderForm
 
 POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
-
-GET     /select-trade-type/import             controllers.StaticContentController.renderImport
 
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 

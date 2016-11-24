@@ -1,0 +1,24 @@
+@import util._
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+
+@(form: Form[_], data: ImportFormData)
+@standardPage(data.getQuestion, Some(Html(data.getQuestion))) {
+  @errorSummary(form)
+} {
+
+  <form action="@controllers.importcontent.routes.ImportController.handleSubmit()" method="POST">
+
+    <input type="hidden" name="stageKey" value="@data.getStageKey" />
+
+    @contextFormParams()
+
+    @formRadioGroup(form("selectedOption"), data.getOptions) { }
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+
+  </form>
+}
