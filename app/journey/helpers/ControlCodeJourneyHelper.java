@@ -55,6 +55,9 @@ public class ControlCodeJourneyHelper {
                   journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE, asc)
               , httpExecutionContext.current());
     }
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+      return softwareJourneyHelper.performCatchallSoftwareControlNotApplicableTransition();
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));

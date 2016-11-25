@@ -11,6 +11,8 @@ import journey.Events;
 import models.controlcode.ControlCodeJourney;
 import models.software.ApplicableSoftwareControls;
 import models.software.CatchallSoftwareControlsFlow;
+import models.software.Relationship;
+import models.software.SoftwareCatchallControlsNotApplicableFlow;
 import models.software.SoftwareCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
@@ -166,33 +168,47 @@ public class SoftwareJourneyHelper {
         }, httpExecutionContext.current());
   }
 
+  public CompletionStage<Relationship> checkRelationshipExists(SoftwareCategory softwareCategory) {
+    boolean relationshipExists = softwareCategory == SoftwareCategory.MILITARY;
+    return softwareAndTechnologyRelationshipServiceClient.get(softwareCategory, relationshipExists)
+        .thenApplyAsync(result -> {
+          if (result.relationshipExists) {
+            return Relationship.RELATIONSHIP_EXISTS;
+          }
+          else {
+            return Relationship.RELATIONSHIP_DOES_NOT_EXIST;
+          }
+        }, httpExecutionContext.current());
+  }
+
   public CompletionStage<Result> performCatchallSoftwareControlsTransition() {
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-
-    // Stubbed relationship for SoftwareAndTechnologyRelationshipServiceClient
-    boolean relationshipExists = softwareCategory == SoftwareCategory.MILITARY;
 
     return checkCatchtallSoftwareControls(softwareCategory)
         .thenComposeAsync(controls -> {
           if (controls == ApplicableSoftwareControls.ZERO) {
-            return softwareAndTechnologyRelationshipServiceClient.get(softwareCategory, relationshipExists)
-                .thenComposeAsync(result -> {
-                  if (result.relationshipExists) {
-                    return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS,
+            return checkRelationshipExists(softwareCategory)
+                .thenComposeAsync(relationship -> {
+                  if (relationship == Relationship.RELATIONSHIP_EXISTS) {
+                    return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
                         CatchallSoftwareControlsFlow.RELATIONSHIP_EXISTS);
                   }
-                  else {
-                    return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS,
+                  else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
+                    return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
                         CatchallSoftwareControlsFlow.RELATIONSHIP_DOES_NOT_EXIST);
+                  }
+                  else {
+                    throw new RuntimeException(String.format("Unexpected member of Relationship enum: \"%s\""
+                        , relationship.toString()));
                   }
                 }, httpExecutionContext.current());
           }
           else if (controls == ApplicableSoftwareControls.ONE) {
-            return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS,
+            return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
                 CatchallSoftwareControlsFlow.CATCHALL_ONE);
           }
           else if (controls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
-            return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS,
+            return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
                 CatchallSoftwareControlsFlow.CATCHALL_GREATER_THAN_ONE);
           }
           else {
@@ -202,4 +218,43 @@ public class SoftwareJourneyHelper {
         }, httpExecutionContext.current());
   }
 
+  public CompletionStage<Result> performCatchallSoftwareControlNotApplicableTransition() {
+    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+    return checkCatchtallSoftwareControls(softwareCategory)
+        .thenComposeAsync(controls -> {
+         if (controls == ApplicableSoftwareControls.ONE) {
+           return checkRelationshipExists(softwareCategory)
+               .thenComposeAsync(relationship -> {
+                 if (relationship == Relationship.RELATIONSHIP_EXISTS) {
+                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                       SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS);
+                 }
+                 else if (relationship == Relationship.RELATIONSHIP_EXISTS) {
+                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                       SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS);
+                 }
+                 else {
+                   throw new RuntimeException(String.format("Unexpected member of Relationship enum: \"%s\""
+                       , relationship.toString()));
+                 }
+               }, httpExecutionContext.current());
+          }
+          else if (controls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+            return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                SoftwareCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS);
+          }
+          else {
+            throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+                , controls.toString()));
+          }
+        }, httpExecutionContext.current());
+  }
+
+  public CompletionStage<Result> performCatchallSoftwareControlRelationship() {
+    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+    return checkRelationshipExists(softwareCategory)
+        .thenComposeAsync(relationship ->
+                journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP, relationship)
+            , httpExecutionContext.current());
+  }
 }

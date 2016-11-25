@@ -71,6 +71,10 @@ public class TechnicalNotesController {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
+  public CompletionStage<Result> renderSoftwareCatchallControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
     String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
@@ -110,6 +114,10 @@ public class TechnicalNotesController {
 
   public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
+  public CompletionStage<Result> handleSoftwareCatchallControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
   }
 
   public static class TechnicalNotesForm {

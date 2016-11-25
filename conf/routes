@@ -221,6 +221,30 @@ GET     /select-trade-type/import             controllers.StaticContentControlle
 
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 
+GET     /software-category-catchall-controls                             controllers.controlcode.ControlCodeController.renderSoftwareCatchallControlsForm
+
+POST    /software-category-catchall-controls                             controllers.controlcode.ControlCodeController.handleSoftwareCatchallControlsSubmit
+
+GET     /software-category-catchall-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSoftwareCatchallControlsForm
+
+POST    /software-category-catchall-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSoftwareCatchallControlsSubmit
+
+GET     /software-category-catchall-controls/decontrols                  controllers.controlcode.DecontrolsController.renderSoftwareCatchallControlsForm
+
+POST    /software-category-catchall-controls/decontrols                  controllers.controlcode.DecontrolsController.handleSoftwareCatchallControlsSubmit
+
+GET     /software-category-catchall-controls/not-applicable              controllers.controlcode.NotApplicableController.renderSoftwareCatchallControlsForm(extended)
+
+POST    /software-category-catchall-controls/not-applicable              controllers.controlcode.NotApplicableController.handleSoftwareCatchallControlsSubmit
+
+GET     /software-category-catchall-controls/technical-notes             controllers.controlcode.TechnicalNotesController.renderSoftwareCatchallControlsForm
+
+POST    /software-category-catchall-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareCatchallControlsSubmit
+
+GET     /software-category-catchall-controls/show-controls               controllers.software.controls.SoftwareControlsController.renderSoftwareCatchallForm
+
+POST    /software-category-catchall-controls/show-controls               controllers.software.controls.SoftwareControlsController.handleSoftwareCatchallSubmit
+
 GET     /software-controls                             controllers.controlcode.ControlCodeController.renderSoftwareControlsForm
 
 POST    /software-controls                             controllers.controlcode.ControlCodeController.handleSoftwareControlsSubmit

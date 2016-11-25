@@ -73,6 +73,10 @@ public class DecontrolsController {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
+  public CompletionStage<Result> renderSoftwareCatchallControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  }
+
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
     String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
@@ -117,6 +121,10 @@ public class DecontrolsController {
 
   public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
+  public CompletionStage<Result> handleSoftwareCatchallControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
   }
 
   public static class DecontrolsForm {

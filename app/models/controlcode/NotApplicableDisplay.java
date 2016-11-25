@@ -32,14 +32,18 @@ public class NotApplicableDisplay {
       this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
-        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
+        controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
       if (applicableSoftwareControls != null) {
         if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
           this.formAction = routes.NotApplicableController.handleSoftwareControlsSubmit().url();
         }
-        else {
-          // TODO check that this button configuration is correct for software controls related to a physical good
+        else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
           this.formAction = routes.NotApplicableController.handleRelatedSoftwareControlsSubmit().url();
+        }
+        else {
+          // ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
+          this.formAction = routes.NotApplicableController.handleSoftwareCatchallControlsSubmit().url();
         }
         if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
           buttonConfiguration = ButtonConfiguration.CONTINUE_NO_SOFTWARE_CONTROLS;

@@ -48,6 +48,9 @@ public class AdditionalSpecificationsDisplay {
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit().url();
     }
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+      this.formAction = routes.AdditionalSpecificationsController.handleSoftwareCatchallControlsSubmit().url();
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));

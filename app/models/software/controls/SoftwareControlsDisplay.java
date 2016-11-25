@@ -19,6 +19,10 @@ public class SoftwareControlsDisplay {
       this.formAction = routes.SoftwareControlsController.handleRelatedToPhysicalGoodSubmit().url();
       this.pageTitle = "Showing controls related to your selected physical good";
     }
+    else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATCHALL) {
+      this.formAction = routes.SoftwareControlsController.handleSoftwareCatchallSubmit().url();
+      this.pageTitle = "Showing catchall controls related to your items category";
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of SoftwareControlsJourney enum: \"%s\""
           , softwareControlsJourney.toString()));
