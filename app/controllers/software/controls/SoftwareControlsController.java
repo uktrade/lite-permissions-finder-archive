@@ -85,11 +85,11 @@ public class SoftwareControlsController {
         if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATEGORY) {
           return journeyManager.performTransition(Events.NONE_MATCHED);
         }
-        else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD){
+        else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
           return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
         }
-        else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATCHALL){
-          return softwareJourneyHelper.performCatchallSoftwareControlRelationship();
+        else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATCHALL) {
+          return softwareJourneyHelper.performCatchallSoftwareControlRelationshipTransition();
         }
         else {
           throw new RuntimeException(String.format("Unexpected member of SoftwareControlsJourney enum: \"%s\""

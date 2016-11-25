@@ -259,7 +259,7 @@ public class SoftwareJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> performCatchallSoftwareControlRelationship() {
+  public CompletionStage<Result> performCatchallSoftwareControlRelationshipTransition() {
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
     return checkRelationshipExists(softwareCategory)
         .thenComposeAsync(relationship ->

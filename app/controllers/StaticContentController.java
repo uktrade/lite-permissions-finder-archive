@@ -30,6 +30,7 @@ public class StaticContentController extends Controller {
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     SOFTWARE_CONTROLS_NLR("software/controls/noLicenceRequired.html", "No software controls exist for the selected item"),
     SOFTWARE_RELATIONSHIP_NLR("software/relationship/noLicenceRequired.html", "No relationship between software and technology"),
+    SOFTWARE_RELATIONSHIP_CONTACT_ECO("software/relationship/contactECO.html", "Contact ECO"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
 
     StaticHtml(String filename, String title) {
@@ -117,6 +118,10 @@ public class StaticContentController extends Controller {
 
   public Result renderSoftwareRelationshipNLR() {
     return renderStaticHtml(StaticHtml.SOFTWARE_RELATIONSHIP_NLR);
+  }
+
+  public Result renderSoftwareRelationshipContactECO() {
+    return renderStaticHtml(StaticHtml.SOFTWARE_RELATIONSHIP_CONTACT_ECO);
   }
 
   public Result renderVirtualEU() {

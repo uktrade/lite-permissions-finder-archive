@@ -301,6 +301,10 @@ GET     /software-technology-relationship/licence-may-not-be-required           
 
 POST    /software-technology-relationship/licence-may-not-be-required             controllers.StaticContentController.renderSoftwareRelationshipNLR
 
+GET     /software-technology-relationship/contact-eco                             controllers.StaticContentController.renderSoftwareRelationshipContactECO
+
+POST    /software-technology-relationship/contact-eco                             controllers.StaticContentController.renderSoftwareRelationshipContactECO
+
 GET     /start-application                    controllers.StartApplicationController.renderForm
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit

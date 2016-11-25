@@ -377,6 +377,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftwareCategories", "What is your software for?",
         controllers.software.routes.DualUseSoftwareCategoriesController.renderForm());
 
+    JourneyStage softwareRelationshipContactECO = defineStage("softwareRelationshipContactECO", "Contact ECO",
+        routes.StaticContentController.renderSoftwareRelationshipContactECO());
+
     atStage(softwareExemptions)
         .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
         .branch()
@@ -419,7 +422,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     softwareCatchallControls();
 
     atStage(softwareTechnologyRelationship)
-        .onEvent(StandardEvents.YES).then(moveTo(notImplemented));
+        .onEvent(StandardEvents.YES).then(moveTo(softwareRelationshipContactECO));
     atStage(softwareTechnologyRelationship)
         .onEvent(StandardEvents.NO).then(moveTo(softwareRelationshipNLR));
   }
@@ -705,7 +708,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(softwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(notImplemented)); //TODO do this
+        .then(moveTo(controlCodeSoftwareCatchallControls));
 
     atStage(softwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP)
