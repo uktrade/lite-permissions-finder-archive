@@ -87,6 +87,9 @@ public class GuiceModule extends AbstractModule{
 
   @Provides
   public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders() {
-    return Arrays.asList(new ExportJourneyDefinitionBuilder(), new ImportJourneyDefinitionBuilder());
+    ImportJourneyDefinitionBuilder importJourneyDefinitionBuilder = new ImportJourneyDefinitionBuilder();
+    importJourneyDefinitionBuilder.initStages();
+
+    return Arrays.asList(new ExportJourneyDefinitionBuilder(), importJourneyDefinitionBuilder);
   }
 }

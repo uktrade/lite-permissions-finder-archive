@@ -9,13 +9,15 @@ import exceptions.FormStateException;
 import importcontent.ImportJourneyDefinitionBuilder;
 import importcontent.models.ImportFoodWhat;
 import importcontent.models.ImportWhat;
+import importcontent.models.ImportWhatWhereIron;
+import importcontent.models.ImportWhatWhereTextiles;
 import importcontent.models.ImportWhere;
 import importcontent.models.ImportYesNo;
 import models.ImportFormData;
 import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
-import play.data.validation.Constraints;
+import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.importcontent.importQuestion;
@@ -40,22 +42,26 @@ public class ImportController extends Controller {
 
   public Result renderForm(String stageKey) {
     Logger.info("ImportController.renderForm: " + stageKey);
-    return ok(importQuestion.render(formFactory.form(), getImportFormData(stageKey)));
+    return ok(importQuestion.render(formFactory.form(), populateImportFormData(new ImportFormData(stageKey))));
   }
 
   public CompletionStage<Result> handleSubmit() {
-    Form<ImportController.ImportQuestionForm> form = formFactory.form(ImportController.ImportQuestionForm.class).bindFromRequest();
+    Form<ImportQuestionForm> form = formFactory.form(ImportQuestionForm.class).bindFromRequest();
     showFormValues();
     if (form.hasErrors()) {
-      return completedFuture(ok(importQuestion.render(form, getImportFormData(form.get().stageKey))));
+      // Cannot retrieve stageKey or stageOption from form on an error, so we get from request directly
+      String stageKey = request().body().asFormUrlEncoded().get("stageKey")[0];
+      return completedFuture(ok(importQuestion.render(form, populateImportFormData(new ImportFormData(stageKey)))));
     }
     return completeTransition(form.get().stageKey, form.get().selectedOption);
   }
 
   public static class ImportQuestionForm {
-    @Constraints.Required(message = "Please select one option")
-    public String selectedOption;
-    public String stageKey;
+
+    @Required(message = "Please select one option")
+    private String selectedOption;
+
+    private String stageKey;
 
     public String getSelectedOption() {
       return selectedOption;
@@ -72,87 +78,125 @@ public class ImportController extends Controller {
     public void setStageKey(String stageKey) {
       this.stageKey = stageKey;
     }
+
   }
 
-  private CompletionStage<Result> completeTransition(String stageKey, String option) {
-    Logger.info("ImportController.completeTransition: " + stageKey + "/" + option);
+  private CompletionStage<Result> completeTransition(String stageKey, String selectedOption) {
+    Logger.info("ImportController.completeTransition: " + stageKey + "/" + selectedOption);
     switch (stageKey) {
       case ImportJourneyDefinitionBuilder.KEY_WHERE: {
-        Optional<ImportWhere> optional = ImportWhere.getMatched(option);
+        Optional<ImportWhere> optional = ImportWhere.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_WHERE_SELECTED, optional.get());
         }
         break;
       }
       case ImportJourneyDefinitionBuilder.KEY_WHAT: {
-        Optional<ImportWhat> optional = ImportWhat.getMatched(option);
+        Optional<ImportWhat> optional = ImportWhat.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_WHAT_SELECTED, optional.get());
         }
         break;
       }
       case ImportJourneyDefinitionBuilder.KEY_CHARCOAL: {
-        Optional<ImportYesNo> optional = ImportYesNo.getMatched(option);
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_CHARCOAL_SELECTED, optional.get());
         }
         break;
       }
-      case ImportJourneyDefinitionBuilder.KEY_MILITARY: {
-        Optional<ImportYesNo> optional = ImportYesNo.getMatched(option);
+      case ImportJourneyDefinitionBuilder.KEY_MILITARY_IRAN: {
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
         if (optional.isPresent()) {
-          return journeyManager.performTransition(ImportEvents.IMPORT_MILITARY_SELECTED, optional.get());
+          return journeyManager.performTransition(ImportEvents.IMPORT_MILITARY_IRAN_SELECTED, optional.get());
+        }
+        break;
+      }
+      case ImportJourneyDefinitionBuilder.KEY_MILITARY_RUSSIA: {
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
+        if (optional.isPresent()) {
+          return journeyManager.performTransition(ImportEvents.IMPORT_MILITARY_RUSSIA_SELECTED, optional.get());
+        }
+        break;
+      }
+      case ImportJourneyDefinitionBuilder.KEY_MILITARY_MYANMAR: {
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
+        if (optional.isPresent()) {
+          return journeyManager.performTransition(ImportEvents.IMPORT_MILITARY_MYANMAR_SELECTED, optional.get());
         }
         break;
       }
       case ImportJourneyDefinitionBuilder.KEY_SHOT: {
-        Optional<ImportYesNo> optional = ImportYesNo.getMatched(option);
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_SHOT_SELECTED, optional.get());
         }
         break;
       }
       case ImportJourneyDefinitionBuilder.KEY_SUBSTANCES: {
-        Optional<ImportYesNo> optional = ImportYesNo.getMatched(option);
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_SUBSTANCES_SELECTED, optional.get());
         }
         break;
       }
       case ImportJourneyDefinitionBuilder.KEY_OZONE: {
-        Optional<ImportYesNo> optional = ImportYesNo.getMatched(option);
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_OZONE_SELECTED, optional.get());
         }
         break;
       }
       case ImportJourneyDefinitionBuilder.KEY_DRUGS: {
-        Optional<ImportYesNo> optional = ImportYesNo.getMatched(option);
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_DRUGS_SELECTED, optional.get());
         }
         break;
       }
       case ImportJourneyDefinitionBuilder.KEY_FOOD_WHAT: {
-        Optional<ImportFoodWhat> optional = ImportFoodWhat.getMatched(option);
+        Optional<ImportFoodWhat> optional = ImportFoodWhat.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_FOOD_WHAT_SELECTED, optional.get());
         }
         break;
       }
       case ImportJourneyDefinitionBuilder.KEY_ENDANGERED: {
-        Optional<ImportYesNo> optional = ImportYesNo.getMatched(option);
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
         if (optional.isPresent()) {
           return journeyManager.performTransition(ImportEvents.IMPORT_ENDANGERED_SELECTED, optional.get());
         }
         break;
       }
+      case ImportJourneyDefinitionBuilder.KEY_WHAT_WHERE_IRON: {
+        Optional<ImportWhatWhereIron> optional = ImportWhatWhereIron.getMatched(selectedOption);
+        if (optional.isPresent()) {
+          return journeyManager.performTransition(ImportEvents.IMPORT_WHAT_WHERE_IRON_SELECTED, optional.get());
+        }
+        break;
+      }
+      case ImportJourneyDefinitionBuilder.KEY_WHAT_WHERE_TEXTILES: {
+        Optional<ImportWhatWhereTextiles> optional = ImportWhatWhereTextiles.getMatched(selectedOption);
+        if (optional.isPresent()) {
+          return journeyManager.performTransition(ImportEvents.IMPORT_WHAT_WHERE_TEXTILES_SELECTED, optional.get());
+        }
+        break;
+      }
+      case ImportJourneyDefinitionBuilder.KEY_BELARUS_TEXTILES: {
+        Optional<ImportYesNo> optional = ImportYesNo.getMatched(selectedOption);
+        if (optional.isPresent()) {
+          return journeyManager.performTransition(ImportEvents.IMPORT_BELARUS_TEXTILES_SELECTED, optional.get());
+        }
+        break;
+      }
     }
-    throw new FormStateException("Unknown selection option: " + option);
+    throw new FormStateException("Unknown selectedOption: " + selectedOption);
   }
 
-  private ImportFormData getImportFormData(String stageKey) {
-    ImportFormData data = new ImportFormData(stageKey);
+  private ImportFormData populateImportFormData(ImportFormData data) {
+    String stageKey = data.getStageKey();
+    Logger.info("populateImportFormData stageKey: " + stageKey);
+    Logger.info("populateImportFormData KEY_WHERE: " + ImportJourneyDefinitionBuilder.KEY_WHERE);
     switch (stageKey) {
       case ImportJourneyDefinitionBuilder.KEY_WHERE:
         data.setQuestion(ImportJourneyDefinitionBuilder.KEY_WHERE_QUESTION);
@@ -166,7 +210,15 @@ public class ImportController extends Controller {
         data.setQuestion(ImportJourneyDefinitionBuilder.KEY_CHARCOAL_QUESTION);
         data.setOptions(ImportYesNo.getSelectOptions());
         break;
-      case ImportJourneyDefinitionBuilder.KEY_MILITARY:
+      case ImportJourneyDefinitionBuilder.KEY_MILITARY_IRAN:
+        data.setQuestion(ImportJourneyDefinitionBuilder.KEY_MILITARY_QUESTION);
+        data.setOptions(ImportYesNo.getSelectOptions());
+        break;
+      case ImportJourneyDefinitionBuilder.KEY_MILITARY_RUSSIA:
+        data.setQuestion(ImportJourneyDefinitionBuilder.KEY_MILITARY_QUESTION);
+        data.setOptions(ImportYesNo.getSelectOptions());
+        break;
+      case ImportJourneyDefinitionBuilder.KEY_MILITARY_MYANMAR:
         data.setQuestion(ImportJourneyDefinitionBuilder.KEY_MILITARY_QUESTION);
         data.setOptions(ImportYesNo.getSelectOptions());
         break;
@@ -194,11 +246,34 @@ public class ImportController extends Controller {
         data.setQuestion(ImportJourneyDefinitionBuilder.KEY_ENDANGERED_QUESTION);
         data.setOptions(ImportYesNo.getSelectOptions());
         break;
+      case ImportJourneyDefinitionBuilder.KEY_WHAT_WHERE_IRON:
+        data.setQuestion(ImportJourneyDefinitionBuilder.KEY_WHAT_WHERE_IRON_QUESTION);
+        data.setOptions(ImportWhatWhereIron.getSelectOptions());
+        break;
+      case ImportJourneyDefinitionBuilder.KEY_WHAT_WHERE_TEXTILES:
+        data.setQuestion(ImportJourneyDefinitionBuilder.KEY_WHAT_WHERE_TEXTILES_QUESTION);
+        data.setOptions(ImportWhatWhereTextiles.getSelectOptions());
+        break;
+      case ImportJourneyDefinitionBuilder.KEY_BELARUS_TEXTILES:
+        data.setQuestion(ImportJourneyDefinitionBuilder.KEY_BELARUS_TEXTILES_QUESTION);
+        data.setOptions(ImportYesNo.getSelectOptions());
+        break;
       default:
         Logger.warn("Unrecognised stageKey: " + stageKey);
         break;
     }
     return data;
+  }
+
+  private Optional<String> getRequestFormParam(String paramName) {
+    Map<String, String[]> formValues = request().body().asFormUrlEncoded();
+    if(formValues != null) {
+      String[] params = formValues.get(paramName);
+      if (params != null && params.length > 0) {
+        return Optional.of(params[0]);
+      }
+    }
+    return Optional.empty();
   }
 
   private void showFormValues() {
@@ -207,5 +282,6 @@ public class ImportController extends Controller {
       System.out.println("Key : " + key + " Value : " + Arrays.toString(value));
     });
   }
+
 }
 

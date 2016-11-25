@@ -41,4 +41,5 @@ public class ImportFormData {
   public void setOptions(List<SelectOption> options) {
     this.options = options;
   }
+
 }

@@ -10,7 +10,7 @@
 
   <form action="@controllers.importcontent.routes.ImportController.handleSubmit()" method="POST">
 
-    <input type="hidden" name="stageKey" value="@data.getStageKey" />
+    <input type="hidden" name="stageKey" value="@(data.getStageKey)" />
 
     @contextFormParams()
 
