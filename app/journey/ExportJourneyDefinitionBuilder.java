@@ -374,6 +374,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   }
 
   private void softwareStages() {
+
+    JourneyStage softwareExemptionsNLR = defineStage("softwareExemptionsNLR", "Software exemptions apply",
+        controllers.routes.StaticContentController.renderSoftwareExemptionsNLR());
+
     JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftwareCategories", "What is your software for?",
         controllers.software.routes.DualUseSoftwareCategoriesController.renderForm());
 
@@ -383,7 +387,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(softwareExemptions)
         .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
         .branch()
-        .when(SoftwareExemptionsFlow.EXEMPTIONS_APPLY, moveTo(notApplicable)) // TODO check this is the correct NLR to show
+        .when(SoftwareExemptionsFlow.EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR))
         .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
         .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
         .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))

@@ -71,9 +71,13 @@ GET     /dual-use-software-categories         controllers.software.DualUseSoftwa
 
 POST    /dual-use-software-categories         controllers.software.DualUseSoftwareCategoriesController.handleSubmit
 
-GET     /exempt-software                      controllers.software.ExemptionsController.renderForm
+GET     /exemptions-may-apply                 controllers.software.ExemptionsController.renderForm
 
-POST    /exempt-software                      controllers.software.ExemptionsController.handleSubmit
+POST    /exemptions-may-apply                 controllers.software.ExemptionsController.handleSubmit
+
+GET     /exemptions-apply                     controllers.StaticContentController.renderSoftwareExemptionsNLR
+
+POST    /exemptions-apply                     controllers.StaticContentController.renderSoftwareExemptionsNLR
 
 GET     /export-category                      controllers.categories.ExportCategoryController.renderForm
 

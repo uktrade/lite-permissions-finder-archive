@@ -29,6 +29,7 @@ public class StaticContentController extends Controller {
     NOT_APPLICABLE("notApplicable.html", "You cannot use this service to get an export licence"),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     SOFTWARE_CONTROLS_NLR("software/controls/noLicenceRequired.html", "No software controls exist for the selected item"),
+    SOFTWARE_EXEMPTIONS_NLR("software/exemptionsNLR.html", "Software exemptions apply"),
     SOFTWARE_RELATIONSHIP_NLR("software/relationship/noLicenceRequired.html", "No relationship between software and technology"),
     SOFTWARE_RELATIONSHIP_CONTACT_ECO("software/relationship/contactECO.html", "Contact ECO"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
@@ -114,6 +115,10 @@ public class StaticContentController extends Controller {
 
   public Result renderSoftwareControlsNLR() {
     return renderStaticHtml(StaticHtml.SOFTWARE_CONTROLS_NLR);
+  }
+
+  public Result renderSoftwareExemptionsNLR() {
+    return renderStaticHtml(StaticHtml.SOFTWARE_EXEMPTIONS_NLR);
   }
 
   public Result renderSoftwareRelationshipNLR() {
