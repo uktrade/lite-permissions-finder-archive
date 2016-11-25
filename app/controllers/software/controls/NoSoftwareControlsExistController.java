@@ -55,7 +55,7 @@ public class NoSoftwareControlsExistController {
 
   private CompletionStage<Result> renderWithForm(Form<NoSoftwareControlsExistForm> form) {
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return softwareJourneyHelper.checkCatchtallSoftwareControls(softwareCategory)
+    return softwareJourneyHelper.checkCatchtallSoftwareControls(softwareCategory, false)
         .thenApplyAsync(control -> {
           if (control == ApplicableSoftwareControls.ONE || control == ApplicableSoftwareControls.GREATER_THAN_ONE) {
             return ok(noSoftwareControlsExist.render(form));

@@ -142,7 +142,7 @@ public class SoftwareJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<ApplicableSoftwareControls> checkCatchtallSoftwareControls(SoftwareCategory softwareCategory) {
+  public CompletionStage<ApplicableSoftwareControls> checkCatchtallSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
     // Count is specific to stubbed CategoryControlsServiceClient
     int count =
         softwareCategory == SoftwareCategory.MILITARY ? 0
@@ -157,6 +157,15 @@ public class SoftwareJourneyHelper {
             return ApplicableSoftwareControls.ZERO;
           }
           else if (size == 1) {
+            // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
+            // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
+            if (!StringUtils.equals("PL9009a2g", permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS))) {
+              permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
+              permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+              permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+              permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+              permissionsFinderDao.clearControlCodeTechnicalNotesApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+            }
             return ApplicableSoftwareControls.ONE;
           }
           else if (size > 1) {
@@ -184,7 +193,7 @@ public class SoftwareJourneyHelper {
   public CompletionStage<Result> performCatchallSoftwareControlsTransition() {
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
 
-    return checkCatchtallSoftwareControls(softwareCategory)
+    return checkCatchtallSoftwareControls(softwareCategory, true)
         .thenComposeAsync(controls -> {
           if (controls == ApplicableSoftwareControls.ZERO) {
             return checkRelationshipExists(softwareCategory)
@@ -220,7 +229,7 @@ public class SoftwareJourneyHelper {
 
   public CompletionStage<Result> performCatchallSoftwareControlNotApplicableTransition() {
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return checkCatchtallSoftwareControls(softwareCategory)
+    return checkCatchtallSoftwareControls(softwareCategory, true)
         .thenComposeAsync(controls -> {
          if (controls == ApplicableSoftwareControls.ONE) {
            return checkRelationshipExists(softwareCategory)
@@ -229,7 +238,7 @@ public class SoftwareJourneyHelper {
                    return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
                        SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS);
                  }
-                 else if (relationship == Relationship.RELATIONSHIP_EXISTS) {
+                 else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
                    return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
                        SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS);
                  }

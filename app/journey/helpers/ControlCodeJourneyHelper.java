@@ -91,7 +91,7 @@ public class ControlCodeJourneyHelper {
   private CompletionStage<Result> controlsRelatedToPhysicalGoodTransition(ApplicableSoftwareControls applicableSoftwareControls) {
     if (applicableSoftwareControls == ApplicableSoftwareControls.ZERO) {
       SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-      return softwareJourneyHelper.checkCatchtallSoftwareControls(softwareCategory)
+      return softwareJourneyHelper.checkCatchtallSoftwareControls(softwareCategory, false)
           .thenComposeAsync(controls -> {
             if (controls == ApplicableSoftwareControls.ZERO) {
               return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,

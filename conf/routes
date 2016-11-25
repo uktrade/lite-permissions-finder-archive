@@ -197,9 +197,9 @@ GET     /no-software-controls-exist               controllers.software.controls.
 
 POST    /no-software-controls-exist               controllers.software.controls.NoSoftwareControlsExistController.handleSubmit
 
-GET     /no-software-controls-exist/no-licence-required     controllers.StaticContentController.renderSoftwareControlsNLR
+GET     /no-software-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
 
-POST    /no-software-controls-exist/no-licence-required     controllers.StaticContentController.renderSoftwareControlsNLR
+POST    /no-software-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
 
 GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
 
@@ -292,6 +292,10 @@ POST    /software-controls-related-to-a-physical-good/technical-notes           
 GET     /software-controls-related-to-a-physical-good/show-controls               controllers.software.controls.SoftwareControlsController.renderRelatedToPhysicalGoodForm
 
 POST    /software-controls-related-to-a-physical-good/show-controls               controllers.software.controls.SoftwareControlsController.handleRelatedToPhysicalGoodSubmit
+
+GET     /software-technology-relationship/licence-may-not-be-required             controllers.StaticContentController.renderSoftwareRelationshipNLR
+
+POST    /software-technology-relationship/licence-may-not-be-required             controllers.StaticContentController.renderSoftwareRelationshipNLR
 
 GET     /start-application                    controllers.StartApplicationController.renderForm
 
