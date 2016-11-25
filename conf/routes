@@ -293,6 +293,10 @@ GET     /software-controls-related-to-a-physical-good/show-controls             
 
 POST    /software-controls-related-to-a-physical-good/show-controls               controllers.software.controls.SoftwareControlsController.handleRelatedToPhysicalGoodSubmit
 
+GET     /software-technology-relationship                                         controllers.software.RelationshipController.renderForm
+
+POST    /software-technology-relationship                                         controllers.software.RelationshipController.handleSubmit
+
 GET     /software-technology-relationship/licence-may-not-be-required             controllers.StaticContentController.renderSoftwareRelationshipNLR
 
 POST    /software-technology-relationship/licence-may-not-be-required             controllers.StaticContentController.renderSoftwareRelationshipNLR

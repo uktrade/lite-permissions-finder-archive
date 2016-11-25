@@ -58,6 +58,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
   public static final String SOFTWARE_CATEGORY = "softwareCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
+  public static final String SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP = "softwareIsCoveredByTechnologyRelationship";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -376,5 +377,13 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public String prependFieldName(ControlCodeJourney controlCodeJourney, String fieldName) {
     return controlCodeJourney.value() + ":" + fieldName;
+  }
+
+  public void saveSoftwareIsCoveredByTechnologyRelationship(Boolean isCoveredByRelationship) {
+    writeBoolean(SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP, isCoveredByRelationship);
+  }
+
+  public Optional<Boolean> getSoftwareIsCoveredByTechnologyRelationship() {
+    return readBoolean(SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP);
   }
 }

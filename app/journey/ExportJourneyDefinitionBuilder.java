@@ -62,6 +62,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.StaticContentController.renderSoftwareControlsNLR());
   private JourneyStage softwareRelationshipNLR = defineStage("softwareRelationshipNLR", "No software controls exist for the selected item",
       routes.StaticContentController.renderSoftwareRelationshipNLR());
+  private JourneyStage softwareTechnologyRelationship = defineStage("softwareTechnologyRelationship", "Is export covered by software technology relationship?",
+      controllers.software.routes.RelationshipController.renderForm());
 
   public ExportJourneyDefinitionBuilder() {}
 
@@ -416,6 +418,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     softwareCatchallControls();
 
+    atStage(softwareTechnologyRelationship)
+        .onEvent(StandardEvents.YES).then(moveTo(notImplemented));
+    atStage(softwareTechnologyRelationship)
+        .onEvent(StandardEvents.NO).then(moveTo(softwareRelationshipNLR));
   }
 
   /**
@@ -699,13 +705,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(softwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(notImplemented));
+        .then(moveTo(notImplemented)); //TODO do this
 
     atStage(softwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP)
         .branch()
-        .when(Relationship.RELATIONSHIP_EXISTS, moveTo(notImplemented))
-        .when(Relationship.RELATIONSHIP_DOES_NOT_EXIST, moveTo(notImplemented));
+        .when(Relationship.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
+        .when(Relationship.RELATIONSHIP_DOES_NOT_EXIST, moveTo(softwareRelationshipNLR));
 
     atStage(controlCodeSoftwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -719,7 +725,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
         .branch()
         .when(SoftwareCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
-        .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(notImplemented))
+        .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
         .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
 
     atStage(additionalSpecificationSoftwareCatchallControls)
@@ -733,7 +739,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
         .branch()
         .when(SoftwareCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableExtendedSoftwareCatchallControls))
-        .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(notImplemented))
+        .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
         .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
 
     atStage(decontrolsSoftwareCatchallControls)
@@ -746,7 +752,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
         .branch()
         .when(SoftwareCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableExtendedSoftwareCatchallControls))
-        .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(notImplemented))
+        .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
         .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
 
     atStage(technicalNotesSoftwareCatchallControls)
@@ -758,7 +764,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
         .branch()
         .when(SoftwareCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableExtendedSoftwareCatchallControls))
-        .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(notImplemented))
+        .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
         .when(SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
 
     atStage(controlCodeNotApplicableSoftwareCatchallControls)
@@ -770,7 +776,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
         .branch()
         .when(SoftwareCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(softwareCatchallControls));
-
   }
 
   /**
@@ -796,7 +801,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .branch()
         .when(CatchallSoftwareControlsFlow.CATCHALL_ONE, moveTo(controlCodeSoftwareCatchallControls))
         .when(CatchallSoftwareControlsFlow.CATCHALL_GREATER_THAN_ONE, moveTo(softwareCatchallControls))
-        .when(CatchallSoftwareControlsFlow.RELATIONSHIP_EXISTS, moveTo(notImplemented))
+        .when(CatchallSoftwareControlsFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
         .when(CatchallSoftwareControlsFlow.RELATIONSHIP_DOES_NOT_EXIST, moveTo(softwareRelationshipNLR));
   }
 
