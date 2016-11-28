@@ -100,15 +100,9 @@ public class SoftwareJourneyHelper {
   }
 
 
-  public CompletionStage<ApplicableSoftwareControls> checkRelatedSoftwareControls(SoftwareCategory softwareCategory, String controlCode, boolean saveToDao) {
-    // Count is specific to stubbed CategoryControlsServiceClient
-    int count =
-        softwareCategory == SoftwareCategory.MILITARY ? 0
-            : softwareCategory == SoftwareCategory.AEROSPACE ? 1
-            : softwareCategory == SoftwareCategory.COMPUTERS ? 2
-            : 0;
+  public CompletionStage<ApplicableSoftwareControls> checkRelatedSoftwareControls(String controlCode, boolean saveToDao) {
 
-    return relatedControlsServiceClient.get(softwareCategory, controlCode, count)
+    return relatedControlsServiceClient.get(GoodsType.SOFTWARE, controlCode) // TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
@@ -119,8 +113,9 @@ public class SoftwareJourneyHelper {
             if (saveToDao) {
               // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, "PL9009a2g");
               // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
-              if (!StringUtils.equals("PL9009a2g", permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD))) {
-                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, "PL9009a2g");
+              ControlCode mappedControlCode = result.controlCodes.get(0);
+              if (!StringUtils.equals(mappedControlCode.controlCode, permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD))) {
+                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, mappedControlCode.controlCode);
                 permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
                 permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
                 permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
@@ -153,14 +148,17 @@ public class SoftwareJourneyHelper {
             return ApplicableSoftwareControls.ZERO;
           }
           else if (size == 1) {
-            // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
-            // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
-            if (!StringUtils.equals("PL9009a2g", permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS))) {
-              permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
-              permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
-              permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
-              permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
-              permissionsFinderDao.clearControlCodeTechnicalNotesApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+            // Saving to the DAO here prevents a separate call to the CatchallControlsServiceClient, if not a little hacky
+            if (saveToDao) {
+              // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
+              // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
+              if (!StringUtils.equals("PL9009a2g", permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS))) {
+                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
+                permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+                permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+                permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+                permissionsFinderDao.clearControlCodeTechnicalNotesApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+              }
             }
             return ApplicableSoftwareControls.ONE;
           }

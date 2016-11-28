@@ -48,9 +48,8 @@ public class ControlCodeJourneyHelper {
               , httpExecutionContext.current());
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
       String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
-      return softwareJourneyHelper.checkRelatedSoftwareControls(softwareCategory, controlCode, false)
+      return softwareJourneyHelper.checkRelatedSoftwareControls(controlCode, false)
           .thenComposeAsync(asc ->
                   journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE, asc)
               , httpExecutionContext.current());
@@ -70,8 +69,7 @@ public class ControlCodeJourneyHelper {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-      return softwareJourneyHelper.checkRelatedSoftwareControls(softwareCategory, controlCode, true) // Save to DAO if one result returned
+      return softwareJourneyHelper.checkRelatedSoftwareControls(controlCode, true) // Save to DAO if one result returned
           .thenComposeAsync(this::controlsRelatedToPhysicalGoodTransition, httpExecutionContext.current());
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {

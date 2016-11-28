@@ -4,7 +4,8 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
-import models.software.SoftwareCategory;
+import exceptions.ServiceException;
+import models.GoodsType;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
@@ -25,24 +26,27 @@ public class RelatedControlsServiceClient {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl = webServiceAddress + "/related-controls";
+    this.webServiceUrl = webServiceAddress + "/mapped-controls";
   }
 
-  public CompletionStage<RelatedControlsServiceResult> get(SoftwareCategory softwareCategory, String controlCode) {
-    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softwareCategory.toString() + "/" +
-        UrlEscapers.urlFragmentEscaper().escape(controlCode)))
+  public CompletionStage<RelatedControlsServiceResult> get(GoodsType goodsType, String controlCode) {
+    if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
+      throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\"", goodsType.toString()));
+    }
+    String url = webServiceUrl + "/" + goodsType.toUrlString() +  "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode);
+    return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get()
-        .thenApplyAsync(response -> (RelatedControlsServiceResult) null, httpExecutionContext.current());
-  }
-
-  public CompletionStage<RelatedControlsServiceResult> get(SoftwareCategory softwareCategory, String controlCode, int count) {
-    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softwareCategory.toString() + "/" +
-        UrlEscapers.urlFragmentEscaper().escape(controlCode)))
-        .withRequestFilter(CorrelationId.requestFilter)
-        .setRequestTimeout(webServiceTimeout)
-        .get()
-        .thenApplyAsync(response -> new RelatedControlsServiceResult(count), httpExecutionContext.current());
+        .thenApplyAsync(response -> {
+          if (response.getStatus() != 200) {
+            String errorMessage = response.asJson() != null ? errorMessage = response.asJson().get("message").asText() : "";
+            throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /mapped-" +
+                "controls: %s %s", response.getStatus(), errorMessage));
+          }
+          else {
+            return new RelatedControlsServiceResult(response.asJson());
+          }
+        }, httpExecutionContext.current());
   }
 }

@@ -75,10 +75,9 @@ public class NotApplicableController {
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
-      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softwareJourneyHelper.checkRelatedSoftwareControls(softwareCategory, selectedControlCode, false)
+      return softwareJourneyHelper.checkRelatedSoftwareControls(selectedControlCode, false)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
@@ -136,9 +135,8 @@ public class NotApplicableController {
       }
       else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
         // A different action is expected for each valid member of ApplicableSoftwareControls
-        SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
         String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
-        return softwareJourneyHelper.checkRelatedSoftwareControls(softwareCategory, controlCode, false)
+        return softwareJourneyHelper.checkRelatedSoftwareControls(controlCode, false)
             .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }

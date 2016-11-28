@@ -162,7 +162,7 @@ public class SoftwareControlsController {
       // Note, this is looking at the selected physical good control code which is related to their physical good
       String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
 
-      return relatedControlsServiceClient.get(softwareCategory, controlCode, count)
+      return relatedControlsServiceClient.get(GoodsType.SOFTWARE, controlCode)  // TODO TECHNOLOGY
           .thenApplyAsync(result -> {
             int size = result.controlCodes.size();
             if (size > 1) {
