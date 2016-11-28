@@ -12,11 +12,10 @@ import controllers.ErrorController;
 import controllers.controlcode.ControlCodeController;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.ControlCodeJourneyHelper;
 import journey.helpers.SoftwareJourneyHelper;
 import models.GoodsType;
-import models.search.SearchResultsBaseDisplay;
 import models.controlcode.ControlCodeJourney;
+import models.search.SearchResultsBaseDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -30,7 +29,6 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
   private final HttpExecutionContext httpExecutionContext;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
   private final SoftwareJourneyHelper softwareJourneyHelper;
 
   @Inject
@@ -42,12 +40,10 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                                               ErrorController errorController,
                                               HttpExecutionContext httpExecutionContext,
                                               PermissionsFinderDao permissionsFinderDao,
-                                              ControlCodeJourneyHelper controlCodeJourneyHelper,
                                               SoftwareJourneyHelper softwareJourneyHelper) {
     super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
     this.httpExecutionContext = httpExecutionContext;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
     this.softwareJourneyHelper = softwareJourneyHelper;
   }
 
@@ -116,9 +112,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
-      controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(controlCodeJourney, result.get());
+      permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(controlCodeJourney, result.get());
       permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeJourney, displayCount);
-      permissionsFinderDao.saveSelectedControlCode(controlCodeJourney, result.get());
       permissionsFinderDao.savePhysicalGoodSearchLastChosenControlCode(controlCodeJourney, result.get());
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }

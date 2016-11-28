@@ -9,7 +9,6 @@ import models.controlcode.ControlCodeJourney;
 import models.software.ApplicableSoftwareControls;
 import models.software.ControlsRelatedToPhysicalGoodsFlow;
 import models.software.SoftwareCategory;
-import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 
@@ -120,20 +119,6 @@ public class ControlCodeJourneyHelper {
     else {
       throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
           , applicableSoftwareControls.toString()));
-    }
-  }
-
-  public void clearControlCodeJourneyDaoFields(ControlCodeJourney controlCodeJourney) {
-    permissionsFinderDao.clearControlCodeApplies(controlCodeJourney);
-    permissionsFinderDao.clearControlCodeDecontrolsApply(controlCodeJourney);
-    permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(controlCodeJourney);
-    permissionsFinderDao.clearControlCodeTechnicalNotesApply(controlCodeJourney);
-  }
-
-  public void clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney controlCodeJourney, String newSelectedControlCode) {
-    String oldSelectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
-    if (!StringUtils.equals(newSelectedControlCode, oldSelectedControlCode)) {
-      clearControlCodeJourneyDaoFields(controlCodeJourney);
     }
   }
 }

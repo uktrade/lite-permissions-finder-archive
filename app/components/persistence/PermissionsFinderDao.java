@@ -386,4 +386,20 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public Optional<Boolean> getSoftwareIsCoveredByTechnologyRelationship() {
     return readBoolean(SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP);
   }
+
+  public void clearControlCodeJourneyDaoFields(ControlCodeJourney controlCodeJourney) {
+    clearControlCodeApplies(controlCodeJourney);
+    clearControlCodeDecontrolsApply(controlCodeJourney);
+    clearControlCodeAdditionalSpecificationsApply(controlCodeJourney);
+    clearControlCodeTechnicalNotesApply(controlCodeJourney);
+  }
+
+  public void clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney controlCodeJourney, String newSelectedControlCode) {
+    String oldSelectedControlCode = getSelectedControlCode(controlCodeJourney);
+    if (!StringUtils.equals(newSelectedControlCode, oldSelectedControlCode)) {
+      clearControlCodeJourneyDaoFields(controlCodeJourney);
+      saveSelectedControlCode(controlCodeJourney,newSelectedControlCode);
+    }
+  }
+
 }

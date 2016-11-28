@@ -10,7 +10,6 @@ import components.services.controlcode.controls.category.CategoryControlsService
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.ControlCodeJourneyHelper;
 import journey.helpers.SoftwareJourneyHelper;
 import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
@@ -34,7 +33,6 @@ public class SoftwareControlsController {
   private final RelatedControlsServiceClient relatedControlsServiceClient;
   private final CatchallControlsServiceClient catchallControlsServiceClient;
   private final HttpExecutionContext httpExecutionContext;
-  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
   private final SoftwareJourneyHelper softwareJourneyHelper;
 
   @Inject
@@ -45,7 +43,6 @@ public class SoftwareControlsController {
                                     RelatedControlsServiceClient relatedControlsServiceClient,
                                     CatchallControlsServiceClient catchallControlsServiceClient,
                                     HttpExecutionContext httpExecutionContext,
-                                    ControlCodeJourneyHelper controlCodeJourneyHelper,
                                     SoftwareJourneyHelper softwareJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
@@ -54,7 +51,6 @@ public class SoftwareControlsController {
     this.relatedControlsServiceClient = relatedControlsServiceClient;
     this.catchallControlsServiceClient = catchallControlsServiceClient;
     this.httpExecutionContext = httpExecutionContext;
-    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
     this.softwareJourneyHelper = softwareJourneyHelper;
   }
 
@@ -104,16 +100,13 @@ public class SoftwareControlsController {
     else if (StringUtils.isNotEmpty(controlCode)) {
       // Setup DAO state based on view variant
       if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATEGORY) {
-        controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
-        permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
       }
       else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
-        controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
-        permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
       }
       else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATCHALL) {
-        controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
-        permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
       }
       else {
         throw new RuntimeException(String.format("Unexpected member of SoftwareControlsJourney enum: \"%s\""

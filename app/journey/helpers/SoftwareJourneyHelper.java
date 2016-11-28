@@ -16,7 +16,6 @@ import models.software.CatchallSoftwareControlsFlow;
 import models.software.Relationship;
 import models.software.SoftwareCatchallControlsNotApplicableFlow;
 import models.software.SoftwareCategory;
-import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 
@@ -69,15 +68,8 @@ public class SoftwareJourneyHelper {
             // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
             if (saveToDao) {
               ControlCode controlCode = result.controlCodes.get(0);
-              // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, "PL9009a2g");
-              // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
-              if (!StringUtils.equals(controlCode.controlCode, permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS))) {
-                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
-                permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CONTROLS);
-                permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CONTROLS);
-                permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CONTROLS);
-                permissionsFinderDao.clearControlCodeTechnicalNotesApply(ControlCodeJourney.SOFTWARE_CONTROLS);
-              }
+              permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                  ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
             }
             return ApplicableSoftwareControls.ONE;
           }
@@ -111,16 +103,9 @@ public class SoftwareJourneyHelper {
           else if (size == 1) {
             // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
             if (saveToDao) {
-              // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, "PL9009a2g");
-              // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
               ControlCode mappedControlCode = result.controlCodes.get(0);
-              if (!StringUtils.equals(mappedControlCode.controlCode, permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD))) {
-                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, mappedControlCode.controlCode);
-                permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
-                permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
-                permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
-                permissionsFinderDao.clearControlCodeTechnicalNotesApply(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
-              }
+              permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                  ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, mappedControlCode.controlCode);
             }
             return ApplicableSoftwareControls.ONE;
           }
@@ -143,16 +128,9 @@ public class SoftwareJourneyHelper {
           else if (size == 1) {
             // Saving to the DAO here prevents a separate call to the CatchallControlsServiceClient, if not a little hacky
             if (saveToDao) {
-              // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
-              // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
               ControlCode catchallControlCode = result.controlCodes.get(0);
-              if (!StringUtils.equals(catchallControlCode.controlCode, permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS))) {
-                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
-                permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
-                permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
-                permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
-                permissionsFinderDao.clearControlCodeTechnicalNotesApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
-              }
+              permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                  ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
             }
             return ApplicableSoftwareControls.ONE;
           }
