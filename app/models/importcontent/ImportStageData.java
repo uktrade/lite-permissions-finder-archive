@@ -1,21 +1,28 @@
-package models;
+package models.importcontent;
 
 
 import utils.common.SelectOption;
 
 import java.util.List;
 
-public class ImportFormData {
+public class ImportStageData {
 
   private String stageKey;
   private String question;
   private List<SelectOption> options;
 
-  public ImportFormData() {
+  public ImportStageData() {
   }
 
-  public ImportFormData(String stageKey) {
+  public ImportStageData(String stageKey) {
     this.stageKey = stageKey;
+  }
+
+  public ImportStageData(String stageKey, String question, List<SelectOption> options) {
+
+    this.stageKey = stageKey;
+    this.question = question;
+    this.options = options;
   }
 
   public String getStageKey() {

@@ -1,4 +1,4 @@
-package controllers.importcontent;
+package importcontent;
 
 import components.common.journey.ParameterisedJourneyEvent;
 import importcontent.models.ImportFoodWhat;

@@ -10,22 +10,8 @@ import views.html.importcontent.staticContent;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class StaticController extends Controller {
-
-  private static List<String> staticKeys = new ArrayList<>();
-
-  static {
-    for(int i = 1; i < 32; i++) {
-      staticKeys.add("importEp" + i);
-    }
-  }
-
-  public static List<String> getImportStaticKeys() {
-    return staticKeys;
-  }
 
   public Result render(String key) {
     try {
@@ -39,6 +25,5 @@ public class StaticController extends Controller {
       throw new RuntimeException("Failed to read", e);
     }
   }
-
 }
 

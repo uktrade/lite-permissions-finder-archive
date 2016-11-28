@@ -3,8 +3,6 @@ package importcontent;
 import components.common.journey.BackLink;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
-import controllers.importcontent.ImportEvents;
-import controllers.importcontent.StaticController;
 import controllers.routes;
 import importcontent.models.ImportFoodWhat;
 import importcontent.models.ImportWhat;
@@ -15,7 +13,7 @@ import importcontent.models.ImportYesNo;
 import journey.JourneyDefinitionNames;
 import play.Logger;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -51,54 +49,43 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   public static final String KEY_BELARUS_TEXTILES = "importBelarusTextiles";
   public static final String KEY_BELARUS_TEXTILES_QUESTION = "Are you sending textiles to Belarus for processing before being returned to the UK?";
 
-  private Map<String, JourneyStage> stages = new TreeMap<>();
+  // Import key/JourneyStage map
+  private Map<String, JourneyStage> stageMap;
 
-
+  /**
+   * Create import JourneyStages
+   */
   public void initStages() {
 
-    stages = new HashMap<>();
-    stages.put(KEY_WHERE, initStage(KEY_WHERE, KEY_WHERE_QUESTION));
-    stages.put(KEY_WHAT, initStage(KEY_WHAT, KEY_WHAT_QUESTION));
-    stages.put(KEY_CHARCOAL, initStage(KEY_CHARCOAL, KEY_CHARCOAL_QUESTION));
-    stages.put(KEY_MILITARY_IRAN, initStage(KEY_MILITARY_IRAN, KEY_MILITARY_QUESTION));
-    stages.put(KEY_MILITARY_RUSSIA, initStage(KEY_MILITARY_RUSSIA, KEY_MILITARY_QUESTION));
-    stages.put(KEY_MILITARY_MYANMAR, initStage(KEY_MILITARY_MYANMAR, KEY_MILITARY_QUESTION));
-    stages.put(KEY_SHOT, initStage(KEY_SHOT, KEY_SHOT_QUESTION));
-    stages.put(KEY_SUBSTANCES, initStage(KEY_SUBSTANCES, KEY_SUBSTANCES_QUESTION));
-    stages.put(KEY_OZONE, initStage(KEY_OZONE, KEY_OZONE_QUESTION));
-    stages.put(KEY_DRUGS, initStage(KEY_DRUGS, KEY_DRUGS_QUESTION));
-    stages.put(KEY_FOOD_WHAT, initStage(KEY_FOOD_WHAT, KEY_FOOD_WHAT_QUESTION));
-    stages.put(KEY_ENDANGERED, initStage(KEY_ENDANGERED, KEY_ENDANGERED_QUESTION));
-    stages.put(KEY_WHAT_WHERE_IRON, initStage(KEY_WHAT_WHERE_IRON, KEY_WHAT_WHERE_IRON_QUESTION));
-    stages.put(KEY_WHAT_WHERE_TEXTILES, initStage(KEY_WHAT_WHERE_TEXTILES, KEY_WHAT_WHERE_TEXTILES_QUESTION));
-    stages.put(KEY_BELARUS_TEXTILES, initStage(KEY_BELARUS_TEXTILES, KEY_BELARUS_TEXTILES_QUESTION));
+    stageMap = new TreeMap<>();
 
-    List<String> staticKeys = StaticController.getImportStaticKeys();
-    for (String key : staticKeys) {
-      stages.put(key, initStaticStage(key));
+    // Create non-static JourneyStages
+    stageMap.put(KEY_WHERE, initStage(KEY_WHERE, KEY_WHERE_QUESTION));
+    stageMap.put(KEY_WHAT, initStage(KEY_WHAT, KEY_WHAT_QUESTION));
+    stageMap.put(KEY_CHARCOAL, initStage(KEY_CHARCOAL, KEY_CHARCOAL_QUESTION));
+    stageMap.put(KEY_MILITARY_IRAN, initStage(KEY_MILITARY_IRAN, KEY_MILITARY_QUESTION));
+    stageMap.put(KEY_MILITARY_RUSSIA, initStage(KEY_MILITARY_RUSSIA, KEY_MILITARY_QUESTION));
+    stageMap.put(KEY_MILITARY_MYANMAR, initStage(KEY_MILITARY_MYANMAR, KEY_MILITARY_QUESTION));
+    stageMap.put(KEY_SHOT, initStage(KEY_SHOT, KEY_SHOT_QUESTION));
+    stageMap.put(KEY_SUBSTANCES, initStage(KEY_SUBSTANCES, KEY_SUBSTANCES_QUESTION));
+    stageMap.put(KEY_OZONE, initStage(KEY_OZONE, KEY_OZONE_QUESTION));
+    stageMap.put(KEY_DRUGS, initStage(KEY_DRUGS, KEY_DRUGS_QUESTION));
+    stageMap.put(KEY_FOOD_WHAT, initStage(KEY_FOOD_WHAT, KEY_FOOD_WHAT_QUESTION));
+    stageMap.put(KEY_ENDANGERED, initStage(KEY_ENDANGERED, KEY_ENDANGERED_QUESTION));
+    stageMap.put(KEY_WHAT_WHERE_IRON, initStage(KEY_WHAT_WHERE_IRON, KEY_WHAT_WHERE_IRON_QUESTION));
+    stageMap.put(KEY_WHAT_WHERE_TEXTILES, initStage(KEY_WHAT_WHERE_TEXTILES, KEY_WHAT_WHERE_TEXTILES_QUESTION));
+    stageMap.put(KEY_BELARUS_TEXTILES, initStage(KEY_BELARUS_TEXTILES, KEY_BELARUS_TEXTILES_QUESTION));
+
+    // Create static JourneyStages
+    for (String key : getStaticKeys()) {
+      stageMap.put(key, initStaticStage(key));
     }
 
-    stages.forEach((key, stage) -> {
-      Logger.info("Key : " + key);
-    });
-  }
-
-  private JourneyStage initStage(String key, String question) {
-    return defineStage(key, question, controllers.importcontent.routes.ImportController.renderForm(key));
-  }
-
-  private JourneyStage initStaticStage(String key) {
-    return defineStage(key, key, controllers.importcontent.routes.StaticController.render(key));
-  }
-
-  private JourneyStage stage(String key) {
-    return stages.get(key);
+    logStages();
   }
 
   @Override
   protected void journeys() {
-
-    //initStages();
 
     defineJourney(JourneyDefinitionNames.IMPORT, stage("importWhere"), BackLink.to(routes.TradeTypeController.renderForm(), "Where are your items going?"));
 
@@ -225,5 +212,34 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .branch()
         .when(ImportYesNo.YES, moveTo(stage("importEp9")))
         .when(ImportYesNo.NO, moveTo(stage("importEp12")));
+  }
+
+  /**
+   * 31 static files named importEp1, importEp2 ... importEp31
+   */
+  private List<String> getStaticKeys() {
+    List<String> keys = new ArrayList<>();
+    for (int i = 1; i < 32; i++) {
+      keys.add("importEp" + i);
+    }
+    return keys;
+  }
+
+  private JourneyStage initStage(String key, String question) {
+    return defineStage(key, question, controllers.importcontent.routes.ImportController.renderForm(key));
+  }
+
+  private JourneyStage initStaticStage(String key) {
+    return defineStage(key, key, controllers.importcontent.routes.StaticController.render(key));
+  }
+
+  private JourneyStage stage(String key) {
+    return stageMap.get(key);
+  }
+
+  private void logStages() {
+    stageMap.forEach((key, stage) -> {
+      Logger.info("Key : " + key);
+    });
   }
 }
