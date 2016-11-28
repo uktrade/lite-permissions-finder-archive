@@ -139,18 +139,10 @@ public class SoftwareControlsController {
   }
 
   private CompletionStage<Result> renderWithForm(SoftwareControlsJourney softwareControlsJourney, Form<SoftwareControlsForm> form) {
-    // Software category is expected at this stage of the journey
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-
-    // Count is specific to stubbed CategoryControlsServiceClient
-    int count =
-        softwareCategory == SoftwareCategory.MILITARY ? 0
-            : softwareCategory == SoftwareCategory.AEROSPACE ? 1
-            : softwareCategory == SoftwareCategory.COMPUTERS ? 2
-            : 0;
-
     // Setup DAO state based on view variant
     if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATEGORY) {
+      // Software category is expected at this stage of the journey
+      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
       return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
           .thenApplyAsync(result -> {
             SoftwareControlsDisplay display = new SoftwareControlsDisplay(softwareControlsJourney, result.controlCodes);
@@ -162,7 +154,7 @@ public class SoftwareControlsController {
       // Note, this is looking at the selected physical good control code which is related to their physical good
       String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
 
-      return relatedControlsServiceClient.get(GoodsType.SOFTWARE, controlCode)  // TODO TECHNOLOGY
+      return relatedControlsServiceClient.get(GoodsType.SOFTWARE, controlCode) // TODO TECHNOLOGY
           .thenApplyAsync(result -> {
             int size = result.controlCodes.size();
             if (size > 1) {
@@ -179,7 +171,9 @@ public class SoftwareControlsController {
           }, httpExecutionContext.current());
     }
     else if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATCHALL) {
-      return catchallControlsServiceClient.get(softwareCategory, count)
+      // Software category is expected at this stage of the journey
+      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+      return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
           .thenApplyAsync(result -> {
             int size = result.controlCodes.size();
             if (size > 1) {

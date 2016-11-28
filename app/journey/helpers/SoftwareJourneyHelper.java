@@ -134,14 +134,7 @@ public class SoftwareJourneyHelper {
   }
 
   public CompletionStage<ApplicableSoftwareControls> checkCatchtallSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
-    // Count is specific to stubbed CategoryControlsServiceClient
-    int count =
-        softwareCategory == SoftwareCategory.MILITARY ? 0
-            : softwareCategory == SoftwareCategory.AEROSPACE ? 1
-            : softwareCategory == SoftwareCategory.COMPUTERS ? 2
-            : 0;
-
-    return catchallControlsServiceClient.get(softwareCategory, count)
+    return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
@@ -152,8 +145,9 @@ public class SoftwareJourneyHelper {
             if (saveToDao) {
               // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
               // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
-              if (!StringUtils.equals("PL9009a2g", permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS))) {
-                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, "PL9009a2g");
+              ControlCode catchallControlCode = result.controlCodes.get(0);
+              if (!StringUtils.equals(catchallControlCode.controlCode, permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS))) {
+                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
                 permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
                 permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
                 permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
