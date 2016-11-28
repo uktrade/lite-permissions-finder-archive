@@ -12,6 +12,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
 import journey.helpers.SoftwareJourneyHelper;
+import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
 import models.software.SoftwareCategory;
 import models.software.controls.SoftwareControlsDisplay;
@@ -144,13 +145,13 @@ public class SoftwareControlsController {
     // Count is specific to stubbed CategoryControlsServiceClient
     int count =
         softwareCategory == SoftwareCategory.MILITARY ? 0
-            : softwareCategory == SoftwareCategory.DUMMY ? 1
-            : softwareCategory == SoftwareCategory.RADIOACTIVE ? 2
+            : softwareCategory == SoftwareCategory.AEROSPACE ? 1
+            : softwareCategory == SoftwareCategory.COMPUTERS ? 2
             : 0;
 
     // Setup DAO state based on view variant
     if (softwareControlsJourney == SoftwareControlsJourney.SOFTWARE_CATEGORY) {
-      return categoryControlsServiceClient.get(softwareCategory, count)
+      return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
           .thenApplyAsync(result -> {
             SoftwareControlsDisplay display = new SoftwareControlsDisplay(softwareControlsJourney, result.controlCodes);
             return ok(softwareControls.render(form, display));

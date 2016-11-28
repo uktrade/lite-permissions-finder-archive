@@ -3,11 +3,13 @@ package journey.helpers;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import components.services.controlcode.controls.ControlCode;
 import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
 import components.services.controlcode.controls.category.CategoryControlsServiceClient;
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import components.services.controlcode.controls.relationship.SoftwareAndTechnologyRelationshipServiceClient;
 import journey.Events;
+import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
 import models.software.ApplicableSoftwareControls;
 import models.software.CatchallSoftwareControlsFlow;
@@ -57,14 +59,7 @@ public class SoftwareJourneyHelper {
    * @return The applicable software controls
    */
   public CompletionStage<ApplicableSoftwareControls> checkSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
-    // Count is specific to stubbed CategoryControlsServiceClient
-    int count =
-        softwareCategory == SoftwareCategory.MILITARY ? 0
-            : softwareCategory == SoftwareCategory.DUMMY ? 1
-            : softwareCategory == SoftwareCategory.RADIOACTIVE ? 2
-            : 0;
-
-    return categoryControlsServiceClient.get(softwareCategory, count)
+    return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) //TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
@@ -73,10 +68,11 @@ public class SoftwareJourneyHelper {
           else if (size == 1) {
             // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
             if (saveToDao) {
+              ControlCode controlCode = result.controlCodes.get(0);
               // TODO fit in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, "PL9009a2g");
               // TODO for now, duplicate code found in controlCodeJourneyHelper.clearControlCodeJourneyDaoFieldsIfChanged
-              if (!StringUtils.equals("PL9009a2g", permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS))) {
-                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS, "PL9009a2g");
+              if (!StringUtils.equals(controlCode.controlCode, permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS))) {
+                permissionsFinderDao.saveSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
                 permissionsFinderDao.clearControlCodeApplies(ControlCodeJourney.SOFTWARE_CONTROLS);
                 permissionsFinderDao.clearControlCodeDecontrolsApply(ControlCodeJourney.SOFTWARE_CONTROLS);
                 permissionsFinderDao.clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney.SOFTWARE_CONTROLS);
@@ -108,8 +104,8 @@ public class SoftwareJourneyHelper {
     // Count is specific to stubbed CategoryControlsServiceClient
     int count =
         softwareCategory == SoftwareCategory.MILITARY ? 0
-            : softwareCategory == SoftwareCategory.DUMMY ? 1
-            : softwareCategory == SoftwareCategory.RADIOACTIVE ? 2
+            : softwareCategory == SoftwareCategory.AEROSPACE ? 1
+            : softwareCategory == SoftwareCategory.COMPUTERS ? 2
             : 0;
 
     return relatedControlsServiceClient.get(softwareCategory, controlCode, count)
@@ -146,8 +142,8 @@ public class SoftwareJourneyHelper {
     // Count is specific to stubbed CategoryControlsServiceClient
     int count =
         softwareCategory == SoftwareCategory.MILITARY ? 0
-            : softwareCategory == SoftwareCategory.DUMMY ? 1
-            : softwareCategory == SoftwareCategory.RADIOACTIVE ? 2
+            : softwareCategory == SoftwareCategory.AEROSPACE ? 1
+            : softwareCategory == SoftwareCategory.COMPUTERS ? 2
             : 0;
 
     return catchallControlsServiceClient.get(softwareCategory, count)

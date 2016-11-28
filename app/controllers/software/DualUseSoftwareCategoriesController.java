@@ -61,7 +61,7 @@ public class DualUseSoftwareCategoriesController {
     // MILITARY is a member of SoftwareCategory but is not dual use
     else if (StringUtils.isNotEmpty(dualUseSoftwareCategoryText)) {
       SoftwareCategory softwareCategory = SoftwareCategory.valueOf(dualUseSoftwareCategoryText);
-      if (SoftwareCategory.isDualUseSoftwareCategory(softwareCategory)) {
+      if (softwareCategory.isDualUseSoftwareCategory()) {
         permissionsFinderDao.saveSoftwareCategory(softwareCategory);
         return softwareJourneyHelper.checkSoftwareControls(softwareCategory, true) // Save to DAO
             .thenComposeAsync(this::dualUseSoftwareCategorySelected, httpExecutionContext.current());
@@ -79,7 +79,6 @@ public class DualUseSoftwareCategoriesController {
   private CompletionStage<Result> dualUseSoftwareCategorySelected(ApplicableSoftwareControls applicableSoftwareControls) {
     return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED, applicableSoftwareControls);
   }
-
 
   public static class DualUseSoftwareCategoriesForm {
 
