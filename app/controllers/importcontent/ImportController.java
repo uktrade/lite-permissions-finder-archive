@@ -1,20 +1,11 @@
 package controllers.importcontent;
 
-import static importcontent.ImportEvents.IMPORT_BELARUS_TEXTILES_SELECTED;
-import static importcontent.ImportEvents.IMPORT_CHARCOAL_SELECTED;
-import static importcontent.ImportEvents.IMPORT_DRUGS_SELECTED;
-import static importcontent.ImportEvents.IMPORT_ENDANGERED_SELECTED;
 import static importcontent.ImportEvents.IMPORT_FOOD_WHAT_SELECTED;
-import static importcontent.ImportEvents.IMPORT_MILITARY_IRAN_SELECTED;
-import static importcontent.ImportEvents.IMPORT_MILITARY_MYANMAR_SELECTED;
-import static importcontent.ImportEvents.IMPORT_MILITARY_RUSSIA_SELECTED;
-import static importcontent.ImportEvents.IMPORT_OZONE_SELECTED;
-import static importcontent.ImportEvents.IMPORT_SHOT_SELECTED;
-import static importcontent.ImportEvents.IMPORT_SUBSTANCES_SELECTED;
 import static importcontent.ImportEvents.IMPORT_WHAT_SELECTED;
 import static importcontent.ImportEvents.IMPORT_WHAT_WHERE_IRON_SELECTED;
 import static importcontent.ImportEvents.IMPORT_WHAT_WHERE_TEXTILES_SELECTED;
 import static importcontent.ImportEvents.IMPORT_WHERE_SELECTED;
+import static importcontent.ImportEvents.IMPORT_YES_NO_SELECTED;
 import static importcontent.ImportJourneyDefinitionBuilder.KEY_BELARUS_TEXTILES;
 import static importcontent.ImportJourneyDefinitionBuilder.KEY_BELARUS_TEXTILES_QUESTION;
 import static importcontent.ImportJourneyDefinitionBuilder.KEY_CHARCOAL;
@@ -61,8 +52,10 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
+import utils.common.SelectOption;
 import views.html.importcontent.importQuestion;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CompletionStage;
@@ -96,26 +89,9 @@ public class ImportController extends Controller {
    * ImportStageForm
    */
   public static class ImportStageForm {
-
     @Required(message = "Please select one option")
-    private String selectedOption;
-    private String stageKey;
-
-    public String getSelectedOption() {
-      return selectedOption;
-    }
-
-    public void setSelectedOption(String selectedOption) {
-      this.selectedOption = selectedOption;
-    }
-
-    public String getStageKey() {
-      return stageKey;
-    }
-
-    public void setStageKey(String stageKey) {
-      this.stageKey = stageKey;
-    }
+    public String selectedOption;
+    public String stageKey;
   }
 
   private ImportStageData getImportStageData(String stageKey) {
@@ -124,21 +100,24 @@ public class ImportController extends Controller {
 
   private void initPageData() {
     stageDataMap = new TreeMap<>();
+
     stageDataMap.put(KEY_WHERE, new ImportStageData(KEY_WHERE, KEY_WHERE_QUESTION, ImportWhere.getSelectOptions()));
     stageDataMap.put(KEY_WHAT, new ImportStageData(KEY_WHAT, KEY_WHAT_QUESTION, ImportWhat.getSelectOptions()));
-    stageDataMap.put(KEY_CHARCOAL, new ImportStageData(KEY_CHARCOAL, KEY_CHARCOAL_QUESTION, ImportYesNo.getSelectOptions()));
-    stageDataMap.put(KEY_MILITARY_IRAN, new ImportStageData(KEY_MILITARY_IRAN, KEY_MILITARY_QUESTION, ImportYesNo.getSelectOptions()));
-    stageDataMap.put(KEY_MILITARY_RUSSIA, new ImportStageData(KEY_MILITARY_RUSSIA, KEY_MILITARY_QUESTION, ImportYesNo.getSelectOptions()));
-    stageDataMap.put(KEY_MILITARY_MYANMAR, new ImportStageData(KEY_MILITARY_MYANMAR, KEY_MILITARY_QUESTION, ImportYesNo.getSelectOptions()));
-    stageDataMap.put(KEY_SHOT, new ImportStageData(KEY_SHOT, KEY_SHOT_QUESTION, ImportYesNo.getSelectOptions()));
-    stageDataMap.put(KEY_SUBSTANCES, new ImportStageData(KEY_SUBSTANCES, KEY_SUBSTANCES_QUESTION, ImportYesNo.getSelectOptions()));
-    stageDataMap.put(KEY_OZONE, new ImportStageData(KEY_OZONE, KEY_OZONE_QUESTION, ImportYesNo.getSelectOptions()));
-    stageDataMap.put(KEY_DRUGS, new ImportStageData(KEY_DRUGS, KEY_DRUGS_QUESTION, ImportYesNo.getSelectOptions()));
     stageDataMap.put(KEY_FOOD_WHAT, new ImportStageData(KEY_FOOD_WHAT, KEY_FOOD_WHAT_QUESTION, ImportFoodWhat.getSelectOptions()));
-    stageDataMap.put(KEY_ENDANGERED, new ImportStageData(KEY_ENDANGERED, KEY_ENDANGERED_QUESTION, ImportYesNo.getSelectOptions()));
     stageDataMap.put(KEY_WHAT_WHERE_IRON, new ImportStageData(KEY_WHAT_WHERE_IRON, KEY_WHAT_WHERE_IRON_QUESTION, ImportWhatWhereIron.getSelectOptions()));
     stageDataMap.put(KEY_WHAT_WHERE_TEXTILES, new ImportStageData(KEY_WHAT_WHERE_TEXTILES, KEY_WHAT_WHERE_TEXTILES_QUESTION, ImportWhatWhereTextiles.getSelectOptions()));
-    stageDataMap.put(KEY_BELARUS_TEXTILES, new ImportStageData(KEY_BELARUS_TEXTILES, KEY_BELARUS_TEXTILES_QUESTION, ImportYesNo.getSelectOptions()));
+
+    List<SelectOption> yesNoOptions = ImportYesNo.getSelectOptions();
+    stageDataMap.put(KEY_CHARCOAL, new ImportStageData(KEY_CHARCOAL, KEY_CHARCOAL_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_MILITARY_IRAN, new ImportStageData(KEY_MILITARY_IRAN, KEY_MILITARY_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_MILITARY_RUSSIA, new ImportStageData(KEY_MILITARY_RUSSIA, KEY_MILITARY_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_MILITARY_MYANMAR, new ImportStageData(KEY_MILITARY_MYANMAR, KEY_MILITARY_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_SHOT, new ImportStageData(KEY_SHOT, KEY_SHOT_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_SUBSTANCES, new ImportStageData(KEY_SUBSTANCES, KEY_SUBSTANCES_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_OZONE, new ImportStageData(KEY_OZONE, KEY_OZONE_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_DRUGS, new ImportStageData(KEY_DRUGS, KEY_DRUGS_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_ENDANGERED, new ImportStageData(KEY_ENDANGERED, KEY_ENDANGERED_QUESTION, yesNoOptions));
+    stageDataMap.put(KEY_BELARUS_TEXTILES, new ImportStageData(KEY_BELARUS_TEXTILES, KEY_BELARUS_TEXTILES_QUESTION, yesNoOptions));
   }
 
   private CompletionStage<Result> completeTransition(String stageKey, String option) {
@@ -147,34 +126,31 @@ public class ImportController extends Controller {
       return journeyManager.performTransition(IMPORT_WHERE_SELECTED, ImportWhere.valueOf(option));
     } else if (stageKey.equals(KEY_WHAT) && ImportWhat.getMatched(option).isPresent()) {
       return journeyManager.performTransition(IMPORT_WHAT_SELECTED, ImportWhat.valueOf(option));
-    } else if (stageKey.equals(KEY_CHARCOAL) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_CHARCOAL_SELECTED, ImportYesNo.valueOf(option));
-    } else if (stageKey.equals(KEY_MILITARY_IRAN) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_MILITARY_IRAN_SELECTED, ImportYesNo.valueOf(option));
-    } else if (stageKey.equals(KEY_MILITARY_RUSSIA) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_MILITARY_RUSSIA_SELECTED, ImportYesNo.valueOf(option));
-    } else if (stageKey.equals(KEY_MILITARY_MYANMAR) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_MILITARY_MYANMAR_SELECTED, ImportYesNo.valueOf(option));
-    } else if (stageKey.equals(KEY_SHOT) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_SHOT_SELECTED, ImportYesNo.valueOf(option));
-    } else if (stageKey.equals(KEY_SUBSTANCES) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_SUBSTANCES_SELECTED, ImportYesNo.valueOf(option));
-    } else if (stageKey.equals(KEY_OZONE) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_OZONE_SELECTED, ImportYesNo.valueOf(option));
-    } else if (stageKey.equals(KEY_DRUGS) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_DRUGS_SELECTED, ImportYesNo.valueOf(option));
     } else if (stageKey.equals(KEY_FOOD_WHAT) && ImportFoodWhat.getMatched(option).isPresent()) {
       return journeyManager.performTransition(IMPORT_FOOD_WHAT_SELECTED, ImportFoodWhat.valueOf(option));
-    } else if (stageKey.equals(KEY_ENDANGERED) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_ENDANGERED_SELECTED, ImportYesNo.valueOf(option));
     } else if (stageKey.equals(KEY_WHAT_WHERE_IRON) && ImportWhatWhereIron.getMatched(option).isPresent()) {
       return journeyManager.performTransition(IMPORT_WHAT_WHERE_IRON_SELECTED, ImportWhatWhereIron.valueOf(option));
     } else if (stageKey.equals(KEY_WHAT_WHERE_TEXTILES) && ImportWhatWhereTextiles.getMatched(option).isPresent()) {
       return journeyManager.performTransition(IMPORT_WHAT_WHERE_TEXTILES_SELECTED, ImportWhatWhereTextiles.valueOf(option));
-    } else if (stageKey.equals(KEY_BELARUS_TEXTILES) && ImportYesNo.getMatched(option).isPresent()) {
-      return journeyManager.performTransition(IMPORT_BELARUS_TEXTILES_SELECTED, ImportYesNo.valueOf(option));
+    } else if (isYesNoStage(stageKey, option)) {
+      return journeyManager.performTransition(IMPORT_YES_NO_SELECTED, ImportYesNo.valueOf(option));
     }
     throw new FormStateException("Unknown selectedOption: " + option);
+  }
+
+  /**
+   * Returns true for all Yes/No stageKey stages with correct Yes/No option, false otherwise
+   */
+  private boolean isYesNoStage(String stageKey, String option) {
+    boolean result = false;
+    if (stageKey.equals(KEY_CHARCOAL) || stageKey.equals(KEY_MILITARY_IRAN) || stageKey.equals(KEY_MILITARY_RUSSIA) ||
+        stageKey.equals(KEY_MILITARY_MYANMAR) || stageKey.equals(KEY_SHOT) || stageKey.equals(KEY_SUBSTANCES) ||
+        stageKey.equals(KEY_OZONE) || stageKey.equals(KEY_DRUGS) || stageKey.equals(KEY_BELARUS_TEXTILES) || stageKey.equals(KEY_ENDANGERED)) {
+      if (ImportYesNo.getMatched(option).isPresent()) {
+        result = true;
+      }
+    }
+    return result;
   }
 
   private String getStageKeyFromRequest() {
