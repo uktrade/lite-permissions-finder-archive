@@ -184,7 +184,8 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   }
 
   private JourneyStage initStage(ImportQuestion importQuestion) {
-    return defineStage(importQuestion.key(), importQuestion.question(), controllers.importcontent.routes.ImportController.renderForm());
+    String stageKey = importQuestion.key();
+    return defineStage(stageKey, importQuestion.question(), controllers.importcontent.routes.ImportController.renderForm(stageKey));
   }
 
   private JourneyStage initStaticStage(String key) {

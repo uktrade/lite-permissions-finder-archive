@@ -29,10 +29,9 @@ public class ImportController extends Controller {
     this.formFactory = formFactory;
     this.stageDataMap = ImportUtils.getStageData();
   }
-
-  public Result renderForm() {
-    String stageKey = journeyManager.getCurrentInternalStageName();
-    return ok(importQuestion.render(formFactory.form(), stageDataMap.get(stageKey)));
+  
+  public Result renderForm(String stageKey) {
+    return ok(importQuestion.render(formFactory.form(), stageDataMap.get(journeyManager.getCurrentInternalStageName())));
   }
 
   public CompletionStage<Result> handleSubmit() {
