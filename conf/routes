@@ -1,9 +1,24 @@
 # routes-import
 
-GET         /import-content        controllers.importcontent.ImportController.renderForm
-POST        /import-content        controllers.importcontent.ImportController.handleSubmit
+GET         /import/importWhere                    controllers.importcontent.ImportController.renderForm
+GET         /import/importWhat                     controllers.importcontent.ImportController.renderForm
+GET         /import/importCharcoal                 controllers.importcontent.ImportController.renderForm
+GET         /import/importMilitaryIran             controllers.importcontent.ImportController.renderForm
+GET         /import/importMilitaryRussia           controllers.importcontent.ImportController.renderForm
+GET         /import/importMilitaryMyanmar          controllers.importcontent.ImportController.renderForm
+GET         /import/importShot                     controllers.importcontent.ImportController.renderForm
+GET         /import/importSubstances               controllers.importcontent.ImportController.renderForm
+GET         /import/importOzone                    controllers.importcontent.ImportController.renderForm
+GET         /import/importDrugs                    controllers.importcontent.ImportController.renderForm
+GET         /import/importFoodWhat                 controllers.importcontent.ImportController.renderForm
+GET         /import/importEndangered               controllers.importcontent.ImportController.renderForm
+GET         /import/importWhatWhereIron            controllers.importcontent.ImportController.renderForm
+GET         /import/importWhatWhereTextiles        controllers.importcontent.ImportController.renderForm
+GET         /import/importBelarusTextiles          controllers.importcontent.ImportController.renderForm
 
-GET         /import-static         controllers.importcontent.StaticController.render(importHtmlName: String)
+POST        /import-content                        controllers.importcontent.ImportController.handleSubmit
+
+GET         /import-static                         controllers.importcontent.StaticController.render(importHtmlName: String)
 
 # Routes
 # ~~~~
