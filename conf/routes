@@ -1,6 +1,6 @@
 # routes-import
 
-GET         /import-content        controllers.importcontent.ImportController.renderForm(stageKey: String)
+GET         /import-content        controllers.importcontent.ImportController.renderForm
 POST        /import-content        controllers.importcontent.ImportController.handleSubmit
 
 GET         /import-static         controllers.importcontent.StaticController.render(importHtmlName: String)

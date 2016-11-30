@@ -10,8 +10,6 @@
 
   <form action="@controllers.importcontent.routes.ImportController.handleSubmit()" method="POST">
 
-    <input type="hidden" name="stageKey" value="@(data.getStageKey)" />
-
     @contextFormParams()
 
     @formRadioGroup(form("selectedOption"), data.getOptions) { }

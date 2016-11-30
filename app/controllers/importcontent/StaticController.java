@@ -19,7 +19,7 @@ public class StaticController extends Controller {
       if (resource == null) {
         throw new RuntimeException("Not a file: " + key);
       } else {
-        return ok(staticContent.render("d", new Html(Resources.toString(resource, Charsets.UTF_8))));
+        return ok(staticContent.render("Importing - Import & Export Licensing", new Html(Resources.toString(resource, Charsets.UTF_8))));
       }
     } catch (IOException e) {
       throw new RuntimeException("Failed to read", e);

@@ -3,7 +3,7 @@
 
 @(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None, twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
 
-@govukTemplateDefaults("Importing - Import & Export Licensing", pageName = pageName) {
+@govukTemplateDefaults(htmlTitle, pageName = pageName) {
 
   <main id="content" role="main">
 

@@ -1,36 +1,32 @@
 package models.importcontent;
 
-
+import components.common.journey.JourneyManager;
+import play.mvc.Result;
 import utils.common.SelectOption;
 
 import java.util.List;
+import java.util.concurrent.CompletionStage;
+import java.util.function.BiFunction;
 
 public class ImportStageData {
 
-  private String stageKey;
   private String question;
   private List<SelectOption> options;
+  private BiFunction<JourneyManager, String, CompletionStage<Result>> journeyTransitionFunction;
 
-  public ImportStageData() {
-  }
-
-  public ImportStageData(String stageKey) {
-    this.stageKey = stageKey;
-  }
-
-  public ImportStageData(String stageKey, String question, List<SelectOption> options) {
-
-    this.stageKey = stageKey;
+  public ImportStageData(String question, List<SelectOption> options,
+                         BiFunction<JourneyManager, String, CompletionStage<Result>> journeyTransitionFunction) {
     this.question = question;
     this.options = options;
+    this.journeyTransitionFunction = journeyTransitionFunction;
   }
 
-  public String getStageKey() {
-    return stageKey;
+  public CompletionStage<Result> completeTransition(JourneyManager journeyManager, String selectedOption) {
+    return journeyTransitionFunction.apply(journeyManager, selectedOption);
   }
 
-  public void setStageKey(String stageKey) {
-    this.stageKey = stageKey;
+  public boolean isValidStageOption(String option) {
+    return options.stream().anyMatch(so -> so.value.equals(option));
   }
 
   public String getQuestion() {
