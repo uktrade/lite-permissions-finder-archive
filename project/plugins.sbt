@@ -23,3 +23,6 @@ libraryDependencies += "org.javassist" % "javassist" % "3.20.0-GA"
 // Play Ebean support, to enable, uncomment this line, and enable in your build.sbt using
 // enablePlugins(PlayEbean).
 // addSbtPlugin("com.typesafe.sbt" % "sbt-play-ebean" % "1.0.0")
+
+//For version info in the build
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.6.1")

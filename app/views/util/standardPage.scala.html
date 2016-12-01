@@ -1,7 +1,7 @@
 @import util._
 @import views.html.common.page._
 
-@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None)(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None, twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle + " - Import & Export Licensing", pageName = pageName) {
 
@@ -10,6 +10,11 @@
     @phaseBanner()
 
     @backLink()
+
+    @if(twoThirdsColumn) {
+      <div class="grid-row">
+        <div class="column-two-thirds">
+    }
 
     <a id="contentStart"></a>
 
@@ -26,6 +31,11 @@
     </header>
 
     @content
+
+    @if(twoThirdsColumn) {
+        </div>
+      </div>
+    }
 
   </main>
 }

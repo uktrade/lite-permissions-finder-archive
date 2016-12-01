@@ -57,8 +57,7 @@ public class TradeTypeController extends Controller {
         permissionsFinderDao.saveSourceCountry(UNITED_KINGDOM);
         return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
       case IMPORT:
-        //TODO: start import journey
-        return completedFuture(redirect(routes.StaticContentController.renderImport()));
+        return journeyManager.startJourney(JourneyDefinitionNames.IMPORT);
       case TRANSSHIPMENT:
       case BROKERING:
         return completedFuture(redirect(routes.StaticContentController.renderBrokeringTranshipment()));

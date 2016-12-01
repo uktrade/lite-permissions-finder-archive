@@ -1,3 +1,9 @@
+# routes-import
+
+GET         /import/:stageKey                   controllers.importcontent.ImportController.renderForm(stageKey: String)
+POST        /import-content                     controllers.importcontent.ImportController.handleSubmit
+GET         /import-static                      controllers.importcontent.StaticController.render(importHtmlName: String)
+
 # Routes
 # ~~~~
 ->      /common                     common.Routes
@@ -221,8 +227,6 @@ GET     /select-trade-type                    controllers.TradeTypeController.re
 
 POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
 
-GET     /select-trade-type/import             controllers.StaticContentController.renderImport
-
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 
 GET     /software-category-catchall-controls                             controllers.controlcode.ControlCodeController.renderSoftwareCatchallControlsForm
@@ -326,3 +330,7 @@ GET     /js-routes                            controllers.JavaScriptRoutesContro
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)
+
+#Build info
+
+GET     /admin/build                          controllers.admin.AdminController.buildInfo

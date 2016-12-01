@@ -1,0 +1,31 @@
+@import util._
+@import views.html.common.page._
+
+@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None, twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
+
+@govukTemplateDefaults(htmlTitle, pageName = pageName) {
+
+  <main id="content" role="main">
+
+    @phaseBanner()
+
+    @backLink()
+
+    @if(twoThirdsColumn) {
+      <div class="grid-row">
+        <div class="column-two-thirds">
+    }
+
+    <a id="contentStart"></a>
+
+    @beforeHeader
+
+    @content
+
+    @if(twoThirdsColumn) {
+        </div>
+      </div>
+    }
+
+  </main>
+}

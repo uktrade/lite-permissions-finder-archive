@@ -2,7 +2,14 @@ name := """lite-permissions-finder"""
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayJava).dependsOn(`zzz-common`)
+lazy val root = (project in file("."))
+  .enablePlugins(PlayJava)
+  .dependsOn(`zzz-common`)
+  .enablePlugins(BuildInfoPlugin)
+  .settings(
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "buildinfo"
+  )
 
 scalaVersion := "2.11.8"
 
@@ -22,3 +29,18 @@ libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.
 
 // Contains all files and libraries shared across other projects
 lazy val `zzz-common` = project.in(file("subprojects/lite-play-common")).enablePlugins(PlayJava)
+
+//Add build time and git commit to the build info object
+
+buildInfoKeys ++= Seq[BuildInfoKey](
+  BuildInfoKey.action("gitCommit") {
+    try {
+      "git rev-parse HEAD".!!.trim
+    } catch {
+      case e: Throwable => "unknown (" + e.getMessage + ")"
+    }
+  }
+)
+
+buildInfoOptions += BuildInfoOption.BuildTime
+buildInfoOptions += BuildInfoOption.ToJson

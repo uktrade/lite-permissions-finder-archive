@@ -5,7 +5,7 @@
 
 @import models.search.SearchBaseDisplay
 @(display: SearchBaseDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle)), headingCssClass = "heading-xlarge heading-tight"){
+@standardPage(display.pageTitle, Some(Html(display.pageTitle)), headingCssClass = "heading-xlarge heading-tight", pageName = Some("searchBase")){
   @errorSummary(display.form)
 }{
 
@@ -13,16 +13,15 @@
 
     @contextFormParams()
 
-    <span class="form-hint">Provide as much information as you can</span>
-    @formTextarea(display.form("description"), cssClass = "form-control-wide") {
-
+    @formTextarea(display.form("description"), cssClass = "form-control-wide", rows = "4") {
+      Provide as much information as you can
     }
 
     <p><span class="bold-medium">Other information (optional)</span></p>
     <p>
       You don't have to complete these, but they can help to narrow your results.
     </p>
-    @formTextarea(display.form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide"){
+    @formTextarea(display.form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide", rows = "4"){
       If the item is a component, attachment or part for another item, describe its use.
     }
 
