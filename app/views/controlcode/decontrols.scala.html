@@ -2,7 +2,6 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.controlcode.routes.DecontrolsController
 @import models.controlcode.DecontrolsDisplay
 
 @(form: Form[_], display: DecontrolsDisplay)
@@ -31,7 +30,7 @@
     }
     </ul>
 
-    <form action="@DecontrolsController.handleSubmit()" method="POST">
+    <form action="@display.formAction" method="POST">
 
         @contextFormParams()
 

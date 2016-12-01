@@ -10,8 +10,10 @@ import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeDisplay;
+import models.controlcode.ControlCodeJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -31,38 +33,57 @@ public class ControlCodeController extends Controller {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
+  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
 
   @Inject
   public ControlCodeController(JourneyManager journeyManager,
                                FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao,
                                HttpExecutionContext httpExecutionContext,
-                               FrontendServiceClient frontendServiceClient) {
+                               FrontendServiceClient frontendServiceClient,
+                               ControlCodeJourneyHelper controlCodeJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
+    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
 
-  public CompletionStage<Result> renderForm() {
-    Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies();
+  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
+    Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies(controlCodeJourney);
     ControlCodeForm templateForm = new ControlCodeForm();
     templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getPhysicalGoodControlCode())
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
         .thenApplyAsync(result ->
             ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
-                new ControlCodeDisplay(result))), httpExecutionContext.current());
+                new ControlCodeDisplay(controlCodeJourney, result))), httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> renderRelatedToSoftwareForm() {
-    return renderForm();
+  public CompletionStage<Result> renderSearchForm() {
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  public CompletionStage<Result> renderSearchRelatedToSoftwareForm() {
+    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  }
+
+  public CompletionStage<Result> renderSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
+  public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
+  public CompletionStage<Result> renderSoftwareCatchallControlsForm() {
+    return renderForm(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  }
+
+  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getPhysicalGoodControlCode();
+    String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
 
@@ -81,17 +102,17 @@ public class ControlCodeController extends Controller {
           }
 
           if (form.hasErrors()) {
-            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(result))));
+            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeJourney, result))));
           }
 
           String couldDescribeItems = form.get().couldDescribeItems;
           if("true".equals(couldDescribeItems)) {
-            permissionsFinderDao.saveControlCodeApplies(true);
-            return nextScreenTrue(result);
+            permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, true);
+            return nextScreenTrue(controlCodeJourney, result);
           }
           else if ("false".equals(couldDescribeItems)) {
-            permissionsFinderDao.saveControlCodeApplies(false);
-            return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
+            permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, false);
+            return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeJourney);
           }
           else {
             throw new FormStateException("Unhandled form state");
@@ -99,7 +120,27 @@ public class ControlCodeController extends Controller {
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 
-  public CompletionStage<Result> nextScreenTrue(FrontendServiceResult frontendServiceResult) {
+  public CompletionStage<Result> handleSearchSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+  }
+
+  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
+    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  }
+
+  public CompletionStage<Result> handleSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  }
+
+  public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  }
+
+  public CompletionStage<Result> handleSoftwareCatchallControlsSubmit() {
+    return handleSubmit(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  }
+
+  public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     if (controlCodeData.canShow()) {
       if (controlCodeData.canShowAdditionalSpecifications()) {
@@ -113,7 +154,7 @@ public class ControlCodeController extends Controller {
       }
     }
     else {
-      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
+      return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCodeData.controlCode);
     }
   }
 

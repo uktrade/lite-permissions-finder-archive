@@ -7,6 +7,5 @@ public enum ControlCodeFlowStage {
   CONFIRMED,
   DECONTROLS,
   NOT_APPLICABLE,
-  SEARCH_AGAIN,
   TECHNICAL_NOTES
 }

@@ -8,6 +8,7 @@ import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import models.GoodsType;
+import models.controlcode.ControlCodeJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -24,7 +25,8 @@ public class RadioactiveController {
   public static final String CONTROLLED_RADIOACTIVE_SOURCES = "Controlled Radioactive Sources";
 
   @Inject
-  public RadioactiveController(JourneyManager journeyManager, FormFactory formFactory,
+  public RadioactiveController(JourneyManager journeyManager,
+                               FormFactory formFactory,
                                PermissionsFinderDao permissionsFinderDao) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
@@ -40,7 +42,8 @@ public class RadioactiveController {
     if ("continue".equals(form.get().action)) {
       // Setup DAO state for Destination Country journey stage.
       permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
-      permissionsFinderDao.savePhysicalGoodControlCode(CONTROLLED_RADIOACTIVE_SOURCES);
+      permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+          ControlCodeJourney.PHYSICAL_GOODS_SEARCH, CONTROLLED_RADIOACTIVE_SOURCES);
       return journeyManager.performTransition(StandardEvents.NEXT);
     }
     throw new FormStateException("Unknown value of action: \"" + form.get().action + "\"");

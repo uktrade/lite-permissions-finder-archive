@@ -11,6 +11,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.registration.OgelRegistrationServiceClient;
 import controllers.search.SearchController;
 import exceptions.FormStateException;
+import models.controlcode.ControlCodeJourney;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -62,7 +63,8 @@ public class ContinueApplicationController {
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.setTransaction(transactionId);
         // Overwrite stored search form data
-        permissionsFinderDao.savePhysicalGoodSearchForm(new SearchController.ControlCodeSearchForm());
+        permissionsFinderDao.savePhysicalGoodSearchForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH,
+            new SearchController.ControlCodeSearchForm());
         Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
         if (ogelRegistrationExists.isPresent() && ogelRegistrationExists.get()) {
           return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);

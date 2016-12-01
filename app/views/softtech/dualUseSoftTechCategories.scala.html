@@ -1,0 +1,95 @@
+@import controllers.softtech.routes.DualUseSoftTechCategoriesController
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import models.softtech.SoftwareCategory
+
+@(form: Form[_])
+@standardPage("What is your software for?", Some(Html("What is your software for?"))){
+  @errorSummary(form)
+}{
+
+  <form action="@DualUseSoftTechCategoriesController.handleSubmit" method="POST">
+    
+    @contextFormParams()
+
+    @*TODO Add content *@
+
+    @detailPanel("NUCLEAR"){NUCLEAR} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.NUCLEAR">Continue</button>
+    }
+
+    @detailPanel("SPECIAL_MATERIALS"){SPECIAL_MATERIALS} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.SPECIAL_MATERIALS">Continue</button>
+    }
+
+    @detailPanel("MATERIALS_PROCESSING"){MATERIALS_PROCESSING} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.MATERIALS_PROCESSING">Continue</button>
+    }
+
+    @detailPanel("ELECTRONICS"){ELECTRONICS} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.ELECTRONICS">Continue</button>
+    }
+
+    @detailPanel("COMPUTERS"){COMPUTERS} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.COMPUTERS">Continue</button>
+    }
+
+    @detailPanel("TELECOMS"){TELECOMS} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.TELECOMS">Continue</button>
+    }
+
+    @detailPanel("SENSORS"){SENSORS} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.SENSORS">Continue</button>
+    }
+
+    @detailPanel("NAVIGATION"){NAVIGATION} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.NAVIGATION">Continue</button>
+    }
+
+    @detailPanel("MARINE"){MARINE} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.MARINE">Continue</button>
+    }
+
+    @detailPanel("AEROSPACE"){AEROSPACE} {
+      <p>
+        CONTENT WILL GO HERE
+      </p>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.AEROSPACE">Continue</button>
+    }
+
+    <div class="form-group">
+      <button type="submit" id="continue" class="link underlined font-small no-matched-result-link" name="action" value="noneOfTheAbove">None of the above</button>
+    </div>
+    
+  </form>
+  
+}

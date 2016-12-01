@@ -2,7 +2,6 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.controlcode.routes.TechnicalNotesController
 @import models.controlcode.TechnicalNotesDisplay
 
 @(form: Form[_], display: TechnicalNotesDisplay)
@@ -29,7 +28,7 @@
     @Html(display.technicalNotes)
     </div>
 
-    <form action="@TechnicalNotesController.handleSubmit()" method="POST">
+    <form action="@display.formAction" method="POST">
 
       @contextFormParams()
 

@@ -9,8 +9,13 @@ import models.GoodsType;
 import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
 import models.VirtualEUOgelStage;
-import models.software.ApplicableSoftwareControls;
-import models.software.SoftwareExemptionsFlow;
+import models.softtech.ApplicableSoftTechControls;
+import models.softtech.CatchallSoftTechControlsFlow;
+import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
+import models.softtech.Relationship;
+import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
+import models.softtech.SoftwareControlsNotApplicableFlow;
+import models.softtech.SoftwareExemptionsFlow;
 
 public class Events {
 
@@ -64,7 +69,25 @@ public class Events {
   public static final ParameterisedJourneyEvent<SoftwareExemptionsFlow> SOFTWARE_EXEMPTIONS_FLOW =
       new ParameterisedJourneyEvent<>("SOFTWARE_EXEMPTIONS_FLOW", SoftwareExemptionsFlow.class);
 
-  public static final ParameterisedJourneyEvent<ApplicableSoftwareControls> DUAL_USE_SOFTWARE_CATEGORY_SELECTED =
-      new ParameterisedJourneyEvent<>("DUAL_USE_SOFTWARE_CATEGORY_SELECTED", ApplicableSoftwareControls.class);
+  public static final ParameterisedJourneyEvent<ApplicableSoftTechControls> DUAL_USE_SOFTWARE_CATEGORY_SELECTED =
+      new ParameterisedJourneyEvent<>("DUAL_USE_SOFTWARE_CATEGORY_SELECTED", ApplicableSoftTechControls.class);
+
+  public static final ParameterisedJourneyEvent<ApplicableSoftTechControls> CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE", ApplicableSoftTechControls.class);
+
+  public static final ParameterisedJourneyEvent<SoftwareControlsNotApplicableFlow> CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW", SoftwareControlsNotApplicableFlow.class);
+
+  public static final ParameterisedJourneyEvent<ControlsRelatedToPhysicalGoodsFlow> CONTROLS_RELATED_PHYSICAL_GOOD =
+      new ParameterisedJourneyEvent<>("CONTROLS_RELATED_PHYSICAL_GOOD", ControlsRelatedToPhysicalGoodsFlow.class);
+
+  public static final ParameterisedJourneyEvent<CatchallSoftTechControlsFlow> CATCHALL_SOFTWARE_CONTROLS_FLOW =
+      new ParameterisedJourneyEvent<>("CATCHALL_SOFTWARE_CONTROLS_FLOW", CatchallSoftTechControlsFlow.class);
+
+  public static final ParameterisedJourneyEvent<SoftTechCatchallControlsNotApplicableFlow> CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW", SoftTechCatchallControlsNotApplicableFlow.class);
+
+  public static final ParameterisedJourneyEvent<Relationship> CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP", Relationship.class);
 
 }

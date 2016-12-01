@@ -12,8 +12,13 @@ import models.GoodsType;
 import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
 import models.VirtualEUOgelStage;
-import models.software.ApplicableSoftwareControls;
-import models.software.SoftwareExemptionsFlow;
+import models.softtech.ApplicableSoftTechControls;
+import models.softtech.CatchallSoftTechControlsFlow;
+import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
+import models.softtech.Relationship;
+import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
+import models.softtech.SoftwareControlsNotApplicableFlow;
+import models.softtech.SoftwareExemptionsFlow;
 
 public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
@@ -22,7 +27,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage goodsType = defineStage("goodsType", "Are you exporting goods, software or technical information?",
       routes.GoodsTypeController.renderForm());
   private final JourneyStage physicalGoodsSearch = defineStage("physicalGoodsSearch", "Describe your items",
-      controllers.search.routes.PhysicalGoodsSearchController.renderForm());
+      controllers.search.routes.PhysicalGoodsSearchController.renderSearchForm());
   private final JourneyStage destinationCountries = defineStage("destinationCountries", "Countries and territories",
       routes.DestinationCountryController.renderForm());
   private final JourneyStage ogelQuestions = defineStage("ogelQuestions", "Refining your licence results",
@@ -31,11 +36,34 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.StaticContentController.renderNotImplemented());
   private final JourneyStage notApplicable = defineStage("notApplicable", "You cannot use this service to get an export licence",
       routes.StaticContentController.renderNotApplicable());
-  private final JourneyStage softwareExemptions = defineStage("softwareExemptions", "Some types of software do not need a licence",
-      controllers.software.routes.ExemptionsController.renderForm());
-  private final JourneyStage physicalGoodsSearchRelatedToSoftware = defineStage("physicalGoodsSearchRelatedToSoftware", "Describe your items",
-      controllers.search.routes.PhysicalGoodsSearchController.renderRelatedToSoftwareForm());
 
+  /** Software **/
+  private final JourneyStage softwareExemptions = defineStage("softwareExemptions", "Some types of software do not need a licence",
+      controllers.softtech.routes.ExemptionsController.renderForm());
+  private final JourneyStage physicalGoodsSearchRelatedToSoftware = defineStage("physicalGoodsSearchRelatedToSoftware", "Describe your items",
+      controllers.search.routes.PhysicalGoodsSearchController.renderSearchRelatedToSoftwareForm());
+  private final JourneyStage controlCodeForSoftwareControls = defineStage("controlCodeSoftwareControls", "Summary",
+      controllers.controlcode.routes.ControlCodeController.renderSoftwareControlsForm());
+  private final JourneyStage controlCodeForRelatedSoftwareControls = defineStage("controlCodeForRelatedSoftwareControls", "Summary",
+      controllers.controlcode.routes.ControlCodeController.renderRelatedSoftwareControlsForm());
+  private final JourneyStage controlCodeSoftwareCatchallControls = defineStage("controlCodeSoftwareCatchallControls", "Summary",
+      controllers.controlcode.routes.ControlCodeController.renderSoftwareCatchallControlsForm());
+  private final JourneyStage softwareCategoryControls = defineStage("softwareCategoryControls", "Showing controls related to software category",
+      controllers.softtech.controls.routes.SoftTechControlsController.renderSofwareCategoryForm());
+  private final JourneyStage softwareRelatedToPhysicalGoodControls= defineStage("softwareRelatedToPhysicalGoodControls", "Showing controls related to your selected physical good",
+      controllers.softtech.controls.routes.SoftTechControlsController.renderRelatedToPhysicalGoodForm());
+  private final JourneyStage softwareCatchallControls= defineStage("softwareCatchallControls", "Showing catchall controls related to your items category",
+      controllers.softtech.controls.routes.SoftTechControlsController.renderSoftwareCatchallForm());
+  private JourneyStage relatedToEquipmentOrMaterials = defineStage("relatedToEquipmentOrMaterials", "Is your software any of the following?",
+      controllers.softtech.routes.RelatedEquipmentController.renderForm());
+  private JourneyStage noSoftwareControlsExist = defineStage("noSoftTechControlsExist", "No software controls exist for item",
+      controllers.softtech.controls.routes.NoSoftTechControlsExistController.renderForm());
+  private JourneyStage softwareControlsNLR = defineStage("softwareControlsNLR", "No software controls exist for the selected item",
+      routes.StaticContentController.renderSoftwareControlsNLR());
+  private JourneyStage softwareRelationshipNLR = defineStage("softwareRelationshipNLR", "No software controls exist for the selected item",
+      routes.StaticContentController.renderSoftwareRelationshipNLR());
+  private JourneyStage softwareTechnologyRelationship = defineStage("softwareTechnologyRelationship", "Is export covered by software technology relationship?",
+      controllers.softtech.routes.RelationshipController.renderForm());
 
   public ExportJourneyDefinitionBuilder() {}
 
@@ -223,25 +251,25 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private void physicalGoodsStages() {
 
     JourneyStage physicalGoodsSearchResults = defineStage("physicalGoodsSearchResults", "Possible matches",
-        controllers.search.routes.PhysicalGoodsSearchResultsController.renderForm());
+        controllers.search.routes.PhysicalGoodsSearchResultsController.renderSearchForm());
 
     JourneyStage controlCode = defineStage("controlCode", "Summary",
-        controllers.controlcode.routes.ControlCodeController.renderForm());
+        controllers.controlcode.routes.ControlCodeController.renderSearchForm());
 
     JourneyStage controlCodeNotApplicable = defineStage("controlCodeNotApplicable", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderSearchForm(Boolean.FALSE.toString()));
 
     JourneyStage controlCodeNotApplicableExtended = defineStage("controlCodeNotApplicableExtended", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(Boolean.TRUE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderSearchForm(Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecifications = defineStage("additionalSpecifications", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm());
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderSearchForm());
 
     JourneyStage decontrols = defineStage("decontrols", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderForm());
+        controllers.controlcode.routes.DecontrolsController.renderSearchForm());
 
     JourneyStage technicalNotes = defineStage("technicalNotes", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderForm());
+        controllers.controlcode.routes.TechnicalNotesController.renderSearchForm());
 
     JourneyStage ogelResults = defineStage("ogelResults", "Licences applicable to your answers",
         controllers.ogel.routes.OgelResultsController.renderForm());
@@ -346,30 +374,31 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   }
 
   private void softwareStages() {
-    JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftwareCategories", "What is your software for?",
-        controllers.software.routes.DualUseSoftwareCategoriesController.renderForm());
 
-    JourneyStage relatedToEquipmentOrMaterials = defineStage("relatedToEquipmentOrMaterials", "Is your software any of the following?",
-        controllers.software.routes.RelatedEquipmentController.renderForm());
+    JourneyStage softwareExemptionsNLR = defineStage("softwareExemptionsNLR", "Software exemptions apply",
+        controllers.routes.StaticContentController.renderSoftwareExemptionsNLR());
 
-    JourneyStage categoryControls = defineStage("categoryControls", "Showing controls related to software category",
-        controllers.software.controls.routes.CategoryControlsController.renderForm());
+    JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftTechCategories", "What is your software for?",
+        controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm());
+
+    JourneyStage softwareRelationshipContactECO = defineStage("softwareRelationshipContactECO", "Contact ECO",
+        routes.StaticContentController.renderSoftwareRelationshipContactECO());
 
     atStage(softwareExemptions)
         .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
         .branch()
-        .when(SoftwareExemptionsFlow.EXEMPTIONS_APPLY, moveTo(notApplicable)) // TODO check this is the correct NLR to show
+        .when(SoftwareExemptionsFlow.EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR))
         .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
         .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
-        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(notImplemented))
-        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(categoryControls));
+        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))
+        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(softwareCategoryControls));
 
     atStage(dualUseSoftwareCategories)
         .onEvent(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED)
         .branch()
-        .when(ApplicableSoftwareControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
-        .when(ApplicableSoftwareControls.ONE, moveTo(notImplemented))
-        .when(ApplicableSoftwareControls.GREATER_THAN_ONE, moveTo(categoryControls));
+        .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeForSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(softwareCategoryControls));
 
     atStage(dualUseSoftwareCategories)
         .onEvent(Events.NONE_MATCHED)
@@ -378,43 +407,55 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.YES).then(moveTo(physicalGoodsSearchRelatedToSoftware));
 
-    atStage(relatedToEquipmentOrMaterials)
-        .onEvent(StandardEvents.NO).then(moveTo(notImplemented));
+    bindCatchallSoftwareControls(relatedToEquipmentOrMaterials);
 
-    atStage(categoryControls)
+    atStage(softwareCategoryControls)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(notImplemented));
+        .then(moveTo(controlCodeForSoftwareControls));
 
-    atStage(categoryControls)
+    atStage(softwareCategoryControls)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(relatedToEquipmentOrMaterials));
 
+    softwareCategoryControls();
+
     physicalGoodsSearchRelatedToSoftware();
 
+    softwareControlsRelatedToAPhysicalGood();
+
+    softwareCatchallControls();
+
+    atStage(softwareTechnologyRelationship)
+        .onEvent(StandardEvents.YES).then(moveTo(softwareRelationshipContactECO));
+    atStage(softwareTechnologyRelationship)
+        .onEvent(StandardEvents.NO).then(moveTo(softwareRelationshipNLR));
   }
 
+  /**
+   * Physical good search to then find related software controls with
+   */
   private void physicalGoodsSearchRelatedToSoftware() {
 
     JourneyStage physicalGoodsSearchResultsRelatedToSoftware = defineStage("physicalGoodsSearchResultsRelatedToSoftware", "Possible matches",
-        controllers.search.routes.PhysicalGoodsSearchResultsController.renderRelatedToSoftwareForm());
+        controllers.search.routes.PhysicalGoodsSearchResultsController.renderSearchRelatedToSoftwareForm());
 
     JourneyStage controlCodeforRelatedToSoftware = defineStage("controlCodeRelatedToSoftware", "Summary",
-        controllers.controlcode.routes.ControlCodeController.renderRelatedToSoftwareForm());
+        controllers.controlcode.routes.ControlCodeController.renderSearchRelatedToSoftwareForm());
 
     JourneyStage controlCodeNotApplicableRelatedToSoftware = defineStage("controlCodeNotApplicableRelatedToSoftware", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderRelatedToSoftwareForm(Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderSearchRelatedToSoftwareForm(Boolean.FALSE.toString()));
 
     JourneyStage controlCodeNotApplicableExtendedRelatedToSoftware = defineStage("controlCodeNotApplicableExtendedRelatedToSoftware", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderRelatedToSoftwareForm(Boolean.TRUE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderSearchRelatedToSoftwareForm(Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecificationsRelatedToSoftware = defineStage("additionalSpecificationsRelatedToSoftware", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderRelatedToSoftwareForm());
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderSearchRelatedToSoftwareForm());
 
     JourneyStage decontrolsRelatedToSoftware = defineStage("decontrolsRelatedToSoftware", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderRelatedToSoftwareForm());
+        controllers.controlcode.routes.DecontrolsController.renderSearchRelatedToSoftwareForm());
 
     JourneyStage technicalNotesRelatedToSoftware = defineStage("technicalNotesRelatedToSoftware", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderRelatedToSoftwareForm());
+        controllers.controlcode.routes.TechnicalNotesController.renderSearchRelatedToSoftwareForm());
 
     atStage(physicalGoodsSearchRelatedToSoftware)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
@@ -424,6 +465,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(controlCodeforRelatedToSoftware));
 
+    bindCatchallSoftwareControls(physicalGoodsSearchResultsRelatedToSoftware); // None matched
+
     atStage(controlCodeforRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
@@ -431,30 +474,34 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationsRelatedToSoftware))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsRelatedToSoftware))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(notImplemented)) // TODO
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearchRelatedToSoftware))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
+
+    bindControlsRelatedToPhysicalGoods(controlCodeforRelatedToSoftware);
 
     atStage(additionalSpecificationsRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtendedRelatedToSoftware))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsRelatedToSoftware))
-        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(notImplemented)); // TODO
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware));
+
+    bindControlsRelatedToPhysicalGoods(additionalSpecificationsRelatedToSoftware);
 
     atStage(decontrolsRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtendedRelatedToSoftware))
-        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(notImplemented)); // TODO
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware));
+
+    bindControlsRelatedToPhysicalGoods(decontrolsRelatedToSoftware);
 
     atStage(technicalNotesRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
-        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtendedRelatedToSoftware))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(notImplemented)); // TODO
+        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtendedRelatedToSoftware));
+
+    bindControlsRelatedToPhysicalGoods(technicalNotesRelatedToSoftware);
 
     atStage(controlCodeNotApplicableRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -469,6 +516,300 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
   }
 
+  /**
+   * Software controls per software category
+   */
+  private void softwareCategoryControls() {
 
+    JourneyStage controlCodeNotApplicableSoftwareControls = defineStage("controlCodeNotApplicableSoftwareControls", "Rating is not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderSoftwareControlsForm(Boolean.FALSE.toString()));
+
+    JourneyStage controlCodeNotApplicableExtendedSoftwareControls = defineStage("controlCodeNotApplicableExtendedSoftwareControls", "Rating is not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderSoftwareControlsForm(Boolean.TRUE.toString()));
+
+    JourneyStage additionalSpecificationsSoftwareControls = defineStage("additionalSpecificationsSoftwareControls", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderSoftwareControlsForm());
+
+    JourneyStage decontrolsSoftwareControls = defineStage("decontrolsSoftwareControls", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderSoftwareControlsForm());
+
+    JourneyStage technicalNotesSoftwareControls = defineStage("technicalNotesSoftwareControls", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderSoftwareControlsForm());
+
+    atStage(controlCodeForSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationsSoftwareControls))
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsSoftwareControls))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(controlCodeForSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .branch()
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableSoftwareControls));
+
+    atStage(additionalSpecificationsSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsSoftwareControls))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(additionalSpecificationsSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .branch()
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls));
+
+    atStage(decontrolsSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(decontrolsSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .branch()
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls));
+
+    atStage(technicalNotesSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(technicalNotesSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .branch()
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls));
+
+    atStage(controlCodeNotApplicableSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(softwareCategoryControls))
+        .when(SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS, moveTo(relatedToEquipmentOrMaterials));
+
+    atStage(controlCodeNotApplicableExtendedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(softwareCategoryControls))
+        .when(SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS, moveTo(relatedToEquipmentOrMaterials));
+  }
+
+  /**
+   * Software controls for a selected physical good
+   */
+  private void softwareControlsRelatedToAPhysicalGood() {
+    JourneyStage controlCodeNotApplicableRelatedSoftwareControls = defineStage("controlCodeNotApplicableRelatedSoftwareControls", "Rating is not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderRelatedSoftwareControlsForm(Boolean.FALSE.toString()));
+
+    JourneyStage controlCodeNotApplicableExtendedRelatedSoftwareControls = defineStage("controlCodeNotApplicableExtendedRelatedSoftwareControls", "Rating is not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderRelatedSoftwareControlsForm(Boolean.TRUE.toString()));
+
+    JourneyStage additionalSpecificationsRelatedSoftwareControls = defineStage("additionalSpecificationsRelatedSoftwareControls", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderRelatedSoftwareControlsForm());
+
+    JourneyStage decontrolsRelatedSoftwareControls = defineStage("decontrolsRelatedSoftwareControls", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderRelatedSoftwareControlsForm());
+
+    JourneyStage technicalNotesRelatedSoftwareControls = defineStage("technicalNotesRelatedSoftwareControls", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderRelatedSoftwareControlsForm());
+
+    atStage(softwareRelatedToPhysicalGoodControls)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
+        .then(moveTo(controlCodeForRelatedSoftwareControls));
+
+    bindCatchallSoftwareControls(softwareRelatedToPhysicalGoodControls);
+
+    atStage(controlCodeForRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationsRelatedSoftwareControls))
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsRelatedSoftwareControls))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedSoftwareControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(controlCodeForRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .branch()
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableRelatedSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableRelatedSoftwareControls));
+
+    atStage(additionalSpecificationsRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsRelatedSoftwareControls))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedSoftwareControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(additionalSpecificationsRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .branch()
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls));
+
+    atStage(decontrolsRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedSoftwareControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(decontrolsRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .branch()
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls));
+
+    atStage(technicalNotesRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(technicalNotesRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .branch()
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls));
+
+    atStage(controlCodeNotApplicableRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(softwareRelatedToPhysicalGoodControls));
+
+    bindCatchallSoftwareControls(controlCodeNotApplicableRelatedSoftwareControls);
+
+    atStage(controlCodeNotApplicableExtendedRelatedSoftwareControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS, moveTo(softwareRelatedToPhysicalGoodControls));
+
+    bindCatchallSoftwareControls(controlCodeNotApplicableExtendedRelatedSoftwareControls);
+
+    // Expecting CatchallSoftTechControlsFlow.CATCHALL_ONE or CatchallSoftTechControlsFlow.CATCHALL_GREATER_THAN_ONE
+    bindCatchallSoftwareControls(noSoftwareControlsExist);
+
+  }
+
+  private void softwareCatchallControls() {
+
+    JourneyStage controlCodeNotApplicableSoftwareCatchallControls = defineStage("controlCodeNotApplicableSoftwareCatchallControls", "Rating is not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderSoftwareCatchallControlsForm(Boolean.FALSE.toString()));
+
+    JourneyStage controlCodeNotApplicableExtendedSoftwareCatchallControls = defineStage("controlCodeNotApplicableExtendedSoftwareCatchallControls", "Rating is not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderSoftwareCatchallControlsForm(Boolean.TRUE.toString()));
+
+    JourneyStage additionalSpecificationSoftwareCatchallControls = defineStage("additionalSpecificationSoftwareCatchallControls", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderSoftwareCatchallControlsForm());
+
+    JourneyStage decontrolsSoftwareCatchallControls = defineStage("decontrolsSoftwareCatchallControls", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderSoftwareCatchallControlsForm());
+
+    JourneyStage technicalNotesSoftwareCatchallControls = defineStage("technicalNotesSoftwareCatchallControls", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderSoftwareCatchallControlsForm());
+
+    atStage(softwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
+        .then(moveTo(controlCodeSoftwareCatchallControls));
+
+    atStage(softwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP)
+        .branch()
+        .when(Relationship.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
+        .when(Relationship.RELATIONSHIP_DOES_NOT_EXIST, moveTo(softwareRelationshipNLR));
+
+    atStage(controlCodeSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationSoftwareCatchallControls))
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsSoftwareCatchallControls))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareCatchallControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(controlCodeSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
+        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
+        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
+
+    atStage(additionalSpecificationSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsSoftwareCatchallControls))
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareCatchallControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(additionalSpecificationSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableExtendedSoftwareCatchallControls))
+        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
+        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
+
+    atStage(decontrolsSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareCatchallControls))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(decontrolsSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableExtendedSoftwareCatchallControls))
+        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
+        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
+
+    atStage(technicalNotesSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
+    atStage(technicalNotesSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableExtendedSoftwareCatchallControls))
+        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
+        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
+
+    atStage(controlCodeNotApplicableSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(softwareCatchallControls));
+
+    atStage(controlCodeNotApplicableExtendedSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .branch()
+        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS, moveTo(softwareCatchallControls));
+  }
+
+  /**
+   * Physical good related to software
+   * @param journeyStage
+   */
+  private void bindControlsRelatedToPhysicalGoods(JourneyStage journeyStage) {
+    atStage(journeyStage)
+        .onEvent(Events.CONTROLS_RELATED_PHYSICAL_GOOD)
+        .branch()
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_ONE, moveTo(controlCodeForRelatedSoftwareControls))
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_GREATER_THAN_ONE, moveTo(softwareRelatedToPhysicalGoodControls))
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_ZERO, moveTo(softwareControlsNLR))
+        .when(ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_CONTROL_GREATER_THAN_ZERO, moveTo(noSoftwareControlsExist));
+  }
+  /**
+   * Catch all software controls
+   * @param journeyStage
+   */
+  private void bindCatchallSoftwareControls(JourneyStage journeyStage) {
+    atStage(journeyStage)
+        .onEvent(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW)
+        .branch()
+        .when(CatchallSoftTechControlsFlow.CATCHALL_ONE, moveTo(controlCodeSoftwareCatchallControls))
+        .when(CatchallSoftTechControlsFlow.CATCHALL_GREATER_THAN_ONE, moveTo(softwareCatchallControls))
+        .when(CatchallSoftTechControlsFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
+        .when(CatchallSoftTechControlsFlow.RELATIONSHIP_DOES_NOT_EXIST, moveTo(softwareRelationshipNLR));
+  }
 
 }

@@ -2,7 +2,6 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.controlcode.routes.AdditionalSpecificationsController
 @import models.controlcode.AdditionalSpecificationsDisplay
 
 @(form: Form[_], display: AdditionalSpecificationsDisplay)
@@ -33,7 +32,7 @@
       </ul>
     }
 
-    <form action="@AdditionalSpecificationsController.handleSubmit()" method="POST">
+    <form action="@display.formAction" method="POST">
 
       @contextFormParams()
 

@@ -18,6 +18,10 @@ public enum GoodsType {
     return this.value;
   }
 
+  public String toUrlString(){
+    return this.toString().toLowerCase();
+  }
+
   public static Optional<GoodsType> getMatched(String goodsType) {
     return EnumSet.allOf(GoodsType.class).stream().filter(e -> e.value().equals(goodsType)).findFirst();
   }

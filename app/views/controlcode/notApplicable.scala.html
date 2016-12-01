@@ -2,17 +2,17 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.controlcode.routes.NotApplicableController
 
-@(form: Form[_], controlCodeAlias: String, showExtendedContent: Boolean)
-@standardPage(controlCodeAlias + " is not applicable to your item", Some(Html(controlCodeAlias + " is not applicable to your item"))){
-  @errorSummary(form)
+@import models.controlcode.NotApplicableDisplay
+@(display: NotApplicableDisplay)
+@standardPage(display.controlCodeAlias + " is not applicable to your item", Some(Html(display.controlCodeAlias + " is not applicable to your item"))){
+  @errorSummary(display.form)
 }{
-  <form action="@NotApplicableController.handleSubmit" method="POST">
+  <form action="@display.formAction" method="POST">
 
     @contextFormParams()
 
-    @if(showExtendedContent) {
+    @if(display.showExtendedContent) {
 
       <p>
         This may be because either:
@@ -34,14 +34,27 @@
       <p>
         To find out if your item is listed under another classification, you can either:
       </p>
-
       <ul class="list list-bullet text">
-        <li>
-          <button class="link underlined" name="action" value="backToSearchResults">return to your search results and select another item type</button>, or
-        </li>
-        <li>
-          <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
-        </li>
+      @display.buttonConfiguration match {
+        case NotApplicableDisplay.ButtonConfiguration.RETURN_TO_SEARCH => {
+          <li>
+            <button class="link underlined" name="action" value="backToSearchResults">return to your search results and select another item type</button>, or
+          </li>
+          <li>
+            <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
+          </li>
+        }
+        case NotApplicableDisplay.ButtonConfiguration.RETURN_TO_SOFTWARE_CONTROLS => {
+          <li>
+            <button class="link underlined" name="action" value="returnToControls">RETURN TO SOFTWARE CONTROL LIST</button>
+          </li>
+        }
+        case NotApplicableDisplay.ButtonConfiguration.CONTINUE_NO_SOFTWARE_CONTROLS => {
+          <li>
+            <button class="link underlined" name="action" value="continue">CONTINUE THROUGH JOURNEY</button>
+          </li>
+        }
+      }
       </ul>
 
       <h2 class="heading-medium">
@@ -92,12 +105,26 @@
       </p>
 
       <ul class="list list-bullet text">
-        <li>
-          <button class="link underlined" name="action" value="backToSearchResults">return to your search results and select another item type</button>, or
-        </li>
-        <li>
-          <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
-        </li>
+      @display.buttonConfiguration match {
+        case NotApplicableDisplay.ButtonConfiguration.RETURN_TO_SEARCH => {
+          <li>
+            <button class="link underlined" name="action" value="backToSearchResults">return to your search results and select another item type</button>, or
+          </li>
+          <li>
+            <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
+          </li>
+        }
+        case NotApplicableDisplay.ButtonConfiguration.RETURN_TO_SOFTWARE_CONTROLS => {
+          <li>
+            <button class="link underlined" name="action" value="returnToControls">RETURN TO SOFTWARE CONTROL LIST</button>
+          </li>
+        }
+        case NotApplicableDisplay.ButtonConfiguration.CONTINUE_NO_SOFTWARE_CONTROLS => {
+          <li>
+            <button class="link underlined" name="action" value="continue">CONTINUE THROUGH JOURNEY</button>
+          </li>
+        }
+      }
       </ul>
 
       <h2 class="heading-medium">

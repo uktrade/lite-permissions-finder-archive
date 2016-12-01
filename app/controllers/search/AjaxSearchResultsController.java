@@ -11,6 +11,7 @@ import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.search.SearchServiceClient;
 import models.GoodsType;
+import models.controlcode.ControlCodeJourney;
 import play.Logger;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
@@ -52,7 +53,7 @@ public class AjaxSearchResultsController {
    * @param transactionId the transaction ID
    * @return a Result with JSON content of the additional results to show
    */
-  public CompletionStage<Result> getResults(String goodsType, int fromIndex, int toIndex, String transactionId) {
+  public CompletionStage<Result> getResults(String controlCodeJourney, String goodsType, int fromIndex, int toIndex, String transactionId) {
 
     if (transactionId == null || transactionId.isEmpty()) {
       return completedFuture(ok(buildErrorJsonAndLog(
@@ -63,10 +64,12 @@ public class AjaxSearchResultsController {
     }
 
     Optional<GoodsType> goodsTypeOptional = GoodsType.getMatched(goodsType);
+    Optional<ControlCodeJourney> controlCodeJourneyOptional = ControlCodeJourney.getMatched(controlCodeJourney);
 
-    if (goodsTypeOptional.isPresent()) {
+    if (goodsTypeOptional.isPresent() && controlCodeJourneyOptional.isPresent()) {
       if (goodsTypeOptional.get() == GoodsType.PHYSICAL) {
-        Optional<SearchController.ControlCodeSearchForm> optionalForm = permissionsFinderDao.getPhysicalGoodsSearchForm();
+        Optional<SearchController.ControlCodeSearchForm> optionalForm =
+            permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeJourneyOptional.get());
         if (optionalForm.isPresent()) {
           return searchServiceClient.get(SearchController.getSearchTerms(optionalForm.get()))
               .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, fromIndex, toIndex))
@@ -81,7 +84,12 @@ public class AjaxSearchResultsController {
       }
     }
     else {
-      return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for goodsType %s", goodsType))));
+      if (!goodsTypeOptional.isPresent()) {
+        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for goodsType %s", goodsType))));
+      }
+      else {
+        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for controlCodeJourney %s", controlCodeJourney))));
+      }
     }
 
   }

@@ -2,7 +2,6 @@
 @import views.html.common.form._
 @import views.html.common.page._
 @import views.html.common.state._
-@import controllers.controlcode.routes.ControlCodeController
 @import models.controlcode.ControlCodeDisplay
 
 @(form: Form[_], display: ControlCodeDisplay)
@@ -42,8 +41,9 @@
 
   </ul>
   @twoThirdsColumn {
-    <form action="@ControlCodeController.handleSubmit()" method="POST">
 
+    <form action="@display.formAction" method="POST">
+      
       @contextFormParams()
 
       @formRadioBoolean(form("couldDescribeItems"), Html("Could this describe your items?"), "Yes", "No")
