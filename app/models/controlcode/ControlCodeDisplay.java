@@ -4,6 +4,7 @@ import components.services.controlcode.Ancestor;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
 import controllers.controlcode.routes;
+import models.GoodsType;
 
 import java.util.List;
 
@@ -34,7 +35,10 @@ public class ControlCodeDisplay {
       this.formAction = routes.ControlCodeController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.ControlCodeController.handleSearchRelatedToSoftwareSubmit().url();
+      this.formAction = routes.ControlCodeController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      this.formAction = routes.ControlCodeController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.ControlCodeController.handleSoftwareControlsSubmit().url();

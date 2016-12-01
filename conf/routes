@@ -49,9 +49,9 @@ GET     /control-code/technical-notes         controllers.controlcode.TechnicalN
 
 POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSearchSubmit
 
-GET     /control-code-related-to-software                             controllers.controlcode.ControlCodeController.renderSearchRelatedToSoftwareForm
+GET     /related-control-code/:goodsType                              controllers.controlcode.ControlCodeController.renderSearchRelatedToForm(goodsType)
 
-POST    /control-code-related-to-software                             controllers.controlcode.ControlCodeController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType                              controllers.controlcode.ControlCodeController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSearchRelatedToSoftwareForm
 
