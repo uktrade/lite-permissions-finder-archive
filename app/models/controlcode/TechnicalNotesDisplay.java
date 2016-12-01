@@ -3,6 +3,7 @@ package models.controlcode;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
 import controllers.controlcode.routes;
+import models.GoodsType;
 
 public class TechnicalNotesDisplay {
   public final String formAction;
@@ -21,7 +22,10 @@ public class TechnicalNotesDisplay {
       this.formAction = routes.TechnicalNotesController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSoftwareSubmit().url();
+      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.TechnicalNotesController.handleSoftwareControlsSubmit().url();

@@ -9,6 +9,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.SoftTechJourneyHelper;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.TechnicalNotesDisplay;
 import play.data.Form;
@@ -59,8 +60,8 @@ public class TechnicalNotesController {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> renderSearchRelatedToSoftwareForm() {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderSoftwareControlsForm() {
@@ -104,8 +105,8 @@ public class TechnicalNotesController {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {

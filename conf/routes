@@ -65,9 +65,9 @@ GET     /related-control-code/:goodsType/not-applicable               controller
 
 POST    /related-control-code/:goodsType/not-applicable               controllers.controlcode.NotApplicableController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.renderSearchRelatedToSoftwareForm
+GET     /related-control-code/:goodsType/technical-notes              controllers.controlcode.TechnicalNotesController.renderSearchRelatedToForm(goodsType)
 
-POST    /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType/technical-notes              controllers.controlcode.TechnicalNotesController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
