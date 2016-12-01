@@ -9,7 +9,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.search.SearchServiceClient;
 import controllers.ErrorController;
 import journey.Events;
-import journey.helpers.SoftTechJourneyHelper;
+import journey.helpers.ControlCodeJourneyHelper;
 import models.controlcode.ControlCodeJourney;
 import models.search.SearchBaseDisplay;
 import play.data.Form;
@@ -44,7 +44,7 @@ public class PhysicalGoodsSearchController extends SearchController {
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm (String goodsTypeText) {
-    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::renderForm);
+    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
@@ -65,7 +65,7 @@ public class PhysicalGoodsSearchController extends SearchController {
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit (String goodsTypeText) {
-    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::handleSubmit);
+    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
 }

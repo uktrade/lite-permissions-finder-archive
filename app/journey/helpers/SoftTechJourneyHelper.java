@@ -235,23 +235,4 @@ public class SoftTechJourneyHelper {
             , httpExecutionContext.current());
   }
 
-  public static CompletionStage<Result> validateGoodsTypeTextThenContinue(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
-    if (StringUtils.isNotEmpty(goodsTypeText)) {
-      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
-      if (goodsType == GoodsType.SOFTWARE) {
-        return resultFunc.apply(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
-      }
-      else if (goodsType == GoodsType.TECHNOLOGY) {
-        return resultFunc.apply(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY);
-      }
-      else {
-        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
-            , goodsType.toString()));
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
-    }
-  }
-
 }

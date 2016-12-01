@@ -5,14 +5,17 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import journey.Events;
 import models.ControlCodeFlowStage;
+import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
 import models.softtech.SoftwareCategory;
+import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 public class ControlCodeJourneyHelper {
 
@@ -30,6 +33,25 @@ public class ControlCodeJourneyHelper {
     this.softTechJourneyHelper = softTechJourneyHelper;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
+  }
+
+  public static CompletionStage<Result> getSearchRelatedToPhysicalGoodsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
+    if (StringUtils.isNotEmpty(goodsTypeText)) {
+      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
+      if (goodsType == GoodsType.SOFTWARE) {
+        return resultFunc.apply(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+      }
+      else if (goodsType == GoodsType.TECHNOLOGY) {
+        return resultFunc.apply(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY);
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+            , goodsType.toString()));
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
+    }
   }
 
   public CompletionStage<Result> notApplicableJourneyTransition(ControlCodeJourney controlCodeJourney) {

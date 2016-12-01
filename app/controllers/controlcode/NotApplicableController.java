@@ -9,6 +9,7 @@ import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeJourneyHelper;
 import journey.helpers.SoftTechJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
@@ -95,7 +96,7 @@ public class NotApplicableController {
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText, String showExtendedContent) {
-    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText,
+    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText,
         controlCodeJourney -> this.renderForm(controlCodeJourney, showExtendedContent));
   }
 
@@ -205,7 +206,7 @@ public class NotApplicableController {
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::handleSubmit);
+    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {
