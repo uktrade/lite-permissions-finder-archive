@@ -12,6 +12,7 @@ import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.SoftTechJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.AdditionalSpecificationsDisplay;
 import models.controlcode.ControlCodeJourney;
@@ -67,8 +68,8 @@ public class AdditionalSpecificationsController {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> renderSearchRelatedToSoftwareForm() {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderSoftwareControlsForm() {
@@ -113,8 +114,8 @@ public class AdditionalSpecificationsController {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {

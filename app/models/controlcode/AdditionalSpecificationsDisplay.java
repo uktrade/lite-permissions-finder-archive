@@ -4,6 +4,7 @@ import components.services.controlcode.AdditionalSpecifications;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
 import controllers.controlcode.routes;
+import models.GoodsType;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +41,10 @@ public class AdditionalSpecificationsDisplay {
       this.formAction = routes.AdditionalSpecificationsController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSoftwareSubmit().url();
+      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleSoftwareControlsSubmit().url();
