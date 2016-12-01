@@ -1,4 +1,4 @@
-package controllers.software;
+package controllers.softtech;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
@@ -8,11 +8,11 @@ import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
-import journey.helpers.SoftwareJourneyHelper;
+import journey.helpers.SoftTechJourneyHelper;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
-import views.html.software.relatedEquipment;
+import views.html.softtech.relatedEquipment;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -21,17 +21,17 @@ public class RelatedEquipmentController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final SoftwareJourneyHelper softwareJourneyHelper;
+  private final SoftTechJourneyHelper softTechJourneyHelper;
 
   @Inject
   public RelatedEquipmentController(JourneyManager journeyManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
-                                    SoftwareJourneyHelper softwareJourneyHelper) {
+                                    SoftTechJourneyHelper softTechJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.softwareJourneyHelper = softwareJourneyHelper;
+    this.softTechJourneyHelper = softTechJourneyHelper;
   }
 
   public Result renderForm() {
@@ -57,7 +57,7 @@ public class RelatedEquipmentController {
     }
     else if ("false".equals(relatedToEquipmentOrMaterials)) {
       permissionsFinderDao.saveRelatedToEquipmentOrMaterials(false);
-      return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
+      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
     }
     else {
       throw new FormStateException(String.format("Unknown value for relatedToEquipmentOrMaterials: \"%s\"",

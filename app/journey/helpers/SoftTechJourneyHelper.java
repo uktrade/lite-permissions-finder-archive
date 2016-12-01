@@ -11,17 +11,17 @@ import components.services.controlcode.controls.relationship.SoftwareAndTechnolo
 import journey.Events;
 import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
-import models.software.ApplicableSoftwareControls;
-import models.software.CatchallSoftwareControlsFlow;
-import models.software.Relationship;
-import models.software.SoftwareCatchallControlsNotApplicableFlow;
-import models.software.SoftwareCategory;
+import models.softtech.ApplicableSoftTechControls;
+import models.softtech.CatchallSoftTechControlsFlow;
+import models.softtech.Relationship;
+import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
+import models.softtech.SoftwareCategory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;
 
-public class SoftwareJourneyHelper {
+public class SoftTechJourneyHelper {
 
   private final CategoryControlsServiceClient categoryControlsServiceClient;
   private final RelatedControlsServiceClient relatedControlsServiceClient;
@@ -32,7 +32,7 @@ public class SoftwareJourneyHelper {
   private final JourneyManager journeyManager;
 
   @Inject
-  public SoftwareJourneyHelper(CategoryControlsServiceClient categoryControlsServiceClient,
+  public SoftTechJourneyHelper(CategoryControlsServiceClient categoryControlsServiceClient,
                                RelatedControlsServiceClient relatedControlsServiceClient,
                                CatchallControlsServiceClient catchallControlsServiceClient,
                                SoftwareAndTechnologyRelationshipServiceClient softwareAndTechnologyRelationshipServiceClient,
@@ -57,12 +57,12 @@ public class SoftwareJourneyHelper {
    *                  by the CategoryControlsServiceClient request
    * @return The applicable software controls
    */
-  public CompletionStage<ApplicableSoftwareControls> checkSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
+  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
     return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) //TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
-            return ApplicableSoftwareControls.ZERO;
+            return ApplicableSoftTechControls.ZERO;
           }
           else if (size == 1) {
             // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
@@ -71,10 +71,10 @@ public class SoftwareJourneyHelper {
               permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
                   ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
             }
-            return ApplicableSoftwareControls.ONE;
+            return ApplicableSoftTechControls.ONE;
           }
           else if (size > 1) {
-            return ApplicableSoftwareControls.GREATER_THAN_ONE;
+            return ApplicableSoftTechControls.GREATER_THAN_ONE;
           }
           else {
             throw new RuntimeException(String.format("Invalid value for size: \"%d\"", size));
@@ -87,18 +87,18 @@ public class SoftwareJourneyHelper {
    * @param softwareCategory The software category to check the controls of
    * @return The applicable software controls
    */
-  public CompletionStage<ApplicableSoftwareControls> checkSoftwareControls(SoftwareCategory softwareCategory) {
+  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftwareCategory softwareCategory) {
     return checkSoftwareControls(softwareCategory, false);
   }
 
 
-  public CompletionStage<ApplicableSoftwareControls> checkRelatedSoftwareControls(String controlCode, boolean saveToDao) {
+  public CompletionStage<ApplicableSoftTechControls> checkRelatedSoftwareControls(String controlCode, boolean saveToDao) {
 
     return relatedControlsServiceClient.get(GoodsType.SOFTWARE, controlCode) // TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
-            return ApplicableSoftwareControls.ZERO;
+            return ApplicableSoftTechControls.ZERO;
           }
           else if (size == 1) {
             // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
@@ -107,10 +107,10 @@ public class SoftwareJourneyHelper {
               permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
                   ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, mappedControlCode.controlCode);
             }
-            return ApplicableSoftwareControls.ONE;
+            return ApplicableSoftTechControls.ONE;
           }
           else if (size > 1) {
-            return ApplicableSoftwareControls.GREATER_THAN_ONE;
+            return ApplicableSoftTechControls.GREATER_THAN_ONE;
           }
           else {
             throw new RuntimeException(String.format("Invalid value for size: \"%d\"", size));
@@ -118,12 +118,12 @@ public class SoftwareJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<ApplicableSoftwareControls> checkCatchtallSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
+  public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
     return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
-            return ApplicableSoftwareControls.ZERO;
+            return ApplicableSoftTechControls.ZERO;
           }
           else if (size == 1) {
             // Saving to the DAO here prevents a separate call to the CatchallControlsServiceClient, if not a little hacky
@@ -132,10 +132,10 @@ public class SoftwareJourneyHelper {
               permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
                   ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
             }
-            return ApplicableSoftwareControls.ONE;
+            return ApplicableSoftTechControls.ONE;
           }
           else if (size > 1) {
-            return ApplicableSoftwareControls.GREATER_THAN_ONE;
+            return ApplicableSoftTechControls.GREATER_THAN_ONE;
           }
           else {
             throw new RuntimeException(String.format("Invalid value for size: \"%d\"", size));
@@ -161,16 +161,16 @@ public class SoftwareJourneyHelper {
 
     return checkCatchtallSoftwareControls(softwareCategory, true)
         .thenComposeAsync(controls -> {
-          if (controls == ApplicableSoftwareControls.ZERO) {
+          if (controls == ApplicableSoftTechControls.ZERO) {
             return checkRelationshipExists(softwareCategory)
                 .thenComposeAsync(relationship -> {
                   if (relationship == Relationship.RELATIONSHIP_EXISTS) {
                     return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
-                        CatchallSoftwareControlsFlow.RELATIONSHIP_EXISTS);
+                        CatchallSoftTechControlsFlow.RELATIONSHIP_EXISTS);
                   }
                   else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
                     return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
-                        CatchallSoftwareControlsFlow.RELATIONSHIP_DOES_NOT_EXIST);
+                        CatchallSoftTechControlsFlow.RELATIONSHIP_DOES_NOT_EXIST);
                   }
                   else {
                     throw new RuntimeException(String.format("Unexpected member of Relationship enum: \"%s\""
@@ -178,16 +178,16 @@ public class SoftwareJourneyHelper {
                   }
                 }, httpExecutionContext.current());
           }
-          else if (controls == ApplicableSoftwareControls.ONE) {
+          else if (controls == ApplicableSoftTechControls.ONE) {
             return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
-                CatchallSoftwareControlsFlow.CATCHALL_ONE);
+                CatchallSoftTechControlsFlow.CATCHALL_ONE);
           }
-          else if (controls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+          else if (controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
             return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
-                CatchallSoftwareControlsFlow.CATCHALL_GREATER_THAN_ONE);
+                CatchallSoftTechControlsFlow.CATCHALL_GREATER_THAN_ONE);
           }
           else {
-            throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+            throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
                 , controls.toString()));
           }
         }, httpExecutionContext.current());
@@ -197,16 +197,16 @@ public class SoftwareJourneyHelper {
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
     return checkCatchtallSoftwareControls(softwareCategory, true)
         .thenComposeAsync(controls -> {
-         if (controls == ApplicableSoftwareControls.ONE) {
+         if (controls == ApplicableSoftTechControls.ONE) {
            return checkRelationshipExists(softwareCategory)
                .thenComposeAsync(relationship -> {
                  if (relationship == Relationship.RELATIONSHIP_EXISTS) {
                    return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-                       SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS);
+                       SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS);
                  }
                  else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
                    return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-                       SoftwareCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS);
+                       SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS);
                  }
                  else {
                    throw new RuntimeException(String.format("Unexpected member of Relationship enum: \"%s\""
@@ -214,12 +214,12 @@ public class SoftwareJourneyHelper {
                  }
                }, httpExecutionContext.current());
           }
-          else if (controls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+          else if (controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
             return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-                SoftwareCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS);
+                SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS);
           }
           else {
-            throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+            throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
                 , controls.toString()));
           }
         }, httpExecutionContext.current());

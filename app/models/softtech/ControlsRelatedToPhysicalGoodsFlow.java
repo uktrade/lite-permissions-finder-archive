@@ -1,4 +1,4 @@
-package models.software;
+package models.softtech;
 
 public enum ControlsRelatedToPhysicalGoodsFlow {
   SOFTWARE_CONTROL_ONE,

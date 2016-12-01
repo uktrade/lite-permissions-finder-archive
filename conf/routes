@@ -67,13 +67,13 @@ GET     /destination-country                  controllers.DestinationCountryCont
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
-GET     /dual-use-software-categories         controllers.software.DualUseSoftwareCategoriesController.renderForm
+GET     /dual-use-software-categories         controllers.softtech.DualUseSoftTechCategoriesController.renderForm
 
-POST    /dual-use-software-categories         controllers.software.DualUseSoftwareCategoriesController.handleSubmit
+POST    /dual-use-software-categories         controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit
 
-GET     /exemptions-may-apply                 controllers.software.ExemptionsController.renderForm
+GET     /exemptions-may-apply                 controllers.softtech.ExemptionsController.renderForm
 
-POST    /exemptions-may-apply                 controllers.software.ExemptionsController.handleSubmit
+POST    /exemptions-may-apply                 controllers.softtech.ExemptionsController.handleSubmit
 
 GET     /exemptions-apply                     controllers.StaticContentController.renderSoftwareExemptionsNLR
 
@@ -197,9 +197,9 @@ GET     /licence-not-available-through-this-service   controllers.StaticContentC
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
 
-GET     /no-software-controls-exist               controllers.software.controls.NoSoftwareControlsExistController.renderForm
+GET     /no-software-controls-exist               controllers.softtech.controls.NoSoftTechControlsExistController.renderForm
 
-POST    /no-software-controls-exist               controllers.software.controls.NoSoftwareControlsExistController.handleSubmit
+POST    /no-software-controls-exist               controllers.softtech.controls.NoSoftTechControlsExistController.handleSubmit
 
 GET     /no-software-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
 
@@ -209,9 +209,9 @@ GET     /register-for-open-general-export-licence     controllers.ogel.OgelSumma
 
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
 
-GET     /related-to-equipment-or-materials      controllers.software.RelatedEquipmentController.renderForm
+GET     /related-to-equipment-or-materials      controllers.softtech.RelatedEquipmentController.renderForm
 
-POST    /related-to-equipment-or-materials      controllers.software.RelatedEquipmentController.handleSubmit
+POST    /related-to-equipment-or-materials      controllers.softtech.RelatedEquipmentController.handleSubmit
 
 GET     /select-goods-type                    controllers.GoodsTypeController.renderForm
 
@@ -245,9 +245,9 @@ GET     /software-category-catchall-controls/technical-notes             control
 
 POST    /software-category-catchall-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareCatchallControlsSubmit
 
-GET     /software-category-catchall-controls/show-controls               controllers.software.controls.SoftwareControlsController.renderSoftwareCatchallForm
+GET     /software-category-catchall-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.renderSoftwareCatchallForm
 
-POST    /software-category-catchall-controls/show-controls               controllers.software.controls.SoftwareControlsController.handleSoftwareCatchallSubmit
+POST    /software-category-catchall-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.handleSoftwareCatchallSubmit
 
 GET     /software-controls                             controllers.controlcode.ControlCodeController.renderSoftwareControlsForm
 
@@ -269,9 +269,9 @@ GET     /software-controls/technical-notes             controllers.controlcode.T
 
 POST    /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareControlsSubmit
 
-GET     /software-controls/show-controls               controllers.software.controls.SoftwareControlsController.renderSofwareCategoryForm
+GET     /software-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.renderSofwareCategoryForm
 
-POST    /software-controls/show-controls               controllers.software.controls.SoftwareControlsController.handleSoftwareCategorySubmit
+POST    /software-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.handleSoftwareCategorySubmit
 
 GET     /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.renderRelatedSoftwareControlsForm
 
@@ -293,13 +293,13 @@ GET     /software-controls-related-to-a-physical-good/technical-notes           
 
 POST    /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedSoftwareControlsSubmit
 
-GET     /software-controls-related-to-a-physical-good/show-controls               controllers.software.controls.SoftwareControlsController.renderRelatedToPhysicalGoodForm
+GET     /software-controls-related-to-a-physical-good/show-controls               controllers.softtech.controls.SoftTechControlsController.renderRelatedToPhysicalGoodForm
 
-POST    /software-controls-related-to-a-physical-good/show-controls               controllers.software.controls.SoftwareControlsController.handleRelatedToPhysicalGoodSubmit
+POST    /software-controls-related-to-a-physical-good/show-controls               controllers.softtech.controls.SoftTechControlsController.handleRelatedToPhysicalGoodSubmit
 
-GET     /software-technology-relationship                                         controllers.software.RelationshipController.renderForm
+GET     /software-technology-relationship                                         controllers.softtech.RelationshipController.renderForm
 
-POST    /software-technology-relationship                                         controllers.software.RelationshipController.handleSubmit
+POST    /software-technology-relationship                                         controllers.softtech.RelationshipController.handleSubmit
 
 GET     /software-technology-relationship/licence-may-not-be-required             controllers.StaticContentController.renderSoftwareRelationshipNLR
 

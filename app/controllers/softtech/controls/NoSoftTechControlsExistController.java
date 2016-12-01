@@ -1,37 +1,36 @@
-package controllers.software.controls;
+package controllers.softtech.controls;
 
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
-import journey.helpers.SoftwareJourneyHelper;
-import models.software.ApplicableSoftwareControls;
-import models.software.SoftwareCategory;
+import journey.helpers.SoftTechJourneyHelper;
+import models.softtech.ApplicableSoftTechControls;
+import models.softtech.SoftwareCategory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.software.controls.noSoftwareControlsExist;
+import views.html.softtech.controls.noSoftTechControlsExist;
 
 import java.util.concurrent.CompletionStage;
 
-public class NoSoftwareControlsExistController {
+public class NoSoftTechControlsExistController {
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final SoftwareJourneyHelper softwareJourneyHelper;
+  private final SoftTechJourneyHelper softTechJourneyHelper;
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public NoSoftwareControlsExistController(FormFactory formFactory,
+  public NoSoftTechControlsExistController(FormFactory formFactory,
                                            PermissionsFinderDao permissionsFinderDao,
-                                           SoftwareJourneyHelper softwareJourneyHelper,
+                                           SoftTechJourneyHelper softTechJourneyHelper,
                                            HttpExecutionContext httpExecutionContext) {
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.softwareJourneyHelper = softwareJourneyHelper;
+    this.softTechJourneyHelper = softTechJourneyHelper;
     this.httpExecutionContext = httpExecutionContext;
   }
 
@@ -46,7 +45,7 @@ public class NoSoftwareControlsExistController {
     }
     String action = form.get().action;
     if ("continue".equals(action)) {
-      return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
+      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
     }
     else {
       throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
@@ -55,13 +54,13 @@ public class NoSoftwareControlsExistController {
 
   private CompletionStage<Result> renderWithForm(Form<NoSoftwareControlsExistForm> form) {
     SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return softwareJourneyHelper.checkCatchtallSoftwareControls(softwareCategory, false)
+    return softTechJourneyHelper.checkCatchtallSoftwareControls(softwareCategory, false)
         .thenApplyAsync(control -> {
-          if (control == ApplicableSoftwareControls.ONE || control == ApplicableSoftwareControls.GREATER_THAN_ONE) {
-            return ok(noSoftwareControlsExist.render(form));
+          if (control == ApplicableSoftTechControls.ONE || control == ApplicableSoftTechControls.GREATER_THAN_ONE) {
+            return ok(noSoftTechControlsExist.render(form));
           }
           else {
-            throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
+            throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
                 , control.toString()));
           }
         }, httpExecutionContext.current());

@@ -1,6 +1,6 @@
-package models.software;
+package models.softtech;
 
-public enum CatchallSoftwareControlsFlow {
+public enum CatchallSoftTechControlsFlow {
   CATCHALL_ONE,
   CATCHALL_GREATER_THAN_ONE,
   RELATIONSHIP_EXISTS,

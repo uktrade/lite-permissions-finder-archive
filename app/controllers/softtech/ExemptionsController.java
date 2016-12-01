@@ -1,4 +1,4 @@
-package controllers.software;
+package controllers.softtech;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
@@ -8,16 +8,16 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.SoftwareJourneyHelper;
+import journey.helpers.SoftTechJourneyHelper;
 import models.ExportCategory;
-import models.software.ApplicableSoftwareControls;
-import models.software.SoftwareCategory;
-import models.software.SoftwareExemptionsFlow;
+import models.softtech.ApplicableSoftTechControls;
+import models.softtech.SoftwareCategory;
+import models.softtech.SoftwareExemptionsFlow;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.software.exemptions;
+import views.html.softtech.exemptions;
 
 import java.util.concurrent.CompletionStage;
 
@@ -26,16 +26,16 @@ public class ExemptionsController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final SoftwareJourneyHelper softwareJourneyHelper;
+  private final SoftTechJourneyHelper softTechJourneyHelper;
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
   public ExemptionsController(FormFactory formFactory, PermissionsFinderDao permissionsFinderDao,
-                              JourneyManager journeyManager, SoftwareJourneyHelper softwareJourneyHelper, HttpExecutionContext httpExecutionContext) {
+                              JourneyManager journeyManager, SoftTechJourneyHelper softTechJourneyHelper, HttpExecutionContext httpExecutionContext) {
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.journeyManager = journeyManager;
-    this.softwareJourneyHelper = softwareJourneyHelper;
+    this.softTechJourneyHelper = softTechJourneyHelper;
     this.httpExecutionContext = httpExecutionContext;
   }
 
@@ -62,7 +62,7 @@ public class ExemptionsController {
       ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
       if (exportCategory == ExportCategory.MILITARY) {
         permissionsFinderDao.saveSoftwareCategory(SoftwareCategory.MILITARY);
-        return softwareJourneyHelper.checkSoftwareControls(SoftwareCategory.MILITARY, true) // MILITARY_ONE_CONTROL will set DAO state
+        return softTechJourneyHelper.checkSoftwareControls(SoftwareCategory.MILITARY, true) // MILITARY_ONE_CONTROL will set DAO state
             .thenComposeAsync(this::softwareExemptionsFlow, httpExecutionContext.current());
       }
       else if (exportCategory == ExportCategory.DUAL_USE) {
@@ -79,19 +79,19 @@ public class ExemptionsController {
 
   }
 
-  private CompletionStage<Result> softwareExemptionsFlow(ApplicableSoftwareControls applicableSoftwareControls) {
-    if (applicableSoftwareControls == ApplicableSoftwareControls.ZERO) {
+  private CompletionStage<Result> softwareExemptionsFlow(ApplicableSoftTechControls applicableSoftTechControls) {
+    if (applicableSoftTechControls == ApplicableSoftTechControls.ZERO) {
       return journeyManager.performTransition(Events.SOFTWARE_EXEMPTIONS_FLOW, SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS);
     }
-    else if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
+    else if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
       return journeyManager.performTransition(Events.SOFTWARE_EXEMPTIONS_FLOW, SoftwareExemptionsFlow.MILITARY_ONE_CONTROL);
     }
-    else if (applicableSoftwareControls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+    else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
       return journeyManager.performTransition(Events.SOFTWARE_EXEMPTIONS_FLOW, SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL);
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
-          , applicableSoftwareControls.toString()));
+      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
+          , applicableSoftTechControls.toString()));
     }
   }
 

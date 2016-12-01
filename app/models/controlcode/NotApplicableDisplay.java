@@ -1,7 +1,7 @@
 package models.controlcode;
 
 import controllers.controlcode.routes;
-import models.software.ApplicableSoftwareControls;
+import models.softtech.ApplicableSoftTechControls;
 import play.data.Form;
 
 public class NotApplicableDisplay {
@@ -17,9 +17,9 @@ public class NotApplicableDisplay {
    * @param form The form
    * @param controlCodeAlias The control code alias
    * @param showExtendedContent Show the extended content
-   * @param applicableSoftwareControls Should be {@code null} unless {@code controlCodeJourney == }{@link ControlCodeJourney#SOFTWARE_CONTROLS}.
+   * @param applicableSoftTechControls Should be {@code null} unless {@code controlCodeJourney == }{@link ControlCodeJourney#SOFTWARE_CONTROLS}.
    */
-  public NotApplicableDisplay(ControlCodeJourney controlCodeJourney, Form<?> form, String controlCodeAlias, boolean showExtendedContent, ApplicableSoftwareControls applicableSoftwareControls) {
+  public NotApplicableDisplay(ControlCodeJourney controlCodeJourney, Form<?> form, String controlCodeAlias, boolean showExtendedContent, ApplicableSoftTechControls applicableSoftTechControls) {
     this.form = form;
     this.controlCodeAlias = controlCodeAlias;
     this.showExtendedContent = showExtendedContent;
@@ -34,7 +34,7 @@ public class NotApplicableDisplay {
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
         controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
         controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      if (applicableSoftwareControls != null) {
+      if (applicableSoftTechControls != null) {
         if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
           this.formAction = routes.NotApplicableController.handleSoftwareControlsSubmit().url();
         }
@@ -45,19 +45,19 @@ public class NotApplicableDisplay {
           // ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
           this.formAction = routes.NotApplicableController.handleSoftwareCatchallControlsSubmit().url();
         }
-        if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
+        if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
           buttonConfiguration = ButtonConfiguration.CONTINUE_NO_SOFTWARE_CONTROLS;
         }
-        else if (applicableSoftwareControls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+        else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
           buttonConfiguration = ButtonConfiguration.RETURN_TO_SOFTWARE_CONTROLS;
         }
         else {
-          throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
-              , applicableSoftwareControls.toString()));
+          throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
+              , applicableSoftTechControls.toString()));
         }
       }
       else {
-        throw new RuntimeException(String.format("Expected applicableSoftwareControls to not be null"));
+        throw new RuntimeException(String.format("Expected applicableSoftTechControls to not be null"));
       }
     }
     else {

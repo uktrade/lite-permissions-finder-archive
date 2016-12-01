@@ -12,7 +12,7 @@ import controllers.ErrorController;
 import controllers.controlcode.ControlCodeController;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.SoftwareJourneyHelper;
+import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
 import models.search.SearchResultsBaseDisplay;
@@ -29,7 +29,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
 
   private final HttpExecutionContext httpExecutionContext;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final SoftwareJourneyHelper softwareJourneyHelper;
+  private final SoftTechJourneyHelper softTechJourneyHelper;
 
   @Inject
   public PhysicalGoodsSearchResultsController(JourneyManager journeyManager,
@@ -40,11 +40,11 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                                               ErrorController errorController,
                                               HttpExecutionContext httpExecutionContext,
                                               PermissionsFinderDao permissionsFinderDao,
-                                              SoftwareJourneyHelper softwareJourneyHelper) {
+                                              SoftTechJourneyHelper softTechJourneyHelper) {
     super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
     this.httpExecutionContext = httpExecutionContext;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.softwareJourneyHelper = softwareJourneyHelper;
+    this.softTechJourneyHelper = softTechJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
@@ -141,7 +141,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
       return journeyManager.performTransition(Events.NONE_MATCHED);
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
+      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

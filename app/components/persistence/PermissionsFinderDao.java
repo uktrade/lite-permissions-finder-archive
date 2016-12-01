@@ -14,7 +14,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
 import models.controlcode.ControlCodeJourney;
-import models.software.SoftwareCategory;
+import models.softtech.SoftwareCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;

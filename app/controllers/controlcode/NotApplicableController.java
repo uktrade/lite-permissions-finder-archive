@@ -9,13 +9,13 @@ import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.SoftwareJourneyHelper;
+import journey.helpers.SoftTechJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.NotApplicableDisplay;
-import models.software.ApplicableSoftwareControls;
-import models.software.SoftwareCategory;
-import models.software.SoftwareControlsNotApplicableFlow;
+import models.softtech.ApplicableSoftTechControls;
+import models.softtech.SoftwareCategory;
+import models.softtech.SoftwareControlsNotApplicableFlow;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -32,7 +32,7 @@ public class NotApplicableController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
-  private final SoftwareJourneyHelper softwareJourneyHelper;
+  private final SoftTechJourneyHelper softTechJourneyHelper;
 
   @Inject
   public NotApplicableController(FormFactory formFactory,
@@ -40,13 +40,13 @@ public class NotApplicableController {
                                  PermissionsFinderDao permissionsFinderDao,
                                  HttpExecutionContext httpExecutionContext,
                                  FrontendServiceClient frontendServiceClient,
-                                 SoftwareJourneyHelper softwareJourneyHelper) {
+                                 SoftTechJourneyHelper softTechJourneyHelper) {
     this.formFactory = formFactory;
     this.journeyManager = journeyManager;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
-    this.softwareJourneyHelper = softwareJourneyHelper;
+    this.softTechJourneyHelper = softTechJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney, String showExtendedContent) {
@@ -66,7 +66,7 @@ public class NotApplicableController {
       SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softwareJourneyHelper.checkSoftwareControls(softwareCategory)
+      return softTechJourneyHelper.checkSoftwareControls(softwareCategory)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
@@ -77,7 +77,7 @@ public class NotApplicableController {
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softwareJourneyHelper.checkRelatedSoftwareControls(selectedControlCode, false)
+      return softTechJourneyHelper.checkRelatedSoftwareControls(selectedControlCode, false)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
@@ -127,16 +127,16 @@ public class NotApplicableController {
         }
       }
       else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-        // A different action is expected for each valid member of ApplicableSoftwareControls
+        // A different action is expected for each valid member of ApplicableSoftTechControls
         SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-        return softwareJourneyHelper.checkSoftwareControls(softwareCategory)
+        return softTechJourneyHelper.checkSoftwareControls(softwareCategory)
             .thenApplyAsync(controls -> softwareControls(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
       else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-        // A different action is expected for each valid member of ApplicableSoftwareControls
+        // A different action is expected for each valid member of ApplicableSoftTechControls
         String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
-        return softwareJourneyHelper.checkRelatedSoftwareControls(controlCode, false)
+        return softTechJourneyHelper.checkRelatedSoftwareControls(controlCode, false)
             .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
@@ -148,9 +148,9 @@ public class NotApplicableController {
     throw new FormStateException("Unhandled form state");
   }
 
-  private CompletionStage<Result> softwareControls(ApplicableSoftwareControls applicableSoftwareControls, String action) {
+  private CompletionStage<Result> softwareControls(ApplicableSoftTechControls applicableSoftTechControls, String action) {
     // TODO remove duplicate code
-    if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
+    if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
       if ("continue".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS);
@@ -159,7 +159,7 @@ public class NotApplicableController {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");
       }
     }
-    else if (applicableSoftwareControls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+    else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
       if ("returnToControls".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
@@ -169,22 +169,22 @@ public class NotApplicableController {
       }
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
-          , applicableSoftwareControls.toString()));
+      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
+          , applicableSoftTechControls.toString()));
     }
   }
 
-  private CompletionStage<Result> softwareControlsRelatedToPhysicalGood(ApplicableSoftwareControls applicableSoftwareControls, String action) {
+  private CompletionStage<Result> softwareControlsRelatedToPhysicalGood(ApplicableSoftTechControls applicableSoftTechControls, String action) {
     // TODO remove duplicate code
-    if (applicableSoftwareControls == ApplicableSoftwareControls.ONE) {
+    if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
       if ("continue".equals(action)) {
-        return softwareJourneyHelper.performCatchallSoftwareControlsTransition();
+        return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
       }
       else {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");
       }
     }
-    else if (applicableSoftwareControls == ApplicableSoftwareControls.GREATER_THAN_ONE) {
+    else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
       if ("returnToControls".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
@@ -194,8 +194,8 @@ public class NotApplicableController {
       }
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftwareControls enum: \"%s\""
-          , applicableSoftwareControls.toString()));
+      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
+          , applicableSoftTechControls.toString()));
     }
   }
 

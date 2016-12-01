@@ -1,16 +1,16 @@
-@import controllers.software.routes.DualUseSoftwareCategoriesController
+@import controllers.softtech.routes.DualUseSoftTechCategoriesController
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import models.software.SoftwareCategory
+@import models.softtech.SoftwareCategory
 
 @(form: Form[_])
 @standardPage("What is your software for?", Some(Html("What is your software for?"))){
   @errorSummary(form)
 }{
 
-  <form action="@DualUseSoftwareCategoriesController.handleSubmit" method="POST">
+  <form action="@DualUseSoftTechCategoriesController.handleSubmit" method="POST">
     
     @contextFormParams()
 

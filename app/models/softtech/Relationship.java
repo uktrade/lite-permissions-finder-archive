@@ -1,4 +1,4 @@
-package models.software;
+package models.softtech;
 
 public enum Relationship {
   RELATIONSHIP_EXISTS,

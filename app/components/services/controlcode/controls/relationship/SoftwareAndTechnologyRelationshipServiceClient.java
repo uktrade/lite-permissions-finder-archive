@@ -4,7 +4,7 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
-import models.software.SoftwareCategory;
+import models.softtech.SoftwareCategory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 

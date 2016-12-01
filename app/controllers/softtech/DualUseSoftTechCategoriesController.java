@@ -1,4 +1,4 @@
-package controllers.software;
+package controllers.softtech;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
@@ -8,44 +8,44 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.SoftwareJourneyHelper;
-import models.software.ApplicableSoftwareControls;
-import models.software.SoftwareCategory;
+import journey.helpers.SoftTechJourneyHelper;
+import models.softtech.ApplicableSoftTechControls;
+import models.softtech.SoftwareCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.software.dualUseSoftwareCategories;
+import views.html.softtech.dualUseSoftTechCategories;
 
 import java.util.concurrent.CompletionStage;
 
-public class DualUseSoftwareCategoriesController {
+public class DualUseSoftTechCategoriesController {
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final SoftwareJourneyHelper softwareJourneyHelper;
+  private final SoftTechJourneyHelper softTechJourneyHelper;
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public DualUseSoftwareCategoriesController(FormFactory formFactory, PermissionsFinderDao permissionsFinderDao,
-                                             JourneyManager journeyManager, SoftwareJourneyHelper softwareJourneyHelper, HttpExecutionContext httpExecutionContext) {
+  public DualUseSoftTechCategoriesController(FormFactory formFactory, PermissionsFinderDao permissionsFinderDao,
+                                             JourneyManager journeyManager, SoftTechJourneyHelper softTechJourneyHelper, HttpExecutionContext httpExecutionContext) {
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.journeyManager = journeyManager;
-    this.softwareJourneyHelper = softwareJourneyHelper;
+    this.softTechJourneyHelper = softTechJourneyHelper;
     this.httpExecutionContext = httpExecutionContext;
   }
 
   public Result renderForm() {
-    return ok(dualUseSoftwareCategories.render(formFactory.form(DualUseSoftwareCategoriesForm.class)));
+    return ok(dualUseSoftTechCategories.render(formFactory.form(DualUseSoftwareCategoriesForm.class)));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<DualUseSoftwareCategoriesForm> form = formFactory.form(DualUseSoftwareCategoriesForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(dualUseSoftwareCategories.render(form)));
+      return completedFuture(ok(dualUseSoftTechCategories.render(form)));
     }
     String dualUseSoftwareCategoryText = form.get().dualUseSoftwareCategory;
     String action = form.get().action;
@@ -63,7 +63,7 @@ public class DualUseSoftwareCategoriesController {
       SoftwareCategory softwareCategory = SoftwareCategory.valueOf(dualUseSoftwareCategoryText);
       if (softwareCategory.isDualUseSoftwareCategory()) {
         permissionsFinderDao.saveSoftwareCategory(softwareCategory);
-        return softwareJourneyHelper.checkSoftwareControls(softwareCategory, true) // Save to DAO
+        return softTechJourneyHelper.checkSoftwareControls(softwareCategory, true) // Save to DAO
             .thenComposeAsync(this::dualUseSoftwareCategorySelected, httpExecutionContext.current());
       }
       else {
@@ -76,8 +76,8 @@ public class DualUseSoftwareCategoriesController {
     }
   }
 
-  private CompletionStage<Result> dualUseSoftwareCategorySelected(ApplicableSoftwareControls applicableSoftwareControls) {
-    return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED, applicableSoftwareControls);
+  private CompletionStage<Result> dualUseSoftwareCategorySelected(ApplicableSoftTechControls applicableSoftTechControls) {
+    return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED, applicableSoftTechControls);
   }
 
   public static class DualUseSoftwareCategoriesForm {

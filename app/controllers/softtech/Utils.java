@@ -1,4 +1,4 @@
-package controllers.software;
+package controllers.softtech;
 
 import models.GoodsType;
 

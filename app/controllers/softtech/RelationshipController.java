@@ -1,4 +1,4 @@
-package controllers.software;
+package controllers.softtech;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
@@ -12,7 +12,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Result;
-import views.html.software.relationship;
+import views.html.softtech.relationship;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
