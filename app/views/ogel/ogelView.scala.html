@@ -1,0 +1,10 @@
+@import util._
+@import components.services.ogels.ogel.OgelServiceResult
+@import views.html.ogel._
+
+@(ogel: OgelServiceResult)
+@standardPage(ogel.name, Some(Html(ogel.name))) {
+
+}{
+  @ogelConditionSummary(ogel)
+}
