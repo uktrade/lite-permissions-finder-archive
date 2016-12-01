@@ -28,7 +28,10 @@ public class SearchResultsBaseDisplay {
       this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.PhysicalGoodsSearchResultsController.renderSearchRelatedToSoftwareForm().url();
+      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

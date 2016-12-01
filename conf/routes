@@ -189,9 +189,9 @@ GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSe
 
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSearchSubmit
 
-GET     /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.renderSearchRelatedToSoftwareForm
+GET     /export-search-results-related-to-physical-goods/:goodsType   controllers.search.PhysicalGoodsSearchResultsController.renderSearchRelatedToForm(goodsType)
 
-POST    /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.handleSearchRelatedToSoftwareSubmit
+POST    /export-search-results-related-to-physical-goods/:goodsType   controllers.search.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeJourney: String, goodsType: String, fromIndex: Int, toIndex: Int, transactionId: String)
 

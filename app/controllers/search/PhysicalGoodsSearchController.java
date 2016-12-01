@@ -6,13 +6,12 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import controllers.ErrorController;
 import components.services.search.SearchServiceClient;
+import controllers.ErrorController;
 import journey.Events;
-import models.GoodsType;
-import models.search.SearchBaseDisplay;
+import journey.helpers.SoftTechJourneyHelper;
 import models.controlcode.ControlCodeJourney;
-import org.apache.commons.lang3.StringUtils;
+import models.search.SearchBaseDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -21,7 +20,6 @@ import views.html.search.physicalGoodsSearch;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-
 
 public class PhysicalGoodsSearchController extends SearchController {
 
@@ -35,33 +33,18 @@ public class PhysicalGoodsSearchController extends SearchController {
     super(journeyManager, formFactory, permissionsFinderDao, httpExecutionContext, searchServiceClient, errorController);
   }
 
-  private Result renderForm(ControlCodeJourney controlCodeJourney) {
+  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
     Optional<ControlCodeSearchForm> templateFormOptional = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeJourney);
     ControlCodeSearchForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new ControlCodeSearchForm();
-    return ok(physicalGoodsSearch.render(new SearchBaseDisplay(controlCodeJourney, searchForm(templateForm))));
+    return completedFuture(ok(physicalGoodsSearch.render(new SearchBaseDisplay(controlCodeJourney, searchForm(templateForm)))));
   }
 
-  public Result renderSearchForm() {
+  public CompletionStage<Result> renderSearchForm() {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public Result renderSearchRelatedToForm (String goodsTypeText) {
-    if (StringUtils.isNotEmpty(goodsTypeText)) {
-      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
-      if (goodsType == GoodsType.SOFTWARE) {
-        return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
-      }
-      else if (goodsType == GoodsType.TECHNOLOGY) {
-        return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY);
-      }
-      else {
-        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
-            , goodsType.toString()));
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
-    }
+  public CompletionStage<Result> renderSearchRelatedToForm (String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
@@ -81,27 +64,8 @@ public class PhysicalGoodsSearchController extends SearchController {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
-  }
-
   public CompletionStage<Result> handleSearchRelatedToSubmit (String goodsTypeText) {
-    if (StringUtils.isNotEmpty(goodsTypeText)) {
-      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
-      if (goodsType == GoodsType.SOFTWARE) {
-        return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
-      }
-      else if (goodsType == GoodsType.TECHNOLOGY) {
-        return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY);
-      }
-      else {
-        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
-            , goodsType.toString()));
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
-    }
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::handleSubmit);
   }
 
 }

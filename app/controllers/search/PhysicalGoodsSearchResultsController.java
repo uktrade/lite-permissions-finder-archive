@@ -69,8 +69,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> renderSearchRelatedToSoftwareForm() {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
@@ -125,8 +125,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<SearchServiceResult> physicalGoodsSearch(ControlCodeJourney controlCodeJourney) {
