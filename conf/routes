@@ -181,9 +181,9 @@ GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSe
 
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSearchSubmit
 
-GET     /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.renderSearchRelatedToSoftwareForm
+GET     /export-search-related-to-physical-goods/:goodsType         controllers.search.PhysicalGoodsSearchController.renderSearchRelatedToForm(goodsType)
 
-POST    /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.handleSearchRelatedToSoftwareSubmit
+POST    /export-search-related-to-physical-goods/:goodsType         controllers.search.PhysicalGoodsSearchController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderSearchForm
 

@@ -6,9 +6,13 @@ import java.util.Optional;
 public enum ControlCodeJourney {
   PHYSICAL_GOODS_SEARCH("physicalGoodsSearch"),
   PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE("physicalGoodsSearchRelatedToSoftware"),
-  SOFTWARE_CONTROLS("softTechControls"),
-  SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD("relatedSoftwareControls"),
-  SOFTWARE_CATCHALL_CONTROLS("softwareCatchallControls");
+  PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY("physicalGoodsSearchRelatedToTechnology"),
+  SOFTWARE_CONTROLS("softwareControls"),
+  SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD("softwareControlsRelatedToPhysicalGood"),
+  SOFTWARE_CATCHALL_CONTROLS("softwareCatchallControls"),
+  TECHNOLOGY_CONTROLS("technologyControls"),
+  TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD("technologyControlsRelatedToPhysicalGood"),
+  TECHNOLOGY_CATCHALL_CONTROLS("technologyCatchallControls");
 
   private String value;
 
