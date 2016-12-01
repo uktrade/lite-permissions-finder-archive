@@ -4,7 +4,7 @@
 @import views.html.common.state._
 
 @(form: Form[_], formAction: String, pageTitle: String)
-@standardPage(pageTitle, Some(Html(pageTitle)), headingCssClass = "heading-xlarge heading-tight", pageName = Some("searchBase")){
+@standardPage(pageTitle, Some(Html(pageTitle)), headingCssClass = "heading-xlarge", pageName = Some("searchBase")){
   @errorSummary(form)
 }{
 
@@ -12,16 +12,15 @@
 
     @contextFormParams()
 
-    <span class="form-hint">Provide as much information as you can</span>
-    @formTextarea(form("description"), cssClass = "form-control-wide") {
-
+    @formTextarea(form("description"), cssClass = "form-control-wide", rows = "4") {
+      Provide as much information as you can
     }
 
     <p><span class="bold-medium">Other information (optional)</span></p>
     <p>
       You don't have to complete these, but they can help to narrow your results.
     </p>
-    @formTextarea(form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide"){
+    @formTextarea(form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide", rows = "4"){
       If the item is a component, attachment or part for another item, describe its use.
     }
 

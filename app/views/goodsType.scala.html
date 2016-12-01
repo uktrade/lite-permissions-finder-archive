@@ -16,27 +16,18 @@
     @fieldContainer(form("goodsType")) {
 
       <div class="form-group">
-        @formRadio(form("goodsType"), Html("I am exporting physical goods"),
+        @formRadio(form("goodsType"), Html("<span class=\"heading-small\">I am exporting physical goods</span><br>For example vehicles, protective hardware, nuclear materials, electronic equipment, or any other physical items"),
           GoodsType.PHYSICAL.value(), "label-goods-type")
-        <p class="panel panel-border-wide">
-          For example vehicles, protective hardware, nuclear materials, electronic equipment, or any other physical items
-        </p>
       </div>
 
       <div class="form-group">
-        @formRadio(form("goodsType"), Html("I am exporting software"),
+        @formRadio(form("goodsType"), Html("<span class=\"heading-small\">I am exporting software</span><br>For example programmes or source code to enable the use of goods that themselves require an export licence"),
           GoodsType.SOFTWARE.value(), "label-goods-type")
-        <p class="panel panel-border-wide">
-          For example programmes or source code to enable the use of goods that themselves require an export licence
-        </p>
       </div>
 
       <div class="form-group">
-        @formRadio(form("goodsType"), Html("I am exporting technical information"),
+        @formRadio(form("goodsType"), Html("<span class=\"heading-small\">I am exporting technical information</span><br>For example manuals, designs, models or blueprints for goods that themselves require an export licence, and also technical assistance in the form of training, consulting and other services."),
           GoodsType.TECHNOLOGY.value(), "label-goods-type")
-        <p class="panel panel-border-wide">
-          For example manuals, designs, models or blueprints for goods that themselves require an export licence, and also technical assistance in the form of training, consulting and other services. Read more about <a href="https://www.gov.uk/guidance/export-of-technology" rel="external" target="_blank">exporting technology</a>.
-        </p>
       </div>
 
       <button type="submit" class="button">Continue</button>
