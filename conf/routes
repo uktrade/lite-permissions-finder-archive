@@ -61,9 +61,9 @@ GET     /related-control-code/:goodsType/decontrols                   controller
 
 POST    /related-control-code/:goodsType/decontrols                   controllers.controlcode.DecontrolsController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.renderSearchRelatedToSoftwareForm(extended)
+GET     /related-control-code/:goodsType/not-applicable               controllers.controlcode.NotApplicableController.renderSearchRelatedToForm(goodsType, extended)
 
-POST    /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType/not-applicable               controllers.controlcode.NotApplicableController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.renderSearchRelatedToSoftwareForm
 

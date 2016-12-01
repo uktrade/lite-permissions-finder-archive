@@ -94,8 +94,9 @@ public class NotApplicableController {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH, showExtendedContent);
   }
 
-  public CompletionStage<Result> renderSearchRelatedToSoftwareForm(String showExtendedContent) {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE, showExtendedContent);
+  public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText, String showExtendedContent) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText,
+        controlCodeJourney -> this.renderForm(controlCodeJourney, showExtendedContent));
   }
 
   public CompletionStage<Result> renderSoftwareControlsForm(String showExtendedContent) {
@@ -203,8 +204,8 @@ public class NotApplicableController {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeTextThenContinue(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleSoftwareControlsSubmit() {

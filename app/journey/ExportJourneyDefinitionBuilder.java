@@ -443,10 +443,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.ControlCodeController.renderSearchRelatedToForm(GoodsType.SOFTWARE.toUrlString()));
 
     JourneyStage controlCodeNotApplicableRelatedToSoftware = defineStage("controlCodeNotApplicableRelatedToSoftware", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSearchRelatedToSoftwareForm(Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderSearchRelatedToForm(GoodsType.SOFTWARE.toUrlString(), Boolean.FALSE.toString()));
 
     JourneyStage controlCodeNotApplicableExtendedRelatedToSoftware = defineStage("controlCodeNotApplicableExtendedRelatedToSoftware", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSearchRelatedToSoftwareForm(Boolean.TRUE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderSearchRelatedToForm(GoodsType.SOFTWARE.toUrlString(), Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecificationsRelatedToSoftware = defineStage("additionalSpecificationsRelatedToSoftware", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderSearchRelatedToForm(GoodsType.SOFTWARE.toUrlString()));
