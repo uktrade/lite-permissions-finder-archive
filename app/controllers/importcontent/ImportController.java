@@ -11,7 +11,7 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
-import utils.ImportUtils;
+import importcontent.ImportUtils;
 import views.html.importcontent.importQuestion;
 
 import java.util.Map;

@@ -1,4 +1,4 @@
-package utils;
+package importcontent;
 
 import static importcontent.ImportEvents.IMPORT_FOOD_WHAT_SELECTED;
 import static importcontent.ImportEvents.IMPORT_WHAT_SELECTED;
