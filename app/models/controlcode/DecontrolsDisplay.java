@@ -3,6 +3,7 @@ package models.controlcode;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
 import controllers.controlcode.routes;
+import models.GoodsType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +27,10 @@ public class DecontrolsDisplay {
       this.formAction = routes.DecontrolsController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.DecontrolsController.handleSearchRelatedToSoftwareSubmit().url();
+      this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleSoftwareControlsSubmit().url();

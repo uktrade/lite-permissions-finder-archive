@@ -57,9 +57,9 @@ GET     /related-control-code/:goodsType/additional-specifications    controller
 
 POST    /related-control-code/:goodsType/additional-specifications    controllers.controlcode.AdditionalSpecificationsController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.renderSearchRelatedToSoftwareForm
+GET     /related-control-code/:goodsType/decontrols                   controllers.controlcode.DecontrolsController.renderSearchRelatedToForm(goodsType)
 
-POST    /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType/decontrols                   controllers.controlcode.DecontrolsController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.renderSearchRelatedToSoftwareForm(extended)
 
