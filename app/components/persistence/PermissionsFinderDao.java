@@ -14,7 +14,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
 import models.controlcode.ControlCodeJourney;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
@@ -56,7 +56,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_DECONTROLS_APPLY = "controlCodeDecontrolsApply";
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
   public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
-  public static final String SOFTWARE_CATEGORY = "softwareCategory";
+  public static final String SOFT_TECH_CATEGORY = "softTechCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
   public static final String SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP = "softwareIsCoveredByTechnologyRelationship";
 
@@ -348,18 +348,18 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readString(DO_EXEMPTIONS_APPLY);
   }
 
-  public void saveSoftwareCategory(SoftwareCategory softwareCategory) {
-    writeString(SOFTWARE_CATEGORY, softwareCategory.toString());
+  public void saveSoftTechCategory(GoodsType goodsType, SoftTechCategory softTechCategory) {
+    writeString(prependFieldName(goodsType, SOFT_TECH_CATEGORY), softTechCategory.toString());
   }
 
-  public Optional<SoftwareCategory> getSoftwareCategory() {
-    String softwareCategory = readString(SOFTWARE_CATEGORY);
+  public Optional<SoftTechCategory> getSoftTechCategory(GoodsType goodsType) {
+    String softwareCategory = readString(prependFieldName(goodsType, SOFT_TECH_CATEGORY));
     if (StringUtils.isEmpty(softwareCategory)) {
       return Optional.empty();
     }
     else {
       try {
-        return Optional.of(SoftwareCategory.valueOf(softwareCategory));
+        return Optional.of(SoftTechCategory.valueOf(softwareCategory));
       }
       catch (IllegalArgumentException e) {
         return Optional.empty();
@@ -376,7 +376,15 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public String prependFieldName(ControlCodeJourney controlCodeJourney, String fieldName) {
-    return controlCodeJourney.value() + ":" + fieldName;
+    return prependFieldName(controlCodeJourney.value(), fieldName);
+  }
+
+  public String prependFieldName(GoodsType goodsType, String fieldName) {
+    return prependFieldName(goodsType.toUrlString(), fieldName);
+  }
+
+  public String prependFieldName(String prefix, String fieldName) {
+    return prefix + ":" + fieldName;
   }
 
   public void saveSoftwareIsCoveredByTechnologyRelationship(Boolean isCoveredByRelationship) {

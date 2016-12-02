@@ -12,7 +12,7 @@ import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.DualUseSoftTechCategoriesDisplay;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -46,7 +46,7 @@ public class DualUseSoftTechCategoriesController {
   }
 
   private CompletionStage<Result> renderFormInternal(GoodsType goodsType) {
-    return completedFuture(ok(dualUseSoftTechCategories.render(formFactory.form(DualUseSoftwareCategoriesForm.class),
+    return completedFuture(ok(dualUseSoftTechCategories.render(formFactory.form(DualUseSoftTechCategoriesForm.class),
         new DualUseSoftTechCategoriesDisplay(goodsType))));
   }
 
@@ -55,11 +55,11 @@ public class DualUseSoftTechCategoriesController {
   }
 
   private CompletionStage<Result> handleSubmitInternal(GoodsType goodsType) {
-    Form<DualUseSoftwareCategoriesForm> form = formFactory.form(DualUseSoftwareCategoriesForm.class).bindFromRequest();
+    Form<DualUseSoftTechCategoriesForm> form = formFactory.form(DualUseSoftTechCategoriesForm.class).bindFromRequest();
     if (form.hasErrors()) {
       return completedFuture(ok(dualUseSoftTechCategories.render(form, new DualUseSoftTechCategoriesDisplay(goodsType))));
     }
-    String dualUseSoftwareCategoryText = form.get().dualUseSoftwareCategory;
+    String dualUseSoftwareCategoryText = form.get().dualUseSoftTechCategory;
     String action = form.get().action;
 
     if (StringUtils.isNotEmpty(action)) {
@@ -70,17 +70,16 @@ public class DualUseSoftTechCategoriesController {
         throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
       }
     }
-    // MILITARY is a member of SoftwareCategory but is not dual use
     else if (StringUtils.isNotEmpty(dualUseSoftwareCategoryText)) {
-      SoftwareCategory softwareCategory = SoftwareCategory.valueOf(dualUseSoftwareCategoryText);
-      if (softwareCategory.isDualUseSoftwareCategory()) {
-        permissionsFinderDao.saveSoftwareCategory(softwareCategory);
-        return softTechJourneyHelper.checkSoftwareControls(softwareCategory, true) // Save to DAO
+      SoftTechCategory softTechCategory = SoftTechCategory.valueOf(dualUseSoftwareCategoryText);
+      if (softTechCategory.isDualUseSoftTechCategory()) {
+        permissionsFinderDao.saveSoftTechCategory(goodsType, softTechCategory);
+        return softTechJourneyHelper.checkSoftwareControls(softTechCategory, true) // Save to DAO
             .thenComposeAsync(this::dualUseSoftTechCategorySelected, httpExecutionContext.current());
       }
       else {
-        throw new RuntimeException(String.format("Unexpected member of SoftwareCategory enum: \"%s\""
-            , softwareCategory.toString()));
+        throw new RuntimeException(String.format("Unexpected member of SoftTechCategory enum: \"%s\""
+            , softTechCategory.toString()));
       }
     }
     else {
@@ -108,9 +107,9 @@ public class DualUseSoftTechCategoriesController {
     }
   }
 
-  public static class DualUseSoftwareCategoriesForm {
+  public static class DualUseSoftTechCategoriesForm {
 
-    public String dualUseSoftwareCategory;
+    public String dualUseSoftTechCategory;
 
     public String action;
 

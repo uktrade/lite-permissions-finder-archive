@@ -12,10 +12,11 @@ import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
 import journey.helpers.SoftTechJourneyHelper;
 import models.ControlCodeFlowStage;
+import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.NotApplicableDisplay;
 import models.softtech.ApplicableSoftTechControls;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import models.softtech.SoftwareControlsNotApplicableFlow;
 import play.data.Form;
 import play.data.FormFactory;
@@ -64,10 +65,10 @@ public class NotApplicableController {
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
-      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkSoftwareControls(softwareCategory)
+      return softTechJourneyHelper.checkSoftwareControls(softTechCategory)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
@@ -130,8 +131,8 @@ public class NotApplicableController {
       }
       else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
         // A different action is expected for each valid member of ApplicableSoftTechControls
-        SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-        return softTechJourneyHelper.checkSoftwareControls(softwareCategory)
+        SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+        return softTechJourneyHelper.checkSoftwareControls(softTechCategory)
             .thenApplyAsync(controls -> softwareControls(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }

@@ -6,8 +6,9 @@ import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.helpers.SoftTechJourneyHelper;
+import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -53,8 +54,8 @@ public class NoSoftTechControlsExistController {
   }
 
   private CompletionStage<Result> renderWithForm(Form<NoSoftwareControlsExistForm> form) {
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return softTechJourneyHelper.checkCatchtallSoftwareControls(softwareCategory, false)
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+    return softTechJourneyHelper.checkCatchtallSoftwareControls(softTechCategory, false)
         .thenApplyAsync(control -> {
           if (control == ApplicableSoftTechControls.ONE || control == ApplicableSoftTechControls.GREATER_THAN_ONE) {
             return ok(noSoftTechControlsExist.render(form));

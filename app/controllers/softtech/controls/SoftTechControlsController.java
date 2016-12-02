@@ -13,7 +13,7 @@ import journey.Events;
 import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import models.softtech.controls.SoftTechControlsJourney;
 import models.softtech.controls.SoftTechControlsDisplay;
 import org.apache.commons.lang3.StringUtils;
@@ -135,8 +135,8 @@ public class SoftTechControlsController {
     // Setup DAO state based on view variant
     if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
       // Software category is expected at this stage of the journey
-      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-      return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+      return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softTechCategory) // TODO TECHNOLOGY
           .thenApplyAsync(result -> {
             SoftTechControlsDisplay display = new SoftTechControlsDisplay(softTechControlsJourney, result.controlCodes);
             return ok(softTechControls.render(form, display));
@@ -165,8 +165,8 @@ public class SoftTechControlsController {
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
       // Software category is expected at this stage of the journey
-      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-      return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+      return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softTechCategory) // TODO TECHNOLOGY
           .thenApplyAsync(result -> {
             int size = result.controlCodes.size();
             if (size > 1) {

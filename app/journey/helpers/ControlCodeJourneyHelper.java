@@ -9,7 +9,7 @@ import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
@@ -62,8 +62,8 @@ public class ControlCodeJourneyHelper {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-      return softTechJourneyHelper.checkSoftwareControls(softwareCategory)
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+      return softTechJourneyHelper.checkSoftwareControls(softTechCategory)
           .thenComposeAsync(asc ->
                   journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE, asc)
               , httpExecutionContext.current());
@@ -113,8 +113,8 @@ public class ControlCodeJourneyHelper {
 
   private CompletionStage<Result> controlsRelatedToPhysicalGoodTransition(ApplicableSoftTechControls applicableSoftTechControls) {
     if (applicableSoftTechControls == ApplicableSoftTechControls.ZERO) {
-      SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-      return softTechJourneyHelper.checkCatchtallSoftwareControls(softwareCategory, false)
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+      return softTechJourneyHelper.checkCatchtallSoftwareControls(softTechCategory, false)
           .thenComposeAsync(controls -> {
             if (controls == ApplicableSoftTechControls.ZERO) {
               return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,

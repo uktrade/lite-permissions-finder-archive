@@ -2,8 +2,7 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import models.softtech.DualUseSoftTechCategoriesDisplay
-@import models.softtech.SoftwareCategory
+@import models.softtech.{DualUseSoftTechCategoriesDisplay, SoftTechCategory}
 
 @(form: Form[_], display: DualUseSoftTechCategoriesDisplay)
 @standardPage(display.pageTitle, Some(Html(display.pageTitle))){
@@ -20,70 +19,70 @@
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.NUCLEAR">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.NUCLEAR">Continue</button>
     }
 
     @detailPanel("SPECIAL_MATERIALS"){SPECIAL_MATERIALS} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.SPECIAL_MATERIALS">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.SPECIAL_MATERIALS">Continue</button>
     }
 
     @detailPanel("MATERIALS_PROCESSING"){MATERIALS_PROCESSING} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.MATERIALS_PROCESSING">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.MATERIALS_PROCESSING">Continue</button>
     }
 
     @detailPanel("ELECTRONICS"){ELECTRONICS} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.ELECTRONICS">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.ELECTRONICS">Continue</button>
     }
 
     @detailPanel("COMPUTERS"){COMPUTERS} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.COMPUTERS">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.COMPUTERS">Continue</button>
     }
 
     @detailPanel("TELECOMS"){TELECOMS} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.TELECOMS">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.TELECOMS">Continue</button>
     }
 
     @detailPanel("SENSORS"){SENSORS} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.SENSORS">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.SENSORS">Continue</button>
     }
 
     @detailPanel("NAVIGATION"){NAVIGATION} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.NAVIGATION">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.NAVIGATION">Continue</button>
     }
 
     @detailPanel("MARINE"){MARINE} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.MARINE">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.MARINE">Continue</button>
     }
 
     @detailPanel("AEROSPACE"){AEROSPACE} {
       <p>
         CONTENT WILL GO HERE
       </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftwareCategory" value="@SoftwareCategory.AEROSPACE">Continue</button>
+      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.AEROSPACE">Continue</button>
     }
 
     <div class="form-group">

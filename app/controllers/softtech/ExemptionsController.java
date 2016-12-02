@@ -10,8 +10,9 @@ import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.SoftTechJourneyHelper;
 import models.ExportCategory;
+import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import models.softtech.SoftwareExemptionsFlow;
 import play.data.Form;
 import play.data.FormFactory;
@@ -61,8 +62,8 @@ public class ExemptionsController {
       // Expecting an export category at this stage of the journey
       ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
       if (exportCategory == ExportCategory.MILITARY) {
-        permissionsFinderDao.saveSoftwareCategory(SoftwareCategory.MILITARY);
-        return softTechJourneyHelper.checkSoftwareControls(SoftwareCategory.MILITARY, true) // MILITARY_ONE_CONTROL will set DAO state
+        permissionsFinderDao.saveSoftTechCategory(GoodsType.SOFTWARE, SoftTechCategory.MILITARY);
+        return softTechJourneyHelper.checkSoftwareControls(SoftTechCategory.MILITARY, true) // MILITARY_ONE_CONTROL will set DAO state
             .thenComposeAsync(this::softwareExemptionsFlow, httpExecutionContext.current());
       }
       else if (exportCategory == ExportCategory.DUAL_USE) {

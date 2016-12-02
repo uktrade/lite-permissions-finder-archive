@@ -1,6 +1,6 @@
 package models.softtech;
 
-public enum SoftwareCategory {
+public enum SoftTechCategory {
   AEROSPACE,
   COMPUTERS,
   ELECTRONICS,
@@ -17,11 +17,11 @@ public enum SoftwareCategory {
     return this.toString().replace('_','-').toLowerCase();
   }
 
-  public static boolean isDualUseSoftwareCategory(SoftwareCategory softwareCategory) {
-    return softwareCategory.isDualUseSoftwareCategory();
+  public static boolean isDualUseSoftTechCategory(SoftTechCategory softTechCategory) {
+    return softTechCategory.isDualUseSoftTechCategory();
   }
 
-  public boolean isDualUseSoftwareCategory() {
+  public boolean isDualUseSoftTechCategory() {
     return this != MILITARY;
   }
 

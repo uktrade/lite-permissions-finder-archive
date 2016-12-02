@@ -15,13 +15,11 @@ import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.Relationship;
 import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
-import models.softtech.SoftwareCategory;
-import org.apache.commons.lang3.StringUtils;
+import models.softtech.SoftTechCategory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 public class SoftTechJourneyHelper {
 
@@ -54,13 +52,13 @@ public class SoftTechJourneyHelper {
    * Check for software controls of the given software category
    * Note: Writes to DAO if ONE would be returns and saveToDao is true. This is a small shortcut, preventing a
    * separate call to CategoryControlsServiceClient request the single control code to save.
-   * @param softwareCategory The software category to check the controls of
+   * @param softTechCategory The software category to check the controls of
    * @param saveToDao Whether to save the single control code to the DAO, if a single control code were to be returned
    *                  by the CategoryControlsServiceClient request
    * @return The applicable software controls
    */
-  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
-    return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) //TODO TECHNOLOGY
+  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftTechCategory softTechCategory, boolean saveToDao) {
+    return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softTechCategory) //TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
@@ -86,11 +84,11 @@ public class SoftTechJourneyHelper {
 
   /**
    * Check for software controls of the given software category
-   * @param softwareCategory The software category to check the controls of
+   * @param softTechCategory The software category to check the controls of
    * @return The applicable software controls
    */
-  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftwareCategory softwareCategory) {
-    return checkSoftwareControls(softwareCategory, false);
+  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftTechCategory softTechCategory) {
+    return checkSoftwareControls(softTechCategory, false);
   }
 
 
@@ -120,8 +118,8 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
-    return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
+  public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(SoftTechCategory softTechCategory, boolean saveToDao) {
+    return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softTechCategory) // TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
@@ -145,9 +143,9 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Relationship> checkRelationshipExists(SoftwareCategory softwareCategory) {
-    boolean relationshipExists = softwareCategory == SoftwareCategory.MILITARY;
-    return softwareAndTechnologyRelationshipServiceClient.get(softwareCategory, relationshipExists)
+  public CompletionStage<Relationship> checkRelationshipExists(SoftTechCategory softTechCategory) {
+    boolean relationshipExists = softTechCategory == SoftTechCategory.MILITARY;
+    return softwareAndTechnologyRelationshipServiceClient.get(softTechCategory, relationshipExists)
         .thenApplyAsync(result -> {
           if (result.relationshipExists) {
             return Relationship.RELATIONSHIP_EXISTS;
@@ -159,12 +157,12 @@ public class SoftTechJourneyHelper {
   }
 
   public CompletionStage<Result> performCatchallSoftwareControlsTransition() {
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
 
-    return checkCatchtallSoftwareControls(softwareCategory, true)
+    return checkCatchtallSoftwareControls(softTechCategory, true)
         .thenComposeAsync(controls -> {
           if (controls == ApplicableSoftTechControls.ZERO) {
-            return checkRelationshipExists(softwareCategory)
+            return checkRelationshipExists(softTechCategory)
                 .thenComposeAsync(relationship -> {
                   if (relationship == Relationship.RELATIONSHIP_EXISTS) {
                     return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
@@ -196,11 +194,11 @@ public class SoftTechJourneyHelper {
   }
 
   public CompletionStage<Result> performCatchallSoftwareControlNotApplicableTransition() {
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return checkCatchtallSoftwareControls(softwareCategory, true)
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+    return checkCatchtallSoftwareControls(softTechCategory, true)
         .thenComposeAsync(controls -> {
          if (controls == ApplicableSoftTechControls.ONE) {
-           return checkRelationshipExists(softwareCategory)
+           return checkRelationshipExists(softTechCategory)
                .thenComposeAsync(relationship -> {
                  if (relationship == Relationship.RELATIONSHIP_EXISTS) {
                    return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
@@ -228,8 +226,8 @@ public class SoftTechJourneyHelper {
   }
 
   public CompletionStage<Result> performCatchallSoftwareControlRelationshipTransition() {
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return checkRelationshipExists(softwareCategory)
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+    return checkRelationshipExists(softTechCategory)
         .thenComposeAsync(relationship ->
                 journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP, relationship)
             , httpExecutionContext.current());
