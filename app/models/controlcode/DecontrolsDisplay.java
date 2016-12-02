@@ -39,7 +39,7 @@ public class DecontrolsDisplay {
       this.formAction = routes.DecontrolsController.handleRelatedSoftwareControlsSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.DecontrolsController.handleSoftwareCatchallControlsSubmit().url();
+      this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

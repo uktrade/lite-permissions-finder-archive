@@ -241,9 +241,9 @@ GET     /category-catchall-controls/:goodsType/additional-specifications   contr
 
 POST    /category-catchall-controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/decontrols                  controllers.controlcode.DecontrolsController.renderSoftwareCatchallControlsForm
+GET     /category-catchall-controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls/decontrols                  controllers.controlcode.DecontrolsController.handleSoftwareCatchallControlsSubmit
+POST    /category-catchall-controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.handleCatchallControlsSubmit(goodsType)
 
 GET     /software-category-catchall-controls/not-applicable              controllers.controlcode.NotApplicableController.renderSoftwareCatchallControlsForm(extended)
 
