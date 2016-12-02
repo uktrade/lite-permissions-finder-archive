@@ -73,9 +73,9 @@ GET     /destination-country                  controllers.DestinationCountryCont
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
-GET     /dual-use-software-categories         controllers.softtech.DualUseSoftTechCategoriesController.renderForm
+GET     /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.renderForm(goodsType)
 
-POST    /dual-use-software-categories         controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit
+POST    /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit(goodsType)
 
 GET     /exemptions-may-apply                 controllers.softtech.ExemptionsController.renderForm
 
