@@ -1,5 +1,6 @@
 package controllers.softtech.controls;
 
+import static journey.helpers.SoftTechJourneyHelper.validateThenGetResult;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -9,6 +10,7 @@ import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.SoftTechCategory;
+import models.softtech.controls.NoSoftTechControlsExistDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -35,14 +37,22 @@ public class NoSoftTechControlsExistController {
     this.httpExecutionContext = httpExecutionContext;
   }
 
-  public CompletionStage<Result> renderForm() {
-    return renderWithForm(formFactory.form(NoSoftwareControlsExistForm.class));
+  public CompletionStage<Result> renderForm(String goodsTypeText) {
+    return validateThenGetResult(goodsTypeText, this::renderFormInternal);
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  private CompletionStage<Result> renderFormInternal(GoodsType goodsType) {
+    return renderWithForm(goodsType, formFactory.form(NoSoftwareControlsExistForm.class));
+  }
+
+  public CompletionStage<Result> handleSubmit(String goodsTypeText) {
+    return validateThenGetResult(goodsTypeText, this::handleSubmitInternal);
+  }
+
+  private CompletionStage<Result> handleSubmitInternal(GoodsType goodsType) {
     Form<NoSoftwareControlsExistForm> form = formFactory.form(NoSoftwareControlsExistForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return renderWithForm(form);
+      return renderWithForm(goodsType, form);
     }
     String action = form.get().action;
     if ("continue".equals(action)) {
@@ -53,12 +63,12 @@ public class NoSoftTechControlsExistController {
     }
   }
 
-  private CompletionStage<Result> renderWithForm(Form<NoSoftwareControlsExistForm> form) {
-    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+  private CompletionStage<Result> renderWithForm(GoodsType goodsType, Form<NoSoftwareControlsExistForm> form) {
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
     return softTechJourneyHelper.checkCatchtallSoftwareControls(softTechCategory, false)
         .thenApplyAsync(control -> {
           if (control == ApplicableSoftTechControls.ONE || control == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-            return ok(noSoftTechControlsExist.render(form));
+            return ok(noSoftTechControlsExist.render(form, new NoSoftTechControlsExistDisplay(goodsType)));
           }
           else {
             throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""

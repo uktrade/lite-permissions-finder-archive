@@ -203,13 +203,13 @@ GET     /licence-not-available-through-this-service   controllers.StaticContentC
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
 
-GET     /no-software-controls-exist               controllers.softtech.controls.NoSoftTechControlsExistController.renderForm
+GET     /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.renderForm(goodsType)
 
-POST    /no-software-controls-exist               controllers.softtech.controls.NoSoftTechControlsExistController.handleSubmit
+POST    /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.handleSubmit(goodsType)
 
-GET     /no-software-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
+GET     /no-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
 
-POST    /no-software-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
+POST    /no-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
 
 GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
 

@@ -16,10 +16,12 @@ import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.Relationship;
 import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
 import models.softtech.SoftTechCategory;
+import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 public class SoftTechJourneyHelper {
 
@@ -231,6 +233,22 @@ public class SoftTechJourneyHelper {
         .thenComposeAsync(relationship ->
                 journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP, relationship)
             , httpExecutionContext.current());
+  }
+
+  public static CompletionStage<Result> validateThenGetResult(String goodsTypeText, Function<GoodsType, CompletionStage<Result>> resultFunc) {
+    if (StringUtils.isNotEmpty(goodsTypeText)) {
+      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
+      if (goodsType == GoodsType.SOFTWARE || goodsType == GoodsType.TECHNOLOGY) {
+        return resultFunc.apply(goodsType);
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+            , goodsType.toString()));
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
+    }
   }
 
 }

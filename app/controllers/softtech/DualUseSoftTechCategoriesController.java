@@ -1,6 +1,7 @@
 package controllers.softtech;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static journey.helpers.SoftTechJourneyHelper.validateThenGetResult;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -21,7 +22,6 @@ import play.mvc.Result;
 import views.html.softtech.dualUseSoftTechCategories;
 
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 public class DualUseSoftTechCategoriesController {
 
@@ -89,22 +89,6 @@ public class DualUseSoftTechCategoriesController {
 
   private CompletionStage<Result> dualUseSoftTechCategorySelected(ApplicableSoftTechControls applicableSoftTechControls) {
     return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED, applicableSoftTechControls);
-  }
-
-  private CompletionStage<Result> validateThenGetResult(String goodsTypeText, Function<GoodsType, CompletionStage<Result>> resultFunc) {
-    if (StringUtils.isNotEmpty(goodsTypeText)) {
-      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
-      if (goodsType == GoodsType.SOFTWARE || goodsType == GoodsType.TECHNOLOGY) {
-       return resultFunc.apply(goodsType);
-      }
-      else {
-        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
-            , goodsType.toString()));
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
-    }
   }
 
   public static class DualUseSoftTechCategoriesForm {
