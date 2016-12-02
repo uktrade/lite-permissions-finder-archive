@@ -207,9 +207,13 @@ GET     /no-controls-exist/:goodsType               controllers.softtech.control
 
 POST    /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.handleSubmit(goodsType)
 
-GET     /no-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
+GET     /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
 
-POST    /no-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
+POST    /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
+
+GET     /no-controls-exist/technology/licence-may-not-be-required       controllers.StaticContentController.renderTechnologyControlsNLR
+
+POST    /no-controls-exist/technology/licence-may-not-be-required       controllers.StaticContentController.renderTechnologyControlsNLR
 
 GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
 

@@ -31,6 +31,7 @@ public class StaticContentController extends Controller {
     SOFTWARE_EXEMPTIONS_NLR("software/exemptionsNLR.html", "Software exemptions apply"),
     SOFTWARE_RELATIONSHIP_NLR("software/relationship/noLicenceRequired.html", "No relationship between software and technology"),
     SOFTWARE_RELATIONSHIP_CONTACT_ECO("software/relationship/contactECO.html", "Contact ECO"),
+    TECHNOLOGY_CONTROLS_NLR("technology/controls/noLicenceRequired.html", "No technology controls exist for the selected item"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
 
     StaticHtml(String filename, String title) {
@@ -110,6 +111,10 @@ public class StaticContentController extends Controller {
 
   public Result renderSoftwareControlsNLR() {
     return renderStaticHtml(StaticHtml.SOFTWARE_CONTROLS_NLR);
+  }
+
+  public Result renderTechnologyControlsNLR() {
+    return renderStaticHtml(StaticHtml.TECHNOLOGY_CONTROLS_NLR);
   }
 
   public Result renderSoftwareExemptionsNLR() {
