@@ -16,6 +16,7 @@ import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.NotApplicableDisplay;
 import models.softtech.ApplicableSoftTechControls;
+import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
 import models.softtech.SoftTechCategory;
 import models.softtech.SoftwareControlsNotApplicableFlow;
 import play.data.Form;
@@ -86,6 +87,18 @@ public class NotApplicableController {
                       result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
           ), httpExecutionContext.current());
     }
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+      // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
+      String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
+      CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+      return softTechJourneyHelper.checkCatchtallSoftwareControls(softTechCategory, false)
+          .thenCombineAsync(frontendStage, (controls, result) -> ok(
+              notApplicable.render(
+                  new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
+                      result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
+          ), httpExecutionContext.current());
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));
@@ -143,6 +156,13 @@ public class NotApplicableController {
             .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
+      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+        // A different action is expected for each valid member of ApplicableSoftTechControls
+        SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+        return softTechJourneyHelper.checkCatchtallSoftwareControls(softTechCategory, false)
+            .thenApplyAsync(controls -> softwareCatcallControls(controls, action),
+                httpExecutionContext.current()).thenCompose(Function.identity());
+      }
       else {
         throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
             , controlCodeJourney.toString()));
@@ -191,6 +211,22 @@ public class NotApplicableController {
       if ("returnToControls".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
+      }
+      else {
+        throw new FormStateException("Unknown value for action: \"" + action + "\"");
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
+          , applicableSoftTechControls.toString()));
+    }
+  }
+
+  private CompletionStage<Result> softwareCatcallControls(ApplicableSoftTechControls applicableSoftTechControls, String action) {
+    if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
+      if ("returnToControls".equals(action)) {
+        return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+            SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS);
       }
       else {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");
