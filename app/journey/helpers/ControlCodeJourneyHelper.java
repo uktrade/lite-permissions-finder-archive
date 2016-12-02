@@ -54,6 +54,25 @@ public class ControlCodeJourneyHelper {
     }
   }
 
+  public static CompletionStage<Result> getCatchAllControlsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
+    if (StringUtils.isNotEmpty(goodsTypeText)) {
+      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
+      if (goodsType == GoodsType.SOFTWARE) {
+        return resultFunc.apply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+      }
+      else if (goodsType == GoodsType.TECHNOLOGY) {
+        return resultFunc.apply(ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS);
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+            , goodsType.toString()));
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
+    }
+  }
+
   public CompletionStage<Result> notApplicableJourneyTransition(ControlCodeJourney controlCodeJourney) {
     if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);

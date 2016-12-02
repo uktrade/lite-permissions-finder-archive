@@ -47,7 +47,10 @@ public class ControlCodeDisplay {
       this.formAction = routes.ControlCodeController.handleRelatedSoftwareControlsSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.ControlCodeController.handleSoftwareCatchallControlsSubmit().url();
+      this.formAction = routes.ControlCodeController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+      this.formAction = routes.ControlCodeController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
