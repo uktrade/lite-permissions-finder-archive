@@ -233,13 +233,13 @@ POST    /select-trade-type                    controllers.TradeTypeController.ha
 
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 
-GET     /category-catchall-controls/:goodsType                           controllers.controlcode.ControlCodeController.renderCatchallControlsForm(goodsType)
+GET     /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeController.renderCatchallControlsForm(goodsType)
 
-POST    /category-catchall-controls/:goodsType                           controllers.controlcode.ControlCodeController.handleCatchallControlsSubmit(goodsType)
+POST    /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSoftwareCatchallControlsForm
+GET     /category-catchall-controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSoftwareCatchallControlsSubmit
+POST    /category-catchall-controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleCatchallControlsSubmit(goodsType)
 
 GET     /software-category-catchall-controls/decontrols                  controllers.controlcode.DecontrolsController.renderSoftwareCatchallControlsForm
 

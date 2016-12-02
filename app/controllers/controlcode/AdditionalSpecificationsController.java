@@ -79,8 +79,8 @@ public class AdditionalSpecificationsController {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
-  public CompletionStage<Result> renderSoftwareCatchallControlsForm() {
-    return renderForm(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
@@ -125,8 +125,8 @@ public class AdditionalSpecificationsController {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
-  public CompletionStage<Result> handleSoftwareCatchallControlsSubmit() {
-    return handleSubmit(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {

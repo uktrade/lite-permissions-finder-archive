@@ -702,7 +702,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.NotApplicableController.renderSoftwareCatchallControlsForm(Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecificationSoftwareCatchallControls = defineStage("additionalSpecificationSoftwareCatchallControls", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderSoftwareCatchallControlsForm());
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString()));
 
     JourneyStage decontrolsSoftwareCatchallControls = defineStage("decontrolsSoftwareCatchallControls", "Decontrols",
         controllers.controlcode.routes.DecontrolsController.renderSoftwareCatchallControlsForm());
