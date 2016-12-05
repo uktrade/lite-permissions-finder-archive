@@ -38,7 +38,9 @@ public class NotApplicableDisplay {
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
         controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
-        controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+        controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
+        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+      // Software
       if (applicableSoftTechControls != null) {
         if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
           this.formAction = routes.NotApplicableController.handleSoftwareControlsSubmit().url();
@@ -46,10 +48,14 @@ public class NotApplicableDisplay {
         else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
           this.formAction = routes.NotApplicableController.handleRelatedSoftwareControlsSubmit().url();
         }
-        else {
-          // ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
-          this.formAction = routes.NotApplicableController.handleSoftwareCatchallControlsSubmit().url();
+        else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
         }
+        else {
+          // ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS
+          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+        }
+
         if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
           buttonConfiguration = ButtonConfiguration.CONTINUE_NO_SOFTWARE_CONTROLS;
         }

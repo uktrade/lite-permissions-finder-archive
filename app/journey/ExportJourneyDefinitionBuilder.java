@@ -696,10 +696,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private void softwareCatchallControls() {
 
     JourneyStage controlCodeNotApplicableSoftwareCatchallControls = defineStage("controlCodeNotApplicableSoftwareCatchallControls", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSoftwareCatchallControlsForm(Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString(), Boolean.FALSE.toString()));
 
     JourneyStage controlCodeNotApplicableExtendedSoftwareCatchallControls = defineStage("controlCodeNotApplicableExtendedSoftwareCatchallControls", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSoftwareCatchallControlsForm(Boolean.TRUE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString(), Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecificationSoftwareCatchallControls = defineStage("additionalSpecificationSoftwareCatchallControls", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString()));

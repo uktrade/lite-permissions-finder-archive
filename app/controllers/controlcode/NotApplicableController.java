@@ -122,8 +122,9 @@ public class NotApplicableController {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, showExtendedContent);
   }
 
-  public CompletionStage<Result> renderSoftwareCatchallControlsForm(String showExtendedContent) {
-    return renderForm(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, showExtendedContent);
+  public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText, String showExtendedContent) {
+    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText,
+        controlCodeJourney -> renderForm(controlCodeJourney, showExtendedContent));
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
@@ -254,8 +255,8 @@ public class NotApplicableController {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
-  public CompletionStage<Result> handleSoftwareCatchallControlsSubmit() {
-    return handleSubmit(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public static class NotApplicableForm {
