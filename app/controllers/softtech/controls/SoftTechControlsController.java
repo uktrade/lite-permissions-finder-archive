@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
-import components.services.controlcode.controls.catchall.CatchallControlsServiceResult;
 import components.services.controlcode.controls.category.CategoryControlsServiceClient;
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
@@ -56,7 +55,7 @@ public class SoftTechControlsController {
   }
 
   private CompletionStage<Result> renderForm(SoftTechControlsJourney softTechControlsJourney) {
-    return renderWithForm(softTechControlsJourney, formFactory.form(SoftwareControlsForm.class));
+    return renderWithForm(softTechControlsJourney, formFactory.form(SoftTechControlsForm.class));
   }
 
   public CompletionStage<Result> renderSofwareCategoryForm() {
@@ -72,7 +71,7 @@ public class SoftTechControlsController {
   }
 
   private CompletionStage<Result> handleSubmit(SoftTechControlsJourney softTechControlsJourney) {
-    Form<SoftwareControlsForm> form = formFactory.form(SoftwareControlsForm.class).bindFromRequest();
+    Form<SoftTechControlsForm> form = formFactory.form(SoftTechControlsForm.class).bindFromRequest();
     if (form.hasErrors()) {
       renderWithForm(softTechControlsJourney, form);
     }
@@ -138,7 +137,7 @@ public class SoftTechControlsController {
     return SoftTechJourneyHelper.getCatchallControlsResult(goodsTypeText, this::handleSubmit);
   }
 
-  private CompletionStage<Result> renderWithForm(SoftTechControlsJourney softTechControlsJourney, Form<SoftwareControlsForm> form) {
+  private CompletionStage<Result> renderWithForm(SoftTechControlsJourney softTechControlsJourney, Form<SoftTechControlsForm> form) {
     // Setup DAO state based on view variant
     if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
       // Software category is expected at this stage of the journey
@@ -182,7 +181,7 @@ public class SoftTechControlsController {
     }
   }
 
-  private CompletionStage<Result> catchallControls(SoftTechControlsJourney softTechControlsJourney, Form<SoftwareControlsForm> form, GoodsType goodsType) {
+  private CompletionStage<Result> catchallControls(SoftTechControlsJourney softTechControlsJourney, Form<SoftTechControlsForm> form, GoodsType goodsType) {
     // SoftTech category is expected at this stage of the journey
     SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
     return catchallControlsServiceClient.get(goodsType, softTechCategory)
@@ -202,7 +201,7 @@ public class SoftTechControlsController {
         }, httpExecutionContext.current());
   }
 
-  public static class SoftwareControlsForm {
+  public static class SoftTechControlsForm {
 
     public String controlCode;
 

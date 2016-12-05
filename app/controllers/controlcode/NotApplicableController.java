@@ -18,7 +18,7 @@ import models.controlcode.NotApplicableDisplay;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
 import models.softtech.SoftTechCategory;
-import models.softtech.SoftwareControlsNotApplicableFlow;
+import models.softtech.SoftTechControlsNotApplicableFlow;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -176,8 +176,8 @@ public class NotApplicableController {
     // TODO remove duplicate code
     if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
       if ("continue".equals(action)) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
-            SoftwareControlsNotApplicableFlow.CONTINUE_NO_CONTROLS);
+        return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
+            SoftTechControlsNotApplicableFlow.CONTINUE_NO_CONTROLS);
       }
       else {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");
@@ -185,8 +185,8 @@ public class NotApplicableController {
     }
     else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
       if ("returnToControls".equals(action)) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
-            SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
+        return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
+            SoftTechControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CONTROLS);
       }
       else {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");
@@ -210,8 +210,8 @@ public class NotApplicableController {
     }
     else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
       if ("returnToControls".equals(action)) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW,
-            SoftwareControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CONTROLS);
+        return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
+            SoftTechControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CONTROLS);
       }
       else {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");
@@ -226,8 +226,8 @@ public class NotApplicableController {
   private CompletionStage<Result> softwareCatcallControls(ApplicableSoftTechControls applicableSoftTechControls, String action) {
     if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
       if ("returnToControls".equals(action)) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-            SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS);
+        return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+            SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS);
       }
       else {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");

@@ -88,7 +88,7 @@ public class DualUseSoftTechCategoriesController {
   }
 
   private CompletionStage<Result> dualUseSoftTechCategorySelected(ApplicableSoftTechControls applicableSoftTechControls) {
-    return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED, applicableSoftTechControls);
+    return journeyManager.performTransition(Events.DUAL_USE_SOFT_TECH_CATEGORY_SELECTED, applicableSoftTechControls);
   }
 
   public static class DualUseSoftTechCategoriesForm {

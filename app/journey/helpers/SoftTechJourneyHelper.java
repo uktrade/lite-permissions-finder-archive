@@ -168,11 +168,11 @@ public class SoftTechJourneyHelper {
             return checkRelationshipExists(softTechCategory)
                 .thenComposeAsync(relationship -> {
                   if (relationship == Relationship.RELATIONSHIP_EXISTS) {
-                    return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
+                    return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                         CatchallSoftTechControlsFlow.RELATIONSHIP_EXISTS);
                   }
                   else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
-                    return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
+                    return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                         CatchallSoftTechControlsFlow.RELATIONSHIP_DOES_NOT_EXIST);
                   }
                   else {
@@ -182,11 +182,11 @@ public class SoftTechJourneyHelper {
                 }, httpExecutionContext.current());
           }
           else if (controls == ApplicableSoftTechControls.ONE) {
-            return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
+            return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                 CatchallSoftTechControlsFlow.CATCHALL_ONE);
           }
           else if (controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-            return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
+            return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                 CatchallSoftTechControlsFlow.CATCHALL_GREATER_THAN_ONE);
           }
           else {
@@ -204,11 +204,11 @@ public class SoftTechJourneyHelper {
            return checkRelationshipExists(softTechCategory)
                .thenComposeAsync(relationship -> {
                  if (relationship == Relationship.RELATIONSHIP_EXISTS) {
-                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
                        SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS);
                  }
                  else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
-                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
                        SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS);
                  }
                  else {
@@ -218,8 +218,8 @@ public class SoftTechJourneyHelper {
                }, httpExecutionContext.current());
           }
           else if (controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-            return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-                SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS);
+            return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS);
           }
           else {
             throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
@@ -232,7 +232,7 @@ public class SoftTechJourneyHelper {
     SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
     return checkRelationshipExists(softTechCategory)
         .thenComposeAsync(relationship ->
-                journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP, relationship)
+                journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP, relationship)
             , httpExecutionContext.current());
   }
 

@@ -137,11 +137,11 @@ public class ControlCodeJourneyHelper {
           .thenComposeAsync(controls -> {
             if (controls == ApplicableSoftTechControls.ZERO) {
               return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
-                  ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_ZERO);
+                  ControlsRelatedToPhysicalGoodsFlow.SOFT_TECH_CONTROL_CATCHALL_ZERO);
             }
             else if (controls == ApplicableSoftTechControls.ONE || controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
               return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
-                  ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_CATCHALL_CONTROL_GREATER_THAN_ZERO);
+                  ControlsRelatedToPhysicalGoodsFlow.SOFT_TECH_CONTROL_CATCHALL_CONTROL_GREATER_THAN_ZERO);
             }
             else {
               throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
@@ -151,11 +151,11 @@ public class ControlCodeJourneyHelper {
     }
     else if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
       return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
-          ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_ONE);
+          ControlsRelatedToPhysicalGoodsFlow.SOFT_TECH_CONTROL_ONE);
     }
     else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
       return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
-          ControlsRelatedToPhysicalGoodsFlow.SOFTWARE_CONTROL_GREATER_THAN_ONE);
+          ControlsRelatedToPhysicalGoodsFlow.SOFT_TECH_CONTROL_GREATER_THAN_ONE);
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
