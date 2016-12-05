@@ -41,7 +41,10 @@ public class ControlCodeDisplay {
       this.formAction = routes.ControlCodeController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-      this.formAction = routes.ControlCodeController.handleSoftwareControlsSubmit().url();
+      this.formAction = routes.ControlCodeController.handleControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+      this.formAction = routes.ControlCodeController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.ControlCodeController.handleRelatedSoftwareControlsSubmit().url();

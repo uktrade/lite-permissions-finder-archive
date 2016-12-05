@@ -257,9 +257,9 @@ GET     /category-catchall-controls/:goodsType/show-controls               contr
 
 POST    /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-controls                             controllers.controlcode.ControlCodeController.renderSoftwareControlsForm
+GET     /controls/:goodsType                             controllers.controlcode.ControlCodeController.renderControlsForm(goodsType)
 
-POST    /software-controls                             controllers.controlcode.ControlCodeController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType                             controllers.controlcode.ControlCodeController.handleControlsSubmit(goodsType)
 
 GET     /software-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSoftwareControlsForm
 

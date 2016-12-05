@@ -35,44 +35,6 @@ public class ControlCodeJourneyHelper {
     this.httpExecutionContext = httpExecutionContext;
   }
 
-  public static CompletionStage<Result> getSearchRelatedToPhysicalGoodsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
-    if (StringUtils.isNotEmpty(goodsTypeText)) {
-      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
-      if (goodsType == GoodsType.SOFTWARE) {
-        return resultFunc.apply(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
-      }
-      else if (goodsType == GoodsType.TECHNOLOGY) {
-        return resultFunc.apply(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY);
-      }
-      else {
-        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
-            , goodsType.toString()));
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
-    }
-  }
-
-  public static CompletionStage<Result> getCatchAllControlsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
-    if (StringUtils.isNotEmpty(goodsTypeText)) {
-      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
-      if (goodsType == GoodsType.SOFTWARE) {
-        return resultFunc.apply(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
-      }
-      else if (goodsType == GoodsType.TECHNOLOGY) {
-        return resultFunc.apply(ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS);
-      }
-      else {
-        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
-            , goodsType.toString()));
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
-    }
-  }
-
   public CompletionStage<Result> notApplicableJourneyTransition(ControlCodeJourney controlCodeJourney) {
     if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
@@ -162,4 +124,42 @@ public class ControlCodeJourneyHelper {
           , applicableSoftTechControls.toString()));
     }
   }
+
+  private static CompletionStage<Result> validateGoodsTypeAndGetResult(String goodsTypeText,
+                                                                       ControlCodeJourney softwareJourney,
+                                                                       ControlCodeJourney technologyJourney,
+                                                                       Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
+    if (StringUtils.isNotEmpty(goodsTypeText)) {
+      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
+      if (goodsType == GoodsType.SOFTWARE) {
+        return resultFunc.apply(softwareJourney);
+      }
+      else if (goodsType == GoodsType.TECHNOLOGY) {
+        return resultFunc.apply(technologyJourney);
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+            , goodsType.toString()));
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
+    }
+  }
+
+  public static CompletionStage<Result> getSearchRelatedToPhysicalGoodsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE,
+        ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY, resultFunc);
+  }
+
+  public static CompletionStage<Result> getCatchAllControlsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS,
+        ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS, resultFunc);
+  }
+
+  public static CompletionStage<Result> getControlsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, ControlCodeJourney.SOFTWARE_CONTROLS,
+        ControlCodeJourney.TECHNOLOGY_CONTROLS, resultFunc);
+  }
+
 }

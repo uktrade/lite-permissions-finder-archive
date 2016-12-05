@@ -43,7 +43,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage physicalGoodsSearchRelatedToSoftware = defineStage("physicalGoodsSearchRelatedToSoftware", "Describe your items",
       controllers.search.routes.PhysicalGoodsSearchController.renderSearchRelatedToForm(GoodsType.SOFTWARE.toUrlString()));
   private final JourneyStage controlCodeForSoftwareControls = defineStage("controlCodeSoftwareControls", "Summary",
-      controllers.controlcode.routes.ControlCodeController.renderSoftwareControlsForm());
+      controllers.controlcode.routes.ControlCodeController.renderControlsForm(GoodsType.SOFTWARE.toUrlString()));
   private final JourneyStage controlCodeForRelatedSoftwareControls = defineStage("controlCodeForRelatedSoftwareControls", "Summary",
       controllers.controlcode.routes.ControlCodeController.renderRelatedSoftwareControlsForm());
   private final JourneyStage controlCodeSoftwareCatchallControls = defineStage("controlCodeSoftwareCatchallControls", "Summary",
