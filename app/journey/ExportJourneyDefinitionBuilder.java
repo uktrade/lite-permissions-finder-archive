@@ -522,10 +522,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private void softwareCategoryControls() {
 
     JourneyStage controlCodeNotApplicableSoftwareControls = defineStage("controlCodeNotApplicableSoftwareControls", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSoftwareControlsForm(Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderControlsForm(GoodsType.SOFTWARE.toUrlString(), Boolean.FALSE.toString()));
 
     JourneyStage controlCodeNotApplicableExtendedSoftwareControls = defineStage("controlCodeNotApplicableExtendedSoftwareControls", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSoftwareControlsForm(Boolean.TRUE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderControlsForm(GoodsType.SOFTWARE.toUrlString(), Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecificationsSoftwareControls = defineStage("additionalSpecificationsSoftwareControls", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderControlsForm(GoodsType.SOFTWARE.toUrlString()));

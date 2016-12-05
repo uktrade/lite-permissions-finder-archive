@@ -74,7 +74,7 @@ public class DualUseSoftTechCategoriesController {
       SoftTechCategory softTechCategory = SoftTechCategory.valueOf(dualUseSoftwareCategoryText);
       if (softTechCategory.isDualUseSoftTechCategory()) {
         permissionsFinderDao.saveSoftTechCategory(goodsType, softTechCategory);
-        return softTechJourneyHelper.checkSoftwareControls(softTechCategory, true) // Save to DAO
+        return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, true) // Save to DAO
             .thenComposeAsync(this::dualUseSoftTechCategorySelected, httpExecutionContext.current());
       }
       else {

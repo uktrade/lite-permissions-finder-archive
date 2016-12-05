@@ -63,7 +63,7 @@ public class ExemptionsController {
       ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
       if (exportCategory == ExportCategory.MILITARY) {
         permissionsFinderDao.saveSoftTechCategory(GoodsType.SOFTWARE, SoftTechCategory.MILITARY);
-        return softTechJourneyHelper.checkSoftwareControls(SoftTechCategory.MILITARY, true) // MILITARY_ONE_CONTROL will set DAO state
+        return softTechJourneyHelper.checkSoftTechControls(GoodsType.SOFTWARE, SoftTechCategory.MILITARY, true) // MILITARY_ONE_CONTROL will set DAO state
             .thenComposeAsync(this::softwareExemptionsFlow, httpExecutionContext.current());
       }
       else if (exportCategory == ExportCategory.DUAL_USE) {

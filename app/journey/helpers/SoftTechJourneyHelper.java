@@ -55,14 +55,19 @@ public class SoftTechJourneyHelper {
    * Check for software controls of the given software category
    * Note: Writes to DAO if ONE would be returns and saveToDao is true. This is a small shortcut, preventing a
    * separate call to CategoryControlsServiceClient request the single control code to save.
+   * @param goodsType The goods type to check the controls of, should be {@link GoodsType#SOFTWARE} or {@link GoodsType#TECHNOLOGY}
    * @param softTechCategory The software category to check the controls of
    * @param saveToDao Whether to save the single control code to the DAO, if a single control code were to be returned
    *                  by the CategoryControlsServiceClient request
    * @return The applicable software controls
    */
-  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftTechCategory softTechCategory, boolean saveToDao) {
-    return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softTechCategory) //TODO TECHNOLOGY
+  public CompletionStage<ApplicableSoftTechControls> checkSoftTechControls(GoodsType goodsType, SoftTechCategory softTechCategory, boolean saveToDao) {
+    return categoryControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> {
+          if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
+            throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+                , goodsType.toString()));
+          }
           int size = result.controlCodes.size();
           if (size == 0) {
             return ApplicableSoftTechControls.ZERO;
@@ -71,8 +76,14 @@ public class SoftTechJourneyHelper {
             // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
             if (saveToDao) {
               ControlCode controlCode = result.controlCodes.get(0);
-              permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                  ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
+              if (goodsType == GoodsType.SOFTWARE) {
+                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                    ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
+              }
+              else { // GoodsType.TECHNOLOGY
+                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                    ControlCodeJourney.TECHNOLOGY_CONTROLS, controlCode.controlCode);
+              }
             }
             return ApplicableSoftTechControls.ONE;
           }
@@ -85,18 +96,7 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  /**
-   * Check for software controls of the given software category
-   * @param softTechCategory The software category to check the controls of
-   * @return The applicable software controls
-   */
-  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftTechCategory softTechCategory) {
-    return checkSoftwareControls(softTechCategory, false);
-  }
-
-
   public CompletionStage<ApplicableSoftTechControls> checkRelatedSoftwareControls(String controlCode, boolean saveToDao) {
-
     return relatedControlsServiceClient.get(GoodsType.SOFTWARE, controlCode) // TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();

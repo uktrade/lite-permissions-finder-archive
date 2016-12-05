@@ -69,7 +69,7 @@ public class NotApplicableController {
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkSoftwareControls(softTechCategory)
+      return softTechJourneyHelper.checkSoftTechControls(GoodsType.SOFTWARE, softTechCategory, false)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
@@ -114,8 +114,9 @@ public class NotApplicableController {
         controlCodeJourney -> this.renderForm(controlCodeJourney, showExtendedContent));
   }
 
-  public CompletionStage<Result> renderSoftwareControlsForm(String showExtendedContent) {
-    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS, showExtendedContent);
+  public CompletionStage<Result> renderControlsForm(String goodsTypeText, String showExtendedContent) {
+    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText,
+        controlCodeJourney -> renderForm(controlCodeJourney, showExtendedContent));
   }
 
   public CompletionStage<Result> renderRelatedSoftwareControlsForm(String showExtendedContent) {
@@ -146,7 +147,7 @@ public class NotApplicableController {
       else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
         // A different action is expected for each valid member of ApplicableSoftTechControls
         SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-        return softTechJourneyHelper.checkSoftwareControls(softTechCategory)
+        return softTechJourneyHelper.checkSoftTechControls(GoodsType.SOFTWARE, softTechCategory, false)
             .thenApplyAsync(controls -> softwareControls(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
@@ -247,8 +248,8 @@ public class NotApplicableController {
     return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
-  public CompletionStage<Result> handleSoftwareControlsSubmit() {
-    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {

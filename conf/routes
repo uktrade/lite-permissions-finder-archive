@@ -269,9 +269,9 @@ GET     /controls/:goodsType/decontrols                  controllers.controlcode
 
 POST    /controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/not-applicable              controllers.controlcode.NotApplicableController.renderSoftwareControlsForm(extended)
+GET     /controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.renderControlsForm(goodsType, extended)
 
-POST    /software-controls/not-applicable              controllers.controlcode.NotApplicableController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleControlsSubmit(goodsType)
 
 GET     /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.renderSoftwareControlsForm
 

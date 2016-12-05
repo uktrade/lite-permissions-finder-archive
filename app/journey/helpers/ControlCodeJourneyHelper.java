@@ -43,8 +43,9 @@ public class ControlCodeJourneyHelper {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-      return softTechJourneyHelper.checkSoftwareControls(softTechCategory)
+      GoodsType goodsType = GoodsType.SOFTWARE;
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+      return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, false)
           .thenComposeAsync(asc ->
                   journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE, asc)
               , httpExecutionContext.current());
@@ -57,6 +58,7 @@ public class ControlCodeJourneyHelper {
               , httpExecutionContext.current());
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+      // TODO Account for technology catchall
       return softTechJourneyHelper.performCatchallSoftwareControlNotApplicableTransition();
     }
     else {
