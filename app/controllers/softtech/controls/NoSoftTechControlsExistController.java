@@ -56,7 +56,7 @@ public class NoSoftTechControlsExistController {
     }
     String action = form.get().action;
     if ("continue".equals(action)) {
-      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
     }
     else {
       throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
@@ -65,7 +65,7 @@ public class NoSoftTechControlsExistController {
 
   private CompletionStage<Result> renderWithForm(GoodsType goodsType, Form<NoSoftwareControlsExistForm> form) {
     SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-    return softTechJourneyHelper.checkCatchtallSoftwareControls(softTechCategory, false)
+    return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
         .thenApplyAsync(control -> {
           if (control == ApplicableSoftTechControls.ONE || control == ApplicableSoftTechControls.GREATER_THAN_ONE) {
             return ok(noSoftTechControlsExist.render(form, new NoSoftTechControlsExistDisplay(goodsType)));

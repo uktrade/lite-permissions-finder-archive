@@ -142,7 +142,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
       return journeyManager.performTransition(Events.NONE_MATCHED);
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

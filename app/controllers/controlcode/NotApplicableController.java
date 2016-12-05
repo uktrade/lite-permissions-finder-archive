@@ -92,13 +92,14 @@ public class NotApplicableController {
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-      return softTechJourneyHelper.checkCatchtallSoftwareControls(softTechCategory, false)
+      return softTechJourneyHelper.checkCatchtallSoftwareControls(GoodsType.SOFTWARE, softTechCategory, false)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
                       result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
           ), httpExecutionContext.current());
     }
+    // TODO TECHNOLOGY_CATCHALL_CONTROLS
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));
@@ -160,11 +161,13 @@ public class NotApplicableController {
       }
       else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
         // A different action is expected for each valid member of ApplicableSoftTechControls
-        SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-        return softTechJourneyHelper.checkCatchtallSoftwareControls(softTechCategory, false)
+        GoodsType goodsType = GoodsType.SOFTWARE;
+        SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+        return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
             .thenApplyAsync(controls -> softwareCatcallControls(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
+      // TODO TECHNOLOGY_CATCHALL_CONTROLS
       else {
         throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
             , controlCodeJourney.toString()));
@@ -203,7 +206,7 @@ public class NotApplicableController {
     // TODO remove duplicate code
     if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
       if ("continue".equals(action)) {
-        return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
+        return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
       }
       else {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");

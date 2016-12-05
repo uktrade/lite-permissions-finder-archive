@@ -83,7 +83,7 @@ public class SoftTechControlsController {
           return journeyManager.performTransition(Events.NONE_MATCHED);
         }
         else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
-          return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
+          return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
         }
         else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
           return softTechJourneyHelper.performCatchallSoftTechControlRelationshipTransition(GoodsType.SOFTWARE);

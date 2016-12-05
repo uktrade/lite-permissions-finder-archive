@@ -545,7 +545,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(controlCodeForSoftwareControls)
-        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableSoftwareControls))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableSoftwareControls));
@@ -558,7 +558,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(additionalSpecificationsSoftwareControls)
-        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls));
@@ -570,7 +570,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(decontrolsSoftwareControls)
-        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls));
@@ -581,7 +581,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(technicalNotesSoftwareControls)
-        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedSoftwareControls));
@@ -633,7 +633,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(controlCodeForRelatedSoftwareControls)
-        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableRelatedSoftwareControls))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableRelatedSoftwareControls));
@@ -646,7 +646,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(additionalSpecificationsRelatedSoftwareControls)
-        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls));
@@ -658,7 +658,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(decontrolsRelatedSoftwareControls)
-        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls));
@@ -669,7 +669,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(technicalNotesRelatedSoftwareControls)
-        .onEvent(Events.CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableExtendedRelatedSoftwareControls));

@@ -121,8 +121,8 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(SoftTechCategory softTechCategory, boolean saveToDao) {
-    return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softTechCategory) // TODO TECHNOLOGY
+  public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(GoodsType goodsType, SoftTechCategory softTechCategory, boolean saveToDao) {
+    return catchallControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
@@ -132,8 +132,14 @@ public class SoftTechJourneyHelper {
             // Saving to the DAO here prevents a separate call to the CatchallControlsServiceClient, if not a little hacky
             if (saveToDao) {
               ControlCode catchallControlCode = result.controlCodes.get(0);
-              permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                  ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
+              if (goodsType == GoodsType.SOFTWARE) {
+                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                    ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
+              }
+              else { // GoodsType.TECHNOLOGY
+                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                    ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS, catchallControlCode.controlCode);
+              }
             }
             return ApplicableSoftTechControls.ONE;
           }
@@ -159,10 +165,9 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> performCatchallSoftwareControlsTransition() {
-    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-
-    return checkCatchtallSoftwareControls(softTechCategory, true)
+  public CompletionStage<Result> performCatchallSoftTechControlsTransition(GoodsType goodsType) {
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+    return checkCatchtallSoftwareControls(goodsType, softTechCategory, true)
         .thenComposeAsync(controls -> {
           if (controls == ApplicableSoftTechControls.ZERO) {
             return checkRelationshipExists(softTechCategory)
@@ -196,9 +201,9 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> performCatchallSoftwareControlNotApplicableTransition() {
-    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-    return checkCatchtallSoftwareControls(softTechCategory, true)
+  public CompletionStage<Result> performCatchallSoftTechControlNotApplicableTransition(GoodsType goodsType) {
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+    return checkCatchtallSoftwareControls(goodsType, softTechCategory, true)
         .thenComposeAsync(controls -> {
          if (controls == ApplicableSoftTechControls.ONE) {
            return checkRelationshipExists(softTechCategory)

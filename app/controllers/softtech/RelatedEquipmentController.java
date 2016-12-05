@@ -9,6 +9,7 @@ import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.helpers.SoftTechJourneyHelper;
+import models.GoodsType;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -57,7 +58,7 @@ public class RelatedEquipmentController {
     }
     else if ("false".equals(relatedToEquipmentOrMaterials)) {
       permissionsFinderDao.saveRelatedToEquipmentOrMaterials(false);
-      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
     }
     else {
       throw new FormStateException(String.format("Unknown value for relatedToEquipmentOrMaterials: \"%s\"",
