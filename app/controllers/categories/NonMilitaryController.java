@@ -58,7 +58,7 @@ public class NonMilitaryController {
         .getMatched(nonMilitaryFirearmsExportedBySelf);
     if (typeOptional.isPresent()) {
       permissionsFinderDao.saveNonMilitaryFirearmsExportedBySelf(nonMilitaryFirearmsExportedBySelf);
-      return journeyManager.performTransition(Events.NON_MILITARY_FIREARMS_QUESTION_ANSWERERD, typeOptional.get());
+      return journeyManager.performTransition(Events.NON_MILITARY_FIREARMS_QUESTION_ANSWERED, typeOptional.get());
     }
     else {
       throw new FormStateException("Unknown value of nonMilitaryFirearmsExportedBySelf: \"" + nonMilitaryFirearmsExportedBySelf + "\"");

@@ -225,7 +225,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(false, moveTo(categoryMedicinesDrugsStatic));
 
     atStage(categoryNonMilitary)
-        .onEvent(Events.NON_MILITARY_FIREARMS_QUESTION_ANSWERERD)
+        .onEvent(Events.NON_MILITARY_FIREARMS_QUESTION_ANSWERED)
         .branch()
         .when(NonMilitaryFirearmExportBySelfType.YES, moveTo(categoryNonMilitaryCheckDestination))
         .when(NonMilitaryFirearmExportBySelfType.NO_INCLUDED_IN_PERSONAL_EFFECTS, moveTo(categoryNonMilitaryCheckDestination))
