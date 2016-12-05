@@ -34,7 +34,10 @@ public class TechnicalNotesDisplay {
       this.formAction = routes.TechnicalNotesController.handleRelatedSoftwareControlsSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.TechnicalNotesController.handleSoftwareCatchallControlsSubmit().url();
+      this.formAction = routes.TechnicalNotesController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+      this.formAction = routes.TechnicalNotesController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

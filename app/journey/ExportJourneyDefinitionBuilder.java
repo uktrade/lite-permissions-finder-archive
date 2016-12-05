@@ -708,7 +708,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.DecontrolsController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString()));
 
     JourneyStage technicalNotesSoftwareCatchallControls = defineStage("technicalNotesSoftwareCatchallControls", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderSoftwareCatchallControlsForm());
+        controllers.controlcode.routes.TechnicalNotesController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString()));
 
     atStage(softwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_SELECTED)

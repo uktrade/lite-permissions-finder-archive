@@ -249,9 +249,9 @@ GET     /category-catchall-controls/:goodsType/not-applicable              contr
 
 POST    /category-catchall-controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/technical-notes             controllers.controlcode.TechnicalNotesController.renderSoftwareCatchallControlsForm
+GET     /category-catchall-controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareCatchallControlsSubmit
+POST    /category-catchall-controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleCatchallControlsSubmit(goodsType)
 
 GET     /software-category-catchall-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.renderSoftwareCatchallForm
 
