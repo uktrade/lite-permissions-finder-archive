@@ -261,9 +261,9 @@ GET     /controls/:goodsType                             controllers.controlcode
 
 POST    /controls/:goodsType                             controllers.controlcode.ControlCodeController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSoftwareControlsForm
+GET     /controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderControlsForm(goodsType)
 
-POST    /software-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleControlsSubmit(goodsType)
 
 GET     /software-controls/decontrols                  controllers.controlcode.DecontrolsController.renderSoftwareControlsForm
 
