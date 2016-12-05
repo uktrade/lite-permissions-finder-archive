@@ -64,19 +64,24 @@ public class NotApplicableController {
                       Boolean.parseBoolean(showExtendedContent))))
               , httpExecutionContext.current());
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
+        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+
+      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS
+          ? GoodsType.SOFTWARE
+          : GoodsType.TECHNOLOGY;
+
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkSoftTechControls(GoodsType.SOFTWARE, softTechCategory, false)
+      return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, false)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
                       result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
           ), httpExecutionContext.current());
     }
-    // TODO TECHNOLOGY_CONTROLS
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
@@ -90,13 +95,11 @@ public class NotApplicableController {
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
         controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      GoodsType goodsType;
-      if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-        goodsType = GoodsType.SOFTWARE;
-      }
-      else {
-        goodsType = GoodsType.TECHNOLOGY;
-      }
+
+      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
+          ? GoodsType.SOFTWARE
+          : GoodsType.TECHNOLOGY;
+
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
@@ -179,7 +182,7 @@ public class NotApplicableController {
         // A different action is expected for each valid member of ApplicableSoftTechControls
         SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
         return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
-            .thenApplyAsync(controls -> softwareCatcallControls(controls, action),
+            .thenApplyAsync(controls -> softTechCatcallControls(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
       else {
@@ -241,7 +244,7 @@ public class NotApplicableController {
     }
   }
 
-  private CompletionStage<Result> softwareCatcallControls(ApplicableSoftTechControls applicableSoftTechControls, String action) {
+  private CompletionStage<Result> softTechCatcallControls(ApplicableSoftTechControls applicableSoftTechControls, String action) {
     if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
       if ("returnToControls".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
