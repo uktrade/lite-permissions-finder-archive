@@ -23,8 +23,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
 public class TechnicalNotesController {
-
-  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
@@ -32,13 +30,11 @@ public class TechnicalNotesController {
   private final ControlCodeJourneyHelper controlCodeJourneyHelper;
 
   @Inject
-  public TechnicalNotesController(JourneyManager journeyManager,
-                                  FormFactory formFactory,
+  public TechnicalNotesController(FormFactory formFactory,
                                   PermissionsFinderDao permissionsFinderDao,
                                   HttpExecutionContext httpExecutionContext,
                                   FrontendServiceClient frontendServiceClient,
                                   ControlCodeJourneyHelper controlCodeJourneyHelper) {
-    this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
@@ -63,8 +59,8 @@ public class TechnicalNotesController {
     return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
   }
 
-  public CompletionStage<Result> renderSoftwareControlsForm() {
-    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
+  public CompletionStage<Result> renderControlsForm(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
@@ -108,8 +104,8 @@ public class TechnicalNotesController {
     return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
-  public CompletionStage<Result> handleSoftwareControlsSubmit() {
-    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {

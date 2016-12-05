@@ -28,7 +28,10 @@ public class TechnicalNotesDisplay {
       this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-      this.formAction = routes.TechnicalNotesController.handleSoftwareControlsSubmit().url();
+      this.formAction = routes.TechnicalNotesController.handleControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+      this.formAction = routes.TechnicalNotesController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.TechnicalNotesController.handleRelatedSoftwareControlsSubmit().url();

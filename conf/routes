@@ -273,9 +273,9 @@ GET     /controls/:goodsType/not-applicable              controllers.controlcode
 
 POST    /controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.renderSoftwareControlsForm
+GET     /controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.renderControlsForm(goodsType)
 
-POST    /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleControlsSubmit(goodsType)
 
 GET     /software-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.renderSofwareCategoryForm
 
