@@ -1,6 +1,5 @@
 package controllers.softtech.controls;
 
-import static journey.helpers.SoftTechJourneyHelper.validateThenGetResult;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -38,7 +37,7 @@ public class NoSoftTechControlsExistController {
   }
 
   public CompletionStage<Result> renderForm(String goodsTypeText) {
-    return validateThenGetResult(goodsTypeText, this::renderFormInternal);
+    return SoftTechJourneyHelper.validateGoodsTypeAndGetResult(goodsTypeText, this::renderFormInternal);
   }
 
   private CompletionStage<Result> renderFormInternal(GoodsType goodsType) {
@@ -46,7 +45,7 @@ public class NoSoftTechControlsExistController {
   }
 
   public CompletionStage<Result> handleSubmit(String goodsTypeText) {
-    return validateThenGetResult(goodsTypeText, this::handleSubmitInternal);
+    return SoftTechJourneyHelper.validateGoodsTypeAndGetResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   private CompletionStage<Result> handleSubmitInternal(GoodsType goodsType) {

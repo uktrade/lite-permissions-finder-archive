@@ -241,7 +241,7 @@ public class SoftTechJourneyHelper {
             , httpExecutionContext.current());
   }
 
-  public static CompletionStage<Result> validateThenGetResult(String goodsTypeText, Function<GoodsType, CompletionStage<Result>> resultFunc) {
+  public static CompletionStage<Result> validateGoodsTypeAndGetResult(String goodsTypeText, Function<GoodsType, CompletionStage<Result>> resultFunc) {
     if (StringUtils.isNotEmpty(goodsTypeText)) {
       GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
       if (goodsType == GoodsType.SOFTWARE || goodsType == GoodsType.TECHNOLOGY) {
@@ -279,8 +279,18 @@ public class SoftTechJourneyHelper {
     }
   }
 
+  public static CompletionStage<Result> getCategoryControlsResult(String goodsTypeText, Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, SoftTechControlsJourney.SOFTWARE_CATEGORY,
+        SoftTechControlsJourney.TECHNOLOGY_CATEGORY, resultFunc);
+  }
+
   public static CompletionStage<Result> getCatchallControlsResult(String goodsTypeText, Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
     return validateGoodsTypeAndGetResult(goodsTypeText, SoftTechControlsJourney.SOFTWARE_CATCHALL,
         SoftTechControlsJourney.TECHNOLOGY_CATCHALL, resultFunc);
+  }
+
+  public static CompletionStage<Result> getRelatedControlsResult(String goodsTypeText, Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD,
+        SoftTechControlsJourney.TECHNOLOGY_RELATED_TO_A_PHYSICAL_GOOD, resultFunc);
   }
 }

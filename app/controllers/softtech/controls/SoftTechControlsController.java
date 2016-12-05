@@ -58,8 +58,8 @@ public class SoftTechControlsController {
     return renderWithForm(softTechControlsJourney, formFactory.form(SoftTechControlsForm.class));
   }
 
-  public CompletionStage<Result> renderSofwareCategoryForm() {
-    return renderForm(SoftTechControlsJourney.SOFTWARE_CATEGORY);
+  public CompletionStage<Result> renderCategoryForm(String goodsTypeText) {
+    return SoftTechJourneyHelper.getCategoryControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderRelatedToPhysicalGoodForm() {
@@ -79,7 +79,8 @@ public class SoftTechControlsController {
     String controlCode = form.get().controlCode;
     if (StringUtils.isNotEmpty(action)) {
       if ("noMatchedControlCode".equals(action)) {
-        if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
+        if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY ||
+            softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
           return journeyManager.performTransition(Events.NONE_MATCHED);
         }
         else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
@@ -105,6 +106,9 @@ public class SoftTechControlsController {
       if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
         permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
       }
+      else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.TECHNOLOGY_CONTROLS, controlCode);
+      }
       else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
         permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
       }
@@ -125,8 +129,8 @@ public class SoftTechControlsController {
     }
   }
 
-  public CompletionStage<Result> handleSoftwareCategorySubmit() {
-    return handleSubmit(SoftTechControlsJourney.SOFTWARE_CATEGORY);
+  public CompletionStage<Result> handleCategorySubmit(String goodsTypeText) {
+    return SoftTechJourneyHelper.getCategoryControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleRelatedToPhysicalGoodSubmit() {
@@ -139,10 +143,16 @@ public class SoftTechControlsController {
 
   private CompletionStage<Result> renderWithForm(SoftTechControlsJourney softTechControlsJourney, Form<SoftTechControlsForm> form) {
     // Setup DAO state based on view variant
-    if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
+    if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY ||
+        softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
+
+      GoodsType goodsType = softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY
+          ? GoodsType.SOFTWARE
+          : GoodsType.TECHNOLOGY;
+
       // Software category is expected at this stage of the journey
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-      return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softTechCategory) // TODO TECHNOLOGY
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+      return categoryControlsServiceClient.get(goodsType, softTechCategory)
           .thenApplyAsync(result -> {
             SoftTechControlsDisplay display = new SoftTechControlsDisplay(softTechControlsJourney, result.controlCodes);
             return ok(softTechControls.render(form, display));

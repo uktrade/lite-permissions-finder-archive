@@ -49,7 +49,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage controlCodeSoftwareCatchallControls = defineStage("controlCodeSoftwareCatchallControls", "Summary",
       controllers.controlcode.routes.ControlCodeController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString()));
   private final JourneyStage softwareCategoryControls = defineStage("softwareCategoryControls", "Showing controls related to software category",
-      controllers.softtech.controls.routes.SoftTechControlsController.renderSofwareCategoryForm());
+      controllers.softtech.controls.routes.SoftTechControlsController.renderCategoryForm(GoodsType.SOFTWARE.toUrlString()));
   private final JourneyStage softwareRelatedToPhysicalGoodControls = defineStage("softwareRelatedToPhysicalGoodControls", "Showing controls related to your selected physical good",
       controllers.softtech.controls.routes.SoftTechControlsController.renderRelatedToPhysicalGoodForm());
   private final JourneyStage softwareCatchallControls= defineStage("softwareCatchallControls", "Showing catchall controls related to your items category",

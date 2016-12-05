@@ -277,9 +277,9 @@ GET     /controls/:goodsType/technical-notes             controllers.controlcode
 
 POST    /controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.renderSofwareCategoryForm
+GET     /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCategoryForm(goodsType)
 
-POST    /software-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.handleSoftwareCategorySubmit
+POST    /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCategorySubmit(goodsType)
 
 GET     /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.renderRelatedSoftwareControlsForm
 
