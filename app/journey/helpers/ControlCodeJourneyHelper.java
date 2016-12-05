@@ -64,7 +64,9 @@ public class ControlCodeJourneyHelper {
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
       return softTechJourneyHelper.performCatchallSoftTechControlNotApplicableTransition(GoodsType.SOFTWARE);
     }
-    // TODO TECHNOLOGY_CATCHALL_CONTROLS
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+      return softTechJourneyHelper.performCatchallSoftTechControlNotApplicableTransition(GoodsType.TECHNOLOGY);
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));

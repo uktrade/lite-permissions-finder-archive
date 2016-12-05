@@ -56,7 +56,7 @@ public class NoSoftTechControlsExistController {
     }
     String action = form.get().action;
     if ("continue".equals(action)) {
-      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(goodsType);
     }
     else {
       throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
