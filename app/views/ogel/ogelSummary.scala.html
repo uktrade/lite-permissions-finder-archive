@@ -3,6 +3,7 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.state._
+@import views.html.ogel._
 
 @(form: Form[OgelSummaryForm], ogel: OgelServiceResult, physicalGoodControlCode: String, allowedToProceed: Boolean)
 @standardPage(ogel.name, Some(Html(ogel.name))){
@@ -13,45 +14,7 @@
     You may be able to use the <strong class="bold-small">@ogel.name</strong>. What you can and can&apos;t do with this licence is show below.
   </p>
 
-  <h2 class="heading-medium">
-    What you can do
-  </h2>
-
-  <ul class="ogel-summary-bullet-list">
-    @for(can <- ogel.summary.canList) {
-      <li>
-        @can
-      </li>
-    }
-  </ul>
-
-  <h2 class="heading-medium">
-    @Html("What you can't do")
-  </h2>
-
-  <ul class="ogel-summary-bullet-list">
-    @for(cant <- ogel.summary.cantList) {
-      <li>
-        @cant
-      </li>
-    }
-  </ul>
-
-  <h2 class="heading-medium">
-    What you must do
-  </h2>
-
-  <ul class="list ogel-summary-bullet-list">
-    @for(must <- ogel.summary.mustList) {
-      <li>
-        @must
-      </li>
-    }
-  </ul>
-
-  <p class="bold-small">
-    <a class="external" href="@ogel.link" rel="external" target="_blank">Read the full licence</a> for more on how to use it, what you can export and permitted export destinations.
-  </p>
+  @ogelConditionSummary(ogel)
 
   <form action="@controllers.ogel.routes.OgelSummaryController.handleSubmit()" method="POST">
 

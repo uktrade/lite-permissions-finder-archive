@@ -1,8 +1,11 @@
-# routes-import
+# Routes - import
 
 GET         /import/:stageKey                   controllers.importcontent.ImportController.renderForm(stageKey: String)
 POST        /import-content                     controllers.importcontent.ImportController.handleSubmit
 GET         /import-static                      controllers.importcontent.StaticController.render(importHtmlName: String)
+
+# Route Ogel Conditions
+GET         /ogel-conditions/:ogelId            controllers.ViewOgelController.viewOgel(ogelId: String)
 
 # Routes
 # ~~~~
