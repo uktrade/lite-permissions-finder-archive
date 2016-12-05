@@ -33,7 +33,10 @@ public class DecontrolsDisplay {
       this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-      this.formAction = routes.DecontrolsController.handleSoftwareControlsSubmit().url();
+      this.formAction = routes.DecontrolsController.handleControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+      this.formAction = routes.DecontrolsController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.DecontrolsController.handleRelatedSoftwareControlsSubmit().url();

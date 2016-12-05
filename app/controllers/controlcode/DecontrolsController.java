@@ -65,8 +65,8 @@ public class DecontrolsController {
     return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
   }
 
-  public CompletionStage<Result> renderSoftwareControlsForm() {
-    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
+  public CompletionStage<Result> renderControlsForm(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
@@ -115,8 +115,8 @@ public class DecontrolsController {
     return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
-  public CompletionStage<Result> handleSoftwareControlsSubmit() {
-    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
