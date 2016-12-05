@@ -2,6 +2,7 @@ package models.softtech.controls;
 
 import components.services.controlcode.controls.ControlCode;
 import controllers.softtech.controls.routes;
+import models.GoodsType;
 
 import java.util.List;
 
@@ -21,7 +22,11 @@ public class SoftTechControlsDisplay {
       this.pageTitle = "Showing controls related to your selected physical good";
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-      this.formAction = routes.SoftTechControlsController.handleSoftwareCatchallSubmit().url();
+      this.formAction = routes.SoftTechControlsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.pageTitle = "Showing catchall controls related to your items category";
+    }
+    else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
+      this.formAction = routes.SoftTechControlsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
       this.pageTitle = "Showing catchall controls related to your items category";
     }
     else {

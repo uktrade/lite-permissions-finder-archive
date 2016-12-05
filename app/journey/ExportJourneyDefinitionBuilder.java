@@ -53,7 +53,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage softwareRelatedToPhysicalGoodControls = defineStage("softwareRelatedToPhysicalGoodControls", "Showing controls related to your selected physical good",
       controllers.softtech.controls.routes.SoftTechControlsController.renderRelatedToPhysicalGoodForm());
   private final JourneyStage softwareCatchallControls= defineStage("softwareCatchallControls", "Showing catchall controls related to your items category",
-      controllers.softtech.controls.routes.SoftTechControlsController.renderSoftwareCatchallForm());
+      controllers.softtech.controls.routes.SoftTechControlsController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString()));
   private JourneyStage relatedToEquipmentOrMaterials = defineStage("relatedToEquipmentOrMaterials", "Is your software any of the following?",
       controllers.softtech.routes.RelatedEquipmentController.renderForm());
   private JourneyStage noSoftwareControlsExist = defineStage("noSoftTechControlsExist", "No software controls exist for item",

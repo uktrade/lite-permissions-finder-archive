@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
+import components.services.controlcode.controls.catchall.CatchallControlsServiceResult;
 import components.services.controlcode.controls.category.CategoryControlsServiceClient;
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
@@ -66,8 +67,8 @@ public class SoftTechControlsController {
     return renderForm(SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
-  public CompletionStage<Result> renderSoftwareCatchallForm() {
-    return renderForm(SoftTechControlsJourney.SOFTWARE_CATCHALL);
+  public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
+    return SoftTechJourneyHelper.getCatchallControlsResult(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(SoftTechControlsJourney softTechControlsJourney) {
@@ -86,7 +87,10 @@ public class SoftTechControlsController {
           return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
         }
         else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-          return softTechJourneyHelper.performCatchallSoftwareControlRelationshipTransition();
+          return softTechJourneyHelper.performCatchallSoftTechControlRelationshipTransition(GoodsType.SOFTWARE);
+        }
+        else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
+          return softTechJourneyHelper.performCatchallSoftTechControlRelationshipTransition(GoodsType.TECHNOLOGY);
         }
         else {
           throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
@@ -108,6 +112,9 @@ public class SoftTechControlsController {
       else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
         permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
       }
+      else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS, controlCode);
+      }
       else {
         throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
             , softTechControlsJourney.toString()));
@@ -127,8 +134,8 @@ public class SoftTechControlsController {
     return handleSubmit(SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
-  public CompletionStage<Result> handleSoftwareCatchallSubmit() {
-    return handleSubmit(SoftTechControlsJourney.SOFTWARE_CATCHALL);
+  public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
+    return SoftTechJourneyHelper.getCatchallControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   private CompletionStage<Result> renderWithForm(SoftTechControlsJourney softTechControlsJourney, Form<SoftwareControlsForm> form) {
@@ -164,28 +171,35 @@ public class SoftTechControlsController {
           }, httpExecutionContext.current());
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-      // Software category is expected at this stage of the journey
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-      return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softTechCategory) // TODO TECHNOLOGY
-          .thenApplyAsync(result -> {
-            int size = result.controlCodes.size();
-            if (size > 1) {
-              /**
-               * Expecting more than one control code here. 1 or 0 control codes should not reach this point (and should
-               * have prompted a different transition)
-               */
-              SoftTechControlsDisplay display = new SoftTechControlsDisplay(softTechControlsJourney, result.controlCodes);
-              return ok(softTechControls.render(form, display));
-            }
-            else {
-              throw new RuntimeException(String.format("Invalid value for size: \"%d\"", size));
-            }
-          }, httpExecutionContext.current());
+      return catchallControls(softTechControlsJourney, form, GoodsType.SOFTWARE);
+    }
+    else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
+      return catchallControls(softTechControlsJourney, form, GoodsType.TECHNOLOGY);
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
           , softTechControlsJourney.toString()));
     }
+  }
+
+  private CompletionStage<Result> catchallControls(SoftTechControlsJourney softTechControlsJourney, Form<SoftwareControlsForm> form, GoodsType goodsType) {
+    // SoftTech category is expected at this stage of the journey
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+    return catchallControlsServiceClient.get(goodsType, softTechCategory)
+        .thenApplyAsync(result -> {
+          int size = result.controlCodes.size();
+          if (size > 1) {
+            /**
+             * Expecting more than one control code here. 1 or 0 control codes should not reach this point (and should
+             * have prompted a different transition)
+             */
+            SoftTechControlsDisplay display = new SoftTechControlsDisplay(softTechControlsJourney, result.controlCodes);
+            return ok(softTechControls.render(form, display));
+          }
+          else {
+            throw new RuntimeException(String.format("Invalid value for size: \"%d\"", size));
+          }
+        }, httpExecutionContext.current());
   }
 
   public static class SoftwareControlsForm {

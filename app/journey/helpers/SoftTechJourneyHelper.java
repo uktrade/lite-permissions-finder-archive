@@ -16,6 +16,7 @@ import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.Relationship;
 import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
 import models.softtech.SoftTechCategory;
+import models.softtech.controls.SoftTechControlsJourney;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
@@ -227,8 +228,8 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> performCatchallSoftwareControlRelationshipTransition() {
-    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+  public CompletionStage<Result> performCatchallSoftTechControlRelationshipTransition(GoodsType goodsType) {
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
     return checkRelationshipExists(softTechCategory)
         .thenComposeAsync(relationship ->
                 journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP, relationship)
@@ -251,4 +252,30 @@ public class SoftTechJourneyHelper {
     }
   }
 
+  private static CompletionStage<Result> validateGoodsTypeAndGetResult(String goodsTypeText,
+                                                                       SoftTechControlsJourney softwareJourney,
+                                                                       SoftTechControlsJourney technologyJourney,
+                                                                       Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
+    if (StringUtils.isNotEmpty(goodsTypeText)) {
+      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
+      if (goodsType == GoodsType.SOFTWARE) {
+        return resultFunc.apply(softwareJourney);
+      }
+      else if (goodsType == GoodsType.TECHNOLOGY) {
+        return resultFunc.apply(technologyJourney);
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+            , goodsType.toString()));
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
+    }
+  }
+
+  public static CompletionStage<Result> getCatchallControlsResult(String goodsTypeText, Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, SoftTechControlsJourney.SOFTWARE_CATCHALL,
+        SoftTechControlsJourney.TECHNOLOGY_CATCHALL, resultFunc);
+  }
 }

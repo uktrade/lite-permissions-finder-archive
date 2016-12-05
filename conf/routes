@@ -253,9 +253,9 @@ GET     /category-catchall-controls/:goodsType/technical-notes             contr
 
 POST    /category-catchall-controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.renderSoftwareCatchallForm
+GET     /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.handleSoftwareCatchallSubmit
+POST    /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCatchallControlsSubmit(goodsType)
 
 GET     /software-controls                             controllers.controlcode.ControlCodeController.renderSoftwareControlsForm
 
