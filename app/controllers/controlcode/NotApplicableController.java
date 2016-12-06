@@ -156,10 +156,16 @@ public class NotApplicableController {
           throw new FormStateException("Unknown value for action: \"" + action + "\"");
         }
       }
-      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
+      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
+          controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+
+        GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
+            ? GoodsType.SOFTWARE
+            : GoodsType.TECHNOLOGY;
+
         // A different action is expected for each valid member of ApplicableSoftTechControls
-        SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-        return softTechJourneyHelper.checkSoftTechControls(GoodsType.SOFTWARE, softTechCategory, false)
+        SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+        return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, false)
             .thenApplyAsync(controls -> softTechControls(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
@@ -172,13 +178,11 @@ public class NotApplicableController {
       }
       else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
           controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-        GoodsType goodsType;
-        if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-          goodsType = GoodsType.SOFTWARE;
-        }
-        else {
-          goodsType = GoodsType.TECHNOLOGY;
-        }
+
+        GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
+            ? GoodsType.SOFTWARE
+            : GoodsType.TECHNOLOGY;
+
         // A different action is expected for each valid member of ApplicableSoftTechControls
         SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
         return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
