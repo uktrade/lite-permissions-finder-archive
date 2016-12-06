@@ -28,7 +28,8 @@ public class StaticContentController extends Controller {
     NOT_APPLICABLE("notApplicable.html", "You cannot use this service to get an export licence"),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     SOFTWARE_CONTROLS_NLR("software/controls/noLicenceRequired.html", "No software controls exist for the selected item"),
-    SOFTWARE_EXEMPTIONS_NLR("software/exemptionsNLR.html", "Software exemptions apply"),
+    SOFTWARE_EXEMPTIONS_NLR1("software/exemptionsNLR1.html", "No licence available"),
+    SOFTWARE_EXEMPTIONS_NLR2("software/exemptionsNLR2.html", "No licence available"),
     SOFTWARE_RELATIONSHIP_NLR("software/relationship/noLicenceRequired.html", "No relationship between software and technology"),
     SOFTWARE_RELATIONSHIP_CONTACT_ECO("software/relationship/contactECO.html", "Contact ECO"),
     TECHNOLOGY_CONTROLS_NLR("technology/controls/noLicenceRequired.html", "No technology controls exist for the selected item"),
@@ -117,8 +118,12 @@ public class StaticContentController extends Controller {
     return renderStaticHtml(StaticHtml.TECHNOLOGY_CONTROLS_NLR);
   }
 
-  public Result renderSoftwareExemptionsNLR() {
-    return renderStaticHtml(StaticHtml.SOFTWARE_EXEMPTIONS_NLR);
+  public Result renderSoftwareExemptionsNLR1() {
+    return renderStaticHtml(StaticHtml.SOFTWARE_EXEMPTIONS_NLR1);
+  }
+
+  public Result renderSoftwareExemptionsNLR2() {
+    return renderStaticHtml(StaticHtml.SOFTWARE_EXEMPTIONS_NLR2);
   }
 
   public Result renderSoftwareRelationshipNLR() {

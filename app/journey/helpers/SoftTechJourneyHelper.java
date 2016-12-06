@@ -53,7 +53,7 @@ public class SoftTechJourneyHelper {
 
   /**
    * Check for software controls of the given software category
-   * Note: Writes to DAO if ONE would be returns and saveToDao is true. This is a small shortcut, preventing a
+   * Note: Writes to DAO if Q1 would be returns and saveToDao is true. This is a small shortcut, preventing a
    * separate call to CategoryControlsServiceClient request the single control code to save.
    * @param goodsType The goods type to check the controls of, should be {@link GoodsType#SOFTWARE} or {@link GoodsType#TECHNOLOGY}
    * @param softTechCategory The software category to check the controls of

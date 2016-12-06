@@ -38,8 +38,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.StaticContentController.renderNotApplicable());
 
   /** Software **/
-  private final JourneyStage softwareExemptions = defineStage("softwareExemptions", "Some types of software do not need a licence",
-      controllers.softtech.routes.ExemptionsController.renderForm());
+  private final JourneyStage softwareExemptionsQ1 = defineStage("softwareExemptionsQ1", "Some types of software do not need a licence",
+      controllers.softtech.routes.ExemptionsController.renderFormQ1());
+  private final JourneyStage softwareExemptionsQ2 = defineStage("softwareExemptionsQ2", "Some types of software do not need a licence",
+      controllers.softtech.routes.ExemptionsController.renderFormQ2());
   private final JourneyStage physicalGoodsSearchRelatedToSoftware = defineStage("physicalGoodsSearchRelatedToSoftware", "Describe your items",
       controllers.search.routes.PhysicalGoodsSearchController.renderSearchRelatedToForm(GoodsType.SOFTWARE.toUrlString()));
   private final JourneyStage controlCodeForSoftwareControls = defineStage("controlCodeSoftwareControls", "Summary",
@@ -77,7 +79,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(physicalGoodsSearch))
-        .when(GoodsType.SOFTWARE, moveTo(softwareExemptions))
+        .when(GoodsType.SOFTWARE, moveTo(softwareExemptionsQ1))
         .when(GoodsType.TECHNOLOGY, moveTo(notImplemented));
 
     physicalGoodsStages();
@@ -375,8 +377,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private void softwareStages() {
 
-    JourneyStage softwareExemptionsNLR = defineStage("softwareExemptionsNLR", "Software exemptions apply",
-        controllers.routes.StaticContentController.renderSoftwareExemptionsNLR());
+    JourneyStage softwareExemptionsNLR1 = defineStage("softwareExemptionsNLR1", "Software exemptions apply",
+        controllers.routes.StaticContentController.renderSoftwareExemptionsNLR1());
+
+    JourneyStage softwareExemptionsNLR2 = defineStage("softwareExemptionsNLR2", "Software exemptions apply",
+        controllers.routes.StaticContentController.renderSoftwareExemptionsNLR2());
 
     JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftTechCategories", "What is your software for?",
         controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.SOFTWARE.toUrlString()));
@@ -384,10 +389,16 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage softwareRelationshipContactECO = defineStage("softwareRelationshipContactECO", "Contact ECO",
         routes.StaticContentController.renderSoftwareRelationshipContactECO());
 
-    atStage(softwareExemptions)
+    atStage(softwareExemptionsQ1)
         .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
         .branch()
-        .when(SoftwareExemptionsFlow.EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR))
+        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR1))
+        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_DO_NOT_APPLY, moveTo(softwareExemptionsQ2));
+
+    atStage(softwareExemptionsQ2)
+        .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
+        .branch()
+        .when(SoftwareExemptionsFlow.Q1_AND_Q2_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR2))
         .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
         .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
         .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))

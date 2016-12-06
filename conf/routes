@@ -77,13 +77,21 @@ GET     /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTe
 
 POST    /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit(goodsType)
 
-GET     /exemptions-may-apply                 controllers.softtech.ExemptionsController.renderForm
+GET     /exemptions-may-apply/question-one        controllers.softtech.ExemptionsController.renderFormQ1
 
-POST    /exemptions-may-apply                 controllers.softtech.ExemptionsController.handleSubmit
+POST    /exemptions-may-apply/question-one        controllers.softtech.ExemptionsController.handleSubmitQ1
 
-GET     /exemptions-apply                     controllers.StaticContentController.renderSoftwareExemptionsNLR
+GET     /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.renderFormQ2
 
-POST    /exemptions-apply                     controllers.StaticContentController.renderSoftwareExemptionsNLR
+POST    /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.handleSubmitQ2
+
+GET     /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
+
+POST    /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
+
+GET     /exemptions-apply/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
+
+POST    /exemptions-apply/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
 
 GET     /export-category                      controllers.categories.ExportCategoryController.renderForm
 

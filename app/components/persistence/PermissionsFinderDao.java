@@ -55,7 +55,8 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY = "controlCodeAdditionalSpecificationsApply";
   public static final String CONTROL_CODE_DECONTROLS_APPLY = "controlCodeDecontrolsApply";
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
-  public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
+  public static final String DO_EXEMPTIONS_APPLY_Q1 = "doExemptionsApplyQ1";
+  public static final String DO_EXEMPTIONS_APPLY_Q2 = "doExemptionsApplyQ2";
   public static final String SOFT_TECH_CATEGORY = "softTechCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
   public static final String SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP = "softwareIsCoveredByTechnologyRelationship";
@@ -340,12 +341,20 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     deleteString(prependFieldName(controlCodeJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
   }
 
-  public void saveDoExemptionsApply(String doExemptionsApply) {
-    writeString(DO_EXEMPTIONS_APPLY, doExemptionsApply);
+  public void saveDoExemptionsApplyQ1(String doExemptionsApply) {
+    writeString(DO_EXEMPTIONS_APPLY_Q1, doExemptionsApply);
   }
 
-  public String getDoExemptionsApply() {
-    return readString(DO_EXEMPTIONS_APPLY);
+  public String getDoExemptionsApplyQ1() {
+    return readString(DO_EXEMPTIONS_APPLY_Q1);
+  }
+
+  public void saveDoExemptionsApplyQ2(String doExemptionsApply) {
+    writeString(DO_EXEMPTIONS_APPLY_Q2, doExemptionsApply);
+  }
+
+  public String getDoExemptionsApplyQ2() {
+    return readString(DO_EXEMPTIONS_APPLY_Q2);
   }
 
   public void saveSoftTechCategory(GoodsType goodsType, SoftTechCategory softTechCategory) {
