@@ -3,42 +3,39 @@
 @import views.html.util._
 @(field: Form.Field, hintText:String, removeButtonValue: Integer, showRemoveButton: Boolean, showDetailPanel: Boolean, countries: List[Country])
 <div id="@field.id" class="form-group @if(field.error.isDefined) { error}">
-  <div class="grid-row">
-    <div class="column-two-thirds">
-      @if(field.error.isDefined) {
-        <p class="error-message">@Messages(field.error.get.message)</p>
-      }
 
-      <label class="form-hint" for="@Html(field.id + "-s")">@hintText</label>
+  @if(field.error.isDefined) {
+    <p class="error-message">@Messages(field.error.get.message)</p>
+  }
 
-      <select name="@field.name" id="@Html(field.id + "-s")" class="form-control ui-autocomplete-base" autofocus="autofocus" autocorrect="off" autocomplete="off" ui-autocomplete="ui-autocomplete" ui-autocomplete-id="@Html(field.id + "-s")">
-        <option value="" @if(field.value == null || "".equals(field.value)) {selected="selected"}></option>
-        @for(country <- countries) {
-          <option value="@country.getCountryRef" data-alternative-spellings="" data-relevancy-booster="1" @if(field.value != null && country.getCountryRef.equals(field.value)){selected="selected"}>@country.getCountryName</option>
-        }
-      </select>
+  <label class="form-hint" for="@Html(field.id + "-s")">@hintText</label>
 
-      @if(showRemoveButton) {
+  <select name="@field.name" id="@Html(field.id + "-s")" class="form-control ui-autocomplete-base" autofocus="autofocus" autocorrect="off" autocomplete="off" ui-autocomplete="ui-autocomplete" ui-autocomplete-id="@Html(field.id + "-s")">
+    <option value="" @if(field.value == null || "".equals(field.value)) {selected="selected"}></option>
+    @for(country <- countries) {
+      <option value="@country.getCountryRef" data-alternative-spellings="" data-relevancy-booster="1" @if(field.value != null && country.getCountryRef.equals(field.value)){selected="selected"}>@country.getCountryName</option>
+    }
+  </select>
 
-        <button type="submit" class="link" name="removeThroughDestination" value="@removeButtonValue">Remove</button>
+  @if(showRemoveButton) {
 
-      }
+    <button type="submit" class="link" name="removeThroughDestination" value="@removeButtonValue">Remove</button>
 
-      @if(showDetailPanel) {
-        @detailPanel("destination-help"){
-          Can't find your destination?
-        } {
+  }
 
-          <p>
-            If you can't find your destination, country or territory you can get help from the
-            government's Export Control Organisation
-          </p>
+  @if(showDetailPanel) {
+    @detailPanel("destination-help"){
+      Can't find your destination?
+    } {
 
-          @helpInfoPanel()
+      <p>
+        If you can't find your destination, country or territory you can get help from the
+        government's Export Control Organisation
+      </p>
 
-        }
-      }
+      @helpInfoPanel()
 
-    </div>
-  </div>
+    }
+  }
+
 </div>

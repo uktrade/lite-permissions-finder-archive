@@ -4,7 +4,7 @@
 @import views.html.common.state._
 
 @(form: Form[_], formAction: String, pageTitle: String)
-@standardPage(pageTitle, Some(Html(pageTitle)), headingCssClass = "heading-xlarge", pageName = Some("searchBase")){
+@standardPage(pageTitle, Some(Html(pageTitle)), pageName = Some("searchBase")){
   @errorSummary(form)
 }{
 
