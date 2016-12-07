@@ -13,8 +13,13 @@
 
     @contextFormParams()
 
-    @*TODO update styling and ID*@
-    <table id="searchResults" class="search-results">
+    @if(!display.preResultsLabel.isEmpty) {
+      <p class="pre-search-results font-small">
+        @display.preResultsLabel
+      </p>
+    }
+
+    <table class="search-results">
       <thead><tr><th></th></tr></thead>
       <tbody>
       @for(i <- 0 until display.controlCodes.size) {
@@ -29,7 +34,6 @@
       </tbody>
     </table>
 
-    @*TODO update styling and ID*@
     <div class="search-result-actions">
       <button type="submit" name="action" value="noMatchedControlCode" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
     </div>
