@@ -11,16 +11,16 @@ import java.util.stream.Collectors;
 public enum ImportWhat {
 
   FIREARMS("Firearms and ammunition"),
-  TEXTILES("Textiles and clothing"),
+  EXPLOSIVES("Explosives"),
+  LAND_MINES("Anti-personnel and land mines"),
+  TORTURE("Goods that could be used for torture"),
+  NUCLEAR("Nuclear materials"),
+  CHEMICALS("Chemicals, pesticides and ozone-depleting substances"),
+  MEDICINES("Medicines, pharmaceuticals and drugs"),
+  DIAMONDS("Diamonds"),
   IRON("Iron and steel"),
   FOOD("Food, animals and plants"),
-  MEDICINES("Medicines, pharmaceuticals and drugs"),
-  NUCLEAR("Nuclear materials"),
-  EXPLOSIVES("Explosives"),
-  DIAMONDS("Diamonds"),
-  TORTURE("Goods that could be used for torture"),
-  LAND_MINES("Anti-personnel and land mines"),
-  CHEMICALS("Chemicals, pesticides and ozone-depleting substances"),
+  TEXTILES("Textiles and clothing"),
   NONE_ABOVE("None of the above");
 
   private String prompt;
