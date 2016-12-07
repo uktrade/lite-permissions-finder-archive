@@ -34,7 +34,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.ogel.routes.OgelQuestionsController.renderForm());
   private final JourneyStage notImplemented = defineStage("notImplemented", "This section is currently under development",
       routes.StaticContentController.renderNotImplemented());
-  private final JourneyStage notApplicable = defineStage("notApplicable", "You cannot use this service to get an export licence",
+  private final JourneyStage notApplicable = defineStage("notApplicable", "No licence available",
       routes.StaticContentController.renderNotApplicable());
 
   /** Software **/
