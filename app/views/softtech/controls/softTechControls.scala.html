@@ -4,9 +4,9 @@
 @import views.html.common.form._
 @import views.html.common.state._
 
-@(form: Form[_], display: SoftTechControlsDisplay)
+@(display: SoftTechControlsDisplay)
 @standardPage(display.pageTitle, Some(Html(display.pageTitle))){
-  @errorSummary(form)
+  @errorSummary(display.form)
 }{
 
   <form action="@display.formAction" method="POST">

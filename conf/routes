@@ -309,9 +309,9 @@ GET     /software-controls-related-to-a-physical-good/technical-notes           
 
 POST    /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedSoftwareControlsSubmit
 
-GET     /software-controls-related-to-a-physical-good/show-controls               controllers.softtech.controls.SoftTechControlsController.renderRelatedToPhysicalGoodForm
+GET     /controls-related-to-a-physical-good/:goodsType/show-controls             controllers.softtech.controls.SoftTechControlsController.renderRelatedToPhysicalGoodForm(goodsType)
 
-POST    /software-controls-related-to-a-physical-good/show-controls               controllers.softtech.controls.SoftTechControlsController.handleRelatedToPhysicalGoodSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/show-controls             controllers.softtech.controls.SoftTechControlsController.handleRelatedToPhysicalGoodSubmit(goodsType)
 
 GET     /software-technology-relationship                                         controllers.softtech.RelationshipController.renderForm
 
