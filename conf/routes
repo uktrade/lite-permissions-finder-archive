@@ -227,9 +227,9 @@ GET     /register-for-open-general-export-licence     controllers.ogel.OgelSumma
 
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
 
-GET     /related-to-equipment-or-materials      controllers.softtech.RelatedEquipmentController.renderForm
+GET     /related-to-equipment-or-materials/:goodsType      controllers.softtech.RelatedEquipmentController.renderForm(goodsType)
 
-POST    /related-to-equipment-or-materials      controllers.softtech.RelatedEquipmentController.handleSubmit
+POST    /related-to-equipment-or-materials/:goodsType      controllers.softtech.RelatedEquipmentController.handleSubmit(goodsType)
 
 GET     /select-goods-type                    controllers.GoodsTypeController.renderForm
 

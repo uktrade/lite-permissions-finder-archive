@@ -376,12 +376,12 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     }
   }
 
-  public void saveRelatedToEquipmentOrMaterials(Boolean relatedToEquipmentOrMaterials) {
-    writeString(RELATED_TO_EQUIPMENT_OR_MATERIALS, relatedToEquipmentOrMaterials.toString());
+  public void saveRelatedToEquipmentOrMaterials(GoodsType goodsType, Boolean relatedToEquipmentOrMaterials) {
+    writeString(prependFieldName(goodsType.toUrlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS), relatedToEquipmentOrMaterials.toString());
   }
 
-  public Optional<Boolean> getRelatedToEquipmentOrMaterials() {
-    return readBoolean(RELATED_TO_EQUIPMENT_OR_MATERIALS);
+  public Optional<Boolean> getRelatedToEquipmentOrMaterials(GoodsType goodsType) {
+    return readBoolean(prependFieldName(goodsType.toUrlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS));
   }
 
   public String prependFieldName(ControlCodeJourney controlCodeJourney, String fieldName) {
