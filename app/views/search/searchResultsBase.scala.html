@@ -7,9 +7,7 @@
 @import models.search.SearchResultsBaseDisplay
 @import models.controlcode.ControlCodeJourney
 @(display: SearchResultsBaseDisplay)
-  @standardPage(
-    if (!display.results.isEmpty()) "Possible matches" else "Your search did not return any results",
-    Some(Html(if (!display.results.isEmpty()) "Possible matches" else "Your search did not return any results")), pageName = Some("searchResultsBase")) {
+  @standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchResultsBase")) {
     @errorSummary(display.form)
   }{
 
@@ -18,6 +16,12 @@
     @contextFormParams()
 
     @if(!display.results.isEmpty()) {
+
+        @if(!display.preResultsLabel.isEmpty) {
+          <p class="pre-search-results font-small">
+            @display.preResultsLabel
+          </p>
+        }
 
         <input id="controlCodeJourneyHiddenInput" type="hidden" name="controlCodeJourney" value="@display.controlCodeJourney.value">
 
