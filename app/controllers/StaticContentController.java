@@ -27,10 +27,10 @@ public class StaticContentController extends Controller {
     CATEGORY_WASTE("categories/waste.html", "You must have a licence to export most types of waste"),
     NOT_APPLICABLE("notApplicable.html", "You cannot use this service to get an export licence"),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
-    SOFTWARE_CONTROLS_NLR("software/controls/noLicenceRequired.html", "No software controls exist for the selected item"),
+    SOFTWARE_CONTROLS_NLR("software/controls/noLicenceRequired.html", "No licence available"),
     SOFTWARE_EXEMPTIONS_NLR1("software/exemptionsNLR1.html", "No licence available"),
     SOFTWARE_EXEMPTIONS_NLR2("software/exemptionsNLR2.html", "No licence available"),
-    SOFTWARE_RELATIONSHIP_NLR("software/relationship/noLicenceRequired.html", "No relationship between software and technology"),
+    SOFTWARE_RELATIONSHIP_NLR("software/relationship/noLicenceRequired.html", "No licence available"),
     SOFTWARE_RELATIONSHIP_CONTACT_ECO("software/relationship/contactECO.html", "Contact ECO"),
     TECHNOLOGY_CONTROLS_NLR("technology/controls/noLicenceRequired.html", "No technology controls exist for the selected item"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
