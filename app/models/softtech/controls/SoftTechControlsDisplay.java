@@ -4,6 +4,7 @@ import components.services.controlcode.controls.ControlCode;
 import controllers.softtech.controls.SoftTechControlsController;
 import controllers.softtech.controls.routes;
 import models.GoodsType;
+import models.softtech.SoftTechCategory;
 import play.data.Form;
 
 import java.util.List;
@@ -16,16 +17,28 @@ public class SoftTechControlsDisplay {
   public final String preResultsLabel;
   public List<ControlCode> controlCodes;
 
-  public SoftTechControlsDisplay(Form<SoftTechControlsController.SoftTechControlsForm> form, SoftTechControlsJourney softTechControlsJourney, List<ControlCode> controlCodes) {
+  public SoftTechControlsDisplay(Form<SoftTechControlsController.SoftTechControlsForm> form, SoftTechControlsJourney softTechControlsJourney, SoftTechCategory softTechCategory, List<ControlCode> controlCodes) {
     this.form = form;
     if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
       this.formAction = routes.SoftTechControlsController.handleCategorySubmit(GoodsType.SOFTWARE.toUrlString()).url();
-      this.pageTitle = "Showing controls related to software category";
+      if (softTechCategory.isDualUseSoftTechCategory()) {
+        this.pageTitle = "Showing controls related to software category";
+      }
+      else {
+        // Military
+        this.pageTitle = "Possible matches";
+      }
       this.preResultsLabel = "";
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
       this.formAction = routes.SoftTechControlsController.handleCategorySubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
-      this.pageTitle = "Showing controls related to technology category";
+      if (softTechCategory.isDualUseSoftTechCategory()) {
+        this.pageTitle = "Showing controls related to technology category";
+      }
+      else {
+        // Military
+        this.pageTitle = "Possible matches";
+      }
       this.preResultsLabel = "";
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {

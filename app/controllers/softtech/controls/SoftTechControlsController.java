@@ -157,7 +157,7 @@ public class SoftTechControlsController {
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return categoryControlsServiceClient.get(goodsType, softTechCategory)
           .thenApplyAsync(result -> {
-            SoftTechControlsDisplay display = new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes);
+            SoftTechControlsDisplay display = new SoftTechControlsDisplay(form, softTechControlsJourney, softTechCategory, result.controlCodes);
             return ok(softTechControls.render(display));
           }, httpExecutionContext.current());
     }
@@ -171,9 +171,11 @@ public class SoftTechControlsController {
       // Note, this is looking at the selected physical good control code which is related to their physical good
       String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
 
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+
       return relatedControlsServiceClient.get(goodsType, controlCode)
           .thenApplyAsync(result ->
-              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes)), httpExecutionContext.current());
+              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, softTechCategory, result.controlCodes)), httpExecutionContext.current());
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
       return catchallControls(softTechControlsJourney, form, GoodsType.SOFTWARE);
@@ -192,7 +194,7 @@ public class SoftTechControlsController {
     SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
     return catchallControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result ->
-            validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
+            validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, softTechCategory, result.controlCodes))
         , httpExecutionContext.current());
   }
 
