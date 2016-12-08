@@ -5,9 +5,9 @@ import components.common.journey.ParameterisedJourneyEvent;
 import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
+import models.ExportYesNo;
 import models.GoodsType;
 import models.LifeType;
-import models.NonMilitaryFirearmExportBySelfType;
 import models.RadioactiveStage;
 import models.VirtualEUOgelStage;
 import models.softtech.ApplicableSoftTechControls;
@@ -64,8 +64,8 @@ public class Events {
 
   public static final JourneyEvent OGEL_DO_CONDITIONS_APPLY = new JourneyEvent("OGEL_DO_CONDITIONS_APPLY");
 
-  public static final ParameterisedJourneyEvent<NonMilitaryFirearmExportBySelfType> NON_MILITARY_FIREARMS_QUESTION_ANSWERED =
-      new ParameterisedJourneyEvent<>("NON_MILITARY_FIREARMS_QUESTION_ANSWERED", NonMilitaryFirearmExportBySelfType.class);
+  public static final ParameterisedJourneyEvent<ExportYesNo> NON_MILITARY_FIREARMS_ANSWER_SELECTED =
+      new ParameterisedJourneyEvent<>("NON_MILITARY_FIREARMS_ANSWER_SELECTED", ExportYesNo.class);
 
   public static final ParameterisedJourneyEvent<SoftwareExemptionsFlow> SOFTWARE_EXEMPTIONS_FLOW =
       new ParameterisedJourneyEvent<>("SOFTWARE_EXEMPTIONS_FLOW", SoftwareExemptionsFlow.class);
