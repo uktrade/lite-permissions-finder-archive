@@ -621,7 +621,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.NotApplicableController.renderRelatedSoftwareControlsForm(Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecificationsRelatedSoftwareControls = defineStage("additionalSpecificationsRelatedSoftwareControls", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderRelatedSoftwareControlsForm());
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderRelatedControlsForm(GoodsType.SOFTWARE.toUrlString()));
 
     JourneyStage decontrolsRelatedSoftwareControls = defineStage("decontrolsRelatedSoftwareControls", "Decontrols",
         controllers.controlcode.routes.DecontrolsController.renderRelatedSoftwareControlsForm());
