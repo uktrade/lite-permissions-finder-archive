@@ -73,8 +73,8 @@ public class ControlCodeController extends Controller {
     return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
   }
 
-  public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
-    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
@@ -132,13 +132,14 @@ public class ControlCodeController extends Controller {
     return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
   }
 
-  public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
-    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
+  public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
     return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
   }
+
 
   public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;

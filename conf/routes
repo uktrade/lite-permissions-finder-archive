@@ -292,9 +292,9 @@ GET     /controls/:goodsType/show-controls               controllers.softtech.co
 
 POST    /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCategorySubmit(goodsType)
 
-GET     /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.renderRelatedSoftwareControlsForm
+GET     /controls-related-to-a-physical-good/:goodsType/                          controllers.controlcode.ControlCodeController.renderRelatedControlsForm(goodsType)
 
-POST    /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.handleRelatedSoftwareControlsSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/                          controllers.controlcode.ControlCodeController.handleRelatedControlsSubmit(goodsType)
 
 GET     /software-controls-related-to-a-physical-good/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderRelatedSoftwareControlsForm
 
