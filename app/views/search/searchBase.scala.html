@@ -5,8 +5,9 @@
 
 @import models.search.SearchBaseDisplay
 @(display: SearchBaseDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle)), headingCssClass = "heading-xlarge heading-tight", pageName = Some("searchBase")){
+@standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchBase")){
   @errorSummary(display.form)
+
 }{
 
   <form action="@display.formAction" method="POST">
