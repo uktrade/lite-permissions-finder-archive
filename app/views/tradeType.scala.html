@@ -10,6 +10,13 @@
   @errorSummary(form)
 }{
 
+  <div class="panel panel-border-wide">
+    <p>
+      You should use this service once for each type of item you are moving. Multiple item searches will be added later.
+    </p>
+  </div>
+  <br>
+
   <form action="@routes.TradeTypeController.handleSubmit()" method="POST">
 
     @contextFormParams()

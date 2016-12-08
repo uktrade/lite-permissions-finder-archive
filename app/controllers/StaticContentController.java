@@ -25,7 +25,7 @@ public class StaticContentController extends Controller {
     CATEGORY_PLANTS("categories/plant.html", "You may need approval from the destination country"),
     CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines"),
     CATEGORY_WASTE("categories/waste.html", "You must have a licence to export most types of waste"),
-    NOT_APPLICABLE("notApplicable.html", "You cannot use this service to get an export licence"),
+    NOT_APPLICABLE("notApplicable.html", "No licence available"),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     SOFTWARE_CONTROLS_NLR("software/controls/noLicenceRequired.html", "No software controls exist for the selected item"),
     SOFTWARE_EXEMPTIONS_NLR("software/exemptionsNLR.html", "Software exemptions apply"),

@@ -14,29 +14,32 @@
   </p>
 
   <p>
-    <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources#scope-of-the-controls-on-radioactive-sources" class="external" target="_blank" rel="external">View the activity thresholds of the radioactive materials controlled</a>
+    <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources#scope-of-the-controls-on-radioactive-sources" class="external"
+    target="_blank" rel="external">View the activity thresholds of the radioactive materials controlled</a>
   </p>
 
-  <p>
-    If you are exporting radioactive goods above any of the thresholds, you will need an export licence.
-  </p>
+
 
   <form action="@RadioactiveController.handleSubmit" method="POST">
 
     @contextFormParams()
 
     <p>
-      Continue to <button type="submit" class="link underlined font-small" name="action" value="continue">use this service</button> if you want to register for the <span class="bold-small">open general export licence for radioactive sources</span>.
+      You can use the open general export licence for radioactive sources to export these materials to certain destinations if they are within the permitted thresholds.
+      If you want to register for this licence, continue to <button type="submit" class="link underlined font-small" name="action" value="continue">use this service</button>
+        to find out if your export destination is permitted.
     </p>
+
+
+    <h2 class="heading-medium">Other radioactive materials and thresholds</h2>
+
+    <p>If your material is not listed or is below the activity threshold shown, then you should continue to
+      <button type="submit" class="link underlined font-small" name="action" value="continue">use this service</button> to find out if your items need a licence.</p>
 
   </form>
 
   <p>
-    For other licences to export radioactive goods, you will need to <a href="https://www.spire.bis.gov.uk/spire/fox/espire/LOGIN/login" class="external" target="_blank" rel="external">apply through SPIRE</a>.
-  </p>
-
-  <p>
     Read more about <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources" class="external" target="_blank" rel="external">controls on radioactive sources</a>.
   </p>
-  
+
 }
