@@ -11,6 +11,7 @@ import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
+import models.RadioactiveStage;
 import models.VirtualEUOgelStage;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
@@ -245,8 +246,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .then(moveTo(physicalGoodsSearch));
 
     atStage(categoryRadioactive)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(destinationCountries));
+        .onEvent(Events.RADIOACTIVE_NEXT)
+        .branch()
+        .when(RadioactiveStage.CRS_SELECTED, moveTo(destinationCountries))
+        .when(RadioactiveStage.CONTINUE, moveTo(physicalGoodsSearch));
 
   }
 

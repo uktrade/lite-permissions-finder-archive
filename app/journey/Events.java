@@ -8,6 +8,7 @@ import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
 import models.NonMilitaryFirearmExportBySelfType;
+import models.RadioactiveStage;
 import models.VirtualEUOgelStage;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
@@ -90,5 +91,8 @@ public class Events {
 
   public static final ParameterisedJourneyEvent<Relationship> CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP =
       new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP", Relationship.class);
+
+  public static final ParameterisedJourneyEvent<RadioactiveStage> RADIOACTIVE_NEXT =
+      new ParameterisedJourneyEvent<>("RADIOACTIVE_NEXT", RadioactiveStage.class);
 
 }

@@ -3,6 +3,8 @@
 @import views.html.common.form._
 @import views.html.common.state._
 @import controllers.categories.routes.RadioactiveController
+@import models.RadioactiveStage
+
 
 @(form: Form[_])
 @standardPage("You need a licence to export radioactive materials above certain activity thresholds", Some(Html("You need a licence to export radioactive materials above certain activity thresholds"))){
@@ -26,7 +28,8 @@
 
     <p>
       You can use the open general export licence for radioactive sources to export these materials to certain destinations if they are within the permitted thresholds.
-      If you want to register for this licence, continue to <button type="submit" class="link underlined font-small" name="action" value="continue">use this service</button>
+      If you want to register for this licence, continue to
+        <button type="submit" class="link underlined font-small" name="action" value="@RadioactiveStage.CRS_SELECTED.name()">use this service</button>
         to find out if your export destination is permitted.
     </p>
 
@@ -34,7 +37,7 @@
     <h2 class="heading-medium">Other radioactive materials and thresholds</h2>
 
     <p>If your material is not listed or is below the activity threshold shown, then you should continue to
-      <button type="submit" class="link underlined font-small" name="action" value="continue">use this service</button> to find out if your items need a licence.</p>
+      <button type="submit" class="link underlined font-small" name="action" value="@RadioactiveStage.CONTINUE.name()">use this service</button> to find out if your items need a licence.</p>
 
   </form>
 
