@@ -1,6 +1,7 @@
 package models.controlcode;
 
 import controllers.controlcode.routes;
+import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
 import play.data.Form;
 
@@ -28,28 +29,42 @@ public class NotApplicableDisplay {
       this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.NotApplicableController.handleSearchRelatedToSoftwareSubmit().url();
+      this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
       this.buttonConfiguration = ButtonConfiguration.RETURN_TO_SEARCH;
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
+        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS ||
         controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
-        controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+        controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
+        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+      // Software
       if (applicableSoftTechControls != null) {
         if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-          this.formAction = routes.NotApplicableController.handleSoftwareControlsSubmit().url();
+          this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+        }
+        else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+          this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
         }
         else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
           this.formAction = routes.NotApplicableController.handleRelatedSoftwareControlsSubmit().url();
         }
-        else {
-          // ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
-          this.formAction = routes.NotApplicableController.handleSoftwareCatchallControlsSubmit().url();
+        else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
         }
+        else {
+          // ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS
+          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+        }
+
         if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
-          buttonConfiguration = ButtonConfiguration.CONTINUE_NO_SOFTWARE_CONTROLS;
+          buttonConfiguration = ButtonConfiguration.CONTINUE_NO_SOFT_TECH_CONTROLS;
         }
         else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-          buttonConfiguration = ButtonConfiguration.RETURN_TO_SOFTWARE_CONTROLS;
+          buttonConfiguration = ButtonConfiguration.RETURN_TO_SOFT_TECH_CONTROLS;
         }
         else {
           throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
@@ -79,7 +94,7 @@ public class NotApplicableDisplay {
 
   public enum ButtonConfiguration {
     RETURN_TO_SEARCH,
-    RETURN_TO_SOFTWARE_CONTROLS,
-    CONTINUE_NO_SOFTWARE_CONTROLS
+    RETURN_TO_SOFT_TECH_CONTROLS,
+    CONTINUE_NO_SOFT_TECH_CONTROLS
   }
 }

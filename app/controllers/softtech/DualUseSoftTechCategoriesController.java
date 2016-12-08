@@ -9,8 +9,10 @@ import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.SoftTechJourneyHelper;
+import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
-import models.softtech.SoftwareCategory;
+import models.softtech.DualUseSoftTechCategoriesDisplay;
+import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -38,16 +40,25 @@ public class DualUseSoftTechCategoriesController {
     this.httpExecutionContext = httpExecutionContext;
   }
 
-  public Result renderForm() {
-    return ok(dualUseSoftTechCategories.render(formFactory.form(DualUseSoftwareCategoriesForm.class)));
+  public CompletionStage<Result> renderForm(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeAndGetResult(goodsTypeText, this::renderFormInternal);
   }
 
-  public CompletionStage<Result> handleSubmit() {
-    Form<DualUseSoftwareCategoriesForm> form = formFactory.form(DualUseSoftwareCategoriesForm.class).bindFromRequest();
+  private CompletionStage<Result> renderFormInternal(GoodsType goodsType) {
+    return completedFuture(ok(dualUseSoftTechCategories.render(formFactory.form(DualUseSoftTechCategoriesForm.class),
+        new DualUseSoftTechCategoriesDisplay(goodsType))));
+  }
+
+  public CompletionStage<Result> handleSubmit(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeAndGetResult(goodsTypeText, this::handleSubmitInternal);
+  }
+
+  private CompletionStage<Result> handleSubmitInternal(GoodsType goodsType) {
+    Form<DualUseSoftTechCategoriesForm> form = formFactory.form(DualUseSoftTechCategoriesForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(dualUseSoftTechCategories.render(form)));
+      return completedFuture(ok(dualUseSoftTechCategories.render(form, new DualUseSoftTechCategoriesDisplay(goodsType))));
     }
-    String dualUseSoftwareCategoryText = form.get().dualUseSoftwareCategory;
+    String dualUseSoftwareCategoryText = form.get().dualUseSoftTechCategory;
     String action = form.get().action;
 
     if (StringUtils.isNotEmpty(action)) {
@@ -58,17 +69,16 @@ public class DualUseSoftTechCategoriesController {
         throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
       }
     }
-    // MILITARY is a member of SoftwareCategory but is not dual use
     else if (StringUtils.isNotEmpty(dualUseSoftwareCategoryText)) {
-      SoftwareCategory softwareCategory = SoftwareCategory.valueOf(dualUseSoftwareCategoryText);
-      if (softwareCategory.isDualUseSoftwareCategory()) {
-        permissionsFinderDao.saveSoftwareCategory(softwareCategory);
-        return softTechJourneyHelper.checkSoftwareControls(softwareCategory, true) // Save to DAO
-            .thenComposeAsync(this::dualUseSoftwareCategorySelected, httpExecutionContext.current());
+      SoftTechCategory softTechCategory = SoftTechCategory.valueOf(dualUseSoftwareCategoryText);
+      if (softTechCategory.isDualUseSoftTechCategory()) {
+        permissionsFinderDao.saveSoftTechCategory(goodsType, softTechCategory);
+        return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, true) // Save to DAO
+            .thenComposeAsync(this::dualUseSoftTechCategorySelected, httpExecutionContext.current());
       }
       else {
-        throw new RuntimeException(String.format("Unexpected member of SoftwareCategory enum: \"%s\""
-            , softwareCategory.toString()));
+        throw new RuntimeException(String.format("Unexpected member of SoftTechCategory enum: \"%s\""
+            , softTechCategory.toString()));
       }
     }
     else {
@@ -76,13 +86,13 @@ public class DualUseSoftTechCategoriesController {
     }
   }
 
-  private CompletionStage<Result> dualUseSoftwareCategorySelected(ApplicableSoftTechControls applicableSoftTechControls) {
-    return journeyManager.performTransition(Events.DUAL_USE_SOFTWARE_CATEGORY_SELECTED, applicableSoftTechControls);
+  private CompletionStage<Result> dualUseSoftTechCategorySelected(ApplicableSoftTechControls applicableSoftTechControls) {
+    return journeyManager.performTransition(Events.DUAL_USE_SOFT_TECH_CATEGORY_SELECTED, applicableSoftTechControls);
   }
 
-  public static class DualUseSoftwareCategoriesForm {
+  public static class DualUseSoftTechCategoriesForm {
 
-    public String dualUseSoftwareCategory;
+    public String dualUseSoftTechCategory;
 
     public String action;
 

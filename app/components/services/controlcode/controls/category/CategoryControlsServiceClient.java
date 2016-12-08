@@ -5,7 +5,7 @@ import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
 import models.GoodsType;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
@@ -28,13 +28,13 @@ public class CategoryControlsServiceClient {
     this.webServiceUrl = webServiceAddress + "/specific-controls";
   }
 
-  public CompletionStage<CategoryControlsServiceResult> get(GoodsType goodsType, SoftwareCategory softwareCategory) {
+  public CompletionStage<CategoryControlsServiceResult> get(GoodsType goodsType, SoftTechCategory softTechCategory) {
     if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
       throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\"", goodsType.toString()));
     }
     String url;
-    if (softwareCategory.isDualUseSoftwareCategory()) {
-      url = webServiceUrl + "/" + goodsType.toUrlString() +  "/dual-use/" + softwareCategory.toUrlString();
+    if (softTechCategory.isDualUseSoftTechCategory()) {
+      url = webServiceUrl + "/" + goodsType.toUrlString() +  "/dual-use/" + softTechCategory.toUrlString();
     }
     else {
       url = webServiceUrl + "/" + goodsType.toUrlString() +  "/military";

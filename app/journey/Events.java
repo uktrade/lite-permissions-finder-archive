@@ -14,7 +14,7 @@ import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
 import models.softtech.Relationship;
 import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
-import models.softtech.SoftwareControlsNotApplicableFlow;
+import models.softtech.SoftTechControlsNotApplicableFlow;
 import models.softtech.SoftwareExemptionsFlow;
 
 public class Events {
@@ -63,31 +63,32 @@ public class Events {
 
   public static final JourneyEvent OGEL_DO_CONDITIONS_APPLY = new JourneyEvent("OGEL_DO_CONDITIONS_APPLY");
 
-  public static final ParameterisedJourneyEvent<NonMilitaryFirearmExportBySelfType> NON_MILITARY_FIREARMS_QUESTION_ANSWERERD =
-      new ParameterisedJourneyEvent<>("NON_MILITARY_FIREARMS_QUESTION_ANSWERERD", NonMilitaryFirearmExportBySelfType.class);
+  public static final ParameterisedJourneyEvent<NonMilitaryFirearmExportBySelfType> NON_MILITARY_FIREARMS_QUESTION_ANSWERED =
+      new ParameterisedJourneyEvent<>("NON_MILITARY_FIREARMS_QUESTION_ANSWERED", NonMilitaryFirearmExportBySelfType.class);
 
   public static final ParameterisedJourneyEvent<SoftwareExemptionsFlow> SOFTWARE_EXEMPTIONS_FLOW =
       new ParameterisedJourneyEvent<>("SOFTWARE_EXEMPTIONS_FLOW", SoftwareExemptionsFlow.class);
 
-  public static final ParameterisedJourneyEvent<ApplicableSoftTechControls> DUAL_USE_SOFTWARE_CATEGORY_SELECTED =
-      new ParameterisedJourneyEvent<>("DUAL_USE_SOFTWARE_CATEGORY_SELECTED", ApplicableSoftTechControls.class);
+  public static final ParameterisedJourneyEvent<ApplicableSoftTechControls> DUAL_USE_SOFT_TECH_CATEGORY_SELECTED =
+      new ParameterisedJourneyEvent<>("DUAL_USE_SOFT_TECH_CATEGORY_SELECTED", ApplicableSoftTechControls.class);
 
-  public static final ParameterisedJourneyEvent<ApplicableSoftTechControls> CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE =
-      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE", ApplicableSoftTechControls.class);
+  // TODO Refactor name of this event
+  public static final ParameterisedJourneyEvent<ApplicableSoftTechControls> CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE", ApplicableSoftTechControls.class);
 
-  public static final ParameterisedJourneyEvent<SoftwareControlsNotApplicableFlow> CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW =
-      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CONTROLS_NOT_APPLICABLE_FLOW", SoftwareControlsNotApplicableFlow.class);
+  public static final ParameterisedJourneyEvent<SoftTechControlsNotApplicableFlow> CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW", SoftTechControlsNotApplicableFlow.class);
 
   public static final ParameterisedJourneyEvent<ControlsRelatedToPhysicalGoodsFlow> CONTROLS_RELATED_PHYSICAL_GOOD =
       new ParameterisedJourneyEvent<>("CONTROLS_RELATED_PHYSICAL_GOOD", ControlsRelatedToPhysicalGoodsFlow.class);
 
-  public static final ParameterisedJourneyEvent<CatchallSoftTechControlsFlow> CATCHALL_SOFTWARE_CONTROLS_FLOW =
-      new ParameterisedJourneyEvent<>("CATCHALL_SOFTWARE_CONTROLS_FLOW", CatchallSoftTechControlsFlow.class);
+  public static final ParameterisedJourneyEvent<CatchallSoftTechControlsFlow> CATCHALL_SOFT_TECH_CONTROLS_FLOW =
+      new ParameterisedJourneyEvent<>("CATCHALL_SOFT_TECH_CONTROLS_FLOW", CatchallSoftTechControlsFlow.class);
 
-  public static final ParameterisedJourneyEvent<SoftTechCatchallControlsNotApplicableFlow> CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW =
-      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW", SoftTechCatchallControlsNotApplicableFlow.class);
+  public static final ParameterisedJourneyEvent<SoftTechCatchallControlsNotApplicableFlow> CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW", SoftTechCatchallControlsNotApplicableFlow.class);
 
-  public static final ParameterisedJourneyEvent<Relationship> CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP =
-      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP", Relationship.class);
+  public static final ParameterisedJourneyEvent<Relationship> CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP =
+      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP", Relationship.class);
 
 }

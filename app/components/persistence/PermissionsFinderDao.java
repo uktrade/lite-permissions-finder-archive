@@ -14,7 +14,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
 import models.controlcode.ControlCodeJourney;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
@@ -55,8 +55,9 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY = "controlCodeAdditionalSpecificationsApply";
   public static final String CONTROL_CODE_DECONTROLS_APPLY = "controlCodeDecontrolsApply";
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
-  public static final String DO_EXEMPTIONS_APPLY = "doExemptionsApply";
-  public static final String SOFTWARE_CATEGORY = "softwareCategory";
+  public static final String DO_EXEMPTIONS_APPLY_Q1 = "doExemptionsApplyQ1";
+  public static final String DO_EXEMPTIONS_APPLY_Q2 = "doExemptionsApplyQ2";
+  public static final String SOFT_TECH_CATEGORY = "softTechCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
   public static final String SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP = "softwareIsCoveredByTechnologyRelationship";
 
@@ -340,26 +341,34 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     deleteString(prependFieldName(controlCodeJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
   }
 
-  public void saveDoExemptionsApply(String doExemptionsApply) {
-    writeString(DO_EXEMPTIONS_APPLY, doExemptionsApply);
+  public void saveDoExemptionsApplyQ1(String doExemptionsApply) {
+    writeString(DO_EXEMPTIONS_APPLY_Q1, doExemptionsApply);
   }
 
-  public String getDoExemptionsApply() {
-    return readString(DO_EXEMPTIONS_APPLY);
+  public String getDoExemptionsApplyQ1() {
+    return readString(DO_EXEMPTIONS_APPLY_Q1);
   }
 
-  public void saveSoftwareCategory(SoftwareCategory softwareCategory) {
-    writeString(SOFTWARE_CATEGORY, softwareCategory.toString());
+  public void saveDoExemptionsApplyQ2(String doExemptionsApply) {
+    writeString(DO_EXEMPTIONS_APPLY_Q2, doExemptionsApply);
   }
 
-  public Optional<SoftwareCategory> getSoftwareCategory() {
-    String softwareCategory = readString(SOFTWARE_CATEGORY);
+  public String getDoExemptionsApplyQ2() {
+    return readString(DO_EXEMPTIONS_APPLY_Q2);
+  }
+
+  public void saveSoftTechCategory(GoodsType goodsType, SoftTechCategory softTechCategory) {
+    writeString(prependFieldName(goodsType, SOFT_TECH_CATEGORY), softTechCategory.toString());
+  }
+
+  public Optional<SoftTechCategory> getSoftTechCategory(GoodsType goodsType) {
+    String softwareCategory = readString(prependFieldName(goodsType, SOFT_TECH_CATEGORY));
     if (StringUtils.isEmpty(softwareCategory)) {
       return Optional.empty();
     }
     else {
       try {
-        return Optional.of(SoftwareCategory.valueOf(softwareCategory));
+        return Optional.of(SoftTechCategory.valueOf(softwareCategory));
       }
       catch (IllegalArgumentException e) {
         return Optional.empty();
@@ -367,16 +376,24 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     }
   }
 
-  public void saveRelatedToEquipmentOrMaterials(Boolean relatedToEquipmentOrMaterials) {
-    writeString(RELATED_TO_EQUIPMENT_OR_MATERIALS, relatedToEquipmentOrMaterials.toString());
+  public void saveRelatedToEquipmentOrMaterials(GoodsType goodsType, Boolean relatedToEquipmentOrMaterials) {
+    writeString(prependFieldName(goodsType.toUrlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS), relatedToEquipmentOrMaterials.toString());
   }
 
-  public Optional<Boolean> getRelatedToEquipmentOrMaterials() {
-    return readBoolean(RELATED_TO_EQUIPMENT_OR_MATERIALS);
+  public Optional<Boolean> getRelatedToEquipmentOrMaterials(GoodsType goodsType) {
+    return readBoolean(prependFieldName(goodsType.toUrlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS));
   }
 
   public String prependFieldName(ControlCodeJourney controlCodeJourney, String fieldName) {
-    return controlCodeJourney.value() + ":" + fieldName;
+    return prependFieldName(controlCodeJourney.value(), fieldName);
+  }
+
+  public String prependFieldName(GoodsType goodsType, String fieldName) {
+    return prependFieldName(goodsType.toUrlString(), fieldName);
+  }
+
+  public String prependFieldName(String prefix, String fieldName) {
+    return prefix + ":" + fieldName;
   }
 
   public void saveSoftwareIsCoveredByTechnologyRelationship(Boolean isCoveredByRelationship) {

@@ -52,41 +52,49 @@ GET     /control-code/technical-notes         controllers.controlcode.TechnicalN
 
 POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSearchSubmit
 
-GET     /control-code-related-to-software                             controllers.controlcode.ControlCodeController.renderSearchRelatedToSoftwareForm
+GET     /related-control-code/:goodsType                              controllers.controlcode.ControlCodeController.renderSearchRelatedToForm(goodsType)
 
-POST    /control-code-related-to-software                             controllers.controlcode.ControlCodeController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType                              controllers.controlcode.ControlCodeController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSearchRelatedToSoftwareForm
+GET     /related-control-code/:goodsType/additional-specifications    controllers.controlcode.AdditionalSpecificationsController.renderSearchRelatedToForm(goodsType)
 
-POST    /control-code-related-to-software/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType/additional-specifications    controllers.controlcode.AdditionalSpecificationsController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.renderSearchRelatedToSoftwareForm
+GET     /related-control-code/:goodsType/decontrols                   controllers.controlcode.DecontrolsController.renderSearchRelatedToForm(goodsType)
 
-POST    /control-code-related-to-software/decontrols                  controllers.controlcode.DecontrolsController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType/decontrols                   controllers.controlcode.DecontrolsController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.renderSearchRelatedToSoftwareForm(extended)
+GET     /related-control-code/:goodsType/not-applicable               controllers.controlcode.NotApplicableController.renderSearchRelatedToForm(goodsType, extended)
 
-POST    /control-code-related-to-software/not-applicable              controllers.controlcode.NotApplicableController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType/not-applicable               controllers.controlcode.NotApplicableController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.renderSearchRelatedToSoftwareForm
+GET     /related-control-code/:goodsType/technical-notes              controllers.controlcode.TechnicalNotesController.renderSearchRelatedToForm(goodsType)
 
-POST    /control-code-related-to-software/technical-notes             controllers.controlcode.TechnicalNotesController.handleSearchRelatedToSoftwareSubmit
+POST    /related-control-code/:goodsType/technical-notes              controllers.controlcode.TechnicalNotesController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
-GET     /dual-use-software-categories         controllers.softtech.DualUseSoftTechCategoriesController.renderForm
+GET     /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.renderForm(goodsType)
 
-POST    /dual-use-software-categories         controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit
+POST    /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit(goodsType)
 
-GET     /exemptions-may-apply                 controllers.softtech.ExemptionsController.renderForm
+GET     /exemptions-may-apply/question-one        controllers.softtech.ExemptionsController.renderFormQ1
 
-POST    /exemptions-may-apply                 controllers.softtech.ExemptionsController.handleSubmit
+POST    /exemptions-may-apply/question-one        controllers.softtech.ExemptionsController.handleSubmitQ1
 
-GET     /exemptions-apply                     controllers.StaticContentController.renderSoftwareExemptionsNLR
+GET     /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.renderFormQ2
 
-POST    /exemptions-apply                     controllers.StaticContentController.renderSoftwareExemptionsNLR
+POST    /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.handleSubmitQ2
+
+GET     /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
+
+POST    /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
+
+GET     /exemptions-apply/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
+
+POST    /exemptions-apply/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
 
 GET     /export-category                      controllers.categories.ExportCategoryController.renderForm
 
@@ -184,17 +192,17 @@ GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSe
 
 POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSearchSubmit
 
-GET     /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.renderSearchRelatedToSoftwareForm
+GET     /export-search-related-to-physical-goods/:goodsType         controllers.search.PhysicalGoodsSearchController.renderSearchRelatedToForm(goodsType)
 
-POST    /export-search-physical-goods-related-to-software         controllers.search.PhysicalGoodsSearchController.handleSearchRelatedToSoftwareSubmit
+POST    /export-search-related-to-physical-goods/:goodsType         controllers.search.PhysicalGoodsSearchController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderSearchForm
 
 POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSearchSubmit
 
-GET     /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.renderSearchRelatedToSoftwareForm
+GET     /export-search-results-related-to-physical-goods/:goodsType   controllers.search.PhysicalGoodsSearchResultsController.renderSearchRelatedToForm(goodsType)
 
-POST    /export-search-results-physical-goods-related-to-software controllers.search.PhysicalGoodsSearchResultsController.handleSearchRelatedToSoftwareSubmit
+POST    /export-search-results-related-to-physical-goods/:goodsType   controllers.search.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeJourney: String, goodsType: String, fromIndex: Int, toIndex: Int, transactionId: String)
 
@@ -206,21 +214,25 @@ GET     /licence-not-available-through-this-service   controllers.StaticContentC
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
 
-GET     /no-software-controls-exist               controllers.softtech.controls.NoSoftTechControlsExistController.renderForm
+GET     /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.renderForm(goodsType)
 
-POST    /no-software-controls-exist               controllers.softtech.controls.NoSoftTechControlsExistController.handleSubmit
+POST    /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.handleSubmit(goodsType)
 
-GET     /no-software-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
+GET     /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
 
-POST    /no-software-controls-exist/licence-may-not-be-required       controllers.StaticContentController.renderSoftwareControlsNLR
+POST    /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
+
+GET     /no-controls-exist/technology/licence-may-not-be-required       controllers.StaticContentController.renderTechnologyControlsNLR
+
+POST    /no-controls-exist/technology/licence-may-not-be-required       controllers.StaticContentController.renderTechnologyControlsNLR
 
 GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
 
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
 
-GET     /related-to-equipment-or-materials      controllers.softtech.RelatedEquipmentController.renderForm
+GET     /related-to-equipment-or-materials/:goodsType      controllers.softtech.RelatedEquipmentController.renderForm(goodsType)
 
-POST    /related-to-equipment-or-materials      controllers.softtech.RelatedEquipmentController.handleSubmit
+POST    /related-to-equipment-or-materials/:goodsType      controllers.softtech.RelatedEquipmentController.handleSubmit(goodsType)
 
 GET     /select-goods-type                    controllers.GoodsTypeController.renderForm
 
@@ -232,53 +244,53 @@ POST    /select-trade-type                    controllers.TradeTypeController.ha
 
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 
-GET     /software-category-catchall-controls                             controllers.controlcode.ControlCodeController.renderSoftwareCatchallControlsForm
+GET     /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls                             controllers.controlcode.ControlCodeController.handleSoftwareCatchallControlsSubmit
+POST    /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSoftwareCatchallControlsForm
+GET     /category-catchall-controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSoftwareCatchallControlsSubmit
+POST    /category-catchall-controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/decontrols                  controllers.controlcode.DecontrolsController.renderSoftwareCatchallControlsForm
+GET     /category-catchall-controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls/decontrols                  controllers.controlcode.DecontrolsController.handleSoftwareCatchallControlsSubmit
+POST    /category-catchall-controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/not-applicable              controllers.controlcode.NotApplicableController.renderSoftwareCatchallControlsForm(extended)
+GET     /category-catchall-controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.renderCatchallControlsForm(goodsType, extended)
 
-POST    /software-category-catchall-controls/not-applicable              controllers.controlcode.NotApplicableController.handleSoftwareCatchallControlsSubmit
+POST    /category-catchall-controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/technical-notes             controllers.controlcode.TechnicalNotesController.renderSoftwareCatchallControlsForm
+GET     /category-catchall-controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareCatchallControlsSubmit
+POST    /category-catchall-controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-category-catchall-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.renderSoftwareCatchallForm
+GET     /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCatchallControlsForm(goodsType)
 
-POST    /software-category-catchall-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.handleSoftwareCatchallSubmit
+POST    /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCatchallControlsSubmit(goodsType)
 
-GET     /software-controls                             controllers.controlcode.ControlCodeController.renderSoftwareControlsForm
+GET     /controls/:goodsType                             controllers.controlcode.ControlCodeController.renderControlsForm(goodsType)
 
-POST    /software-controls                             controllers.controlcode.ControlCodeController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType                             controllers.controlcode.ControlCodeController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSoftwareControlsForm
+GET     /controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderControlsForm(goodsType)
 
-POST    /software-controls/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/decontrols                  controllers.controlcode.DecontrolsController.renderSoftwareControlsForm
+GET     /controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.renderControlsForm(goodsType)
 
-POST    /software-controls/decontrols                  controllers.controlcode.DecontrolsController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/not-applicable              controllers.controlcode.NotApplicableController.renderSoftwareControlsForm(extended)
+GET     /controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.renderControlsForm(goodsType, extended)
 
-POST    /software-controls/not-applicable              controllers.controlcode.NotApplicableController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.renderSoftwareControlsForm
+GET     /controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.renderControlsForm(goodsType)
 
-POST    /software-controls/technical-notes             controllers.controlcode.TechnicalNotesController.handleSoftwareControlsSubmit
+POST    /controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleControlsSubmit(goodsType)
 
-GET     /software-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.renderSofwareCategoryForm
+GET     /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCategoryForm(goodsType)
 
-POST    /software-controls/show-controls               controllers.softtech.controls.SoftTechControlsController.handleSoftwareCategorySubmit
+POST    /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCategorySubmit(goodsType)
 
 GET     /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.renderRelatedSoftwareControlsForm
 
@@ -300,9 +312,9 @@ GET     /software-controls-related-to-a-physical-good/technical-notes           
 
 POST    /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedSoftwareControlsSubmit
 
-GET     /software-controls-related-to-a-physical-good/show-controls               controllers.softtech.controls.SoftTechControlsController.renderRelatedToPhysicalGoodForm
+GET     /controls-related-to-a-physical-good/:goodsType/show-controls             controllers.softtech.controls.SoftTechControlsController.renderRelatedToPhysicalGoodForm(goodsType)
 
-POST    /software-controls-related-to-a-physical-good/show-controls               controllers.softtech.controls.SoftTechControlsController.handleRelatedToPhysicalGoodSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/show-controls             controllers.softtech.controls.SoftTechControlsController.handleRelatedToPhysicalGoodSubmit(goodsType)
 
 GET     /software-technology-relationship                                         controllers.softtech.RelationshipController.renderForm
 

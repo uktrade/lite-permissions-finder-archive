@@ -15,11 +15,14 @@ import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.Relationship;
 import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
+import models.softtech.controls.SoftTechControlsJourney;
+import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 public class SoftTechJourneyHelper {
 
@@ -50,16 +53,21 @@ public class SoftTechJourneyHelper {
 
   /**
    * Check for software controls of the given software category
-   * Note: Writes to DAO if ONE would be returns and saveToDao is true. This is a small shortcut, preventing a
+   * Note: Writes to DAO if Q1 would be returns and saveToDao is true. This is a small shortcut, preventing a
    * separate call to CategoryControlsServiceClient request the single control code to save.
-   * @param softwareCategory The software category to check the controls of
+   * @param goodsType The goods type to check the controls of, should be {@link GoodsType#SOFTWARE} or {@link GoodsType#TECHNOLOGY}
+   * @param softTechCategory The software category to check the controls of
    * @param saveToDao Whether to save the single control code to the DAO, if a single control code were to be returned
    *                  by the CategoryControlsServiceClient request
    * @return The applicable software controls
    */
-  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
-    return categoryControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) //TODO TECHNOLOGY
+  public CompletionStage<ApplicableSoftTechControls> checkSoftTechControls(GoodsType goodsType, SoftTechCategory softTechCategory, boolean saveToDao) {
+    return categoryControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> {
+          if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
+            throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+                , goodsType.toString()));
+          }
           int size = result.controlCodes.size();
           if (size == 0) {
             return ApplicableSoftTechControls.ZERO;
@@ -68,8 +76,14 @@ public class SoftTechJourneyHelper {
             // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
             if (saveToDao) {
               ControlCode controlCode = result.controlCodes.get(0);
-              permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                  ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
+              if (goodsType == GoodsType.SOFTWARE) {
+                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                    ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
+              }
+              else { // GoodsType.TECHNOLOGY
+                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                    ControlCodeJourney.TECHNOLOGY_CONTROLS, controlCode.controlCode);
+              }
             }
             return ApplicableSoftTechControls.ONE;
           }
@@ -82,18 +96,7 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  /**
-   * Check for software controls of the given software category
-   * @param softwareCategory The software category to check the controls of
-   * @return The applicable software controls
-   */
-  public CompletionStage<ApplicableSoftTechControls> checkSoftwareControls(SoftwareCategory softwareCategory) {
-    return checkSoftwareControls(softwareCategory, false);
-  }
-
-
   public CompletionStage<ApplicableSoftTechControls> checkRelatedSoftwareControls(String controlCode, boolean saveToDao) {
-
     return relatedControlsServiceClient.get(GoodsType.SOFTWARE, controlCode) // TODO TECHNOLOGY
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
@@ -118,8 +121,8 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(SoftwareCategory softwareCategory, boolean saveToDao) {
-    return catchallControlsServiceClient.get(GoodsType.SOFTWARE, softwareCategory) // TODO TECHNOLOGY
+  public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(GoodsType goodsType, SoftTechCategory softTechCategory, boolean saveToDao) {
+    return catchallControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
@@ -129,8 +132,14 @@ public class SoftTechJourneyHelper {
             // Saving to the DAO here prevents a separate call to the CatchallControlsServiceClient, if not a little hacky
             if (saveToDao) {
               ControlCode catchallControlCode = result.controlCodes.get(0);
-              permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                  ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
+              if (goodsType == GoodsType.SOFTWARE) {
+                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                    ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
+              }
+              else { // GoodsType.TECHNOLOGY
+                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                    ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS, catchallControlCode.controlCode);
+              }
             }
             return ApplicableSoftTechControls.ONE;
           }
@@ -143,9 +152,9 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Relationship> checkRelationshipExists(SoftwareCategory softwareCategory) {
-    boolean relationshipExists = softwareCategory == SoftwareCategory.MILITARY;
-    return softwareAndTechnologyRelationshipServiceClient.get(softwareCategory, relationshipExists)
+  public CompletionStage<Relationship> checkRelationshipExists(SoftTechCategory softTechCategory) {
+    boolean relationshipExists = softTechCategory == SoftTechCategory.MILITARY;
+    return softwareAndTechnologyRelationshipServiceClient.get(softTechCategory, relationshipExists)
         .thenApplyAsync(result -> {
           if (result.relationshipExists) {
             return Relationship.RELATIONSHIP_EXISTS;
@@ -156,20 +165,19 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> performCatchallSoftwareControlsTransition() {
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-
-    return checkCatchtallSoftwareControls(softwareCategory, true)
+  public CompletionStage<Result> performCatchallSoftTechControlsTransition(GoodsType goodsType) {
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+    return checkCatchtallSoftwareControls(goodsType, softTechCategory, true)
         .thenComposeAsync(controls -> {
           if (controls == ApplicableSoftTechControls.ZERO) {
-            return checkRelationshipExists(softwareCategory)
+            return checkRelationshipExists(softTechCategory)
                 .thenComposeAsync(relationship -> {
                   if (relationship == Relationship.RELATIONSHIP_EXISTS) {
-                    return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
+                    return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                         CatchallSoftTechControlsFlow.RELATIONSHIP_EXISTS);
                   }
                   else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
-                    return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
+                    return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                         CatchallSoftTechControlsFlow.RELATIONSHIP_DOES_NOT_EXIST);
                   }
                   else {
@@ -179,11 +187,11 @@ public class SoftTechJourneyHelper {
                 }, httpExecutionContext.current());
           }
           else if (controls == ApplicableSoftTechControls.ONE) {
-            return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
+            return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                 CatchallSoftTechControlsFlow.CATCHALL_ONE);
           }
           else if (controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-            return journeyManager.performTransition(Events.CATCHALL_SOFTWARE_CONTROLS_FLOW,
+            return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                 CatchallSoftTechControlsFlow.CATCHALL_GREATER_THAN_ONE);
           }
           else {
@@ -193,19 +201,19 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> performCatchallSoftwareControlNotApplicableTransition() {
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return checkCatchtallSoftwareControls(softwareCategory, true)
+  public CompletionStage<Result> performCatchallSoftTechControlNotApplicableTransition(GoodsType goodsType) {
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+    return checkCatchtallSoftwareControls(goodsType, softTechCategory, true)
         .thenComposeAsync(controls -> {
          if (controls == ApplicableSoftTechControls.ONE) {
-           return checkRelationshipExists(softwareCategory)
+           return checkRelationshipExists(softTechCategory)
                .thenComposeAsync(relationship -> {
                  if (relationship == Relationship.RELATIONSHIP_EXISTS) {
-                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
                        SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS);
                  }
                  else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
-                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
                        SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS);
                  }
                  else {
@@ -215,8 +223,8 @@ public class SoftTechJourneyHelper {
                }, httpExecutionContext.current());
           }
           else if (controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-            return journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-                SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFTWARE_CATCHALL_CONTROLS);
+            return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
+                SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS);
           }
           else {
             throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
@@ -225,11 +233,64 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> performCatchallSoftwareControlRelationshipTransition() {
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return checkRelationshipExists(softwareCategory)
+  public CompletionStage<Result> performCatchallSoftTechControlRelationshipTransition(GoodsType goodsType) {
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+    return checkRelationshipExists(softTechCategory)
         .thenComposeAsync(relationship ->
-                journeyManager.performTransition(Events.CONTROL_CODE_SOFTWARE_CATCHALL_RELATIONSHIP, relationship)
+                journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP, relationship)
             , httpExecutionContext.current());
+  }
+
+  public static CompletionStage<Result> validateGoodsTypeAndGetResult(String goodsTypeText, Function<GoodsType, CompletionStage<Result>> resultFunc) {
+    if (StringUtils.isNotEmpty(goodsTypeText)) {
+      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
+      if (goodsType == GoodsType.SOFTWARE || goodsType == GoodsType.TECHNOLOGY) {
+        return resultFunc.apply(goodsType);
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+            , goodsType.toString()));
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
+    }
+  }
+
+  private static CompletionStage<Result> validateGoodsTypeAndGetResult(String goodsTypeText,
+                                                                       SoftTechControlsJourney softwareJourney,
+                                                                       SoftTechControlsJourney technologyJourney,
+                                                                       Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
+    if (StringUtils.isNotEmpty(goodsTypeText)) {
+      GoodsType goodsType = GoodsType.valueOf(goodsTypeText.toUpperCase());
+      if (goodsType == GoodsType.SOFTWARE) {
+        return resultFunc.apply(softwareJourney);
+      }
+      else if (goodsType == GoodsType.TECHNOLOGY) {
+        return resultFunc.apply(technologyJourney);
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+            , goodsType.toString()));
+      }
+    }
+    else {
+      throw new RuntimeException(String.format("Expected goodsTypeText to not be empty"));
+    }
+  }
+
+  public static CompletionStage<Result> getCategoryControlsResult(String goodsTypeText, Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, SoftTechControlsJourney.SOFTWARE_CATEGORY,
+        SoftTechControlsJourney.TECHNOLOGY_CATEGORY, resultFunc);
+  }
+
+  public static CompletionStage<Result> getCatchallControlsResult(String goodsTypeText, Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, SoftTechControlsJourney.SOFTWARE_CATCHALL,
+        SoftTechControlsJourney.TECHNOLOGY_CATCHALL, resultFunc);
+  }
+
+  public static CompletionStage<Result> getRelatedControlsResult(String goodsTypeText, Function<SoftTechControlsJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD,
+        SoftTechControlsJourney.TECHNOLOGY_RELATED_TO_A_PHYSICAL_GOOD, resultFunc);
   }
 }

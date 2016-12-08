@@ -6,8 +6,10 @@ import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.helpers.SoftTechJourneyHelper;
+import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
+import models.softtech.controls.NoSoftTechControlsExistDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -34,30 +36,38 @@ public class NoSoftTechControlsExistController {
     this.httpExecutionContext = httpExecutionContext;
   }
 
-  public CompletionStage<Result> renderForm() {
-    return renderWithForm(formFactory.form(NoSoftwareControlsExistForm.class));
+  public CompletionStage<Result> renderForm(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeAndGetResult(goodsTypeText, this::renderFormInternal);
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  private CompletionStage<Result> renderFormInternal(GoodsType goodsType) {
+    return renderWithForm(goodsType, formFactory.form(NoSoftwareControlsExistForm.class));
+  }
+
+  public CompletionStage<Result> handleSubmit(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeAndGetResult(goodsTypeText, this::handleSubmitInternal);
+  }
+
+  private CompletionStage<Result> handleSubmitInternal(GoodsType goodsType) {
     Form<NoSoftwareControlsExistForm> form = formFactory.form(NoSoftwareControlsExistForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return renderWithForm(form);
+      return renderWithForm(goodsType, form);
     }
     String action = form.get().action;
     if ("continue".equals(action)) {
-      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(goodsType);
     }
     else {
       throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
     }
   }
 
-  private CompletionStage<Result> renderWithForm(Form<NoSoftwareControlsExistForm> form) {
-    SoftwareCategory softwareCategory = permissionsFinderDao.getSoftwareCategory().get();
-    return softTechJourneyHelper.checkCatchtallSoftwareControls(softwareCategory, false)
+  private CompletionStage<Result> renderWithForm(GoodsType goodsType, Form<NoSoftwareControlsExistForm> form) {
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+    return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
         .thenApplyAsync(control -> {
           if (control == ApplicableSoftTechControls.ONE || control == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-            return ok(noSoftTechControlsExist.render(form));
+            return ok(noSoftTechControlsExist.render(form, new NoSoftTechControlsExistDisplay(goodsType)));
           }
           else {
             throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""

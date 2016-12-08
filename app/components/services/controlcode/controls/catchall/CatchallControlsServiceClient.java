@@ -5,7 +5,7 @@ import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
 import models.GoodsType;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
@@ -29,12 +29,12 @@ public class CatchallControlsServiceClient {
     this.webServiceUrl = webServiceAddress + "/catch-all-controls";
   }
 
-  public CompletionStage<CatchallControlsServiceResult> get(GoodsType goodsType, SoftwareCategory softwareCategory) {
+  public CompletionStage<CatchallControlsServiceResult> get(GoodsType goodsType, SoftTechCategory softTechCategory) {
     if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
       throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\"", goodsType.toString()));
     }
     String url;
-    if (softwareCategory.isDualUseSoftwareCategory()) {
+    if (softTechCategory.isDualUseSoftTechCategory()) {
       url = webServiceUrl + "/" + goodsType.toUrlString() +  "/dual-use";
     }
     else {

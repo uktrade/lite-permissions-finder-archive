@@ -2,26 +2,32 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.softtech.routes.RelatedEquipmentController
+@import models.softtech.RelatedEquipmentDisplay
 
-@(form: Form[_])
-@standardPage("Software related to equipment or materials?", Some(Html("Software related to equipment or materials?"))){
+@(form: Form[_], display: RelatedEquipmentDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
   @errorSummary(form)
 }{
 
-  <form action="@RelatedEquipmentController.handleSubmit" method="POST">
+  <form action="@display.formAction" method="POST">
     
     @contextFormParams()
 
-    @*TODO Content*@
-
-    <h2 class="heading-medium">Is your software related to the following?</h2>
+    <h2 class="heading-medium">@display.questionHeading</h2>
 
     <ul class="list list-bullet text">
-      <li>CONTENT</li>
+      <li>
+        For the development, production, use, operation, repair or maintenance of equipment or materials
+      </li>
+      <li>
+        To enhance or modify equipment to exceed its normal performance limits
+      </li>
+      <li>
+        To perform or simulate the functions of cryptographic equipment, such as secure communications equipment
+      </li>
     </ul>
 
-    @formRadioBoolean(field = form("relatedToEquipmentOrMaterials"), prompt = Html("Is your software related to the following?"), hideHeading = true)
+    @formRadioBoolean(field = form("relatedToEquipmentOrMaterials"), prompt = Html(display.questionHeading), hideHeading = true)
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

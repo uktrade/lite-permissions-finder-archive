@@ -67,20 +67,20 @@ public class AdditionalSpecificationsController {
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> renderSearchRelatedToSoftwareForm() {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
   }
 
-  public CompletionStage<Result> renderSoftwareControlsForm() {
-    return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS);
+  public CompletionStage<Result> renderControlsForm(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderRelatedSoftwareControlsForm() {
     return renderForm(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
-  public CompletionStage<Result> renderSoftwareCatchallControlsForm() {
-    return renderForm(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
@@ -113,20 +113,20 @@ public class AdditionalSpecificationsController {
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
-  public CompletionStage<Result> handleSoftwareControlsSubmit() {
-    return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS);
+  public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleRelatedSoftwareControlsSubmit() {
     return handleSubmit(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
   }
 
-  public CompletionStage<Result> handleSoftwareCatchallControlsSubmit() {
-    return handleSubmit(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS);
+  public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {

@@ -12,6 +12,7 @@ import controllers.ErrorController;
 import controllers.controlcode.ControlCodeController;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeJourneyHelper;
 import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
 import models.controlcode.ControlCodeJourney;
@@ -69,8 +70,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> renderSearchRelatedToSoftwareForm() {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
@@ -125,8 +126,8 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
   }
 
-  public CompletionStage<Result> handleSearchRelatedToSoftwareSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+  public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
+    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<SearchServiceResult> physicalGoodsSearch(ControlCodeJourney controlCodeJourney) {
@@ -141,7 +142,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
       return journeyManager.performTransition(Events.NONE_MATCHED);
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

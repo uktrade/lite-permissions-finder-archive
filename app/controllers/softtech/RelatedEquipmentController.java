@@ -9,6 +9,8 @@ import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.helpers.SoftTechJourneyHelper;
+import models.GoodsType;
+import models.softtech.RelatedEquipmentDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -34,30 +36,39 @@ public class RelatedEquipmentController {
     this.softTechJourneyHelper = softTechJourneyHelper;
   }
 
-  public Result renderForm() {
+  public CompletionStage<Result> renderForm(String goodsTypeText) {
+    return SoftTechJourneyHelper.validateGoodsTypeAndGetResult(goodsTypeText, this::renderFormInternal);
+  }
+
+  private CompletionStage<Result> renderFormInternal(GoodsType goodsType) {
     RelatedEquipmentForm templateForm = new RelatedEquipmentForm();
-    Optional<Boolean> relatedToEquipmentOrMaterialsOptional = permissionsFinderDao.getRelatedToEquipmentOrMaterials();
+    Optional<Boolean> relatedToEquipmentOrMaterialsOptional = permissionsFinderDao.getRelatedToEquipmentOrMaterials(goodsType);
     templateForm.relatedToEquipmentOrMaterials = relatedToEquipmentOrMaterialsOptional.isPresent()
         ? relatedToEquipmentOrMaterialsOptional.get().toString()
         : "";
-    return ok(relatedEquipment.render(formFactory.form(RelatedEquipmentForm.class).fill(templateForm)));
+    return completedFuture(ok(relatedEquipment.render(formFactory.form(RelatedEquipmentForm.class).fill(templateForm),
+        new RelatedEquipmentDisplay(goodsType))));
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  public CompletionStage<Result> handleSubmit(String goodsTypeText){
+    return SoftTechJourneyHelper.validateGoodsTypeAndGetResult(goodsTypeText, this::handleSubmitInternal);
+  }
+
+  public CompletionStage<Result> handleSubmitInternal(GoodsType goodsType) {
     Form<RelatedEquipmentForm> form = formFactory.form(RelatedEquipmentForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(relatedEquipment.render(form)));
+      return completedFuture(ok(relatedEquipment.render(form, new RelatedEquipmentDisplay(goodsType))));
     }
 
     String relatedToEquipmentOrMaterials = form.get().relatedToEquipmentOrMaterials;
 
     if ("true".equals(relatedToEquipmentOrMaterials)) {
-      permissionsFinderDao.saveRelatedToEquipmentOrMaterials(true);
+      permissionsFinderDao.saveRelatedToEquipmentOrMaterials(goodsType, true);
       return journeyManager.performTransition(StandardEvents.YES);
     }
     else if ("false".equals(relatedToEquipmentOrMaterials)) {
-      permissionsFinderDao.saveRelatedToEquipmentOrMaterials(false);
-      return softTechJourneyHelper.performCatchallSoftwareControlsTransition();
+      permissionsFinderDao.saveRelatedToEquipmentOrMaterials(goodsType, false);
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(goodsType);
     }
     else {
       throw new FormStateException(String.format("Unknown value for relatedToEquipmentOrMaterials: \"%s\"",

@@ -4,7 +4,7 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
-import models.softtech.SoftwareCategory;
+import models.softtech.SoftTechCategory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
@@ -28,16 +28,16 @@ public class SoftwareAndTechnologyRelationshipServiceClient {
     this.webServiceUrl = webServiceAddress + "/related-controls";
   }
 
-  public CompletionStage<SoftwareAndTechnologyRelationshipServiceResult> get(SoftwareCategory softwareCategory) {
-    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softwareCategory.toString()))
+  public CompletionStage<SoftwareAndTechnologyRelationshipServiceResult> get(SoftTechCategory softTechCategory) {
+    return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softTechCategory.toString()))
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get()
         .thenApplyAsync(response -> (SoftwareAndTechnologyRelationshipServiceResult) null, httpExecutionContext.current());
   }
 
-  public CompletionStage<SoftwareAndTechnologyRelationshipServiceResult> get(SoftwareCategory softwareCategory, boolean relationshipExists) {
-      return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softwareCategory.toString()))
+  public CompletionStage<SoftwareAndTechnologyRelationshipServiceResult> get(SoftTechCategory softTechCategory, boolean relationshipExists) {
+      return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(softTechCategory.toString()))
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get()

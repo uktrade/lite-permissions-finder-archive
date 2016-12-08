@@ -3,6 +3,7 @@ package models.controlcode;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
 import controllers.controlcode.routes;
+import models.GoodsType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,16 +27,22 @@ public class DecontrolsDisplay {
       this.formAction = routes.DecontrolsController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.DecontrolsController.handleSearchRelatedToSoftwareSubmit().url();
+      this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-      this.formAction = routes.DecontrolsController.handleSoftwareControlsSubmit().url();
+      this.formAction = routes.DecontrolsController.handleControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+      this.formAction = routes.DecontrolsController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.DecontrolsController.handleRelatedSoftwareControlsSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.DecontrolsController.handleSoftwareCatchallControlsSubmit().url();
+      this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
