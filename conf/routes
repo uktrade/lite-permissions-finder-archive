@@ -138,12 +138,12 @@ GET     /export-category/medicines-drugs/controlled controllers.StaticContentCon
 
 POST    /export-category/medicines-drugs/controlled controllers.StaticContentController.renderCategoryMedicinesDrugs
 
-GET     /export-category/non-military-firearms      controllers.categories.NonMilitaryController.renderForm
-POST    /export-category/non-military-firearms      controllers.categories.NonMilitaryController.handleSubmit
+GET     /export-category/non-military-firearms          controllers.categories.NonMilitaryController.renderForm
+POST    /export-category/non-military-firearms          controllers.categories.NonMilitaryController.handleSubmit
 
-GET     /export-category/non-military-firearms/ep1  controllers.StaticContentController.renderCategoryNonMilitaryFirearmsEp1
-GET     /export-category/non-military-firearms/ep2  controllers.StaticContentController.renderCategoryNonMilitaryFirearmsEp2
-GET     /export-category/non-military-firearms/ep3  controllers.StaticContentController.renderCategoryNonMilitaryFirearmsEp3
+GET     /export-category/non-military-firearms/taking   controllers.StaticContentController.renderCategoryNonMilitaryTaking
+GET     /export-category/non-military-firearms/sending  controllers.StaticContentController.renderCategoryNonMilitarySending
+GET     /export-category/non-military-firearms/licence  controllers.StaticContentController.renderCategoryNonMilitaryNeedLicence
 
 GET     /export-category/plants-animals       controllers.categories.PlantsAnimalsController.renderForm
 

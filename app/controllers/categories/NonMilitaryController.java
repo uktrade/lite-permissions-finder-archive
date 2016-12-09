@@ -5,7 +5,6 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
-import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
 import models.ExportYesNo;
@@ -26,13 +25,16 @@ public class NonMilitaryController {
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao permissionsFinderDao;
+
+  public static final String TAKE_YOURSELF_KEY = "categoryNonMilitaryTakeYourself";
+  public static final String TAKE_YOURSELF_QUESTION = "Will you be taking the firearms or ammunition out of the UK yourself?";
+  public static final String PERSONAL_EFFECTS_KEY = "categoryNonMilitaryPersonalEffects";
+  public static final String PERSONAL_EFFECTS_QUESTION = "Will the firearms or ammunition be sent out of the UK as part of your personal effects?";
 
   @Inject
-  public NonMilitaryController(JourneyManager journeyManager, FormFactory formFactory, PermissionsFinderDao permissionsFinderDao) {
+  public NonMilitaryController(JourneyManager journeyManager, FormFactory formFactory) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   public Result renderForm() {
@@ -41,33 +43,31 @@ public class NonMilitaryController {
   }
 
   public CompletionStage<Result> handleSubmit() {
-
     Form<NonMilitaryForm> form = formFactory.form(NonMilitaryForm.class).bindFromRequest();
     if (form.hasErrors()) {
       return completedFuture(ok(nonMilitary.render(form, getQuestion(journeyManager.getCurrentInternalStageName()))));
     }
 
     Optional<ExportYesNo> optYesNo = ExportYesNo.getMatched(form.get().selectedOption);
-    if(optYesNo.isPresent()) {
-      return journeyManager.performTransition(Events.NON_MILITARY_FIREARMS_ANSWER_SELECTED, optYesNo.get());
+    if (optYesNo.isPresent()) {
+      return journeyManager.performTransition(Events.NON_MILITARY_FIREARMS_OPTION_SELECTED, optYesNo.get());
     }
     throw new FormStateException("Unknown selectedOption");
-
   }
 
-  private String getQuestion(String stageKey) {
+  private String getQuestion(String stageName) {
     String question = "";
-    if(stageKey.equals("categoryNonMilitary1")) {
-      question = "Will you be taking the firearms or ammunition out of the UK yourself?";
-    } else if(stageKey.equals("categoryNonMilitary2")) {
-      question = "Will the firearms or ammunition be sent out of the UK as part of your personal effects?";
+    if (stageName.equals(TAKE_YOURSELF_KEY)) {
+      question = TAKE_YOURSELF_QUESTION;
+    } else if (stageName.equals(PERSONAL_EFFECTS_KEY)) {
+      question = PERSONAL_EFFECTS_QUESTION;
     }
     return question;
   }
 
   public static class NonMilitaryForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Please select one option")
     public String selectedOption;
 
   }
