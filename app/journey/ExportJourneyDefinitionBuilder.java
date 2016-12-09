@@ -476,6 +476,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(controlCodeforRelatedToSoftware));
 
+    atStage(physicalGoodsSearchResultsRelatedToSoftware)
+        .onEvent(Events.EDIT_SEARCH_DESCRIPTION)
+        .then(moveTo(physicalGoodsSearchRelatedToSoftware));
+
     bindCatchallSoftwareControls(physicalGoodsSearchResultsRelatedToSoftware); // None matched
 
     atStage(controlCodeforRelatedToSoftware)

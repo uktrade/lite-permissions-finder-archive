@@ -62,21 +62,36 @@
 
     } else {
 
-      <p>
-        Edit your description, and:
-      </p>
+      @if(display.controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
+        display.controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
 
-      <ul class="list list-bullet text">
-        <li class="font-">check your terms are spelled correctly</li>
-        <li>try different terms</li>
-        <li>if you are searching for components of larger items, widen your search to include those larger items</li>
-      </ul>
+        <p>
+          <button type="submit" name="action" value="edit-description" class="link underlined font-small no-matched-result-link">Edit your description</button>, and:
+        </p>
 
-      @if(display.controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+        <ul class="list list-bullet text">
+          <li class="font-">check your terms are spelled correctly</li>
+          <li>try different terms</li>
+          <li>if you are searching for components of larger items, widen your search to include those larger items</li>
+        </ul>
 
-        <button type="submit" name="action" value="no-matched-result" class="link underlined font-small no-matched-result-link">CONTINUE JOURNEY</button>
+        <p>
+          If you cannot find the item related to your software, <button type="submit" name="action" value="continue" class="link underlined font-small no-matched-result-link">continue to use this service</button> to find out if other controls might apply.
+        </p>
 
+      } else {
+
+        <p>
+          Edit your description, and:
+        </p>
+
+        <ul class="list list-bullet text">
+          <li class="font-">check your terms are spelled correctly</li>
+          <li>try different terms</li>
+          <li>if you are searching for components of larger items, widen your search to include those larger items</li>
+        </ul>
       }
+
     </form>
 
     }

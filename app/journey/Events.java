@@ -43,6 +43,8 @@ public class Events {
 
   public static final JourneyEvent NONE_MATCHED = new JourneyEvent("NONE_MATCHED");
 
+  public static final JourneyEvent EDIT_SEARCH_DESCRIPTION = new JourneyEvent("RETURN_TO_SEARCH");
+
   public static final JourneyEvent CONTROL_CODE_SELECTED = new JourneyEvent("CONTROL_CODE_SELECTED");
 
   public static final ParameterisedJourneyEvent<ControlCodeFlowStage> CONTROL_CODE_FLOW_NEXT =

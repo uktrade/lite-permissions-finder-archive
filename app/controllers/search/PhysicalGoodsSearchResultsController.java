@@ -107,6 +107,10 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                 SearchResultsBaseDisplay display = new SearchResultsBaseDisplay(controlCodeJourney, form, GoodsType.PHYSICAL, result.results, newDisplayCount);
                 return ok(physicalGoodsSearchResults.render(display));
               }, httpExecutionContext.current());
+        case EDIT_DESCRIPTION:
+          return editDescription(controlCodeJourney);
+        case CONTINUE:
+          return continueWithService(controlCodeJourney);
       }
     }
 
@@ -136,13 +140,38 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   }
 
   private CompletionStage<Result> noneMatched(ControlCodeJourney controlCodeJourney){
-    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH ||
-        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
-        controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH ||
+          controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
+          controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
       return journeyManager.performTransition(Events.NONE_MATCHED);
     }
-    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
+          controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      return continueWithService(controlCodeJourney);
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
+          , controlCodeJourney.toString()));
+    }
+  }
+
+  private CompletionStage<Result> editDescription(ControlCodeJourney controlCodeJourney) {
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
+        controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      return journeyManager.performTransition(Events.EDIT_SEARCH_DESCRIPTION);
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
+          , controlCodeJourney.toString()));
+    }
+  }
+
+  private CompletionStage<Result> continueWithService(ControlCodeJourney controlCodeJourney) {
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE);
+    }
+    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.TECHNOLOGY);
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
