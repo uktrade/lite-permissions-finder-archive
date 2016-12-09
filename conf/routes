@@ -304,9 +304,9 @@ GET     /controls-related-to-a-physical-good/:goodsType/decontrols              
 
 POST    /controls-related-to-a-physical-good/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.handleRelatedControlsSubmit(goodsType)
 
-GET     /software-controls-related-to-a-physical-good/not-applicable              controllers.controlcode.NotApplicableController.renderRelatedSoftwareControlsForm(extended)
+GET     /controls-related-to-a-physical-good/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.renderRelatedControlsForm(goodsType, extended)
 
-POST    /software-controls-related-to-a-physical-good/not-applicable              controllers.controlcode.NotApplicableController.handleRelatedSoftwareControlsSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleRelatedControlsSubmit(goodsType)
 
 GET     /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.renderRelatedSoftwareControlsForm
 
