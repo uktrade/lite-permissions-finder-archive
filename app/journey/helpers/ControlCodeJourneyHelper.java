@@ -173,4 +173,9 @@ public class ControlCodeJourneyHelper {
         ControlCodeJourney.TECHNOLOGY_CONTROLS, resultFunc);
   }
 
+  public static CompletionStage<Result> getRelatedControlsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
+    return validateGoodsTypeAndGetResult(goodsTypeText, ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD,
+        ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, resultFunc);
+  }
+
 }

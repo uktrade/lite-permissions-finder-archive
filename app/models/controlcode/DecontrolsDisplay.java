@@ -39,10 +39,16 @@ public class DecontrolsDisplay {
       this.formAction = routes.DecontrolsController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.DecontrolsController.handleRelatedSoftwareControlsSubmit().url();
+      this.formAction = routes.DecontrolsController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      this.formAction = routes.DecontrolsController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+      this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

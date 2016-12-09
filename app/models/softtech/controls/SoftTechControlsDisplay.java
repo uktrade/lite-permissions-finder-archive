@@ -4,6 +4,7 @@ import components.services.controlcode.controls.ControlCode;
 import controllers.softtech.controls.SoftTechControlsController;
 import controllers.softtech.controls.routes;
 import models.GoodsType;
+import models.softtech.SoftTechCategory;
 import play.data.Form;
 
 import java.util.List;
@@ -20,12 +21,12 @@ public class SoftTechControlsDisplay {
     this.form = form;
     if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
       this.formAction = routes.SoftTechControlsController.handleCategorySubmit(GoodsType.SOFTWARE.toUrlString()).url();
-      this.pageTitle = "Showing controls related to software category";
+      this.pageTitle = "Possible matches";
       this.preResultsLabel = "";
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
       this.formAction = routes.SoftTechControlsController.handleCategorySubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
-      this.pageTitle = "Showing controls related to technology category";
+      this.pageTitle = "Possible matches";
       this.preResultsLabel = "";
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {

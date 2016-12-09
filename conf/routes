@@ -292,29 +292,29 @@ GET     /controls/:goodsType/show-controls               controllers.softtech.co
 
 POST    /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCategorySubmit(goodsType)
 
-GET     /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.renderRelatedSoftwareControlsForm
+GET     /controls-related-to-a-physical-good/:goodsType/                            controllers.controlcode.ControlCodeController.renderRelatedControlsForm(goodsType)
 
-POST    /software-controls-related-to-a-physical-good                             controllers.controlcode.ControlCodeController.handleRelatedSoftwareControlsSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/                            controllers.controlcode.ControlCodeController.handleRelatedControlsSubmit(goodsType)
 
-GET     /software-controls-related-to-a-physical-good/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderRelatedSoftwareControlsForm
+GET     /controls-related-to-a-physical-good/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderRelatedControlsForm(goodsType)
 
-POST    /software-controls-related-to-a-physical-good/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleRelatedControlsSubmit(goodsType)
 
-GET     /software-controls-related-to-a-physical-good/decontrols                  controllers.controlcode.DecontrolsController.renderRelatedSoftwareControlsForm
+GET     /controls-related-to-a-physical-good/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.renderRelatedControlsForm(goodsType)
 
-POST    /software-controls-related-to-a-physical-good/decontrols                  controllers.controlcode.DecontrolsController.handleRelatedSoftwareControlsSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.handleRelatedControlsSubmit(goodsType)
 
-GET     /software-controls-related-to-a-physical-good/not-applicable              controllers.controlcode.NotApplicableController.renderRelatedSoftwareControlsForm(extended)
+GET     /controls-related-to-a-physical-good/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.renderRelatedControlsForm(goodsType, extended)
 
-POST    /software-controls-related-to-a-physical-good/not-applicable              controllers.controlcode.NotApplicableController.handleRelatedSoftwareControlsSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleRelatedControlsSubmit(goodsType)
 
-GET     /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.renderRelatedSoftwareControlsForm
+GET     /controls-related-to-a-physical-good/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.renderRelatedControlsForm(goodsType)
 
-POST    /software-controls-related-to-a-physical-good/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedSoftwareControlsSubmit
+POST    /controls-related-to-a-physical-good/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleRelatedControlsSubmit(goodsType)
 
-GET     /controls-related-to-a-physical-good/:goodsType/show-controls             controllers.softtech.controls.SoftTechControlsController.renderRelatedToPhysicalGoodForm(goodsType)
+GET     /controls-related-to-a-physical-good/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderRelatedToPhysicalGoodForm(goodsType)
 
-POST    /controls-related-to-a-physical-good/:goodsType/show-controls             controllers.softtech.controls.SoftTechControlsController.handleRelatedToPhysicalGoodSubmit(goodsType)
+POST    /controls-related-to-a-physical-good/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleRelatedToPhysicalGoodSubmit(goodsType)
 
 GET     /software-technology-relationship                                         controllers.softtech.RelationshipController.renderForm
 
