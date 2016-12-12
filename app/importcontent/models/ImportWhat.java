@@ -10,27 +10,36 @@ import java.util.stream.Collectors;
 
 public enum ImportWhat {
 
-  FIREARMS("Firearms and ammunition"),
-  EXPLOSIVES("Explosives"),
-  LAND_MINES("Anti-personnel and land mines"),
-  TORTURE("Goods that could be used for torture"),
-  NUCLEAR("Nuclear materials"),
-  CHEMICALS("Chemicals, pesticides and ozone-depleting substances"),
-  MEDICINES("Medicines, pharmaceuticals and drugs"),
-  DIAMONDS("Diamonds"),
-  IRON("Iron and steel"),
-  FOOD("Food, animals and plants"),
-  TEXTILES("Textiles and clothing"),
-  NONE_ABOVE("None of the above");
+  FIREARMS("Firearms and ammunition", true),
+  EXPLOSIVES("Explosives", true),
+  LAND_MINES("Anti-personnel and land mines", true),
+  TORTURE("Goods that could be used for torture", true),
+  NUCLEAR("Nuclear materials", true),
+  CHEMICALS("Chemicals, pesticides and ozone-depleting substances", true),
+  MEDICINES("Medicines, pharmaceuticals and drugs", true),
+  DIAMONDS("Diamonds", true),
+  IRON("Iron and steel", true),
+  IRON_KAZAKHSTAN("Iron and steel from Kazakhstan", false),
+  FOOD("Food, animals and plants", true),
+  TEXTILES_NORTH_KOREA("Textiles and clothing from North Korea", false),
+  TEXTILES_BELARUS("Textiles and clothing from Belarus", false),
+  TEXTILES("Textiles and clothing", true),
+  NONE_ABOVE("None of the above", true);
 
   private String prompt;
+  private boolean includeAsOption;
 
-  ImportWhat(String prompt) {
+  ImportWhat(String prompt, boolean includeAsOption) {
     this.prompt = prompt;
+    this.includeAsOption = includeAsOption;
   }
 
   public String getPrompt() {
     return this.prompt;
+  }
+
+  public boolean getIncludeAsOption() {
+    return this.includeAsOption;
   }
 
   public boolean equals(String arg) {
@@ -39,7 +48,9 @@ public enum ImportWhat {
 
   public static List<SelectOption> getSelectOptions() {
     List<ImportWhat> enums = Arrays.asList(ImportWhat.values());
-    return enums.stream().map(e -> new SelectOption(e.name(), e.getPrompt())).collect(Collectors.toList());
+    return enums.stream()
+        .filter(ImportWhat::getIncludeAsOption)
+        .map(e -> new SelectOption(e.name(), e.getPrompt())).collect(Collectors.toList());
   }
 
   public static Optional<ImportWhat> getMatched(String name) {

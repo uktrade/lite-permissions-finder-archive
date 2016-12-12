@@ -13,8 +13,5 @@ public class ImportEvents {
   public static final ParameterisedJourneyEvent<ImportWhat> IMPORT_WHAT_SELECTED = new ParameterisedJourneyEvent<>("IMPORT_WHAT_SELECTED", ImportWhat.class);
   public static final ParameterisedJourneyEvent<ImportWhere> IMPORT_WHERE_SELECTED = new ParameterisedJourneyEvent<>("IMPORT_WHERE_SELECTED", ImportWhere.class);
   public static final ParameterisedJourneyEvent<ImportFoodWhat> IMPORT_FOOD_WHAT_SELECTED = new ParameterisedJourneyEvent<>("IMPORT_FOOD_WHAT_SELECTED", ImportFoodWhat.class);
-  public static final ParameterisedJourneyEvent<ImportWhatWhereIron> IMPORT_WHAT_WHERE_IRON_SELECTED = new ParameterisedJourneyEvent<>("IMPORT_WHAT_WHERE_IRON_SELECTED", ImportWhatWhereIron.class);
-  public static final ParameterisedJourneyEvent<ImportWhatWhereTextiles> IMPORT_WHAT_WHERE_TEXTILES_SELECTED = new ParameterisedJourneyEvent<>("IMPORT_WHAT_WHERE_TEXTILES_SELECTED", ImportWhatWhereTextiles.class);
-
   public static final ParameterisedJourneyEvent<ImportYesNo> IMPORT_YES_NO_SELECTED = new ParameterisedJourneyEvent<>("IMPORT_YES_NO_SELECTED", ImportYesNo.class);
 }

@@ -6,8 +6,6 @@ import components.common.journey.JourneyStage;
 import controllers.routes;
 import importcontent.models.ImportFoodWhat;
 import importcontent.models.ImportWhat;
-import importcontent.models.ImportWhatWhereIron;
-import importcontent.models.ImportWhatWhereTextiles;
 import importcontent.models.ImportWhere;
 import importcontent.models.ImportYesNo;
 import journey.JourneyDefinitionNames;
@@ -26,31 +24,25 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
    * Create import JourneyStages
    */
   public void initStages() {
-
     stageMap = new HashMap<>();
 
     // Create non-static JourneyStages
-    stageMap.put(ImportQuestion.WHERE.key(), initStage(ImportQuestion.WHERE));
+    stageMap.put(ImportQuestion.WHERE.key(), initWhereStage(ImportQuestion.WHERE));
     stageMap.put(ImportQuestion.WHAT.key(), initStage(ImportQuestion.WHAT));
     stageMap.put(ImportQuestion.CHARCOAL.key(), initStage(ImportQuestion.CHARCOAL));
-    stageMap.put(ImportQuestion.MILITARY_IRAN.key(), initStage(ImportQuestion.MILITARY_IRAN));
-    stageMap.put(ImportQuestion.MILITARY_RUSSIA.key(), initStage(ImportQuestion.MILITARY_RUSSIA));
-    stageMap.put(ImportQuestion.MILITARY_MYANMAR.key(), initStage(ImportQuestion.MILITARY_MYANMAR));
+    stageMap.put(ImportQuestion.MILITARY.key(), initStage(ImportQuestion.MILITARY));
     stageMap.put(ImportQuestion.SHOT.key(), initStage(ImportQuestion.SHOT));
     stageMap.put(ImportQuestion.SUBSTANCES.key(), initStage(ImportQuestion.SUBSTANCES));
     stageMap.put(ImportQuestion.OZONE.key(), initStage(ImportQuestion.OZONE));
     stageMap.put(ImportQuestion.DRUGS.key(), initStage(ImportQuestion.DRUGS));
     stageMap.put(ImportQuestion.FOOD_WHAT.key(), initStage(ImportQuestion.FOOD_WHAT));
     stageMap.put(ImportQuestion.ENDANGERED.key(), initStage(ImportQuestion.ENDANGERED));
-    stageMap.put(ImportQuestion.WHAT_WHERE_IRON.key(), initStage(ImportQuestion.WHAT_WHERE_IRON));
-    stageMap.put(ImportQuestion.WHAT_WHERE_TEXTILES.key(), initStage(ImportQuestion.WHAT_WHERE_TEXTILES));
     stageMap.put(ImportQuestion.BELARUS_TEXTILES.key(), initStage(ImportQuestion.BELARUS_TEXTILES));
 
     // Create static JourneyStages (static files named importEp1, importEp2 .. to importEp31)
     for (String key : IntStream.range(1, 32).boxed().map(n -> "importEp" + n).collect(Collectors.toList())) {
       stageMap.put(key, initStaticStage(key));
     }
-
   }
 
   @Override
@@ -62,14 +54,12 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(stage(ImportQuestion.WHERE))
         .onEvent(ImportEvents.IMPORT_WHERE_SELECTED)
         .branch()
-        .when(ImportWhere.OTHER, moveTo(stage(ImportQuestion.WHAT)))
-        .when(ImportWhere.CRIMEA, moveTo(stage("importEp3")))
-        .when(ImportWhere.EU, moveTo(stage("importEp15")))
-        .when(ImportWhere.SOMALIA, moveTo(stage(ImportQuestion.CHARCOAL)))
-        .when(ImportWhere.SYRIA, moveTo(stage("importEp6")))
-        .when(ImportWhere.RUSSIA, moveTo(stage(ImportQuestion.MILITARY_RUSSIA)))
-        .when(ImportWhere.IRAN, moveTo(stage(ImportQuestion.MILITARY_IRAN)))
-        .when(ImportWhere.MYANMAR, moveTo(stage(ImportQuestion.MILITARY_MYANMAR)));
+        .when(ImportWhere.OTHER_COUNTRIES, moveTo(stage(ImportQuestion.WHAT)))
+        .when(ImportWhere.CHARCOAL_COUNTRIES, moveTo(stage(ImportQuestion.CHARCOAL)))
+        .when(ImportWhere.MILITARY_COUNTRIES, moveTo(stage(ImportQuestion.MILITARY)))
+        .when(ImportWhere.CRIMEA_REGION, moveTo(stage("importEp3")))
+        .when(ImportWhere.EU_COUNTRIES, moveTo(stage("importEp15")))
+        .when(ImportWhere.SYRIA_COUNTRY, moveTo(stage("importEp6")));
 
     // Are you importing charcoal or charcoal products?
     atStage(stage(ImportQuestion.CHARCOAL))
@@ -78,25 +68,10 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ImportYesNo.YES, moveTo(stage("importEp5")))
         .when(ImportYesNo.NO, moveTo(stage(ImportQuestion.WHAT)));
 
-    // Are you importing military goods or technology? (Iran)
-    atStage(stage(ImportQuestion.MILITARY_IRAN))
+    atStage(stage(ImportQuestion.MILITARY))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
         .when(ImportYesNo.YES, moveTo(stage("importEp1")))
-        .when(ImportYesNo.NO, moveTo(stage(ImportQuestion.WHAT)));
-
-    // Are you importing military goods or technology? (Russia)
-    atStage(stage(ImportQuestion.MILITARY_RUSSIA))
-        .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
-        .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp2")))
-        .when(ImportYesNo.NO, moveTo(stage(ImportQuestion.WHAT)));
-
-    // Are you importing military goods or technology? (Myanmar)
-    atStage(stage(ImportQuestion.MILITARY_MYANMAR))
-        .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
-        .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp4")))
         .when(ImportYesNo.NO, moveTo(stage(ImportQuestion.WHAT)));
 
     // What are you importing?
@@ -104,8 +79,11 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(ImportEvents.IMPORT_WHAT_SELECTED)
         .branch()
         .when(ImportWhat.FIREARMS, moveTo(stage(ImportQuestion.SHOT)))
-        .when(ImportWhat.TEXTILES, moveTo(stage(ImportQuestion.WHAT_WHERE_TEXTILES)))
-        .when(ImportWhat.IRON, moveTo(stage(ImportQuestion.WHAT_WHERE_IRON)))
+        .when(ImportWhat.TEXTILES, moveTo(stage("importEp11")))
+        .when(ImportWhat.TEXTILES_BELARUS, moveTo(stage(ImportQuestion.BELARUS_TEXTILES)))
+        .when(ImportWhat.TEXTILES_NORTH_KOREA, moveTo(stage("importEp10")))
+        .when(ImportWhat.IRON, moveTo(stage("importEp14")))
+        .when(ImportWhat.IRON_KAZAKHSTAN, moveTo(stage("importEp13")))
         .when(ImportWhat.FOOD, moveTo(stage(ImportQuestion.FOOD_WHAT)))
         .when(ImportWhat.MEDICINES, moveTo(stage(ImportQuestion.DRUGS)))
         .when(ImportWhat.NUCLEAR, moveTo(stage("importEp16")))
@@ -160,27 +138,17 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ImportYesNo.YES, moveTo(stage("importEp26")))
         .when(ImportYesNo.NO, moveTo(stage("importEp27")));
 
-    // Where are you importing the iron/steel from?
-    atStage(stage(ImportQuestion.WHAT_WHERE_IRON))
-        .onEvent(ImportEvents.IMPORT_WHAT_WHERE_IRON_SELECTED)
-        .branch()
-        .when(ImportWhatWhereIron.KAZAKHSTAN, moveTo(stage("importEp13")))
-        .when(ImportWhatWhereIron.OTHER, moveTo(stage("importEp14")));
-
-    // Where are you importing the textiles from?
-    atStage(stage(ImportQuestion.WHAT_WHERE_TEXTILES))
-        .onEvent(ImportEvents.IMPORT_WHAT_WHERE_TEXTILES_SELECTED)
-        .branch()
-        .when(ImportWhatWhereTextiles.BELARUS, moveTo(stage(ImportQuestion.BELARUS_TEXTILES)))
-        .when(ImportWhatWhereTextiles.NORTH_KOREA, moveTo(stage("importEp10")))
-        .when(ImportWhatWhereTextiles.OTHER, moveTo(stage("importEp11")));
-
     // Are you sending textiles to Belarus for processing before being returned to the UK?
     atStage(stage(ImportQuestion.BELARUS_TEXTILES))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
         .when(ImportYesNo.YES, moveTo(stage("importEp9")))
         .when(ImportYesNo.NO, moveTo(stage("importEp12")));
+  }
+
+  private JourneyStage initWhereStage(ImportQuestion importQuestion) {
+    String stageKey = importQuestion.key();
+    return defineStage(stageKey, importQuestion.question(), controllers.importcontent.routes.ImportWhereController.renderForm());
   }
 
   private JourneyStage initStage(ImportQuestion importQuestion) {

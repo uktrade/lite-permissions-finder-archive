@@ -4,6 +4,9 @@ GET         /import/:stageKey                   controllers.importcontent.Import
 POST        /import-content                     controllers.importcontent.ImportController.handleSubmit
 GET         /import-static                      controllers.importcontent.StaticController.render(importHtmlName: String)
 
+GET         /import-where                     controllers.importcontent.ImportWhereController.renderForm
+POST        /import-where                     controllers.importcontent.ImportWhereController.handleSubmit
+
 # Route Ogel Conditions
 GET         /ogel-conditions/:ogelId            controllers.ViewOgelController.viewOgel(ogelId: String)
 
