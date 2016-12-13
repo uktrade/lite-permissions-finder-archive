@@ -32,6 +32,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.DestinationCountryController.renderForm());
   private final JourneyStage ogelQuestions = defineStage("ogelQuestions", "Refining your licence results",
       controllers.ogel.routes.OgelQuestionsController.renderForm());
+  private final JourneyStage ogelNotApplicable = defineStage("ogelNotApplicable", "The licence is not applicable to your item",
+      controllers.ogel.routes.OgelNotApplicableController.renderForm());
   private final JourneyStage notImplemented = defineStage("notImplemented", "This section is currently under development",
       routes.StaticContentController.renderNotImplemented());
   private final JourneyStage notApplicable = defineStage("notApplicable", "No licence available",
@@ -361,14 +363,26 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .then(moveTo(ogelConditions));
 
     atStage(ogelConditions)
-        .onEvent(Events.OGEL_DO_CONDITIONS_APPLY)
+        .onEvent(Events.OGEL_CONDITIONS_DO_APPLY)
         .then(moveTo(ogelSummary));
+
+    atStage(ogelConditions)
+        .onEvent(Events.OGEL_CONDITIONS_DO_NOT_APPLY)
+        .then(moveTo(ogelNotApplicable));
 
     atStage(ogelConditions)
         .onEvent(Events.VIRTUAL_EU_OGEL_STAGE)
         .branch()
         .when(VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_APPLY, moveTo(virtualEU))
         .when(VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_NOT_APPLY, moveTo(ogelResults));
+
+    atStage(ogelNotApplicable)
+        .onEvent(Events.OGEL_CONTINUE_TO_NON_APPLICABLE_LICENCE)
+        .then(moveTo(ogelSummary));
+
+    atStage(ogelNotApplicable)
+        .onEvent(Events.OGEL_CHOOSE_AGAIN)
+        .then(moveTo(ogelResults));
 
     atStage(ogelSummary)
         .onEvent(Events.OGEL_CHOOSE_AGAIN)
