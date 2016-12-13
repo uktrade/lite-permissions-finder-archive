@@ -53,7 +53,11 @@ public class ControlCodeDisplay {
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.ControlCodeController.handleRelatedSoftwareControlsSubmit().url();
+      this.formAction = routes.ControlCodeController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.couldDescribeItemsLabel = "Could this describe your items?";
+    }
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      this.formAction = routes.ControlCodeController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {

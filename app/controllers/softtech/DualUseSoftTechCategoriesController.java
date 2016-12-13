@@ -63,6 +63,8 @@ public class DualUseSoftTechCategoriesController {
 
     if (StringUtils.isNotEmpty(action)) {
       if ("noneOfTheAbove".equals(action)) {
+        // The user has identified this as a dual use item, however no categories have matched their selection
+        permissionsFinderDao.saveSoftTechCategory(goodsType, SoftTechCategory.DUAL_USE_UNSPECIFIED);
         return journeyManager.performTransition(Events.NONE_MATCHED);
       }
       else {

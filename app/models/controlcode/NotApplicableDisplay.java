@@ -39,6 +39,7 @@ public class NotApplicableDisplay {
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
         controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS ||
         controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
+        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
         controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
         controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
       // Software
@@ -50,7 +51,10 @@ public class NotApplicableDisplay {
           this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
         }
         else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-          this.formAction = routes.NotApplicableController.handleRelatedSoftwareControlsSubmit().url();
+          this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+        }
+        else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+          this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
         }
         else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
           this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();

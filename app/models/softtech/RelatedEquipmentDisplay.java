@@ -10,12 +10,12 @@ public class RelatedEquipmentDisplay {
   public RelatedEquipmentDisplay(GoodsType goodsType) {
     if (goodsType == GoodsType.SOFTWARE) {
       this.formAction = routes.RelatedEquipmentController.handleSubmit(goodsType.toUrlString()).url();
-      this.pageTitle = "Software related to equipment or materials?";
+      this.pageTitle = "Software related to equipment or materials";
       this.questionHeading = "Is your software any of the following?";
     }
     else if (goodsType == GoodsType.TECHNOLOGY) {
       this.formAction = routes.RelatedEquipmentController.handleSubmit(goodsType.toUrlString()).url();
-      this.pageTitle = "Technology related to equipment or materials?";
+      this.pageTitle = "Technology related to equipment or materials";
       this.questionHeading = "Is your technology any of the following?";
     }
     else {

@@ -11,7 +11,8 @@ public enum SoftTechCategory {
   NUCLEAR,
   SENSORS,
   SPECIAL_MATERIALS,
-  TELECOMS;
+  TELECOMS,
+  DUAL_USE_UNSPECIFIED; // Used following a "NONE MATCHED" route
 
   public String toUrlString() {
     return this.toString().replace('_','-').toLowerCase();

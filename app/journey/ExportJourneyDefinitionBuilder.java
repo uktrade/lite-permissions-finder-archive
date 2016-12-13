@@ -48,7 +48,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage controlCodeForSoftwareControls = defineStage("controlCodeSoftwareControls", "Summary",
       controllers.controlcode.routes.ControlCodeController.renderControlsForm(GoodsType.SOFTWARE.toUrlString()));
   private final JourneyStage controlCodeForRelatedSoftwareControls = defineStage("controlCodeForRelatedSoftwareControls", "Summary",
-      controllers.controlcode.routes.ControlCodeController.renderRelatedSoftwareControlsForm());
+      controllers.controlcode.routes.ControlCodeController.renderRelatedControlsForm(GoodsType.SOFTWARE.toUrlString()));
   private final JourneyStage controlCodeSoftwareCatchallControls = defineStage("controlCodeSoftwareCatchallControls", "Summary",
       controllers.controlcode.routes.ControlCodeController.renderCatchallControlsForm(GoodsType.SOFTWARE.toUrlString()));
   private final JourneyStage softwareCategoryControls = defineStage("softwareCategoryControls", "Showing controls related to software category",
@@ -479,6 +479,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(controlCodeforRelatedToSoftware));
 
+    atStage(physicalGoodsSearchResultsRelatedToSoftware)
+        .onEvent(Events.EDIT_SEARCH_DESCRIPTION)
+        .then(moveTo(physicalGoodsSearchRelatedToSoftware));
+
     bindCatchallSoftwareControls(physicalGoodsSearchResultsRelatedToSoftware); // None matched
 
     atStage(controlCodeforRelatedToSoftware)
@@ -618,19 +622,19 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
    */
   private void softwareControlsRelatedToAPhysicalGood() {
     JourneyStage controlCodeNotApplicableRelatedSoftwareControls = defineStage("controlCodeNotApplicableRelatedSoftwareControls", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderRelatedSoftwareControlsForm(Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderRelatedControlsForm(GoodsType.SOFTWARE.toUrlString(), Boolean.FALSE.toString()));
 
     JourneyStage controlCodeNotApplicableExtendedRelatedSoftwareControls = defineStage("controlCodeNotApplicableExtendedRelatedSoftwareControls", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderRelatedSoftwareControlsForm(Boolean.TRUE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderRelatedControlsForm(GoodsType.SOFTWARE.toUrlString(), Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecificationsRelatedSoftwareControls = defineStage("additionalSpecificationsRelatedSoftwareControls", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderRelatedSoftwareControlsForm());
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderRelatedControlsForm(GoodsType.SOFTWARE.toUrlString()));
 
     JourneyStage decontrolsRelatedSoftwareControls = defineStage("decontrolsRelatedSoftwareControls", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderRelatedSoftwareControlsForm());
+        controllers.controlcode.routes.DecontrolsController.renderRelatedControlsForm(GoodsType.SOFTWARE.toUrlString()));
 
     JourneyStage technicalNotesRelatedSoftwareControls = defineStage("technicalNotesRelatedSoftwareControls", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderRelatedSoftwareControlsForm());
+        controllers.controlcode.routes.TechnicalNotesController.renderRelatedControlsForm(GoodsType.SOFTWARE.toUrlString()));
 
     atStage(softwareRelatedToPhysicalGoodControls)
         .onEvent(Events.CONTROL_CODE_SELECTED)
