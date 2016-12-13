@@ -12,7 +12,7 @@ public enum ImportQuestion {
   DRUGS("import-drugs", "Are you importing controlled drugs?"),
   FOOD_WHAT("import-food-what", "What are you importing?"),
   ENDANGERED("import-endangered", "Are the animals endangered?"),
-  BELARUS_TEXTILES("import-belarus-textiles", "Are you sending textiles to Belarus for processing before being returned to the UK?");
+  BELARUS_TEXTILES("import-belarus-textiles", "Are you importing textiles that you previously sent to Belarus from the UK for processing?");
 
   private String key;
   private String question;
