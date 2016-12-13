@@ -39,6 +39,8 @@ public class SearchResultsController {
   public enum SearchResultAction{
     NONE_MATCHED,
     SHORE_MORE,
+    EDIT_DESCRIPTION,
+    CONTINUE
   }
 
   public Form<ControlCodeSearchResultsForm> searchResultsForm() {
@@ -57,13 +59,21 @@ public class SearchResultsController {
     if (form.action == null || form.action.isEmpty()){
       return Optional.empty();
     }
-    if("no-matched-result".equals(form.action)){
+    else if("no-matched-result".equals(form.action)){
       return Optional.of(SearchResultAction.NONE_MATCHED);
     }
-    if("show-more-results".equals(form.action)){
+    else if("show-more-results".equals(form.action)){
       return Optional.of(SearchResultAction.SHORE_MORE);
     }
-    return Optional.empty();
+    else if("edit-description".equals(form.action)){
+      return Optional.of(SearchResultAction.EDIT_DESCRIPTION);
+    }
+    else if("edit-description".equals(form.action)){
+      return Optional.of(SearchResultAction.CONTINUE);
+    }
+    else {
+      return Optional.empty();
+    }
   }
 
   public static class ControlCodeSearchResultsForm {

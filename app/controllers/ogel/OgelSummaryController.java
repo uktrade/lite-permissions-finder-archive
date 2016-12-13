@@ -11,7 +11,6 @@ import components.services.ogels.ogel.OgelServiceClient;
 import exceptions.BusinessRuleException;
 import exceptions.FormStateException;
 import journey.Events;
-import models.controlcode.ControlCodeJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -59,7 +58,7 @@ public class OgelSummaryController {
     }
     String action = form.get().action;
     return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-        permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH))
+        permissionsFinderDao.getConfirmedControlCode())
         .thenApplyAsync(conditionsResult -> {
           if ("register".equals(action)) {
             if (conditionsResult.isEmpty) {
@@ -92,9 +91,9 @@ public class OgelSummaryController {
   public CompletionStage<Result> renderWithForm(Form<OgelSummaryForm> form) {
     String ogelId = permissionsFinderDao.getOgelId();
     // TODO This will need to take account of control codes generated via the Software journey
-    String physicalGoodsControlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    String controlCode = permissionsFinderDao.getConfirmedControlCode();
 
-    return ogelConditionsServiceClient.get(ogelId, physicalGoodsControlCode)
+    return ogelConditionsServiceClient.get(ogelId, controlCode)
         .thenApplyAsync(conditionsResult -> {
           return ogelServiceClient.get(permissionsFinderDao.getOgelId())
               .thenApplyAsync(ogelResult -> {
@@ -103,7 +102,7 @@ public class OgelSummaryController {
                 boolean allowedToProceed = conditionsResult.isEmpty || (!conditionsResult.isMissingControlCodes
                     && OgelConditionsServiceClient.isItemAllowed(conditionsResult, permissionsFinderDao.getOgelConditionsApply().get()));
 
-                return ok(ogelSummary.render(form, ogelResult, physicalGoodsControlCode, allowedToProceed));
+                return ok(ogelSummary.render(form, ogelResult, controlCode, allowedToProceed));
               }, httpExecutionContext.current());
         }, httpExecutionContext.current())
         .thenCompose(Function.identity());

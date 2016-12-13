@@ -53,7 +53,10 @@ public class AdditionalSpecificationsDisplay {
       this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.AdditionalSpecificationsController.handleRelatedSoftwareControlsSubmit().url();
+      this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+    }
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
