@@ -8,8 +8,7 @@
 @(controlCodeJourney: ControlCodeJourney, canPickFromResultsAgain: Boolean)
 
 @detailPanel("im-not-sure")(Html("I'm not sure")) {
-  @if(controlCodeJourney == PHYSICAL_GOODS_SEARCH ||
-    controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE || controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+  @if(ControlCodeJourney.isPhysicalGoodsSearchVariant(controlCodeJourney)) {
     @if(canPickFromResultsAgain) {
       <p>
         If your item is not described above, you can:
@@ -28,19 +27,17 @@
     @helpInfoPanel()
   }
 
-  @if(controlCodeJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD){
+  @if(ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeJourney)){
     @defining(if(controlCodeJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) "software" else "technology") {controlType =>
       @if(canPickFromResultsAgain) {
-        @if(canPickFromResultsAgain) {
-          <p>
-            If your item is not described above you can <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the possible @controlType matches</button>.
-          </p>
-        }
+        <p>
+          If your item is not described above you can <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the possible @controlType matches</button>.
+        </p>
       }
     }
     @helpInfoPanel()
   }
-  @if(controlCodeJourney == SOFTWARE_CONTROLS || controlCodeJourney == TECHNOLOGY_CONTROLS) {
+  @if(ControlCodeJourney.isSoftTechControlsVariant(controlCodeJourney)) {
     @defining(if(controlCodeJourney == SOFTWARE_CONTROLS) "software" else "technology") {controlType =>
       @if(canPickFromResultsAgain) {
         <p>
@@ -50,7 +47,7 @@
     }
     @helpInfoPanel()
   }
-  @if(controlCodeJourney == SOFTWARE_CATCHALL_CONTROLS || controlCodeJourney == TECHNOLOGY_CATCHALL_CONTROLS) {
+  @if(ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
     @defining(if(controlCodeJourney == SOFTWARE_CATCHALL_CONTROLS) "software" else "technology") {controlType =>
       @if(canPickFromResultsAgain) {
         <p>

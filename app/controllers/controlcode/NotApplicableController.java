@@ -148,8 +148,7 @@ public class NotApplicableController {
     Form<NotApplicableForm> form = formFactory.form(NotApplicableForm.class).bindFromRequest();
     if (!form.hasErrors()) {
       String action = form.get().action;
-      if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH
-          || controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+      if (ControlCodeJourney.isPhysicalGoodsSearchVariant(controlCodeJourney)) {
         if ("backToSearch".equals(action)) {
           return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
         }
@@ -160,8 +159,7 @@ public class NotApplicableController {
           throw new FormStateException("Unknown value for action: \"" + action + "\"");
         }
       }
-      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
-          controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+      else if (ControlCodeJourney.isSoftTechControlsVariant(controlCodeJourney)) {
 
         GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS
             ? GoodsType.SOFTWARE
@@ -173,7 +171,7 @@ public class NotApplicableController {
             .thenApplyAsync(controls -> softTechControls(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
-      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      else if (ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeJourney)) {
         GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
             ? GoodsType.SOFTWARE
             : GoodsType.TECHNOLOGY;
@@ -183,8 +181,7 @@ public class NotApplicableController {
             .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
-      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
-          controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+      else if (ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
 
         GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
             ? GoodsType.SOFTWARE
@@ -216,7 +213,7 @@ public class NotApplicableController {
       }
     }
     else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-      if ("returnToControls".equals(action)) {
+      if ("backToMatches".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftTechControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CONTROLS);
       }
@@ -241,7 +238,7 @@ public class NotApplicableController {
       }
     }
     else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-      if ("returnToControls".equals(action)) {
+      if ("backToMatches".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftTechControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CONTROLS);
       }
@@ -257,7 +254,7 @@ public class NotApplicableController {
 
   private CompletionStage<Result> softTechCatcallControls(ApplicableSoftTechControls applicableSoftTechControls, String action) {
     if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-      if ("returnToControls".equals(action)) {
+      if ("backToMatches".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS);
       }
