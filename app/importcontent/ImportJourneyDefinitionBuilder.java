@@ -57,7 +57,6 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ImportWhere.OTHER_COUNTRIES, moveTo(stage(ImportQuestion.WHAT)))
         .when(ImportWhere.CHARCOAL_COUNTRIES, moveTo(stage(ImportQuestion.CHARCOAL)))
         .when(ImportWhere.MILITARY_COUNTRIES, moveTo(stage(ImportQuestion.MILITARY)))
-        .when(ImportWhere.CRIMEA_REGION, moveTo(stage("importEp3")))
         .when(ImportWhere.EU_COUNTRIES, moveTo(stage("importEp15")))
         .when(ImportWhere.SYRIA_COUNTRY, moveTo(stage("importEp6")));
 

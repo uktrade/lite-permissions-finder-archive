@@ -83,8 +83,6 @@ public class ImportWhereController extends Controller {
   private ImportWhere getImportWhereRoute(String spireCode) {
     if (ImportController.MILITARY_COUNTRY_SPIRE_CODES.contains(spireCode)) {
       return ImportWhere.MILITARY_COUNTRIES;
-    } else if (spireCode.equals(ImportController.CRIMEA_SPIRE_CODE)) {
-      return ImportWhere.CRIMEA_REGION;
     } else if (spireCode.equals(ImportController.SOMALIA_SPIRE_CODE)) {
       return ImportWhere.CHARCOAL_COUNTRIES;
     } else if (spireCode.equals(ImportController.SYRIA_SPIRE_CODE)) {

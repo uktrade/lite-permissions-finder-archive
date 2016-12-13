@@ -1,4 +1,5 @@
 @import util._
 
-@(title: java.lang.String, content: Html)
-@standardImportPage(title, Some(Html(title))){ }(content)
+@(title: java.lang.String, displayImportingFromCrimea: java.lang.Boolean, content: Html)
+@standardImportPage(title, displayImportingFromCrimea, Some(Html(title))){ }(content)
+
