@@ -17,12 +17,16 @@ public class ControlCodeDisplay {
   public final List<Ancestor> otherAncestors;
   public final boolean showGreatestAncestor;
   public final String couldDescribeItemsLabel;
+  public final ControlCodeJourney controlCodeJourney;
+  public final boolean showPickAgain;
 
-  public ControlCodeDisplay(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
+  public ControlCodeDisplay(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult, boolean canPickFromResultsAgain) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
+    this.controlCodeJourney = controlCodeJourney;
+    this.showPickAgain = canPickFromResultsAgain;
     if (frontendServiceResult.greatestAncestor.isPresent()) {
       this.greatestAncestor = frontendServiceResult.greatestAncestor.get();
       showGreatestAncestor = true;
@@ -56,7 +60,7 @@ public class ControlCodeDisplay {
       this.formAction = routes.ControlCodeController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.ControlCodeController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }

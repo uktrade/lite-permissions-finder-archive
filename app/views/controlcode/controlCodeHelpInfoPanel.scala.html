@@ -1,0 +1,70 @@
+@import util._
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+@import models.controlcode.ControlCodeJourney
+@import models.controlcode.ControlCodeJourney._
+
+@(controlCodeJourney: ControlCodeJourney, canPickFromResultsAgain: Boolean)
+
+@detailPanel("im-not-sure")(Html("I'm not sure")) {
+  @if(controlCodeJourney == PHYSICAL_GOODS_SEARCH ||
+    controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE || controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+    @if(canPickFromResultsAgain) {
+      <p>
+        If your item is not described above, you can:
+      </p>
+      <ul class="list list-bullet text">
+        <li>
+          <button class="link underlined" name="action" value="backToResults" data-skip-validation>
+            return to your search results and select another item type</button>, or
+        </li>
+        <li>
+          <button class="link underlined" name="action" value="backToSearch" data-skip-validation>
+            edit your item description to get a different set of results</button>
+        </li>
+      </ul>
+    }
+    @helpInfoPanel()
+  }
+
+  @if(controlCodeJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD){
+    @defining(if(controlCodeJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) "software" else "technology") {controlType =>
+      @if(canPickFromResultsAgain) {
+        @if(canPickFromResultsAgain) {
+          <p>
+            If your item is not described above you can <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the possible @controlType matches</button>.
+          </p>
+        }
+      }
+    }
+    @helpInfoPanel()
+  }
+  @if(controlCodeJourney == SOFTWARE_CONTROLS || controlCodeJourney == TECHNOLOGY_CONTROLS) {
+    @defining(if(controlCodeJourney == SOFTWARE_CONTROLS) "software" else "technology") {controlType =>
+      @if(canPickFromResultsAgain) {
+        <p>
+          If your item is not described above you can <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the possible @controlType matches</button>.
+        </p>
+      }
+    }
+    @helpInfoPanel()
+  }
+  @if(controlCodeJourney == SOFTWARE_CATCHALL_CONTROLS || controlCodeJourney == TECHNOLOGY_CATCHALL_CONTROLS) {
+    @defining(if(controlCodeJourney == SOFTWARE_CATCHALL_CONTROLS) "software" else "technology") {controlType =>
+      @if(canPickFromResultsAgain) {
+        <p>
+          If your item is not described above you can <button class="link underlined" name="action" value="backToMatches" data-skip-validation>
+          return to the possible @controlType matches</button>.
+        </p>
+      }
+      <p>
+        If none of the <button class="link underlined" name="action" value="backToCategory" data-skip-validation>other military @controlType controls</button> describe your item, you may be able to use the classification ML21d.
+      </p>
+      <p>
+        If you're not sure, you can contact the Export Control Organisation (ECO) to discuss your export, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@beis.gsi.gov.uk">eco.help@@beis.gsi.gov.uk</a>.
+      </p>
+    }
+  }
+}
+

@@ -96,8 +96,8 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<ApplicableSoftTechControls> checkRelatedSoftwareControls(String controlCode, boolean saveToDao) {
-    return relatedControlsServiceClient.get(GoodsType.SOFTWARE, controlCode) // TODO TECHNOLOGY
+  public CompletionStage<ApplicableSoftTechControls> checkRelatedSoftwareControls(GoodsType goodsType, String controlCode, boolean saveToDao) {
+    return relatedControlsServiceClient.get(goodsType, controlCode)
         .thenApplyAsync(result -> {
           int size = result.controlCodes.size();
           if (size == 0) {
