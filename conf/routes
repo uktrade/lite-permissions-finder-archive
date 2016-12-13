@@ -138,8 +138,9 @@ GET     /export-category/medicines-drugs/controlled controllers.StaticContentCon
 
 POST    /export-category/medicines-drugs/controlled controllers.StaticContentController.renderCategoryMedicinesDrugs
 
-GET     /export-category/non-military-firearms          controllers.categories.NonMilitaryController.renderForm
-POST    /export-category/non-military-firearms          controllers.categories.NonMilitaryController.handleSubmit
+GET     /export-category/non-military-firearms-yourself     controllers.categories.NonMilitaryController.renderTakeYourselfForm
+GET     /export-category/non-military-firearms-effects      controllers.categories.NonMilitaryController.renderPersonalEffectsForm
+POST    /export-category/non-military-firearms              controllers.categories.NonMilitaryController.handleSubmit
 
 GET     /export-category/non-military-firearms/taking   controllers.StaticContentController.renderCategoryNonMilitaryTaking
 GET     /export-category/non-military-firearms/sending  controllers.StaticContentController.renderCategoryNonMilitarySending

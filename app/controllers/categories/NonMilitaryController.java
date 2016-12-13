@@ -37,9 +37,14 @@ public class NonMilitaryController {
     this.formFactory = formFactory;
   }
 
-  public Result renderForm() {
+  public Result renderTakeYourselfForm() {
     NonMilitaryForm templateForm = new NonMilitaryForm();
-    return ok(nonMilitary.render(formFactory.form(NonMilitaryForm.class).fill(templateForm), getQuestion(journeyManager.getCurrentInternalStageName())));
+    return ok(nonMilitary.render(formFactory.form(NonMilitaryForm.class).fill(templateForm), TAKE_YOURSELF_QUESTION));
+  }
+
+  public Result renderPersonalEffectsForm() {
+    NonMilitaryForm templateForm = new NonMilitaryForm();
+    return ok(nonMilitary.render(formFactory.form(NonMilitaryForm.class).fill(templateForm), PERSONAL_EFFECTS_QUESTION));
   }
 
   public CompletionStage<Result> handleSubmit() {
