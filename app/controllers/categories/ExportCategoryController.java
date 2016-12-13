@@ -10,7 +10,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.categories.selectExportCategories;
+import views.html.categories.exportCategories;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -29,7 +29,7 @@ public class ExportCategoryController extends Controller {
   }
 
   public Result renderForm() {
-    return ok(selectExportCategories.render(formFactory.form()));
+    return ok(exportCategories.render(formFactory.form()));
   }
 
   public CompletionStage<Result> handleSubmit() {
