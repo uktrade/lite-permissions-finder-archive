@@ -67,7 +67,7 @@ public class SummaryField {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     String content =  "<strong class=\"bold-small\">" + controlCodeData.controlCode
         + "</strong> - " + controlCodeData.title;
-    return new SummaryField(SummaryFieldType.CONTROL_CODE, "Goods rating", content, null, editLinkUrl, true, true);
+    return new SummaryField(SummaryFieldType.CONTROL_CODE, "Classification", content, null, editLinkUrl, true, true);
   }
 
   /**
@@ -79,7 +79,7 @@ public class SummaryField {
    */
   public static SummaryField fromOgelServiceResult(OgelServiceResult ogelServiceResult,
                                                    String editLinkUrl, boolean isValid) {
-    return new SummaryField(SummaryFieldType.OGEL_TYPE, "Licence type", ogelServiceResult.name, ogelServiceResult.id,
+    return new SummaryField(SummaryFieldType.OGEL_TYPE, "Licence", ogelServiceResult.name, ogelServiceResult.id,
         editLinkUrl, false, isValid);
   }
 
@@ -94,7 +94,7 @@ public class SummaryField {
     String content = destinationCountries.stream()
         .map(country -> "<li>" + country.getCountryName() + "</li>")
         .collect(Collectors.joining("", "<ul>", "</ul>"));
-    return new SummaryField(SummaryFieldType.DESTINATION_COUNTRIES, "Destination countries", content, null,
+    return new SummaryField(SummaryFieldType.DESTINATION_COUNTRIES, "Destination(s)", content, null,
         editLinkUrl, true, true);
   }
 

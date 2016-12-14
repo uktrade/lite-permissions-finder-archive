@@ -82,11 +82,14 @@ public class NotApplicableController {
                       result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
           ), httpExecutionContext.current());
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
+          ? GoodsType.SOFTWARE
+          : GoodsType.TECHNOLOGY;
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkRelatedSoftwareControls(selectedControlCode, false)
+      return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, selectedControlCode, false)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
@@ -145,22 +148,20 @@ public class NotApplicableController {
     Form<NotApplicableForm> form = formFactory.form(NotApplicableForm.class).bindFromRequest();
     if (!form.hasErrors()) {
       String action = form.get().action;
-      if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH
-          || controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+      if (ControlCodeJourney.isPhysicalGoodsSearchVariant(controlCodeJourney)) {
         if ("backToSearch".equals(action)) {
           return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
         }
-        else if ("backToSearchResults".equals(action)) {
-          return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
+        else if ("backToResults".equals(action)) {
+          return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_RESULTS);
         }
         else {
           throw new FormStateException("Unknown value for action: \"" + action + "\"");
         }
       }
-      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
-          controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+      else if (ControlCodeJourney.isSoftTechControlsVariant(controlCodeJourney)) {
 
-        GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
+        GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS
             ? GoodsType.SOFTWARE
             : GoodsType.TECHNOLOGY;
 
@@ -170,15 +171,17 @@ public class NotApplicableController {
             .thenApplyAsync(controls -> softTechControls(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
-      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      else if (ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeJourney)) {
+        GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
+            ? GoodsType.SOFTWARE
+            : GoodsType.TECHNOLOGY;
         // A different action is expected for each valid member of ApplicableSoftTechControls
         String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
-        return softTechJourneyHelper.checkRelatedSoftwareControls(controlCode, false)
+        return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, controlCode, false)
             .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
-      else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
-          controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+      else if (ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
 
         GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
             ? GoodsType.SOFTWARE
@@ -210,7 +213,7 @@ public class NotApplicableController {
       }
     }
     else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-      if ("returnToControls".equals(action)) {
+      if ("backToMatches".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftTechControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CONTROLS);
       }
@@ -235,7 +238,7 @@ public class NotApplicableController {
       }
     }
     else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-      if ("returnToControls".equals(action)) {
+      if ("backToMatches".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftTechControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CONTROLS);
       }
@@ -251,7 +254,7 @@ public class NotApplicableController {
 
   private CompletionStage<Result> softTechCatcallControls(ApplicableSoftTechControls applicableSoftTechControls, String action) {
     if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-      if ("returnToControls".equals(action)) {
+      if ("backToMatches".equals(action)) {
         return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
             SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS);
       }
