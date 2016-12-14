@@ -19,7 +19,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.importcontent.importCountry;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -95,7 +94,7 @@ public class ImportWhereController extends Controller {
     } else if (spireCode.equals(ImportController.SYRIA_SPIRE_CODE)) {
       return ImportWhere.SYRIA_COUNTRY;
     } else {
-      if(isEuCountry(spireCode)) {
+      if (isEuCountry(spireCode)) {
         return ImportWhere.EU_COUNTRIES;
       }
     }
@@ -103,11 +102,7 @@ public class ImportWhereController extends Controller {
   }
 
   private boolean isEuCountry(String spireCountryCode) {
-    Optional<ImportCountry> optImportCountry = ImportCountry.getMatched(spireCountryCode);
-    if (optImportCountry.isPresent() && optImportCountry.get().isEu()) {
-      return true;
-    }
-    return false;
+    return ImportCountry.getMatched(spireCountryCode).map(ImportCountry::isEu).orElse(false);
   }
 
   /**

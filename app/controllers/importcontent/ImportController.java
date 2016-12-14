@@ -11,7 +11,6 @@ import importcontent.ImportQuestion;
 import importcontent.ImportUtils;
 import importcontent.models.ImportMilitaryYesNo;
 import importcontent.models.ImportWhat;
-import importcontent.models.ImportYesNo;
 import models.importcontent.ImportStageData;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
@@ -42,7 +41,6 @@ public class ImportController extends Controller {
   public static final String SYRIA_SPIRE_CODE = "CTRY617";
   public static final String SOMALIA_SPIRE_CODE = "CTRY2004";
   public static final String UKRAINE_SPIRE_CODE = "CTRY1646";
-
   public static final String RUSSIA_SPIRE_CODE = "CTRY220";
   public static final String IRAN_SPIRE_CODE = "CTRY1952";
   public static final String MYANMAR_SPIRE_CODE = "CTRY1989";

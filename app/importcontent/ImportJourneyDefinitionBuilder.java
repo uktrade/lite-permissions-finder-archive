@@ -68,6 +68,7 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ImportYesNo.YES, moveTo(stage("importEp5")))
         .when(ImportYesNo.NO, moveTo(stage(ImportQuestion.WHAT)));
 
+    // Are you importing military goods or technology?
     atStage(stage(ImportQuestion.MILITARY))
         .onEvent(ImportEvents.IMPORT_MILITARY_YES_NO_SELECTED)
         .branch()

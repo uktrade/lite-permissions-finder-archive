@@ -39,7 +39,7 @@ LITEPermissionsFinder.Utils = {
 
 LITEPermissionsFinder.DestinationCountry = {
   setupPage: function() {
-    LITEPermissionsFinder.countrySetup._setup();
+    LITEPermissionsFinder.countrySetup.setup();
 
     $("#through-destination-countries-wrapper").hide();
 
@@ -59,12 +59,12 @@ LITEPermissionsFinder.DestinationCountry = {
 
 LITEPermissionsFinder.ImportCountry = {
   setupPage: function() {
-    LITEPermissionsFinder.countrySetup._setup();
+    LITEPermissionsFinder.countrySetup.setup();
   }
 };
 
 LITEPermissionsFinder.countrySetup = {
-  _setup: function() {
+  setup: function() {
     $("select[ui-autocomplete='ui-autocomplete']").selectToAutocomplete({"alternative-spellings-attr":"data-alternative-spelling", "autoFocus":false});
 
     // Associates the new ui-autocomplete input with the original select id (if the input was created), needed for labels and such.
