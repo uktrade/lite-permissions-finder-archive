@@ -46,7 +46,7 @@ public class OgelResultsController {
                                HttpExecutionContext httpExecutionContext,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                OgelConditionsServiceClient ogelConditionsServiceClient,
-                               @Named("countryServiceExport") CountryServiceClient countryServiceClient) {
+                               CountryServiceClient countryServiceClient) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;

@@ -49,7 +49,7 @@ public class OgelRegistrationServiceClient {
                                        PermissionsFinderDao permissionsFinderDao,
                                        HttpExecutionContext httpExecutionContext,
                                        FrontendServiceClient frontendServiceClient,
-                                       @Named("countryServiceExport") CountryServiceClient countryServiceClient,
+                                       CountryServiceClient countryServiceClient,
                                        OgelServiceClient ogelServiceClient,
                                        ApplicableOgelServiceClient applicableOgelServiceClient) {
     this.wsClient = wsClient;

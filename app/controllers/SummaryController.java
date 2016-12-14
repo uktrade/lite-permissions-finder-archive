@@ -51,7 +51,7 @@ public class SummaryController {
                            PermissionsFinderDao permissionsFinderDao,
                            HttpExecutionContext httpExecutionContext,
                            FrontendServiceClient frontendServiceClient,
-                           @Named("countryServiceExport") CountryServiceClient countryServiceClient,
+                           CountryServiceClient countryServiceClient,
                            OgelServiceClient ogelServiceClient,
                            ApplicableOgelServiceClient applicableOgelServiceClient,
                            OgelRegistrationServiceClient ogelRegistrationServiceClient

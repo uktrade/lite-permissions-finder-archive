@@ -48,7 +48,7 @@ public class DestinationCountryController extends Controller {
                                       FormFactory formFactory,
                                       PermissionsFinderDao permissionsFinderDao,
                                       HttpExecutionContext httpExecutionContext,
-                                      @Named("countryServiceExport") CountryServiceClient countryServiceClient) {
+                                      CountryServiceClient countryServiceClient) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
