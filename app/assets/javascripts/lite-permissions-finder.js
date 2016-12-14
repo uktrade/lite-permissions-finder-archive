@@ -7,6 +7,9 @@ LITEPermissionsFinder.Utils = {
       if (pageName == "destinationCountry") {
         LITEPermissionsFinder.DestinationCountry.setupPage();
       }
+      if (pageName == "importCountry") {
+        LITEPermissionsFinder.ImportCountry.setupPage();
+      }
       else if (pageName == "searchBase") {
         LITEPermissionsFinder.Search.setupPage();
       }
@@ -36,17 +39,7 @@ LITEPermissionsFinder.Utils = {
 
 LITEPermissionsFinder.DestinationCountry = {
   setupPage: function() {
-    $("select[ui-autocomplete='ui-autocomplete']").selectToAutocomplete({"alternative-spellings-attr":"data-alternative-spelling", "autoFocus":false});
-
-    // Associates the new ui-autocomplete input with the original select id (if the input was created), needed for labels and such.
-    $("select[ui-autocomplete='ui-autocomplete']").each(function() {
-      var id = $(this).attr("id");
-      var autocompleteInput = $("input[ui-autocomplete-id=" + id + "]");
-      if (autocompleteInput.length > 0) {
-        autocompleteInput.attr("id", id);
-        $(this).removeAttr("id");
-      }
-    });
+    LITEPermissionsFinder.countrySetup._setup();
 
     $("#through-destination-countries-wrapper").hide();
 
@@ -59,6 +52,28 @@ LITEPermissionsFinder.DestinationCountry = {
     $("#itemThroughMultipleCountries-F").change(function() {
       if ($(this).is(":checked")) {
         $("#through-destination-countries-wrapper").hide();
+      }
+    });
+  }
+};
+
+LITEPermissionsFinder.ImportCountry = {
+  setupPage: function() {
+    LITEPermissionsFinder.countrySetup._setup();
+  }
+};
+
+LITEPermissionsFinder.countrySetup = {
+  _setup: function() {
+    $("select[ui-autocomplete='ui-autocomplete']").selectToAutocomplete({"alternative-spellings-attr":"data-alternative-spelling", "autoFocus":false});
+
+    // Associates the new ui-autocomplete input with the original select id (if the input was created), needed for labels and such.
+    $("select[ui-autocomplete='ui-autocomplete']").each(function() {
+      var id = $(this).attr("id");
+      var autocompleteInput = $("input[ui-autocomplete-id=" + id + "]");
+      if (autocompleteInput.length > 0) {
+        autocompleteInput.attr("id", id);
+        $(this).removeAttr("id");
       }
     });
   }

@@ -26,6 +26,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import javax.inject.Named;
+
 public class DestinationCountryController extends Controller {
 
   private final JourneyManager journeyManager;
@@ -46,7 +48,7 @@ public class DestinationCountryController extends Controller {
                                       FormFactory formFactory,
                                       PermissionsFinderDao permissionsFinderDao,
                                       HttpExecutionContext httpExecutionContext,
-                                      CountryServiceClient countryServiceClient) {
+                                      @Named("countryServiceExport") CountryServiceClient countryServiceClient) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;

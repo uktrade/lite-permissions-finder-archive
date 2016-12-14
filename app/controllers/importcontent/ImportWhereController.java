@@ -19,32 +19,39 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.importcontent.importCountry;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
+
+import javax.inject.Named;
 
 public class ImportWhereController extends Controller {
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final ImportJourneyDao importJourneyDao;
-  private final CountryServiceClient countryServiceClient;
   private final HttpExecutionContext httpExecutionContext;
+  private final CountryServiceClient countryServiceExport;
+  private final CountryServiceClient countryServiceEu;
 
   public static final String COUNTRY_FIELD_NAME = "importCountry";
 
   @Inject
   public ImportWhereController(JourneyManager journeyManager, FormFactory formFactory, ImportJourneyDao importJourneyDao,
-                               HttpExecutionContext httpExecutionContext, CountryServiceClient countryServiceClient) {
+                               HttpExecutionContext httpExecutionContext,
+                               @Named("countryServiceExport") CountryServiceClient countryServiceExport,
+                               @Named("countryServiceEu") CountryServiceClient countryServiceEu) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.importJourneyDao = importJourneyDao;
     this.httpExecutionContext = httpExecutionContext;
-    this.countryServiceClient = countryServiceClient;
+    this.countryServiceExport = countryServiceExport;
+    this.countryServiceEu = countryServiceEu;
   }
 
   public CompletionStage<Result> renderForm() {
-    return countryServiceClient.getCountries()
+    return countryServiceExport.getCountries()
         .thenApplyAsync(response -> {
           if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()) {
             return ok(importCountry.render(formFactory.form(), response.getCountries()));
@@ -56,7 +63,7 @@ public class ImportWhereController extends Controller {
 
   public CompletionStage<Result> handleSubmit() {
     Form<ImportCountryForm> form = formFactory.form(ImportCountryForm.class).bindFromRequest();
-    return countryServiceClient.getCountries()
+    return countryServiceExport.getCountries()
         .thenApplyAsync(response -> {
           if (response.getStatus() == CountryServiceClient.Status.SUCCESS && !response.getCountries().isEmpty()) {
             if (form.hasErrors()) {

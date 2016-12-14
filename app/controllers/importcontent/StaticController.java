@@ -38,7 +38,7 @@ public class StaticController extends Controller {
 
   private boolean showImportingFromCrimea() {
     String country = importJourneyDao.getImportCountrySelected();
-    return country.equals(ImportController.UKRAINE_SPIRE_CODE) || country.equals(ImportController.RUSSIA_SPIRE_CODE);
+    return country.equals(ImportController.UKRAINE_SPIRE_CODE);
   }
 }
 

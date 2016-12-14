@@ -38,9 +38,7 @@ public class ImportController extends Controller {
   private static final String NORTH_KOREA_SPIRE_CODE = "CTRY383";
   public static final String SYRIA_SPIRE_CODE = "CTRY617";
   public static final String SOMALIA_SPIRE_CODE = "CTRY2004";
-
-  public static final String UKRAINE_SPIRE_CODE = "CTRY1646"; // CRIMEA ???
-  public static final String RUSSIA_SPIRE_CODE = "CTRY220"; // CRIMEA ???
+  public static final String UKRAINE_SPIRE_CODE = "CTRY1646";
 
   // 'Military' spire codes: Russia, Iran and Myanmar
   public static final List<String> MILITARY_COUNTRY_SPIRE_CODES = new ArrayList<>(Arrays.asList("CTRY220", "CTRY1952", "CTRY1989"));

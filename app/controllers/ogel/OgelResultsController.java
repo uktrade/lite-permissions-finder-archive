@@ -27,6 +27,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.inject.Named;
+
 public class OgelResultsController {
 
   private final JourneyManager journeyManager;
@@ -44,7 +46,7 @@ public class OgelResultsController {
                                HttpExecutionContext httpExecutionContext,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                OgelConditionsServiceClient ogelConditionsServiceClient,
-                               CountryServiceClient countryServiceClient) {
+                               @Named("countryServiceExport") CountryServiceClient countryServiceClient) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;

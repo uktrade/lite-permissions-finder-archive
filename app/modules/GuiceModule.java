@@ -1,9 +1,11 @@
 package modules;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import components.common.CommonGuiceModule;
+import components.common.client.CountryServiceClient;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneySerialiser;
 import components.common.persistence.RedisKeyConfig;
@@ -12,11 +14,15 @@ import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
 import play.Configuration;
 import play.Environment;
+import play.libs.concurrent.HttpExecutionContext;
+import play.libs.ws.WSClient;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import javax.inject.Named;
 
 public class GuiceModule extends AbstractModule{
 
@@ -91,5 +97,23 @@ public class GuiceModule extends AbstractModule{
     importJourneyDefinitionBuilder.initStages();
 
     return Arrays.asList(new ExportJourneyDefinitionBuilder(), importJourneyDefinitionBuilder);
+  }
+
+  @Provides
+  @Named("countryServiceExport")
+  CountryServiceClient provideCountryServiceExportClient(HttpExecutionContext httpContext, WSClient wsClient,
+                                                         @Named("countryServiceAddress") String address,
+                                                         @Named("countryServiceTimeout") int timeout,
+                                                         ObjectMapper mapper) {
+    return new CountryServiceClient(httpContext, wsClient, address + "/countries/set/export-control", timeout, mapper);
+  }
+
+  @Provides
+  @Named("countryServiceEu")
+  CountryServiceClient provideCountryServiceEuClient(HttpExecutionContext httpContext, WSClient wsClient,
+                                                     @Named("countryServiceAddress") String address,
+                                                     @Named("countryServiceTimeout") int timeout,
+                                                     ObjectMapper mapper) {
+    return new CountryServiceClient(httpContext, wsClient, address + "/countries/group/eu", timeout, mapper);
   }
 }
