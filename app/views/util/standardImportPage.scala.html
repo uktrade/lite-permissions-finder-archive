@@ -1,7 +1,7 @@
 @import util._
 @import views.html.common.page._
 
-@(htmlTitle: String, displayImportingFromCrimea: java.lang.Boolean, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None, twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, displayImportingFromCrimea: Boolean, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None, twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle, pageName = pageName) {
 
