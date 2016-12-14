@@ -56,9 +56,10 @@ public class ControlCodeController extends Controller {
     ControlCodeForm templateForm = new ControlCodeForm();
     templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
-        .thenApplyAsync(result ->
-            ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
-                new ControlCodeDisplay(controlCodeJourney, result))), httpExecutionContext.current());
+        .thenCombineAsync(controlCodeJourneyHelper.getCanPickFromResultsAgain(controlCodeJourney), (frontendServiceResult, canPickFromResultsAgain) -> {
+          return ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
+              new ControlCodeDisplay(controlCodeJourney, frontendServiceResult, canPickFromResultsAgain)));
+        }, httpExecutionContext.current());
   }
 
   public CompletionStage<Result> renderSearchForm() {
@@ -85,30 +86,38 @@ public class ControlCodeController extends Controller {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
     String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
     return frontendServiceClient.get(code)
-        .thenApplyAsync(result -> {
-
+        .thenCombineAsync(controlCodeJourneyHelper.getCanPickFromResultsAgain(controlCodeJourney), (frontendServiceResult, canPickFromResultsAgain) -> {
           // Outside of form binding to preserve @Required validation for couldDescribeItems
           String action = form.field("action").value();
           if (action != null && !action.isEmpty()) {
-            if ("backToSearch".equals(action)) {
+            if ("backToSearch".equals(action) && ControlCodeJourney.isPhysicalGoodsSearchVariant(controlCodeJourney)) {
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
             }
-            else if ("backToSearchResults".equals(action)) {
-              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS);
+            else if ("backToResults".equals(action) && ControlCodeJourney.isPhysicalGoodsSearchVariant(controlCodeJourney)) {
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_RESULTS);
+            }
+            else if ("backToMatches".equals(action) && (ControlCodeJourney.isSoftTechControlsVariant(controlCodeJourney)
+                || ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeJourney)
+                || ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney))) {
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_MATCHES);
+            }
+            else if ("backToCategory".equals(action) && ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
+              return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_CATEGORY);
             }
             else {
-              throw new FormStateException("Invalid value for action: \"" + action + "\"");
+              throw new FormStateException(String.format("Invalid combination of action: \"%s\" and " +
+                  "controlCodeJourney: \"%s\"", action, controlCodeJourney.toString()));
             }
           }
 
           if (form.hasErrors()) {
-            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeJourney, result))));
+            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeJourney, frontendServiceResult, canPickFromResultsAgain))));
           }
 
           String couldDescribeItems = form.get().couldDescribeItems;
           if("true".equals(couldDescribeItems)) {
             permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, true);
-            return nextScreenTrue(controlCodeJourney, result);
+            return nextScreenTrue(controlCodeJourney, frontendServiceResult);
           }
           else if ("false".equals(couldDescribeItems)) {
             permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, false);
