@@ -90,7 +90,6 @@ public class OgelSummaryController {
 
   public CompletionStage<Result> renderWithForm(Form<OgelSummaryForm> form) {
     String ogelId = permissionsFinderDao.getOgelId();
-    // TODO This will need to take account of control codes generated via the Software journey
     String controlCode = permissionsFinderDao.getConfirmedControlCode();
 
     return ogelConditionsServiceClient.get(ogelId, controlCode)
