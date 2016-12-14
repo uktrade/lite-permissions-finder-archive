@@ -78,18 +78,19 @@ public class ImportController extends Controller {
     String option = form.get().selectedOption;
     if (importStageData.isValidStageOption(option)) {
 
+      // Get selected country for custom transitions
+      String country = importJourneyDao.getImportCountrySelected();
+
       // Custom transitions for ImportQuestion.WHAT
       if (stageKey.equals(ImportQuestion.WHAT.key())) {
         if (option.equals(ImportWhat.IRON.name())) {
-          if (importJourneyDao.getImportCountrySelected().equals(KAZAKHSTAN_SPIRE_CODE)) {
+          if (country.equals(KAZAKHSTAN_SPIRE_CODE)) {
             return journeyManager.performTransition(ImportEvents.IMPORT_WHAT_SELECTED, ImportWhat.IRON_KAZAKHSTAN);
           }
-        }
-        if (option.equals(ImportWhat.TEXTILES.name())) {
-          if (importJourneyDao.getImportCountrySelected().equals(BELARUS_SPIRE_CODE)) {
+        } else if (option.equals(ImportWhat.TEXTILES.name())) {
+          if (country.equals(BELARUS_SPIRE_CODE)) {
             return journeyManager.performTransition(ImportEvents.IMPORT_WHAT_SELECTED, ImportWhat.TEXTILES_BELARUS);
-          }
-          if (importJourneyDao.getImportCountrySelected().equals(NORTH_KOREA_SPIRE_CODE)) {
+          } else if (country.equals(NORTH_KOREA_SPIRE_CODE)) {
             return journeyManager.performTransition(ImportEvents.IMPORT_WHAT_SELECTED, ImportWhat.TEXTILES_NORTH_KOREA);
           }
         }
@@ -97,13 +98,12 @@ public class ImportController extends Controller {
 
       // Custom transitions for ImportQuestion.MILITARY
       if (stageKey.equals(ImportQuestion.MILITARY.key())) {
-        if (option.equals(ImportYesNo.YES.name())) {
-          String militaryCountry = importJourneyDao.getImportCountrySelected();
-          if (militaryCountry.equals(RUSSIA_SPIRE_CODE)) {
+        if (option.equals(ImportMilitaryYesNo.YES.name())) {
+          if (country.equals(RUSSIA_SPIRE_CODE)) {
             return journeyManager.performTransition(ImportEvents.IMPORT_MILITARY_YES_NO_SELECTED, ImportMilitaryYesNo.YES_RUSSIA);
-          } else if (militaryCountry.equals(IRAN_SPIRE_CODE)) {
+          } else if (country.equals(IRAN_SPIRE_CODE)) {
             return journeyManager.performTransition(ImportEvents.IMPORT_MILITARY_YES_NO_SELECTED, ImportMilitaryYesNo.YES_IRAN);
-          } else if (militaryCountry.equals(MYANMAR_SPIRE_CODE)) {
+          } else if (country.equals(MYANMAR_SPIRE_CODE)) {
             return journeyManager.performTransition(ImportEvents.IMPORT_MILITARY_YES_NO_SELECTED, ImportMilitaryYesNo.YES_MYANMAR);
           }
         }
