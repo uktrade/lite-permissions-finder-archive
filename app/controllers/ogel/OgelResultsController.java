@@ -27,6 +27,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.inject.Named;
+
 public class OgelResultsController {
 
   private final JourneyManager journeyManager;

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public enum ImportFoodWhat {
 
-  FOOD("Food, including animal products, fruit and vegetables"),
+  FOOD("Food, including edible animal products, fruit and vegetables"),
   NON_FOOD("Non-food animal products, such as blood, feathers, wool and manure"),
   ANIMALS("Live animals"),
   NON_EDIBLE("Non-edible plants");

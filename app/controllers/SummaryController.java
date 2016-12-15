@@ -27,6 +27,8 @@ import views.html.summary;
 
 import java.util.concurrent.CompletionStage;
 
+import javax.inject.Named;
+
 public class SummaryController {
 
   private final TransactionManager transactionManager;
