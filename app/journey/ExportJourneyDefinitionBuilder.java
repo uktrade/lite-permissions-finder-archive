@@ -4,13 +4,14 @@ import components.common.journey.BackLink;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
+import controllers.categories.NonMilitaryController;
 import controllers.routes;
 import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
+import models.ExportYesNo;
 import models.GoodsType;
 import models.LifeType;
-import models.NonMilitaryFirearmExportBySelfType;
 import models.RadioactiveStage;
 import models.VirtualEUOgelStage;
 import models.softtech.ApplicableSoftTechControls;
@@ -135,16 +136,14 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage categoryMedicinesDrugs = defineStage("categoryMedicinesDrugs", "Medicines and drugs",
         controllers.categories.routes.MedicinesDrugsController.renderForm());
 
-    JourneyStage categoryNonMilitary = defineStage("categoryNonMilitary",
-        "Will you be taking the firearms or ammunition out of the UK yourself?",
-        controllers.categories.routes.NonMilitaryController.renderForm());
+    JourneyStage categoryNonMilitaryTakeYourself = defineStage(NonMilitaryController.TAKE_YOURSELF_KEY,
+        NonMilitaryController.TAKE_YOURSELF_QUESTION, controllers.categories.routes.NonMilitaryController.renderTakeYourselfForm());
+    JourneyStage categoryNonMilitaryPersonalEffects = defineStage(NonMilitaryController.PERSONAL_EFFECTS_KEY,
+        NonMilitaryController.PERSONAL_EFFECTS_QUESTION, controllers.categories.routes.NonMilitaryController.renderPersonalEffectsForm());
 
-    JourneyStage categoryNonMilitaryCheckDestination = defineStage("categoryNonMilitaryCheckDestination",
-        "You need to check the rules for your destination country",
-        routes.StaticContentController.renderCategoryNonMilitaryFirearmsCheckDestination());
-
-    JourneyStage categoryNonMilitaryNeedExportLicence = defineStage("categoryNonMilitaryNeedExportLicence",
-        "You need an export licence", routes.StaticContentController.renderCategoryNonMilitaryFirearmsNeedExportLicence());
+    JourneyStage categoryNonMilitaryTakingStatic = defineStage("categoryNonMilitaryTaking", "", routes.StaticContentController.renderCategoryNonMilitaryTaking());
+    JourneyStage categoryNonMilitarySendingStatic = defineStage("categoryNonMilitarySending", "", routes.StaticContentController.renderCategoryNonMilitarySending());
+    JourneyStage categoryNonMilitaryNeedLicenceStatic = defineStage("categoryNonMilitaryNeedLicence", "", routes.StaticContentController.renderCategoryNonMilitaryNeedLicence());
 
     JourneyStage categoryPlantsAnimals = defineStage("categoryPlantsAnimals", "Plants and animals",
         controllers.categories.routes.PlantsAnimalsController.renderForm());
@@ -184,7 +183,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ExportCategory.MEDICINES_DRUGS, moveTo(categoryMedicinesDrugs))
         .when(ExportCategory.MILITARY, moveTo(goodsType))
         .when(ExportCategory.NONE, moveTo(categoryDualUse))
-        .when(ExportCategory.NON_MILITARY, moveTo(categoryNonMilitary))
+        .when(ExportCategory.NON_MILITARY, moveTo(categoryNonMilitaryTakeYourself))
         .when(ExportCategory.PLANTS_ANIMALS, moveTo(categoryPlantsAnimals))
         .when(ExportCategory.RADIOACTIVE, moveTo(categoryRadioactive))
         .when(ExportCategory.TECHNICAL_ASSISTANCE, moveTo(categoryFinancialTechnicalAssistance))
@@ -201,13 +200,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ArtsCulturalGoodsType.HISTORIC, moveTo(categoryArtsCulturalHistoric))
         .when(ArtsCulturalGoodsType.NON_HISTORIC, moveTo(categoryArtsCulturalNonHistoric))
         .when(ArtsCulturalGoodsType.FIREARM_HISTORIC, moveTo(categoryArtsCulturalFirearmHistoric))
-        .when(ArtsCulturalGoodsType.FIREARM_NON_HISTORIC, moveTo(categoryNonMilitary));
+        .when(ArtsCulturalGoodsType.FIREARM_NON_HISTORIC, moveTo(categoryNonMilitaryTakeYourself));
 
     // Note use of EXPORT_CATEGORY_SELECTED for single value
     atStage(categoryArtsCulturalFirearmHistoric)
         .onEvent(Events.EXPORT_CATEGORY_SELECTED)
         .branch()
-        .when(ExportCategory.NON_MILITARY, moveTo(categoryNonMilitary));
+        .when(ExportCategory.NON_MILITARY, moveTo(categoryNonMilitaryTakeYourself));
 
     atStage(categoryChemicalsCosmetics)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
@@ -229,12 +228,17 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(true, moveTo(categoryTortureRestraint))
         .when(false, moveTo(categoryMedicinesDrugsStatic));
 
-    atStage(categoryNonMilitary)
-        .onEvent(Events.NON_MILITARY_FIREARMS_QUESTION_ANSWERED)
+    atStage(categoryNonMilitaryTakeYourself)
+        .onEvent(Events.NON_MILITARY_FIREARMS_OPTION_SELECTED)
         .branch()
-        .when(NonMilitaryFirearmExportBySelfType.YES, moveTo(categoryNonMilitaryCheckDestination))
-        .when(NonMilitaryFirearmExportBySelfType.NO_INCLUDED_IN_PERSONAL_EFFECTS, moveTo(categoryNonMilitaryCheckDestination))
-        .when(NonMilitaryFirearmExportBySelfType.NO_TRANSFER_TO_THIRD_PARTY, moveTo(categoryNonMilitaryNeedExportLicence));
+        .when(true, moveTo(categoryNonMilitaryTakingStatic))
+        .when(false, moveTo(categoryNonMilitaryPersonalEffects));
+
+    atStage(categoryNonMilitaryPersonalEffects)
+        .onEvent(Events.NON_MILITARY_FIREARMS_OPTION_SELECTED)
+        .branch()
+        .when(true, moveTo(categoryNonMilitarySendingStatic))
+        .when(false, moveTo(categoryNonMilitaryNeedLicenceStatic));
 
     atStage(categoryPlantsAnimals)
         .onEvent(Events.LIFE_TYPE_SELECTED)
