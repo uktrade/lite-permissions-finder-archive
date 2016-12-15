@@ -5,7 +5,6 @@ import components.common.journey.ParameterisedJourneyEvent;
 import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
-import models.ExportYesNo;
 import models.GoodsType;
 import models.LifeType;
 import models.RadioactiveStage;
