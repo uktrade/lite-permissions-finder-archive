@@ -65,10 +65,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("countryCacheKey"))
         .to(configuration.getString("countryCacheKey"));
 
-    bind(CountryProvider.class).asEagerSingleton();
-    bind(CountryCacheScheduler.class).asEagerSingleton();
-    bindActor(UpdateCountryCacheActor.class, "updateCountryCacheActor");
-
     // ogelService
     bindConstant().annotatedWith(Names.named("ogelServiceAddress"))
         .to(configuration.getString("ogelService.address"));
