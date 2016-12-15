@@ -58,12 +58,10 @@ public class ImportController extends Controller {
   }
 
   public Result renderForm(String stageKey) {
-    logImportCountrySelectedStored();
     return ok(importQuestion.render(formFactory.form(), stageDataMap.get(journeyManager.getCurrentInternalStageName())));
   }
 
   public CompletionStage<Result> handleSubmit() {
-    logImportCountrySelectedStored();
     String stageKey = journeyManager.getCurrentInternalStageName();
     Logger.info("stageKey: " + stageKey);
     ImportStageData importStageData = stageDataMap.get(stageKey);
@@ -110,13 +108,6 @@ public class ImportController extends Controller {
       return importStageData.completeTransition(journeyManager, option);
     } else {
       throw new FormStateException("Unknown selected option: " + option);
-    }
-  }
-
-  private void logImportCountrySelectedStored() {
-    String selected = importJourneyDao.getImportCountrySelected();
-    if (!StringUtils.isBlank(selected)) {
-      Logger.info("ImportCountrySelectedStored: " + selected);
     }
   }
 
