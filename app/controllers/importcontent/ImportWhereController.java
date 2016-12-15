@@ -8,12 +8,10 @@ import components.common.journey.JourneyManager;
 import components.persistence.ImportJourneyDao;
 import exceptions.FormStateException;
 import importcontent.ImportEvents;
-import importcontent.models.ImportCountry;
 import importcontent.models.ImportWhere;
 import models.common.Country;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.importcontent.importCountry;
@@ -30,7 +28,6 @@ public class ImportWhereController extends Controller {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final ImportJourneyDao importJourneyDao;
-  private final HttpExecutionContext httpExecutionContext;
   private final CountryProvider countryProviderExport;
   private final CountryProvider countryProviderEu;
 
@@ -38,13 +35,11 @@ public class ImportWhereController extends Controller {
 
   @Inject
   public ImportWhereController(JourneyManager journeyManager, FormFactory formFactory, ImportJourneyDao importJourneyDao,
-                               HttpExecutionContext httpExecutionContext,
                                @Named("countryProviderExport") CountryProvider countryProviderExport,
                                @Named("countryProviderEu") CountryProvider countryProviderEu) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.importJourneyDao = importJourneyDao;
-    this.httpExecutionContext = httpExecutionContext;
     this.countryProviderExport = countryProviderExport;
     this.countryProviderEu = countryProviderEu;
   }
@@ -92,7 +87,8 @@ public class ImportWhereController extends Controller {
   }
 
   private boolean isEuCountry(String spireCountryCode) {
-    return ImportCountry.getMatched(spireCountryCode).map(ImportCountry::isEu).orElse(false);
+    List<Country> euCountries = new ArrayList<Country>(countryProviderEu.getCountries());
+    return euCountries.stream().anyMatch(c -> spireCountryCode.equals(c.getCountryRef()));
   }
 
   /**
