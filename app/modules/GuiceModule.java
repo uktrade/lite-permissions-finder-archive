@@ -67,11 +67,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("countryServiceTimeout"))
         .to(configuration.getString("countryService.timeout"));
 
-    bindConstant().annotatedWith(Names.named("countryCacheExpiry"))
-        .to(configuration.getString("countryCacheExpiry"));
-    bindConstant().annotatedWith(Names.named("countryCacheKey"))
-        .to(configuration.getString("countryCacheKey"));
-
     // ogelService
     bindConstant().annotatedWith(Names.named("ogelServiceAddress"))
         .to(configuration.getString("ogelService.address"));
