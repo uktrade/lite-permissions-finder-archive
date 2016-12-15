@@ -6,22 +6,18 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import exceptions.FormStateException;
+import exceptions.ServiceResponseException;
 import journey.Events;
-import models.ExportYesNo;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Result;
-import utils.common.SelectOption;
 import views.html.categories.nonMilitary;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class NonMilitaryController {
 
-  public static final List<SelectOption> YES_NO_OPTIONS = ExportYesNo.getSelectOptions();
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
@@ -53,9 +49,9 @@ public class NonMilitaryController {
       return completedFuture(ok(nonMilitary.render(form, getQuestion(journeyManager.getCurrentInternalStageName()))));
     }
 
-    Optional<ExportYesNo> optYesNo = ExportYesNo.getMatched(form.get().selectedOption);
-    if (optYesNo.isPresent()) {
-      return journeyManager.performTransition(Events.NON_MILITARY_FIREARMS_OPTION_SELECTED, optYesNo.get());
+    Boolean choice = form.get().selectedOption;
+    if (choice != null) {
+      return journeyManager.performTransition(Events.NON_MILITARY_FIREARMS_OPTION_SELECTED, choice);
     }
     throw new FormStateException("Unknown selectedOption");
   }
@@ -66,6 +62,8 @@ public class NonMilitaryController {
       question = TAKE_YOURSELF_QUESTION;
     } else if (stageName.equals(PERSONAL_EFFECTS_KEY)) {
       question = PERSONAL_EFFECTS_QUESTION;
+    } else {
+      throw new RuntimeException("No question configured for stageName: " + stageName);
     }
     return question;
   }
@@ -73,7 +71,7 @@ public class NonMilitaryController {
   public static class NonMilitaryForm {
 
     @Required(message = "Please select one option")
-    public String selectedOption;
+    public Boolean selectedOption;
 
   }
 }

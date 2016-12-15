@@ -87,8 +87,7 @@ public class ImportWhereController extends Controller {
   }
 
   private boolean isEuCountry(String spireCountryCode) {
-    List<Country> euCountries = new ArrayList<Country>(countryProviderEu.getCountries());
-    return euCountries.stream().anyMatch(c -> spireCountryCode.equals(c.getCountryRef()));
+    return countryProviderEu.getCountries().stream().anyMatch(c -> spireCountryCode.equals(c.getCountryRef()));
   }
 
   /**

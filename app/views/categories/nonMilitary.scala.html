@@ -2,7 +2,6 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.categories.NonMilitaryController
 
 @(form: Form[_], question: java.lang.String)
 @standardPage(question, Some(Html(question))){
@@ -13,7 +12,7 @@
 
     @contextFormParams()
 
-    @formRadioGroup(form("selectedOption"), NonMilitaryController.YES_NO_OPTIONS) { }
+    @formRadioBoolean(form("selectedOption"), Html(""))
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

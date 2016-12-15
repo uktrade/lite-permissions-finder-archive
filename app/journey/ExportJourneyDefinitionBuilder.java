@@ -231,14 +231,14 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(categoryNonMilitaryTakeYourself)
         .onEvent(Events.NON_MILITARY_FIREARMS_OPTION_SELECTED)
         .branch()
-        .when(ExportYesNo.YES, moveTo(categoryNonMilitaryTakingStatic))
-        .when(ExportYesNo.NO, moveTo(categoryNonMilitaryPersonalEffects));
+        .when(true, moveTo(categoryNonMilitaryTakingStatic))
+        .when(false, moveTo(categoryNonMilitaryPersonalEffects));
 
     atStage(categoryNonMilitaryPersonalEffects)
         .onEvent(Events.NON_MILITARY_FIREARMS_OPTION_SELECTED)
         .branch()
-        .when(ExportYesNo.YES, moveTo(categoryNonMilitarySendingStatic))
-        .when(ExportYesNo.NO, moveTo(categoryNonMilitaryNeedLicenceStatic));
+        .when(true, moveTo(categoryNonMilitarySendingStatic))
+        .when(false, moveTo(categoryNonMilitaryNeedLicenceStatic));
 
     atStage(categoryPlantsAnimals)
         .onEvent(Events.LIFE_TYPE_SELECTED)
