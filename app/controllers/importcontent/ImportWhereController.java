@@ -12,6 +12,7 @@ import importcontent.models.ImportWhere;
 import models.common.Country;
 import play.data.Form;
 import play.data.FormFactory;
+import play.data.validation.Constraints;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.importcontent.importCountry;
@@ -95,6 +96,7 @@ public class ImportWhereController extends Controller {
    * ImportCountryForm
    */
   public static class ImportCountryForm {
+    @Constraints.Required(message = "Please select one option")
     public String importCountry;
   }
 }
