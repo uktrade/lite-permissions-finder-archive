@@ -64,7 +64,9 @@ public class Events {
 
   public static final JourneyEvent OGEL_CONDITIONS_APPLY = new JourneyEvent("OGEL_CONDITIONS_APPLY");
 
-  public static final JourneyEvent OGEL_DO_CONDITIONS_APPLY = new JourneyEvent("OGEL_DO_CONDITIONS_APPLY");
+  public static final JourneyEvent OGEL_CONDITIONS_DO_APPLY = new JourneyEvent("OGEL_CONDITIONS_DO_APPLY");
+
+  public static final JourneyEvent OGEL_CONDITIONS_DO_NOT_APPLY = new JourneyEvent("OGEL_CONDITIONS_DO_NOT_APPLY");
 
   public static final ParameterisedJourneyEvent<ExportYesNo> NON_MILITARY_FIREARMS_OPTION_SELECTED =
       new ParameterisedJourneyEvent<>("NON_MILITARY_FIREARMS_OPTION_SELECTED", ExportYesNo.class);

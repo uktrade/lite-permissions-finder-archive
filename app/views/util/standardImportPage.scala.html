@@ -1,7 +1,7 @@
 @import util._
 @import views.html.common.page._
 
-@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None, twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, displayImportingFromCrimea: Boolean, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", pageName: Option[String] = None, twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle, pageName = pageName) {
 
@@ -21,6 +21,18 @@
     @beforeHeader
 
     @content
+
+    @if(displayImportingFromCrimea) {
+      <h1 class="heading-large">Importing from Crimea</h1>
+
+      <p>You are not allowed to import goods into the EU that originated in Crimea or Sevastopol.
+        Read about sanctions on international trade with Crimea.</p>
+
+      <p>If you still think you may be eligible for a licence, or for further advice on import controls,
+        you can contact the
+        Import Licensing Branch
+        by email <a href="mailto:enquiries.ilb@@bis.gsi.gov.uk">enquiries.ilb@@bis.gsi.gov.uk</a> or by phone on 01642 364333.</p>
+    }
 
     @if(twoThirdsColumn) {
         </div>

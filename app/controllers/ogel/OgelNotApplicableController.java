@@ -8,6 +8,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.ogels.ogel.OgelServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
+import models.ogel.OgelNotApplicableDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -60,8 +61,8 @@ public class OgelNotApplicableController {
 
   public CompletionStage<Result> renderWithForm(Form<OgelNotApplicableForm> form) {
     return ogelServiceClient.get(permissionsFinderDao.getOgelId())
-        .thenApplyAsync(ogelResult -> ok(ogelNotApplicable.render(form, ogelResult,
-              permissionsFinderDao.getConfirmedControlCode())), httpExecutionContext.current());
+        .thenApplyAsync(ogelResult -> ok(ogelNotApplicable.render(form, new OgelNotApplicableDisplay(ogelResult,
+              permissionsFinderDao.getConfirmedControlCode()))), httpExecutionContext.current());
   }
 
   public static class OgelNotApplicableForm {

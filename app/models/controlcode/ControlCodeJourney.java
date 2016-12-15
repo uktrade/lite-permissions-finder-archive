@@ -28,4 +28,22 @@ public enum ControlCodeJourney {
     return EnumSet.allOf(ControlCodeJourney.class).stream().filter(e -> e.value().equals(controlCodeJourney)).findFirst();
   }
 
+  public static boolean isPhysicalGoodsSearchVariant(ControlCodeJourney controlCodeJourney) {
+    return controlCodeJourney == PHYSICAL_GOODS_SEARCH ||
+        controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
+        controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
+  }
+
+  public static boolean isSoftTechControlsVariant(ControlCodeJourney controlCodeJourney) {
+    return controlCodeJourney == SOFTWARE_CONTROLS || controlCodeJourney == TECHNOLOGY_CONTROLS;
+  }
+
+  public static boolean isSoftTechControlsRelatedToPhysicalGoodVariant(ControlCodeJourney controlCodeJourney) {
+    return controlCodeJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD;
+  }
+
+  public static boolean isSoftTechCatchallControlsVariant(ControlCodeJourney controlCodeJourney) {
+    return controlCodeJourney == SOFTWARE_CATCHALL_CONTROLS || controlCodeJourney == TECHNOLOGY_CATCHALL_CONTROLS;
+  }
+
 }

@@ -34,6 +34,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.DestinationCountryController.renderForm());
   private final JourneyStage ogelQuestions = defineStage("ogelQuestions", "Refining your licence results",
       controllers.ogel.routes.OgelQuestionsController.renderForm());
+  private final JourneyStage ogelNotApplicable = defineStage("ogelNotApplicable", "The licence is not applicable to your item",
+      controllers.ogel.routes.OgelNotApplicableController.renderForm());
   private final JourneyStage notImplemented = defineStage("notImplemented", "This section is currently under development",
       routes.StaticContentController.renderNotImplemented());
   private final JourneyStage notApplicable = defineStage("notApplicable", "No licence available",
@@ -313,7 +315,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
+        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResults));
 
     atStage(additionalSpecifications)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -340,13 +342,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
+        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResults));
 
     atStage(controlCodeNotApplicableExtended)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResults));
+        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResults));
 
     atStage(destinationCountries)
         .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
@@ -368,14 +370,26 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .then(moveTo(ogelConditions));
 
     atStage(ogelConditions)
-        .onEvent(Events.OGEL_DO_CONDITIONS_APPLY)
+        .onEvent(Events.OGEL_CONDITIONS_DO_APPLY)
         .then(moveTo(ogelSummary));
+
+    atStage(ogelConditions)
+        .onEvent(Events.OGEL_CONDITIONS_DO_NOT_APPLY)
+        .then(moveTo(ogelNotApplicable));
 
     atStage(ogelConditions)
         .onEvent(Events.VIRTUAL_EU_OGEL_STAGE)
         .branch()
         .when(VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_APPLY, moveTo(virtualEU))
         .when(VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_NOT_APPLY, moveTo(ogelResults));
+
+    atStage(ogelNotApplicable)
+        .onEvent(Events.OGEL_CONTINUE_TO_NON_APPLICABLE_LICENCE)
+        .then(moveTo(ogelSummary));
+
+    atStage(ogelNotApplicable)
+        .onEvent(Events.OGEL_CHOOSE_AGAIN)
+        .then(moveTo(ogelResults));
 
     atStage(ogelSummary)
         .onEvent(Events.OGEL_CHOOSE_AGAIN)
@@ -492,12 +506,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(controlCodeforRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
+        .when(ControlCodeFlowStage.BACK_TO_MATCHES, moveTo(physicalGoodsSearchResultsRelatedToSoftware))
         .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableRelatedToSoftware))
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationsRelatedToSoftware))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsRelatedToSoftware))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedToSoftware))
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearchRelatedToSoftware))
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
+        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
 
     bindControlsRelatedToPhysicalGoods(controlCodeforRelatedToSoftware);
 
@@ -529,13 +544,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearchRelatedToSoftware))
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
+        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
 
     atStage(controlCodeNotApplicableExtendedRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearchRelatedToSoftware))
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
+        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
   }
 
   /**
@@ -561,6 +576,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(controlCodeForSoftwareControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
+        .when(ControlCodeFlowStage.BACK_TO_MATCHES, moveTo(softwareCategoryControls))
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationsSoftwareControls))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsSoftwareControls))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareControls))
@@ -649,6 +665,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(controlCodeForRelatedSoftwareControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
+        .when(ControlCodeFlowStage.BACK_TO_MATCHES, moveTo(softwareRelatedToPhysicalGoodControls))
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationsRelatedSoftwareControls))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsRelatedSoftwareControls))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesRelatedSoftwareControls))
@@ -745,6 +762,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(controlCodeSoftwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
+        .when(ControlCodeFlowStage.BACK_TO_MATCHES, moveTo(softwareCatchallControls))
+        .when(ControlCodeFlowStage.BACK_TO_CATEGORY, moveTo(softwareCategoryControls))
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationSoftwareCatchallControls))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsSoftwareCatchallControls))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareCatchallControls))

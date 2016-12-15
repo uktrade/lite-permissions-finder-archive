@@ -43,7 +43,7 @@
   @twoThirdsColumn {
 
     <form action="@display.formAction" method="POST">
-      
+
       @contextFormParams()
 
       @formRadioBoolean(form("couldDescribeItems"), Html(display.couldDescribeItemsLabel), "Yes", "No")
@@ -52,25 +52,7 @@
         <button type="submit" class="button">Continue</button>
       </div>
 
-      @detailPanel("im-not-sure")(Html("I'm not sure")) {
-        <p>
-          If your item is not described above, you can:
-        </p>
-
-        <ul class="list list-bullet text">
-          <li>
-            <button class="link underlined" name="action" value="backToSearchResults" data-skip-validation>
-              return to your search results and select another item type</button>, or
-          </li>
-          <li>
-            <button class="link underlined" name="action" value="backToSearch" data-skip-validation>
-              edit your item description to get a different set of results</button>
-          </li>
-        </ul>
-
-        @helpInfoPanel()
-
-      }
+      @controlCodeHelpInfoPanel(display.controlCodeJourney, display.showPickAgain)
 
     </form>
   }

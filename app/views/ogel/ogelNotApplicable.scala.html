@@ -2,10 +2,10 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import components.services.ogels.ogel.OgelServiceResult
+@import models.ogel.OgelNotApplicableDisplay
 
-@(form: Form[_], ogelServiceResult: OgelServiceResult,controlCode: String)
-@standardPage("The licence is not applicable to your item", Some(Html("The licence is not applicable to your item"))){
+@(form: Form[_], display: OgelNotApplicableDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
   @errorSummary(form)
 }{
 
@@ -14,13 +14,18 @@
     @contextFormParams()
 
     <p>
-      Although some items within the classification <strong class="bold-medium">@controlCode</strong> can be exported using @ogelServiceResult.name, your items are not covered by this licence. You can:
+      Although some items within the classification <strong class="bold-medium">@display.controlCode</strong> can be exported using @display.ogelTitle, your items are not covered by this licence. You can:
     </p>
 
     <div class="form-group">
-      <button type="submit" class="link underlined" name="action" value="continueToLicence">- read the details of this licence anyway</button>
-      <br/>
-      <button type="submit" class="link underlined" name="action" value="chooseAnotherLicence">- choose a different licence</button>
+      <ul class="list list-bullet text">
+        <li>
+          <button type="submit" class="link underlined" name="action" value="continueToLicence">read the details of this licence anyway</button>
+        </li>
+        <li>
+          <button type="submit" class="link underlined" name="action" value="chooseAnotherLicence">choose a different licence</button>
+        </li>
+      </ul>
     </div>
     
   </form>

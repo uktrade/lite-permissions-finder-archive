@@ -1,6 +1,7 @@
 package models.controlcode;
 
 import components.services.controlcode.AdditionalSpecifications;
+import components.services.controlcode.Ancestor;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
 import controllers.controlcode.routes;
@@ -15,6 +16,9 @@ public class AdditionalSpecificationsDisplay {
   public final String title;
   public final String friendlyDescription;
   public final String controlCodeAlias;
+  public final Ancestor greatestAncestor;
+  public final List<Ancestor> otherAncestors;
+  public final boolean showGreatestAncestor;
   public final String clauseText;
   public final List<String> specifications;
 
@@ -23,6 +27,15 @@ public class AdditionalSpecificationsDisplay {
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
+    if (frontendServiceResult.greatestAncestor.isPresent()) {
+      this.greatestAncestor = frontendServiceResult.greatestAncestor.get();
+      showGreatestAncestor = true;
+    }
+    else {
+      this.greatestAncestor = null;
+      showGreatestAncestor = false;
+    }
+    this.otherAncestors = frontendServiceResult.otherAncestors;
     AdditionalSpecifications additionalSpecifications = frontendServiceResult.controlCodeData.additionalSpecifications;
     if (additionalSpecifications != null) {
       this.clauseText = additionalSpecifications.clauseText;

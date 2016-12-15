@@ -11,6 +11,26 @@
 
   <ul class="tree">
 
+    @if(display.showGreatestAncestor) {
+      <li>
+        <span class="tree-dot"></span>
+        <span class="tree-desc">
+          <span class="tree-desc-wrapper">@Html(display.greatestAncestor.friendlyDescription)</span>
+        </span>
+        <span class="tree-code">@display.greatestAncestor.alias</span>
+      </li>
+    }
+
+    @for(otherAncestorCode <- display.otherAncestors) {
+      <li>
+        <span class="tree-dot"></span>
+        <span class="tree-desc">
+          <span class="tree-desc-wrapper">@Html(otherAncestorCode.friendlyDescription)</span>
+        </span>
+        <span class="tree-code">@otherAncestorCode.alias</span>
+      </li>
+    }
+
     <li class="last">
       <span class="tree-dot"></span>
       <span class="tree-desc">

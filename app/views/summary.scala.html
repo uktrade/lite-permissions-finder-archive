@@ -6,7 +6,7 @@
 
 @(form: Form[_], summary: Summary, isResumedApplication: Boolean)
 
-@standardPage("Check your answers so far", Some(Html("Check your answers so far"))) {
+@standardPage("Check your answers so far", Some(Html("Check your answers so far")), twoThirdsColumn = false) {
   @errorSummary(form)
 }{
 
@@ -28,7 +28,7 @@
     @if(!summary.summaryFields.isEmpty) {
 
       <div class="form-group">
-        <table>
+        <table class="check-your-answers">
           <thead>
             <th colspan="3"> </th>
           </thead>
@@ -41,7 +41,7 @@
               } else {
                 <td>@summaryField.content</td>
               }
-              <td><a class="not-visited" href="@summaryField.editLinkUrl">Change</a></td>
+              <td class="change-answer"><a class="not-visited" href="@summaryField.editLinkUrl">Change <span class="visuallyhidden">@summaryField.heading</span></a></td>
             </tr>
           }
           </tbody>

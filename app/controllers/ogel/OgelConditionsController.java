@@ -111,7 +111,12 @@ public class OgelConditionsController {
                       }
                     }
                     else {
-                      return journeyManager.performTransition(Events.OGEL_DO_CONDITIONS_APPLY);
+                      if (OgelConditionsServiceClient.isItemAllowed(conditionsResult, doConditionsApply)) {
+                        return journeyManager.performTransition(Events.OGEL_CONDITIONS_DO_APPLY);
+                      }
+                      else {
+                        return journeyManager.performTransition(Events.OGEL_CONDITIONS_DO_NOT_APPLY);
+                      }
                     }
                   }, httpExecutionContext.current())
                   .thenCompose(Function.identity());
