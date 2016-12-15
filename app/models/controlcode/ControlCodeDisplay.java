@@ -18,15 +18,13 @@ public class ControlCodeDisplay {
   public final boolean showGreatestAncestor;
   public final String couldDescribeItemsLabel;
   public final ControlCodeJourney controlCodeJourney;
-  public final boolean showPickAgain;
 
-  public ControlCodeDisplay(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult, boolean canPickFromResultsAgain) {
+  public ControlCodeDisplay(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
     this.controlCodeJourney = controlCodeJourney;
-    this.showPickAgain = canPickFromResultsAgain;
     if (frontendServiceResult.greatestAncestor.isPresent()) {
       this.greatestAncestor = frontendServiceResult.greatestAncestor.get();
       showGreatestAncestor = true;
