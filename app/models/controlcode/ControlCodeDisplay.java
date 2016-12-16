@@ -18,6 +18,9 @@ public class ControlCodeDisplay {
   public final boolean showGreatestAncestor;
   public final String couldDescribeItemsLabel;
   public final ControlCodeJourney controlCodeJourney;
+  public final boolean decontrolsExist;
+  public final boolean additionalSpecificationsExist;
+  public final boolean technicalNotesExist;
 
   public ControlCodeDisplay(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
@@ -25,13 +28,16 @@ public class ControlCodeDisplay {
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
     this.controlCodeJourney = controlCodeJourney;
+    this.decontrolsExist = controlCodeData.canShowDecontrols();
+    this.additionalSpecificationsExist = controlCodeData.canShowAdditionalSpecifications();
+    this.technicalNotesExist = controlCodeData.canShowTechnicalNotes();
     if (frontendServiceResult.greatestAncestor.isPresent()) {
       this.greatestAncestor = frontendServiceResult.greatestAncestor.get();
-      showGreatestAncestor = true;
+      this.showGreatestAncestor = true;
     }
     else {
       this.greatestAncestor = null;
-      showGreatestAncestor = false;
+      this.showGreatestAncestor = false;
     }
     this.otherAncestors = frontendServiceResult.otherAncestors;
     if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {

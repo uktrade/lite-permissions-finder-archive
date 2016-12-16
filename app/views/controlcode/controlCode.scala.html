@@ -46,7 +46,29 @@
 
       @contextFormParams()
 
-      @formRadioBoolean(form("couldDescribeItems"), Html(display.couldDescribeItemsLabel), "Yes", "No")
+      @if(display.decontrolsExist || display.additionalSpecificationsExist || display.technicalNotesExist) {
+
+        @formRadioBooleanWithContent(form("couldDescribeItems"), Html(display.couldDescribeItemsLabel), "Yes", "No")(HtmlFormat.empty){
+          <p>
+            If you are not sure whether @display.controlCodeAlias describes your item, you can read more details about it before you decide. The extra information for this item is:
+          </p>
+
+          <ul class="list list-bullet text">
+            @if(display.additionalSpecificationsExist){ <li>a fuller description of this item, or the items related to it</li> }
+            @if(display.decontrolsExist){ <li>items that fit this description but which are actually controlled elsewhere, or not at all</li> }
+            @if(display.technicalNotesExist){ <li>technical notes that give examples or define terms</li> }
+          </ul>
+
+          <p>
+            If you want to read this extra information before deciding, answer <strong class="bold-small">Yes</strong> to this question. You can change your answer later if you decide for sure this item does not apply.
+          </p>
+        }
+
+      } else {
+
+        @formRadioBoolean(form("couldDescribeItems"), Html(display.couldDescribeItemsLabel), "Yes", "No")
+
+      }
 
       <div class="form-group">
         <button type="submit" class="button">Continue</button>
