@@ -178,7 +178,7 @@ public class NotApplicableController {
         // A different action is expected for each valid member of ApplicableSoftTechControls
         String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
         return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, controlCode, false)
-            .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(controls, action),
+            .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(goodsType, controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
       else if (ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
@@ -227,11 +227,11 @@ public class NotApplicableController {
     }
   }
 
-  private CompletionStage<Result> softwareControlsRelatedToPhysicalGood(ApplicableSoftTechControls applicableSoftTechControls, String action) {
+  private CompletionStage<Result> softwareControlsRelatedToPhysicalGood(GoodsType goodsType, ApplicableSoftTechControls applicableSoftTechControls, String action) {
     // TODO remove duplicate code
     if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
       if ("continue".equals(action)) {
-        return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE); // TODO TECHNOLOGY
+        return softTechJourneyHelper.performCatchallSoftTechControlsTransition(goodsType);
       }
       else {
         throw new FormStateException("Unknown value for action: \"" + action + "\"");

@@ -76,7 +76,6 @@ public class Events {
   public static final ParameterisedJourneyEvent<ApplicableSoftTechControls> DUAL_USE_SOFT_TECH_CATEGORY_SELECTED =
       new ParameterisedJourneyEvent<>("DUAL_USE_SOFT_TECH_CATEGORY_SELECTED", ApplicableSoftTechControls.class);
 
-  // TODO Refactor name of this event
   public static final ParameterisedJourneyEvent<ApplicableSoftTechControls> CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE =
       new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE", ApplicableSoftTechControls.class);
 

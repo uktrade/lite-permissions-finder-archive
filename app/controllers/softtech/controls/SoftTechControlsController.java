@@ -176,10 +176,10 @@ public class SoftTechControlsController {
               validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes)), httpExecutionContext.current());
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-      return catchallControls(softTechControlsJourney, form, GoodsType.SOFTWARE);
+      return catchallControls(GoodsType.SOFTWARE, softTechControlsJourney, form);
     }
     else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
-      return catchallControls(softTechControlsJourney, form, GoodsType.TECHNOLOGY);
+      return catchallControls(GoodsType.TECHNOLOGY, softTechControlsJourney, form);
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
@@ -187,9 +187,9 @@ public class SoftTechControlsController {
     }
   }
 
-  private CompletionStage<Result> catchallControls(SoftTechControlsJourney softTechControlsJourney, Form<SoftTechControlsForm> form, GoodsType goodsType) {
+  private CompletionStage<Result> catchallControls(GoodsType goodsType, SoftTechControlsJourney softTechControlsJourney, Form<SoftTechControlsForm> form) {
     // SoftTech category is expected at this stage of the journey
-    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
     return catchallControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result ->
             validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
