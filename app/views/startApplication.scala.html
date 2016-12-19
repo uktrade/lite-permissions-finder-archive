@@ -1,45 +1,42 @@
-@import util._
-@import views.html.common.page._
-@import views.html.common.form._
-@import views.html.common.state._
 @import controllers.routes.StartApplicationController
+@import util._
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
 
 @(form: Form[_], applicationCode: String)
-@standardPage("Before you begin", Some(Html("Before you begin"))){
+@standardPage("Before you begin", Some(Html("Before you begin"))) {
   @errorSummary(form)
-}{
+} {
 
   <p>
-    You don't have to complete everything in one go. If you enter your email address below we will send you a code that you can use to return at any time.
+    You don't have to complete everything in one go.
+    If you want to return to this service later, you can use this code to recover your previously answered questions:
   </p>
 
-  <p>
-    If you would rather not enter your email address, you can just write the code down.
-  </p>
+  <div class="panel panel-border-wide">
+    <span class="bold-xlarge">@applicationCode</span>
+  </div>
 
   <form action="@StartApplicationController.handleSubmit" method="POST">
 
     @contextFormParams()
 
-    @formInput(form("emailAddress")) {
-      Your email address (optional)
+    <p>
+    @detailPanel("Email me this code") {Email me this code} {
+      @formInput(form("emailAddress")) {
+        Your email address (optional)
+      }
     }
-
-    <p>
-      If you would rather write down your code, it is:
-    </p>
-
-    <div class="panel panel-border-wide">
-      <span class="bold-xlarge">@applicationCode</span>
-    </div>
-
-    <p>
-      You can also <a href="javascript:window.print();">print this page</a>.
     </p>
 
     <div class="form-group">
-      <button type="submit" class="button">Save and continue</button>
+      <button type="submit" class="button">Continue</button>
     </div>
+
+    <p>
+      <a href="javascript:window.print();">Print this page</a>
+    </p>
 
   </form>
 
