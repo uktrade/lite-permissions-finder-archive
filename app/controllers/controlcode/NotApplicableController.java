@@ -83,13 +83,21 @@ public class NotApplicableController {
           ), httpExecutionContext.current());
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
+      GoodsType goodsType;
+      ControlCodeJourney physicalControlCodeJourney;
+      if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+        goodsType = GoodsType.SOFTWARE;
+        physicalControlCodeJourney = ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE;
+      }
+      else {
+        goodsType = GoodsType.TECHNOLOGY;
+        physicalControlCodeJourney = ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
+      }
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
+      String physicalGoodControlCode = permissionsFinderDao.getSelectedControlCode(physicalControlCodeJourney);
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, selectedControlCode, false)
+      return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, physicalGoodControlCode, false)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeJourney, formFactory.form(NotApplicableForm.class),
@@ -172,12 +180,22 @@ public class NotApplicableController {
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
       else if (ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeJourney)) {
-        GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
-            ? GoodsType.SOFTWARE
-            : GoodsType.TECHNOLOGY;
+
+        GoodsType goodsType;
+        ControlCodeJourney physicalControlCodeJourney;
+        if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+          goodsType = GoodsType.SOFTWARE;
+          physicalControlCodeJourney = ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE;
+        }
+        else {
+          goodsType = GoodsType.TECHNOLOGY;
+          physicalControlCodeJourney = ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
+        }
+
         // A different action is expected for each valid member of ApplicableSoftTechControls
-        String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD);
-        return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, controlCode, false)
+        String physicalGoodControlCode = permissionsFinderDao.getSelectedControlCode(physicalControlCodeJourney);
+
+        return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, physicalGoodControlCode, false)
             .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(goodsType, controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
