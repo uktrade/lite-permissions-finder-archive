@@ -17,7 +17,6 @@ import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
 import models.softtech.Relationship;
-import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
 import models.softtech.SoftTechControlsNotApplicableFlow;
 import models.softtech.SoftwareExemptionsFlow;
 
@@ -732,19 +731,16 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(controlCodeSoftwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
-        .when(ControlCodeFlowStage.BACK_TO_MATCHES, moveTo(softwareCatchallControls))
-        .when(ControlCodeFlowStage.BACK_TO_CATEGORY, moveTo(softwareCategoryControls))
         .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecificationSoftwareCatchallControls))
         .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrolsSoftwareCatchallControls))
         .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotesSoftwareCatchallControls))
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(controlCodeSoftwareCatchallControls)
-        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
-        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
-        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
-        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableSoftwareCatchallControls));
 
     atStage(additionalSpecificationSoftwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -754,11 +750,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(additionalSpecificationSoftwareCatchallControls)
-        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
-        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
-        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
-        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableSoftwareCatchallControls));
 
     atStage(decontrolsSoftwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -767,11 +762,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(decontrolsSoftwareCatchallControls)
-        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
-        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
-        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
-        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableSoftwareCatchallControls));
+
 
     atStage(technicalNotesSoftwareCatchallControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
@@ -779,16 +774,21 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(technicalNotesSoftwareCatchallControls)
-        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE)
         .branch()
-        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
-        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
-        .when(SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS, moveTo(softwareRelationshipNLR));
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeNotApplicableSoftwareCatchallControls))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlCodeNotApplicableSoftwareCatchallControls));
 
     atStage(controlCodeNotApplicableSoftwareCatchallControls)
-        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW)
+        .onEvent(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP)
         .branch()
-        .when(SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS, moveTo(softwareCatchallControls));
+        .when(Relationship.RELATIONSHIP_EXISTS, moveTo(softwareTechnologyRelationship))
+        .when(Relationship.RELATIONSHIP_DOES_NOT_EXIST, moveTo(softwareRelationshipNLR));
+
+    atStage(controlCodeNotApplicableSoftwareCatchallControls)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.BACK_TO_MATCHES, moveTo(softwareCatchallControls));
 
   }
 
