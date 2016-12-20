@@ -13,7 +13,6 @@ import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
 import models.softtech.Relationship;
-import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
 import models.softtech.SoftTechControlsNotApplicableFlow;
 import models.softtech.SoftwareExemptionsFlow;
 
@@ -87,9 +86,6 @@ public class Events {
 
   public static final ParameterisedJourneyEvent<CatchallSoftTechControlsFlow> CATCHALL_SOFT_TECH_CONTROLS_FLOW =
       new ParameterisedJourneyEvent<>("CATCHALL_SOFT_TECH_CONTROLS_FLOW", CatchallSoftTechControlsFlow.class);
-
-  public static final ParameterisedJourneyEvent<SoftTechCatchallControlsNotApplicableFlow> CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW =
-      new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW", SoftTechCatchallControlsNotApplicableFlow.class);
 
   public static final ParameterisedJourneyEvent<Relationship> CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP =
       new ParameterisedJourneyEvent<>("CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP", Relationship.class);

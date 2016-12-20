@@ -14,7 +14,6 @@ import models.controlcode.ControlCodeJourney;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.Relationship;
-import models.softtech.SoftTechCatchallControlsNotApplicableFlow;
 import models.softtech.SoftTechCategory;
 import models.softtech.controls.SoftTechControlsJourney;
 import org.apache.commons.lang3.StringUtils;
@@ -193,38 +192,6 @@ public class SoftTechJourneyHelper {
           else if (controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
             return journeyManager.performTransition(Events.CATCHALL_SOFT_TECH_CONTROLS_FLOW,
                 CatchallSoftTechControlsFlow.CATCHALL_GREATER_THAN_ONE);
-          }
-          else {
-            throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
-                , controls.toString()));
-          }
-        }, httpExecutionContext.current());
-  }
-
-  public CompletionStage<Result> performCatchallSoftTechControlNotApplicableTransition(GoodsType goodsType) {
-    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-    return checkCatchtallSoftwareControls(goodsType, softTechCategory, true)
-        .thenComposeAsync(controls -> {
-         if (controls == ApplicableSoftTechControls.ONE) {
-           return checkRelationshipExists(softTechCategory)
-               .thenComposeAsync(relationship -> {
-                 if (relationship == Relationship.RELATIONSHIP_EXISTS) {
-                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-                       SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_EXISTS);
-                 }
-                 else if (relationship == Relationship.RELATIONSHIP_DOES_NOT_EXIST) {
-                   return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-                       SoftTechCatchallControlsNotApplicableFlow.RELATIONSHIP_NOT_EXISTS);
-                 }
-                 else {
-                   throw new RuntimeException(String.format("Unexpected member of Relationship enum: \"%s\""
-                       , relationship.toString()));
-                 }
-               }, httpExecutionContext.current());
-          }
-          else if (controls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-            return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_CONTROLS_NOT_APPLICABLE_FLOW,
-                SoftTechCatchallControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CATCHALL_CONTROLS);
           }
           else {
             throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""

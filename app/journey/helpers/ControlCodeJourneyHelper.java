@@ -42,9 +42,7 @@ public class ControlCodeJourneyHelper {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
     }
     else if (ControlCodeJourney.isSoftTechControlsVariant(controlCodeJourney)) {
-      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
+      GoodsType goodsType = controlCodeJourney.getSoftTechGoodsType();
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, false)
           .thenComposeAsync(asc ->
@@ -66,10 +64,12 @@ public class ControlCodeJourneyHelper {
               , httpExecutionContext.current());
     }
     else if (ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
-      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
-      return softTechJourneyHelper.performCatchallSoftTechControlNotApplicableTransition(goodsType);
+      GoodsType goodsType = controlCodeJourney.getSoftTechGoodsType();
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+      return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
+          .thenComposeAsync(asc ->
+                  journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE, asc)
+              , httpExecutionContext.current());
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
