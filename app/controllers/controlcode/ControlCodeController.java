@@ -4,8 +4,8 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
+import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
@@ -151,21 +151,24 @@ public class ControlCodeController extends Controller {
 
 
   public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
-    ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
-    if (controlCodeData.canShow()) {
-      if (controlCodeData.canShowAdditionalSpecifications()) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS);
-      }
-      else if (controlCodeData.canShowDecontrols()) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLS);
-      }
-      else {
-        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
-      }
-    }
-    else {
-      return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCodeData.controlCode);
-    }
+
+    return journeyManager.performTransition(StandardEvents.NEXT);
+//
+//    ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
+//    if (controlCodeData.canShow()) {
+//      if (controlCodeData.canShowAdditionalSpecifications()) {
+//        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS);
+//      }
+//      else if (controlCodeData.canShowDecontrols()) {
+//        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLS);
+//      }
+//      else {
+//        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
+//      }
+//    }
+//    else {
+//      return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCodeData.controlCode);
+//    }
   }
 
   public static class ControlCodeForm {

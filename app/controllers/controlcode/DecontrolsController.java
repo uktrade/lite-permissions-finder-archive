@@ -5,12 +5,11 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
+import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
-import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
-import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeJourney;
 import models.controlcode.DecontrolsDisplay;
 import play.data.Form;
@@ -94,7 +93,7 @@ public class DecontrolsController {
             else if ("false".equals(decontrolsDescribeItem)) {
               permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeJourney, false);
               if (result.controlCodeData.canShowTechnicalNotes()) {
-                return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
+                return journeyManager.performTransition(StandardEvents.NEXT); //journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
               }
               else {
                 return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCode);

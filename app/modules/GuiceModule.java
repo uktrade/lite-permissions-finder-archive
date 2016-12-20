@@ -15,8 +15,6 @@ import play.Environment;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class GuiceModule extends AbstractModule{
 
@@ -86,10 +84,10 @@ public class GuiceModule extends AbstractModule{
   }
 
   @Provides
-  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders() {
+  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportJourneyDefinitionBuilder) {
     ImportJourneyDefinitionBuilder importJourneyDefinitionBuilder = new ImportJourneyDefinitionBuilder();
     importJourneyDefinitionBuilder.initStages();
 
-    return Arrays.asList(new ExportJourneyDefinitionBuilder(), importJourneyDefinitionBuilder);
+    return Arrays.asList(exportJourneyDefinitionBuilder, importJourneyDefinitionBuilder);
   }
 }
