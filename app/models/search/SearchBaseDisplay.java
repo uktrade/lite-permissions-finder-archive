@@ -22,19 +22,19 @@ public class SearchBaseDisplay {
       this.formAction = routes.PhysicalGoodsSearchController.handleSearchSubmit().url();
       this.pageTitle = "Describe your items";
       this.descriptionLabel = "Provide as much information as you can";
-      this.componentLabel = "If the item is a component, attachment or part for another item, describe its use.";
+      this.componentLabel = "If the item is a component, attachment or part for another item, describe its use (optional)";
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.PhysicalGoodsSearchController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
       this.pageTitle = "Describe the equipment or materials your software is related to";
       this.descriptionLabel = "Provide as much information as you can about the physical item your software is used with";
-      this.componentLabel = "If the item your software is used with is a component, attachment or part for another item, describe the completed item or system.";
+      this.componentLabel = "If the item your software is used with is a component, attachment or part for another item, describe the completed item or system (optional)";
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
       this.formAction = routes.PhysicalGoodsSearchController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
       this.pageTitle = "Describe the equipment or materials your technology is related to";
       this.descriptionLabel = "Provide as much information as you can about the physical item your technology is used with";
-      this.componentLabel = "If the item your technology is used with is a component, attachment or part for another item, describe the completed item or system.";
+      this.componentLabel = "If the item your technology is used with is a component, attachment or part for another item, describe the completed item or system (optional)";
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

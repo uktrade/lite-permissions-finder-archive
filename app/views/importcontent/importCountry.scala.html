@@ -1,0 +1,29 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import models.common.Country
+@import controllers.importcontent.ImportWhereController
+
+@(form: Form[_], countries: List[Country])
+@standardPage("Countries and territories", Some(Html("Countries and territories")), pageName = Some("importCountry")){
+  @errorSummary(form)
+}{
+
+  <form action="@controllers.importcontent.routes.ImportWhereController.handleSubmit()" method="POST">
+
+    @contextFormParams()
+
+    <input type="submit" class="hidden"></input>
+
+    <h2 class="heading-medium">Where are you importing from?</h2>
+
+    @countrySelect(form(ImportWhereController.COUNTRY_FIELD_NAME), "Type the country or territory the import will come from", null, false, false, countries)
+
+
+    <div class="form-group">
+      <button type="submit" class="button">Save and continue</button>
+    </div>
+  </form>
+
+}

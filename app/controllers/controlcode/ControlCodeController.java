@@ -56,9 +56,9 @@ public class ControlCodeController extends Controller {
     ControlCodeForm templateForm = new ControlCodeForm();
     templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
-        .thenCombineAsync(controlCodeJourneyHelper.getCanPickFromResultsAgain(controlCodeJourney), (frontendServiceResult, canPickFromResultsAgain) -> {
+        .thenApplyAsync(frontendServiceResult -> {
           return ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
-              new ControlCodeDisplay(controlCodeJourney, frontendServiceResult, canPickFromResultsAgain)));
+              new ControlCodeDisplay(controlCodeJourney, frontendServiceResult)));
         }, httpExecutionContext.current());
   }
 
@@ -86,7 +86,7 @@ public class ControlCodeController extends Controller {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
     String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
     return frontendServiceClient.get(code)
-        .thenCombineAsync(controlCodeJourneyHelper.getCanPickFromResultsAgain(controlCodeJourney), (frontendServiceResult, canPickFromResultsAgain) -> {
+        .thenApplyAsync(frontendServiceResult -> {
           // Outside of form binding to preserve @Required validation for couldDescribeItems
           String action = form.field("action").value();
           if (action != null && !action.isEmpty()) {
@@ -111,7 +111,7 @@ public class ControlCodeController extends Controller {
           }
 
           if (form.hasErrors()) {
-            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeJourney, frontendServiceResult, canPickFromResultsAgain))));
+            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeJourney, frontendServiceResult))));
           }
 
           String couldDescribeItems = form.get().couldDescribeItems;

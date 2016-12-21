@@ -38,18 +38,11 @@ public class ControlCodeJourneyHelper {
   }
 
   public CompletionStage<Result> notApplicableJourneyTransition(ControlCodeJourney controlCodeJourney) {
-    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+    if (ControlCodeJourney.isPhysicalGoodsSearchVariant(controlCodeJourney)) {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
     }
-    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
-        controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.NOT_APPLICABLE);
-    }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
-        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
-      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
+    else if (ControlCodeJourney.isSoftTechControlsVariant(controlCodeJourney)) {
+      GoodsType goodsType = controlCodeJourney.getSoftTechGoodsType();
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, false)
           .thenComposeAsync(asc ->
@@ -70,11 +63,13 @@ public class ControlCodeJourneyHelper {
                   journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE, asc)
               , httpExecutionContext.current());
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      return softTechJourneyHelper.performCatchallSoftTechControlNotApplicableTransition(GoodsType.SOFTWARE);
-    }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      return softTechJourneyHelper.performCatchallSoftTechControlNotApplicableTransition(GoodsType.TECHNOLOGY);
+    else if (ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
+      GoodsType goodsType = controlCodeJourney.getSoftTechGoodsType();
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+      return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
+          .thenComposeAsync(asc ->
+                  journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE, asc)
+              , httpExecutionContext.current());
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
@@ -83,43 +78,31 @@ public class ControlCodeJourneyHelper {
   }
 
   public CompletionStage<Result> confirmedJourneyTransition(ControlCodeJourney controlCodeJourney, String controlCode) {
-    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH ||
+        ControlCodeJourney.isSoftTechControlsVariant(controlCodeJourney) ||
+        ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeJourney) ||
+        ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
       permissionsFinderDao.saveConfirmedControlCode(controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       return softTechJourneyHelper.checkRelatedSoftwareControls(GoodsType.SOFTWARE, controlCode, true) // Save to DAO if one result returned
-          .thenComposeAsync(this::controlsRelatedToPhysicalGoodTransition, httpExecutionContext.current());
+          .thenComposeAsync(applicableSoftTechControls -> controlsRelatedToPhysicalGoodTransition(GoodsType.SOFTWARE, applicableSoftTechControls), httpExecutionContext.current());
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
       return softTechJourneyHelper.checkRelatedSoftwareControls(GoodsType.TECHNOLOGY, controlCode, true) // Save to DAO if one result returned
-          .thenComposeAsync(this::controlsRelatedToPhysicalGoodTransition, httpExecutionContext.current());
+          .thenComposeAsync(applicableSoftTechControls -> controlsRelatedToPhysicalGoodTransition(GoodsType.TECHNOLOGY, applicableSoftTechControls), httpExecutionContext.current());
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
-        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
-      permissionsFinderDao.saveConfirmedControlCode(controlCode);
-      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
-    }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      permissionsFinderDao.saveConfirmedControlCode(controlCode);
-      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
-    }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
-        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      permissionsFinderDao.saveConfirmedControlCode(controlCode);
-      return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
-    }
-    // TODO TECHNOLOGY_CATCHALL_CONTROLS
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
           , controlCodeJourney.toString()));
     }
   }
 
-  private CompletionStage<Result> controlsRelatedToPhysicalGoodTransition(ApplicableSoftTechControls applicableSoftTechControls) {
+  private CompletionStage<Result> controlsRelatedToPhysicalGoodTransition(GoodsType goodsType, ApplicableSoftTechControls applicableSoftTechControls) {
     if (applicableSoftTechControls == ApplicableSoftTechControls.ZERO) {
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(GoodsType.SOFTWARE).get();
-      return softTechJourneyHelper.checkCatchtallSoftwareControls(GoodsType.SOFTWARE, softTechCategory, false) // TODO TECHNOLOGY
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+      return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
           .thenComposeAsync(controls -> {
             if (controls == ApplicableSoftTechControls.ZERO) {
               return journeyManager.performTransition(Events.CONTROLS_RELATED_PHYSICAL_GOOD,
@@ -189,64 +172,6 @@ public class ControlCodeJourneyHelper {
   public static CompletionStage<Result> getRelatedControlsResult(String goodsTypeText, Function<ControlCodeJourney, CompletionStage<Result>> resultFunc) {
     return validateGoodsTypeAndGetResult(goodsTypeText, ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD,
         ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, resultFunc);
-  }
-
-  /**
-   * Checks the number of results for a given control code journey to determine whether a results screen has been shown
-   * and is able to be transitioned back too. If there is more than one result, this function returns true.
-   * @param controlCodeJourney the control code journey variant
-   * @return whether there is a prior results screen in which the user can traverse back too
-   */
-  public CompletionStage<Boolean> getCanPickFromResultsAgain(ControlCodeJourney controlCodeJourney){
-    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH ||
-        controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
-        controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      return completedFuture(true);
-    }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
-        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
-      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-      return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, false)
-          .thenApplyAsync(this::canPickFromResultsAgain);
-    }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
-        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
-      String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
-      return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, controlCode, false)
-          .thenApplyAsync(this::canPickFromResultsAgain);
-    }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS ||
-        controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      GoodsType goodsType = controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-      return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
-          .thenApplyAsync(this::canPickFromResultsAgain, httpExecutionContext.current());
-    }
-    else {
-      throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
-          , controlCodeJourney.toString()));
-    }
-  }
-
-  private Boolean canPickFromResultsAgain (ApplicableSoftTechControls applicableSoftTechControls) {
-    switch (applicableSoftTechControls) {
-      case ONE:
-        return false;
-      case GREATER_THAN_ONE:
-        return true;
-      default:
-        // ZERO or null
-        throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
-            , applicableSoftTechControls.toString()));
-    }
   }
 
 }

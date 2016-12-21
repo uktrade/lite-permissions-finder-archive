@@ -5,100 +5,73 @@
 
 @import models.controlcode.NotApplicableDisplay
 @import models.controlcode.ControlCodeJourney
-@import models.controlcode.ControlCodeJourney._
 @(display: NotApplicableDisplay)
-@standardPage(display.controlCodeAlias + " is not applicable to your item", Some(Html(display.controlCodeAlias + " is not applicable to your item"))){
+@standardPage("Description not applicable", Some(Html("Description not applicable"))){
   @errorSummary(display.form)
 }{
   <form action="@display.formAction" method="POST">
 
     @contextFormParams()
 
-    @if(display.showExtendedContent) {
-      <p>
-        This may be because either:
-      </p>
-      <ul class="list list-bullet text">
-        <li>
-          your item is listed under another classification, or
-        </li>
-        <li>
-          you do not need a licence to export your item
-        </li>
-      </ul>
-      <p>
-        It's not possible to say for certain that you do not need a licence - it is still your responsibility to make sure.
-      </p>
-    } else {
-      <p>
-        You should select another item type from your search results, or edit your description to get a new set of results:
-      </p>
-    }
+    <p>
+      As you have indicated that @display.controlCodeAlias is not applicable to your export, you can now:
+    </p>
 
+    <ul class="list list-bullet text">
     @if(ControlCodeJourney.isPhysicalGoodsSearchVariant(display.controlCodeJourney)){
       @if(display.canPickAgain) {
-        <p>
-          To find out if your item is listed under another classification, you can either:
-        </p>
-        <ul class="list list-bullet text">
-          <li>
-            <button class="link underlined" name="action" value="backToResults">return to your search results and select another item type</button>, or
-          </li>
-          <li>
-            <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
-          </li>
-        </ul>
+        <li>
+          <button class="link underlined" name="action" value="backToResults">return to the list of possible matches and choose again</button>
+        </li>
+        <li>
+          <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
+        </li>
       }
     }
 
     @if(ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(display.controlCodeJourney)){
-      @defining(if(display.controlCodeJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) "software" else "technology") {controlType =>
-        @if(display.canPickAgain) {
-          <p>
-            You should <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of @controlType types and choose again</button>.
-          </p>
-        } else {
-          <p>
-            You can <button class="link underlined" name="action" value="continue" data-skip-validation>continue through the rest of this checker</button>.
-          </p>
-        }
+      @if(display.canPickAgain) {
+        <li>
+          <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
+        </li>
+      } else {
+        <li>
+          <button class="link underlined" name="action" value="continue" data-skip-validation>continue to other options</button>
+        </li>
       }
     }
 
     @if(ControlCodeJourney.isSoftTechControlsVariant(display.controlCodeJourney)){
-      @defining(if(display.controlCodeJourney == SOFTWARE_CONTROLS) "software" else "technology") {controlType =>
-        @if(display.canPickAgain) {
-          <p>
-            You should <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of @controlType types and choose again</button>.
-          </p>
-        } else {
-          <p>
-            You can <button class="link underlined" name="action" value="continue" data-skip-validation>continue through the rest of this checker</button>.
-          </p>
-        }
+      @if(display.canPickAgain) {
+        <li>
+          <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
+        </li>
+      } else {
+        <li>
+          <button class="link underlined" name="action" value="continue" data-skip-validation>continue to other options</button>.
+        </li>
       }
     }
 
     @if(ControlCodeJourney.isSoftTechCatchallControlsVariant(display.controlCodeJourney)){
-      @defining(if(display.controlCodeJourney == SOFTWARE_CATCHALL_CONTROLS) "software" else "technology") {controlType =>
-        @if(display.canPickAgain) {
-          <p>
-            You should <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of @controlType types and choose again</button>.
-          </p>
-        } else {
-          <p>
-            You can <button class="link underlined" name="action" value="continue" data-skip-validation>continue through the rest of this checker</button>.
-          </p>
-        }
+      @if(display.canPickAgain) {
+        <li>
+          <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
+        </li>
+      } else {
+        <li>
+          <button class="link underlined" name="action" value="continue" data-skip-validation>continue to other options</button>
+        </li>
       }
     }
+    </ul>
 
     @if(display.showExtendedContent) {
       <h2 class="heading-medium">
         Need some help?
       </h2>
       <p>
-        You can contact the Export Control Organisation (ECO) to discuss your export, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@beis.gsi.gov.uk">eco.help@@beis.gsi.gov.uk</a>.
+        You can contact the Export Control Organisation to discuss your export, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@beis.gsi.gov.uk">eco.help@@beis.gsi.gov.uk</a>.
       </p>
       <h2 class="heading-medium">
         End-use controls
@@ -131,7 +104,7 @@
         Need some help?
       </h2>
       <p>
-        You can contact the Export Control Organisation (ECO) to discuss your export, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@beis.gsi.gov.uk">eco.help@@beis.gsi.gov.uk</a>.
+        You can contact the Export Control Organisation to discuss your export, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@beis.gsi.gov.uk">eco.help@@beis.gsi.gov.uk</a>.
       </p>
     }
 

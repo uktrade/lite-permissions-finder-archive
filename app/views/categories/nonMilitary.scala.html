@@ -2,10 +2,9 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.categories.NonMilitaryController
 
-@(form: Form[_])
-@standardPage("Will you be taking the firearms or ammunition out of the UK yourself?", Some(Html("Will you be taking the firearms or ammunition out of the UK yourself?"))){
+@(form: Form[_], question: java.lang.String)
+@standardPage(question, Some(Html(question))){
   @errorSummary(form)
 }{
 
@@ -13,7 +12,7 @@
 
     @contextFormParams()
 
-    @formRadioGroup(form("nonMilitaryFirearmsExportedBySelf"), NonMilitaryController.FIREARMS_EXPORTED_BY_SELF_OPTIONS) { }
+    @formRadioBoolean(form("selectedOption"), Html(""))
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>
