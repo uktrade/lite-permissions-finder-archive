@@ -20,18 +20,21 @@ public class ControlCodeDecider implements Decider<Collection<ControlCodeDecider
 
   private final PermissionsFinderDao dao;
   private final FrontendServiceClient client;
+  private final SubJourneyContextParamProvider subJourneyContextParamProvider;
 
   @Inject
-  public ControlCodeDecider(PermissionsFinderDao dao, FrontendServiceClient client) {
+  public ControlCodeDecider(PermissionsFinderDao dao, FrontendServiceClient client, SubJourneyContextParamProvider subJourneyContextParamProvider) {
     this.dao = dao;
     this.client = client;
+    this.subJourneyContextParamProvider = subJourneyContextParamProvider;
   }
 
   @Override
   public CompletionStage<Collection<ControlCodeDataType>> decide() {
 
-    //TODO this needs improving
-    String controlCode = dao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    ControlCodeJourney controlCodeJourney = subJourneyContextParamProvider.getSubJourneyValueFromContext();
+
+    String controlCode = dao.getSelectedControlCode(controlCodeJourney);
 
     return client.get(controlCode).thenApply(e -> containsData(e.controlCodeData));
   }

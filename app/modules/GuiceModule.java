@@ -13,12 +13,16 @@ import components.common.CommonGuiceModule;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
 import components.common.client.CountryServiceClient;
+import components.common.journey.JourneyContextParamProvider;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneySerialiser;
 import components.common.persistence.RedisKeyConfig;
+import components.common.state.ContextParamManager;
+import components.common.transaction.TransactionContextParamProvider;
 import components.persistence.PermissionsFinderDao;
 import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
+import journey.SubJourneyContextParamProvider;
 import play.Configuration;
 import play.Environment;
 import play.libs.akka.AkkaGuiceSupport;
@@ -156,4 +160,10 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "EU country cache", actorSystem.dispatcher(), null);
     actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefExport, "EXPORT country cache", actorSystem.dispatcher(), null);
   }
+
+  @Provides
+  public ContextParamManager provideContextParamManager() {
+    return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new SubJourneyContextParamProvider());
+  }
+
 }
