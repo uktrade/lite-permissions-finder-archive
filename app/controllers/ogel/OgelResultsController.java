@@ -4,7 +4,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.client.CountryServiceClient;
+import components.common.cache.CountryProvider;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
@@ -12,6 +12,7 @@ import components.services.ogels.conditions.OgelConditionsServiceClient;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import exceptions.FormStateException;
 import journey.Events;
+import models.common.Country;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -20,6 +21,7 @@ import play.mvc.Result;
 import utils.CountryUtils;
 import views.html.ogel.ogelResults;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +39,7 @@ public class OgelResultsController {
   private final HttpExecutionContext httpExecutionContext;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
   private final OgelConditionsServiceClient ogelConditionsServiceClient;
-  private final CountryServiceClient countryServiceClient;
+  private final CountryProvider countryProviderExport;
 
   @Inject
   public OgelResultsController(JourneyManager journeyManager,
@@ -46,14 +48,14 @@ public class OgelResultsController {
                                HttpExecutionContext httpExecutionContext,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                OgelConditionsServiceClient ogelConditionsServiceClient,
-                               CountryServiceClient countryServiceClient) {
+                               @Named("countryProviderExport") CountryProvider countryProviderExport) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.ogelConditionsServiceClient = ogelConditionsServiceClient;
-    this.countryServiceClient = countryServiceClient;
+    this.countryProviderExport = countryProviderExport;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -77,22 +79,20 @@ public class OgelResultsController {
             return completedFuture(ok(ogelResults.render(form, result.results, null, null)));
           }
           else {
-            return countryServiceClient.getCountries()
-                .thenApplyAsync(countryServiceResponse -> {
 
-                  List<String> countryNames = countryServiceResponse.getCountriesByRef(destinationCountries).stream()
-                      .map(country -> country.getCountryName())
-                      .collect(Collectors.toList());
+            List<Country> countries = new ArrayList<>(countryProviderExport.getCountries());
+            List<String> countryNames = CountryUtils.getFilteredCountries(countries, destinationCountries).stream()
+                .map(Country::getCountryName)
+                .collect(Collectors.toList());
 
-                  // Creates a string in the form "A, B and C"
-                  String destinationCountryNamesHtml = countryNames.size() == 1
-                      ? countryNames.get(0)
-                      : countryNames.subList(0, countryNames.size() -1).stream()
-                        .collect(Collectors.joining(", ", "", " "))
-                        .concat("and " + countryNames.get(countryNames.size() -1));
+            // Creates a string in the form "A, B and C"
+            String destinationCountryNamesHtml = countryNames.size() == 1
+                ? countryNames.get(0)
+                : countryNames.subList(0, countryNames.size() -1).stream()
+                .collect(Collectors.joining(", ", "", " "))
+                .concat("and " + countryNames.get(countryNames.size() -1));
 
-                  return ok(ogelResults.render(form, Collections.emptyList(), controlCode, destinationCountryNamesHtml));
-                }, httpExecutionContext.current());
+            return completedFuture(ok(ogelResults.render(form, Collections.emptyList(), controlCode, destinationCountryNamesHtml)));
           }
         }, httpExecutionContext.current());
   }

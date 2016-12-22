@@ -4,7 +4,7 @@ import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.common.client.CountryServiceClient;
+import components.common.cache.CountryProvider;
 import components.common.logging.CorrelationId;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
@@ -36,7 +36,7 @@ public class OgelRegistrationServiceClient {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
-  private final CountryServiceClient countryServiceClient;
+  private final CountryProvider countryProviderExport;
   private final OgelServiceClient ogelServiceClient;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
 
@@ -49,7 +49,7 @@ public class OgelRegistrationServiceClient {
                                        PermissionsFinderDao permissionsFinderDao,
                                        HttpExecutionContext httpExecutionContext,
                                        FrontendServiceClient frontendServiceClient,
-                                       CountryServiceClient countryServiceClient,
+                                       @Named("countryProviderExport") CountryProvider countryProviderExport,
                                        OgelServiceClient ogelServiceClient,
                                        ApplicableOgelServiceClient applicableOgelServiceClient) {
     this.wsClient = wsClient;
@@ -61,7 +61,7 @@ public class OgelRegistrationServiceClient {
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
-    this.countryServiceClient = countryServiceClient;
+    this.countryProviderExport = countryProviderExport;
     this.ogelServiceClient = ogelServiceClient;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
   }
@@ -73,7 +73,7 @@ public class OgelRegistrationServiceClient {
         .setQueryParameter("securityToken", webServiceSharedSecret);
 
     CompletionStage<Summary> summaryStage = Summary.composeSummary(contextParamManager, permissionsFinderDao,
-        httpExecutionContext, frontendServiceClient, countryServiceClient, ogelServiceClient, applicableOgelServiceClient);
+        httpExecutionContext, frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProviderExport);
 
     CompletionStage<OgelRegistrationServiceRequest> requestStage =
         summaryStage.thenApplyAsync(summary -> new OgelRegistrationServiceRequest(transactionId, summary),
