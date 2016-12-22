@@ -27,7 +27,7 @@ public class NotApplicableDisplay {
     this.controlCodeAlias = controlCodeAlias;
     this.showExtendedContent = showExtendedContent;
     if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.NotApplicableController.handleSearchSubmit().url();
+      this.formAction = routes.NotApplicableController.handleSubmit().url();
       this.canPickAgain = true;
     }
     else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {

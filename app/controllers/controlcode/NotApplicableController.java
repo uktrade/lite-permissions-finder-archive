@@ -51,7 +51,12 @@ public class NotApplicableController {
     this.softTechJourneyHelper = softTechJourneyHelper;
   }
 
-  private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney, String showExtendedContent) {
+  public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText, String showExtendedContent) {
+    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText,
+        controlCodeSubJourney -> renderFormInternal(controlCodeSubJourney, showExtendedContent));
+  }
+
+  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney, String showExtendedContent) {
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
       return frontendServiceClient
           .get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
@@ -114,31 +119,31 @@ public class NotApplicableController {
     }
   }
 
-  public CompletionStage<Result> renderSearchForm(String showExtendedContent) {
-    return renderForm(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH, showExtendedContent);
-  }
-
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText, String showExtendedContent) {
     return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText,
-        controlCodeSubJourney -> this.renderForm(controlCodeSubJourney, showExtendedContent));
+        controlCodeSubJourney -> this.renderFormInternal(controlCodeSubJourney, showExtendedContent));
   }
 
   public CompletionStage<Result> renderControlsForm(String goodsTypeText, String showExtendedContent) {
     return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText,
-        controlCodeSubJourney -> renderForm(controlCodeSubJourney, showExtendedContent));
+        controlCodeSubJourney -> renderFormInternal(controlCodeSubJourney, showExtendedContent));
   }
 
   public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText, String showExtendedContent) {
     return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText,
-        controlCodeSubJourney -> renderForm(controlCodeSubJourney, showExtendedContent));
+        controlCodeSubJourney -> renderFormInternal(controlCodeSubJourney, showExtendedContent));
   }
 
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText, String showExtendedContent) {
     return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText,
-        controlCodeSubJourney -> renderForm(controlCodeSubJourney, showExtendedContent));
+        controlCodeSubJourney -> renderFormInternal(controlCodeSubJourney, showExtendedContent));
   }
 
-  private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney) {
+  public CompletionStage<Result> handleSubmit() {
+    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
+  }
+
+  private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<NotApplicableForm> form = formFactory.form(NotApplicableForm.class).bindFromRequest();
     if (!form.hasErrors()) {
       String action = form.get().action;
@@ -263,24 +268,20 @@ public class NotApplicableController {
     }
   }
 
-  public CompletionStage<Result> handleSearchSubmit() {
-    return handleSubmit(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
-  }
-
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public static class NotApplicableForm {

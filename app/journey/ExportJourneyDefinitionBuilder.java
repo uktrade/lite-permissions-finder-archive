@@ -274,10 +274,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
     JourneyStage controlCodeNotApplicable = defineStage("controlCodeNotApplicable", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSearchForm(Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString(), Boolean.FALSE.toString()));
 
     JourneyStage controlCodeNotApplicableExtended = defineStage("controlCodeNotApplicableExtended", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSearchForm(Boolean.TRUE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString(), Boolean.TRUE.toString()));
 
     JourneyStage additionalSpecifications = defineStage("additionalSpecifications", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
