@@ -35,10 +35,10 @@ public class CatchallControlsServiceClient {
     }
     String url;
     if (softTechCategory.isDualUseSoftTechCategory()) {
-      url = webServiceUrl + "/" + goodsType.toUrlString() +  "/dual-use";
+      url = webServiceUrl + "/" + goodsType.urlString() +  "/dual-use";
     }
     else {
-      url = webServiceUrl + "/" + goodsType.toUrlString() +  "/military";
+      url = webServiceUrl + "/" + goodsType.urlString() +  "/military";
     }
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)

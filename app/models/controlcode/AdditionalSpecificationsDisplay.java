@@ -54,28 +54,28 @@ public class AdditionalSpecificationsDisplay {
       this.formAction = routes.AdditionalSpecificationsController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-      this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
-      this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

@@ -33,7 +33,7 @@ public class RelatedControlsServiceClient {
     if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
       throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\"", goodsType.toString()));
     }
-    String url = webServiceUrl + "/" + goodsType.toUrlString() +  "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode);
+    String url = webServiceUrl + "/" + goodsType.urlString() +  "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode);
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)

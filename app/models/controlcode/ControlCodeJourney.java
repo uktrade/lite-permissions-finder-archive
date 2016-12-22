@@ -6,24 +6,41 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public enum ControlCodeJourney {
-  PHYSICAL_GOODS_SEARCH("physicalGoodsSearch"),
-  PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE("physicalGoodsSearchRelatedToSoftware"),
-  PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY("physicalGoodsSearchRelatedToTechnology"),
-  SOFTWARE_CONTROLS("softwareControls"),
-  SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD("softwareControlsRelatedToPhysicalGood"),
-  SOFTWARE_CATCHALL_CONTROLS("softwareCatchallControls"),
-  TECHNOLOGY_CONTROLS("technologyControls"),
-  TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD("technologyControlsRelatedToPhysicalGood"),
-  TECHNOLOGY_CATCHALL_CONTROLS("technologyCatchallControls");
+  PHYSICAL_GOODS_SEARCH(ControlCodeVariant.SEARCH, GoodsType.PHYSICAL),
+  PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE(ControlCodeVariant.SEARCH, GoodsType.SOFTWARE),
+  PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY(ControlCodeVariant.SEARCH, GoodsType.TECHNOLOGY),
+  SOFTWARE_CONTROLS(ControlCodeVariant.CONTROLS, GoodsType.SOFTWARE),
+  SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, GoodsType.SOFTWARE),
+  SOFTWARE_CATCHALL_CONTROLS(ControlCodeVariant.CATCHALL_CONTROLS, GoodsType.SOFTWARE),
+  TECHNOLOGY_CONTROLS(ControlCodeVariant.CONTROLS, GoodsType.TECHNOLOGY),
+  TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, GoodsType.TECHNOLOGY),
+  TECHNOLOGY_CATCHALL_CONTROLS(ControlCodeVariant.CATCHALL_CONTROLS, GoodsType.SOFTWARE);
 
-  private String value;
+  private final ControlCodeVariant controlCodeVariant;
+  private final GoodsType goodsType;
+  private final String value;
 
-  ControlCodeJourney(String value) {
-    this.value = value;
+  ControlCodeJourney(ControlCodeVariant controlCodeVariant, GoodsType goodsType) {
+    this.controlCodeVariant = controlCodeVariant;
+    this.goodsType = goodsType;
+    this.value = controlCodeVariant.urlString() + ":" + goodsType.urlString();
   }
 
   public String value() {
     return this.value;
+  }
+
+  public static Optional<ControlCodeJourney> getMatched(String controlCodeVariantText, String goodsTypeText) {
+    Optional<ControlCodeVariant> controlCodeVariantOptional = ControlCodeVariant.getMatchedByUrlString(controlCodeVariantText);
+    Optional<GoodsType> goodsTypeOptional =  GoodsType.getMatchedByUrlString(goodsTypeText);
+    if (controlCodeVariantOptional.isPresent() && goodsTypeOptional.isPresent()) {
+      return EnumSet.allOf(ControlCodeJourney.class).stream()
+          .filter(e -> e.controlCodeVariant == controlCodeVariantOptional.get() && e.goodsType == goodsTypeOptional.get())
+          .findFirst();
+    }
+    else {
+      return Optional.empty();
+    }
   }
 
   public static Optional<ControlCodeJourney> getMatched(String controlCodeJourney) {

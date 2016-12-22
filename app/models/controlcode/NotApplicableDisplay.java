@@ -31,11 +31,11 @@ public class NotApplicableDisplay {
       this.canPickAgain = true;
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
       this.canPickAgain = true;
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.canPickAgain = true;
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS ||
@@ -47,23 +47,23 @@ public class NotApplicableDisplay {
       // Software
       if (applicableSoftTechControls != null) {
         if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-          this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+          this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
         }
         else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
-          this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+          this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
         }
         else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-          this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+          this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
         }
         else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-          this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+          this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
         }
         else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
         }
         else {
           // ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS
-          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
         }
 
         if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {

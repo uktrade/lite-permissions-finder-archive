@@ -37,28 +37,28 @@ public class TechnicalNotesDisplay {
       this.formAction = routes.TechnicalNotesController.handleSearchSubmit().url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
-      this.formAction = routes.TechnicalNotesController.handleControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.TechnicalNotesController.handleControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
-      this.formAction = routes.TechnicalNotesController.handleControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.TechnicalNotesController.handleControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.TechnicalNotesController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.TechnicalNotesController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.TechnicalNotesController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.TechnicalNotesController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.TechnicalNotesController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.TechnicalNotesController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
     else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      this.formAction = routes.TechnicalNotesController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.TechnicalNotesController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""

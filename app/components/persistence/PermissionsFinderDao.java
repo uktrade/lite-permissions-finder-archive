@@ -206,7 +206,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public Optional<GoodsType> getGoodsType() {
-    return GoodsType.getMatched(readString(GOODS_TYPE));
+    return GoodsType.getMatchedByValue(readString(GOODS_TYPE));
   }
 
   public void clearGoodsType() {
@@ -377,11 +377,11 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public void saveRelatedToEquipmentOrMaterials(GoodsType goodsType, Boolean relatedToEquipmentOrMaterials) {
-    writeString(prependFieldName(goodsType.toUrlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS), relatedToEquipmentOrMaterials.toString());
+    writeString(prependFieldName(goodsType.urlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS), relatedToEquipmentOrMaterials.toString());
   }
 
   public Optional<Boolean> getRelatedToEquipmentOrMaterials(GoodsType goodsType) {
-    return readBoolean(prependFieldName(goodsType.toUrlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS));
+    return readBoolean(prependFieldName(goodsType.urlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS));
   }
 
   public String prependFieldName(ControlCodeJourney controlCodeJourney, String fieldName) {
@@ -389,7 +389,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public String prependFieldName(GoodsType goodsType, String fieldName) {
-    return prependFieldName(goodsType.toUrlString(), fieldName);
+    return prependFieldName(goodsType.urlString(), fieldName);
   }
 
   public String prependFieldName(String prefix, String fieldName) {

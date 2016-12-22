@@ -9,11 +9,11 @@ public class DualUseSoftTechCategoriesDisplay {
 
   public DualUseSoftTechCategoriesDisplay(GoodsType goodsType) {
     if (goodsType == GoodsType.SOFTWARE) {
-      this.formAction = routes.DualUseSoftTechCategoriesController.handleSubmit(goodsType.toUrlString()).url();
+      this.formAction = routes.DualUseSoftTechCategoriesController.handleSubmit(goodsType.urlString()).url();
       this.pageTitle = "What is your software for?";
     }
     else if (goodsType == GoodsType.TECHNOLOGY) {
-      this.formAction = routes.DualUseSoftTechCategoriesController.handleSubmit(goodsType.toUrlString()).url();
+      this.formAction = routes.DualUseSoftTechCategoriesController.handleSubmit(goodsType.urlString()).url();
       this.pageTitle = "What is your technology for?";
     }
     else {

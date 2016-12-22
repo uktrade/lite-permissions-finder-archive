@@ -48,7 +48,7 @@ public class GoodsTypeController extends Controller {
     }
 
     String goodsTypeParam = form.get().goodsType;
-    Optional<GoodsType> goodsTypeOptional = GoodsType.getMatched(goodsTypeParam);
+    Optional<GoodsType> goodsTypeOptional = GoodsType.getMatchedByValue(goodsTypeParam);
 
     if(goodsTypeOptional.isPresent()) {
       permissionsFinderDao.saveGoodsType(goodsTypeOptional.get());

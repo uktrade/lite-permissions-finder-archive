@@ -63,7 +63,7 @@ public class AjaxSearchResultsController {
       transactionManager.setTransaction(transactionId);
     }
 
-    Optional<GoodsType> goodsTypeOptional = GoodsType.getMatched(goodsType);
+    Optional<GoodsType> goodsTypeOptional = GoodsType.getMatchedByValue(goodsType);
     Optional<ControlCodeJourney> controlCodeJourneyOptional = ControlCodeJourney.getMatched(controlCodeJourney);
 
     if (goodsTypeOptional.isPresent() && controlCodeJourneyOptional.isPresent()) {

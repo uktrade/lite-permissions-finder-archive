@@ -35,9 +35,9 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-GET     /control-code                         controllers.controlcode.ControlCodeController.renderSearchForm
+GET     /export/control-code/:controlCodeVariant/:goodsType     controllers.controlcode.ControlCodeController.renderForm(controlCodeVariant, goodsType)
 
-POST    /control-code                         controllers.controlcode.ControlCodeController.handleSearchSubmit
+POST    /export/control-code                                    controllers.controlcode.ControlCodeController.handleSubmit
 
 GET     /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSearchForm
 

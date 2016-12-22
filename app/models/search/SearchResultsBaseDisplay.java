@@ -35,13 +35,13 @@ public class SearchResultsBaseDisplay {
       pageTitleWithoutMatches = "Your search did not return any results";
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.toUrlString()).url();
+      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
       this.preResultsLabel = "Select the closest match to the item your software is used with";
       pageTitleWithMatches = "Item related to your software";
       pageTitleWithoutMatches = "Your search did not return any results";
     }
     else if (controlCodeJourney== ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.toUrlString()).url();
+      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.preResultsLabel = "Select the closest match to the item your technology is used with";
       pageTitleWithMatches = "Item related to your technology";
       pageTitleWithoutMatches = "Your search did not return any results";
