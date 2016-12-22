@@ -107,19 +107,19 @@ public class SoftTechControlsController {
     else if (StringUtils.isNotEmpty(controlCode)) {
       // Setup DAO state based on view variant
       if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS, controlCode);
       }
       else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS, controlCode);
       }
       else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
       }
       else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
       }
       else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS, controlCode);
       }
       else {
         throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""

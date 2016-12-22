@@ -76,11 +76,11 @@ public class SoftTechJourneyHelper {
             if (saveToDao) {
               ControlCode controlCode = result.controlCodes.get(0);
               if (goodsType == GoodsType.SOFTWARE) {
-                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(
                     models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
               }
               else { // GoodsType.TECHNOLOGY
-                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(
                     models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS, controlCode.controlCode);
               }
             }
@@ -106,7 +106,7 @@ public class SoftTechJourneyHelper {
             // Saving to the DAO here prevents a separate call to the CategoryControlsServiceClient, if not a little hacky
             if (saveToDao) {
               ControlCode mappedControlCode = result.controlCodes.get(0);
-              permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+              permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(
                   models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, mappedControlCode.controlCode);
             }
             return ApplicableSoftTechControls.ONE;
@@ -132,11 +132,11 @@ public class SoftTechJourneyHelper {
             if (saveToDao) {
               ControlCode catchallControlCode = result.controlCodes.get(0);
               if (goodsType == GoodsType.SOFTWARE) {
-                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(
                     ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
               }
               else { // GoodsType.TECHNOLOGY
-                permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+                permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(
                     models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS, catchallControlCode.controlCode);
               }
             }

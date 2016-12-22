@@ -9,7 +9,7 @@ import components.services.controlcode.FrontendServiceClient;
 import components.services.search.SearchServiceClient;
 import components.services.search.SearchServiceResult;
 import controllers.ErrorController;
-import controllers.controlcode.ControlCodeController;
+import controllers.controlcode.ControlCodeSummaryController;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
@@ -37,12 +37,12 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
                                               FormFactory formFactory,
                                               SearchServiceClient searchServiceClient,
                                               FrontendServiceClient frontendServiceClient,
-                                              ControlCodeController controlCodeController,
+                                              ControlCodeSummaryController controlCodeSummaryController,
                                               ErrorController errorController,
                                               HttpExecutionContext httpExecutionContext,
                                               PermissionsFinderDao permissionsFinderDao,
                                               SoftTechJourneyHelper softTechJourneyHelper) {
-    super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeController, errorController);
+    super(journeyManager, formFactory, searchServiceClient, frontendServiceClient, controlCodeSummaryController, errorController);
     this.httpExecutionContext = httpExecutionContext;
     this.permissionsFinderDao = permissionsFinderDao;
     this.softTechJourneyHelper = softTechJourneyHelper;
@@ -117,7 +117,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
-      permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(controlCodeSubJourney, result.get());
+      permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, result.get());
       permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, displayCount);
       permissionsFinderDao.savePhysicalGoodSearchLastChosenControlCode(controlCodeSubJourney, result.get());
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);

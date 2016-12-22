@@ -9,10 +9,9 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.SubJourneyContextParamProvider;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.ControlCodeFlowStage;
-import models.controlcode.ControlCodeDisplay;
+import models.controlcode.ControlCodeSummaryDisplay;
 import models.controlcode.ControlCodeSubJourney;
 import play.data.Form;
 import play.data.FormFactory;
@@ -20,13 +19,13 @@ import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.controlcode.controlCode;
+import views.html.controlcode.controlCodeSummary;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
-public class ControlCodeController extends Controller {
+public class ControlCodeSummaryController extends Controller {
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
@@ -34,23 +33,20 @@ public class ControlCodeController extends Controller {
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
   private final ControlCodeSubJourneyHelper controlCodeSubJourneyHelper;
-  private final SubJourneyContextParamProvider subJourneyContextParamProvider;
 
   @Inject
-  public ControlCodeController(JourneyManager journeyManager,
-                               FormFactory formFactory,
-                               PermissionsFinderDao permissionsFinderDao,
-                               HttpExecutionContext httpExecutionContext,
-                               FrontendServiceClient frontendServiceClient,
-                               ControlCodeSubJourneyHelper controlCodeSubJourneyHelper,
-                               SubJourneyContextParamProvider subJourneyContextParamProvider) {
+  public ControlCodeSummaryController(JourneyManager journeyManager,
+                                      FormFactory formFactory,
+                                      PermissionsFinderDao permissionsFinderDao,
+                                      HttpExecutionContext httpExecutionContext,
+                                      FrontendServiceClient frontendServiceClient,
+                                      ControlCodeSubJourneyHelper controlCodeSubJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
     this.controlCodeSubJourneyHelper = controlCodeSubJourneyHelper;
-    this.subJourneyContextParamProvider = subJourneyContextParamProvider;
   }
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
@@ -63,8 +59,8 @@ public class ControlCodeController extends Controller {
     templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
         .thenApplyAsync(frontendServiceResult ->
-            ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
-                new ControlCodeDisplay(controlCodeSubJourney, frontendServiceResult)))
+            ok(controlCodeSummary.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
+                new ControlCodeSummaryDisplay(controlCodeSubJourney, frontendServiceResult)))
         , httpExecutionContext.current());
   }
 
@@ -117,7 +113,7 @@ public class ControlCodeController extends Controller {
           }
 
           if (form.hasErrors()) {
-            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeSubJourney, frontendServiceResult))));
+            return completedFuture(ok(controlCodeSummary.render(form, new ControlCodeSummaryDisplay(controlCodeSubJourney, frontendServiceResult))));
           }
 
           String couldDescribeItems = form.get().couldDescribeItems;

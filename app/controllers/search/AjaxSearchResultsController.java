@@ -53,7 +53,7 @@ public class AjaxSearchResultsController {
    * @param transactionId the transaction ID
    * @return a Result with JSON content of the additional results to show
    */
-  public CompletionStage<Result> getResults(String controlCodeJourney, String goodsType, int fromIndex, int toIndex, String transactionId) {
+  public CompletionStage<Result> getResults(String controlCodeSubJourney, String goodsType, int fromIndex, int toIndex, String transactionId) {
 
     if (transactionId == null || transactionId.isEmpty()) {
       return completedFuture(ok(buildErrorJsonAndLog(
@@ -64,12 +64,12 @@ public class AjaxSearchResultsController {
     }
 
     Optional<GoodsType> goodsTypeOptional = GoodsType.getMatchedByValue(goodsType);
-    Optional<ControlCodeSubJourney> controlCodeJourneyOptional = models.controlcode.ControlCodeSubJourney.getMatched(controlCodeJourney);
+    Optional<ControlCodeSubJourney> controlCodeSubJourneyOptional = models.controlcode.ControlCodeSubJourney.getMatched(controlCodeSubJourney);
 
-    if (goodsTypeOptional.isPresent() && controlCodeJourneyOptional.isPresent()) {
+    if (goodsTypeOptional.isPresent() && controlCodeSubJourneyOptional.isPresent()) {
       if (goodsTypeOptional.get() == GoodsType.PHYSICAL) {
         Optional<SearchController.ControlCodeSearchForm> optionalForm =
-            permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeJourneyOptional.get());
+            permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourneyOptional.get());
         if (optionalForm.isPresent()) {
           return searchServiceClient.get(SearchController.getSearchTerms(optionalForm.get()))
               .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, fromIndex, toIndex))
@@ -88,7 +88,7 @@ public class AjaxSearchResultsController {
         return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for goodsType %s", goodsType))));
       }
       else {
-        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for controlCodeSubJourney %s", controlCodeJourney))));
+        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for controlCodeSubJourney %s", controlCodeSubJourney))));
       }
     }
 

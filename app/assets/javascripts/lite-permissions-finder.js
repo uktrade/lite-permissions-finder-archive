@@ -132,10 +132,10 @@ LITEPermissionsFinder.SearchResults = {
   _fetchResults: function(fromIndex, toIndex) {
     var transactionId = $("input[type=hidden][name=ctx_transaction]").val();
     var goodsType = LITEPermissionsFinder.SearchResults._goodsTypeHiddenInput().val();
-    var controlCodeJourney = LITEPermissionsFinder.SearchResults._controlCodeJourneyHiddenInput().val();
+    var controlCodeSubJourney = LITEPermissionsFinder.SearchResults._controlCodeSubJourneyHiddenInput().val();
     var showMoreResultsButton = LITEPermissionsFinder.SearchResults._showMoreResultsButton();
     var resultsDisplayCountHiddenInput = LITEPermissionsFinder.SearchResults._resultsDisplayCountHiddenInput();
-    var route = jsRoutes.controllers.search.AjaxSearchResultsController.getResults(controlCodeJourney, goodsType, fromIndex, toIndex, transactionId);
+    var route = jsRoutes.controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney, goodsType, fromIndex, toIndex, transactionId);
     $.ajax({
       url: route.url,
       type: route.type,
@@ -176,8 +176,8 @@ LITEPermissionsFinder.SearchResults = {
   _resultsDisplayCountHiddenInput: function() {
     return $("#resultsDisplayCountHiddenInput");
   },
-  _controlCodeJourneyHiddenInput: function() {
-    return $("#controlCodeJourneyHiddenInput");
+  _controlCodeSubJourneyHiddenInput: function() {
+    return $("#controlCodeSubJourneyHiddenInput");
   },
   _goodsTypeHiddenInput: function() {
     return $("#goodsTypeHiddenInput");

@@ -1,10 +1,10 @@
+@import models.controlcode.ControlCodeSummaryDisplay
 @import util._
 @import views.html.common.form._
 @import views.html.common.page._
 @import views.html.common.state._
-@import models.controlcode.ControlCodeDisplay
 
-@(form: Form[_], display: ControlCodeDisplay)
+@(form: Form[_], display: ControlCodeSummaryDisplay)
 @standardPage(display.title, Some(Html(display.title)), twoThirdsColumn = false){
   @errorSummary(form)
 }{

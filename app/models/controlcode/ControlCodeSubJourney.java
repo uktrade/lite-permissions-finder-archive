@@ -43,8 +43,8 @@ public enum ControlCodeSubJourney {
     }
   }
 
-  public static Optional<ControlCodeSubJourney> getMatched(String controlCodeJourney) {
-    return EnumSet.allOf(ControlCodeSubJourney.class).stream().filter(e -> e.value().equals(controlCodeJourney)).findFirst();
+  public static Optional<ControlCodeSubJourney> getMatched(String controlCodeSubJourney) {
+    return EnumSet.allOf(ControlCodeSubJourney.class).stream().filter(e -> e.value().equals(controlCodeSubJourney)).findFirst();
   }
 
   public static boolean isPhysicalGoodsSearchVariant(ControlCodeSubJourney controlCodeSubJourney) {

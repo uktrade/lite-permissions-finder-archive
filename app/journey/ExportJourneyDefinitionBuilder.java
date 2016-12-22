@@ -50,11 +50,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage physicalGoodsSearchRelatedToSoftware = defineStage("physicalGoodsSearchRelatedToSoftware", "Describe your items",
       controllers.search.routes.PhysicalGoodsSearchController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
   private final JourneyStage controlCodeForSoftwareControls = defineStage("controlCodeSoftwareControls", "Summary",
-      controllers.controlcode.routes.ControlCodeController.renderControlsForm(GoodsType.SOFTWARE.urlString()));
+      controllers.controlcode.routes.ControlCodeSummaryController.renderControlsForm(GoodsType.SOFTWARE.urlString()));
   private final JourneyStage controlCodeForRelatedSoftwareControls = defineStage("controlCodeForRelatedSoftwareControls", "Summary",
-      controllers.controlcode.routes.ControlCodeController.renderRelatedControlsForm(GoodsType.SOFTWARE.urlString()));
+      controllers.controlcode.routes.ControlCodeSummaryController.renderRelatedControlsForm(GoodsType.SOFTWARE.urlString()));
   private final JourneyStage controlCodeSoftwareCatchallControls = defineStage("controlCodeSoftwareCatchallControls", "Summary",
-      controllers.controlcode.routes.ControlCodeController.renderCatchallControlsForm(GoodsType.SOFTWARE.urlString()));
+      controllers.controlcode.routes.ControlCodeSummaryController.renderCatchallControlsForm(GoodsType.SOFTWARE.urlString()));
   private final JourneyStage softwareCategoryControls = defineStage("softwareCategoryControls", "Showing controls related to software category",
       controllers.softtech.controls.routes.SoftTechControlsController.renderCategoryForm(GoodsType.SOFTWARE.urlString()));
   private final JourneyStage softwareRelatedToPhysicalGoodControls = defineStage("softwareRelatedToPhysicalGoodControls", "Showing controls related to your selected physical good",
@@ -271,7 +271,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.search.routes.PhysicalGoodsSearchResultsController.renderSearchForm());
 
     JourneyStage controlCode = defineStage("controlCode", "Summary",
-        controllers.controlcode.routes.ControlCodeController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
     JourneyStage controlCodeNotApplicable = defineStage("controlCodeNotApplicable", "Rating is not applicable",
         controllers.controlcode.routes.NotApplicableController.renderSearchForm(Boolean.FALSE.toString()));
@@ -533,9 +533,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     JourneyStage physicalGoodsSearchResultsRelatedToSoftware = defineStage("physicalGoodsSearchResultsRelatedToSoftware", "Possible matches",
         controllers.search.routes.PhysicalGoodsSearchResultsController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
-
     JourneyStage controlCodeforRelatedToSoftware = defineStage("controlCodeRelatedToSoftware", "Summary",
-        controllers.controlcode.routes.ControlCodeController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.ControlCodeSummaryController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
 
     JourneyStage controlCodeNotApplicableRelatedToSoftware = defineStage("controlCodeNotApplicableRelatedToSoftware", "Description not applicable",
         controllers.controlcode.routes.NotApplicableController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));

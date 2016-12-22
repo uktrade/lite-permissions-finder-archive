@@ -44,7 +44,7 @@ public class RadioactiveController {
     if (RadioactiveStage.CRS_SELECTED.name().equals(form.get().action)) {
       // Setup DAO state for Destination Country journey stage.
       permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
-      permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
+      permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(
           ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH, CONTROLLED_RADIOACTIVE_SOURCES);
       return journeyManager.performTransition(Events.RADIOACTIVE_NEXT, RadioactiveStage.CRS_SELECTED);
     } else if(RadioactiveStage.CONTINUE.name().equals(form.get().action)) {

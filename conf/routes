@@ -35,9 +35,9 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-GET     /export/control-code/:controlCodeVariant/:goodsType     controllers.controlcode.ControlCodeController.renderForm(controlCodeVariant, goodsType)
+GET     /export/control-code/:controlCodeVariant/:goodsType     controllers.controlcode.ControlCodeSummaryController.renderForm(controlCodeVariant, goodsType)
 
-POST    /export/control-code                                    controllers.controlcode.ControlCodeController.handleSubmit
+POST    /export/control-code                                    controllers.controlcode.ControlCodeSummaryController.handleSubmit
 
 GET     /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSearchForm
 
@@ -55,9 +55,9 @@ GET     /control-code/technical-notes         controllers.controlcode.TechnicalN
 
 POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSearchSubmit
 
-GET     /related-control-code/:goodsType                              controllers.controlcode.ControlCodeController.renderSearchRelatedToForm(goodsType)
+GET     /related-control-code/:goodsType                              controllers.controlcode.ControlCodeSummaryController.renderSearchRelatedToForm(goodsType)
 
-POST    /related-control-code/:goodsType                              controllers.controlcode.ControlCodeController.handleSearchRelatedToSubmit(goodsType)
+POST    /related-control-code/:goodsType                              controllers.controlcode.ControlCodeSummaryController.handleSearchRelatedToSubmit(goodsType)
 
 GET     /related-control-code/:goodsType/additional-specifications    controllers.controlcode.AdditionalSpecificationsController.renderSearchRelatedToForm(goodsType)
 
@@ -243,9 +243,9 @@ POST    /select-trade-type                    controllers.TradeTypeController.ha
 
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 
-GET     /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeController.renderCatchallControlsForm(goodsType)
+GET     /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeSummaryController.renderCatchallControlsForm(goodsType)
 
-POST    /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeController.handleCatchallControlsSubmit(goodsType)
+POST    /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeSummaryController.handleCatchallControlsSubmit(goodsType)
 
 GET     /category-catchall-controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderCatchallControlsForm(goodsType)
 
@@ -267,9 +267,9 @@ GET     /category-catchall-controls/:goodsType/show-controls               contr
 
 POST    /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCatchallControlsSubmit(goodsType)
 
-GET     /controls/:goodsType                             controllers.controlcode.ControlCodeController.renderControlsForm(goodsType)
+GET     /controls/:goodsType                             controllers.controlcode.ControlCodeSummaryController.renderControlsForm(goodsType)
 
-POST    /controls/:goodsType                             controllers.controlcode.ControlCodeController.handleControlsSubmit(goodsType)
+POST    /controls/:goodsType                             controllers.controlcode.ControlCodeSummaryController.handleControlsSubmit(goodsType)
 
 GET     /controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderControlsForm(goodsType)
 
@@ -291,9 +291,9 @@ GET     /controls/:goodsType/show-controls               controllers.softtech.co
 
 POST    /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCategorySubmit(goodsType)
 
-GET     /controls-related-to-a-physical-good/:goodsType/                            controllers.controlcode.ControlCodeController.renderRelatedControlsForm(goodsType)
+GET     /controls-related-to-a-physical-good/:goodsType/                            controllers.controlcode.ControlCodeSummaryController.renderRelatedControlsForm(goodsType)
 
-POST    /controls-related-to-a-physical-good/:goodsType/                            controllers.controlcode.ControlCodeController.handleRelatedControlsSubmit(goodsType)
+POST    /controls-related-to-a-physical-good/:goodsType/                            controllers.controlcode.ControlCodeSummaryController.handleRelatedControlsSubmit(goodsType)
 
 GET     /controls-related-to-a-physical-good/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderRelatedControlsForm(goodsType)
 

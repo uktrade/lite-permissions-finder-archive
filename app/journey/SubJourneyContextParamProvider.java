@@ -22,8 +22,8 @@ public class SubJourneyContextParamProvider extends ContextParamProvider {
     updateParamValueOnContext(controlCodeSubJourney.value());
   }
 
-  private ControlCodeSubJourney getSubJourneyOrElseNull(String controlCodeJourney) {
-    return ControlCodeSubJourney.getMatched(controlCodeJourney).orElse(null);
+  private ControlCodeSubJourney getSubJourneyOrElseNull(String controlCodeSubJourney) {
+    return ControlCodeSubJourney.getMatched(controlCodeSubJourney).orElse(null);
   }
 
 }

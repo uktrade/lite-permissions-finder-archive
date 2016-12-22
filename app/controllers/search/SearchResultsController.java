@@ -2,7 +2,7 @@ package controllers.search;
 
 import components.common.journey.JourneyManager;
 import components.services.search.SearchServiceClient;
-import controllers.controlcode.ControlCodeController;
+import controllers.controlcode.ControlCodeSummaryController;
 import controllers.ErrorController;
 import components.services.controlcode.FrontendServiceClient;
 import play.data.Form;
@@ -18,7 +18,7 @@ public class SearchResultsController {
   private final FormFactory formFactory;
   protected final SearchServiceClient searchServiceClient;
   protected final FrontendServiceClient frontendServiceClient;
-  protected final ControlCodeController controlCodeController;
+  protected final ControlCodeSummaryController controlCodeSummaryController;
   protected final ErrorController errorController;
 
 
@@ -26,13 +26,13 @@ public class SearchResultsController {
                                  FormFactory formFactory,
                                  SearchServiceClient searchServiceClient,
                                  FrontendServiceClient frontendServiceClient,
-                                 ControlCodeController controlCodeController,
+                                 ControlCodeSummaryController controlCodeSummaryController,
                                  ErrorController errorController) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.searchServiceClient = searchServiceClient;
     this.frontendServiceClient = frontendServiceClient;
-    this.controlCodeController = controlCodeController;
+    this.controlCodeSummaryController = controlCodeSummaryController;
     this.errorController = errorController;
   }
 
@@ -82,7 +82,7 @@ public class SearchResultsController {
 
     public String action;
 
-    public String controlCodeJourney;
+    public String controlCodeSubJourney;
 
     public String goodsType;
 
