@@ -95,7 +95,7 @@ public class ControlCodeSubJourneyHelper {
         models.controlcode.ControlCodeSubJourney.isSoftTechControlsVariant(controlCodeSubJourney) ||
         models.controlcode.ControlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeSubJourney) ||
         models.controlcode.ControlCodeSubJourney.isSoftTechCatchallControlsVariant(controlCodeSubJourney)) {
-      permissionsFinderDao.saveConfirmedControlCode(controlCode);
+//      permissionsFinderDao.saveConfirmedControlCode(controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.CONFIRMED);
     }
     else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {

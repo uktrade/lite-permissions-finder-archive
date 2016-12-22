@@ -321,20 +321,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 //        //.whenThenDecide(ControlCodeFlowStage.CONFIRMED, additionalSpecsDecision);
 //
 
-
-    //Existing
-
-    atStage(controlCode)
-        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
-        .branch()
-//        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicable))
-//        .when(ControlCodeFlowStage.ADDITIONAL_SPECIFICATIONS, moveTo(additionalSpecifications))
-//        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
-//        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
-//        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries))
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
-        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResults));
-
     //New
 
     DecisionStage<Boolean> decontrolsDecision = defineDecisionStage("hasDecontrols", controlCodeDecider,
@@ -366,6 +352,14 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(additionalSpecsDecision));
 
+    atStage(additionalSpecifications)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtended))
+//        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
+//        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
+        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
+
     atDecisionStage(additionalSpecsDecision)
         .decide()
         .when(true, moveTo(additionalSpecifications))
@@ -379,14 +373,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
 
     //Existing
-
-    atStage(additionalSpecifications)
-        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
-        .branch()
-        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtended))
-//        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
-//        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
 
     atStage(decontrols)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)

@@ -30,7 +30,6 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String JOURNEY = "journey";
   public static final String SOURCE_COUNTRY = "sourceCountry";
   public static final String SELECTED_CONTROL_CODE = "selectedControlCode";
-  public static final String CONFIRMED_CONTROL_CODE = "confirmedControlCode";
   public static final String OGEL_ID = "ogelId";
   public static final String EXPORT_CATEGORY = "exportCategory";
   public static final String APPLICATION_CODE = "applicationCode";
@@ -60,6 +59,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String SOFT_TECH_CATEGORY = "softTechCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
   public static final String SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP = "softwareIsCoveredByTechnologyRelationship";
+  public static final String LAST_STARTED_CONTROL_CODE_SUB_JOURNEY = "lastStartedControlCodeSubJourney";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -67,6 +67,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public void saveSelectedControlCode(ControlCodeSubJourney controlCodeSubJourney, String selectedControlCode) {
+    saveLastStartedControlCodeSubJourney(controlCodeSubJourney);
     writeString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE), selectedControlCode);
   }
 
@@ -74,12 +75,22 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE));
   }
 
-  public void saveConfirmedControlCode(String confirmedControlCode) {
-    writeString(CONFIRMED_CONTROL_CODE, confirmedControlCode);
+  public String getLastSelectedControlCode(){
+    Optional<ControlCodeSubJourney> subJourneyOptional = getLastStartedControlCodeSubJourney();
+    if (subJourneyOptional.isPresent()) {
+      return getSelectedControlCode(subJourneyOptional.get());
+    }
+    else {
+      return null;
+    }
   }
 
-  public String getConfirmedControlCode() {
-    return readString(CONFIRMED_CONTROL_CODE);
+  private void saveLastStartedControlCodeSubJourney(ControlCodeSubJourney lastStartedControlCodeSubJourney) {
+    writeString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY, lastStartedControlCodeSubJourney.value());
+  }
+
+  public Optional<ControlCodeSubJourney> getLastStartedControlCodeSubJourney() {
+    return ControlCodeSubJourney.getMatched(readString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY));
   }
 
   public void saveSourceCountry(String sourceCountry) {

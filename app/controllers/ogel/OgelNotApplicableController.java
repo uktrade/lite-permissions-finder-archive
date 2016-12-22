@@ -62,7 +62,7 @@ public class OgelNotApplicableController {
   public CompletionStage<Result> renderWithForm(Form<OgelNotApplicableForm> form) {
     return ogelServiceClient.get(permissionsFinderDao.getOgelId())
         .thenApplyAsync(ogelResult -> ok(ogelNotApplicable.render(form, new OgelNotApplicableDisplay(ogelResult,
-              permissionsFinderDao.getConfirmedControlCode()))), httpExecutionContext.current());
+              permissionsFinderDao.getLastSelectedControlCode()))), httpExecutionContext.current());
   }
 
   public static class OgelNotApplicableForm {
