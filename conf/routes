@@ -203,7 +203,7 @@ GET     /export-search-results-related-to-physical-goods/:goodsType   controller
 
 POST    /export-search-results-related-to-physical-goods/:goodsType   controllers.search.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeJourney: String, goodsType: String, fromIndex: Int, toIndex: Int, transactionId: String)
+GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney: String, goodsType: String, fromIndex: Int, toIndex: Int, transactionId: String)
 
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 

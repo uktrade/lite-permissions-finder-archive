@@ -10,7 +10,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.helpers.ControlCodeJourneyHelper;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.DecontrolsDisplay;
 import play.data.Form;
 import play.data.FormFactory;
@@ -47,17 +47,17 @@ public class DecontrolsController {
     this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
-  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
-    Optional<Boolean> decontrolsApply = permissionsFinderDao.getControlCodeDecontrolsApply(controlCodeJourney);
+  private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
+    Optional<Boolean> decontrolsApply = permissionsFinderDao.getControlCodeDecontrolsApply(controlCodeSubJourney);
     DecontrolsForm templateForm = new DecontrolsForm();
     templateForm.decontrolsDescribeItem = decontrolsApply.isPresent() ? decontrolsApply.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
         .thenApplyAsync(result -> ok(decontrols.render(formFactory.form(DecontrolsForm.class).fill(templateForm),
-            new DecontrolsDisplay(controlCodeJourney, result))), httpExecutionContext.current());
+            new DecontrolsDisplay(controlCodeSubJourney, result))), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> renderSearchForm() {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    return renderForm(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
@@ -76,27 +76,27 @@ public class DecontrolsController {
     return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
   }
 
-  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney){
+  private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
-    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
+    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
     return frontendServiceClient.get(controlCode)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
-            return completedFuture(ok(decontrols.render(form, new DecontrolsDisplay(controlCodeJourney, result))));
+            return completedFuture(ok(decontrols.render(form, new DecontrolsDisplay(controlCodeSubJourney, result))));
           }
           else {
             String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
             if("true".equals(decontrolsDescribeItem)) {
-              permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeJourney, true);
-              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeJourney);
+              permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeSubJourney, true);
+              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeSubJourney);
             }
             else if ("false".equals(decontrolsDescribeItem)) {
-              permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeJourney, false);
+              permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeSubJourney, false);
               if (result.controlCodeData.canShowTechnicalNotes()) {
                 return journeyManager.performTransition(StandardEvents.NEXT); //journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
               }
               else {
-                return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCode);
+                return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeSubJourney, controlCode);
               }
             }
             else {
@@ -107,7 +107,7 @@ public class DecontrolsController {
   }
 
   public CompletionStage<Result> handleSearchSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    return handleSubmit(ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {

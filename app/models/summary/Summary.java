@@ -11,7 +11,6 @@ import components.services.ogels.ogel.OgelServiceClient;
 import components.services.ogels.ogel.OgelServiceResult;
 import controllers.ogel.OgelQuestionsController;
 import controllers.routes;
-import models.controlcode.ControlCodeJourney;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import utils.CountryUtils;

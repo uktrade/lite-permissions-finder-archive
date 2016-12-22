@@ -22,7 +22,7 @@ public class AdditionalSpecificationsDisplay {
   public final String clauseText;
   public final List<String> specifications;
 
-  public AdditionalSpecificationsDisplay(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
+  public AdditionalSpecificationsDisplay(ControlCodeSubJourney controlCodeSubJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
@@ -50,36 +50,36 @@ public class AdditionalSpecificationsDisplay {
       this.clauseText = null;
       this.specifications = Collections.emptyList();
     }
-    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+    if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
       this.formAction = routes.AdditionalSpecificationsController.handleSearchSubmit().url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
       this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
-          , controlCodeJourney.toString()));
+      throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
+          , controlCodeSubJourney.toString()));
     }
   }
 

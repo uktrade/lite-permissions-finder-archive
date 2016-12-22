@@ -1,7 +1,7 @@
 package journey;
 
 import components.common.state.ContextParamProvider;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 
 public class SubJourneyContextParamProvider extends ContextParamProvider {
 
@@ -10,20 +10,20 @@ public class SubJourneyContextParamProvider extends ContextParamProvider {
     return "ctx_sub_journey";
   }
 
-  public ControlCodeJourney getSubJourneyValueFromRequest() {
+  public ControlCodeSubJourney getSubJourneyValueFromRequest() {
     return getSubJourneyOrElseNull(getParamValueFromRequest());
   }
 
-  public ControlCodeJourney getSubJourneyValueFromContext() {
+  public ControlCodeSubJourney getSubJourneyValueFromContext() {
     return getSubJourneyOrElseNull(getParamValueFromRequest());
   }
 
-  public void updateSubJourneyValueOnContext(ControlCodeJourney controlCodeJourney) {
-    updateParamValueOnContext(controlCodeJourney.value());
+  public void updateSubJourneyValueOnContext(ControlCodeSubJourney controlCodeSubJourney) {
+    updateParamValueOnContext(controlCodeSubJourney.value());
   }
 
-  private ControlCodeJourney getSubJourneyOrElseNull(String controlCodeJourney) {
-    return ControlCodeJourney.getMatched(controlCodeJourney).orElse(null);
+  private ControlCodeSubJourney getSubJourneyOrElseNull(String controlCodeJourney) {
+    return ControlCodeSubJourney.getMatched(controlCodeJourney).orElse(null);
   }
 
 }

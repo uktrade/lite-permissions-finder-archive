@@ -3,9 +3,8 @@
 @import views.html.common.form._
 @import views.html.common.state._
 @import controllers.search.SearchResultsController
-
+@import models.controlcode.ControlCodeSubJourney
 @import models.search.SearchResultsBaseDisplay
-@import models.controlcode.ControlCodeJourney
 @(display: SearchResultsBaseDisplay)
   @standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchResultsBase")) {
     @errorSummary(display.form)
@@ -23,7 +22,7 @@
           </p>
         }
 
-        <input id="controlCodeJourneyHiddenInput" type="hidden" name="controlCodeJourney" value="@display.controlCodeJourney.value">
+        <input id="controlCodeJourneyHiddenInput" type="hidden" name="controlCodeSubJourney" value="@display.controlCodeSubJourney.value">
 
         <input id="goodsTypeHiddenInput" type="hidden" name="goodsType" value="@display.goodsType.value">
 
@@ -62,8 +61,8 @@
 
     } else {
 
-      @if(display.controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
-        display.controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      @if(display.controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
+        display.controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
 
         <p>
           <button type="submit" name="action" value="edit-description" class="link underlined font-small no-matched-result-link">Edit your description</button>, and:

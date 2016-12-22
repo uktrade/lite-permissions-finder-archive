@@ -5,7 +5,7 @@ import components.common.journey.Decider;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceClient;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import play.Logger;
 
 import java.util.Collection;
@@ -32,9 +32,9 @@ public class ControlCodeDecider implements Decider<Collection<ControlCodeDecider
   @Override
   public CompletionStage<Collection<ControlCodeDataType>> decide() {
 
-    ControlCodeJourney controlCodeJourney = subJourneyContextParamProvider.getSubJourneyValueFromContext();
+    ControlCodeSubJourney controlCodeSubJourney = subJourneyContextParamProvider.getSubJourneyValueFromContext();
 
-    String controlCode = dao.getSelectedControlCode(controlCodeJourney);
+    String controlCode = dao.getSelectedControlCode(controlCodeSubJourney);
 
     return client.get(controlCode).thenApply(e -> containsData(e.controlCodeData));
   }

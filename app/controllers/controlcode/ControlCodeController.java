@@ -13,8 +13,7 @@ import journey.SubJourneyContextParamProvider;
 import journey.helpers.ControlCodeJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.ControlCodeDisplay;
-import models.controlcode.ControlCodeJourney;
-import play.Logger;
+import models.controlcode.ControlCodeSubJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -56,24 +55,20 @@ public class ControlCodeController extends Controller {
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    ControlCodeJourney controlCodeJourney = ControlCodeJourney.getMatched(controlCodeVariantText, goodsTypeText).get();
-    subJourneyContextParamProvider.updateSubJourneyValueOnContext(controlCodeJourney);
-    return renderFormInternal(controlCodeJourney);
+    ControlCodeSubJourney controlCodeSubJourney = models.controlcode.ControlCodeSubJourney.getMatched(controlCodeVariantText, goodsTypeText).get();
+    subJourneyContextParamProvider.updateSubJourneyValueOnContext(controlCodeSubJourney);
+    return renderFormInternal(controlCodeSubJourney);
   }
 
-  private CompletionStage<Result> renderFormInternal(ControlCodeJourney controlCodeJourney) {
-    Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies(controlCodeJourney);
+  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
+    Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies(controlCodeSubJourney);
     ControlCodeForm templateForm = new ControlCodeForm();
     templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
-        .thenApplyAsync(frontendServiceResult -> {
-          return ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
-              new ControlCodeDisplay(controlCodeJourney, frontendServiceResult)));
-        }, httpExecutionContext.current());
-  }
-
-  public CompletionStage<Result> renderSearchForm() {
-    return renderFormInternal(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
+        .thenApplyAsync(frontendServiceResult ->
+            ok(controlCode.render(formFactory.form(ControlCodeForm.class).fill(templateForm),
+                new ControlCodeDisplay(controlCodeSubJourney, frontendServiceResult)))
+        , httpExecutionContext.current());
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm (String goodsTypeText) {
@@ -93,50 +88,50 @@ public class ControlCodeController extends Controller {
   }
 
   public CompletionStage<Result> handleSubmit() {
-    ControlCodeJourney controlCodeJourney = subJourneyContextParamProvider.getSubJourneyValueFromRequest();
-    return handleSubmitInternal(controlCodeJourney);
+    ControlCodeSubJourney controlCodeSubJourney = subJourneyContextParamProvider.getSubJourneyValueFromRequest();
+    return handleSubmitInternal(controlCodeSubJourney);
   }
 
-  private CompletionStage<Result> handleSubmitInternal(ControlCodeJourney controlCodeJourney) {
+  private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<ControlCodeForm> form = formFactory.form(ControlCodeForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
+    String code = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
     return frontendServiceClient.get(code)
         .thenApplyAsync(frontendServiceResult -> {
           // Outside of form binding to preserve @Required validation for couldDescribeItems
           String action = form.field("action").value();
           if (action != null && !action.isEmpty()) {
-            if ("backToSearch".equals(action) && ControlCodeJourney.isPhysicalGoodsSearchVariant(controlCodeJourney)) {
+            if ("backToSearch".equals(action) && models.controlcode.ControlCodeSubJourney.isPhysicalGoodsSearchVariant(controlCodeSubJourney)) {
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
             }
-            else if ("backToResults".equals(action) && ControlCodeJourney.isPhysicalGoodsSearchVariant(controlCodeJourney)) {
+            else if ("backToResults".equals(action) && models.controlcode.ControlCodeSubJourney.isPhysicalGoodsSearchVariant(controlCodeSubJourney)) {
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_RESULTS);
             }
-            else if ("backToMatches".equals(action) && (ControlCodeJourney.isSoftTechControlsVariant(controlCodeJourney)
-                || ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeJourney)
-                || ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney))) {
+            else if ("backToMatches".equals(action) && (models.controlcode.ControlCodeSubJourney.isSoftTechControlsVariant(controlCodeSubJourney)
+                || models.controlcode.ControlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeSubJourney)
+                || models.controlcode.ControlCodeSubJourney.isSoftTechCatchallControlsVariant(controlCodeSubJourney))) {
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_MATCHES);
             }
-            else if ("backToCategory".equals(action) && ControlCodeJourney.isSoftTechCatchallControlsVariant(controlCodeJourney)) {
+            else if ("backToCategory".equals(action) && models.controlcode.ControlCodeSubJourney.isSoftTechCatchallControlsVariant(controlCodeSubJourney)) {
               return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_CATEGORY);
             }
             else {
               throw new FormStateException(String.format("Invalid combination of action: \"%s\" and " +
-                  "controlCodeJourney: \"%s\"", action, controlCodeJourney.toString()));
+                  "controlCodeSubJourney: \"%s\"", action, controlCodeSubJourney.toString()));
             }
           }
 
           if (form.hasErrors()) {
-            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeJourney, frontendServiceResult))));
+            return completedFuture(ok(controlCode.render(form, new ControlCodeDisplay(controlCodeSubJourney, frontendServiceResult))));
           }
 
           String couldDescribeItems = form.get().couldDescribeItems;
           if("true".equals(couldDescribeItems)) {
-            permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, true);
+            permissionsFinderDao.saveControlCodeApplies(controlCodeSubJourney, true);
             return journeyManager.performTransition(StandardEvents.NEXT);
           }
           else if ("false".equals(couldDescribeItems)) {
-            permissionsFinderDao.saveControlCodeApplies(controlCodeJourney, false);
-            return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeJourney);
+            permissionsFinderDao.saveControlCodeApplies(controlCodeSubJourney, false);
+            return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeSubJourney);
           }
           else {
             throw new FormStateException("Unhandled form state");

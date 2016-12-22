@@ -5,7 +5,7 @@ import models.GoodsType;
 import java.util.EnumSet;
 import java.util.Optional;
 
-public enum ControlCodeJourney {
+public enum ControlCodeSubJourney {
   PHYSICAL_GOODS_SEARCH(ControlCodeVariant.SEARCH, GoodsType.PHYSICAL),
   PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE(ControlCodeVariant.SEARCH, GoodsType.SOFTWARE),
   PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY(ControlCodeVariant.SEARCH, GoodsType.TECHNOLOGY),
@@ -20,7 +20,7 @@ public enum ControlCodeJourney {
   private final GoodsType goodsType;
   private final String value;
 
-  ControlCodeJourney(ControlCodeVariant controlCodeVariant, GoodsType goodsType) {
+  ControlCodeSubJourney(ControlCodeVariant controlCodeVariant, GoodsType goodsType) {
     this.controlCodeVariant = controlCodeVariant;
     this.goodsType = goodsType;
     this.value = controlCodeVariant.urlString() + ":" + goodsType.urlString();
@@ -30,11 +30,11 @@ public enum ControlCodeJourney {
     return this.value;
   }
 
-  public static Optional<ControlCodeJourney> getMatched(String controlCodeVariantText, String goodsTypeText) {
+  public static Optional<ControlCodeSubJourney> getMatched(String controlCodeVariantText, String goodsTypeText) {
     Optional<ControlCodeVariant> controlCodeVariantOptional = ControlCodeVariant.getMatchedByUrlString(controlCodeVariantText);
     Optional<GoodsType> goodsTypeOptional =  GoodsType.getMatchedByUrlString(goodsTypeText);
     if (controlCodeVariantOptional.isPresent() && goodsTypeOptional.isPresent()) {
-      return EnumSet.allOf(ControlCodeJourney.class).stream()
+      return EnumSet.allOf(ControlCodeSubJourney.class).stream()
           .filter(e -> e.controlCodeVariant == controlCodeVariantOptional.get() && e.goodsType == goodsTypeOptional.get())
           .findFirst();
     }
@@ -43,38 +43,38 @@ public enum ControlCodeJourney {
     }
   }
 
-  public static Optional<ControlCodeJourney> getMatched(String controlCodeJourney) {
-    return EnumSet.allOf(ControlCodeJourney.class).stream().filter(e -> e.value().equals(controlCodeJourney)).findFirst();
+  public static Optional<ControlCodeSubJourney> getMatched(String controlCodeJourney) {
+    return EnumSet.allOf(ControlCodeSubJourney.class).stream().filter(e -> e.value().equals(controlCodeJourney)).findFirst();
   }
 
-  public static boolean isPhysicalGoodsSearchVariant(ControlCodeJourney controlCodeJourney) {
-    return controlCodeJourney == PHYSICAL_GOODS_SEARCH ||
-        controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
-        controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
+  public static boolean isPhysicalGoodsSearchVariant(ControlCodeSubJourney controlCodeSubJourney) {
+    return controlCodeSubJourney == PHYSICAL_GOODS_SEARCH ||
+        controlCodeSubJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
+        controlCodeSubJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
   }
 
   public boolean isPhysicalGoodsSearchVariant() {
     return isPhysicalGoodsSearchVariant(this);
   }
 
-  public static boolean isSoftTechControlsVariant(ControlCodeJourney controlCodeJourney) {
-    return controlCodeJourney == SOFTWARE_CONTROLS || controlCodeJourney == TECHNOLOGY_CONTROLS;
+  public static boolean isSoftTechControlsVariant(ControlCodeSubJourney controlCodeSubJourney) {
+    return controlCodeSubJourney == SOFTWARE_CONTROLS || controlCodeSubJourney == TECHNOLOGY_CONTROLS;
   }
 
   public boolean isSoftTechControlsVariant() {
     return isSoftTechControlsVariant(this);
   }
 
-  public static boolean isSoftTechControlsRelatedToPhysicalGoodVariant(ControlCodeJourney controlCodeJourney) {
-    return controlCodeJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD;
+  public static boolean isSoftTechControlsRelatedToPhysicalGoodVariant(ControlCodeSubJourney controlCodeSubJourney) {
+    return controlCodeSubJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeSubJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD;
   }
 
   public boolean isSoftTechControlsRelatedToPhysicalGoodVariant() {
     return isSoftTechControlsRelatedToPhysicalGoodVariant(this);
   }
 
-  public static boolean isSoftTechCatchallControlsVariant(ControlCodeJourney controlCodeJourney) {
-    return controlCodeJourney == SOFTWARE_CATCHALL_CONTROLS || controlCodeJourney == TECHNOLOGY_CATCHALL_CONTROLS;
+  public static boolean isSoftTechCatchallControlsVariant(ControlCodeSubJourney controlCodeSubJourney) {
+    return controlCodeSubJourney == SOFTWARE_CATCHALL_CONTROLS || controlCodeSubJourney == TECHNOLOGY_CATCHALL_CONTROLS;
   }
 
   public boolean isSoftTechCatchallControlsVariant() {
@@ -82,24 +82,24 @@ public enum ControlCodeJourney {
   }
 
   /**
-   * Returns the {@link GoodsType} mapping for a given {@link ControlCodeJourney}. When no mapping is found returns null
-   * @param controlCodeJourney
+   * Returns the {@link GoodsType} mapping for a given {@link ControlCodeSubJourney}. When no mapping is found returns null
+   * @param controlCodeSubJourney
    * @return the {@link GoodsType} mapping or null
    */
-  public static GoodsType getGoodsType(ControlCodeJourney controlCodeJourney) {
-    if (controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
-        controlCodeJourney == SOFTWARE_CONTROLS ||
-        controlCodeJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
-        controlCodeJourney == SOFTWARE_CATCHALL_CONTROLS) {
+  public static GoodsType getGoodsType(ControlCodeSubJourney controlCodeSubJourney) {
+    if (controlCodeSubJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
+        controlCodeSubJourney == SOFTWARE_CONTROLS ||
+        controlCodeSubJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
+        controlCodeSubJourney == SOFTWARE_CATCHALL_CONTROLS) {
       return GoodsType.SOFTWARE;
     }
-    else if (controlCodeJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY ||
-        controlCodeJourney == TECHNOLOGY_CONTROLS ||
-        controlCodeJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
-        controlCodeJourney == TECHNOLOGY_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY ||
+        controlCodeSubJourney == TECHNOLOGY_CONTROLS ||
+        controlCodeSubJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
+        controlCodeSubJourney == TECHNOLOGY_CATCHALL_CONTROLS) {
       return GoodsType.TECHNOLOGY;
     }
-    else if (controlCodeJourney == PHYSICAL_GOODS_SEARCH){
+    else if (controlCodeSubJourney == PHYSICAL_GOODS_SEARCH){
       return GoodsType.PHYSICAL;
     }
     else {
@@ -108,7 +108,7 @@ public enum ControlCodeJourney {
   }
 
   /**
-   * @see #getGoodsType(ControlCodeJourney)
+   * @see #getGoodsType(ControlCodeSubJourney)
    */
   public GoodsType getGoodsType() {
     return getGoodsType(this);
@@ -116,11 +116,11 @@ public enum ControlCodeJourney {
 
   /**
    * Returns the software or technology {@link GoodsType} mapping
-   * @param controlCodeJourney
+   * @param controlCodeSubJourney
    * @return either {@link GoodsType#SOFTWARE} or {@link GoodsType#TECHNOLOGY} or null
    */
-  public static GoodsType getSoftTechGoodsType(ControlCodeJourney controlCodeJourney) {
-    GoodsType goodsType = getGoodsType(controlCodeJourney);
+  public static GoodsType getSoftTechGoodsType(ControlCodeSubJourney controlCodeSubJourney) {
+    GoodsType goodsType = getGoodsType(controlCodeSubJourney);
     if (goodsType == GoodsType.SOFTWARE || goodsType == GoodsType.TECHNOLOGY) {
       return goodsType;
     }
@@ -130,7 +130,7 @@ public enum ControlCodeJourney {
   }
 
   /**
-   * @see #getSoftTechGoodsType(ControlCodeJourney)
+   * @see #getSoftTechGoodsType(ControlCodeSubJourney)
    */
   public GoodsType getSoftTechGoodsType() {
     return getSoftTechGoodsType(this);

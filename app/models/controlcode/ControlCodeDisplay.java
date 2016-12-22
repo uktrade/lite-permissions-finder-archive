@@ -17,17 +17,17 @@ public class ControlCodeDisplay {
   public final List<Ancestor> otherAncestors;
   public final boolean showGreatestAncestor;
   public final String couldDescribeItemsLabel;
-  public final ControlCodeJourney controlCodeJourney;
+  public final ControlCodeSubJourney controlCodeSubJourney;
   public final boolean decontrolsExist;
   public final boolean additionalSpecificationsExist;
   public final boolean technicalNotesExist;
 
-  public ControlCodeDisplay(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
+  public ControlCodeDisplay(ControlCodeSubJourney controlCodeSubJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
-    this.controlCodeJourney = controlCodeJourney;
+    this.controlCodeSubJourney = controlCodeSubJourney;
     this.decontrolsExist = controlCodeData.canShowDecontrols();
     this.additionalSpecificationsExist = controlCodeData.canShowAdditionalSpecifications();
     this.technicalNotesExist = controlCodeData.canShowTechnicalNotes();
@@ -40,45 +40,45 @@ public class ControlCodeDisplay {
       this.showGreatestAncestor = false;
     }
     this.otherAncestors = frontendServiceResult.otherAncestors;
-    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.ControlCodeController.handleSubmitNew().url();
+    if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
+      this.formAction = routes.ControlCodeController.handleSubmit().url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.ControlCodeController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe the item your software is used with?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
       this.formAction = routes.ControlCodeController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe the item your technology is used with?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.ControlCodeController.handleControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS) {
       this.formAction = routes.ControlCodeController.handleControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.ControlCodeController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.ControlCodeController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
       this.formAction = routes.ControlCodeController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
       this.formAction = routes.ControlCodeController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
-          , controlCodeJourney.toString()));
+      throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
+          , controlCodeSubJourney.toString()));
     }
   }
 

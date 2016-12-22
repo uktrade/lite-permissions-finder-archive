@@ -10,7 +10,7 @@ import components.services.controlcode.controls.related.RelatedControlsServiceCl
 import components.services.controlcode.controls.relationship.SoftwareAndTechnologyRelationshipServiceClient;
 import journey.Events;
 import models.GoodsType;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.Relationship;
@@ -77,11 +77,11 @@ public class SoftTechJourneyHelper {
               ControlCode controlCode = result.controlCodes.get(0);
               if (goodsType == GoodsType.SOFTWARE) {
                 permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                    ControlCodeJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
+                    models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS, controlCode.controlCode);
               }
               else { // GoodsType.TECHNOLOGY
                 permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                    ControlCodeJourney.TECHNOLOGY_CONTROLS, controlCode.controlCode);
+                    models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS, controlCode.controlCode);
               }
             }
             return ApplicableSoftTechControls.ONE;
@@ -107,7 +107,7 @@ public class SoftTechJourneyHelper {
             if (saveToDao) {
               ControlCode mappedControlCode = result.controlCodes.get(0);
               permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                  ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, mappedControlCode.controlCode);
+                  models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, mappedControlCode.controlCode);
             }
             return ApplicableSoftTechControls.ONE;
           }
@@ -133,11 +133,11 @@ public class SoftTechJourneyHelper {
               ControlCode catchallControlCode = result.controlCodes.get(0);
               if (goodsType == GoodsType.SOFTWARE) {
                 permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                    ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
+                    ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS, catchallControlCode.controlCode);
               }
               else { // GoodsType.TECHNOLOGY
                 permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(
-                    ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS, catchallControlCode.controlCode);
+                    models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS, catchallControlCode.controlCode);
               }
             }
             return ApplicableSoftTechControls.ONE;

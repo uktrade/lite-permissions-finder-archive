@@ -11,7 +11,7 @@ import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.search.SearchServiceClient;
 import models.GoodsType;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import play.Logger;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
@@ -64,7 +64,7 @@ public class AjaxSearchResultsController {
     }
 
     Optional<GoodsType> goodsTypeOptional = GoodsType.getMatchedByValue(goodsType);
-    Optional<ControlCodeJourney> controlCodeJourneyOptional = ControlCodeJourney.getMatched(controlCodeJourney);
+    Optional<ControlCodeSubJourney> controlCodeJourneyOptional = models.controlcode.ControlCodeSubJourney.getMatched(controlCodeJourney);
 
     if (goodsTypeOptional.isPresent() && controlCodeJourneyOptional.isPresent()) {
       if (goodsTypeOptional.get() == GoodsType.PHYSICAL) {
@@ -88,7 +88,7 @@ public class AjaxSearchResultsController {
         return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for goodsType %s", goodsType))));
       }
       else {
-        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for controlCodeJourney %s", controlCodeJourney))));
+        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for controlCodeSubJourney %s", controlCodeJourney))));
       }
     }
 

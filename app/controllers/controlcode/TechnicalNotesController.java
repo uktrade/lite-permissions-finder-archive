@@ -4,12 +4,11 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
 import journey.helpers.ControlCodeJourneyHelper;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.TechnicalNotesDisplay;
 import play.data.Form;
 import play.data.FormFactory;
@@ -42,17 +41,17 @@ public class TechnicalNotesController {
     this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
-  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
-    Optional<Boolean> technicalNotesApply = permissionsFinderDao.getControlCodeTechnicalNotesApply(controlCodeJourney);
+  private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
+    Optional<Boolean> technicalNotesApply = permissionsFinderDao.getControlCodeTechnicalNotesApply(controlCodeSubJourney);
     TechnicalNotesForm templateForm = new TechnicalNotesForm();
     templateForm.stillDescribesItems = technicalNotesApply.isPresent() ? technicalNotesApply.get().toString() : "";
-    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
         .thenApplyAsync(result -> ok(technicalNotes.render(formFactory.form(TechnicalNotesForm.class).fill(templateForm),
-            new TechnicalNotesDisplay(controlCodeJourney, result))), httpExecutionContext.current());
+            new TechnicalNotesDisplay(controlCodeSubJourney, result))), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> renderSearchForm() {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    return renderForm(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
@@ -71,23 +70,23 @@ public class TechnicalNotesController {
     return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
   }
 
-  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
+  private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney) {
     Form<TechnicalNotesForm> form = formFactory.form(TechnicalNotesForm.class).bindFromRequest();
-    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
+    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
     return frontendServiceClient.get(controlCode)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
-            return completedFuture(ok(technicalNotes.render(form, new TechnicalNotesDisplay(controlCodeJourney, result))));
+            return completedFuture(ok(technicalNotes.render(form, new TechnicalNotesDisplay(controlCodeSubJourney, result))));
           }
           else {
             String stillDescribesItems = form.get().stillDescribesItems;
             if("true".equals(stillDescribesItems)) {
-              permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeJourney, true);
-              return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCode);
+              permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeSubJourney, true);
+              return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeSubJourney, controlCode);
             }
             else if ("false".equals(stillDescribesItems)) {
-              permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeJourney, false);
-              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeJourney);
+              permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeSubJourney, false);
+              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeSubJourney);
             }
             else {
               throw new FormStateException("Unhandled form state");
@@ -97,7 +96,7 @@ public class TechnicalNotesController {
   }
 
   public CompletionStage<Result> handleSearchSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    return handleSubmit(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {

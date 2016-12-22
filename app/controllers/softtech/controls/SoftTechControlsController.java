@@ -12,7 +12,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
 import models.softtech.controls.SoftTechControlsJourney;
 import models.softtech.controls.SoftTechControlsDisplay;
@@ -107,19 +107,19 @@ public class SoftTechControlsController {
     else if (StringUtils.isNotEmpty(controlCode)) {
       // Setup DAO state based on view variant
       if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS, controlCode);
       }
       else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.TECHNOLOGY_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS, controlCode);
       }
       else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
       }
       else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
       }
       else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS, controlCode);
+        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS, controlCode);
       }
       else {
         throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
@@ -169,7 +169,7 @@ public class SoftTechControlsController {
           : GoodsType.TECHNOLOGY;
 
       // Note, this is looking at the selected physical good control code which is related to their physical good
-      String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
+      String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
 
       return relatedControlsServiceClient.get(goodsType, controlCode)
           .thenApplyAsync(result ->

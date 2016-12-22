@@ -19,7 +19,7 @@ public class DecontrolsDisplay {
   public final boolean showGreatestAncestor;
   public final List<String> decontrols;
 
-  public DecontrolsDisplay(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
+  public DecontrolsDisplay(ControlCodeSubJourney controlCodeSubJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
@@ -36,36 +36,36 @@ public class DecontrolsDisplay {
     this.decontrols = controlCodeData.decontrols.stream()
         .map(decontrol -> decontrol.text)
         .collect(Collectors.toList());
-    if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH) {
+    if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
       this.formAction = routes.DecontrolsController.handleSearchSubmit().url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
       this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.DecontrolsController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.DecontrolsController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeJourney == ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of ControlCodeJourney enum: \"%s\""
-          , controlCodeJourney.toString()));
+      throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
+          , controlCodeSubJourney.toString()));
     }
   }
 

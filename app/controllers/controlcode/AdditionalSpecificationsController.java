@@ -14,7 +14,7 @@ import journey.Events;
 import journey.helpers.ControlCodeJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.AdditionalSpecificationsDisplay;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -51,20 +51,20 @@ public class AdditionalSpecificationsController {
     this.controlCodeJourneyHelper = controlCodeJourneyHelper;
   }
 
-  private CompletionStage<Result> renderForm(ControlCodeJourney controlCodeJourney) {
-    Optional<Boolean> additionalSpecificationsApply = permissionsFinderDao.getControlCodeAdditionalSpecificationsApply(controlCodeJourney);
+  private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
+    Optional<Boolean> additionalSpecificationsApply = permissionsFinderDao.getControlCodeAdditionalSpecificationsApply(controlCodeSubJourney);
     AdditionalSpecificationsForm templateForm = new AdditionalSpecificationsForm();
     templateForm.stillDescribesItems = additionalSpecificationsApply.isPresent()
         ? additionalSpecificationsApply.get().toString()
         : "";
-    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeJourney))
+    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
         .thenApplyAsync(result ->
             ok(additionalSpecifications.render(formFactory.form(AdditionalSpecificationsForm.class).fill(templateForm),
-                new AdditionalSpecificationsDisplay(controlCodeJourney, result))), httpExecutionContext.current());
+                new AdditionalSpecificationsDisplay(controlCodeSubJourney, result))), httpExecutionContext.current());
   }
 
   public CompletionStage<Result> renderSearchForm() {
-    return renderForm(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    return renderForm(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
@@ -83,24 +83,24 @@ public class AdditionalSpecificationsController {
     return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
   }
 
-  private CompletionStage<Result> handleSubmit(ControlCodeJourney controlCodeJourney) {
+  private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney) {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
-    String code = permissionsFinderDao.getSelectedControlCode(controlCodeJourney);
+    String code = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
     return frontendServiceClient.get(code)
         .thenApplyAsync(result -> {
           if (form.hasErrors()) {
             return completedFuture(ok(additionalSpecifications.render(form,
-                new AdditionalSpecificationsDisplay(controlCodeJourney, result))));
+                new AdditionalSpecificationsDisplay(controlCodeSubJourney, result))));
           }
           else {
             String stillDescribesItems = form.get().stillDescribesItems;
             if("true".equals(stillDescribesItems)) {
-              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeJourney, true);
-              return nextScreenTrue(controlCodeJourney, result);
+              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeSubJourney, true);
+              return nextScreenTrue(controlCodeSubJourney, result);
             }
             else if ("false".equals(stillDescribesItems)) {
-              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeJourney, false);
-              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeJourney);
+              permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeSubJourney, false);
+              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeSubJourney);
             }
             else {
               throw new FormStateException("Unhandled form state");
@@ -110,7 +110,7 @@ public class AdditionalSpecificationsController {
   }
 
   public CompletionStage<Result> handleSearchSubmit() {
-    return handleSubmit(ControlCodeJourney.PHYSICAL_GOODS_SEARCH);
+    return handleSubmit(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
@@ -129,7 +129,7 @@ public class AdditionalSpecificationsController {
     return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
   }
 
-  public CompletionStage<Result> nextScreenTrue(ControlCodeJourney controlCodeJourney, FrontendServiceResult frontendServiceResult) {
+  public CompletionStage<Result> nextScreenTrue(ControlCodeSubJourney controlCodeSubJourney, FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     if (controlCodeData.canShowDecontrols()) {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.DECONTROLS);
@@ -138,7 +138,7 @@ public class AdditionalSpecificationsController {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
     }
     else {
-      return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeJourney, controlCodeData.controlCode);
+      return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeSubJourney, controlCodeData.controlCode);
     }
   }
 

@@ -2,9 +2,7 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-
-@import models.controlcode.NotApplicableDisplay
-@import models.controlcode.ControlCodeJourney
+@import models.controlcode.{ControlCodeSubJourney, NotApplicableDisplay}
 @(display: NotApplicableDisplay)
 @standardPage("Description not applicable", Some(Html("Description not applicable"))){
   @errorSummary(display.form)
@@ -18,7 +16,7 @@
     </p>
 
     <ul class="list list-bullet text">
-    @if(ControlCodeJourney.isPhysicalGoodsSearchVariant(display.controlCodeJourney)){
+    @if(ControlCodeSubJourney.isPhysicalGoodsSearchVariant(display.controlCodeSubJourney)){
       @if(display.canPickAgain) {
         <li>
           <button class="link underlined" name="action" value="backToResults">return to the list of possible matches and choose again</button>
@@ -29,7 +27,7 @@
       }
     }
 
-    @if(ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(display.controlCodeJourney)){
+    @if(ControlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(display.controlCodeSubJourney)){
       @if(display.canPickAgain) {
         <li>
           <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
@@ -41,7 +39,7 @@
       }
     }
 
-    @if(ControlCodeJourney.isSoftTechControlsVariant(display.controlCodeJourney)){
+    @if(ControlCodeSubJourney.isSoftTechControlsVariant(display.controlCodeSubJourney)){
       @if(display.canPickAgain) {
         <li>
           <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
@@ -53,7 +51,7 @@
       }
     }
 
-    @if(ControlCodeJourney.isSoftTechCatchallControlsVariant(display.controlCodeJourney)){
+    @if(ControlCodeSubJourney.isSoftTechCatchallControlsVariant(display.controlCodeSubJourney)){
       @if(display.canPickAgain) {
         <li>
           <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
