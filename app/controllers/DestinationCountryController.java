@@ -106,12 +106,12 @@ public class DestinationCountryController extends Controller {
           boundForm.throughDestinationCountries.size(), getFieldOrder(boundForm))));
     }
 
-            /*
-             * itemThroughMultipleCountries == true -> Validate the (through) country list
-             * itemThroughMultipleCountries == false -> Reset the country list
-             * itemThroughMultipleCountries == null/empty -> Raise a form error
-             * Otherwise raise an exception
-             */
+    /*
+     * itemThroughMultipleCountries == true -> Validate the (through) country list
+     * itemThroughMultipleCountries == false -> Reset the country list
+     * itemThroughMultipleCountries == null/empty -> Raise a form error
+     * Otherwise raise an exception
+     */
     if ("true".equals(boundForm.itemThroughMultipleCountries)) {
       Set<String> allCountries = new HashSet<>();
       IntStream.range(0, boundForm.throughDestinationCountries.size())
@@ -126,10 +126,8 @@ public class DestinationCountryController extends Controller {
                   "country or territories. Please change or remove one");
             }
           });
-
       permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
       permissionsFinderDao.saveItemThroughMultipleCountries(true);
-
     }
     else if ("false".equals(boundForm.itemThroughMultipleCountries)) {
       permissionsFinderDao.saveItemThroughMultipleCountries(false);

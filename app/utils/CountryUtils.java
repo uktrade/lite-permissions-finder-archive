@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CountryUtils {
@@ -42,13 +41,6 @@ public class CountryUtils {
    * @return List country all matched Countries
    */
   public static List<Country> getFilteredCountries(List<Country> allCountries, List<String> countryRefs) {
-    List<Country> filtered = new ArrayList<>();
-    for (String countryRef : countryRefs) {
-      Optional<Country> countryOpt = allCountries.stream().filter(country -> countryRef.equals(country.getCountryRef())).findFirst();
-      if (countryOpt.isPresent()) {
-        filtered.add(countryOpt.get());
-      }
-    }
-    return filtered;
+    return countryRefs.stream().flatMap(ref -> allCountries.stream().filter(c -> c.getCountryRef().equals(ref))).collect(Collectors.toList());
   }
 }
