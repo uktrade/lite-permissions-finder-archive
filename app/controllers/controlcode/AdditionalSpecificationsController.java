@@ -11,7 +11,7 @@ import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.ControlCodeSubJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.controlcode.AdditionalSpecificationsDisplay;
 import models.controlcode.ControlCodeSubJourney;
@@ -33,7 +33,7 @@ public class AdditionalSpecificationsController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
-  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
+  private final ControlCodeSubJourneyHelper controlCodeSubJourneyHelper;
 
 
   @Inject
@@ -42,13 +42,13 @@ public class AdditionalSpecificationsController {
                                             PermissionsFinderDao permissionsFinderDao,
                                             HttpExecutionContext httpExecutionContext,
                                             FrontendServiceClient frontendServiceClient,
-                                            ControlCodeJourneyHelper controlCodeJourneyHelper) {
+                                            ControlCodeSubJourneyHelper controlCodeSubJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
-    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
+    this.controlCodeSubJourneyHelper = controlCodeSubJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
@@ -68,19 +68,19 @@ public class AdditionalSpecificationsController {
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderControlsForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney) {
@@ -100,7 +100,7 @@ public class AdditionalSpecificationsController {
             }
             else if ("false".equals(stillDescribesItems)) {
               permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeSubJourney, false);
-              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeSubJourney);
+              return controlCodeSubJourneyHelper.notApplicableJourneyTransition(controlCodeSubJourney);
             }
             else {
               throw new FormStateException("Unhandled form state");
@@ -114,19 +114,19 @@ public class AdditionalSpecificationsController {
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> nextScreenTrue(ControlCodeSubJourney controlCodeSubJourney, FrontendServiceResult frontendServiceResult) {
@@ -138,7 +138,7 @@ public class AdditionalSpecificationsController {
       return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
     }
     else {
-      return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeSubJourney, controlCodeData.controlCode);
+      return controlCodeSubJourneyHelper.confirmedJourneyTransition(controlCodeSubJourney, controlCodeData.controlCode);
     }
   }
 

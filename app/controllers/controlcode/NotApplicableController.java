@@ -9,7 +9,7 @@ import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.ControlCodeSubJourneyHelper;
 import journey.helpers.SoftTechJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.GoodsType;
@@ -119,22 +119,22 @@ public class NotApplicableController {
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText, String showExtendedContent) {
-    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText,
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText,
         controlCodeJourney -> this.renderForm(controlCodeJourney, showExtendedContent));
   }
 
   public CompletionStage<Result> renderControlsForm(String goodsTypeText, String showExtendedContent) {
-    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText,
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText,
         controlCodeJourney -> renderForm(controlCodeJourney, showExtendedContent));
   }
 
   public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText, String showExtendedContent) {
-    return ControlCodeJourneyHelper.getRelatedControlsResult(goodsTypeText,
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText,
         controlCodeJourney -> renderForm(controlCodeJourney, showExtendedContent));
   }
 
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText, String showExtendedContent) {
-    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText,
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText,
         controlCodeJourney -> renderForm(controlCodeJourney, showExtendedContent));
   }
 
@@ -268,19 +268,19 @@ public class NotApplicableController {
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public static class NotApplicableForm {

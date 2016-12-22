@@ -9,7 +9,7 @@ import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import exceptions.FormStateException;
-import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.DecontrolsDisplay;
 import play.data.Form;
@@ -30,7 +30,7 @@ public class DecontrolsController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
-  private final ControlCodeJourneyHelper controlCodeJourneyHelper;
+  private final ControlCodeSubJourneyHelper controlCodeSubJourneyHelper;
 
   @Inject
   public DecontrolsController(JourneyManager journeyManager,
@@ -38,13 +38,13 @@ public class DecontrolsController {
                               PermissionsFinderDao permissionsFinderDao,
                               HttpExecutionContext httpExecutionContext,
                               FrontendServiceClient frontendServiceClient,
-                              ControlCodeJourneyHelper controlCodeJourneyHelper) {
+                              ControlCodeSubJourneyHelper controlCodeSubJourneyHelper) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
-    this.controlCodeJourneyHelper = controlCodeJourneyHelper;
+    this.controlCodeSubJourneyHelper = controlCodeSubJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
@@ -61,19 +61,19 @@ public class DecontrolsController {
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderControlsForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderForm);
   }
 
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney){
@@ -88,7 +88,7 @@ public class DecontrolsController {
             String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
             if("true".equals(decontrolsDescribeItem)) {
               permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeSubJourney, true);
-              return controlCodeJourneyHelper.notApplicableJourneyTransition(controlCodeSubJourney);
+              return controlCodeSubJourneyHelper.notApplicableJourneyTransition(controlCodeSubJourney);
             }
             else if ("false".equals(decontrolsDescribeItem)) {
               permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeSubJourney, false);
@@ -96,7 +96,7 @@ public class DecontrolsController {
                 return journeyManager.performTransition(StandardEvents.NEXT); //journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.TECHNICAL_NOTES);
               }
               else {
-                return controlCodeJourneyHelper.confirmedJourneyTransition(controlCodeSubJourney, controlCode);
+                return controlCodeSubJourneyHelper.confirmedJourneyTransition(controlCodeSubJourney, controlCode);
               }
             }
             else {
@@ -111,19 +111,19 @@ public class DecontrolsController {
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
   }
 
   public static class DecontrolsForm {

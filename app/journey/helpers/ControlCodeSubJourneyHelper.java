@@ -17,7 +17,7 @@ import play.mvc.Result;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
-public class ControlCodeJourneyHelper {
+public class ControlCodeSubJourneyHelper {
 
   private final JourneyManager journeyManager;
   private final SoftTechJourneyHelper softTechJourneyHelper;
@@ -25,10 +25,10 @@ public class ControlCodeJourneyHelper {
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public ControlCodeJourneyHelper(JourneyManager journeyManager,
-                                  SoftTechJourneyHelper softTechJourneyHelper,
-                                  PermissionsFinderDao permissionsFinderDao,
-                                  HttpExecutionContext httpExecutionContext) {
+  public ControlCodeSubJourneyHelper(JourneyManager journeyManager,
+                                     SoftTechJourneyHelper softTechJourneyHelper,
+                                     PermissionsFinderDao permissionsFinderDao,
+                                     HttpExecutionContext httpExecutionContext) {
     this.journeyManager = journeyManager;
     this.softTechJourneyHelper = softTechJourneyHelper;
     this.permissionsFinderDao = permissionsFinderDao;

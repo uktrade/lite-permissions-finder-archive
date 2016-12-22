@@ -12,7 +12,7 @@ import controllers.ErrorController;
 import controllers.controlcode.ControlCodeController;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.ControlCodeJourneyHelper;
+import journey.helpers.ControlCodeSubJourneyHelper;
 import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
@@ -71,7 +71,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   }
 
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
   }
 
   private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney) {
@@ -131,7 +131,7 @@ public class PhysicalGoodsSearchResultsController extends SearchResultsControlle
   }
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return ControlCodeJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<SearchServiceResult> physicalGoodsSearch(ControlCodeSubJourney controlCodeSubJourney) {
