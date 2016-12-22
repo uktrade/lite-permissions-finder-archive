@@ -51,9 +51,9 @@ GET     /export/:controlCodeVariant/:goodsType/control-code/not-applicable      
 
 POST    /control-code/not-applicable                                                      controllers.controlcode.NotApplicableController.handleSubmit
 
-GET     /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.renderSearchForm
+GET     /export/:controlCodeVariant/:goodsType/control-code/technical-notes               controllers.controlcode.TechnicalNotesController.renderForm(controlCodeVariant, goodsType)
 
-POST    /control-code/technical-notes         controllers.controlcode.TechnicalNotesController.handleSearchSubmit
+POST    /control-code/technical-notes                                                     controllers.controlcode.TechnicalNotesController.handleSubmit
 
 GET     /related-control-code/:goodsType                              controllers.controlcode.ControlCodeSummaryController.renderSearchRelatedToForm(goodsType)
 

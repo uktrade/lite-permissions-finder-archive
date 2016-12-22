@@ -286,7 +286,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
     JourneyStage technicalNotes = defineStage("technicalNotes", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderSearchForm());
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
     JourneyStage ogelResults = defineStage("ogelResults", "Licences applicable to your answers",
         controllers.ogel.routes.OgelResultsController.renderForm());

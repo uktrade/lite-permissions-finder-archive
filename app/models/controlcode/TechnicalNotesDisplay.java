@@ -34,7 +34,7 @@ public class TechnicalNotesDisplay {
     }
     this.otherAncestors = frontendServiceResult.otherAncestors;
     if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.TechnicalNotesController.handleSearchSubmit().url();
+      this.formAction = routes.TechnicalNotesController.handleSubmit().url();
     }
     else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
