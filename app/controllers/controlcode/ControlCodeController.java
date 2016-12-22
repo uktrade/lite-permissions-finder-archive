@@ -54,10 +54,7 @@ public class ControlCodeController extends Controller {
   }
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    ControlCodeSubJourney controlCodeSubJourney = models.controlcode.ControlCodeSubJourney.getMatched(controlCodeVariantText, goodsTypeText).get();
-    subJourneyContextParamProvider.updateSubJourneyValueOnContext(controlCodeSubJourney);
-    return renderFormInternal(controlCodeSubJourney);
+   return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText, this::renderFormInternal);
   }
 
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
@@ -88,8 +85,7 @@ public class ControlCodeController extends Controller {
   }
 
   public CompletionStage<Result> handleSubmit() {
-    ControlCodeSubJourney controlCodeSubJourney = subJourneyContextParamProvider.getSubJourneyValueFromRequest();
-    return handleSubmitInternal(controlCodeSubJourney);
+    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
   }
 
   private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {

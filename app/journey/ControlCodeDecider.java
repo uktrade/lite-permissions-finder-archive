@@ -23,10 +23,10 @@ public class ControlCodeDecider implements Decider<Collection<ControlCodeDecider
   private final SubJourneyContextParamProvider subJourneyContextParamProvider;
 
   @Inject
-  public ControlCodeDecider(PermissionsFinderDao dao, FrontendServiceClient client, SubJourneyContextParamProvider subJourneyContextParamProvider) {
+  public ControlCodeDecider(PermissionsFinderDao dao, FrontendServiceClient client) {
     this.dao = dao;
     this.client = client;
-    this.subJourneyContextParamProvider = subJourneyContextParamProvider;
+    this.subJourneyContextParamProvider = new SubJourneyContextParamProvider();
   }
 
   @Override

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import journey.Events;
+import journey.SubJourneyContextParamProvider;
 import models.ControlCodeFlowStage;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
@@ -33,6 +34,20 @@ public class ControlCodeSubJourneyHelper {
     this.softTechJourneyHelper = softTechJourneyHelper;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
+  }
+
+  public static CompletionStage<Result> resolveUrlToSubJourneyAndUpdateContext(String controlCodeVariantText, String goodsTypeText, Function<ControlCodeSubJourney, CompletionStage<Result>> resultFunction) {
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    ControlCodeSubJourney controlCodeSubJourney = models.controlcode.ControlCodeSubJourney.getMatched(controlCodeVariantText, goodsTypeText).get();
+    SubJourneyContextParamProvider subJourneyContextParamProvider = new SubJourneyContextParamProvider();
+    subJourneyContextParamProvider.updateSubJourneyValueOnContext(controlCodeSubJourney);
+    return resultFunction.apply(controlCodeSubJourney);
+  }
+
+  public static CompletionStage<Result> resolveContextToSubJourney(Function<ControlCodeSubJourney, CompletionStage<Result>> resultFunction) {
+    SubJourneyContextParamProvider subJourneyContextParamProvider = new SubJourneyContextParamProvider();
+    ControlCodeSubJourney controlCodeSubJourney = subJourneyContextParamProvider.getSubJourneyValueFromRequest();
+    return resultFunction.apply(controlCodeSubJourney);
   }
 
   public CompletionStage<Result> notApplicableJourneyTransition(ControlCodeSubJourney controlCodeSubJourney) {
