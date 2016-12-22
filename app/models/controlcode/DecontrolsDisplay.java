@@ -37,7 +37,7 @@ public class DecontrolsDisplay {
         .map(decontrol -> decontrol.text)
         .collect(Collectors.toList());
     if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.DecontrolsController.handleSearchSubmit().url();
+      this.formAction = routes.DecontrolsController.handleSubmit().url();
     }
     else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();

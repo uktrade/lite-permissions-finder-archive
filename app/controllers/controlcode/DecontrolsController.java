@@ -47,7 +47,11 @@ public class DecontrolsController {
     this.controlCodeSubJourneyHelper = controlCodeSubJourneyHelper;
   }
 
-  private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
+  public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
+    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText, this::renderFormInternal);
+  }
+
+  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<Boolean> decontrolsApply = permissionsFinderDao.getControlCodeDecontrolsApply(controlCodeSubJourney);
     DecontrolsForm templateForm = new DecontrolsForm();
     templateForm.decontrolsDescribeItem = decontrolsApply.isPresent() ? decontrolsApply.get().toString() : "";
@@ -56,27 +60,27 @@ public class DecontrolsController {
             new DecontrolsDisplay(controlCodeSubJourney, result))), httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> renderSearchForm() {
-    return renderForm(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
-  }
-
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderFormInternal);
   }
 
   public CompletionStage<Result> renderControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::renderFormInternal);
   }
 
   public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderFormInternal);
   }
 
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderFormInternal);
   }
 
-  private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney){
+  public CompletionStage<Result> handleSubmit() {
+    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
+  }
+
+  private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney){
     Form<DecontrolsForm> form = formFactory.form(DecontrolsForm.class).bindFromRequest();
     String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
     return frontendServiceClient.get(controlCode)
@@ -106,24 +110,20 @@ public class DecontrolsController {
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 
-  public CompletionStage<Result> handleSearchSubmit() {
-    return handleSubmit(ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
-  }
-
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public static class DecontrolsForm {

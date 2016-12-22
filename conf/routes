@@ -43,9 +43,9 @@ GET     /export/:controlCodeVariant/:goodsType/control-code/additional-specifica
 
 POST    /export/control-code/additional-specifications                                    controllers.controlcode.AdditionalSpecificationsController.handleSubmit
 
-GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderSearchForm
+GET     /export/:controlCodeVariant/:goodsType/control-code/decontrols                    controllers.controlcode.DecontrolsController.renderForm(controlCodeVariant, goodsType)
 
-POST    /control-code/decontrols              controllers.controlcode.DecontrolsController.handleSearchSubmit
+POST    /export/control-code/decontrols                                                   controllers.controlcode.DecontrolsController.handleSubmit
 
 GET     /control-code/not-applicable          controllers.controlcode.NotApplicableController.renderSearchForm(extended)
 
