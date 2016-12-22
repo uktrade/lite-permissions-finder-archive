@@ -51,7 +51,11 @@ public class AdditionalSpecificationsController {
     this.controlCodeSubJourneyHelper = controlCodeSubJourneyHelper;
   }
 
-  private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
+  public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
+    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText, this::renderFormInternal);
+  }
+
+  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<Boolean> additionalSpecificationsApply = permissionsFinderDao.getControlCodeAdditionalSpecificationsApply(controlCodeSubJourney);
     AdditionalSpecificationsForm templateForm = new AdditionalSpecificationsForm();
     templateForm.stillDescribesItems = additionalSpecificationsApply.isPresent()
@@ -63,27 +67,27 @@ public class AdditionalSpecificationsController {
                 new AdditionalSpecificationsDisplay(controlCodeSubJourney, result))), httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> renderSearchForm() {
-    return renderForm(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
-  }
-
   public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderFormInternal);
   }
 
   public CompletionStage<Result> renderControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::renderFormInternal);
   }
 
   public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderFormInternal);
   }
 
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderForm);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderFormInternal);
   }
 
-  private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney) {
+  public CompletionStage<Result> handleSubmit() {
+    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
+  }
+
+  private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
     String code = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
     return frontendServiceClient.get(code)
@@ -109,24 +113,20 @@ public class AdditionalSpecificationsController {
         }, httpExecutionContext.current()).thenCompose(Function.identity());
   }
 
-  public CompletionStage<Result> handleSearchSubmit() {
-    return handleSubmit(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
-  }
-
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmit);
+    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> nextScreenTrue(ControlCodeSubJourney controlCodeSubJourney, FrontendServiceResult frontendServiceResult) {

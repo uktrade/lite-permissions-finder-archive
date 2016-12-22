@@ -35,13 +35,13 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-GET     /export/control-code/:controlCodeVariant/:goodsType     controllers.controlcode.ControlCodeSummaryController.renderForm(controlCodeVariant, goodsType)
+GET     /export/:controlCodeVariant/:goodsType/control-code/summary                       controllers.controlcode.ControlCodeSummaryController.renderForm(controlCodeVariant, goodsType)
 
-POST    /export/control-code                                    controllers.controlcode.ControlCodeSummaryController.handleSubmit
+POST    /export/control-code/summary                                                      controllers.controlcode.ControlCodeSummaryController.handleSubmit
 
-GET     /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderSearchForm
+GET     /export/:controlCodeVariant/:goodsType/control-code/additional-specifications     controllers.controlcode.AdditionalSpecificationsController.renderForm(controlCodeVariant, goodsType)
 
-POST    /control-code/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleSearchSubmit
+POST    /export/control-code/additional-specifications                                    controllers.controlcode.AdditionalSpecificationsController.handleSubmit
 
 GET     /control-code/decontrols              controllers.controlcode.DecontrolsController.renderSearchForm
 

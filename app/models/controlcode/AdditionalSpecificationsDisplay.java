@@ -51,7 +51,7 @@ public class AdditionalSpecificationsDisplay {
       this.specifications = Collections.emptyList();
     }
     if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.AdditionalSpecificationsController.handleSearchSubmit().url();
+      this.formAction = routes.AdditionalSpecificationsController.handleSubmit().url();
     }
     else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
       this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
