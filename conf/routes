@@ -267,26 +267,6 @@ GET     /category-catchall-controls/:goodsType/show-controls               contr
 
 POST    /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCatchallControlsSubmit(goodsType)
 
-GET     /controls/:goodsType                             controllers.controlcode.ControlCodeSummaryController.renderControlsForm(goodsType)
-
-POST    /controls/:goodsType                             controllers.controlcode.ControlCodeSummaryController.handleControlsSubmit(goodsType)
-
-GET     /controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderControlsForm(goodsType)
-
-POST    /controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleControlsSubmit(goodsType)
-
-GET     /controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.renderControlsForm(goodsType)
-
-POST    /controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.handleControlsSubmit(goodsType)
-
-GET     /controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.renderControlsForm(goodsType, extended)
-
-POST    /controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleControlsSubmit(goodsType)
-
-GET     /controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.renderControlsForm(goodsType)
-
-POST    /controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleControlsSubmit(goodsType)
-
 GET     /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCategoryForm(goodsType)
 
 POST    /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCategorySubmit(goodsType)

@@ -50,31 +50,28 @@ public class AdditionalSpecificationsDisplay {
       this.clauseText = null;
       this.specifications = Collections.emptyList();
     }
-    if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.AdditionalSpecificationsController.handleSubmit().url();
+    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
+      if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
+        this.formAction = routes.NotApplicableController.handleSubmit().url();
+      }
+      else {
+        GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+        this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(goodsType.urlString()).url();
+      }
     }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
+    else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
+      this.formAction = routes.NotApplicableController.handleSubmit().url();
     }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.AdditionalSpecificationsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
-    }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS) {
-      this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-    }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS) {
-      this.formAction = routes.AdditionalSpecificationsController.handleControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
-    }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+    else if (controlCodeSubJourney == ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
       this.formAction = routes.AdditionalSpecificationsController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
     }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
+    else if (controlCodeSubJourney == ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
       this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else {

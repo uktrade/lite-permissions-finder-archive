@@ -50,7 +50,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage physicalGoodsSearchRelatedToSoftware = defineStage("physicalGoodsSearchRelatedToSoftware", "Describe your items",
       controllers.search.routes.PhysicalGoodsSearchController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
   private final JourneyStage controlCodeForSoftwareControls = defineStage("controlCodeSoftwareControls", "Summary",
-      controllers.controlcode.routes.ControlCodeSummaryController.renderControlsForm(GoodsType.SOFTWARE.urlString()));
+      controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
   private final JourneyStage controlCodeForRelatedSoftwareControls = defineStage("controlCodeForRelatedSoftwareControls", "Summary",
       controllers.controlcode.routes.ControlCodeSummaryController.renderRelatedControlsForm(GoodsType.SOFTWARE.urlString()));
   private final JourneyStage controlCodeSoftwareCatchallControls = defineStage("controlCodeSoftwareCatchallControls", "Summary",
@@ -574,16 +574,16 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private void softwareCategoryControls() {
 
     JourneyStage controlCodeNotApplicableSoftwareControls = defineStage("controlCodeNotApplicableSoftwareControls", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderControlsForm(GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
 
     JourneyStage additionalSpecificationsSoftwareControls = defineStage("additionalSpecificationsSoftwareControls", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderControlsForm(GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage decontrolsSoftwareControls = defineStage("decontrolsSoftwareControls", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderControlsForm(GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage technicalNotesSoftwareControls = defineStage("technicalNotesSoftwareControls", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderControlsForm(GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     atStage(controlCodeForSoftwareControls)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)

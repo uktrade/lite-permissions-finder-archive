@@ -73,8 +73,7 @@ public class NotApplicableDisplay {
       }
     }
     else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
-      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-      this.formAction = routes.NotApplicableController.handleControlsSubmit(goodsType.urlString()).url();
+      this.formAction = routes.NotApplicableController.handleSubmit().url();
       if (canPickAgain(applicableSoftTechControls)) {
         this.buttons = Arrays.asList(
             new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again")

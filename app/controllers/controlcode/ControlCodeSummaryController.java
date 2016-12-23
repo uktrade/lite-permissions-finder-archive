@@ -64,10 +64,6 @@ public class ControlCodeSummaryController extends Controller {
     return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderFormInternal);
   }
 
-  public CompletionStage<Result> renderControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::renderFormInternal);
-  }
-
   public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText) {
     return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderFormInternal);
   }
@@ -103,10 +99,6 @@ public class ControlCodeSummaryController extends Controller {
 
   public CompletionStage<Result> handleSearchRelatedToSubmit (String goodsTypeText) {
     return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmitInternal);
-  }
-
-  public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {

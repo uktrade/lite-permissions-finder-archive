@@ -124,11 +124,6 @@ public class NotApplicableController {
         controlCodeSubJourney -> this.renderFormInternal(controlCodeSubJourney, showExtendedContent));
   }
 
-  public CompletionStage<Result> renderControlsForm(String goodsTypeText, String showExtendedContent) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText,
-        controlCodeSubJourney -> renderFormInternal(controlCodeSubJourney, showExtendedContent));
-  }
-
   public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText, String showExtendedContent) {
     return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText,
         controlCodeSubJourney -> renderFormInternal(controlCodeSubJourney, showExtendedContent));
@@ -270,10 +265,6 @@ public class NotApplicableController {
 
   public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
     return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmitInternal);
-  }
-
-  public CompletionStage<Result> handleControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
