@@ -60,10 +60,6 @@ public class ControlCodeSummaryController extends Controller {
     return renderWithForm(controlCodeSubJourney, formFactory.form(ControlCodeSummaryForm.class).fill(templateForm));
   }
 
-  public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderFormInternal);
-  }
-
   public CompletionStage<Result> handleSubmit() {
     return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
   }
@@ -87,10 +83,6 @@ public class ControlCodeSummaryController extends Controller {
     else {
       throw new FormStateException("Unhandled form state");
     }
-  }
-
-  public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public static class ControlCodeSummaryForm {

@@ -55,16 +55,9 @@ public class ControlCodeSummaryDisplay {
       }
     }
     else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
-        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
+        controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       this.formAction = routes.ControlCodeSummaryController.handleSubmit().url();
-      this.couldDescribeItemsLabel = "Could this describe your items?";
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.ControlCodeSummaryController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-      this.couldDescribeItemsLabel = "Could this describe your items?";
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      this.formAction = routes.ControlCodeSummaryController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
     else {

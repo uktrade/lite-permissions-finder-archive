@@ -119,11 +119,6 @@ public class NotApplicableController {
     }
   }
 
-  public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText, String showExtendedContent) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText,
-        controlCodeSubJourney -> renderFormInternal(controlCodeSubJourney, showExtendedContent));
-  }
-
   public CompletionStage<Result> handleSubmit() {
     return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
   }
@@ -251,10 +246,6 @@ public class NotApplicableController {
       throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
           , applicableSoftTechControls.toString()));
     }
-  }
-
-  public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public static class NotApplicableForm {

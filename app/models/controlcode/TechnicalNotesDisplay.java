@@ -35,14 +35,9 @@ public class TechnicalNotesDisplay {
     this.otherAncestors = frontendServiceResult.otherAncestors;
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
         controlCodeSubJourney.isSoftTechControlsVariant() ||
-        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
+        controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       this.formAction = routes.TechnicalNotesController.handleSubmit().url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.TechnicalNotesController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      this.formAction = routes.TechnicalNotesController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""

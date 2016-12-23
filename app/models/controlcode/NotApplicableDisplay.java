@@ -56,18 +56,9 @@ public class NotApplicableDisplay {
       );
     }
     else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
-        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
+        controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       this.formAction = routes.NotApplicableController.handleSubmit().url();
-      if (canPickAgain(applicableSoftTechControls)) {
-        this.buttons = Collections.singletonList(new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again"));
-      }
-      else {
-        this.buttons = Collections.singletonList(new NotApplicableButton(1, "continue", "continue to other options"));
-      }
-    }
-    else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
-      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-      this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(goodsType.urlString()).url();
       if (canPickAgain(applicableSoftTechControls)) {
         this.buttons = Collections.singletonList(new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again"));
       }

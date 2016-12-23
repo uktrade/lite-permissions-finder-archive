@@ -38,14 +38,9 @@ public class DecontrolsDisplay {
         .collect(Collectors.toList());
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
         controlCodeSubJourney.isSoftTechControlsVariant() ||
-        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
+        controlCodeSubJourney.isSoftTechControlsVariant()) {
       this.formAction = routes.DecontrolsController.handleSubmit().url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""

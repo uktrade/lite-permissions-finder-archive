@@ -223,26 +223,6 @@ POST    /select-trade-type                    controllers.TradeTypeController.ha
 
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
 
-GET     /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeSummaryController.renderCatchallControlsForm(goodsType)
-
-POST    /category-catchall-controls/:goodsType                             controllers.controlcode.ControlCodeSummaryController.handleCatchallControlsSubmit(goodsType)
-
-GET     /category-catchall-controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.renderCatchallControlsForm(goodsType)
-
-POST    /category-catchall-controls/:goodsType/additional-specifications   controllers.controlcode.AdditionalSpecificationsController.handleCatchallControlsSubmit(goodsType)
-
-GET     /category-catchall-controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.renderCatchallControlsForm(goodsType)
-
-POST    /category-catchall-controls/:goodsType/decontrols                  controllers.controlcode.DecontrolsController.handleCatchallControlsSubmit(goodsType)
-
-GET     /category-catchall-controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.renderCatchallControlsForm(goodsType, extended)
-
-POST    /category-catchall-controls/:goodsType/not-applicable              controllers.controlcode.NotApplicableController.handleCatchallControlsSubmit(goodsType)
-
-GET     /category-catchall-controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.renderCatchallControlsForm(goodsType)
-
-POST    /category-catchall-controls/:goodsType/technical-notes             controllers.controlcode.TechnicalNotesController.handleCatchallControlsSubmit(goodsType)
-
 GET     /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCatchallControlsForm(goodsType)
 
 POST    /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCatchallControlsSubmit(goodsType)

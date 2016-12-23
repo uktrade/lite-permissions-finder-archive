@@ -52,14 +52,9 @@ public class AdditionalSpecificationsDisplay {
     }
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
         controlCodeSubJourney.isSoftTechControlsVariant() ||
-        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
+        controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       this.formAction = routes.NotApplicableController.handleSubmit().url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
-      this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      this.formAction = routes.AdditionalSpecificationsController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
