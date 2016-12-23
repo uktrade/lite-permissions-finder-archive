@@ -368,6 +368,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(true, moveTo(additionalSpecifications))
         .when(false, moveTo(destinationCountries));
 
+    atStage(controlCodeNotApplicable)
+        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .branch()
+        .when(ControlCodeFlowStage.BACK_TO_RESULTS, backTo(physicalGoodsSearchResults))
+        .when(ControlCodeFlowStage.BACK_TO_SEARCH, backTo(physicalGoodsSearch));
+
     atStage(destinationCountries)
         .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
         .then(moveTo(ogelQuestions));
