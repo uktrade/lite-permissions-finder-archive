@@ -36,14 +36,10 @@ public class DecontrolsDisplay {
     this.decontrols = controlCodeData.decontrols.stream()
         .map(decontrol -> decontrol.text)
         .collect(Collectors.toList());
-    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() || controlCodeSubJourney.isSoftTechControlsVariant()) {
+    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
+        controlCodeSubJourney.isSoftTechControlsVariant() ||
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
       this.formAction = routes.DecontrolsController.handleSubmit().url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.DecontrolsController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.DecontrolsController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
     }
     else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
       this.formAction = routes.DecontrolsController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();

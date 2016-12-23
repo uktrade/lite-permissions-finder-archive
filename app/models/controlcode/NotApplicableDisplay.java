@@ -6,6 +6,7 @@ import models.softtech.ApplicableSoftTechControls;
 import play.data.Form;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -54,39 +55,24 @@ public class NotApplicableDisplay {
           new NotApplicableButton(2, "backToSearch", "edit your item description to get a different set of results")
       );
     }
-    else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
-      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-      this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(goodsType.urlString()).url();
-      if (canPickAgain(applicableSoftTechControls)) {
-        this.buttons = Arrays.asList(
-            new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again")
-        );
-      }
-      else {
-        this.buttons = Arrays.asList(new NotApplicableButton(1, "continue", "continue to other options"));
-      }
-    }
-    else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
+    else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
       this.formAction = routes.NotApplicableController.handleSubmit().url();
       if (canPickAgain(applicableSoftTechControls)) {
-        this.buttons = Arrays.asList(
-            new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again")
-        );
+        this.buttons = Collections.singletonList(new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again"));
       }
       else {
-        this.buttons = Arrays.asList(new NotApplicableButton(1, "continue", "continue to other options"));
+        this.buttons = Collections.singletonList(new NotApplicableButton(1, "continue", "continue to other options"));
       }
     }
     else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
       this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(goodsType.urlString()).url();
       if (canPickAgain(applicableSoftTechControls)) {
-        this.buttons = Arrays.asList(
-            new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again")
-        );
+        this.buttons = Collections.singletonList(new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again"));
       }
       else {
-        this.buttons = Arrays.asList(new NotApplicableButton(1, "continue", "continue to other options"));
+        this.buttons = Collections.singletonList(new NotApplicableButton(1, "continue", "continue to other options"));
       }
     }
     else {

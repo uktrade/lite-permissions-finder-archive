@@ -51,27 +51,12 @@ public class ControlCodeSummaryDisplay {
       }
       else {
         // GoodsType.TECHNOLOGY
-        this.couldDescribeItemsLabel = "Could this describe your items?";
+        this.couldDescribeItemsLabel = "Could this describe the item your technology is used with?";
       }
     }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+    else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
       this.formAction = routes.ControlCodeSummaryController.handleSubmit().url();
-      this.couldDescribeItemsLabel = "Could this describe the item your software is used with?";
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.ControlCodeSummaryController.handleSubmit().url();
-      this.couldDescribeItemsLabel = "Could this describe the item your technology is used with?";
-    }
-    else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
-      this.formAction = routes.ControlCodeSummaryController.handleSubmit().url();
-      this.couldDescribeItemsLabel = "Could this describe your items?";
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.ControlCodeSummaryController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-      this.couldDescribeItemsLabel = "Could this describe your items?";
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-      this.formAction = routes.ControlCodeSummaryController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
     else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {

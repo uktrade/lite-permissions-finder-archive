@@ -64,10 +64,6 @@ public class AdditionalSpecificationsController {
     return renderWithForm(controlCodeSubJourney, formFactory.form(AdditionalSpecificationsForm.class).fill(templateForm));
   }
 
-  public CompletionStage<Result> renderRelatedControlsForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderFormInternal);
-  }
-
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
     return ControlCodeSubJourneyHelper.getCatchAllControlsResult(goodsTypeText, this::renderFormInternal);
   }
@@ -95,10 +91,6 @@ public class AdditionalSpecificationsController {
         throw new FormStateException("Unhandled form state");
       }
     }
-  }
-
-  public CompletionStage<Result> handleRelatedControlsSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmitInternal);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
