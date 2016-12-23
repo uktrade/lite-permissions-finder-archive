@@ -48,17 +48,11 @@ public class NotApplicableDisplay {
     this.controlCodeAlias = controlCodeAlias;
     this.showExtendedContent = showExtendedContent;
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
+      this.formAction = routes.NotApplicableController.handleSubmit().url();
       this.buttons = Arrays.asList(
           new NotApplicableButton(1, "backToResults", "return to the list of possible matches and choose again"),
           new NotApplicableButton(2, "backToSearch", "edit your item description to get a different set of results")
       );
-      if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-        this.formAction = routes.NotApplicableController.handleSubmit().url();
-      }
-      else {
-        GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-        this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(goodsType.urlString()).url();
-      }
     }
     else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
       GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();

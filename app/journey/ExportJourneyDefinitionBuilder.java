@@ -494,20 +494,21 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     JourneyStage physicalGoodsSearchResultsRelatedToSoftware = defineStage("physicalGoodsSearchResultsRelatedToSoftware", "Possible matches",
         controllers.search.routes.PhysicalGoodsSearchResultsController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
-    JourneyStage controlCodeforRelatedToSoftware = defineStage("controlCodeRelatedToSoftware", "Summary",
-        controllers.controlcode.routes.ControlCodeSummaryController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage controlCodeRelatedToSoftware = defineStage("controlCodeRelatedToSoftware", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage controlCodeNotApplicableRelatedToSoftware = defineStage("controlCodeNotApplicableRelatedToSoftware", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
 
     JourneyStage additionalSpecificationsRelatedToSoftware = defineStage("additionalSpecificationsRelatedToSoftware", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage decontrolsRelatedToSoftware = defineStage("decontrolsRelatedToSoftware", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage technicalNotesRelatedToSoftware = defineStage("technicalNotesRelatedToSoftware", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
 
     atStage(physicalGoodsSearchRelatedToSoftware)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
@@ -515,7 +516,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(physicalGoodsSearchResultsRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(controlCodeforRelatedToSoftware));
+        .then(moveTo(controlCodeRelatedToSoftware));
 
     atStage(physicalGoodsSearchResultsRelatedToSoftware)
         .onEvent(Events.EDIT_SEARCH_DESCRIPTION)
@@ -523,7 +524,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindCatchallSoftwareControls(physicalGoodsSearchResultsRelatedToSoftware); // None matched
 
-    atStage(controlCodeforRelatedToSoftware)
+    atStage(controlCodeRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
         .branch()
         .when(ControlCodeFlowStage.BACK_TO_MATCHES, moveTo(physicalGoodsSearchResultsRelatedToSoftware))
@@ -534,7 +535,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearchRelatedToSoftware))
         .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResultsRelatedToSoftware));
 
-    bindControlsRelatedToPhysicalGoods(controlCodeforRelatedToSoftware);
+    bindControlsRelatedToPhysicalGoods(controlCodeRelatedToSoftware);
 
     atStage(additionalSpecificationsRelatedToSoftware)
         .onEvent(Events.CONTROL_CODE_FLOW_NEXT)

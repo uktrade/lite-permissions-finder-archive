@@ -33,16 +33,7 @@ public class TechnicalNotesDisplay {
       showGreatestAncestor = false;
     }
     this.otherAncestors = frontendServiceResult.otherAncestors;
-    if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.TechnicalNotesController.handleSubmit().url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.TechnicalNotesController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
-    }
-    else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
+    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() || controlCodeSubJourney.isSoftTechControlsVariant()) {
       this.formAction = routes.TechnicalNotesController.handleSubmit().url();
     }
     else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {

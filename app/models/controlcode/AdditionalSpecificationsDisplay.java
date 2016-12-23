@@ -50,16 +50,8 @@ public class AdditionalSpecificationsDisplay {
       this.clauseText = null;
       this.specifications = Collections.emptyList();
     }
-    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
-      if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-        this.formAction = routes.NotApplicableController.handleSubmit().url();
-      }
-      else {
-        GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-        this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(goodsType.urlString()).url();
-      }
-    }
-    else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
+    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
+        controlCodeSubJourney.isSoftTechControlsVariant()) {
       this.formAction = routes.NotApplicableController.handleSubmit().url();
     }
     else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {

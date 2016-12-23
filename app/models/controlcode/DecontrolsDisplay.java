@@ -36,16 +36,7 @@ public class DecontrolsDisplay {
     this.decontrols = controlCodeData.decontrols.stream()
         .map(decontrol -> decontrol.text)
         .collect(Collectors.toList());
-    if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.DecontrolsController.handleSubmit().url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
-    }
-    else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.DecontrolsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
-    }
-    else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
+    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() || controlCodeSubJourney.isSoftTechControlsVariant()) {
       this.formAction = routes.DecontrolsController.handleSubmit().url();
     }
     else if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
