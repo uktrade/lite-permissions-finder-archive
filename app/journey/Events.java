@@ -93,4 +93,6 @@ public class Events {
   public static final ParameterisedJourneyEvent<RadioactiveStage> RADIOACTIVE_NEXT =
       new ParameterisedJourneyEvent<>("RADIOACTIVE_NEXT", RadioactiveStage.class);
 
+  public static final JourneyEvent CONTROL_CODE_NOT_APPLICABLE = new JourneyEvent("CONTROL_CODE_NOT_APPLICABLE");
+
 }

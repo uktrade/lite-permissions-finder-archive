@@ -270,7 +270,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage physicalGoodsSearchResults = defineStage("physicalGoodsSearchResults", "Possible matches",
         controllers.search.routes.PhysicalGoodsSearchResultsController.renderSearchForm());
 
-    JourneyStage controlCode = defineStage("controlCode", "Summary",
+    JourneyStage controlCodeSummary = defineStage("controlCodeSummary", "Summary",
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
     JourneyStage controlCodeNotApplicable = defineStage("controlCodeNotApplicable", "Rating is not applicable",
@@ -306,98 +306,67 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(physicalGoodsSearchResults)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(controlCode));
+        .then(moveTo(controlCodeSummary));
 
     atStage(physicalGoodsSearchResults)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(notApplicable));
 
-    //TODO - injection?
-//    ControlCodeDecision techNotesDecision = new ControlCodeDecision();
-//    ControlCodeDecision additionalSpecsDecision = new ControlCodeDecision();
-//
-//    atDecision(techNotesDecision)
-//        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes));
-//        //.whenThenDecide(ControlCodeFlowStage.CONFIRMED, additionalSpecsDecision);
-//
-
-    //New
-
     DecisionStage<Boolean> decontrolsDecision = defineDecisionStage("hasDecontrols", controlCodeDecider,
         r -> r.contains(ControlCodeDecider.ControlCodeDataType.DECONTROLS));
+
     DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage("hasTechNotes", controlCodeDecider,
         r -> r.contains(ControlCodeDecider.ControlCodeDataType.TECHNICAL_NOTES));
+
     DecisionStage<Boolean> additionalSpecsDecision = defineDecisionStage("hasAdditionalSpecs", controlCodeDecider,
         r -> r.contains(ControlCodeDecider.ControlCodeDataType.ADDITIONAL_SPECS));
 
-    atStage(controlCode)
+    atStage(controlCodeSummary)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(decontrolsDecision));
+
+    atStage(controlCodeSummary)
+        .onEvent(Events.CONTROL_CODE_NOT_APPLICABLE)
+        .then(moveTo(controlCodeNotApplicable));
+
+    atStage(decontrols)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(technicalNotesDecision));
+
+    atStage(decontrols)
+        .onEvent(Events.CONTROL_CODE_NOT_APPLICABLE)
+        .then(moveTo(controlCodeNotApplicableExtended));
+
+    atStage(technicalNotes)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(additionalSpecsDecision));
+
+    atStage(technicalNotes)
+        .onEvent(Events.CONTROL_CODE_NOT_APPLICABLE)
+        .then(moveTo(controlCodeNotApplicableExtended));
+
+    atStage(additionalSpecifications)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(destinationCountries));
+
+    atStage(additionalSpecifications)
+        .onEvent(Events.CONTROL_CODE_NOT_APPLICABLE)
+        .then(moveTo(controlCodeNotApplicableExtended));
 
     atDecisionStage(decontrolsDecision)
         .decide()
         .when(true, moveTo(decontrols))
         .when(false, moveTo(technicalNotesDecision));
 
-    atStage(decontrols)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(technicalNotesDecision));
-
     atDecisionStage(technicalNotesDecision)
         .decide()
         .when(true, moveTo(technicalNotes))
         .when(false, moveTo(additionalSpecsDecision));
 
-    atStage(technicalNotes)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(additionalSpecsDecision));
-
-    atStage(additionalSpecifications)
-        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
-        .branch()
-        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtended))
-//        .when(ControlCodeFlowStage.DECONTROLS, moveTo(decontrols))
-//        .when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
-
     atDecisionStage(additionalSpecsDecision)
         .decide()
         .when(true, moveTo(additionalSpecifications))
         .when(false, moveTo(destinationCountries));
-
-
-//    atDecisionStage(decontrolsDecision)
-//        .decide(controlCodeDecision) // would also do decide() to operate directly on decision result
-//        .when(ControlCodeData.DECONTROLS, moveTo(decontrols))
-//        .when(ControlCodeData.TECHNICAL, moveTo(technicalNotesDecision));
-
-
-    //Existing
-
-    atStage(decontrols)
-        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
-        .branch()
-        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtended))
-        //.when(ControlCodeFlowStage.TECHNICAL_NOTES, moveTo(technicalNotes))
-        .when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
-
-    atStage(technicalNotes)
-        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
-        .branch()
-        .when(ControlCodeFlowStage.NOT_APPLICABLE, moveTo(controlCodeNotApplicableExtended));
-        //.when(ControlCodeFlowStage.CONFIRMED, moveTo(destinationCountries));
-
-    atStage(controlCodeNotApplicable)
-        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
-        .branch()
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
-        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResults));
-
-    atStage(controlCodeNotApplicableExtended)
-        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
-        .branch()
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH, moveTo(physicalGoodsSearch))
-        .when(ControlCodeFlowStage.BACK_TO_RESULTS, moveTo(physicalGoodsSearchResults));
 
     atStage(destinationCountries)
         .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
