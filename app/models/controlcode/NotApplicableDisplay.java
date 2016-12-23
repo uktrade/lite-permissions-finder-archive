@@ -5,13 +5,34 @@ import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
 import play.data.Form;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 public class NotApplicableDisplay {
   public final Form<?> form;
   public final String formAction;
   public final String controlCodeAlias;
   public final boolean showExtendedContent;
-  public final boolean canPickAgain;
   public final ControlCodeSubJourney controlCodeSubJourney;
+  public final List<NotApplicableButton> buttons;
+
+  public class NotApplicableButton implements Comparable<NotApplicableButton> {
+    public final String value;
+    public final String content;
+    public final int order;
+
+    public NotApplicableButton(int order, String value, String content) {
+      this.order = order;
+      this.value = value;
+      this.content = content;
+    }
+
+    @Override
+    public int compareTo(NotApplicableButton otherButton) {
+      return this.order - otherButton.order;
+    }
+  }
 
   /**
    * Display object for the {@code notApplicable} view
@@ -26,64 +47,72 @@ public class NotApplicableDisplay {
     this.form = form;
     this.controlCodeAlias = controlCodeAlias;
     this.showExtendedContent = showExtendedContent;
-    if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.NotApplicableController.handleSubmit().url();
-      this.canPickAgain = true;
-    }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
-      this.canPickAgain = true;
-    }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
-      this.canPickAgain = true;
-    }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS ||
-        controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS ||
-        controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
-        controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
-        controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS ||
-        controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS) {
-      // Software
-      if (applicableSoftTechControls != null) {
-        if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS) {
-          this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-        }
-        else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS) {
-          this.formAction = routes.NotApplicableController.handleControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
-        }
-        else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-          this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-        }
-        else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-          this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
-        }
-        else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS) {
-          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.SOFTWARE.urlString()).url();
-        }
-        else {
-          // ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS
-          this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(GoodsType.TECHNOLOGY.urlString()).url();
-        }
-
-        if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
-          this.canPickAgain = false;
-        }
-        else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-          this.canPickAgain = true;
-        }
-        else {
-          throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
-              , applicableSoftTechControls.toString()));
-        }
+    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
+      this.buttons = Arrays.asList(
+          new NotApplicableButton(1, "backToResults", "return to the list of possible matches and choose again"),
+          new NotApplicableButton(2, "backToSearch", "edit your item description to get a different set of results")
+      );
+      if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
+        this.formAction = routes.NotApplicableController.handleSubmit().url();
       }
       else {
-        throw new RuntimeException(String.format("Expected applicableSoftTechControls to not be null"));
+        GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+        this.formAction = routes.NotApplicableController.handleSearchRelatedToSubmit(goodsType.urlString()).url();
+      }
+    }
+    else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
+      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+      this.formAction = routes.NotApplicableController.handleRelatedControlsSubmit(goodsType.urlString()).url();
+      if (canPickAgain(applicableSoftTechControls)) {
+        this.buttons = Arrays.asList(
+            new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again")
+        );
+      }
+      else {
+        this.buttons = Arrays.asList(new NotApplicableButton(1, "continue", "continue to other options"));
+      }
+    }
+    else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
+      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+      this.formAction = routes.NotApplicableController.handleControlsSubmit(goodsType.urlString()).url();
+      if (canPickAgain(applicableSoftTechControls)) {
+        this.buttons = Arrays.asList(
+            new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again")
+        );
+      }
+      else {
+        this.buttons = Arrays.asList(new NotApplicableButton(1, "continue", "continue to other options"));
+      }
+    }
+    else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
+      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+      this.formAction = routes.NotApplicableController.handleCatchallControlsSubmit(goodsType.urlString()).url();
+      if (canPickAgain(applicableSoftTechControls)) {
+        this.buttons = Arrays.asList(
+            new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again")
+        );
+      }
+      else {
+        this.buttons = Arrays.asList(new NotApplicableButton(1, "continue", "continue to other options"));
       }
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
           , controlCodeSubJourney.toString()));
+    }
+    this.buttons.sort(Comparator.naturalOrder());
+  }
+
+  private boolean canPickAgain(ApplicableSoftTechControls applicableSoftTechControls) {
+    if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
+      return false;
+    }
+    else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
+      return true;
+    }
+    else {
+      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
+          , applicableSoftTechControls.toString()));
     }
   }
 
