@@ -9,6 +9,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.RadioactiveStage;
 import models.VirtualEUOgelStage;
+import models.controlcode.BackType;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
@@ -94,5 +95,7 @@ public class Events {
       new ParameterisedJourneyEvent<>("RADIOACTIVE_NEXT", RadioactiveStage.class);
 
   public static final JourneyEvent CONTROL_CODE_NOT_APPLICABLE = new JourneyEvent("CONTROL_CODE_NOT_APPLICABLE");
+
+  public static final ParameterisedJourneyEvent<BackType> BACK = new ParameterisedJourneyEvent<>("BACK", BackType.class);
 
 }

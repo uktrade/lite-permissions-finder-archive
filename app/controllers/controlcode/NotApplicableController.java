@@ -13,6 +13,7 @@ import journey.helpers.ControlCodeSubJourneyHelper;
 import journey.helpers.SoftTechJourneyHelper;
 import models.ControlCodeFlowStage;
 import models.GoodsType;
+import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.NotApplicableDisplay;
 import models.softtech.ApplicableSoftTechControls;
@@ -129,10 +130,10 @@ public class NotApplicableController {
       String action = form.get().action;
       if (models.controlcode.ControlCodeSubJourney.isPhysicalGoodsSearchVariant(controlCodeSubJourney)) {
         if ("backToSearch".equals(action)) {
-          return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_SEARCH);
+          return journeyManager.performTransition(Events.BACK, BackType.SEARCH);
         }
         else if ("backToResults".equals(action)) {
-          return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_RESULTS);
+          return journeyManager.performTransition(Events.BACK, BackType.RESULTS);
         }
         else {
           throw new FormStateException("Unknown value for action: \"" + action + "\"");

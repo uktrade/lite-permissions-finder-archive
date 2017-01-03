@@ -15,6 +15,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.RadioactiveStage;
 import models.VirtualEUOgelStage;
+import models.controlcode.BackType;
 import models.controlcode.ControlCodeVariant;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
@@ -369,10 +370,16 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(false, moveTo(destinationCountries));
 
     atStage(controlCodeNotApplicable)
-        .onEvent(Events.CONTROL_CODE_FLOW_NEXT)
+        .onEvent(Events.BACK)
         .branch()
-        .when(ControlCodeFlowStage.BACK_TO_RESULTS, backTo(physicalGoodsSearchResults))
-        .when(ControlCodeFlowStage.BACK_TO_SEARCH, backTo(physicalGoodsSearch));
+        .when(BackType.RESULTS, backTo(physicalGoodsSearchResults))
+        .when(BackType.SEARCH, backTo(physicalGoodsSearch));
+
+    atStage(controlCodeNotApplicableExtended)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.RESULTS, backTo(physicalGoodsSearchResults))
+        .when(BackType.SEARCH, backTo(physicalGoodsSearch));
 
     atStage(destinationCountries)
         .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
