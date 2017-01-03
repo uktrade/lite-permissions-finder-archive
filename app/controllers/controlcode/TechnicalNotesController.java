@@ -44,7 +44,7 @@ public class TechnicalNotesController {
 
   private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<TechnicalNotesForm> form) {
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
-        .thenApplyAsync(result -> ok(technicalNotes.render(form, new TechnicalNotesDisplay(controlCodeSubJourney, result)))
+        .thenApplyAsync(result -> ok(technicalNotes.render(form, new TechnicalNotesDisplay(result)))
             , httpExecutionContext.current());
   }
 

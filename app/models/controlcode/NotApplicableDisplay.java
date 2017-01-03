@@ -1,7 +1,5 @@
 package models.controlcode;
 
-import controllers.controlcode.routes;
-import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
 import play.data.Form;
 
@@ -12,7 +10,6 @@ import java.util.List;
 
 public class NotApplicableDisplay {
   public final Form<?> form;
-  public final String formAction;
   public final String controlCodeAlias;
   public final boolean showExtendedContent;
   public final ControlCodeSubJourney controlCodeSubJourney;
@@ -49,7 +46,6 @@ public class NotApplicableDisplay {
     this.controlCodeAlias = controlCodeAlias;
     this.showExtendedContent = showExtendedContent;
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
-      this.formAction = routes.NotApplicableController.handleSubmit().url();
       this.buttons = Arrays.asList(
           new NotApplicableButton(1, "backToResults", "return to the list of possible matches and choose again"),
           new NotApplicableButton(2, "backToSearch", "edit your item description to get a different set of results")
@@ -58,7 +54,6 @@ public class NotApplicableDisplay {
     else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
         controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
         controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
-      this.formAction = routes.NotApplicableController.handleSubmit().url();
       if (canPickAgain(applicableSoftTechControls)) {
         this.buttons = Collections.singletonList(new NotApplicableButton(1, "backToMatches", "return to the list of possible matches and choose again"));
       }

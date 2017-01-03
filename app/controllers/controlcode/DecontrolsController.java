@@ -45,7 +45,7 @@ public class DecontrolsController {
 
   private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<DecontrolsForm> form) {
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
-        .thenApplyAsync(result -> ok(decontrols.render(form, new DecontrolsDisplay(controlCodeSubJourney, result)))
+        .thenApplyAsync(result -> ok(decontrols.render(form, new DecontrolsDisplay(result)))
             , httpExecutionContext.current());
   }
 
@@ -59,7 +59,6 @@ public class DecontrolsController {
     templateForm.decontrolsDescribeItem = decontrolsApply.isPresent() ? decontrolsApply.get().toString() : "";
     return renderWithForm(controlCodeSubJourney, formFactory.form(DecontrolsForm.class).fill(templateForm));
   }
-
   public CompletionStage<Result> handleSubmit() {
     return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
   }

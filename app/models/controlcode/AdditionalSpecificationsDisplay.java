@@ -4,15 +4,12 @@ import components.services.controlcode.AdditionalSpecifications;
 import components.services.controlcode.Ancestor;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
-import controllers.controlcode.routes;
-import models.GoodsType;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AdditionalSpecificationsDisplay {
-  public final String formAction;
   public final String title;
   public final String friendlyDescription;
   public final String controlCodeAlias;
@@ -22,7 +19,7 @@ public class AdditionalSpecificationsDisplay {
   public final String clauseText;
   public final List<String> specifications;
 
-  public AdditionalSpecificationsDisplay(ControlCodeSubJourney controlCodeSubJourney, FrontendServiceResult frontendServiceResult) {
+  public AdditionalSpecificationsDisplay(FrontendServiceResult frontendServiceResult) {
     ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
@@ -49,16 +46,6 @@ public class AdditionalSpecificationsDisplay {
     else {
       this.clauseText = null;
       this.specifications = Collections.emptyList();
-    }
-    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
-        controlCodeSubJourney.isSoftTechControlsVariant() ||
-        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
-        controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
-      this.formAction = routes.NotApplicableController.handleSubmit().url();
-    }
-    else {
-      throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
-          , controlCodeSubJourney.toString()));
     }
   }
 

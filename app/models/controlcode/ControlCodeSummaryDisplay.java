@@ -3,13 +3,11 @@ package models.controlcode;
 import components.services.controlcode.Ancestor;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
-import controllers.controlcode.routes;
 import models.GoodsType;
 
 import java.util.List;
 
 public class ControlCodeSummaryDisplay {
-  public final String formAction;
   public final String title;
   public final String friendlyDescription;
   public final String controlCodeAlias;
@@ -41,7 +39,6 @@ public class ControlCodeSummaryDisplay {
     }
     this.otherAncestors = frontendServiceResult.otherAncestors;
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
-      this.formAction = routes.ControlCodeSummaryController.handleSubmit().url();
       GoodsType goodsType = controlCodeSubJourney.getGoodsType();
       if (goodsType == GoodsType.PHYSICAL) {
         this.couldDescribeItemsLabel = "Could this describe your items?";
@@ -57,7 +54,6 @@ public class ControlCodeSummaryDisplay {
     else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
         controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
         controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
-      this.formAction = routes.ControlCodeSummaryController.handleSubmit().url();
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
     else {
