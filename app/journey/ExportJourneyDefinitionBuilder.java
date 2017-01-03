@@ -44,6 +44,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.StaticContentController.renderNotApplicable());
 
   /** Software **/
+  private final DecisionStage<ExportCategory> dualUseOrMilitarySoftwareDecision;
   private final JourneyStage softwareExemptionsQ1 = defineStage("softwareExemptionsQ1", "Some types of software do not need a licence",
       controllers.softtech.routes.ExemptionsController.renderFormQ1());
   private final JourneyStage softwareExemptionsQ2 = defineStage("softwareExemptionsQ2", "Some types of software do not need a licence",
@@ -74,10 +75,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.softtech.routes.RelationshipController.renderForm());
 
   private final ControlCodeDecider controlCodeDecider;
+  private final ExportCategoryDecider exportCategoryDecider;
 
   @Inject
-  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider) {
+  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider, ExportCategoryDecider exportCategoryDecider) {
     this.controlCodeDecider = controlCodeDecider;
+    this.exportCategoryDecider = exportCategoryDecider;
+    this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("isDualUseSoftwareDecision", this.exportCategoryDecider);
   }
 
   @Override
@@ -90,7 +94,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(physicalGoodsSearch))
-        .when(GoodsType.SOFTWARE, moveTo(softwareExemptionsQ1))
+        .when(GoodsType.SOFTWARE, moveTo(dualUseOrMilitarySoftwareDecision))
         .when(GoodsType.TECHNOLOGY, moveTo(notImplemented));
 
     physicalGoodsStages();
@@ -440,6 +444,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     JourneyStage softwareRelationshipContactECO = defineStage("softwareRelationshipContactECO", "Contact ECO",
         routes.StaticContentController.renderSoftwareRelationshipContactECO());
+
+    atDecisionStage(dualUseOrMilitarySoftwareDecision)
+        .decide()
+        .when(ExportCategory.MILITARY, moveTo(notImplemented))
+        .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
 
     atStage(softwareExemptionsQ1)
         .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
