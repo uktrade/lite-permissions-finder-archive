@@ -20,13 +20,15 @@
       </p>
     } else {
       <p>
-        Not all items within the classification <strong class="bold-small">@ogelRestriction.controlCode</strong> can be exported using the open general export licence @ogel.name
+        Not all items within the classification <strong class="bold-small">@ogelRestriction.controlCode</strong> can be exported using the open general export licence <strong class="bold-small">@ogel.name</strong>
       </p>
     }
 
     <h2 class="heading-medium">Are you exporting any of the following?</h2>
 
+    <div class="stored-content-container">
     @Html(ogelRestriction.conditionDescription)
+    </div>
 
     @if(ogelRestriction.conditionDescriptionControlCodes.isPresent && !ogelRestriction.conditionDescriptionControlCodes.get.controlCodes.isEmpty) {
       <ul class="list list-bullet text">
