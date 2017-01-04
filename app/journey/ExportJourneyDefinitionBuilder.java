@@ -455,7 +455,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atDecisionStage(dualUseOrMilitarySoftwareDecision)
         .decide()
         .when(ExportCategory.MILITARY, moveTo(applicableSoftTechControlsDecision))
-        .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
+        .when(ExportCategory.DUAL_USE, moveTo(dualUseSoftwareCategories));
+//        .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
 
     /** Software Exemptions */
 //    atStage(softwareExemptionsQ1)
@@ -463,7 +464,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 //        .branch()
 //        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR1))
 //        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_DO_NOT_APPLY, moveTo(softwareExemptionsQ2));
-//
+
 //    atStage(softwareExemptionsQ2)
 //        .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
 //        .branch()
@@ -473,26 +474,25 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 //        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))
 //        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(softwareCategoryControls));
 //
-//    atStage(dualUseSoftwareCategories)
-//        .onEvent(Events.DUAL_USE_SOFT_TECH_CATEGORY_SELECTED)
-//        .branch()
-//        .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
-//        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeForSoftwareControls))
-//        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(softwareCategoryControls));
+    atStage(dualUseSoftwareCategories)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(applicableSoftTechControlsDecision));
 
-//    atStage(dualUseSoftwareCategories)
-//        .onEvent(Events.NONE_MATCHED)
-//        .then(moveTo(relatedToEquipmentOrMaterials));
+    atStage(dualUseSoftwareCategories)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(relatedToEquipmentOrMaterials));
 
-//    atStage(relatedToEquipmentOrMaterials)
-//        .onEvent(StandardEvents.YES).then(moveTo(physicalGoodsSearchRelatedToSoftware));
+    atStage(relatedToEquipmentOrMaterials)
+        .onEvent(StandardEvents.YES)
+        .then(moveTo(physicalGoodsSearchRelatedToSoftware));
 
 //    bindCatchallSoftwareControls(relatedToEquipmentOrMaterials);
 
     atDecisionStage(applicableSoftTechControlsDecision)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
-        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySC)) // TODO Dao state isn't being set here
+//        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySC)) // TODO Dao state isn't being set here
+        .when(ApplicableSoftTechControls.ONE, moveTo(notImplemented))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(categoryControlsListSC));
 
     softwareCategoryControls();
