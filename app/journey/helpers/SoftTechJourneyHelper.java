@@ -61,6 +61,7 @@ public class SoftTechJourneyHelper {
    * @return The applicable software controls
    */
   public CompletionStage<ApplicableSoftTechControls> checkSoftTechControls(GoodsType goodsType, SoftTechCategory softTechCategory, boolean saveToDao) {
+    // TODO remove saveToDao, just
     return categoryControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> {
           if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
@@ -93,6 +94,17 @@ public class SoftTechJourneyHelper {
             throw new RuntimeException(String.format("Invalid value for size: \"%d\"", size));
           }
         }, httpExecutionContext.current());
+  }
+
+  /**
+   * Check for applicable software controls of the given software category
+   * @param goodsType The goods type to check the controls of
+   * @param softTechCategory The software category to check the controls of
+   * @return The applicable software controls
+   */
+  public CompletionStage<ApplicableSoftTechControls> checkSoftTechControls(GoodsType goodsType, SoftTechCategory softTechCategory) {
+    return categoryControlsServiceClient.get(goodsType, softTechCategory)
+        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.controlCodes.size()), httpExecutionContext.current());
   }
 
   public CompletionStage<ApplicableSoftTechControls> checkRelatedSoftwareControls(GoodsType goodsType, String controlCode, boolean saveToDao) {

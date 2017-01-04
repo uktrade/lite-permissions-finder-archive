@@ -4,6 +4,7 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
+import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
 import components.services.controlcode.FrontendServiceResult;
@@ -74,7 +75,7 @@ public class NotApplicableController {
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, false)
+      return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
@@ -128,26 +129,24 @@ public class NotApplicableController {
     Form<NotApplicableForm> form = formFactory.form(NotApplicableForm.class).bindFromRequest();
     if (!form.hasErrors()) {
       String action = form.get().action;
-      if (models.controlcode.ControlCodeSubJourney.isPhysicalGoodsSearchVariant(controlCodeSubJourney)) {
+      if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() || controlCodeSubJourney.isSoftTechControlsVariant()) {
         if ("backToSearch".equals(action)) {
           return journeyManager.performTransition(Events.BACK, BackType.SEARCH);
         }
         else if ("backToResults".equals(action)) {
           return journeyManager.performTransition(Events.BACK, BackType.RESULTS);
         }
+        else if ("backToMatches".equals(action)) {
+          return journeyManager.performTransition(Events.BACK, BackType.MATCHES);
+        }
+        else if ("continue".equals(action)) {
+          return journeyManager.performTransition(StandardEvents.NEXT);
+        }
         else {
           throw new FormStateException("Unknown value for action: \"" + action + "\"");
         }
       }
-      else if (models.controlcode.ControlCodeSubJourney.isSoftTechControlsVariant(controlCodeSubJourney)) {
-        GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-        // A different action is expected for each valid member of ApplicableSoftTechControls
-        SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-        return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, false)
-            .thenComposeAsync(controls -> softTechControls(controls, action),
-                httpExecutionContext.current());
-      }
-      else if (models.controlcode.ControlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeSubJourney)) {
+      else if (ControlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeSubJourney)) {
         GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
         ControlCodeSubJourney physicalControlCodeSubJourney;
         if (goodsType == GoodsType.SOFTWARE) {
@@ -162,7 +161,7 @@ public class NotApplicableController {
             .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(goodsType, controls, action),
                 httpExecutionContext.current()).thenCompose(Function.identity());
       }
-      else if (models.controlcode.ControlCodeSubJourney.isSoftTechCatchallControlsVariant(controlCodeSubJourney)) {
+      else if (ControlCodeSubJourney.isSoftTechCatchallControlsVariant(controlCodeSubJourney)) {
         GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
         // A different action is expected for each valid member of ApplicableSoftTechControls
         SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
@@ -176,32 +175,6 @@ public class NotApplicableController {
       }
     }
     throw new FormStateException("Unhandled form state");
-  }
-
-  private CompletionStage<Result> softTechControls(ApplicableSoftTechControls applicableSoftTechControls, String action) {
-    // TODO remove duplicate code
-    if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
-      if ("continue".equals(action)) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
-            SoftTechControlsNotApplicableFlow.CONTINUE_NO_CONTROLS);
-      }
-      else {
-        throw new FormStateException("Unknown value for action: \"" + action + "\"");
-      }
-    }
-    else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-      if ("backToMatches".equals(action)) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
-            SoftTechControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CONTROLS);
-      }
-      else {
-        throw new FormStateException("Unknown value for action: \"" + action + "\"");
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
-          , applicableSoftTechControls.toString()));
-    }
   }
 
   private CompletionStage<Result> softwareControlsRelatedToPhysicalGood(GoodsType goodsType, ApplicableSoftTechControls applicableSoftTechControls, String action) {
