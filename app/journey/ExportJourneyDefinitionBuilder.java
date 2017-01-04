@@ -10,6 +10,7 @@ import controllers.categories.NonMilitaryController;
 import controllers.routes;
 import journey.deciders.ControlCodeDecider;
 import journey.deciders.ExportCategoryDecider;
+import journey.deciders.SoftTechControlsDecider;
 import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
@@ -47,6 +48,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   /** Software **/
   private final DecisionStage<ExportCategory> dualUseOrMilitarySoftwareDecision;
+  private final DecisionStage<ApplicableSoftTechControls> applicableSoftTechControlsDecision;
   private final JourneyStage softwareExemptionsQ1 = defineStage("softwareExemptionsQ1", "Some types of software do not need a licence",
       controllers.softtech.routes.ExemptionsController.renderFormQ1());
   private final JourneyStage softwareExemptionsQ2 = defineStage("softwareExemptionsQ2", "Some types of software do not need a licence",
@@ -78,12 +80,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private final ControlCodeDecider controlCodeDecider;
   private final ExportCategoryDecider exportCategoryDecider;
+  private final SoftTechControlsDecider softTechControlsDecider;
 
   @Inject
-  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider, ExportCategoryDecider exportCategoryDecider) {
+  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider, ExportCategoryDecider exportCategoryDecider, SoftTechControlsDecider softTechControlsDecider) {
     this.controlCodeDecider = controlCodeDecider;
     this.exportCategoryDecider = exportCategoryDecider;
+    this.softTechControlsDecider = softTechControlsDecider;
     this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("isDualUseSoftwareDecision", this.exportCategoryDecider);
+    this.applicableSoftTechControlsDecision = defineDecisionStage("applicableSoftTechControlsDecision", this.softTechControlsDecider);
   }
 
   @Override
@@ -449,39 +454,46 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atDecisionStage(dualUseOrMilitarySoftwareDecision)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(notImplemented))
+        .when(ExportCategory.MILITARY, moveTo(applicableSoftTechControlsDecision))
         .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
 
-    atStage(softwareExemptionsQ1)
-        .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
-        .branch()
-        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR1))
-        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_DO_NOT_APPLY, moveTo(softwareExemptionsQ2));
+    /** Software Exemptions */
+//    atStage(softwareExemptionsQ1)
+//        .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
+//        .branch()
+//        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR1))
+//        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_DO_NOT_APPLY, moveTo(softwareExemptionsQ2));
+//
+//    atStage(softwareExemptionsQ2)
+//        .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
+//        .branch()
+//        .when(SoftwareExemptionsFlow.Q1_AND_Q2_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR2))
+//        .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
+//        .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
+//        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))
+//        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(softwareCategoryControls));
+//
+//    atStage(dualUseSoftwareCategories)
+//        .onEvent(Events.DUAL_USE_SOFT_TECH_CATEGORY_SELECTED)
+//        .branch()
+//        .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
+//        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeForSoftwareControls))
+//        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(softwareCategoryControls));
 
-    atStage(softwareExemptionsQ2)
-        .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
-        .branch()
-        .when(SoftwareExemptionsFlow.Q1_AND_Q2_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR2))
-        .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
-        .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
-        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))
-        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(softwareCategoryControls));
+//    atStage(dualUseSoftwareCategories)
+//        .onEvent(Events.NONE_MATCHED)
+//        .then(moveTo(relatedToEquipmentOrMaterials));
 
-    atStage(dualUseSoftwareCategories)
-        .onEvent(Events.DUAL_USE_SOFT_TECH_CATEGORY_SELECTED)
-        .branch()
+//    atStage(relatedToEquipmentOrMaterials)
+//        .onEvent(StandardEvents.YES).then(moveTo(physicalGoodsSearchRelatedToSoftware));
+
+//    bindCatchallSoftwareControls(relatedToEquipmentOrMaterials);
+
+    atDecisionStage(applicableSoftTechControlsDecision)
+        .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
-        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeForSoftwareControls))
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeForSoftwareControls)) // TODO Dao state isn't being set here
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(softwareCategoryControls));
-
-    atStage(dualUseSoftwareCategories)
-        .onEvent(Events.NONE_MATCHED)
-        .then(moveTo(relatedToEquipmentOrMaterials));
-
-    atStage(relatedToEquipmentOrMaterials)
-        .onEvent(StandardEvents.YES).then(moveTo(physicalGoodsSearchRelatedToSoftware));
-
-    bindCatchallSoftwareControls(relatedToEquipmentOrMaterials);
 
     atStage(softwareCategoryControls)
         .onEvent(Events.CONTROL_CODE_SELECTED)

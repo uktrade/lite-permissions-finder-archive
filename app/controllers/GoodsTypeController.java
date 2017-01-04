@@ -7,7 +7,9 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
+import models.ExportCategory;
 import models.GoodsType;
+import models.softtech.SoftTechCategory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -51,7 +53,16 @@ public class GoodsTypeController extends Controller {
     Optional<GoodsType> goodsTypeOptional = GoodsType.getMatchedByValue(goodsTypeParam);
 
     if(goodsTypeOptional.isPresent()) {
-      permissionsFinderDao.saveGoodsType(goodsTypeOptional.get());
+      GoodsType goodsType = goodsTypeOptional.get();
+      // Convert and save ExportCategory to SoftTechCategory in the dao, if exporting military
+      // TODO, this isn't great. Could refactor as part of the SoftTechControlsDecider
+      if (goodsType == GoodsType.SOFTWARE) {
+        ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
+        if (exportCategory == ExportCategory.MILITARY) {
+          permissionsFinderDao.saveSoftTechCategory(goodsType, SoftTechCategory.MILITARY);
+        }
+      }
+      permissionsFinderDao.saveGoodsType(goodsType);
       return journeyManager.performTransition(Events.GOODS_TYPE_SELECTED, goodsTypeOptional.get());
     }
 
