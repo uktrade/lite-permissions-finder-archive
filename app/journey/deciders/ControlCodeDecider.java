@@ -1,10 +1,11 @@
-package journey;
+package journey.deciders;
 
 import com.google.inject.Inject;
 import components.common.journey.Decider;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceClient;
+import journey.SubJourneyContextParamProvider;
 import models.controlcode.ControlCodeSubJourney;
 import play.Logger;
 

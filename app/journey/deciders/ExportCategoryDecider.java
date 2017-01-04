@@ -1,4 +1,4 @@
-package journey;
+package journey.deciders;
 
 import com.google.inject.Inject;
 import components.common.journey.Decider;
