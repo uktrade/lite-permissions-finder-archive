@@ -486,13 +486,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(StandardEvents.YES)
         .then(moveTo(physicalGoodsSearchRelatedToSoftware));
 
-//    bindCatchallSoftwareControls(relatedToEquipmentOrMaterials);
-
     atDecisionStage(applicableSoftTechControlsDecision)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
-//        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySC)) // TODO Dao state isn't being set here
-        .when(ApplicableSoftTechControls.ONE, moveTo(notImplemented))
+        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySC))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(categoryControlsListSC));
 
     softwareCategoryControls();
