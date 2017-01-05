@@ -64,7 +64,7 @@ public class ContinueApplicationController {
         transactionManager.setTransaction(transactionId);
         // Overwrite stored search form data
         permissionsFinderDao.savePhysicalGoodSearchForm(ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH,
-            new SearchController.ControlCodeSearchForm());
+            new SearchController.SearchForm());
         Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
         if (ogelRegistrationExists.isPresent() && ogelRegistrationExists.get()) {
           return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);

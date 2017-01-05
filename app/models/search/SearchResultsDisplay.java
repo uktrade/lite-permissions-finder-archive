@@ -8,40 +8,38 @@ import play.data.Form;
 
 import java.util.List;
 
-public class SearchResultsBaseDisplay {
+public class SearchResultsDisplay {
   public final ControlCodeSubJourney controlCodeSubJourney;
   public final Form<?> form;
   public final String formAction;
   public final String pageTitle;
-  public final GoodsType goodsType;
   public final List<Result> results;
   public final int resultsDisplayCount;
   public final String lastChosenControlCode;
   public final String preResultsLabel;
 
-  public SearchResultsBaseDisplay(ControlCodeSubJourney controlCodeSubJourney, Form<?> form, GoodsType goodsType, List<Result> results, int resultsDisplayCount, String lastChosenControlCode) {
+  public SearchResultsDisplay(ControlCodeSubJourney controlCodeSubJourney, Form<?> form, List<Result> results, int resultsDisplayCount, String lastChosenControlCode) {
     this.controlCodeSubJourney = controlCodeSubJourney;
     this.form = form;
-    this.goodsType = goodsType;
     this.results = results;
     this.resultsDisplayCount = resultsDisplayCount;
     this.lastChosenControlCode = lastChosenControlCode;
     String pageTitleWithMatches;
     String pageTitleWithoutMatches;
-    if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
-      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchSubmit().url();
+    if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
+      this.formAction = routes.SearchResultsController.handleSearchSubmit().url();
       this.preResultsLabel = "";
       pageTitleWithMatches = "Possible matches";
       pageTitleWithoutMatches = "Your search did not return any results";
     }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
+    else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
+      this.formAction = routes.SearchResultsController.handleSearchRelatedToSubmit(GoodsType.SOFTWARE.urlString()).url();
       this.preResultsLabel = "Select the closest match to the item your software is used with";
       pageTitleWithMatches = "Item related to your software";
       pageTitleWithoutMatches = "Your search did not return any results";
     }
-    else if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.formAction = routes.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
+    else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
+      this.formAction = routes.SearchResultsController.handleSearchRelatedToSubmit(GoodsType.TECHNOLOGY.urlString()).url();
       this.preResultsLabel = "Select the closest match to the item your technology is used with";
       pageTitleWithMatches = "Item related to your technology";
       pageTitleWithoutMatches = "Your search did not return any results";
@@ -59,7 +57,7 @@ public class SearchResultsBaseDisplay {
     }
   }
 
-  public SearchResultsBaseDisplay(ControlCodeSubJourney controlCodeSubJourney, Form<?> form, GoodsType goodsType, List<Result> results, int resultsDisplayCount) {
-    this(controlCodeSubJourney, form, goodsType, results, resultsDisplayCount, null);
+  public SearchResultsDisplay(ControlCodeSubJourney controlCodeSubJourney, Form<?> form, List<Result> results, int resultsDisplayCount) {
+    this(controlCodeSubJourney, form, results, resultsDisplayCount, null);
   }
 }

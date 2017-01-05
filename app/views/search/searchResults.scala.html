@@ -4,9 +4,10 @@
 @import views.html.common.state._
 @import controllers.search.SearchResultsController
 @import models.controlcode.ControlCodeSubJourney
-@import models.search.SearchResultsBaseDisplay
-@(display: SearchResultsBaseDisplay)
-  @standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchResultsBase")) {
+@import models.search.SearchResultsDisplay
+
+@(display: SearchResultsDisplay)
+  @standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchResults")) {
     @errorSummary(display.form)
   }{
 
@@ -23,8 +24,6 @@
         }
 
         <input id="controlCodeSubJourneyHiddenInput" type="hidden" name="controlCodeSubJourney" value="@display.controlCodeSubJourney.value">
-
-        <input id="goodsTypeHiddenInput" type="hidden" name="goodsType" value="@display.goodsType.value">
 
         <input id="resultsDisplayCountHiddenInput" type="hidden" name="resultsDisplayCount" value="@display.resultsDisplayCount">
 

@@ -3,9 +3,9 @@
 @import views.html.common.form._
 @import views.html.common.state._
 
-@import models.search.SearchBaseDisplay
-@(display: SearchBaseDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchBase")){
+@import models.search.SearchDisplay
+@(display: SearchDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("search")){
   @errorSummary(display.form)
 
 }{
@@ -18,26 +18,9 @@
       @display.descriptionLabel
     }
 
-    @***********************************
-    <p><span class="bold-medium">Other information (optional)</span></p>
-    <p>
-      You don't have to complete these, but they can help to narrow your results.
-    </p>
-    ************************************@
-
     @formTextarea(display.form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide", rows = "4"){
       @display.componentLabel
     }
-
-    @***********************************
-    @formInput(display.form("brand")){
-      @display.brandLabel
-    }
-
-    @formInput(display.form("partNumber")){
-      @display.partNumberLabel
-    }
-    ************************************@
 
     <div class="form-group">
       <button type="submit" class="button">Search</button>

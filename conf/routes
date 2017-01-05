@@ -167,23 +167,23 @@ GET     /export-questions                     controllers.ogel.OgelQuestionsCont
 
 POST    /export-questions                     controllers.ogel.OgelQuestionsController.handleSubmit
 
-GET     /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.renderSearchForm
+GET     /export-search-physical-goods         controllers.search.SearchController.renderSearchForm
 
-POST    /export-search-physical-goods         controllers.search.PhysicalGoodsSearchController.handleSearchSubmit
+POST    /export-search-physical-goods         controllers.search.SearchController.handleSearchSubmit
 
-GET     /export-search-related-to-physical-goods/:goodsType         controllers.search.PhysicalGoodsSearchController.renderSearchRelatedToForm(goodsType)
+GET     /export-search-related-to-physical-goods/:goodsType         controllers.search.SearchController.renderSearchRelatedToForm(goodsType)
 
-POST    /export-search-related-to-physical-goods/:goodsType         controllers.search.PhysicalGoodsSearchController.handleSearchRelatedToSubmit(goodsType)
+POST    /export-search-related-to-physical-goods/:goodsType         controllers.search.SearchController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.renderSearchForm
+GET     /export-search-results-physical-goods controllers.search.SearchResultsController.renderSearchForm
 
-POST    /export-search-results-physical-goods controllers.search.PhysicalGoodsSearchResultsController.handleSearchSubmit
+POST    /export-search-results-physical-goods controllers.search.SearchResultsController.handleSearchSubmit
 
-GET     /export-search-results-related-to-physical-goods/:goodsType   controllers.search.PhysicalGoodsSearchResultsController.renderSearchRelatedToForm(goodsType)
+GET     /export-search-results-related-to-physical-goods/:goodsType   controllers.search.SearchResultsController.renderSearchRelatedToForm(goodsType)
 
-POST    /export-search-results-related-to-physical-goods/:goodsType   controllers.search.PhysicalGoodsSearchResultsController.handleSearchRelatedToSubmit(goodsType)
+POST    /export-search-results-related-to-physical-goods/:goodsType   controllers.search.SearchResultsController.handleSearchRelatedToSubmit(goodsType)
 
-GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney: String, goodsType: String, fromIndex: Int, toIndex: Int, transactionId: String)
+GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney: String, fromIndex: Int, toIndex: Int, transactionId: String)
 
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 

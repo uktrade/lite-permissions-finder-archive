@@ -8,7 +8,7 @@ import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
-import controllers.search.SearchController.ControlCodeSearchForm;
+import controllers.search.SearchController.SearchForm;
 import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
@@ -224,12 +224,12 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     deleteString(GOODS_TYPE);
   }
 
-  public void savePhysicalGoodSearchForm(ControlCodeSubJourney controlCodeSubJourney, ControlCodeSearchForm controlCodeSearchForm) {
-    writeObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), controlCodeSearchForm);
+  public void savePhysicalGoodSearchForm(ControlCodeSubJourney controlCodeSubJourney, SearchForm searchForm) {
+    writeObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), searchForm);
   }
 
-  public Optional<ControlCodeSearchForm> getPhysicalGoodsSearchForm(ControlCodeSubJourney controlCodeSubJourney) {
-    return readObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), ControlCodeSearchForm.class);
+  public Optional<SearchForm> getPhysicalGoodsSearchForm(ControlCodeSubJourney controlCodeSubJourney) {
+    return readObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), SearchForm.class);
   }
 
   public void saveOgelQuestionsForm(OgelQuestionsForm ogelQuestionsForm) {
