@@ -132,6 +132,11 @@ public class SoftTechJourneyHelper {
         }, httpExecutionContext.current());
   }
 
+  public CompletionStage<ApplicableSoftTechControls> checkRelatedSoftwareControls(GoodsType goodsType, String controlCode) {
+    return relatedControlsServiceClient.get(goodsType, controlCode)
+        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.controlCodes.size()), httpExecutionContext.current());
+  }
+
   public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(GoodsType goodsType, SoftTechCategory softTechCategory, boolean saveToDao) {
     return catchallControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> {

@@ -9,7 +9,6 @@ import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.SoftTechCategory;
-import play.libs.concurrent.HttpExecutionContext;
 
 import java.util.concurrent.CompletionStage;
 
@@ -18,17 +17,14 @@ public class CategoryControlsDecider implements Decider<ApplicableSoftTechContro
   private final PermissionsFinderDao dao;
   private final SubJourneyContextParamProvider subJourneyContextParamProvider;
   private final CategoryControlsServiceClient categoryControlsServiceClient;
-  private final HttpExecutionContext httpExecutionContext;
 
   @Inject
   public CategoryControlsDecider(PermissionsFinderDao dao,
                                  SubJourneyContextParamProvider subJourneyContextParamProvider,
-                                 CategoryControlsServiceClient categoryControlsServiceClient,
-                                 HttpExecutionContext httpExecutionContext) {
+                                 CategoryControlsServiceClient categoryControlsServiceClient) {
     this.dao = dao;
     this.subJourneyContextParamProvider = subJourneyContextParamProvider;
     this.categoryControlsServiceClient = categoryControlsServiceClient;
-    this.httpExecutionContext = httpExecutionContext;
   }
 
   @SuppressWarnings("OptionalGetWithoutIsPresent")
@@ -53,7 +49,6 @@ public class CategoryControlsDecider implements Decider<ApplicableSoftTechContro
           }
 
           return applicableSoftTechControls;
-        }
-        , httpExecutionContext.current());
+        });
   }
 }

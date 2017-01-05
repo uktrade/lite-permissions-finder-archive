@@ -30,13 +30,25 @@ public class RelatedControlsDecider implements Decider<ApplicableSoftTechControl
   @Override
   public CompletionStage<ApplicableSoftTechControls> decide() {
 
-    ControlCodeSubJourney controlCodeSubJourney = subJourneyContextParamProvider.getSubJourneyValueFromContext();
+    ControlCodeSubJourney subJourney = subJourneyContextParamProvider.getSubJourneyValueFromContext();
 
-    String controlCode = dao.getSelectedControlCode(controlCodeSubJourney);
+    String controlCode = dao.getSelectedControlCode(subJourney);
 
-    GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+    GoodsType goodsType = subJourney.getSoftTechGoodsType();
 
     return relatedControlsServiceClient.get(goodsType, controlCode)
-        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.controlCodes.size()));
+        .thenApplyAsync(result -> {
+
+          ApplicableSoftTechControls applicableSoftTechControls = ApplicableSoftTechControls.fromInt(result.controlCodes.size());
+
+          // TODO Setting DAO state here is very hacky and needs rethinking
+          if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
+
+            dao.saveSelectedControlCode(subJourney, result.controlCodes.get(0).controlCode);
+
+          }
+
+          return applicableSoftTechControls;
+        });
   }
 }

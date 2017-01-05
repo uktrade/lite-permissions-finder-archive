@@ -85,17 +85,18 @@ public class NotApplicableController {
     else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
       GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
       ControlCodeSubJourney physicalControlCodeSubJourney;
-      if (controlCodeSubJourney == models.controlcode.ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
+      if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
         physicalControlCodeSubJourney = ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE;
       }
       else {
-        physicalControlCodeSubJourney = models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
+        // ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
+        physicalControlCodeSubJourney = ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
       }
       // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
       String physicalGoodControlCode = permissionsFinderDao.getSelectedControlCode(physicalControlCodeSubJourney);
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, physicalGoodControlCode, false)
+      return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, physicalGoodControlCode)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
@@ -129,7 +130,9 @@ public class NotApplicableController {
     Form<NotApplicableForm> form = formFactory.form(NotApplicableForm.class).bindFromRequest();
     if (!form.hasErrors()) {
       String action = form.get().action;
-      if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() || controlCodeSubJourney.isSoftTechControlsVariant()) {
+      if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
+          controlCodeSubJourney.isSoftTechControlsVariant() ||
+          controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
         if ("backToSearch".equals(action)) {
           return journeyManager.performTransition(Events.BACK, BackType.SEARCH);
         }
@@ -146,21 +149,6 @@ public class NotApplicableController {
           throw new FormStateException("Unknown value for action: \"" + action + "\"");
         }
       }
-      else if (ControlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(controlCodeSubJourney)) {
-        GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-        ControlCodeSubJourney physicalControlCodeSubJourney;
-        if (goodsType == GoodsType.SOFTWARE) {
-          physicalControlCodeSubJourney = models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE;
-        }
-        else {
-          physicalControlCodeSubJourney = models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
-        }
-        // A different action is expected for each valid member of ApplicableSoftTechControls
-        String physicalGoodControlCode = permissionsFinderDao.getSelectedControlCode(physicalControlCodeSubJourney);
-        return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, physicalGoodControlCode, false)
-            .thenApplyAsync(controls -> softwareControlsRelatedToPhysicalGood(goodsType, controls, action),
-                httpExecutionContext.current()).thenCompose(Function.identity());
-      }
       else if (ControlCodeSubJourney.isSoftTechCatchallControlsVariant(controlCodeSubJourney)) {
         GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
         // A different action is expected for each valid member of ApplicableSoftTechControls
@@ -175,31 +163,6 @@ public class NotApplicableController {
       }
     }
     throw new FormStateException("Unhandled form state");
-  }
-
-  private CompletionStage<Result> softwareControlsRelatedToPhysicalGood(GoodsType goodsType, ApplicableSoftTechControls applicableSoftTechControls, String action) {
-    // TODO remove duplicate code
-    if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
-      if ("continue".equals(action)) {
-        return softTechJourneyHelper.performCatchallSoftTechControlsTransition(goodsType);
-      }
-      else {
-        throw new FormStateException("Unknown value for action: \"" + action + "\"");
-      }
-    }
-    else if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-      if ("backToMatches".equals(action)) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CONTROLS_NOT_APPLICABLE_FLOW,
-            SoftTechControlsNotApplicableFlow.RETURN_TO_SOFT_TECH_CONTROLS);
-      }
-      else {
-        throw new FormStateException("Unknown value for action: \"" + action + "\"");
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
-          , applicableSoftTechControls.toString()));
-    }
   }
 
   private CompletionStage<Result> softTechCatchallControls(ApplicableSoftTechControls applicableSoftTechControls, SoftTechCategory softTechCategory, String action) {
