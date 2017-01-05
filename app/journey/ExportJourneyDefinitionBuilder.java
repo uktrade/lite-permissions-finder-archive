@@ -25,7 +25,6 @@ import models.softtech.CatchallSoftTechControlsFlow;
 import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
 import models.softtech.Relationship;
 import models.softtech.SoftTechControlsNotApplicableFlow;
-import models.softtech.SoftwareExemptionsFlow;
 
 public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
@@ -67,7 +66,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.softtech.controls.routes.SoftTechControlsController.renderRelatedToPhysicalGoodForm(GoodsType.SOFTWARE.urlString()));
   private final JourneyStage softwareCatchallControls= defineStage("softwareCatchallControls", "Showing catchall controls related to your items category",
       controllers.softtech.controls.routes.SoftTechControlsController.renderCatchallControlsForm(GoodsType.SOFTWARE.urlString()));
-  private JourneyStage relatedToEquipmentOrMaterials = defineStage("relatedToEquipmentOrMaterials", "Is your software any of the following?",
+  private JourneyStage softwareRelatedToEquipmentOrMaterials = defineStage("softwareRelatedToEquipmentOrMaterials", "Is your software any of the following?",
       controllers.softtech.routes.RelatedEquipmentController.renderForm(GoodsType.SOFTWARE.urlString()));
   private JourneyStage noSoftwareControlsExist = defineStage("noSoftTechControlsExist", "No software controls exist for item",
       controllers.softtech.controls.routes.NoSoftTechControlsExistController.renderForm(GoodsType.SOFTWARE.urlString()));
@@ -470,7 +469,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 //        .branch()
 //        .when(SoftwareExemptionsFlow.Q1_AND_Q2_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR2))
 //        .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
-//        .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(relatedToEquipmentOrMaterials))
+//        .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(softwareRelatedToEquipmentOrMaterials))
 //        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))
 //        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(softwareCategoryControls));
 //
@@ -480,15 +479,19 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(dualUseSoftwareCategories)
         .onEvent(Events.NONE_MATCHED)
-        .then(moveTo(relatedToEquipmentOrMaterials));
+        .then(moveTo(softwareRelatedToEquipmentOrMaterials));
 
-    atStage(relatedToEquipmentOrMaterials)
+    atStage(softwareRelatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.YES)
         .then(moveTo(physicalGoodsSearchRelatedToSoftware));
 
+    atStage(softwareRelatedToEquipmentOrMaterials)
+        .onEvent(StandardEvents.NO)
+        .then(moveTo(notImplemented));
+
     atDecisionStage(applicableSoftTechControlsDecision)
         .decide()
-        .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
+        .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelatedToEquipmentOrMaterials))
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySC))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(categoryControlsListSC));
 
@@ -622,7 +625,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(categoryControlsListSC)
         .onEvent(Events.NONE_MATCHED)
-        .then(moveTo(relatedToEquipmentOrMaterials));
+        .then(moveTo(softwareRelatedToEquipmentOrMaterials));
 
     atStage(controlCodeSummarySC)
         .onEvent(StandardEvents.NEXT)
@@ -663,7 +666,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(controlCodeNotApplicableSC)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(relatedToEquipmentOrMaterials));
+        .then(moveTo(softwareRelatedToEquipmentOrMaterials));
 
     /** Software control decision stage transitions */
     atDecisionStage(decontrolsDecisionSC)

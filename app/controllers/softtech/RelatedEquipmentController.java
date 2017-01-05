@@ -23,17 +23,14 @@ public class RelatedEquipmentController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final SoftTechJourneyHelper softTechJourneyHelper;
 
   @Inject
   public RelatedEquipmentController(JourneyManager journeyManager,
                                     FormFactory formFactory,
-                                    PermissionsFinderDao permissionsFinderDao,
-                                    SoftTechJourneyHelper softTechJourneyHelper) {
+                                    PermissionsFinderDao permissionsFinderDao) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
-    this.softTechJourneyHelper = softTechJourneyHelper;
   }
 
   public CompletionStage<Result> renderForm(String goodsTypeText) {
@@ -68,7 +65,7 @@ public class RelatedEquipmentController {
     }
     else if ("false".equals(relatedToEquipmentOrMaterials)) {
       permissionsFinderDao.saveRelatedToEquipmentOrMaterials(goodsType, false);
-      return softTechJourneyHelper.performCatchallSoftTechControlsTransition(goodsType);
+      return journeyManager.performTransition(StandardEvents.NO);
     }
     else {
       throw new FormStateException(String.format("Unknown value for relatedToEquipmentOrMaterials: \"%s\"",
