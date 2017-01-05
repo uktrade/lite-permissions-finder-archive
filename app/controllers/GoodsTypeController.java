@@ -55,7 +55,7 @@ public class GoodsTypeController extends Controller {
     if(goodsTypeOptional.isPresent()) {
       GoodsType goodsType = goodsTypeOptional.get();
       // Convert and save ExportCategory to SoftTechCategory in the dao, if exporting military
-      // TODO, this isn't great. Could refactor as part of the SoftTechControlsDecider
+      // TODO, this isn't great. Could refactor as part of the CategoryControlsDecider
       if (goodsType == GoodsType.SOFTWARE) {
         ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
         if (exportCategory == ExportCategory.MILITARY) {

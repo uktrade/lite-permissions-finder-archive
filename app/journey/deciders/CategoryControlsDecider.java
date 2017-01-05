@@ -13,7 +13,7 @@ import play.libs.concurrent.HttpExecutionContext;
 
 import java.util.concurrent.CompletionStage;
 
-public class SoftTechControlsDecider implements Decider<ApplicableSoftTechControls> {
+public class CategoryControlsDecider implements Decider<ApplicableSoftTechControls> {
 
   private final PermissionsFinderDao dao;
   private final SubJourneyContextParamProvider subJourneyContextParamProvider;
@@ -21,7 +21,7 @@ public class SoftTechControlsDecider implements Decider<ApplicableSoftTechContro
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public SoftTechControlsDecider(PermissionsFinderDao dao,
+  public CategoryControlsDecider(PermissionsFinderDao dao,
                                  SubJourneyContextParamProvider subJourneyContextParamProvider,
                                  CategoryControlsServiceClient categoryControlsServiceClient,
                                  HttpExecutionContext httpExecutionContext) {

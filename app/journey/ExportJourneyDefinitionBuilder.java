@@ -8,9 +8,9 @@ import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
 import controllers.categories.NonMilitaryController;
 import controllers.routes;
+import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ControlCodeDecider;
 import journey.deciders.ExportCategoryDecider;
-import journey.deciders.SoftTechControlsDecider;
 import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
@@ -22,7 +22,6 @@ import models.controlcode.BackType;
 import models.controlcode.ControlCodeVariant;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.CatchallSoftTechControlsFlow;
-import models.softtech.ControlsRelatedToPhysicalGoodsFlow;
 import models.softtech.Relationship;
 import models.softtech.SoftTechControlsNotApplicableFlow;
 
@@ -47,7 +46,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   /** Software **/
   private final DecisionStage<ExportCategory> dualUseOrMilitarySoftwareDecision;
-  private final DecisionStage<ApplicableSoftTechControls> applicableSoftTechControlsDecision;
+  private final DecisionStage<ApplicableSoftTechControls> applicableSoftwareControlsDecision;
   private final JourneyStage softwareExemptionsQ1 = defineStage("softwareExemptionsQ1", "Some types of software do not need a licence",
       controllers.softtech.routes.ExemptionsController.renderFormQ1());
   private final JourneyStage softwareExemptionsQ2 = defineStage("softwareExemptionsQ2", "Some types of software do not need a licence",
@@ -79,15 +78,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private final ControlCodeDecider controlCodeDecider;
   private final ExportCategoryDecider exportCategoryDecider;
-  private final SoftTechControlsDecider softTechControlsDecider;
+  private final CategoryControlsDecider categoryControlsDecider;
 
   @Inject
-  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider, ExportCategoryDecider exportCategoryDecider, SoftTechControlsDecider softTechControlsDecider) {
+  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider, ExportCategoryDecider exportCategoryDecider, CategoryControlsDecider categoryControlsDecider) {
     this.controlCodeDecider = controlCodeDecider;
     this.exportCategoryDecider = exportCategoryDecider;
-    this.softTechControlsDecider = softTechControlsDecider;
+    this.categoryControlsDecider = categoryControlsDecider;
     this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("isDualUseSoftwareDecision", this.exportCategoryDecider);
-    this.applicableSoftTechControlsDecision = defineDecisionStage("applicableSoftTechControlsDecision", this.softTechControlsDecider);
+    this.applicableSoftwareControlsDecision = defineDecisionStage("applicableSoftwareControlsDecision", this.categoryControlsDecider);
   }
 
   @Override
@@ -445,7 +444,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atDecisionStage(dualUseOrMilitarySoftwareDecision)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(applicableSoftTechControlsDecision))
+        .when(ExportCategory.MILITARY, moveTo(applicableSoftwareControlsDecision))
         .when(ExportCategory.DUAL_USE, moveTo(dualUseSoftwareCategories));
 //        .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
 
@@ -467,7 +466,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 //
     atStage(dualUseSoftwareCategories)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(applicableSoftTechControlsDecision));
+        .then(moveTo(applicableSoftwareControlsDecision));
 
     atStage(dualUseSoftwareCategories)
         .onEvent(Events.NONE_MATCHED)
@@ -481,7 +480,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(StandardEvents.NO)
         .then(moveTo(notImplemented));
 
-    atDecisionStage(applicableSoftTechControlsDecision)
+    atDecisionStage(applicableSoftwareControlsDecision)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelatedToEquipmentOrMaterials))
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySC))
