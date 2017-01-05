@@ -2,6 +2,7 @@ package journey;
 
 import com.google.inject.Inject;
 import components.common.journey.BackLink;
+import components.common.journey.CommonStage;
 import components.common.journey.DecisionStage;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
@@ -11,6 +12,7 @@ import controllers.routes;
 import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ControlCodeDecider;
 import journey.deciders.ExportCategoryDecider;
+import journey.deciders.RelatedControlsDecider;
 import models.ArtsCulturalGoodsType;
 import models.ControlCodeFlowStage;
 import models.ExportCategory;
@@ -47,6 +49,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   /** Software **/
   private final DecisionStage<ExportCategory> dualUseOrMilitarySoftwareDecision;
   private final DecisionStage<ApplicableSoftTechControls> applicableSoftwareControlsDecision;
+  private final DecisionStage<ApplicableSoftTechControls> applicableRelatedControlsDecision;
   private final JourneyStage softwareExemptionsQ1 = defineStage("softwareExemptionsQ1", "Some types of software do not need a licence",
       controllers.softtech.routes.ExemptionsController.renderFormQ1());
   private final JourneyStage softwareExemptionsQ2 = defineStage("softwareExemptionsQ2", "Some types of software do not need a licence",
@@ -79,14 +82,21 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final ControlCodeDecider controlCodeDecider;
   private final ExportCategoryDecider exportCategoryDecider;
   private final CategoryControlsDecider categoryControlsDecider;
+  private final RelatedControlsDecider relatedControlsDecider;
 
   @Inject
-  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider, ExportCategoryDecider exportCategoryDecider, CategoryControlsDecider categoryControlsDecider) {
+  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider,
+                                        ExportCategoryDecider exportCategoryDecider,
+                                        CategoryControlsDecider categoryControlsDecider,
+                                        RelatedControlsDecider relatedControlsDecider) {
     this.controlCodeDecider = controlCodeDecider;
     this.exportCategoryDecider = exportCategoryDecider;
     this.categoryControlsDecider = categoryControlsDecider;
+    this.relatedControlsDecider = relatedControlsDecider;
     this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("isDualUseSoftwareDecision", this.exportCategoryDecider);
     this.applicableSoftwareControlsDecision = defineDecisionStage("applicableSoftwareControlsDecision", this.categoryControlsDecider);
+    this.applicableRelatedControlsDecision = defineDecisionStage("applicableRelatedControlsDecision", this.relatedControlsDecider);
+
   }
 
   @Override
@@ -619,7 +629,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         additionalSpecificationsRTS,
         decontrolsRTS,
         technicalNotesRTS,
-        notImplemented, // TODO related software controls decision
+        applicableRelatedControlsDecision,
         additionalSpecsDecisionRTS,
         decontrolsDecisionRTS,
         technicalNotesDecisionRTS
@@ -627,6 +637,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindControlCodeNotApplicableStage(controlCodeNotApplicableRTS, searchRTS, searchResultsRTS);
 
+    atDecisionStage(applicableRelatedControlsDecision)
+        .decide()
+        .when(ApplicableSoftTechControls.ZERO, moveTo(notImplemented))
+        .when(ApplicableSoftTechControls.ONE, moveTo(notImplemented))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(notImplemented));
   }
 
 
@@ -832,7 +847,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
                                                JourneyStage additionalSpecificationsStage,
                                                JourneyStage decontrolsStage,
                                                JourneyStage technicalNotesStage,
-                                               JourneyStage exitStage,
+                                               CommonStage exitStage,
                                                DecisionStage<Boolean> additionalSpecificationsDecisionStage,
                                                DecisionStage<Boolean> decontrolsDecisionStage,
                                                DecisionStage<Boolean> technicalNotesDecisionStage) {
