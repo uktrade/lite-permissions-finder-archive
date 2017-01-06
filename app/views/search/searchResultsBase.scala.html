@@ -35,18 +35,13 @@
           <input id="lastChosenControlCodeHiddenInput" type="hidden" name="lastChosenControlCode" value="@display.lastChosenControlCode">
         }
 
-        <table id="searchResults" class="search-results">
-          <thead><tr><th></th></tr></thead>
-          <tbody>
+        <ol id="searchResults" class="search-results">
           @for(i <- 0 until Math.min(display.results.size, display.resultsDisplayCount)) {
-            <tr>
-              <td>
-                <button id="@display.results.get(i).code-button" type="submit" class="link font-medium" name="result" value="@display.results.get(i).code">@Html(display.results.get(i).highlightedText)</button>
-              </td>
-            </tr>
+            <li>
+              <button id="@display.results.get(i).code-button" type="submit" class="link font-medium" name="result" value="@display.results.get(i).code">@Html(display.results.get(i).highlightedText)</button>
+            </li>
           }
-          </tbody>
-        </table>
+        </ol>
 
         <div class="search-result-actions">
           @if(display.resultsDisplayCount < display.results.size) {
