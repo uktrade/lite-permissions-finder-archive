@@ -109,7 +109,7 @@ public class NotApplicableController {
       String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-      return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
+      return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory)
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
@@ -132,7 +132,8 @@ public class NotApplicableController {
       String action = form.get().action;
       if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
           controlCodeSubJourney.isSoftTechControlsVariant() ||
-          controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
+          controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
+          controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
         if ("backToSearch".equals(action)) {
           return journeyManager.performTransition(Events.BACK, BackType.SEARCH);
         }
@@ -149,40 +150,12 @@ public class NotApplicableController {
           throw new FormStateException("Unknown value for action: \"" + action + "\"");
         }
       }
-      else if (ControlCodeSubJourney.isSoftTechCatchallControlsVariant(controlCodeSubJourney)) {
-        GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-        // A different action is expected for each valid member of ApplicableSoftTechControls
-        SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-        return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory, false)
-            .thenComposeAsync(controls -> softTechCatchallControls(controls, softTechCategory,  action),
-                httpExecutionContext.current());
-      }
       else {
         throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
             , controlCodeSubJourney.toString()));
       }
     }
     throw new FormStateException("Unhandled form state");
-  }
-
-  private CompletionStage<Result> softTechCatchallControls(ApplicableSoftTechControls applicableSoftTechControls, SoftTechCategory softTechCategory, String action) {
-    if (applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE || applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
-      if ("continue".equals(action) && applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
-        return softTechJourneyHelper.checkRelationshipExists(softTechCategory)
-            .thenComposeAsync(r -> journeyManager.performTransition(Events.CONTROL_CODE_SOFT_TECH_CATCHALL_RELATIONSHIP, r)
-                , httpExecutionContext.current());
-      }
-      else if ("backToMatches".equals(action) && applicableSoftTechControls == ApplicableSoftTechControls.GREATER_THAN_ONE) {
-        return journeyManager.performTransition(Events.CONTROL_CODE_FLOW_NEXT, ControlCodeFlowStage.BACK_TO_MATCHES);
-      }
-      else {
-        throw new FormStateException("Unknown value for action: \"" + action + "\"");
-      }
-    }
-    else {
-      throw new RuntimeException(String.format("Unexpected member of ApplicableSoftTechControls enum: \"%s\""
-          , applicableSoftTechControls.toString()));
-    }
   }
 
   public static class NotApplicableForm {

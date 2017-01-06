@@ -30,6 +30,36 @@ public enum ControlCodeSubJourney {
     return this.value;
   }
 
+  public boolean isPhysicalGoodsSearchVariant() {
+    return isPhysicalGoodsSearchVariant(this);
+  }
+
+  public boolean isSoftTechControlsVariant() {
+    return isSoftTechControlsVariant(this);
+  }
+
+  public boolean isSoftTechControlsRelatedToPhysicalGoodVariant() {
+    return isSoftTechControlsRelatedToPhysicalGoodVariant(this);
+  }
+
+  public boolean isSoftTechCatchallControlsVariant() {
+    return isSoftTechCatchallControlsVariant(this);
+  }
+
+  /**
+   * @see #getGoodsType(ControlCodeSubJourney)
+   */
+  public GoodsType getGoodsType() {
+    return getGoodsType(this);
+  }
+
+  /**
+   * @see #getSoftTechGoodsType(ControlCodeSubJourney)
+   */
+  public GoodsType getSoftTechGoodsType() {
+    return getSoftTechGoodsType(this);
+  }
+
   public static Optional<ControlCodeSubJourney> getMatched(String controlCodeVariantText, String goodsTypeText) {
     Optional<ControlCodeVariant> controlCodeVariantOptional = ControlCodeVariant.getMatchedByUrlString(controlCodeVariantText);
     Optional<GoodsType> goodsTypeOptional =  GoodsType.getMatchedByUrlString(goodsTypeText);
@@ -53,32 +83,16 @@ public enum ControlCodeSubJourney {
         controlCodeSubJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
   }
 
-  public boolean isPhysicalGoodsSearchVariant() {
-    return isPhysicalGoodsSearchVariant(this);
-  }
-
   public static boolean isSoftTechControlsVariant(ControlCodeSubJourney controlCodeSubJourney) {
     return controlCodeSubJourney == SOFTWARE_CONTROLS || controlCodeSubJourney == TECHNOLOGY_CONTROLS;
-  }
-
-  public boolean isSoftTechControlsVariant() {
-    return isSoftTechControlsVariant(this);
   }
 
   public static boolean isSoftTechControlsRelatedToPhysicalGoodVariant(ControlCodeSubJourney controlCodeSubJourney) {
     return controlCodeSubJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD || controlCodeSubJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD;
   }
 
-  public boolean isSoftTechControlsRelatedToPhysicalGoodVariant() {
-    return isSoftTechControlsRelatedToPhysicalGoodVariant(this);
-  }
-
   public static boolean isSoftTechCatchallControlsVariant(ControlCodeSubJourney controlCodeSubJourney) {
     return controlCodeSubJourney == SOFTWARE_CATCHALL_CONTROLS || controlCodeSubJourney == TECHNOLOGY_CATCHALL_CONTROLS;
-  }
-
-  public boolean isSoftTechCatchallControlsVariant() {
-    return isSoftTechCatchallControlsVariant(this);
   }
 
   /**
@@ -108,13 +122,6 @@ public enum ControlCodeSubJourney {
   }
 
   /**
-   * @see #getGoodsType(ControlCodeSubJourney)
-   */
-  public GoodsType getGoodsType() {
-    return getGoodsType(this);
-  }
-
-  /**
    * Returns the software or technology {@link GoodsType} mapping
    * @param controlCodeSubJourney
    * @return either {@link GoodsType#SOFTWARE} or {@link GoodsType#TECHNOLOGY} or null
@@ -129,11 +136,69 @@ public enum ControlCodeSubJourney {
     }
   }
 
-  /**
-   * @see #getSoftTechGoodsType(ControlCodeSubJourney)
-   */
-  public GoodsType getSoftTechGoodsType() {
-    return getSoftTechGoodsType(this);
+  public static ControlCodeSubJourney getPhysicalGoodsSearchVariant(GoodsType goodsType) {
+    return validateAndConvertGoodsType(goodsType,
+        ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE,
+        ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY,
+        ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH
+    );
+  }
+
+  public static ControlCodeSubJourney getSoftTechControlsVariant(GoodsType goodsType) {
+    return validateAndConvertGoodsType(goodsType,
+        ControlCodeSubJourney.SOFTWARE_CONTROLS,
+        ControlCodeSubJourney.TECHNOLOGY_CONTROLS
+    );
+  }
+
+  public static ControlCodeSubJourney getSoftTechControlsRelatedToPhysicalGoodVariant(GoodsType goodsType) {
+    return validateAndConvertGoodsType(goodsType,
+        ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD,
+        ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
+    );
+  }
+
+  public static ControlCodeSubJourney getSoftTechCatchallControlsVariant(GoodsType goodsType) {
+    return validateAndConvertGoodsType(goodsType,
+        ControlCodeSubJourney.SOFTWARE_CATCHALL_CONTROLS,
+        ControlCodeSubJourney.TECHNOLOGY_CATCHALL_CONTROLS
+    );
+  }
+
+  private static ControlCodeSubJourney validateAndConvertGoodsType(GoodsType goodsType,
+                                                                   ControlCodeSubJourney softwareJourney,
+                                                                   ControlCodeSubJourney technologyJourney){
+    if (goodsType == GoodsType.PHYSICAL) {
+      throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+          , goodsType.toString()));
+    }
+    else {
+      return validateAndConvertGoodsType(goodsType, softwareJourney, technologyJourney, null);
+    }
+  }
+
+  private static ControlCodeSubJourney validateAndConvertGoodsType(GoodsType goodsType,
+                                                                   ControlCodeSubJourney softwareJourney,
+                                                                   ControlCodeSubJourney technologyJourney,
+                                                                   ControlCodeSubJourney physicalJourney){
+    if (goodsType == GoodsType.SOFTWARE) {
+      return softwareJourney;
+    }
+    else if (goodsType == GoodsType.TECHNOLOGY) {
+      return technologyJourney;
+    }
+    else if (goodsType == GoodsType.PHYSICAL) {
+      return physicalJourney;
+    }
+    else {
+      if (goodsType == null) {
+        throw new IllegalArgumentException(String.format("Argument goodsType should not be null"));
+      }
+      else {
+        throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\""
+            , goodsType.toString()));
+      }
+    }
   }
 
 }

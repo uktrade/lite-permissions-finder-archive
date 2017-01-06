@@ -8,6 +8,7 @@ import journey.SubJourneyContextParamProvider;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
 import models.softtech.ApplicableSoftTechControls;
+import play.libs.concurrent.HttpExecutionContext;
 
 import java.util.concurrent.CompletionStage;
 
@@ -16,14 +17,17 @@ public class RelatedControlsDecider implements Decider<ApplicableSoftTechControl
   private final PermissionsFinderDao dao;
   private final SubJourneyContextParamProvider subJourneyContextParamProvider;
   private final RelatedControlsServiceClient relatedControlsServiceClient;
+  private final HttpExecutionContext httpExecutionContext;
 
   @Inject
   public RelatedControlsDecider(PermissionsFinderDao dao,
                                 SubJourneyContextParamProvider subJourneyContextParamProvider,
-                                RelatedControlsServiceClient relatedControlsServiceClient) {
+                                RelatedControlsServiceClient relatedControlsServiceClient,
+                                HttpExecutionContext httpExecutionContext) {
     this.dao = dao;
     this.subJourneyContextParamProvider = subJourneyContextParamProvider;
     this.relatedControlsServiceClient = relatedControlsServiceClient;
+    this.httpExecutionContext = httpExecutionContext;
   }
 
   @SuppressWarnings("OptionalGetWithoutIsPresent")
@@ -44,11 +48,15 @@ public class RelatedControlsDecider implements Decider<ApplicableSoftTechControl
           // TODO Setting DAO state here is very hacky and needs rethinking
           if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
 
+            ControlCodeSubJourney newSubJourney = ControlCodeSubJourney.getSoftTechControlsRelatedToPhysicalGoodVariant(goodsType);
+
+            // TODO This is a massive hack, relies on knowing where the stage transition for ApplicableSoftTechControls.ONE will go
+            subJourneyContextParamProvider.updateSubJourneyValueOnContext(newSubJourney);
+
             dao.saveSelectedControlCode(subJourney, result.controlCodes.get(0).controlCode);
 
           }
-
           return applicableSoftTechControls;
-        });
+        }, httpExecutionContext.current());
   }
 }
