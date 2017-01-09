@@ -71,6 +71,10 @@ GET     /exemptions-may-apply/question-two        controllers.softtech.Exemption
 
 POST    /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.handleSubmitQ2
 
+GET     /exemptions-may-apply/question-three      controllers.softtech.ExemptionsController.renderFormQ3
+
+POST    /exemptions-may-apply/question-three      controllers.softtech.ExemptionsController.handleSubmitQ3
+
 GET     /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
 
 POST    /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1

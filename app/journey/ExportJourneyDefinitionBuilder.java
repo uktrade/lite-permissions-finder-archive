@@ -49,10 +49,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final DecisionStage<ApplicableSoftTechControls> applicableRelatedControlsDecision;
   private final DecisionStage<ApplicableSoftTechControls> applicableCatchallControlsDecision;
 
-  private final JourneyStage softwareExemptionsQ1 = defineStage("softwareExemptionsQ1", "Some types of software do not need a licence",
-      controllers.softtech.routes.ExemptionsController.renderFormQ1());
-  private final JourneyStage softwareExemptionsQ2 = defineStage("softwareExemptionsQ2", "Some types of software do not need a licence",
-      controllers.softtech.routes.ExemptionsController.renderFormQ2());
   private final JourneyStage searchRTS = defineStage("searchRTS", "Describe your items",
       controllers.search.routes.SearchController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
 
@@ -445,6 +441,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private void softwareStages() {
 
+    JourneyStage softwareExemptionsQ1 = defineStage("softwareExemptionsQ1", "Some types of software do not need a licence",
+        controllers.softtech.routes.ExemptionsController.renderFormQ1());
+
+    JourneyStage softwareExemptionsQ2 = defineStage("softwareExemptionsQ2", "Some types of software do not need a licence",
+        controllers.softtech.routes.ExemptionsController.renderFormQ2());
+
+    JourneyStage softwareExemptionsQ3 = defineStage("softwareExemptionsQ3", "Some types of software do not need a licence",
+        controllers.softtech.routes.ExemptionsController.renderFormQ3());
+
     JourneyStage softwareExemptionsNLR1 = defineStage("softwareExemptionsNLR1", "Software exemptions apply",
         controllers.routes.StaticContentController.renderSoftwareExemptionsNLR1());
 
@@ -460,25 +465,29 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atDecisionStage(dualUseOrMilitarySoftwareDecision)
         .decide()
         .when(ExportCategory.MILITARY, moveTo(applicableSoftwareControlsDecision))
-        .when(ExportCategory.DUAL_USE, moveTo(dualUseSoftwareCategories));
-//        .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
+        .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
 
-    /** Software Exemptions */
-//    atStage(softwareExemptionsQ1)
-//        .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
-//        .branch()
-//        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR1))
-//        .when(SoftwareExemptionsFlow.Q1_EXEMPTIONS_DO_NOT_APPLY, moveTo(softwareExemptionsQ2));
+    // softwareExemptionsQ1 journey transitions
+    bindYesNoJourneyTransition(
+        softwareExemptionsQ1,
+        softwareExemptionsNLR1,
+        softwareExemptionsQ2
+    );
 
-//    atStage(softwareExemptionsQ2)
-//        .onEvent(Events.SOFTWARE_EXEMPTIONS_FLOW)
-//        .branch()
-//        .when(SoftwareExemptionsFlow.Q1_AND_Q2_EXEMPTIONS_APPLY, moveTo(softwareExemptionsNLR2))
-//        .when(SoftwareExemptionsFlow.DUAL_USE, moveTo(dualUseSoftwareCategories))
-//        .when(SoftwareExemptionsFlow.MILITARY_ZERO_CONTROLS, moveTo(softwareRelatedToEquipmentOrMaterials))
-//        .when(SoftwareExemptionsFlow.MILITARY_ONE_CONTROL, moveTo(controlCodeForSoftwareControls))
-//        .when(SoftwareExemptionsFlow.MILITARY_GREATER_THAN_ONE_CONTROL, moveTo(softwareCategoryControls));
-//
+    // softwareExemptionsQ2 journey transitions
+    bindYesNoJourneyTransition(
+        softwareExemptionsQ2,
+        applicableSoftwareControlsDecision,
+        softwareExemptionsQ3
+    );
+
+    // softwareExemptionsQ3 journey transitions
+    bindYesNoJourneyTransition(
+        softwareExemptionsQ3,
+        softwareExemptionsNLR2,
+        dualUseSoftwareCategories
+    );
+
     atStage(dualUseSoftwareCategories)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(applicableSoftwareControlsDecision));
@@ -855,5 +864,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(controlCodeListStage)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(controlCodeNoneMatchedStage));
+  }
+
+  private void bindYesNoJourneyTransition(JourneyStage currentStage, CommonStage yesStage, CommonStage noStage) {
+    atStage(currentStage)
+        .onEvent(StandardEvents.YES)
+        .then(moveTo(yesStage));
+
+    atStage(currentStage)
+        .onEvent(StandardEvents.NO)
+        .then(moveTo(noStage));
   }
 }
