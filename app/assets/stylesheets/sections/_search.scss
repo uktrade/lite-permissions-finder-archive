@@ -1,7 +1,10 @@
 .search-results {
-  td {
-    padding: 0;
+  li {
+    border-bottom: 1px solid $border-colour;
 
+    &:last-child {
+      border-bottom: none;
+    }
     button {
       display: block;
       width: 100%;

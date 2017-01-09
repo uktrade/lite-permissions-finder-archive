@@ -17,25 +17,18 @@
     @if(ogels.length > 0) {
 
       <div class="form-group">
-        <table class="ogel-results">
-          <thead><tr><th></th></tr></thead>
-          <tbody>
+        <ol class="ogel-results search-results">
           @for(ogel <- ogels) {
-            <tr>
-              <td>
-                <div class="ogel-results-cell">
-                  <button type="submit" class="link" name="chosenOgel" value="@ogel.id">@ogel.name</button>
-                  <div class="ogel-usage-summary">
-                  @for(entry <- ogel.usageSummary) {
-                    <span class="font-xsmall">@entry</span><br/>
-                  }
-                  </div>
-                </div>
-              </td>
-            </tr>
+            <li>
+              <button type="submit" class="link" name="chosenOgel" value="@ogel.id">@ogel.name</button>
+              <div class="font-xsmall">
+              @for(entry <- ogel.usageSummary) {
+                @entry<br/>
+              }
+              </div>
+            </li>
           }
-          </tbody>
-        </table>
+        </ol>
       </div>
 
       <div class="form-group">
