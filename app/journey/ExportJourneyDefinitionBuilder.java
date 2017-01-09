@@ -72,10 +72,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.softtech.controls.routes.NoSoftTechControlsExistController.renderForm(GoodsType.SOFTWARE.urlString()));
   private JourneyStage softwareControlsNLR = defineStage("softwareControlsNLR", "No software controls exist for the selected item",
       routes.StaticContentController.renderSoftwareControlsNLR());
-  private JourneyStage softwareRelationshipNLR = defineStage("softwareRelationshipNLR", "No software controls exist for the selected item",
-      routes.StaticContentController.renderSoftwareRelationshipNLR());
-  private JourneyStage softwareTechnologyRelationship = defineStage("softwareTechnologyRelationship", "Is export covered by software technology relationship?",
-      controllers.softtech.routes.RelationshipController.renderForm());
 
   private final ControlCodeDecider controlCodeDecider;
   private final ExportCategoryDecider exportCategoryDecider;
@@ -459,9 +455,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftTechCategories", "What is your software for?",
         controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.SOFTWARE.urlString()));
 
-    JourneyStage softwareRelationshipContactECO = defineStage("softwareRelationshipContactECO", "Contact ECO",
-        routes.StaticContentController.renderSoftwareRelationshipContactECO());
-
     atDecisionStage(dualUseOrMilitarySoftwareDecision)
         .decide()
         .when(ExportCategory.MILITARY, moveTo(applicableSoftwareControlsDecision))
@@ -530,10 +523,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     softwareCatchallControls();
 
-    atStage(softwareTechnologyRelationship)
-        .onEvent(StandardEvents.YES).then(moveTo(softwareRelationshipContactECO));
-    atStage(softwareTechnologyRelationship)
-        .onEvent(StandardEvents.NO).then(moveTo(softwareRelationshipNLR));
   }
 
   /**

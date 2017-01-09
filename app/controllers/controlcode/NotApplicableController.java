@@ -12,14 +12,11 @@ import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import journey.helpers.SoftTechJourneyHelper;
-import models.ControlCodeFlowStage;
 import models.GoodsType;
 import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.NotApplicableDisplay;
-import models.softtech.ApplicableSoftTechControls;
 import models.softtech.SoftTechCategory;
-import models.softtech.SoftTechControlsNotApplicableFlow;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -27,7 +24,6 @@ import play.mvc.Result;
 import views.html.controlcode.notApplicable;
 
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 public class NotApplicableController {
 
