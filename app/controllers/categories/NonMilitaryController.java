@@ -6,7 +6,6 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import exceptions.FormStateException;
-import exceptions.ServiceResponseException;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -23,9 +22,9 @@ public class NonMilitaryController {
   private final FormFactory formFactory;
 
   public static final String TAKE_YOURSELF_KEY = "categoryNonMilitaryTakeYourself";
-  public static final String TAKE_YOURSELF_QUESTION = "Will you be taking the firearms or ammunition out of the UK yourself?";
+  public static final String TAKE_YOURSELF_QUESTION = "Will you be taking the firearms or ammunition out of the UK yourself for your personal use?";
   public static final String PERSONAL_EFFECTS_KEY = "categoryNonMilitaryPersonalEffects";
-  public static final String PERSONAL_EFFECTS_QUESTION = "Will the firearms or ammunition be sent out of the UK as part of your personal effects?";
+  public static final String PERSONAL_EFFECTS_QUESTION = "Will the firearms or ammunition be sent out of the UK as part of your personal effects for your personal use?";
 
   @Inject
   public NonMilitaryController(JourneyManager journeyManager, FormFactory formFactory) {

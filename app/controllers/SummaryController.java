@@ -6,7 +6,7 @@ import static play.mvc.Controller.ctx;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.client.CountryServiceClient;
+import components.common.cache.CountryProvider;
 import components.common.journey.JourneyManager;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
@@ -38,7 +38,7 @@ public class SummaryController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final FrontendServiceClient frontendServiceClient;
-  private final CountryServiceClient countryServiceClient;
+  private final CountryProvider countryProviderExport;
   private final OgelServiceClient ogelServiceClient;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
   private final OgelRegistrationServiceClient ogelRegistrationServiceClient;
@@ -51,7 +51,7 @@ public class SummaryController {
                            PermissionsFinderDao permissionsFinderDao,
                            HttpExecutionContext httpExecutionContext,
                            FrontendServiceClient frontendServiceClient,
-                           CountryServiceClient countryServiceClient,
+                           @Named("countryProviderExport") CountryProvider countryProviderExport,
                            OgelServiceClient ogelServiceClient,
                            ApplicableOgelServiceClient applicableOgelServiceClient,
                            OgelRegistrationServiceClient ogelRegistrationServiceClient
@@ -63,7 +63,7 @@ public class SummaryController {
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.frontendServiceClient = frontendServiceClient;
-    this.countryServiceClient = countryServiceClient;
+    this.countryProviderExport = countryProviderExport;
     this.ogelServiceClient = ogelServiceClient;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.ogelRegistrationServiceClient = ogelRegistrationServiceClient;
@@ -113,7 +113,7 @@ public class SummaryController {
 
   public CompletionStage<Result> renderWithForm(Form<SummaryForm> form, boolean isResumedApplication) {
     return Summary.composeSummary(contextParamManager, permissionsFinderDao, httpExecutionContext,
-        frontendServiceClient, countryServiceClient, ogelServiceClient, applicableOgelServiceClient)
+        frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProviderExport)
         .thenComposeAsync(summaryDetails -> completedFuture(ok(summary.render(form, summaryDetails, isResumedApplication))
         ), httpExecutionContext.current());
   }

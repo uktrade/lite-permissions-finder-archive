@@ -144,17 +144,15 @@ LITEPermissionsFinder.SearchResults = {
       success : function(response) {
         if (typeof response != "undefined" && response.status == "ok") {
           $.each(response.results, function (index, result) {
-            $("#searchResults").children("tbody").append(
-              $("<tr/>").append(
-                $("<td/>").append(
-                  $("<button/>")
-                    .attr("id", result.code + "-button")
-                    .attr("type", "submit")
-                    .attr("name", "result")
-                    .attr("value", result.code)
-                    .addClass("link font-medium")
-                    .text(result.highlightedText)
-                )
+          $("#searchResults").append(
+              $("<li/>").append(
+                $("<button/>")
+                  .attr("id", result.code + "-button")
+                  .attr("type", "submit")
+                  .attr("name", "result")
+                  .attr("value", result.code)
+                  .addClass("link font-medium")
+                  .text(result.highlightedText)
               )
             );
           });
@@ -170,7 +168,7 @@ LITEPermissionsFinder.SearchResults = {
     });
   },
   _currentResultsCount: function() {
-    return $("#searchResults").children("tbody").children("tr").length;
+    return $("#searchResults").children("li").length;
   },
   _resultsDisplayCountHiddenInput: function() {
     return $("#resultsDisplayCountHiddenInput");

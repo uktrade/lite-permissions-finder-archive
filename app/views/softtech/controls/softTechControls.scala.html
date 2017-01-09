@@ -19,20 +19,13 @@
       </p>
     }
 
-    <table class="search-results">
-      <thead><tr><th></th></tr></thead>
-      <tbody>
+    <ol class="search-results">
       @for(i <- 0 until display.controlCodes.size) {
-        <tr>
-          <td>
-            <p>
-              <button id="@display.controlCodes.get(i).controlCode-button" type="submit" class="link font-medium" name="controlCode" value="@display.controlCodes.get(i).controlCode">@Html(display.controlCodes.get(i).friendlyDescription)</button>
-            </p>
-          </td>
-        </tr>
+        <li>
+          <button id="@display.controlCodes.get(i).controlCode-button" type="submit" class="link font-medium" name="controlCode" value="@display.controlCodes.get(i).controlCode">@Html(display.controlCodes.get(i).friendlyDescription)</button>
+        </li>
       }
-      </tbody>
-    </table>
+    </ol>
 
     <div class="search-result-actions">
       <button type="submit" name="action" value="noMatchedControlCode" class="link underlined font-small no-matched-result-link">None of these describe my export</button>

@@ -1,5 +1,6 @@
 package utils;
 
+import models.common.Country;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CountryUtils {
+
   /**
    * Utility to combine the final destination country and list of through countries
    * @param finalDestinationCountry The final destination country
@@ -30,5 +32,15 @@ public class CountryUtils {
     }
 
     return destinationCountries;
+  }
+
+  /**
+   * Returns filtered list of Country's, where we find matched country ref
+   * @param allCountries Countries used to search for matched country refs
+   * @param countryRefs Country refs
+   * @return List country all matched Countries
+   */
+  public static List<Country> getFilteredCountries(List<Country> allCountries, List<String> countryRefs) {
+    return countryRefs.stream().flatMap(ref -> allCountries.stream().filter(c -> c.getCountryRef().equals(ref))).collect(Collectors.toList());
   }
 }

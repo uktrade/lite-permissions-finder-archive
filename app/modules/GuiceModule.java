@@ -114,14 +114,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     return Arrays.asList(exportJourneyDefinitionBuilder, importJourneyDefinitionBuilder);
   }
 
-  @Provides
-  CountryServiceClient provideCountryServiceClient(HttpExecutionContext httpContext, WSClient wsClient,
-                                                   @Named("countryServiceAddress") String address,
-                                                   @Named("countryServiceTimeout") int timeout,
-                                                   ObjectMapper mapper) {
-    return new CountryServiceClient(httpContext, wsClient, address + "/countries/set/export-control", timeout, mapper);
-  }
-
   @Provides @Singleton
   @Named("countryProviderExport")
   CountryProvider provideCountryServiceExportClient(HttpExecutionContext httpContext, WSClient wsClient,

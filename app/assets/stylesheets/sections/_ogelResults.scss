@@ -1,12 +1,9 @@
-.ogel-results {
+.search-results.ogel-results {
+  li {
+    padding: 20px 0;
 
-}
-
-.ogel-results-cell {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-.ogel-usage-summary {
-  margin-left: 4px;
+    button {
+      padding: 0;
+    }
+  }
 }

@@ -1,6 +1,6 @@
 package models.summary;
 
-import components.common.client.CountryServiceClient;
+import components.common.cache.CountryProvider;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
@@ -11,6 +11,7 @@ import components.services.ogels.ogel.OgelServiceClient;
 import components.services.ogels.ogel.OgelServiceResult;
 import controllers.ogel.OgelQuestionsController;
 import controllers.routes;
+import models.common.Country;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import utils.CountryUtils;
@@ -50,17 +51,19 @@ public class Summary {
                                                         PermissionsFinderDao permissionsFinderDao,
                                                         HttpExecutionContext httpExecutionContext,
                                                         FrontendServiceClient frontendServiceClient,
-                                                        CountryServiceClient countryServiceClient,
                                                         OgelServiceClient ogelServiceClient,
-                                                        ApplicableOgelServiceClient applicableOgelServiceClient) {
+                                                        ApplicableOgelServiceClient applicableOgelServiceClient,
+                                                        CountryProvider countryProviderExport) {
     String applicationCode = permissionsFinderDao.getApplicationCode();
     String physicalGoodControlCode = permissionsFinderDao.getLastSelectedControlCode();
     String ogelId = permissionsFinderDao.getOgelId();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
 
+    Summary newSummary = new Summary(applicationCode);
+
     // TODO Drive fields to shown by the journey history, not the dao
-    CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(new Summary(applicationCode));
+    CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(newSummary);
 
     if(StringUtils.isNoneBlank(physicalGoodControlCode)) {
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(physicalGoodControlCode);
@@ -72,12 +75,8 @@ public class Summary {
     }
 
     if (destinationCountries.size() > 0) {
-      CompletionStage<CountryServiceClient.CountryServiceResponse> countryStage = countryServiceClient.getCountries();
-
-      summaryCompletionStage = summaryCompletionStage.thenCombineAsync(countryStage, (summary, response)
-          -> summary.addSummaryField(SummaryField.fromDestinationCountryList(response.getCountriesByRef(destinationCountries),
-          contextParamManager.addParamsToCall(routes.ChangeController.changeDestinationCountries()))
-      ), httpExecutionContext.current());
+      List<Country> countries = CountryUtils.getFilteredCountries(new ArrayList<>(countryProviderExport.getCountries()), destinationCountries);
+      newSummary.addSummaryField(SummaryField.fromDestinationCountryList(countries, contextParamManager.addParamsToCall(routes.ChangeController.changeDestinationCountries())));
     }
 
     if (StringUtils.isNoneBlank(ogelId)) {
@@ -119,5 +118,5 @@ public class Summary {
       this.isValid = isValid;
     }
   }
-  
+
 }
