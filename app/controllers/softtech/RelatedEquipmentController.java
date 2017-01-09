@@ -13,6 +13,7 @@ import models.GoodsType;
 import models.softtech.RelatedEquipmentDisplay;
 import play.data.Form;
 import play.data.FormFactory;
+import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import views.html.softtech.relatedEquipment;
 
@@ -75,6 +76,7 @@ public class RelatedEquipmentController {
 
   public static class RelatedEquipmentForm {
 
+    @Required(message = "You must answer this question")
     public String relatedToEquipmentOrMaterials;
 
   }
