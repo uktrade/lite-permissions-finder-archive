@@ -12,7 +12,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
 import models.softtech.controls.SoftTechControlsJourney;
 import models.softtech.controls.SoftTechControlsDisplay;
@@ -33,7 +33,6 @@ public class SoftTechControlsController {
   private final RelatedControlsServiceClient relatedControlsServiceClient;
   private final CatchallControlsServiceClient catchallControlsServiceClient;
   private final HttpExecutionContext httpExecutionContext;
-  private final SoftTechJourneyHelper softTechJourneyHelper;
 
   @Inject
   public SoftTechControlsController(JourneyManager journeyManager,
@@ -42,8 +41,7 @@ public class SoftTechControlsController {
                                     CategoryControlsServiceClient categoryControlsServiceClient,
                                     RelatedControlsServiceClient relatedControlsServiceClient,
                                     CatchallControlsServiceClient catchallControlsServiceClient,
-                                    HttpExecutionContext httpExecutionContext,
-                                    SoftTechJourneyHelper softTechJourneyHelper) {
+                                    HttpExecutionContext httpExecutionContext) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -51,7 +49,6 @@ public class SoftTechControlsController {
     this.relatedControlsServiceClient = relatedControlsServiceClient;
     this.catchallControlsServiceClient = catchallControlsServiceClient;
     this.httpExecutionContext = httpExecutionContext;
-    this.softTechJourneyHelper = softTechJourneyHelper;
   }
 
   private CompletionStage<Result> renderForm(SoftTechControlsJourney softTechControlsJourney) {
@@ -59,15 +56,21 @@ public class SoftTechControlsController {
   }
 
   public CompletionStage<Result> renderCategoryForm(String goodsTypeText) {
-    return SoftTechJourneyHelper.getCategoryControlsResult(goodsTypeText, this::renderForm);
+    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
+    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getCategoryVariant(goodsType);
+    return renderForm(softTechControlsJourney);
   }
 
   public CompletionStage<Result> renderRelatedToPhysicalGoodForm(String goodsTypeText) {
-    return SoftTechJourneyHelper.getRelatedControlsResult(goodsTypeText, this::renderForm);
+    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
+    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getRelatedToPhysicalGoodsVariant(goodsType);
+    return renderForm(softTechControlsJourney);
   }
 
   public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
-    return SoftTechJourneyHelper.getCatchallControlsResult(goodsTypeText, this::renderForm);
+    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
+    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getCatchallVariant(goodsType);
+    return renderForm(softTechControlsJourney);
   }
 
   private CompletionStage<Result> handleSubmit(SoftTechControlsJourney softTechControlsJourney) {
@@ -79,21 +82,10 @@ public class SoftTechControlsController {
     String controlCode = form.get().controlCode;
     if (StringUtils.isNotEmpty(action)) {
       if ("noMatchedControlCode".equals(action)) {
-        if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY ||
-            softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
+        if (softTechControlsJourney.isCategoryVariant() ||
+            softTechControlsJourney.isRelatedToPhysicalGoodsVariant() ||
+            softTechControlsJourney.isCatchallVariant()) {
           return journeyManager.performTransition(Events.NONE_MATCHED);
-        }
-        else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
-          return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.SOFTWARE);
-        }
-        else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_RELATED_TO_A_PHYSICAL_GOOD) {
-          return softTechJourneyHelper.performCatchallSoftTechControlsTransition(GoodsType.TECHNOLOGY);
-        }
-        else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-          return softTechJourneyHelper.performCatchallSoftTechControlRelationshipTransition(GoodsType.SOFTWARE);
-        }
-        else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
-          return softTechJourneyHelper.performCatchallSoftTechControlRelationshipTransition(GoodsType.TECHNOLOGY);
         }
         else {
           throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
@@ -106,25 +98,7 @@ public class SoftTechControlsController {
     }
     else if (StringUtils.isNotEmpty(controlCode)) {
       // Setup DAO state based on view variant
-      if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS, controlCode);
-      }
-      else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.TECHNOLOGY_CONTROLS, controlCode);
-      }
-      else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, controlCode);
-      }
-      else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.SOFTWARE_CATCHALL_CONTROLS, controlCode);
-      }
-      else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
-        permissionsFinderDao.clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney.TECHNOLOGY_CATCHALL_CONTROLS, controlCode);
-      }
-      else {
-        throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
-            , softTechControlsJourney.toString()));
-      }
+      permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(softTechControlsJourney.getMappedControlCodeSubJourney(), controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
     else {
@@ -133,67 +107,53 @@ public class SoftTechControlsController {
   }
 
   public CompletionStage<Result> handleCategorySubmit(String goodsTypeText) {
-    return SoftTechJourneyHelper.getCategoryControlsResult(goodsTypeText, this::handleSubmit);
+    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
+    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getCategoryVariant(goodsType);
+    return handleSubmit(softTechControlsJourney);
   }
 
   public CompletionStage<Result> handleRelatedToPhysicalGoodSubmit(String goodsTypeText) {
-    return SoftTechJourneyHelper.getRelatedControlsResult(goodsTypeText, this::handleSubmit);
+    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
+    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getRelatedToPhysicalGoodsVariant(goodsType);
+    return handleSubmit(softTechControlsJourney);
   }
 
   public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    return SoftTechJourneyHelper.getCatchallControlsResult(goodsTypeText, this::handleSubmit);
+    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
+    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getCatchallVariant(goodsType);
+    return handleSubmit(softTechControlsJourney);
   }
 
   private CompletionStage<Result> renderWithForm(SoftTechControlsJourney softTechControlsJourney, Form<SoftTechControlsForm> form) {
     // Setup DAO state based on view variant
-    if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY ||
-        softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATEGORY) {
-
-      GoodsType goodsType = softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATEGORY
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
-
+    GoodsType goodsType = softTechControlsJourney.getSoftTechGoodsType();
+    ControlCodeSubJourney subJourney = softTechControlsJourney.getMappedControlCodeSubJourney();
+    if (softTechControlsJourney.isCategoryVariant()) {
       // Software category is expected at this stage of the journey
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return categoryControlsServiceClient.get(goodsType, softTechCategory)
-          .thenApplyAsync(result -> {
-            SoftTechControlsDisplay display = new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes);
-            return ok(softTechControls.render(display));
-          }, httpExecutionContext.current());
+          .thenApplyAsync(result ->
+              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
+          , httpExecutionContext.current());
     }
-    else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD ||
-        softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_RELATED_TO_A_PHYSICAL_GOOD) {
-
-      GoodsType goodsType = softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_RELATED_TO_A_PHYSICAL_GOOD
-          ? GoodsType.SOFTWARE
-          : GoodsType.TECHNOLOGY;
-
-      // Note, this is looking at the selected physical good control code which is related to their physical good
-      String controlCode = permissionsFinderDao.getSelectedControlCode(ControlCodeJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE);
-
+    else if (softTechControlsJourney.isRelatedToPhysicalGoodsVariant()) {
+      String controlCode = permissionsFinderDao.getSelectedControlCode(subJourney);
       return relatedControlsServiceClient.get(goodsType, controlCode)
           .thenApplyAsync(result ->
-              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes)), httpExecutionContext.current());
+              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
+              , httpExecutionContext.current());
     }
-    else if (softTechControlsJourney == SoftTechControlsJourney.SOFTWARE_CATCHALL) {
-      return catchallControls(GoodsType.SOFTWARE, softTechControlsJourney, form);
-    }
-    else if (softTechControlsJourney == SoftTechControlsJourney.TECHNOLOGY_CATCHALL) {
-      return catchallControls(GoodsType.TECHNOLOGY, softTechControlsJourney, form);
+    else if (softTechControlsJourney.isCatchallVariant()) {
+      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+      return catchallControlsServiceClient.get(goodsType, softTechCategory)
+          .thenApplyAsync(result ->
+              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
+              , httpExecutionContext.current());
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
           , softTechControlsJourney.toString()));
     }
-  }
-
-  private CompletionStage<Result> catchallControls(GoodsType goodsType, SoftTechControlsJourney softTechControlsJourney, Form<SoftTechControlsForm> form) {
-    // SoftTech category is expected at this stage of the journey
-    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-    return catchallControlsServiceClient.get(goodsType, softTechCategory)
-        .thenApplyAsync(result ->
-            validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
-        , httpExecutionContext.current());
   }
 
   /**

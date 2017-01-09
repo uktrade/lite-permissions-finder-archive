@@ -4,25 +4,31 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public enum GoodsType {
-  PHYSICAL("PHYSICAL"),
-  SOFTWARE("SOFTWARE"),
-  TECHNOLOGY("TECHNOLOGY");
+  PHYSICAL,
+  SOFTWARE,
+  TECHNOLOGY;
   
   private String value;
+  private String urlString;
 
-  GoodsType(String value) {
-    this.value = value;
+  GoodsType() {
+    this.value = this.toString();
+    this.urlString = value.toLowerCase();
   }
 
   public String value() {
     return this.value;
   }
 
-  public String toUrlString(){
-    return this.toString().toLowerCase();
+  public String urlString(){
+    return urlString;
   }
 
-  public static Optional<GoodsType> getMatched(String goodsType) {
-    return EnumSet.allOf(GoodsType.class).stream().filter(e -> e.value().equals(goodsType)).findFirst();
+  public static Optional<GoodsType> getMatchedByValue(String goodsTypeValue) {
+    return EnumSet.allOf(GoodsType.class).stream().filter(e -> e.value().equals(goodsTypeValue)).findFirst();
+  }
+
+  public static Optional<GoodsType> getMatchedByUrlString(String goodsTypeUrlString) {
+    return EnumSet.allOf(GoodsType.class).stream().filter(e -> e.urlString().equals(goodsTypeUrlString)).findFirst();
   }
 }

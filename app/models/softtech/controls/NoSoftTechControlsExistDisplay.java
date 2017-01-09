@@ -9,11 +9,11 @@ public class NoSoftTechControlsExistDisplay {
 
   public NoSoftTechControlsExistDisplay(GoodsType goodsType) {
     if (goodsType == GoodsType.SOFTWARE) {
-      this.formAction = routes.DualUseSoftTechCategoriesController.handleSubmit(goodsType.toUrlString()).url();
+      this.formAction = routes.DualUseSoftTechCategoriesController.handleSubmit(goodsType.urlString()).url();
       this.pageTitle = "No software controls exist for item";
     }
     else if (goodsType == GoodsType.TECHNOLOGY) {
-      this.formAction = routes.DualUseSoftTechCategoriesController.handleSubmit(goodsType.toUrlString()).url();
+      this.formAction = routes.DualUseSoftTechCategoriesController.handleSubmit(goodsType.urlString()).url();
       this.pageTitle = "No technology controls exist for item";
     }
     else {

@@ -10,10 +10,10 @@ LITEPermissionsFinder.Utils = {
       if (pageName == "importCountry") {
         LITEPermissionsFinder.ImportCountry.setupPage();
       }
-      else if (pageName == "searchBase") {
+      else if (pageName == "search") {
         LITEPermissionsFinder.Search.setupPage();
       }
-      else if (pageName == "searchResultsBase") {
+      else if (pageName == "searchResults") {
         LITEPermissionsFinder.SearchResults.setupPage();
       }
       else if (pageName == "selectExportCategories") {
@@ -27,7 +27,7 @@ LITEPermissionsFinder.Utils = {
   load: function() {
     var pageName = LITEPermissionsFinder.Utils.getPageName();
     if (pageName !== null && pageName != "undefined") {
-      if (pageName == "searchResultsBase") {
+      if (pageName == "searchResults") {
         LITEPermissionsFinder.SearchResults.onload();
       }
     }
@@ -131,11 +131,10 @@ LITEPermissionsFinder.SearchResults = {
   },
   _fetchResults: function(fromIndex, toIndex) {
     var transactionId = $("input[type=hidden][name=ctx_transaction]").val();
-    var goodsType = LITEPermissionsFinder.SearchResults._goodsTypeHiddenInput().val();
-    var controlCodeJourney = LITEPermissionsFinder.SearchResults._controlCodeJourneyHiddenInput().val();
+    var controlCodeSubJourney = LITEPermissionsFinder.SearchResults._controlCodeSubJourneyHiddenInput().val();
     var showMoreResultsButton = LITEPermissionsFinder.SearchResults._showMoreResultsButton();
     var resultsDisplayCountHiddenInput = LITEPermissionsFinder.SearchResults._resultsDisplayCountHiddenInput();
-    var route = jsRoutes.controllers.search.AjaxSearchResultsController.getResults(controlCodeJourney, goodsType, fromIndex, toIndex, transactionId);
+    var route = jsRoutes.controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney, fromIndex, toIndex, transactionId);
     $.ajax({
       url: route.url,
       type: route.type,
@@ -174,11 +173,8 @@ LITEPermissionsFinder.SearchResults = {
   _resultsDisplayCountHiddenInput: function() {
     return $("#resultsDisplayCountHiddenInput");
   },
-  _controlCodeJourneyHiddenInput: function() {
-    return $("#controlCodeJourneyHiddenInput");
-  },
-  _goodsTypeHiddenInput: function() {
-    return $("#goodsTypeHiddenInput");
+  _controlCodeSubJourneyHiddenInput: function() {
+    return $("#controlCodeSubJourneyHiddenInput");
   },
   _paginationSizeHiddenInput: function() {
     return $("#paginationSizeHiddenInput");

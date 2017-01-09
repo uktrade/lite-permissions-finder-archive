@@ -5,18 +5,17 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
+import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
-import models.softtech.ApplicableSoftTechControls;
 import models.softtech.DualUseSoftTechCategoriesDisplay;
 import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.softtech.dualUseSoftTechCategories;
 
@@ -27,17 +26,14 @@ public class DualUseSoftTechCategoriesController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private final SoftTechJourneyHelper softTechJourneyHelper;
-  private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public DualUseSoftTechCategoriesController(FormFactory formFactory, PermissionsFinderDao permissionsFinderDao,
-                                             JourneyManager journeyManager, SoftTechJourneyHelper softTechJourneyHelper, HttpExecutionContext httpExecutionContext) {
+  public DualUseSoftTechCategoriesController(FormFactory formFactory,
+                                             PermissionsFinderDao permissionsFinderDao,
+                                             JourneyManager journeyManager) {
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.journeyManager = journeyManager;
-    this.softTechJourneyHelper = softTechJourneyHelper;
-    this.httpExecutionContext = httpExecutionContext;
   }
 
   public CompletionStage<Result> renderForm(String goodsTypeText) {
@@ -75,8 +71,7 @@ public class DualUseSoftTechCategoriesController {
       SoftTechCategory softTechCategory = SoftTechCategory.valueOf(dualUseSoftwareCategoryText);
       if (softTechCategory.isDualUseSoftTechCategory()) {
         permissionsFinderDao.saveSoftTechCategory(goodsType, softTechCategory);
-        return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory, true) // Save to DAO
-            .thenComposeAsync(this::dualUseSoftTechCategorySelected, httpExecutionContext.current());
+        return journeyManager.performTransition(StandardEvents.NEXT);
       }
       else {
         throw new RuntimeException(String.format("Unexpected member of SoftTechCategory enum: \"%s\""
@@ -86,10 +81,6 @@ public class DualUseSoftTechCategoriesController {
     else {
       throw new FormStateException("Unhandled form state");
     }
-  }
-
-  private CompletionStage<Result> dualUseSoftTechCategorySelected(ApplicableSoftTechControls applicableSoftTechControls) {
-    return journeyManager.performTransition(Events.DUAL_USE_SOFT_TECH_CATEGORY_SELECTED, applicableSoftTechControls);
   }
 
   public static class DualUseSoftTechCategoriesForm {

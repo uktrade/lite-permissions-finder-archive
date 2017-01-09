@@ -4,6 +4,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import components.common.cache.CountryProvider;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
@@ -28,8 +29,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import javax.inject.Named;
 
 public class OgelResultsController {
 
@@ -63,7 +62,7 @@ public class OgelResultsController {
   }
 
   public CompletionStage<Result> renderWithForm(Form<OgelResultsForm> form) {
-    String controlCode = permissionsFinderDao.getConfirmedControlCode();
+    String controlCode = permissionsFinderDao.getLastSelectedControlCode();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
 
     List<String> destinationCountries = CountryUtils.getDestinationCountries(permissionsFinderDao.getFinalDestinationCountry(),
@@ -105,7 +104,7 @@ public class OgelResultsController {
     String chosenOgel = form.get().chosenOgel;
     permissionsFinderDao.saveOgelId(chosenOgel);
 
-    String controlCode = permissionsFinderDao.getConfirmedControlCode();
+    String controlCode = permissionsFinderDao.getLastSelectedControlCode();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
@@ -123,7 +122,7 @@ public class OgelResultsController {
 
     // Combines with the stage above, allowing any exceptions to propagate
     return checkOgelStage
-        .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getConfirmedControlCode()),
+        .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getLastSelectedControlCode()),
             (empty, conditionsResult) -> {
               if (!conditionsResult.isEmpty) {
                 return journeyManager.performTransition(Events.OGEL_CONDITIONS_APPLY);

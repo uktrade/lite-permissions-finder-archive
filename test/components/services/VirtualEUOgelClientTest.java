@@ -29,7 +29,7 @@ public class VirtualEUOgelClientTest {
     }).build();
     Server server = Server.forRouter(router);
     int port = server.httpPort();
-    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "localhost", port, 10000);
+    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "localhost", 10000);
 
     VirtualEUOgelResult result = client.sendServiceRequest("ML1a", "CTRY0",
         Collections.singletonList("CTRY1"), Collections.singletonList("MIL_GOV"))
@@ -50,7 +50,7 @@ public class VirtualEUOgelClientTest {
     }).build();
     Server server = Server.forRouter(router);
     int port = server.httpPort();
-    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "localhost", port, 10000);
+    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "localhost", 10000);
 
     CompletableFuture<VirtualEUOgelResult> resultFuture = client.sendServiceRequest("ML1a", "CTRY0",
         Collections.singletonList("CTRY1"), Collections.singletonList("MIL_GOV"))

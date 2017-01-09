@@ -10,8 +10,7 @@ import com.google.inject.Inject;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.search.SearchServiceClient;
-import models.GoodsType;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import play.Logger;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
@@ -47,13 +46,12 @@ public class AjaxSearchResultsController {
    * Example ERROR response:
    * <code>{"status": "error", "message": "Some error message"}</code>
    *
-   * @param goodsType the type of goods to search over, should be the {@link GoodsType#value()} of a {@link models.GoodsType} entry
    * @param fromIndex the low endpoint (inclusive) of the results list
    * @param toIndex the high endpoint (exclusive) of the results list
    * @param transactionId the transaction ID
    * @return a Result with JSON content of the additional results to show
    */
-  public CompletionStage<Result> getResults(String controlCodeJourney, String goodsType, int fromIndex, int toIndex, String transactionId) {
+  public CompletionStage<Result> getResults(String controlCodeSubJourney, int fromIndex, int toIndex, String transactionId) {
 
     if (transactionId == null || transactionId.isEmpty()) {
       return completedFuture(ok(buildErrorJsonAndLog(
@@ -63,33 +61,22 @@ public class AjaxSearchResultsController {
       transactionManager.setTransaction(transactionId);
     }
 
-    Optional<GoodsType> goodsTypeOptional = GoodsType.getMatched(goodsType);
-    Optional<ControlCodeJourney> controlCodeJourneyOptional = ControlCodeJourney.getMatched(controlCodeJourney);
+    Optional<ControlCodeSubJourney> controlCodeSubJourneyOptional = ControlCodeSubJourney.getMatched(controlCodeSubJourney);
 
-    if (goodsTypeOptional.isPresent() && controlCodeJourneyOptional.isPresent()) {
-      if (goodsTypeOptional.get() == GoodsType.PHYSICAL) {
-        Optional<SearchController.ControlCodeSearchForm> optionalForm =
-            permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeJourneyOptional.get());
-        if (optionalForm.isPresent()) {
-          return searchServiceClient.get(SearchController.getSearchTerms(optionalForm.get()))
-              .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, fromIndex, toIndex))
-                  , httpExecutionContext.current());
-        }
-        else {
-          return completedFuture(ok(buildErrorJsonAndLog("Unable to lookup search terms")));
-        }
+    if (controlCodeSubJourneyOptional.isPresent()) {
+      Optional<SearchController.SearchForm> optionalForm =
+          permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourneyOptional.get());
+      if (optionalForm.isPresent()) {
+        return searchServiceClient.get(SearchController.getSearchTerms(optionalForm.get()))
+            .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, fromIndex, toIndex))
+                , httpExecutionContext.current());
       }
       else {
-        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unhandled goodsType %s", goodsType))));
+        return completedFuture(ok(buildErrorJsonAndLog("Unable to lookup search terms")));
       }
     }
     else {
-      if (!goodsTypeOptional.isPresent()) {
-        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for goodsType %s", goodsType))));
-      }
-      else {
-        return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for controlCodeJourney %s", controlCodeJourney))));
-      }
+      return completedFuture(ok(buildErrorJsonAndLog(String.format("Unknown value for controlCodeSubJourney %s", controlCodeSubJourney))));
     }
 
   }

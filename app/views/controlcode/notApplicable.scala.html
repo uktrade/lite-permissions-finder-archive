@@ -2,14 +2,14 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-
 @import models.controlcode.NotApplicableDisplay
-@import models.controlcode.ControlCodeJourney
+@import controllers.controlcode.routes._
+
 @(display: NotApplicableDisplay)
 @standardPage("Description not applicable", Some(Html("Description not applicable"))){
   @errorSummary(display.form)
 }{
-  <form action="@display.formAction" method="POST">
+  <form action="@NotApplicableController.handleSubmit()" method="POST">
 
     @contextFormParams()
 
@@ -18,51 +18,10 @@
     </p>
 
     <ul class="list list-bullet text">
-    @if(ControlCodeJourney.isPhysicalGoodsSearchVariant(display.controlCodeJourney)){
-      @if(display.canPickAgain) {
-        <li>
-          <button class="link underlined" name="action" value="backToResults">return to the list of possible matches and choose again</button>
-        </li>
-        <li>
-          <button class="link underlined" name="action" value="backToSearch">edit your item description to get a different set of results</button>
-        </li>
-      }
-    }
-
-    @if(ControlCodeJourney.isSoftTechControlsRelatedToPhysicalGoodVariant(display.controlCodeJourney)){
-      @if(display.canPickAgain) {
-        <li>
-          <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
-        </li>
-      } else {
-        <li>
-          <button class="link underlined" name="action" value="continue" data-skip-validation>continue to other options</button>
-        </li>
-      }
-    }
-
-    @if(ControlCodeJourney.isSoftTechControlsVariant(display.controlCodeJourney)){
-      @if(display.canPickAgain) {
-        <li>
-          <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
-        </li>
-      } else {
-        <li>
-          <button class="link underlined" name="action" value="continue" data-skip-validation>continue to other options</button>.
-        </li>
-      }
-    }
-
-    @if(ControlCodeJourney.isSoftTechCatchallControlsVariant(display.controlCodeJourney)){
-      @if(display.canPickAgain) {
-        <li>
-          <button class="link underlined" name="action" value="backToMatches" data-skip-validation>return to the list of possible matches and choose again</button>
-        </li>
-      } else {
-        <li>
-          <button class="link underlined" name="action" value="continue" data-skip-validation>continue to other options</button>
-        </li>
-      }
+    @for(button <- display.buttons) {
+      <li>
+        <button class="link underlined" name="action" value="@button.value" data-skip-validation>@button.content</button>
+      </li>
     }
     </ul>
 

@@ -13,7 +13,7 @@
     
     @contextFormParams()
 
-    <h2 class="heading-medium">Is your software any of the following?</h2>
+    <h2 class="heading-medium">@display.questionLabel</h2>
 
     <ul class="list list-bullet text">
       @for(exemption <- display.exemptions) {
@@ -21,7 +21,7 @@
       }
     </ul>
 
-    @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html("Is your software any of the following?"), hideHeading = true)
+    @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel), hideHeading = true)
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

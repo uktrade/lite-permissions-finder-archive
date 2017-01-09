@@ -8,12 +8,12 @@ import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
-import controllers.search.SearchController.ControlCodeSearchForm;
+import controllers.search.SearchController.SearchForm;
 import models.ExportCategory;
 import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
-import models.controlcode.ControlCodeJourney;
+import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
@@ -30,7 +30,6 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String JOURNEY = "journey";
   public static final String SOURCE_COUNTRY = "sourceCountry";
   public static final String SELECTED_CONTROL_CODE = "selectedControlCode";
-  public static final String CONFIRMED_CONTROL_CODE = "confirmedControlCode";
   public static final String OGEL_ID = "ogelId";
   public static final String EXPORT_CATEGORY = "exportCategory";
   public static final String APPLICATION_CODE = "applicationCode";
@@ -57,29 +56,42 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
   public static final String DO_EXEMPTIONS_APPLY_Q1 = "doExemptionsApplyQ1";
   public static final String DO_EXEMPTIONS_APPLY_Q2 = "doExemptionsApplyQ2";
+  public static final String DO_EXEMPTIONS_APPLY_Q3 = "doExemptionsApplyQ3";
   public static final String SOFT_TECH_CATEGORY = "softTechCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
   public static final String SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP = "softwareIsCoveredByTechnologyRelationship";
+  public static final String LAST_STARTED_CONTROL_CODE_SUB_JOURNEY = "lastStartedControlCodeSubJourney";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
     super(keyConfig, pool, transactionManager);
   }
 
-  public void saveSelectedControlCode(ControlCodeJourney controlCodeJourney, String selectedControlCode) {
-    writeString(prependFieldName(controlCodeJourney, SELECTED_CONTROL_CODE), selectedControlCode);
+  public void saveSelectedControlCode(ControlCodeSubJourney controlCodeSubJourney, String selectedControlCode) {
+    saveLastStartedControlCodeSubJourney(controlCodeSubJourney);
+    writeString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE), selectedControlCode);
   }
 
-  public String getSelectedControlCode(ControlCodeJourney controlCodeJourney) {
-    return readString(prependFieldName(controlCodeJourney, SELECTED_CONTROL_CODE));
+  public String getSelectedControlCode(ControlCodeSubJourney controlCodeSubJourney) {
+    return readString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE));
   }
 
-  public void saveConfirmedControlCode(String confirmedControlCode) {
-    writeString(CONFIRMED_CONTROL_CODE, confirmedControlCode);
+  public String getLastSelectedControlCode(){
+    Optional<ControlCodeSubJourney> subJourneyOptional = getLastStartedControlCodeSubJourney();
+    if (subJourneyOptional.isPresent()) {
+      return getSelectedControlCode(subJourneyOptional.get());
+    }
+    else {
+      return null;
+    }
   }
 
-  public String getConfirmedControlCode() {
-    return readString(CONFIRMED_CONTROL_CODE);
+  private void saveLastStartedControlCodeSubJourney(ControlCodeSubJourney lastStartedControlCodeSubJourney) {
+    writeString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY, lastStartedControlCodeSubJourney.value());
+  }
+
+  public Optional<ControlCodeSubJourney> getLastStartedControlCodeSubJourney() {
+    return ControlCodeSubJourney.getMatched(readString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY));
   }
 
   public void saveSourceCountry(String sourceCountry) {
@@ -122,12 +134,12 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readString(EMAIL_ADDRESS);
   }
 
-  public void savePhysicalGoodSearchPaginationDisplayCount(ControlCodeJourney controlCodeJourney, int physicalGoodSearchPaginationDisplayCount) {
-    writeString(prependFieldName(controlCodeJourney, PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT), Integer.toString(physicalGoodSearchPaginationDisplayCount));
+  public void savePhysicalGoodSearchPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney, int physicalGoodSearchPaginationDisplayCount) {
+    writeString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT), Integer.toString(physicalGoodSearchPaginationDisplayCount));
   }
 
-  public Optional<Integer> getPhysicalGoodSearchPaginationDisplayCount(ControlCodeJourney controlCodeJourney) {
-    String count = readString(prependFieldName(controlCodeJourney, PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT));
+  public Optional<Integer> getPhysicalGoodSearchPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney) {
+    String count = readString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT));
     if (count != null) {
       return Optional.of(Integer.parseInt(count));
     }
@@ -136,16 +148,16 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     }
   }
 
-  public void savePhysicalGoodSearchLastChosenControlCode(ControlCodeJourney controlCodeJourney, String controlCode) {
-    writeString(prependFieldName(controlCodeJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE), controlCode);
+  public void savePhysicalGoodSearchLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
+    writeString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE), controlCode);
   }
 
-  public String getPhysicalGoodSearchLastChosenControlCode(ControlCodeJourney controlCodeJourney) {
-    return readString(prependFieldName(controlCodeJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE));
+  public String getPhysicalGoodSearchLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
+    return readString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE));
   }
 
-  public void clearPhysicalGoodSearchLastChosenControlCode(ControlCodeJourney controlCodeJourney) {
-    deleteString(prependFieldName(controlCodeJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE));
+  public void clearPhysicalGoodSearchLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
+    deleteString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE));
   }
 
   public void saveTradeType(TradeType tradeType) {
@@ -206,19 +218,19 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public Optional<GoodsType> getGoodsType() {
-    return GoodsType.getMatched(readString(GOODS_TYPE));
+    return GoodsType.getMatchedByValue(readString(GOODS_TYPE));
   }
 
   public void clearGoodsType() {
     deleteString(GOODS_TYPE);
   }
 
-  public void savePhysicalGoodSearchForm(ControlCodeJourney controlCodeJourney, ControlCodeSearchForm controlCodeSearchForm) {
-    writeObject(prependFieldName(controlCodeJourney, PHYSICAL_GOOD_SEARCH), controlCodeSearchForm);
+  public void savePhysicalGoodSearchForm(ControlCodeSubJourney controlCodeSubJourney, SearchForm searchForm) {
+    writeObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), searchForm);
   }
 
-  public Optional<ControlCodeSearchForm> getPhysicalGoodsSearchForm(ControlCodeJourney controlCodeJourney) {
-    return readObject(prependFieldName(controlCodeJourney, PHYSICAL_GOOD_SEARCH), ControlCodeSearchForm.class);
+  public Optional<SearchForm> getPhysicalGoodsSearchForm(ControlCodeSubJourney controlCodeSubJourney) {
+    return readObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), SearchForm.class);
   }
 
   public void saveOgelQuestionsForm(OgelQuestionsForm ogelQuestionsForm) {
@@ -293,52 +305,52 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readString(NON_MILITARY_FIREARMS_EXPORTED_BY_SELF);
   }
 
-  public void saveControlCodeApplies(ControlCodeJourney controlCodeJourney, boolean controlCodeApplies) {
-    writeBoolean(prependFieldName(controlCodeJourney, CONTROL_CODE_APPLIES), controlCodeApplies);
+  public void saveControlCodeApplies(ControlCodeSubJourney controlCodeSubJourney, boolean controlCodeApplies) {
+    writeBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_APPLIES), controlCodeApplies);
   }
 
-  public Optional<Boolean> getControlCodeApplies(ControlCodeJourney controlCodeJourney) {
-    return readBoolean(prependFieldName(controlCodeJourney, CONTROL_CODE_APPLIES));
+  public Optional<Boolean> getControlCodeApplies(ControlCodeSubJourney controlCodeSubJourney) {
+    return readBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_APPLIES));
   }
 
-  public void clearControlCodeApplies(ControlCodeJourney controlCodeJourney) {
-    deleteString(prependFieldName(controlCodeJourney, CONTROL_CODE_APPLIES));
+  public void clearControlCodeApplies(ControlCodeSubJourney controlCodeSubJourney) {
+    deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_APPLIES));
   }
 
-  public void saveControlCodeDecontrolsApply(ControlCodeJourney controlCodeJourney, boolean decontrolsApply) {
-    writeBoolean(prependFieldName(controlCodeJourney, CONTROL_CODE_DECONTROLS_APPLY), decontrolsApply);
+  public void saveControlCodeDecontrolsApply(ControlCodeSubJourney controlCodeSubJourney, boolean decontrolsApply) {
+    writeBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_DECONTROLS_APPLY), decontrolsApply);
   }
 
-  public Optional<Boolean> getControlCodeDecontrolsApply(ControlCodeJourney controlCodeJourney) {
-    return readBoolean(prependFieldName(controlCodeJourney, CONTROL_CODE_DECONTROLS_APPLY));
+  public Optional<Boolean> getControlCodeDecontrolsApply(ControlCodeSubJourney controlCodeSubJourney) {
+    return readBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_DECONTROLS_APPLY));
   }
 
-  public void clearControlCodeDecontrolsApply(ControlCodeJourney controlCodeJourney) {
-    deleteString(prependFieldName(controlCodeJourney, CONTROL_CODE_DECONTROLS_APPLY));
+  public void clearControlCodeDecontrolsApply(ControlCodeSubJourney controlCodeSubJourney) {
+    deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_DECONTROLS_APPLY));
   }
 
-  public void saveControlCodeAdditionalSpecificationsApply(ControlCodeJourney controlCodeJourney, boolean additionalSpecificationsApply) {
-    writeBoolean(prependFieldName(controlCodeJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY), additionalSpecificationsApply);
+  public void saveControlCodeAdditionalSpecificationsApply(ControlCodeSubJourney controlCodeSubJourney, boolean additionalSpecificationsApply) {
+    writeBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY), additionalSpecificationsApply);
   }
 
-  public Optional<Boolean> getControlCodeAdditionalSpecificationsApply(ControlCodeJourney controlCodeJourney) {
-    return readBoolean(prependFieldName(controlCodeJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY));
+  public Optional<Boolean> getControlCodeAdditionalSpecificationsApply(ControlCodeSubJourney controlCodeSubJourney) {
+    return readBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY));
   }
 
-  public void clearControlCodeAdditionalSpecificationsApply(ControlCodeJourney controlCodeJourney) {
-    deleteString(prependFieldName(controlCodeJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY));
+  public void clearControlCodeAdditionalSpecificationsApply(ControlCodeSubJourney controlCodeSubJourney) {
+    deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY));
   }
 
-  public void saveControlCodeTechnicalNotesApply(ControlCodeJourney controlCodeJourney, boolean technicalNotesApply) {
-    writeBoolean(prependFieldName(controlCodeJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY), technicalNotesApply);
+  public void saveControlCodeTechnicalNotesApply(ControlCodeSubJourney controlCodeSubJourney, boolean technicalNotesApply) {
+    writeBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY), technicalNotesApply);
   }
 
-  public Optional<Boolean> getControlCodeTechnicalNotesApply(ControlCodeJourney controlCodeJourney) {
-    return readBoolean(prependFieldName(controlCodeJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
+  public Optional<Boolean> getControlCodeTechnicalNotesApply(ControlCodeSubJourney controlCodeSubJourney) {
+    return readBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
   }
 
-  public void clearControlCodeTechnicalNotesApply(ControlCodeJourney controlCodeJourney) {
-    deleteString(prependFieldName(controlCodeJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
+  public void clearControlCodeTechnicalNotesApply(ControlCodeSubJourney controlCodeSubJourney) {
+    deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
   }
 
   public void saveDoExemptionsApplyQ1(String doExemptionsApply) {
@@ -355,6 +367,14 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public String getDoExemptionsApplyQ2() {
     return readString(DO_EXEMPTIONS_APPLY_Q2);
+  }
+
+  public void saveDoExemptionsApplyQ3(String doExemptionsApply) {
+    writeString(DO_EXEMPTIONS_APPLY_Q3, doExemptionsApply);
+  }
+
+  public String getDoExemptionsApplyQ3() {
+    return readString(DO_EXEMPTIONS_APPLY_Q3);
   }
 
   public void saveSoftTechCategory(GoodsType goodsType, SoftTechCategory softTechCategory) {
@@ -377,19 +397,19 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public void saveRelatedToEquipmentOrMaterials(GoodsType goodsType, Boolean relatedToEquipmentOrMaterials) {
-    writeString(prependFieldName(goodsType.toUrlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS), relatedToEquipmentOrMaterials.toString());
+    writeString(prependFieldName(goodsType.urlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS), relatedToEquipmentOrMaterials.toString());
   }
 
   public Optional<Boolean> getRelatedToEquipmentOrMaterials(GoodsType goodsType) {
-    return readBoolean(prependFieldName(goodsType.toUrlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS));
+    return readBoolean(prependFieldName(goodsType.urlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS));
   }
 
-  public String prependFieldName(ControlCodeJourney controlCodeJourney, String fieldName) {
-    return prependFieldName(controlCodeJourney.value(), fieldName);
+  public String prependFieldName(ControlCodeSubJourney controlCodeSubJourney, String fieldName) {
+    return prependFieldName(controlCodeSubJourney.value(), fieldName);
   }
 
   public String prependFieldName(GoodsType goodsType, String fieldName) {
-    return prependFieldName(goodsType.toUrlString(), fieldName);
+    return prependFieldName(goodsType.urlString(), fieldName);
   }
 
   public String prependFieldName(String prefix, String fieldName) {
@@ -404,18 +424,18 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readBoolean(SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP);
   }
 
-  public void clearControlCodeJourneyDaoFields(ControlCodeJourney controlCodeJourney) {
-    clearControlCodeApplies(controlCodeJourney);
-    clearControlCodeDecontrolsApply(controlCodeJourney);
-    clearControlCodeAdditionalSpecificationsApply(controlCodeJourney);
-    clearControlCodeTechnicalNotesApply(controlCodeJourney);
+  public void clearControlCodeSubJourneyDaoFields(ControlCodeSubJourney controlCodeSubJourney) {
+    clearControlCodeApplies(controlCodeSubJourney);
+    clearControlCodeDecontrolsApply(controlCodeSubJourney);
+    clearControlCodeAdditionalSpecificationsApply(controlCodeSubJourney);
+    clearControlCodeTechnicalNotesApply(controlCodeSubJourney);
   }
 
-  public void clearAndUpdateControlCodeJourneyDaoFieldsIfChanged(ControlCodeJourney controlCodeJourney, String newSelectedControlCode) {
-    String oldSelectedControlCode = getSelectedControlCode(controlCodeJourney);
+  public void clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(ControlCodeSubJourney controlCodeSubJourney, String newSelectedControlCode) {
+    String oldSelectedControlCode = getSelectedControlCode(controlCodeSubJourney);
     if (!StringUtils.equals(newSelectedControlCode, oldSelectedControlCode)) {
-      clearControlCodeJourneyDaoFields(controlCodeJourney);
-      saveSelectedControlCode(controlCodeJourney,newSelectedControlCode);
+      clearControlCodeSubJourneyDaoFields(controlCodeSubJourney);
+      saveSelectedControlCode(controlCodeSubJourney,newSelectedControlCode);
     }
   }
 

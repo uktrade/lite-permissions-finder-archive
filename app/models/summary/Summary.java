@@ -55,7 +55,7 @@ public class Summary {
                                                         ApplicableOgelServiceClient applicableOgelServiceClient,
                                                         CountryProvider countryProviderExport) {
     String applicationCode = permissionsFinderDao.getApplicationCode();
-    String physicalGoodControlCode = permissionsFinderDao.getConfirmedControlCode();
+    String physicalGoodControlCode = permissionsFinderDao.getLastSelectedControlCode();
     String ogelId = permissionsFinderDao.getOgelId();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());

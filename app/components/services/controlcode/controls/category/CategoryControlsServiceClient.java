@@ -34,10 +34,10 @@ public class CategoryControlsServiceClient {
     }
     String url;
     if (softTechCategory.isDualUseSoftTechCategory()) {
-      url = webServiceUrl + "/" + goodsType.toUrlString() +  "/dual-use/" + softTechCategory.toUrlString();
+      url = webServiceUrl + "/" + goodsType.urlString() +  "/dual-use/" + softTechCategory.toUrlString();
     }
     else {
-      url = webServiceUrl + "/" + goodsType.toUrlString() +  "/military";
+      url = webServiceUrl + "/" + goodsType.urlString() +  "/military";
     }
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
