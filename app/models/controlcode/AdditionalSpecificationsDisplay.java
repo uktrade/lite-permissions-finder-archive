@@ -3,7 +3,7 @@ package models.controlcode;
 import components.services.controlcode.AdditionalSpecifications;
 import components.services.controlcode.Ancestor;
 import components.services.controlcode.ControlCodeData;
-import components.services.controlcode.FrontendServiceResult;
+import components.services.controlcode.FrontendControlCode;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,21 +19,21 @@ public class AdditionalSpecificationsDisplay {
   public final String clauseText;
   public final List<String> specifications;
 
-  public AdditionalSpecificationsDisplay(FrontendServiceResult frontendServiceResult) {
-    ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
+  public AdditionalSpecificationsDisplay(FrontendControlCode frontendControlCode) {
+    ControlCodeData controlCodeData = frontendControlCode.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
-    if (frontendServiceResult.greatestAncestor.isPresent()) {
-      this.greatestAncestor = frontendServiceResult.greatestAncestor.get();
+    if (frontendControlCode.greatestAncestor.isPresent()) {
+      this.greatestAncestor = frontendControlCode.greatestAncestor.get();
       showGreatestAncestor = true;
     }
     else {
       this.greatestAncestor = null;
       showGreatestAncestor = false;
     }
-    this.otherAncestors = frontendServiceResult.otherAncestors;
-    AdditionalSpecifications additionalSpecifications = frontendServiceResult.controlCodeData.additionalSpecifications;
+    this.otherAncestors = frontendControlCode.otherAncestors;
+    AdditionalSpecifications additionalSpecifications = frontendControlCode.controlCodeData.additionalSpecifications;
     if (additionalSpecifications != null) {
       this.clauseText = additionalSpecifications.clauseText;
       if (additionalSpecifications.specificationText != null) {

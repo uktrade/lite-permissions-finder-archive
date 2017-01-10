@@ -47,7 +47,7 @@ public class AdditionalSpecificationsController {
   private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<AdditionalSpecificationsForm> form) {
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
         .thenApplyAsync(result ->
-            ok(additionalSpecifications.render(form, new AdditionalSpecificationsDisplay(result)))
+            ok(additionalSpecifications.render(form, new AdditionalSpecificationsDisplay(result.getFrontendControlCode())))
             , httpExecutionContext.current());
   }
 

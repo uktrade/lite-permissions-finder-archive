@@ -37,7 +37,7 @@ public class ControlCodeDecider implements Decider<Collection<ControlCodeDecider
 
     String controlCode = dao.getSelectedControlCode(controlCodeSubJourney);
 
-    return client.get(controlCode).thenApply(e -> containsData(e.controlCodeData));
+    return client.get(controlCode).thenApply(e -> containsData(e.getControlCodeData()));
   }
 
   private static Collection<ControlCodeDataType> containsData(ControlCodeData data) {

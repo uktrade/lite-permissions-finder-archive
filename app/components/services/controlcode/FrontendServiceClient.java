@@ -40,7 +40,7 @@ public class FrontendServiceClient {
             throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /frontend-control-codes: %s %s", response.getStatus(), errorMessage));
           }
           else {
-            return Json.fromJson(response.asJson(), FrontendServiceResult.class);
+            return new FrontendServiceResult(response.asJson());
           }
        }, httpExecutionContext.current());
   }

@@ -1,28 +1,31 @@
 package components.services.controlcode;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.Lists;
+import com.fasterxml.jackson.databind.JsonNode;
+import play.libs.Json;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class FrontendServiceResult {
+  private final FrontendControlCode frontendControlCode;
 
-  public final ControlCodeData controlCodeData;
-
-  public final Optional<Ancestor> greatestAncestor;
-
-  public final List<Ancestor> otherAncestors;
-
-  public FrontendServiceResult(@JsonProperty("controlCodeData") ControlCodeData controlCodeData,
-                               @JsonProperty("lineage")List<Ancestor> ancestors) {
-    this.controlCodeData = controlCodeData;
-    List<Ancestor> reversedAncestors = Lists.reverse(ancestors);
-    this.greatestAncestor = !reversedAncestors.isEmpty() ? Optional.of(reversedAncestors.get(0)) : Optional.empty();
-    this.otherAncestors = reversedAncestors.size() > 1
-        ? reversedAncestors.subList(1, reversedAncestors.size())
-        : Collections.emptyList();
+  public FrontendServiceResult(JsonNode responseJson) {
+    this.frontendControlCode = Json.fromJson(responseJson, FrontendControlCode.class);
   }
 
+  public FrontendControlCode getFrontendControlCode() {
+    return this.frontendControlCode;
+  }
+
+  public ControlCodeData getControlCodeData() {
+    return this.frontendControlCode.controlCodeData;
+  }
+
+  public Optional<Ancestor> getGreatestAncestor() {
+    return this.frontendControlCode.greatestAncestor;
+  }
+
+  public List<Ancestor> getOtherAncestors() {
+    return this.frontendControlCode.otherAncestors;
+  }
 }

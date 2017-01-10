@@ -2,7 +2,7 @@ package models.controlcode;
 
 import components.services.controlcode.Ancestor;
 import components.services.controlcode.ControlCodeData;
-import components.services.controlcode.FrontendServiceResult;
+import components.services.controlcode.FrontendControlCode;
 
 import java.util.List;
 
@@ -15,21 +15,21 @@ public class TechnicalNotesDisplay {
   public final boolean showGreatestAncestor;
   public final String technicalNotes;
 
-  public TechnicalNotesDisplay(FrontendServiceResult frontendServiceResult) {
-    ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
+  public TechnicalNotesDisplay(FrontendControlCode frontendControlCode) {
+    ControlCodeData controlCodeData = frontendControlCode.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
     this.technicalNotes = controlCodeData.technicalNotes;
-    if (frontendServiceResult.greatestAncestor.isPresent()) {
-      this.greatestAncestor = frontendServiceResult.greatestAncestor.get();
+    if (frontendControlCode.greatestAncestor.isPresent()) {
+      this.greatestAncestor = frontendControlCode.greatestAncestor.get();
       showGreatestAncestor = true;
     }
     else {
       this.greatestAncestor = null;
       showGreatestAncestor = false;
     }
-    this.otherAncestors = frontendServiceResult.otherAncestors;
+    this.otherAncestors = frontendControlCode.otherAncestors;
   }
 
 }
