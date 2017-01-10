@@ -36,7 +36,7 @@ public class GoodsRelationshipsServiceClient {
       throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\" for parameter relatedToGoodsType", goodsType.toString()));
     }
 
-    String url = webServiceUrl + "/" + goodsType.urlString() + "/for/" + goodsType.urlString();
+    String url = webServiceUrl + "/" + goodsType.urlString() + "/for/" + relatedToGoodsType.urlString();
 
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
