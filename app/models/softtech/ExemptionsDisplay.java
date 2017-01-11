@@ -1,9 +1,9 @@
 package models.softtech;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import controllers.softtech.routes;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ExemptionsDisplay {
 
@@ -15,12 +15,12 @@ public class ExemptionsDisplay {
   public ExemptionsDisplay(ExemptionQuestion exemptionDisplayType) {
     if (exemptionDisplayType == ExemptionQuestion.Q1) {
       this.pageTitle = "Public domain software";
-      this.questionLabel = "Is your software in the public domain, for example available as a free download that does not require permission or payment to use?";
+      this.questionLabel = "Is your software in the public domain?";
       this.formAction = routes.ExemptionsController.handleSubmitQ1().url();
-      this.questionContent = Collections.emptyList();
+      this.questionContent = Arrays.asList("For example, available as a free download that does not require permission or payment to use.");
     }
     else if (exemptionDisplayType == ExemptionQuestion.Q2) {
-      this.pageTitle = "Information security software";
+      this.pageTitle = "Information security";
       this.questionLabel = "Are you exporting information security software?";
       this.formAction = routes.ExemptionsController.handleSubmitQ2().url();
       this.questionContent = Arrays.asList("This means software that ensures the accessibility, confidentiality or integrity of information or communications. It includes software for cryptography, cryptographic activation, cryptanalysis, protection against compromising emanations and computer security.");
