@@ -1,0 +1,24 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import models.softtech.GoodsRelationshipDisplay
+
+@(form: Form[_], display: GoodsRelationshipDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+  @errorSummary(form)
+}{
+
+  <form action="@display.formAction" method="POST">
+
+    @contextFormParams()
+
+    @formRadioBoolean(form.field("isRelatedToGoodsType"), Html(display.questionLabel))
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+
+  </form>
+
+}
