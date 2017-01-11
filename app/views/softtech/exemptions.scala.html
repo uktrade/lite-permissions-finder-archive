@@ -13,14 +13,20 @@
     
     @contextFormParams()
 
-    @if(!display.exemptions.isEmpty) {
+    @if(!display.questionContent.isEmpty) {
       <h2 class="heading-medium">@display.questionLabel</h2>
 
-      <ul class="list list-bullet text">
-      @for(exemption <- display.exemptions) {
-        <li>@exemption</li>
+      @if(display.questionContent.size() > 1) {
+        <ul class="list list-bullet text">
+        @for(contentItem <- display.questionContent) {
+          <li>@contentItem</li>
+        }
+        </ul>
+      } else {
+        <p>
+          @display.questionContent.get(0)
+        </p>
       }
-      </ul>
 
       <div class="form-group">
         @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel), hideHeading = true)
@@ -31,6 +37,7 @@
       <div class="form-group">
         @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel))
       </div>
+
     }
 
     <div class="form-group">
