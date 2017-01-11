@@ -14,6 +14,8 @@ import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ControlCodeDecider;
 import journey.deciders.ExportCategoryDecider;
 import journey.deciders.RelatedControlsDecider;
+import journey.deciders.RelationshipWithSoftwareDecider;
+import journey.deciders.RelationshipWithTechnologyDecider;
 import models.ArtsCulturalGoodsType;
 import models.ExportCategory;
 import models.GoodsType;
@@ -48,6 +50,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final DecisionStage<ApplicableSoftTechControls> applicableSoftwareControlsDecision;
   private final DecisionStage<ApplicableSoftTechControls> applicableRelatedControlsDecision;
   private final DecisionStage<ApplicableSoftTechControls> applicableCatchallControlsDecision;
+  private final DecisionStage<Boolean> softwareRelationshipWithTechnologyExistsDecision;
+  private final DecisionStage<Boolean> softwareRelationshipWithSoftwareExistsDecision;
 
   private final JourneyStage searchRTS = defineStage("searchRTS", "Describe your items",
       controllers.search.routes.SearchController.renderSearchRelatedToForm(GoodsType.SOFTWARE.urlString()));
@@ -73,27 +77,41 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private JourneyStage softwareControlsNLR = defineStage("softwareControlsNLR", "No software controls exist for the selected item",
       routes.StaticContentController.renderSoftwareControlsNLR());
 
+  private JourneyStage softwareRelatedToTechnologyQuestion = defineStage("softwareRelatedToTechnologyQuestion", "Is your software related to a technology?",
+      controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+  private JourneyStage softwareRelatedToSoftwareQuestion = defineStage("softwareRelatedToSoftwareQuestion", "Is your software related to other software?",
+      controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
+
   private final ControlCodeDecider controlCodeDecider;
   private final ExportCategoryDecider exportCategoryDecider;
   private final CategoryControlsDecider categoryControlsDecider;
   private final RelatedControlsDecider relatedControlsDecider;
   private final CatchallControlsDecider catchallControlsDecider;
+  private final RelationshipWithTechnologyDecider relationshipWithTechnologyDecider;
+  private final RelationshipWithSoftwareDecider relationshipWithSoftwareDecider;
 
   @Inject
   public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider,
                                         ExportCategoryDecider exportCategoryDecider,
                                         CategoryControlsDecider categoryControlsDecider,
                                         RelatedControlsDecider relatedControlsDecider,
-                                        CatchallControlsDecider catchallControlsDecider) {
+                                        CatchallControlsDecider catchallControlsDecider,
+                                        RelationshipWithTechnologyDecider relationshipWithTechnologyDecider,
+                                        RelationshipWithSoftwareDecider relationshipWithSoftwareDecider) {
     this.controlCodeDecider = controlCodeDecider;
     this.exportCategoryDecider = exportCategoryDecider;
     this.categoryControlsDecider = categoryControlsDecider;
     this.relatedControlsDecider = relatedControlsDecider;
     this.catchallControlsDecider = catchallControlsDecider;
+    this.relationshipWithTechnologyDecider = relationshipWithTechnologyDecider;
+    this.relationshipWithSoftwareDecider = relationshipWithSoftwareDecider;
     this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("isDualUseSoftwareDecision", this.exportCategoryDecider);
     this.applicableSoftwareControlsDecision = defineDecisionStage("applicableSoftwareControlsDecision", this.categoryControlsDecider);
     this.applicableRelatedControlsDecision = defineDecisionStage("applicableRelatedControlsDecision", this.relatedControlsDecider);
     this.applicableCatchallControlsDecision = defineDecisionStage("applicableCatchallControlsDecision", this.catchallControlsDecider);
+    this.softwareRelationshipWithTechnologyExistsDecision = defineDecisionStage("softwareRelationshipWithTechnologyExistsDecision", this.relationshipWithTechnologyDecider);
+    this.softwareRelationshipWithSoftwareExistsDecision = defineDecisionStage("softwareRelationshipWithSoftwareExistsDecision", this.relationshipWithSoftwareDecider);
   }
 
   @Override
@@ -279,7 +297,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .branch()
         .when(RadioactiveStage.CRS_SELECTED, moveTo(destinationCountries))
         .when(RadioactiveStage.CONTINUE, moveTo(search));
-
   }
 
   private void physicalGoodsStages() {
@@ -509,7 +526,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atDecisionStage(applicableRelatedControlsDecision)
         .decide()
-        .when(ApplicableSoftTechControls.ZERO, moveTo(notImplemented)) // TODO check software controls related to military? else software related to dual use?
+        .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelationshipWithTechnologyExistsDecision))
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySCRTPG))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlsListSCRTPG));
 
@@ -517,11 +534,25 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atDecisionStage(applicableCatchallControlsDecision)
         .decide()
-        .when(ApplicableSoftTechControls.ZERO, moveTo(notImplemented)) // TODO softtech relationship
+        .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelationshipWithTechnologyExistsDecision))
         .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySCC))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlsListSCC));
 
     softwareCatchallControls();
+
+    atDecisionStage(softwareRelationshipWithTechnologyExistsDecision)
+        .decide()
+        .when(true, moveTo(softwareRelatedToTechnologyQuestion))
+        .when(false, moveTo(softwareRelationshipWithSoftwareExistsDecision));
+
+    softwareRelatedToTechnology();
+
+    atDecisionStage(softwareRelationshipWithSoftwareExistsDecision)
+        .decide()
+        .when(true, moveTo(softwareRelatedToSoftwareQuestion))
+        .when(false, moveTo(notImplemented)); //TODO NLR
+
+    softwareRelatedToSoftware();
 
   }
 
@@ -739,7 +770,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     bindControlCodeListStageJourneyTransitions(
         controlsListSCC,
         controlCodeSummarySCC,
-        notImplemented // TODO softech relationship decision
+        softwareRelationshipWithTechnologyExistsDecision
     );
 
     bindControlCodeStageTransitions(
@@ -757,9 +788,24 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     bindControlCodeNotApplicableFromListStageJourneyTransitions(
         controlCodeNotApplicableSCC,
         controlsListSCC,
-        notImplemented // TODO softech relationship decision
+        softwareRelationshipWithTechnologyExistsDecision
     );
+  }
 
+  private void softwareRelatedToTechnology() {
+    bindYesNoJourneyTransition(
+        softwareRelatedToTechnologyQuestion,
+        notImplemented, // TODO Ask repeating questions
+        softwareRelationshipWithSoftwareExistsDecision
+    );
+  }
+
+  private void softwareRelatedToSoftware() {
+    bindYesNoJourneyTransition(
+        softwareRelatedToSoftwareQuestion,
+        notImplemented, // TODO Ask repeating questions
+        notImplemented // TODO NLR
+    );
   }
 
   private void bindControlCodeNotApplicableFromSearchStageJourneyTransitions(JourneyStage controlCodeNotApplicableStage,

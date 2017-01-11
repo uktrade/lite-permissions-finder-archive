@@ -45,7 +45,7 @@ public class DecontrolsController {
 
   private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<DecontrolsForm> form) {
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
-        .thenApplyAsync(result -> ok(decontrols.render(form, new DecontrolsDisplay(result)))
+        .thenApplyAsync(result -> ok(decontrols.render(form, new DecontrolsDisplay(result.getFrontendControlCode())))
             , httpExecutionContext.current());
   }
 

@@ -1,38 +1,37 @@
 package models.softtech;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import controllers.softtech.routes;
 
 public class ExemptionsDisplay {
 
-  public enum ExemptionDisplayType {
-    Q1,
-    Q2,
-    Q3
-  }
-
   public final String formAction;
+  public final String pageTitle;
   public final String questionLabel;
-  public final List<String> exemptions;
+  public final List<String> questionContent;
 
-  public ExemptionsDisplay(ExemptionDisplayType exemptionDisplayType) {
-    if (exemptionDisplayType == ExemptionDisplayType.Q1) {
-      this.questionLabel = "Do public domain software exemptions apply?";
+  public ExemptionsDisplay(ExemptionQuestion exemptionDisplayType) {
+    if (exemptionDisplayType == ExemptionQuestion.Q1) {
+      this.pageTitle = "Public domain software";
+      this.questionLabel = "Is your software in the public domain, for example available as a free download that does not require permission or payment to use?";
       this.formAction = routes.ExemptionsController.handleSubmitQ1().url();
-      this.exemptions = Arrays.asList("Available to buy from retail outlets (e.g. shops open to the public)",
-          "In the public domain (free software that does not require permission or payment to use)");
+      this.questionContent = Collections.emptyList();
     }
-    else if (exemptionDisplayType == ExemptionDisplayType.Q2) {
-      this.questionLabel = "Is software for information security?";
+    else if (exemptionDisplayType == ExemptionQuestion.Q2) {
+      this.pageTitle = "Information security software";
+      this.questionLabel = "Are you exporting information security software?";
       this.formAction = routes.ExemptionsController.handleSubmitQ2().url();
-      this.exemptions = Arrays.asList("Is your software for information security?");
+      this.questionContent = Arrays.asList("This means software that ensures the accessibility, confidentiality or integrity of information or communications. It includes software for cryptography, cryptographic activation, cryptanalysis, protection against compromising emanations and computer security.");
     }
     else {
-      this.questionLabel = "Do software exemptions apply?";
+      this.pageTitle = "Other software exemptions";
+      this.questionLabel = "Are you exporting any of the following?";
       this.formAction = routes.ExemptionsController.handleSubmitQ3().url();
-      this.exemptions = Arrays.asList("Software that the user can install themselves, without your help",
-          "Compiled source code that is the minimum needed to install, operate, maintain or repair exported items");
+      this.questionContent = Arrays.asList("Software that is available to buy from retail outlets, e.g. shops open to the public",
+          "Software that the end user can install without expert help, e.g. a technician or engineer provided by the software's manufacturer",
+          "Source code that is needed to install, operate, maintain or repair exported items, but that cannot be used for anything else");
     }
 
   }

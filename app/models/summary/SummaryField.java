@@ -64,7 +64,7 @@ public class SummaryField {
    * @return a SummaryField for the control code
    */
   public static SummaryField fromFrontendServiceResult(FrontendServiceResult frontendServiceResult, String editLinkUrl) {
-    ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
+    ControlCodeData controlCodeData = frontendServiceResult.getControlCodeData();
     String content =  "<strong class=\"bold-small\">" + controlCodeData.controlCode
         + "</strong> - " + controlCodeData.title;
     return new SummaryField(SummaryFieldType.CONTROL_CODE, "Classification", content, null, editLinkUrl, true, true);

@@ -7,6 +7,8 @@ import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ControlCodeDecider;
 import journey.deciders.ExportCategoryDecider;
 import journey.deciders.RelatedControlsDecider;
+import journey.deciders.RelationshipWithSoftwareDecider;
+import journey.deciders.RelationshipWithTechnologyDecider;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -22,7 +24,9 @@ public class JourneyPrint {
         new ExportCategoryDecider(null),
         new CategoryControlsDecider(null, null, null, null),
         new RelatedControlsDecider(null, null, null, null),
-        new CatchallControlsDecider(null, null, null, null)
+        new CatchallControlsDecider(null, null, null, null),
+        new RelationshipWithTechnologyDecider(null, null),
+        new RelationshipWithSoftwareDecider(null, null)
     ).buildAll();
     Optional<JourneyDefinition> serialiseJourney = journeyDefinitions.stream().filter(j -> JourneyDefinitionNames.EXPORT.equals(j.getJourneyName())).findFirst();
 

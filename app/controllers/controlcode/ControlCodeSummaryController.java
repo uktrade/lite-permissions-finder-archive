@@ -45,7 +45,7 @@ public class ControlCodeSummaryController extends Controller {
   private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<ControlCodeSummaryForm> form) {
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
         .thenApplyAsync(frontendServiceResult ->
-                ok(controlCodeSummary.render(form, new ControlCodeSummaryDisplay(controlCodeSubJourney, frontendServiceResult)))
+                ok(controlCodeSummary.render(form, new ControlCodeSummaryDisplay(controlCodeSubJourney, frontendServiceResult.getFrontendControlCode())))
             , httpExecutionContext.current());
   }
 

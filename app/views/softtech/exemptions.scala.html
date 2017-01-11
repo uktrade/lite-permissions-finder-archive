@@ -5,7 +5,7 @@
 @import models.softtech.ExemptionsDisplay
 
 @(form: Form[_], display: ExemptionsDisplay)
-@standardPage("Some types of software do not need a licence", Some(Html("Some types of software do not need a licence"))){
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
   @errorSummary(form)
 }{
 
@@ -13,15 +13,32 @@
     
     @contextFormParams()
 
-    <h2 class="heading-medium">@display.questionLabel</h2>
+    @if(!display.questionContent.isEmpty) {
+      <h2 class="heading-medium">@display.questionLabel</h2>
 
-    <ul class="list list-bullet text">
-      @for(exemption <- display.exemptions) {
-        <li>@exemption</li>
+      @if(display.questionContent.size() > 1) {
+        <ul class="list list-bullet text">
+        @for(contentItem <- display.questionContent) {
+          <li>@contentItem</li>
+        }
+        </ul>
+      } else {
+        <p>
+          @display.questionContent.get(0)
+        </p>
       }
-    </ul>
 
-    @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel), hideHeading = true)
+      <div class="form-group">
+        @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel), hideHeading = true)
+      </div>
+
+    } else {
+
+      <div class="form-group">
+        @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel))
+      </div>
+
+    }
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

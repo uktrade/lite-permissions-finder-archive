@@ -2,7 +2,7 @@ package models.controlcode;
 
 import components.services.controlcode.Ancestor;
 import components.services.controlcode.ControlCodeData;
-import components.services.controlcode.FrontendServiceResult;
+import components.services.controlcode.FrontendControlCode;
 import models.GoodsType;
 
 import java.util.List;
@@ -20,8 +20,8 @@ public class ControlCodeSummaryDisplay {
   public final boolean additionalSpecificationsExist;
   public final boolean technicalNotesExist;
 
-  public ControlCodeSummaryDisplay(ControlCodeSubJourney controlCodeSubJourney, FrontendServiceResult frontendServiceResult) {
-    ControlCodeData controlCodeData = frontendServiceResult.controlCodeData;
+  public ControlCodeSummaryDisplay(ControlCodeSubJourney controlCodeSubJourney, FrontendControlCode frontendControlCode) {
+    ControlCodeData controlCodeData = frontendControlCode.controlCodeData;
     this.title = controlCodeData.title;
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
@@ -29,15 +29,15 @@ public class ControlCodeSummaryDisplay {
     this.decontrolsExist = controlCodeData.canShowDecontrols();
     this.additionalSpecificationsExist = controlCodeData.canShowAdditionalSpecifications();
     this.technicalNotesExist = controlCodeData.canShowTechnicalNotes();
-    if (frontendServiceResult.greatestAncestor.isPresent()) {
-      this.greatestAncestor = frontendServiceResult.greatestAncestor.get();
+    if (frontendControlCode.greatestAncestor.isPresent()) {
+      this.greatestAncestor = frontendControlCode.greatestAncestor.get();
       this.showGreatestAncestor = true;
     }
     else {
       this.greatestAncestor = null;
       this.showGreatestAncestor = false;
     }
-    this.otherAncestors = frontendServiceResult.otherAncestors;
+    this.otherAncestors = frontendControlCode.otherAncestors;
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
       GoodsType goodsType = controlCodeSubJourney.getGoodsType();
       if (goodsType == GoodsType.PHYSICAL) {

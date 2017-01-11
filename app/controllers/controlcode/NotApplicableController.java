@@ -61,7 +61,7 @@ public class NotApplicableController {
           .thenApplyAsync(result ->
                   ok(notApplicable.render(new NotApplicableDisplay(controlCodeSubJourney,
                       formFactory.form(NotApplicableForm.class),
-                      result.controlCodeData.alias,
+                      result.getControlCodeData().alias,
                       Boolean.parseBoolean(showExtendedContent))))
               , httpExecutionContext.current());
     }
@@ -75,7 +75,7 @@ public class NotApplicableController {
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
-                      result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
+                      result.getControlCodeData().alias, Boolean.parseBoolean(showExtendedContent), controls))
           ), httpExecutionContext.current());
     }
     else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
@@ -96,7 +96,7 @@ public class NotApplicableController {
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
-                      result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
+                      result.getControlCodeData().alias, Boolean.parseBoolean(showExtendedContent), controls))
           ), httpExecutionContext.current());
     }
     else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
@@ -109,7 +109,7 @@ public class NotApplicableController {
           .thenCombineAsync(frontendStage, (controls, result) -> ok(
               notApplicable.render(
                   new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
-                      result.controlCodeData.alias, Boolean.parseBoolean(showExtendedContent), controls))
+                      result.getControlCodeData().alias, Boolean.parseBoolean(showExtendedContent), controls))
           ), httpExecutionContext.current());
     }
     else {
