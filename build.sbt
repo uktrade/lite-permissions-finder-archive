@@ -27,6 +27,8 @@ libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
 libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.5.0"
 
+libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.0"
+
 // Contains all files and libraries shared across other projects
 lazy val `zzz-common` = project.in(file("subprojects/lite-play-common")).enablePlugins(PlayJava)
 

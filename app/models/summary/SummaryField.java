@@ -4,6 +4,7 @@ import components.services.controlcode.ControlCodeData;
 import components.services.controlcode.FrontendServiceResult;
 import components.services.ogels.ogel.OgelServiceResult;
 import models.common.Country;
+import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,9 +78,9 @@ public class SummaryField {
    * @param isValid Is the OGEL ID associated with this field valid?
    * @return a Summary field for the OGEL type
    */
-  public static SummaryField fromOgelServiceResult(OgelServiceResult ogelServiceResult,
+  public static SummaryField fromOgelServiceResult(OgelFullView ogelServiceResult,
                                                    String editLinkUrl, boolean isValid) {
-    return new SummaryField(SummaryFieldType.OGEL_TYPE, "Licence", ogelServiceResult.name, ogelServiceResult.id,
+    return new SummaryField(SummaryFieldType.OGEL_TYPE, "Licence", ogelServiceResult.getName(), ogelServiceResult.getId(),
         editLinkUrl, false, isValid);
   }
 
