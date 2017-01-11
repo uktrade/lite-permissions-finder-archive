@@ -7,25 +7,19 @@ import controllers.softtech.routes;
 
 public class ExemptionsDisplay {
 
-  public enum ExemptionDisplayType {
-    Q1,
-    Q2,
-    Q3
-  }
-
   public final String formAction;
   public final String pageTitle;
   public final String questionLabel;
   public final List<String> questionContent;
 
-  public ExemptionsDisplay(ExemptionDisplayType exemptionDisplayType) {
-    if (exemptionDisplayType == ExemptionDisplayType.Q1) {
+  public ExemptionsDisplay(ExemptionQuestion exemptionDisplayType) {
+    if (exemptionDisplayType == ExemptionQuestion.Q1) {
       this.pageTitle = "Public domain software";
       this.questionLabel = "Is your software in the public domain, for example available as a free download that does not require permission or payment to use?";
       this.formAction = routes.ExemptionsController.handleSubmitQ1().url();
       this.questionContent = Collections.emptyList();
     }
-    else if (exemptionDisplayType == ExemptionDisplayType.Q2) {
+    else if (exemptionDisplayType == ExemptionQuestion.Q2) {
       this.pageTitle = "Information security software";
       this.questionLabel = "Are you exporting information security software?";
       this.formAction = routes.ExemptionsController.handleSubmitQ2().url();

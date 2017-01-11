@@ -14,6 +14,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
 import models.controlcode.ControlCodeSubJourney;
+import models.softtech.ExemptionQuestion;
 import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
@@ -54,13 +55,11 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY = "controlCodeAdditionalSpecificationsApply";
   public static final String CONTROL_CODE_DECONTROLS_APPLY = "controlCodeDecontrolsApply";
   public static final String CONTROL_CODE_TECHNICAL_NOTES_APPLY = "controlCodeTechnicalNotesApply";
-  public static final String DO_EXEMPTIONS_APPLY_Q1 = "doExemptionsApplyQ1";
-  public static final String DO_EXEMPTIONS_APPLY_Q2 = "doExemptionsApplyQ2";
-  public static final String DO_EXEMPTIONS_APPLY_Q3 = "doExemptionsApplyQ3";
   public static final String SOFT_TECH_CATEGORY = "softTechCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
   public static final String LAST_STARTED_CONTROL_CODE_SUB_JOURNEY = "lastStartedControlCodeSubJourney";
   public static final String IS_RELATED_TO_GOODS_TYPE = "isRelatedToGoodsType";
+  public static final String SOFTWARE_EXEMPTION_QUESTION = "softwareExemptionQuestion";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -353,30 +352,6 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
   }
 
-  public void saveDoExemptionsApplyQ1(String doExemptionsApply) {
-    writeString(DO_EXEMPTIONS_APPLY_Q1, doExemptionsApply);
-  }
-
-  public String getDoExemptionsApplyQ1() {
-    return readString(DO_EXEMPTIONS_APPLY_Q1);
-  }
-
-  public void saveDoExemptionsApplyQ2(String doExemptionsApply) {
-    writeString(DO_EXEMPTIONS_APPLY_Q2, doExemptionsApply);
-  }
-
-  public String getDoExemptionsApplyQ2() {
-    return readString(DO_EXEMPTIONS_APPLY_Q2);
-  }
-
-  public void saveDoExemptionsApplyQ3(String doExemptionsApply) {
-    writeString(DO_EXEMPTIONS_APPLY_Q3, doExemptionsApply);
-  }
-
-  public String getDoExemptionsApplyQ3() {
-    return readString(DO_EXEMPTIONS_APPLY_Q3);
-  }
-
   public void saveSoftTechCategory(GoodsType goodsType, SoftTechCategory softTechCategory) {
     writeString(prependFieldName(goodsType, SOFT_TECH_CATEGORY), softTechCategory.toString());
   }
@@ -437,6 +412,14 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
 
   public Optional<Boolean> getIsRelatedToGoodsType (GoodsType goodsType, GoodsType relatedToGoodsType) {
     return readBoolean(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, IS_RELATED_TO_GOODS_TYPE)));
+  }
+
+  public void saveSoftwareExemptionQuestion(ExemptionQuestion exemptionQuestion, boolean doExemptionsApply) {
+    writeBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + exemptionQuestion.toString(), doExemptionsApply);
+  }
+
+  public Optional<Boolean> getSoftwareExemptionQuestion(ExemptionQuestion exemptionQuestion) {
+    return readBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + exemptionQuestion.toString());
   }
 
 }
