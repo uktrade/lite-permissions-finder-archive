@@ -1,10 +1,5 @@
 package components.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static play.mvc.Results.internalServerError;
-import static play.mvc.Results.ok;
-
 import components.services.ogels.virtualeu.VirtualEUOgelClient;
 import components.services.ogels.virtualeu.VirtualEUOgelResult;
 import exceptions.ServiceException;
@@ -19,17 +14,22 @@ import play.server.Server;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static play.mvc.Results.internalServerError;
+import static play.mvc.Results.ok;
+
 public class VirtualEUOgelClientTest {
 
   @Test
   public void shouldGetVirtualEu() throws Exception {
     String ogelId = "OGL61";
-    Router router = new RoutingDsl().GET("/virtual-eu").routeTo(() -> {
-      return ok(Json.parse("{\"virtualEu\":true, \"ogelId\":\"" + ogelId + "\"}"));
-    }).build();
+    Router router = new RoutingDsl().GET("/virtual-eu").routeTo(() ->
+      ok(Json.parse("{\"virtualEu\":true, \"ogelId\":\"" + ogelId + "\"}"))
+    ).build();
     Server server = Server.forRouter(router);
     int port = server.httpPort();
-    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "localhost", 10000);
+    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "http://localhost:" + port, 10000);
 
     VirtualEUOgelResult result = client.sendServiceRequest("ML1a", "CTRY0",
         Collections.singletonList("CTRY1"), Collections.singletonList("MIL_GOV"))
@@ -45,12 +45,12 @@ public class VirtualEUOgelClientTest {
 
   @Test
   public void shouldThowServiceException() throws Exception {
-    Router router = new RoutingDsl().GET("/virtual-eu").routeTo(() -> {
-      return internalServerError();
-    }).build();
+    Router router = new RoutingDsl().GET("/virtual-eu").routeTo(() ->
+      internalServerError()
+    ).build();
     Server server = Server.forRouter(router);
     int port = server.httpPort();
-    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "localhost", 10000);
+    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "http://localhost:" + port, 10000);
 
     CompletableFuture<VirtualEUOgelResult> resultFuture = client.sendServiceRequest("ML1a", "CTRY0",
         Collections.singletonList("CTRY1"), Collections.singletonList("MIL_GOV"))
