@@ -29,6 +29,8 @@ libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.
 
 libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.0"
 
+resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+
 // Contains all files and libraries shared across other projects
 lazy val `zzz-common` = project.in(file("subprojects/lite-play-common")).enablePlugins(PlayJava)
 

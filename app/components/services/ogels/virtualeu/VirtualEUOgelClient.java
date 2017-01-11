@@ -4,9 +4,12 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
+import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
+import uk.gov.bis.lite.ogel.api.view.OgelFullView;
+import uk.gov.bis.lite.ogel.api.view.VirtualEuView;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -29,7 +32,7 @@ public class VirtualEUOgelClient {
     this.webServiceTimeout = webServiceTimeout;
   }
 
-  public CompletionStage<VirtualEUOgelResult> sendServiceRequest(String controlCode, String sourceCountry,
+  public CompletionStage<VirtualEuView> sendServiceRequest(String controlCode, String sourceCountry,
                                                                  List<String> destinationCountries, List<String> activityTypes){
 
     WSRequest request = wsClient.url(webServiceUrl)
@@ -48,7 +51,7 @@ public class VirtualEUOgelClient {
             response.getStatus()));
       }
       else {
-        return VirtualEUOgelResult.build(response.asJson());
+        return Json.fromJson(response.asJson(), VirtualEuView.class);
       }
     }, httpExecutionContext.current());
   }

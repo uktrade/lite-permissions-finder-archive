@@ -1,7 +1,6 @@
 package components.services;
 
 import components.services.ogels.virtualeu.VirtualEUOgelClient;
-import components.services.ogels.virtualeu.VirtualEUOgelResult;
 import exceptions.ServiceException;
 import org.junit.Test;
 import play.libs.Json;
@@ -10,6 +9,7 @@ import play.libs.ws.WS;
 import play.routing.Router;
 import play.routing.RoutingDsl;
 import play.server.Server;
+import uk.gov.bis.lite.ogel.api.view.VirtualEuView;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -31,14 +31,14 @@ public class VirtualEUOgelClientTest {
     int port = server.httpPort();
     VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "http://localhost:" + port, 10000);
 
-    VirtualEUOgelResult result = client.sendServiceRequest("ML1a", "CTRY0",
+    VirtualEuView result = client.sendServiceRequest("ML1a", "CTRY0",
         Collections.singletonList("CTRY1"), Collections.singletonList("MIL_GOV"))
         .toCompletableFuture()
         .get();
 
-    assertThat(result.virtualEu).isTrue();
+    assertThat(result.isVirtualEu()).isTrue();
 
-    assertThat(result.ogelId).isEqualTo(ogelId);
+    assertThat(result.getOgelId()).isEqualTo(ogelId);
 
     server.stop();
   }
@@ -52,7 +52,7 @@ public class VirtualEUOgelClientTest {
     int port = server.httpPort();
     VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "http://localhost:" + port, 10000);
 
-    CompletableFuture<VirtualEUOgelResult> resultFuture = client.sendServiceRequest("ML1a", "CTRY0",
+    CompletableFuture<VirtualEuView> resultFuture = client.sendServiceRequest("ML1a", "CTRY0",
         Collections.singletonList("CTRY1"), Collections.singletonList("MIL_GOV"))
         .toCompletableFuture();
 
