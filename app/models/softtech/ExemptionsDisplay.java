@@ -32,11 +32,12 @@ public class ExemptionsDisplay {
       this.questionContent = Arrays.asList("This means software that ensures the accessibility, confidentiality or integrity of information or communications. It includes software for cryptography, cryptographic activation, cryptanalysis, protection against compromising emanations and computer security.");
     }
     else {
-      this.pageTitle = "Dummy";
-      this.questionLabel = "Do software exemptions apply?";
+      this.pageTitle = "Other software exemptions";
+      this.questionLabel = "Are you exporting any of the following?";
       this.formAction = routes.ExemptionsController.handleSubmitQ3().url();
-      this.questionContent = Arrays.asList("Software that the user can install themselves, without your help",
-          "Compiled source code that is the minimum needed to install, operate, maintain or repair exported items");
+      this.questionContent = Arrays.asList("Software that is available to buy from retail outlets, e.g. shops open to the public",
+          "Software that the end user can install without expert help, e.g. a technician or engineer provided by the software's manufacturer",
+          "Source code that is needed to install, operate, maintain or repair exported items, but that cannot be used for anything else");
     }
 
   }
