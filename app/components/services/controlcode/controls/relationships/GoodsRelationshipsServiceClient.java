@@ -33,7 +33,7 @@ public class GoodsRelationshipsServiceClient {
     }
 
     if (relatedToGoodsType != GoodsType.SOFTWARE && relatedToGoodsType != GoodsType.TECHNOLOGY) {
-      throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\" for parameter relatedToGoodsType", goodsType.toString()));
+      throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\" for parameter relatedToGoodsType", relatedToGoodsType.toString()));
     }
 
     String url = webServiceUrl + "/" + goodsType.urlString() + "/for/" + relatedToGoodsType.urlString();
