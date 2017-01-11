@@ -59,8 +59,8 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String DO_EXEMPTIONS_APPLY_Q3 = "doExemptionsApplyQ3";
   public static final String SOFT_TECH_CATEGORY = "softTechCategory";
   public static final String RELATED_TO_EQUIPMENT_OR_MATERIALS = "relatedToEquipmentOrMaterials";
-  public static final String SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP = "softwareIsCoveredByTechnologyRelationship";
   public static final String LAST_STARTED_CONTROL_CODE_SUB_JOURNEY = "lastStartedControlCodeSubJourney";
+  public static final String IS_RELATED_TO_GOODS_TYPE = "isRelatedToGoodsType";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -416,14 +416,6 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return prefix + ":" + fieldName;
   }
 
-  public void saveSoftwareIsCoveredByTechnologyRelationship(Boolean isCoveredByRelationship) {
-    writeBoolean(SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP, isCoveredByRelationship);
-  }
-
-  public Optional<Boolean> getSoftwareIsCoveredByTechnologyRelationship() {
-    return readBoolean(SOFTWARE_IS_COVERED_BY_TECHNOLOGY_RELATIONSHIP);
-  }
-
   public void clearControlCodeSubJourneyDaoFields(ControlCodeSubJourney controlCodeSubJourney) {
     clearControlCodeApplies(controlCodeSubJourney);
     clearControlCodeDecontrolsApply(controlCodeSubJourney);
@@ -437,6 +429,14 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
       clearControlCodeSubJourneyDaoFields(controlCodeSubJourney);
       saveSelectedControlCode(controlCodeSubJourney,newSelectedControlCode);
     }
+  }
+
+  public void saveIsRelatedToGoodsType(GoodsType goodsType, GoodsType relatedToGoodsType, boolean answer) {
+    writeBoolean(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, IS_RELATED_TO_GOODS_TYPE)), answer);
+  }
+
+  public Optional<Boolean> getIsRelatedToGoodsType (GoodsType goodsType, GoodsType relatedToGoodsType) {
+    return readBoolean(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, IS_RELATED_TO_GOODS_TYPE)));
   }
 
 }

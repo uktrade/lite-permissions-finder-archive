@@ -6,6 +6,7 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
+import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import models.GoodsType;
 import models.softtech.GoodsRelationshipDisplay;
@@ -15,17 +16,20 @@ import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import views.html.softtech.goodsRelationship;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class GoodsRelationshipController {
 
   private final FormFactory formFactory;
   private final JourneyManager journeyManager;
+  private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public GoodsRelationshipController(FormFactory formFactory, JourneyManager journeyManager) {
+  public GoodsRelationshipController(FormFactory formFactory, JourneyManager journeyManager, PermissionsFinderDao permissionsFinderDao) {
     this.formFactory = formFactory;
     this.journeyManager = journeyManager;
+    this.permissionsFinderDao = permissionsFinderDao;
   }
 
   @SuppressWarnings("OptionalGetWithoutIsPresent")
@@ -36,7 +40,10 @@ public class GoodsRelationshipController {
   }
 
   private CompletionStage<Result> renderFormInternal(GoodsType goodsType, GoodsType relatedToGoodsType) {
-    return completedFuture(ok(goodsRelationship.render(formFactory.form(GoodsRelationshipForm.class),
+    GoodsRelationshipForm templateForm = new GoodsRelationshipForm();
+    Optional<Boolean> isRelatedToGoodsType = permissionsFinderDao.getIsRelatedToGoodsType(goodsType, relatedToGoodsType);
+    templateForm.isRelatedToGoodsType = isRelatedToGoodsType.isPresent() ? isRelatedToGoodsType.get().toString() : "";
+    return completedFuture(ok(goodsRelationship.render(formFactory.form(GoodsRelationshipForm.class).fill(templateForm),
         new GoodsRelationshipDisplay(goodsType, relatedToGoodsType))));
   }
 
@@ -59,9 +66,11 @@ public class GoodsRelationshipController {
 
     String isRelatedToGoodsType = form.get().isRelatedToGoodsType;
     if ("true".equals(isRelatedToGoodsType)) {
+      permissionsFinderDao.saveIsRelatedToGoodsType(goodsType, relatedToGoodsType, true);
       return journeyManager.performTransition(StandardEvents.YES);
     }
     else if ("false".equals(isRelatedToGoodsType)) {
+      permissionsFinderDao.saveIsRelatedToGoodsType(goodsType, relatedToGoodsType, false);
       return journeyManager.performTransition(StandardEvents.NO);
     }
     else {
