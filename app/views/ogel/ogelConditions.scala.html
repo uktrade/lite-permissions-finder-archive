@@ -30,10 +30,10 @@
     @Html(ogelRestriction.conditionDescription)
     </div>
 
-    @if(ogelRestriction.conditionDescriptionControlCodes.isPresent && !ogelRestriction.conditionDescriptionControlCodes.get.controlCodes.isEmpty) {
+    @if(ogelRestriction.conditionDescriptionControlCodes.isPresent && !ogelRestriction.conditionDescriptionControlCodes.get.getControlCodes.isEmpty) {
       <ul class="list list-bullet text">
-        @for(controlCode <- ogelRestriction.conditionDescriptionControlCodes.get.controlCodes) {
-         <li>@Html(controlCode.friendlyDescription)</li>
+        @for(controlCode <- ogelRestriction.conditionDescriptionControlCodes.get.getControlCodes) {
+         <li>@Html(controlCode.getFriendlyDescription)</li>
         }
       </ul>
     }

@@ -5,8 +5,10 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
+import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 
 import java.util.concurrent.CompletionStage;
 
@@ -36,7 +38,8 @@ public class OgelConditionsServiceClient {
         .get().handleAsync((response, error) -> {
           if (response.getStatus() == 200 || response.getStatus() == 206) {
             // Condition apply (204) or conditions apply, but with missing control codes (206)
-            return OgelConditionsServiceResult.buildFromJson(response.asJson());
+            ControlCodeConditionFullView controlCodeConditionFullView = Json.fromJson(response.asJson(), ControlCodeConditionFullView.class);
+            return OgelConditionsServiceResult.buildFrom(controlCodeConditionFullView);
           }
           else if (response.getStatus() == 204) {
             // No conditions apply
@@ -57,7 +60,7 @@ public class OgelConditionsServiceClient {
    * @return Business logic result of the OGEL, control code and answer tuple
    */
   public static boolean isItemAllowed(OgelConditionsServiceResult result, boolean conditionsApply) {
-    return Boolean.parseBoolean(result.itemsAllowed) == conditionsApply;
+    return result.itemsAllowed == conditionsApply;
   }
 
 }
