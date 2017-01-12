@@ -4,9 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
+import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -49,7 +51,8 @@ public class ApplicableOgelServiceClient {
             response.getStatus()));
       }
       else {
-        return new ApplicableOgelServiceResult(response.asJson(), showHistoricOgel);
+        ApplicableOgelView applicableOgelView = Json.fromJson(response.asJson(), ApplicableOgelView.class);
+        return new ApplicableOgelServiceResult(applicableOgelView, showHistoricOgel);
       }
     }, httpExecutionContext.current());
   }

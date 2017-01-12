@@ -1,32 +1,31 @@
 package components.services.ogels.applicable;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
-import play.libs.Json;
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ApplicableOgelServiceResult {
 
   private static final String HISTORIC_OGEL_NAME = "historic military goods";
 
-  public final List<Result> results;
+  public final List<ApplicableOgelView> results;
 
-  public ApplicableOgelServiceResult(JsonNode responseJson, boolean showHistoricOgel) {
-    this.results = Arrays.asList(Json.fromJson(responseJson, Result[].class)).stream()
-    .filter(result -> showHistoricOgel || !StringUtils.containsIgnoreCase(result.name, HISTORIC_OGEL_NAME))
+  public ApplicableOgelServiceResult(ApplicableOgelView ogel, boolean showHistoricOgel) {
+    this.results = Stream.of(ogel)
+    .filter(result -> showHistoricOgel || !StringUtils.containsIgnoreCase(result.getName(), HISTORIC_OGEL_NAME))
     .collect(Collectors.toList());
   }
 
-  public Optional<Result> findResultById(String ogelId) {
+  public Optional<ApplicableOgelView> findResultById(String ogelId) {
     if (StringUtils.isBlank(ogelId) || this.results == null || this.results.isEmpty()) {
       return Optional.empty();
     }
     return this.results.stream()
-        .filter(result -> StringUtils.equals(result.id, ogelId))
+        .filter(result -> StringUtils.equals(result.getId(), ogelId))
         .findFirst();
   }
 
