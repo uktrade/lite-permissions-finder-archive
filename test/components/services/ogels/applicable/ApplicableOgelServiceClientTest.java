@@ -20,7 +20,7 @@ public class ApplicableOgelServiceClientTest {
   public void shouldGetApplicableOgel() throws Exception {
 
     Router router = new RoutingDsl().GET("/applicable-ogels").routeTo(() ->
-      ok(Json.parse("{\"id\":\"OGL991\",\"name\":\"OGEL 991\",\"usageSummary\":[\"A\",\"B\",\"C\"]}"))
+      ok(Json.parse("[{\"id\":\"OGL991\",\"name\":\"OGEL 991\",\"usageSummary\":[\"A\",\"B\",\"C\"]}]"))
     ).build();
 
     Server server = Server.forRouter(router);

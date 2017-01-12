@@ -51,7 +51,7 @@ public class ApplicableOgelServiceClient {
             response.getStatus()));
       }
       else {
-        ApplicableOgelView applicableOgelView = Json.fromJson(response.asJson(), ApplicableOgelView.class);
+        ApplicableOgelView[] applicableOgelView = Json.fromJson(response.asJson(), ApplicableOgelView[].class);
         return new ApplicableOgelServiceResult(applicableOgelView, showHistoricOgel);
       }
     }, httpExecutionContext.current());
