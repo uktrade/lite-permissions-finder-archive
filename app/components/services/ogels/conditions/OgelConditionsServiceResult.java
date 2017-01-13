@@ -1,8 +1,10 @@
 package components.services.ogels.conditions;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import play.libs.Json;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
 
 import java.util.Optional;
 
@@ -11,27 +13,24 @@ public class OgelConditionsServiceResult {
   public final String conditionDescription;
   public final String ogelID;
   public final Optional<ConditionDescriptionControlCodes> conditionDescriptionControlCodes;
-  public final String itemsAllowed ;
+  public final boolean itemsAllowed;
   public final String controlCode;
   public final boolean isEmpty;
   public final boolean isMissingControlCodes;
 
-  public OgelConditionsServiceResult() {
+  private OgelConditionsServiceResult() {
     this.conditionDescription = null;
     this.ogelID = null;
     this.conditionDescriptionControlCodes = null;
-    this.itemsAllowed = null;
+    this.itemsAllowed = false;
     this.controlCode = null;
     this.isEmpty = true;
     this.isMissingControlCodes = true;
   }
 
-  public OgelConditionsServiceResult(
-      @JsonProperty("conditionDescription") String conditionDescription,
-      @JsonProperty("ogelID") String ogelID,
-      @JsonProperty("conditionDescriptionControlCodes") ConditionDescriptionControlCodes conditionDescriptionControlCodes,
-      @JsonProperty("itemsAllowed") String itemsAllowed,
-      @JsonProperty("controlCode") String controlCode) {
+  private OgelConditionsServiceResult(String conditionDescription, String ogelID,
+                                      ConditionDescriptionControlCodes conditionDescriptionControlCodes,
+                                     boolean itemsAllowed, String controlCode) {
     this.conditionDescription = conditionDescription;
     this.ogelID = ogelID;
     this.conditionDescriptionControlCodes = conditionDescriptionControlCodes != null
@@ -41,16 +40,19 @@ public class OgelConditionsServiceResult {
     this.controlCode = controlCode;
     this.isEmpty = false;
     this.isMissingControlCodes = conditionDescriptionControlCodes != null
-        && conditionDescriptionControlCodes.missingControlCodes != null
-        && !conditionDescriptionControlCodes.missingControlCodes.isEmpty();
+        && conditionDescriptionControlCodes.getMissingControlCodes() != null
+        && !conditionDescriptionControlCodes.getControlCodes().isEmpty();
   }
 
   public static OgelConditionsServiceResult buildEmpty() {
     return new OgelConditionsServiceResult();
   }
 
-  public static OgelConditionsServiceResult buildFromJson(JsonNode reponseJson) {
-    return Json.fromJson(reponseJson, OgelConditionsServiceResult.class);
+  public static OgelConditionsServiceResult buildFrom(JsonNode jsonNode) {
+    ControlCodeConditionFullView controlCodeCondition = Json.fromJson(jsonNode, ControlCodeConditionFullView.class);
+    return new OgelConditionsServiceResult(controlCodeCondition.getConditionDescription(),
+      controlCodeCondition.getOgelId(), controlCodeCondition.getConditionDescriptionControlCodes(),
+      controlCodeCondition.isItemsAllowed(), controlCodeCondition.getControlCode());
   }
 
 

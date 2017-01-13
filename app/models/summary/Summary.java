@@ -8,12 +8,12 @@ import components.services.controlcode.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import components.services.ogels.ogel.OgelServiceClient;
-import components.services.ogels.ogel.OgelServiceResult;
 import controllers.ogel.OgelQuestionsController;
 import controllers.routes;
 import models.common.Country;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
+import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import utils.CountryUtils;
 
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class Summary {
     if (StringUtils.isNoneBlank(ogelId)) {
       String sourceCountry = permissionsFinderDao.getSourceCountry();
 
-      CompletionStage<OgelServiceResult> ogelStage = ogelServiceClient.get(ogelId);
+      CompletionStage<OgelFullView> ogelStage = ogelServiceClient.get(ogelId);
 
       Optional<OgelQuestionsController.OgelQuestionsForm> ogelQuestionsFormOptional =
           permissionsFinderDao.getOgelQuestionsForm();
@@ -97,7 +97,7 @@ public class Summary {
 
       CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombine(applicableOgelStage,
           (ogelResult, applicableOgelResult) ->
-              new ValidatedOgel(ogelResult, applicableOgelResult.findResultById(ogelResult.id).isPresent()));
+              new ValidatedOgel(ogelResult, applicableOgelResult.findResultById(ogelResult.getId()).isPresent()));
 
       summaryCompletionStage = summaryCompletionStage
           .thenCombineAsync(validatedStage, (summary, validatedOgel)
@@ -110,10 +110,10 @@ public class Summary {
   }
 
   private static class ValidatedOgel {
-    public final OgelServiceResult ogelServiceResult;
+    public final OgelFullView ogelServiceResult;
     public final boolean isValid;
 
-    public ValidatedOgel(OgelServiceResult ogelServiceResult, boolean isValid) {
+    public ValidatedOgel(OgelFullView ogelServiceResult, boolean isValid) {
       this.ogelServiceResult = ogelServiceResult;
       this.isValid = isValid;
     }

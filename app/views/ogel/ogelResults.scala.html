@@ -1,10 +1,9 @@
-@import components.services.ogels.applicable.Result
+@import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView
 @import util._
 @import views.html.common.page._
-@import views.html.common.form._
 @import views.html.common.state._
 
-@(form: Form[_], ogels: List[Result], physicalGoodControlCode: String, destinationCountryNamesHtml: String)
+@(form: Form[_], ogels: List[ApplicableOgelView], physicalGoodControlCode: String, destinationCountryNamesHtml: String)
 @standardPage(if (ogels.length > 0) "Based on your answers, you may be able to use one of the following licences" else "No open licences available"
   , Some(Html(if (ogels.length > 0) "Based on your answers, you may be able to use one of the following licences" else "No open licences available"))){
   @errorSummary(form)
@@ -20,9 +19,9 @@
         <ol class="ogel-results search-results">
           @for(ogel <- ogels) {
             <li>
-              <button type="submit" class="link" name="chosenOgel" value="@ogel.id">@ogel.name</button>
+              <button type="submit" class="link" name="chosenOgel" value="@ogel.getId">@ogel.getName</button>
               <div class="font-xsmall">
-              @for(entry <- ogel.usageSummary) {
+              @for(entry <- ogel.getUsageSummary) {
                 @entry<br/>
               }
               </div>

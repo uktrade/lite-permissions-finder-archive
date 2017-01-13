@@ -1,17 +1,17 @@
-@import components.services.ogels.ogel.OgelServiceResult
+@import uk.gov.bis.lite.ogel.api.view.OgelFullView
 @import controllers.ogel.OgelSummaryController.OgelSummaryForm
 @import util._
 @import views.html.common.page._
 @import views.html.common.state._
 @import views.html.ogel._
 
-@(form: Form[OgelSummaryForm], ogel: OgelServiceResult, physicalGoodControlCode: String, allowedToProceed: Boolean)
-@standardPage(ogel.name, Some(Html(ogel.name))){
+@(form: Form[OgelSummaryForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean)
+@standardPage(ogel.getName, Some(Html(ogel.getName))){
   @errorSummary(form)
 }{
 
   <p>
-    You may be able to use the open general export licence <strong class="bold-small">@ogel.name</strong>. What you can and can&apos;t do with this licence is show below.
+    You may be able to use the open general export licence <strong class="bold-small">@ogel.getName</strong>. What you can and can&apos;t do with this licence is show below.
   </p>
 
   @ogelConditionSummary(ogel)
@@ -34,7 +34,7 @@
 
     <div class="ogel-not-applicable">
       <p>
-        Although some items within the classification <strong class="bold-small">@physicalGoodControlCode</strong> can be exported using @ogel.name, your items are not covered by this licence.
+        Although some items within the classification <strong class="bold-small">@physicalGoodControlCode</strong> can be exported using @ogel.getName, your items are not covered by this licence.
       </p>
       <button type="submit" class="link underlined" name="action" value="chooseAgain">Choose a different licence</button>
     </div>

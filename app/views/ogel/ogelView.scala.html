@@ -1,9 +1,9 @@
+@import uk.gov.bis.lite.ogel.api.view.OgelFullView
 @import util._
-@import components.services.ogels.ogel.OgelServiceResult
 @import views.html.ogel._
 
-@(ogel: OgelServiceResult)
-@standardPage(ogel.name, Some(Html(ogel.name))) {
+@(ogel: OgelFullView)
+@standardPage(ogel.getName, Some(Html(ogel.getName))) {
 
 }{
   @ogelConditionSummary(ogel)
