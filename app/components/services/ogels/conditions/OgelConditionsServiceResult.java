@@ -1,5 +1,8 @@
 package components.services.ogels.conditions;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import play.libs.Json;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
 
@@ -45,7 +48,8 @@ public class OgelConditionsServiceResult {
     return new OgelConditionsServiceResult();
   }
 
-  public static OgelConditionsServiceResult buildFrom(ControlCodeConditionFullView controlCodeCondition) {
+  public static OgelConditionsServiceResult buildFrom(JsonNode jsonNode) {
+    ControlCodeConditionFullView controlCodeCondition = Json.fromJson(jsonNode, ControlCodeConditionFullView.class);
     return new OgelConditionsServiceResult(controlCodeCondition.getConditionDescription(),
       controlCodeCondition.getOgelId(), controlCodeCondition.getConditionDescriptionControlCodes(),
       controlCodeCondition.isItemsAllowed(), controlCodeCondition.getControlCode());

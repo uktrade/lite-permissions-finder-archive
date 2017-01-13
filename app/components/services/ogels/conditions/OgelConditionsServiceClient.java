@@ -38,8 +38,7 @@ public class OgelConditionsServiceClient {
         .get().handleAsync((response, error) -> {
           if (response.getStatus() == 200 || response.getStatus() == 206) {
             // Condition apply (204) or conditions apply, but with missing control codes (206)
-            ControlCodeConditionFullView controlCodeConditionFullView = Json.fromJson(response.asJson(), ControlCodeConditionFullView.class);
-            return OgelConditionsServiceResult.buildFrom(controlCodeConditionFullView);
+            return OgelConditionsServiceResult.buildFrom(response.asJson());
           }
           else if (response.getStatus() == 204) {
             // No conditions apply
