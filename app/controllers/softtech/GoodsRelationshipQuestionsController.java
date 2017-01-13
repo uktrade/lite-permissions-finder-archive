@@ -102,6 +102,8 @@ public class GoodsRelationshipQuestionsController {
             if (result.isValidRelationshipIndex(currentQuestionIndex)) {
               permissionsFinderDao.saveGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex, true);
               permissionsFinderDao.saveGoodsRelationshipQuestionCurrentIndex(goodsType, relatedToGoodsType, currentQuestionIndex);
+              // Save control code for registration
+              permissionsFinderDao.saveControlCodeForRegistration(result.getRelationship(currentQuestionIndex).controlCode.controlCodeData.controlCode);
               return journeyManager.performTransition(StandardEvents.YES);
             }
             else {

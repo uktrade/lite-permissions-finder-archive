@@ -62,7 +62,7 @@ public class OgelResultsController {
   }
 
   public CompletionStage<Result> renderWithForm(Form<OgelResultsForm> form) {
-    String controlCode = permissionsFinderDao.getLastSelectedControlCode();
+    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
 
     List<String> destinationCountries = CountryUtils.getDestinationCountries(permissionsFinderDao.getFinalDestinationCountry(),
@@ -104,7 +104,7 @@ public class OgelResultsController {
     String chosenOgel = form.get().chosenOgel;
     permissionsFinderDao.saveOgelId(chosenOgel);
 
-    String controlCode = permissionsFinderDao.getLastSelectedControlCode();
+    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
@@ -122,7 +122,7 @@ public class OgelResultsController {
 
     // Combines with the stage above, allowing any exceptions to propagate
     return checkOgelStage
-        .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getLastSelectedControlCode()),
+        .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getControlCodeForRegistration()),
             (empty, conditionsResult) -> {
               if (!conditionsResult.isEmpty) {
                 return journeyManager.performTransition(Events.OGEL_CONDITIONS_APPLY);

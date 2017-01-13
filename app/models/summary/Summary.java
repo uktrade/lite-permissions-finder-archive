@@ -55,7 +55,7 @@ public class Summary {
                                                         ApplicableOgelServiceClient applicableOgelServiceClient,
                                                         CountryProvider countryProviderExport) {
     String applicationCode = permissionsFinderDao.getApplicationCode();
-    String physicalGoodControlCode = permissionsFinderDao.getLastSelectedControlCode();
+    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
     String ogelId = permissionsFinderDao.getOgelId();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
@@ -65,8 +65,8 @@ public class Summary {
     // TODO Drive fields to shown by the journey history, not the dao
     CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(newSummary);
 
-    if(StringUtils.isNoneBlank(physicalGoodControlCode)) {
-      CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(physicalGoodControlCode);
+    if(StringUtils.isNoneBlank(controlCode)) {
+      CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(controlCode);
 
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(frontendStage, (summary, result)
           -> summary.addSummaryField(SummaryField.fromFrontendServiceResult(result,
@@ -93,7 +93,7 @@ public class Summary {
       boolean isGoodHistoric = OgelQuestionsController.OgelQuestionsForm.isGoodHistoric(ogelQuestionsFormOptional);
 
       CompletionStage<ApplicableOgelServiceResult> applicableOgelStage = applicableOgelServiceClient.get(
-          physicalGoodControlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric);
+          controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric);
 
       CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombine(applicableOgelStage,
           (ogelResult, applicableOgelResult) ->

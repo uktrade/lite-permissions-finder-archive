@@ -11,11 +11,13 @@ import controllers.categories.NonMilitaryController;
 import controllers.routes;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
-import journey.deciders.ControlCodeDecider;
 import journey.deciders.ExportCategoryDecider;
 import journey.deciders.RelatedControlsDecider;
 import journey.deciders.RelationshipWithSoftwareDecider;
 import journey.deciders.RelationshipWithTechnologyDecider;
+import journey.deciders.controlcode.AdditionalSpecificationsDecider;
+import journey.deciders.controlcode.DecontrolsDecider;
+import journey.deciders.controlcode.TechnicalNotesDecider;
 import models.ArtsCulturalGoodsType;
 import models.ExportCategory;
 import models.GoodsType;
@@ -72,6 +74,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private JourneyStage softwareRelatedToEquipmentOrMaterials = defineStage("softwareRelatedToEquipmentOrMaterials", "Is your software any of the following?",
       controllers.softtech.routes.RelatedEquipmentController.renderForm(GoodsType.SOFTWARE.urlString()));
+
   private JourneyStage softwareJourneyEndNLR = defineStage("softwareJourneyEndNLR", "No licence available",
       routes.StaticContentController.renderSoftwareJourneyEndNLR());
 
@@ -81,7 +84,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private JourneyStage softwareRelatedToSoftwareQuestion = defineStage("softwareRelatedToSoftwareQuestion", "Is your software related to other software?",
       controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
 
-  private final ControlCodeDecider controlCodeDecider;
+  private final AdditionalSpecificationsDecider additionalSpecificationsDecider;
+  private final DecontrolsDecider decontrolsDecider;
+  private final TechnicalNotesDecider technicalNotesDecider;
   private final ExportCategoryDecider exportCategoryDecider;
   private final CategoryControlsDecider categoryControlsDecider;
   private final RelatedControlsDecider relatedControlsDecider;
@@ -90,14 +95,18 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final RelationshipWithSoftwareDecider relationshipWithSoftwareDecider;
 
   @Inject
-  public ExportJourneyDefinitionBuilder(ControlCodeDecider controlCodeDecider,
+  public ExportJourneyDefinitionBuilder(AdditionalSpecificationsDecider additionalSpecificationsDecider,
+                                        DecontrolsDecider decontrolsDecider,
+                                        TechnicalNotesDecider technicalNotesDecider,
                                         ExportCategoryDecider exportCategoryDecider,
                                         CategoryControlsDecider categoryControlsDecider,
                                         RelatedControlsDecider relatedControlsDecider,
                                         CatchallControlsDecider catchallControlsDecider,
                                         RelationshipWithTechnologyDecider relationshipWithTechnologyDecider,
                                         RelationshipWithSoftwareDecider relationshipWithSoftwareDecider) {
-    this.controlCodeDecider = controlCodeDecider;
+    this.additionalSpecificationsDecider = additionalSpecificationsDecider;
+    this.decontrolsDecider = decontrolsDecider;
+    this.technicalNotesDecider = technicalNotesDecider;
     this.exportCategoryDecider = exportCategoryDecider;
     this.categoryControlsDecider = categoryControlsDecider;
     this.relatedControlsDecider = relatedControlsDecider;
@@ -344,14 +353,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(notApplicable));
 
-    DecisionStage<Boolean> decontrolsDecision = defineDecisionStage("hasDecontrols", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.DECONTROLS));
+    DecisionStage<Boolean> additionalSpecsDecision = defineDecisionStage("hasAdditionalSpecs", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage("hasTechNotes", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.TECHNICAL_NOTES));
+    DecisionStage<Boolean> decontrolsDecision = defineDecisionStage("hasDecontrols", decontrolsDecider);
 
-    DecisionStage<Boolean> additionalSpecsDecision = defineDecisionStage("hasAdditionalSpecs", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.ADDITIONAL_SPECS));
+    DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage("hasTechNotes", technicalNotesDecider);
 
     atStage(controlCodeSummary)
         .onEvent(StandardEvents.NEXT)
@@ -572,14 +578,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     /** Software controls decision stages */
-    DecisionStage<Boolean> additionalSpecificationsDecisionSC = defineDecisionStage("additionalSpecsDecisionSC", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.ADDITIONAL_SPECS));
+    DecisionStage<Boolean> additionalSpecificationsDecisionSC = defineDecisionStage("additionalSpecsDecisionSC", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> decontrolsDecisionSC = defineDecisionStage("decontrolsDecisionSC", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.DECONTROLS));
+    DecisionStage<Boolean> decontrolsDecisionSC = defineDecisionStage("decontrolsDecisionSC", decontrolsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionSC = defineDecisionStage("technicalNotesDecisionSC", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.TECHNICAL_NOTES));
+    DecisionStage<Boolean> technicalNotesDecisionSC = defineDecisionStage("technicalNotesDecisionSC", technicalNotesDecider);
 
     /** Software control journey stage transitions */
     bindControlCodeListStageJourneyTransitions(
@@ -631,14 +634,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
 
     /** Search related to software decision stages */
-    DecisionStage<Boolean> decontrolsDecisionRTS = defineDecisionStage("decontrolsDecisionRTS", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.DECONTROLS));
+    DecisionStage<Boolean> additionalSpecsDecisionRTS = defineDecisionStage("additionalSpecsDecisionRTS", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionRTS = defineDecisionStage("technicalNotesDecisionRTS", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.TECHNICAL_NOTES));
+    DecisionStage<Boolean> decontrolsDecisionRTS = defineDecisionStage("decontrolsDecisionRTS", decontrolsDecider);
 
-    DecisionStage<Boolean> additionalSpecsDecisionRTS = defineDecisionStage("additionalSpecsDecisionRTS", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.ADDITIONAL_SPECS));
+    DecisionStage<Boolean> technicalNotesDecisionRTS = defineDecisionStage("technicalNotesDecisionRTS", technicalNotesDecider);
 
     /** Search related to software journey stage transitions */
     atStage(searchRTS)
@@ -701,14 +701,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
 
     /** Software controls related to physical goods decision stages */
-    DecisionStage<Boolean> additionalSpecificationsDecisionSCRTPG = defineDecisionStage("additionalSpecificationsDecisionSCRTPG", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.ADDITIONAL_SPECS));
+    DecisionStage<Boolean> additionalSpecificationsDecisionSCRTPG = defineDecisionStage("additionalSpecificationsDecisionSCRTPG", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> decontrolsDecisionSCRTPG = defineDecisionStage("decontrolsDecisionSCRTPG", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.DECONTROLS));
+    DecisionStage<Boolean> decontrolsDecisionSCRTPG = defineDecisionStage("decontrolsDecisionSCRTPG", decontrolsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionSCRTPG = defineDecisionStage("technicalNotesDecisionSCRTPG", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.TECHNICAL_NOTES));
+    DecisionStage<Boolean> technicalNotesDecisionSCRTPG = defineDecisionStage("technicalNotesDecisionSCRTPG", technicalNotesDecider);
 
     /** Software control journey stage transitions */
     bindControlCodeListStageJourneyTransitions(
@@ -755,14 +752,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     /** Software catchall controls decision stages */
-    DecisionStage<Boolean> additionalSpecificationsDecisionSCC = defineDecisionStage("additionalSpecificationsDecisionSCC", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.ADDITIONAL_SPECS));
+    DecisionStage<Boolean> additionalSpecificationsDecisionSCC = defineDecisionStage("additionalSpecificationsDecisionSCC", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> decontrolsDecisionSCC = defineDecisionStage("decontrolsDecisionSCC", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.DECONTROLS));
+    DecisionStage<Boolean> decontrolsDecisionSCC = defineDecisionStage("decontrolsDecisionSCC", decontrolsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionSCC = defineDecisionStage("technicalNotesDecisionSCC", controlCodeDecider,
-        r -> r.contains(ControlCodeDecider.ControlCodeDataType.TECHNICAL_NOTES));
+    DecisionStage<Boolean> technicalNotesDecisionSCC = defineDecisionStage("technicalNotesDecisionSCC", technicalNotesDecider);
 
     /** Software catchall controls stage transitions */
     bindControlCodeListStageJourneyTransitions(

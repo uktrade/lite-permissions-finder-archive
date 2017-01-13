@@ -75,11 +75,11 @@ public class OgelConditionsController {
     if ("true".equals(doConditionsApplyText) || "false".equals(doConditionsApplyText)) {
       boolean doConditionsApply = Boolean.parseBoolean(doConditionsApplyText);
       permissionsFinderDao.saveOgelConditionsApply(doConditionsApply);
-      String physicalGoodsControlCode = permissionsFinderDao.getLastSelectedControlCode();
+      String controlCode = permissionsFinderDao.getControlCodeForRegistration();
 
       // Check this ogel required conditions
       return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-          permissionsFinderDao.getLastSelectedControlCode())
+          permissionsFinderDao.getControlCodeForRegistration())
           .thenApplyAsync(conditionsResult -> {
             if (conditionsResult.isEmpty) {
               throw new BusinessRuleException("Should not be able to progress without conditions");
@@ -96,7 +96,7 @@ public class OgelConditionsController {
                   .formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
               // branch on this ogel being a virtual eu or not
-              return virtualEUOgelClient.sendServiceRequest(physicalGoodsControlCode, sourceCountry,
+              return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry,
                   destinationCountries, activityTypes)
                   .thenApplyAsync(virtualEUResult -> {
                     if(virtualEUResult.virtualEu) {
@@ -131,12 +131,12 @@ public class OgelConditionsController {
 
   private CompletionStage<Result> renderWithForm(Form<OgelConditionsForm> form) {
     String ogelId = permissionsFinderDao.getOgelId();
-    String physicalGoodControlCode = permissionsFinderDao.getLastSelectedControlCode();
-    return ogelConditionsServiceClient.get(ogelId, physicalGoodControlCode)
+    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
+    return ogelConditionsServiceClient.get(ogelId, controlCode)
         .thenApplyAsync(conditionsResult -> {
           if (conditionsResult.isMissingControlCodes) {
             Logger.error("OGEL conditions service returned a response with missing control codes. " +
-                "OGEL ID: {}, control code: {}.", ogelId, physicalGoodControlCode);
+                "OGEL ID: {}, control code: {}.", ogelId, controlCode);
             form.reject("We have encountered a problem with this particular licence. Unfortunately you will not be " +
                 "able to progress through the service any further with the requested licence. This issue has been logged, " +
                 "we thank your for your patience.");
@@ -149,7 +149,7 @@ public class OgelConditionsController {
                 List<String> activityTypes = OgelQuestionsController.OgelQuestionsForm
                     .formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
-                return virtualEUOgelClient.sendServiceRequest(physicalGoodControlCode, sourceCountry,
+                return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry,
                     destinationCountries, activityTypes)
                     .thenApplyAsync(result -> ok(ogelConditions.render(form, ogelResult,
                         conditionsResult, conditionsResult.isMissingControlCodes, result.virtualEu)),

@@ -62,6 +62,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String SOFTWARE_EXEMPTION_QUESTION = "softwareExemptionQuestion";
   public static final String GOODS_RELATIONSHIP_QUESTION_ANSWER = "goodsRelationshipQuestionAnswer";
   public static final String GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX = "goodsRelationshipQuestionCurrentIndex";
+  public static final String CONTROL_CODE_FOR_REGISTRATION = "controlCodeForRegistration";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -77,23 +78,18 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE));
   }
 
-  public String getLastSelectedControlCode(){
-    Optional<ControlCodeSubJourney> subJourneyOptional = getLastStartedControlCodeSubJourney();
-    if (subJourneyOptional.isPresent()) {
-      return getSelectedControlCode(subJourneyOptional.get());
-    }
-    else {
-      return null;
-    }
-  }
-
   private void saveLastStartedControlCodeSubJourney(ControlCodeSubJourney lastStartedControlCodeSubJourney) {
     writeString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY, lastStartedControlCodeSubJourney.value());
   }
 
-  public Optional<ControlCodeSubJourney> getLastStartedControlCodeSubJourney() {
-    return ControlCodeSubJourney.getMatched(readString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY));
+  public void saveControlCodeForRegistration(String controlCode){
+    writeString(CONTROL_CODE_FOR_REGISTRATION, controlCode);
   }
+
+  public String getControlCodeForRegistration(){
+    return readString(CONTROL_CODE_FOR_REGISTRATION);
+  }
+
 
   public void saveSourceCountry(String sourceCountry) {
     writeString(SOURCE_COUNTRY, sourceCountry);

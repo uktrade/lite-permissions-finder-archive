@@ -46,6 +46,10 @@ public enum ControlCodeSubJourney {
     return isSoftTechCatchallControlsVariant(this);
   }
 
+  public boolean shouldSetDAOStateOnJourneyTransition() {
+    return shouldSetDAOStateOnJourneyTransition(this);
+  }
+
   /**
    * @see #getGoodsType(ControlCodeSubJourney)
    */
@@ -199,6 +203,18 @@ public enum ControlCodeSubJourney {
             , goodsType.toString()));
       }
     }
+  }
+
+  /**
+   * Returns whether the DAO state should be set on leaving this sub journey
+   * @param controlCodeSubJourney
+   * @return should set the DAO state
+   */
+  public static boolean shouldSetDAOStateOnJourneyTransition(ControlCodeSubJourney controlCodeSubJourney) {
+    return controlCodeSubJourney == PHYSICAL_GOODS_SEARCH ||
+        controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
+        controlCodeSubJourney.isSoftTechControlsVariant() ||
+        controlCodeSubJourney.isSoftTechCatchallControlsVariant();
   }
 
 }
