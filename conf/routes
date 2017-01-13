@@ -197,10 +197,6 @@ GET     /licence-not-available-through-this-service/software/      controllers.S
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
 
-GET     /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.renderForm(goodsType)
-
-POST    /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.handleSubmit(goodsType)
-
 GET     /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
 
 POST    /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
