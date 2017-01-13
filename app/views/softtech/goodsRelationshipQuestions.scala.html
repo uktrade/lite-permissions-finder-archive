@@ -1,0 +1,36 @@
+@import models.softtech.GoodsRelationshipQuestionsDisplay
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+
+@(form: Form[_], display: GoodsRelationshipQuestionsDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+  @errorSummary(form)
+}{
+
+  @*TODO Custom back link handling *@
+
+  <form action="@display.formAction" method="POST">
+
+    <input type="hidden" name="currentQuestionIndex" value="@form.field("currentQuestionIndex").value()">
+
+    @contextFormParams()
+
+    <p>
+      @display.relationship.description
+    </p>
+
+    <p>
+      @display.relationship.notes
+    </p>
+
+    @formRadioBoolean(form.field("questionAnswer"), Html(display.relationship.controlEntryQuestion))
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+    
+  </form>
+  
+}

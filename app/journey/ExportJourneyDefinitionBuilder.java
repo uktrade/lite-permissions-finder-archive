@@ -793,17 +793,35 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   }
 
   private void softwareRelatedToTechnology() {
+    JourneyStage softwareGoodsRelatedToTechnologyQuestions = defineStage("softwareGoodsRelatedToTechnologyQuestions", "Software related to technology",
+        controllers.softtech.routes.GoodsRelationshipQuestionsController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
     bindYesNoJourneyTransition(
         softwareRelatedToTechnologyQuestion,
-        notImplemented, // TODO Ask repeating questions
+        softwareGoodsRelatedToTechnologyQuestions,
         softwareRelationshipWithSoftwareExistsDecision
+    );
+
+    bindYesNoJourneyTransition(
+        softwareGoodsRelatedToTechnologyQuestions,
+        destinationCountries,
+        softwareRelatedToSoftwareQuestion
     );
   }
 
   private void softwareRelatedToSoftware() {
+    JourneyStage softwareGoodsRelatedToSoftwareQuestions = defineStage("softwareGoodsRelatedToSoftwareQuestions", "Software related to software",
+        controllers.softtech.routes.GoodsRelationshipQuestionsController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
+
     bindYesNoJourneyTransition(
         softwareRelatedToSoftwareQuestion,
-        notImplemented, // TODO Ask repeating questions
+        softwareGoodsRelatedToSoftwareQuestions,
+        notImplemented // TODO NLR
+    );
+
+    bindYesNoJourneyTransition(
+        softwareGoodsRelatedToSoftwareQuestions,
+        destinationCountries,
         notImplemented // TODO NLR
     );
   }
