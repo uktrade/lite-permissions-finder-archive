@@ -429,7 +429,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public Optional<Boolean> getGoodsRelationshipQuestionAnswer (GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex) {
-    return readBoolean(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, GOODS_RELATIONSHIP_QUESTION_ANSWER)));
+    return readBoolean(goodsRelationshipFieldNamePrefix(goodsType, relatedToGoodsType) + ":" +  GOODS_RELATIONSHIP_QUESTION_ANSWER + ":" + Integer.toString(questionIndex));
   }
 
   public void saveGoodsRelationshipQuestionCurrentIndex(GoodsType goodsType, GoodsType relatedToGoodsType, int currentQuestionIndex) {
