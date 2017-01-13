@@ -47,13 +47,8 @@ public class GoodsRelationshipQuestionsController {
   public CompletionStage<Result> renderForm(String goodsTypeText, String relatedToGoodsTypeText) {
     GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
     GoodsType relatedToGoodsType = GoodsType.getMatchedByUrlString(relatedToGoodsTypeText).get();
-    return renderFormInternal(goodsType, relatedToGoodsType);
-  }
-
-  private CompletionStage<Result> renderFormInternal(GoodsType goodsType, GoodsType relatedToGoodsType) {
     int currentQuestionIndex;
     Optional<Integer> currentQuestionIndexOptional = permissionsFinderDao.getGoodsRelationshipQuestionCurrentIndex(goodsType, relatedToGoodsType);
-    GoodsRelationshipQuestionsForm templateForm = new GoodsRelationshipQuestionsForm();
     if (currentQuestionIndexOptional.isPresent()) {
       currentQuestionIndex = currentQuestionIndexOptional.get();
     } else {
@@ -61,6 +56,11 @@ public class GoodsRelationshipQuestionsController {
       currentQuestionIndex = 0;
       permissionsFinderDao.saveGoodsRelationshipQuestionCurrentIndex(goodsType, relatedToGoodsType, currentQuestionIndex);
     }
+    return renderFormInternal(goodsType, relatedToGoodsType, currentQuestionIndex);
+  }
+
+  private CompletionStage<Result> renderFormInternal(GoodsType goodsType, GoodsType relatedToGoodsType, int currentQuestionIndex) {
+    GoodsRelationshipQuestionsForm templateForm = new GoodsRelationshipQuestionsForm();
     Optional<Boolean> questionAnswerOptional = permissionsFinderDao.getGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex);
     templateForm.questionAnswer = questionAnswerOptional.isPresent() ? questionAnswerOptional.get().toString() : "";
     templateForm.currentQuestionIndex = currentQuestionIndex;
@@ -71,7 +71,7 @@ public class GoodsRelationshipQuestionsController {
     return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
         .thenApplyAsync(result -> {
           GoodsRelationship relationship = result.getRelationship(currentQuestionIndex);
-          GoodsRelationshipQuestionsDisplay display = new GoodsRelationshipQuestionsDisplay(goodsType, relatedToGoodsType, relationship);
+          GoodsRelationshipQuestionsDisplay display = new GoodsRelationshipQuestionsDisplay(goodsType, relatedToGoodsType, relationship, currentQuestionIndex);
           return ok(goodsRelationshipQuestions.apply(form, display));
         }, httpExecutionContext.current());
   }
@@ -88,7 +88,6 @@ public class GoodsRelationshipQuestionsController {
     Form<GoodsRelationshipQuestionsForm> form = formFactory.form(GoodsRelationshipQuestionsForm.class).bindFromRequest();
 
     if (form.hasErrors()) {
-      // TODO Decide, should this be DAO or form state driven?
       int currentQuestionIndex = Integer.parseInt(form.field("currentQuestionIndex").value());
       return renderWithForm(goodsType, relatedToGoodsType, form, currentQuestionIndex);
     }
@@ -141,6 +140,26 @@ public class GoodsRelationshipQuestionsController {
       throw new FormStateException(String.format("Invalid value for questionAnswer: %s", questionAnswer));
     }
   }
+
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
+  public CompletionStage<Result> handleBack(String goodsTypeText, String relatedToGoodsTypeText, String currentQuestionIndexText) {
+    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
+    GoodsType relatedToGoodsType = GoodsType.getMatchedByUrlString(relatedToGoodsTypeText).get();
+    int currentQuestionIndex = Integer.parseInt(currentQuestionIndexText);
+    return handleBackInternal(goodsType, relatedToGoodsType, currentQuestionIndex);
+  }
+
+  private CompletionStage<Result> handleBackInternal(GoodsType goodsType, GoodsType relatedToGoodsType, int currentQuestionIndex) {
+    if (currentQuestionIndex > 0) {
+      int newQuestionIndex = currentQuestionIndex - 1;
+      permissionsFinderDao.saveGoodsRelationshipQuestionCurrentIndex(goodsType, relatedToGoodsType, newQuestionIndex);
+      return renderFormInternal(goodsType, relatedToGoodsType, newQuestionIndex);
+    }
+    else {
+      throw new FormStateException(String.format("Invalid value for currentQuestionIndex: %d", currentQuestionIndex));
+    }
+  }
+
 
   public static class GoodsRelationshipQuestionsForm {
 

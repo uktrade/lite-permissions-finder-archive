@@ -3,13 +3,10 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-
 @(form: Form[_], display: GoodsRelationshipQuestionsDisplay)
 @standardPage(display.pageTitle, Some(Html(display.pageTitle))){
   @errorSummary(form)
 }{
-
-  @*TODO Custom back link handling *@
 
   <form action="@display.formAction" method="POST">
 
