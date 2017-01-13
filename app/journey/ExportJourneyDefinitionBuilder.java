@@ -76,6 +76,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.softtech.controls.routes.NoSoftTechControlsExistController.renderForm(GoodsType.SOFTWARE.urlString()));
   private JourneyStage softwareControlsNLR = defineStage("softwareControlsNLR", "No software controls exist for the selected item",
       routes.StaticContentController.renderSoftwareControlsNLR());
+  private JourneyStage softwareJourneyEndNLR = defineStage("softwareJourneyEndNLR", "No licence available",
+      routes.StaticContentController.renderSoftwareJourneyEndNLR());
 
   private JourneyStage softwareRelatedToTechnologyQuestion = defineStage("softwareRelatedToTechnologyQuestion", "Is your software related to a technology?",
       controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.TECHNOLOGY.urlString()));
@@ -550,7 +552,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atDecisionStage(softwareRelationshipWithSoftwareExistsDecision)
         .decide()
         .when(true, moveTo(softwareRelatedToSoftwareQuestion))
-        .when(false, moveTo(notImplemented)); //TODO NLR
+        .when(false, moveTo(softwareJourneyEndNLR));
 
     softwareRelatedToSoftware();
 
@@ -816,13 +818,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     bindYesNoJourneyTransition(
         softwareRelatedToSoftwareQuestion,
         softwareGoodsRelatedToSoftwareQuestions,
-        notImplemented // TODO NLR
+        softwareJourneyEndNLR
     );
 
     bindYesNoJourneyTransition(
         softwareGoodsRelatedToSoftwareQuestions,
         destinationCountries,
-        notImplemented // TODO NLR
+        softwareJourneyEndNLR
     );
   }
 
