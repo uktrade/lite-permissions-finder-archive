@@ -23,7 +23,7 @@ public class RelationshipWithSoftwareDecider implements Decider<Boolean> {
   @Override
   public CompletionStage<Boolean> decide() {
     GoodsType goodsType = permissionsFinderDao.getGoodsType().get();
-    return goodsRelationshipsServiceClient.get(goodsType, GoodsType.TECHNOLOGY) // TODO switch to GoodsType.SOFTWARE after service is fixed
+    return goodsRelationshipsServiceClient.get(goodsType, GoodsType.SOFTWARE)
         .thenApply(GoodsRelationshipsServiceResult::relationshipsExist);
   }
 }

@@ -68,7 +68,7 @@ public class GoodsRelationshipQuestionsController {
   }
 
   private CompletionStage<Result> renderWithForm(GoodsType goodsType, GoodsType relatedToGoodsType, Form<GoodsRelationshipQuestionsForm> form, int currentQuestionIndex){
-    return goodsRelationshipsServiceClient.get(goodsType, GoodsType.TECHNOLOGY) // TODO use relatedToGoodsType after service is fixed
+    return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
         .thenApplyAsync(result -> {
           GoodsRelationship relationship = result.getRelationship(currentQuestionIndex);
           GoodsRelationshipQuestionsDisplay display = new GoodsRelationshipQuestionsDisplay(goodsType, relatedToGoodsType, relationship, currentQuestionIndex);
@@ -97,7 +97,7 @@ public class GoodsRelationshipQuestionsController {
     int currentQuestionIndex = form.get().currentQuestionIndex;
 
     if ("true".equals(questionAnswer)) {
-      return goodsRelationshipsServiceClient.get(goodsType, GoodsType.TECHNOLOGY) // TODO use relatedToGoodsType after service is fixed
+      return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
           .thenComposeAsync(result -> {
             if (result.isValidRelationshipIndex(currentQuestionIndex)) {
               permissionsFinderDao.saveGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex, true);
@@ -113,7 +113,7 @@ public class GoodsRelationshipQuestionsController {
     }
     else if ("false".equals(questionAnswer)) {
       // Belt and braces check
-      return goodsRelationshipsServiceClient.get(goodsType, GoodsType.TECHNOLOGY) // TODO use relatedToGoodsType after service is fixed
+      return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
           .thenComposeAsync(result -> {
             if (result.isValidRelationshipIndex(currentQuestionIndex)) {
               permissionsFinderDao.saveGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex, false);
