@@ -65,7 +65,7 @@ public class ExemptionsController {
 
     if ("true".equals(doExemptionsApply)) {
       if (exemptionQuestion == ExemptionQuestion.Q2) {
-        permissionsFinderDao.saveSoftTechCategory(GoodsType.SOFTWARE, SoftTechCategory.MILITARY);
+        permissionsFinderDao.saveSoftTechCategory(GoodsType.SOFTWARE, SoftTechCategory.TELECOMS);
       }
       permissionsFinderDao.saveSoftwareExemptionQuestion(exemptionQuestion, true);
       return journeyManager.performTransition(StandardEvents.YES);
