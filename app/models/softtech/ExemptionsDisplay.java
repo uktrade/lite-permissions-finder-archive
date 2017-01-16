@@ -31,7 +31,7 @@ public class ExemptionsDisplay {
       this.formAction = routes.ExemptionsController.handleSubmitQ3().url();
       this.questionContent = Arrays.asList("Software that is available to buy from retail outlets, e.g. shops open to the public",
           "Software that the end user can install without expert help, e.g. a technician or engineer provided by the software's manufacturer",
-          "Source code that is needed to install, operate, maintain or repair exported items, but that cannot be used for anything else");
+          "Source code (excluding code within complete software) needed to install, operate, maintain or repair exported items, but that cannot be used for anything else");
     }
 
   }
