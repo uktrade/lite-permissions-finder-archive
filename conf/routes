@@ -77,11 +77,9 @@ POST    /exemptions-may-apply/question-three      controllers.softtech.Exemption
 
 GET     /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
 
-POST    /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
-
 GET     /exemptions-apply/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
 
-POST    /exemptions-apply/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
+
 
 GET     /export-category                      controllers.categories.ExportCategoryController.renderForm
 
@@ -195,11 +193,9 @@ POST    /eu-intra-community-trade             controllers.StaticContentControlle
 
 GET     /licence-not-available-through-this-service   controllers.StaticContentController.renderNotApplicable
 
+GET     /licence-not-available-through-this-service/software/      controllers.StaticContentController.renderSoftwareJourneyEndNLR
+
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
-
-GET     /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.renderForm(goodsType)
-
-POST    /no-controls-exist/:goodsType               controllers.softtech.controls.NoSoftTechControlsExistController.handleSubmit(goodsType)
 
 GET     /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
 
@@ -216,6 +212,12 @@ POST    /related-to-equipment-or-materials/:goodsType      controllers.softtech.
 GET     /related-goods/:goodsType/with/:relatedToGoodsType   controllers.softtech.GoodsRelationshipController.renderForm(goodsType, relatedToGoodsType)
 
 POST    /related-goods/:goodsType/with/:relatedToGoodsType   controllers.softtech.GoodsRelationshipController.handleSubmit(goodsType, relatedToGoodsType)
+
+GET     /related-goods-questions/:goodsType/with/:relatedToGoodsType        controllers.softtech.GoodsRelationshipQuestionsController.renderForm(goodsType, relatedToGoodsType)
+
+POST    /related-goods-questions/:goodsType/with/:relatedToGoodsType        controllers.softtech.GoodsRelationshipQuestionsController.handleSubmit(goodsType, relatedToGoodsType)
+
+GET     /related-goods-questions/:goodsType/with/:relatedToGoodsType/back   controllers.softtech.GoodsRelationshipQuestionsController.handleBack(goodsType, relatedToGoodsType, currentQuestionIndex)
 
 GET     /select-goods-type                    controllers.GoodsTypeController.renderForm
 

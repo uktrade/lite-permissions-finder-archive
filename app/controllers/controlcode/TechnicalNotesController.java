@@ -71,6 +71,9 @@ public class TechnicalNotesController {
     else {
       String stillDescribesItems = form.get().stillDescribesItems;
       if("true".equals(stillDescribesItems)) {
+        // Note, setting the DAO state here
+        String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
+        permissionsFinderDao.saveControlCodeForRegistration(controlCode);
         permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeSubJourney, true);
         return journeyManager.performTransition(StandardEvents.NEXT);
       }

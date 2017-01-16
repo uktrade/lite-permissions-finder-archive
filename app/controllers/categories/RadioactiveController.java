@@ -46,6 +46,7 @@ public class RadioactiveController {
       permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
       permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(
           ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH, CONTROLLED_RADIOACTIVE_SOURCES);
+      permissionsFinderDao.saveControlCodeForRegistration(CONTROLLED_RADIOACTIVE_SOURCES);
       return journeyManager.performTransition(Events.RADIOACTIVE_NEXT, RadioactiveStage.CRS_SELECTED);
     } else if(RadioactiveStage.CONTINUE.name().equals(form.get().action)) {
       return journeyManager.performTransition(Events.RADIOACTIVE_NEXT, RadioactiveStage.CONTINUE);

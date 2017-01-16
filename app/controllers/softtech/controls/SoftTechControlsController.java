@@ -10,7 +10,6 @@ import components.services.controlcode.controls.category.CategoryControlsService
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
@@ -137,7 +136,9 @@ public class SoftTechControlsController {
           , httpExecutionContext.current());
     }
     else if (softTechControlsJourney.isRelatedToPhysicalGoodsVariant()) {
-      String controlCode = permissionsFinderDao.getSelectedControlCode(subJourney);
+      // Find the selected code of the prior sub journey (physical goods search variant)
+      ControlCodeSubJourney priorSubJourney = ControlCodeSubJourney.getPhysicalGoodsSearchVariant(goodsType);
+      String controlCode = permissionsFinderDao.getSelectedControlCode(priorSubJourney);
       return relatedControlsServiceClient.get(goodsType, controlCode)
           .thenApplyAsync(result ->
               validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))

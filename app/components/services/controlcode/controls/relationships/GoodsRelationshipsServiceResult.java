@@ -23,10 +23,10 @@ public class GoodsRelationshipsServiceResult {
   }
 
   public boolean hasNextRelationship(int currentIndex) {
-    return relationships.listIterator(currentIndex).hasNext();
+    return isValidRelationshipIndex(currentIndex + 1);
   }
 
-  public int getNextRelationshipIndex(int currentIndex) {
-    return relationships.listIterator(currentIndex).nextIndex();
+  public boolean isValidRelationshipIndex(int currentIndex) {
+    return currentIndex >= 0 && currentIndex <= relationships.size() -1;
   }
 }

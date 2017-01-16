@@ -71,16 +71,16 @@ public class OgelQuestionsController {
 
   private CompletionStage<Result> getNextStage(List<String> activityTypes) {
 
-    String physicalGoodControlCode = permissionsFinderDao.getLastSelectedControlCode();
+    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
 
-    return virtualEUOgelClient.sendServiceRequest(physicalGoodControlCode, sourceCountry, destinationCountries, activityTypes)
+    return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry, destinationCountries, activityTypes)
         .thenApplyAsync((result) -> {
           if (result.isVirtualEu()) {
             permissionsFinderDao.saveOgelId(result.getOgelId());
-            return ogelConditionsServiceClient.get(result.getOgelId(), physicalGoodControlCode)
+            return ogelConditionsServiceClient.get(result.getOgelId(), controlCode)
                 .thenApplyAsync(conditionsResult -> {
                   if (!conditionsResult.isEmpty) {
                     return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,

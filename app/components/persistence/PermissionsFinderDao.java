@@ -60,6 +60,9 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String LAST_STARTED_CONTROL_CODE_SUB_JOURNEY = "lastStartedControlCodeSubJourney";
   public static final String IS_RELATED_TO_GOODS_TYPE = "isRelatedToGoodsType";
   public static final String SOFTWARE_EXEMPTION_QUESTION = "softwareExemptionQuestion";
+  public static final String GOODS_RELATIONSHIP_QUESTION_ANSWER = "goodsRelationshipQuestionAnswer";
+  public static final String GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX = "goodsRelationshipQuestionCurrentIndex";
+  public static final String CONTROL_CODE_FOR_REGISTRATION = "controlCodeForRegistration";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -75,23 +78,18 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE));
   }
 
-  public String getLastSelectedControlCode(){
-    Optional<ControlCodeSubJourney> subJourneyOptional = getLastStartedControlCodeSubJourney();
-    if (subJourneyOptional.isPresent()) {
-      return getSelectedControlCode(subJourneyOptional.get());
-    }
-    else {
-      return null;
-    }
-  }
-
   private void saveLastStartedControlCodeSubJourney(ControlCodeSubJourney lastStartedControlCodeSubJourney) {
     writeString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY, lastStartedControlCodeSubJourney.value());
   }
 
-  public Optional<ControlCodeSubJourney> getLastStartedControlCodeSubJourney() {
-    return ControlCodeSubJourney.getMatched(readString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY));
+  public void saveControlCodeForRegistration(String controlCode){
+    writeString(CONTROL_CODE_FOR_REGISTRATION, controlCode);
   }
+
+  public String getControlCodeForRegistration(){
+    return readString(CONTROL_CODE_FOR_REGISTRATION);
+  }
+
 
   public void saveSourceCountry(String sourceCountry) {
     writeString(SOURCE_COUNTRY, sourceCountry);
@@ -422,4 +420,29 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + exemptionQuestion.toString());
   }
 
+  public void saveGoodsRelationshipQuestionAnswer(GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex, boolean answer) {
+    writeBoolean(goodsRelationshipFieldNamePrefix(goodsType, relatedToGoodsType) + ":" +  GOODS_RELATIONSHIP_QUESTION_ANSWER + ":" + Integer.toString(questionIndex), answer);
+  }
+
+  public Optional<Boolean> getGoodsRelationshipQuestionAnswer (GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex) {
+    return readBoolean(goodsRelationshipFieldNamePrefix(goodsType, relatedToGoodsType) + ":" +  GOODS_RELATIONSHIP_QUESTION_ANSWER + ":" + Integer.toString(questionIndex));
+  }
+
+  public void saveGoodsRelationshipQuestionCurrentIndex(GoodsType goodsType, GoodsType relatedToGoodsType, int currentQuestionIndex) {
+    writeString(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX)), Integer.toString(currentQuestionIndex));
+  }
+
+  public Optional<Integer> getGoodsRelationshipQuestionCurrentIndex (GoodsType goodsType, GoodsType relatedToGoodsType) {
+    String currentQuestionIndexString = readString(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX)));
+    if (StringUtils.isNotEmpty(currentQuestionIndexString)) {
+      return Optional.of(Integer.parseInt(currentQuestionIndexString));
+    }
+    else {
+      return Optional.empty();
+    }
+  }
+
+  private String goodsRelationshipFieldNamePrefix(GoodsType goodsType, GoodsType relatedToGoodsType) {
+    return goodsType.urlString() + ":" + relatedToGoodsType.urlString();
+  }
 }
