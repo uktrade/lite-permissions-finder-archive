@@ -1,14 +1,13 @@
-@import components.services.ogels.ogel.OgelServiceResult
+@import uk.gov.bis.lite.ogel.api.view.OgelFullView
 
-@(ogel: OgelServiceResult)
-
+@(ogel: OgelFullView)
 
 <h2 class="heading-medium">
   What you can do
 </h2>
 
 <ul class="ogel-summary-bullet-list">
-@for(can <- ogel.summary.canList) {
+@for(can <- ogel.getSummary.getCanList) {
   <li>
   @can
   </li>
@@ -20,7 +19,7 @@
 </h2>
 
 <ul class="ogel-summary-bullet-list">
-@for(cant <- ogel.summary.cantList) {
+@for(cant <- ogel.getSummary.getCantList) {
   <li>
   @cant
   </li>
@@ -32,7 +31,7 @@
 </h2>
 
 <ul class="list ogel-summary-bullet-list">
-@for(must <- ogel.summary.mustList) {
+@for(must <- ogel.getSummary.getMustList) {
   <li>
   @must
   </li>
@@ -40,6 +39,6 @@
 </ul>
 
 <p class="bold-small">
-  <a class="external" href="@ogel.link" rel="external" target="_blank">Read the full licence</a>
+  <a class="external" href="@ogel.getLink" rel="external" target="_blank">Read the full licence</a>
   for more on how to use it, what you can export and permitted export destinations.
 </p>

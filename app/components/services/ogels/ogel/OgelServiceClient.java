@@ -5,8 +5,10 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
+import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
+import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
 import java.util.concurrent.CompletionStage;
 
@@ -28,7 +30,7 @@ public class OgelServiceClient {
     this.webServiceUrl = webServiceAddress + "/ogels";
   }
 
-  public CompletionStage<OgelServiceResult> get(String ogelId) {
+  public CompletionStage<OgelFullView> get(String ogelId) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId))
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
@@ -38,7 +40,7 @@ public class OgelServiceClient {
                 ogelId, response.getStatus()));
           }
           else {
-            return OgelServiceResult.build(response.asJson());
+            return Json.fromJson(response.asJson(), OgelFullView.class);
           }
         }, httpExecutionContext.current());
   }

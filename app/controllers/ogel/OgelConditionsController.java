@@ -99,7 +99,7 @@ public class OgelConditionsController {
               return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry,
                   destinationCountries, activityTypes)
                   .thenApplyAsync(virtualEUResult -> {
-                    if(virtualEUResult.virtualEu) {
+                    if(virtualEUResult.isVirtualEu()) {
                       // Optional.get() should be fine, doConditionApply checks the state of this optional
                       if (OgelConditionsServiceClient.isItemAllowed(conditionsResult, doConditionsApply)) {
                         return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
@@ -152,7 +152,7 @@ public class OgelConditionsController {
                 return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry,
                     destinationCountries, activityTypes)
                     .thenApplyAsync(result -> ok(ogelConditions.render(form, ogelResult,
-                        conditionsResult, conditionsResult.isMissingControlCodes, result.virtualEu)),
+                        conditionsResult, conditionsResult.isMissingControlCodes, result.isVirtualEu())),
                         httpExecutionContext.current());
 
               }, httpExecutionContext.current())

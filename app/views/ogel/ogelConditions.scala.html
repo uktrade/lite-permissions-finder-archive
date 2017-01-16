@@ -2,10 +2,10 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import components.services.ogels.ogel.OgelServiceResult
+@import uk.gov.bis.lite.ogel.api.view.OgelFullView
 @import components.services.ogels.conditions.OgelConditionsServiceResult
 
-@(form: Form[_], ogel: OgelServiceResult, ogelRestriction: OgelConditionsServiceResult, missingControlCodes: Boolean, isVirtualEUOgel: Boolean)
+@(form: Form[_], ogel: OgelFullView, ogelRestriction: OgelConditionsServiceResult, missingControlCodes: Boolean, isVirtualEUOgel: Boolean)
 @standardPage("Additional conditions apply", Some(Html("Additional conditions apply"))){
   @errorSummary(form)
 }{
@@ -20,7 +20,7 @@
       </p>
     } else {
       <p>
-        Not all items within the classification <strong class="bold-small">@ogelRestriction.controlCode</strong> can be exported using the open general export licence <strong class="bold-small">@ogel.name</strong>
+        Not all items within the classification <strong class="bold-small">@ogelRestriction.controlCode</strong> can be exported using the open general export licence <strong class="bold-small">@ogel.getName</strong>
       </p>
     }
 
@@ -30,10 +30,10 @@
     @Html(ogelRestriction.conditionDescription)
     </div>
 
-    @if(ogelRestriction.conditionDescriptionControlCodes.isPresent && !ogelRestriction.conditionDescriptionControlCodes.get.controlCodes.isEmpty) {
+    @if(ogelRestriction.conditionDescriptionControlCodes.isPresent && !ogelRestriction.conditionDescriptionControlCodes.get.getControlCodes.isEmpty) {
       <ul class="list list-bullet text">
-        @for(controlCode <- ogelRestriction.conditionDescriptionControlCodes.get.controlCodes) {
-         <li>@Html(controlCode.friendlyDescription)</li>
+        @for(controlCode <- ogelRestriction.conditionDescriptionControlCodes.get.getControlCodes) {
+         <li>@Html(controlCode.getFriendlyDescription)</li>
         }
       </ul>
     }

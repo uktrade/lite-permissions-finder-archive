@@ -93,8 +93,8 @@ public class OgelSummaryController {
     String controlCode = permissionsFinderDao.getControlCodeForRegistration();
 
     return ogelConditionsServiceClient.get(ogelId, controlCode)
-        .thenApplyAsync(conditionsResult -> {
-          return ogelServiceClient.get(permissionsFinderDao.getOgelId())
+        .thenApplyAsync(conditionsResult ->
+          ogelServiceClient.get(permissionsFinderDao.getOgelId())
               .thenApplyAsync(ogelResult -> {
                 // True when no restriction service result, otherwise check with isItemAllowed.
                 // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service or the re are missing control codes
@@ -102,8 +102,8 @@ public class OgelSummaryController {
                     && OgelConditionsServiceClient.isItemAllowed(conditionsResult, permissionsFinderDao.getOgelConditionsApply().get()));
 
                 return ok(ogelSummary.render(form, ogelResult, controlCode, allowedToProceed));
-              }, httpExecutionContext.current());
-        }, httpExecutionContext.current())
+              }, httpExecutionContext.current())
+        , httpExecutionContext.current())
         .thenCompose(Function.identity());
   }
 

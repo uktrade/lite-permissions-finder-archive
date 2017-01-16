@@ -4,7 +4,7 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayJava)
-  .dependsOn(`zzz-common`)
+  .dependsOn(`zzz-common` % "test->test;compile->compile")
   .enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
@@ -26,6 +26,10 @@ libraryDependencies += "org.pac4j" % "pac4j-saml" % "1.9.0"
 libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
 libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.5.0"
+
+libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.0"
+
+resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
 
 // Contains all files and libraries shared across other projects
 lazy val `zzz-common` = project.in(file("subprojects/lite-play-common")).enablePlugins(PlayJava)
