@@ -363,7 +363,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         additionalSpecifications,
         technicalNotes,
         destinationCountries,
-        decontrolsDecision, additionalSpecsDecision,
+        decontrolsDecision,
+        additionalSpecsDecision,
         technicalNotesDecision
     );
 
