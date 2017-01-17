@@ -13,6 +13,7 @@ import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
+import models.controlcode.ControlCodeVariant;
 import models.search.SearchResultsDisplay;
 import play.data.Form;
 import play.data.FormFactory;
@@ -53,7 +54,11 @@ public class SearchResultsController {
     this.permissionsFinderDao = permissionsFinderDao;
   }
 
-  private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
+  public CompletionStage<Result> renderForm(String goodsTypeText) {
+    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(ControlCodeVariant.SEARCH.urlString(), goodsTypeText, this::renderFormInternal);
+  }
+
+  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     return physicalGoodsSearch(controlCodeSubJourney)
         .thenApplyAsync(result -> {
           int displayCount = Math.min(result.results.size(), PAGINATION_SIZE);
@@ -71,15 +76,11 @@ public class SearchResultsController {
         }, httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> renderSearchForm() {
-    return renderForm(ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
+  public CompletionStage<Result> handleSubmit() {
+    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
   }
 
-  public CompletionStage<Result> renderSearchRelatedToForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
-  }
-
-  private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney) {
+  private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<SearchResultsForm> form = formFactory.form(SearchResultsForm.class).bindFromRequest();
 
     if (form.hasErrors()) {
@@ -128,14 +129,6 @@ public class SearchResultsController {
     }
 
     throw new FormStateException("Unhandled form state");
-  }
-
-  public CompletionStage<Result> handleSearchSubmit() {
-    return handleSubmit(ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
-  }
-
-  public CompletionStage<Result> handleSearchRelatedToSubmit(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
   }
 
   public CompletionStage<SearchServiceResult> physicalGoodsSearch(ControlCodeSubJourney controlCodeSubJourney) {

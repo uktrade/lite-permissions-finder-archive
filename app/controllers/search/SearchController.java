@@ -9,6 +9,7 @@ import components.persistence.PermissionsFinderDao;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.ControlCodeSubJourney;
+import models.controlcode.ControlCodeVariant;
 import models.search.SearchDisplay;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
@@ -38,7 +39,11 @@ public class SearchController {
     this.permissionsFinderDao = permissionsFinderDao;
   }
 
-  private CompletionStage<Result> renderForm(ControlCodeSubJourney controlCodeSubJourney) {
+  public CompletionStage<Result> renderForm(String goodsTypeText) {
+    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(ControlCodeVariant.SEARCH.urlString(), goodsTypeText, this::renderFormInternal);
+  }
+
+  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<SearchForm> templateFormOptional = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney);
     SearchForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new SearchForm();
     return completedFuture(ok(search.render(
@@ -46,15 +51,11 @@ public class SearchController {
     )));
   }
 
-  public CompletionStage<Result> renderSearchForm() {
-    return renderForm(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
+  public CompletionStage<Result> handleSubmit() {
+    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
   }
 
-  public CompletionStage<Result> renderSearchRelatedToForm (String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::renderForm);
-  }
-
-  private CompletionStage<Result> handleSubmit(ControlCodeSubJourney controlCodeSubJourney) {
+  private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<SearchForm> form = bindSearchForm();
 
     if(form.hasErrors()) {
@@ -67,15 +68,7 @@ public class SearchController {
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 
-  public CompletionStage<Result> handleSearchSubmit() {
-    return handleSubmit(models.controlcode.ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH);
-  }
-
-  public CompletionStage<Result> handleSearchRelatedToSubmit (String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.getSearchRelatedToPhysicalGoodsResult(goodsTypeText, this::handleSubmit);
-  }
-
-  public Form<SearchForm> bindSearchForm() {
+  private Form<SearchForm> bindSearchForm() {
     // Trims whitespace from the form fields
     Map<String, String> map = formFactory.form(SearchForm.class).bindFromRequest().data().entrySet()
         .stream()

@@ -169,23 +169,15 @@ GET     /export-questions                     controllers.ogel.OgelQuestionsCont
 
 POST    /export-questions                     controllers.ogel.OgelQuestionsController.handleSubmit
 
-GET     /export-search-physical-goods         controllers.search.SearchController.renderSearchForm
+GET     /export-search-physical-goods/:goodsType          controllers.search.SearchController.renderForm(goodsType)
 
-POST    /export-search-physical-goods         controllers.search.SearchController.handleSearchSubmit
+POST    /export-search-physical-goods                     controllers.search.SearchController.handleSubmit
 
-GET     /export-search-related-to-physical-goods/:goodsType         controllers.search.SearchController.renderSearchRelatedToForm(goodsType)
+GET     /export-search-physical-goods/results/:goodsType  controllers.search.SearchResultsController.renderForm(goodsType)
 
-POST    /export-search-related-to-physical-goods/:goodsType         controllers.search.SearchController.handleSearchRelatedToSubmit(goodsType)
+POST    /export-search-physical-goods/results/            controllers.search.SearchResultsController.handleSubmit
 
-GET     /export-search-results-physical-goods controllers.search.SearchResultsController.renderSearchForm
-
-POST    /export-search-results-physical-goods controllers.search.SearchResultsController.handleSearchSubmit
-
-GET     /export-search-results-related-to-physical-goods/:goodsType   controllers.search.SearchResultsController.renderSearchRelatedToForm(goodsType)
-
-POST    /export-search-results-related-to-physical-goods/:goodsType   controllers.search.SearchResultsController.handleSearchRelatedToSubmit(goodsType)
-
-GET     /show-more-search-results             controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney: String, fromIndex: Int, toIndex: Int, transactionId: String)
+GET     /export-search-physical-goods/show-more-results/  controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney: String, fromIndex: Int, toIndex: Int, transactionId: String)
 
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 
