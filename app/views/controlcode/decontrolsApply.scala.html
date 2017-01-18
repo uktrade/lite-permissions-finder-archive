@@ -1,0 +1,42 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import controllers.controlcode.routes.DecontrolsApplyController
+@import models.controlcode.notapplicable.DecontrolsApplyDisplay
+
+@(form: Form[_], display: DecontrolsApplyDisplay)
+@standardPage("Choose a different item type", Some(Html("Choose a different item type"))){
+  @errorSummary(form)
+}{
+
+  <p>
+    You selected <span class="bold-small">@display.controlCodeTitle</span>, but your item is among the group of items that are not controlled under this classification, known as decontrols.
+  </p>
+
+  <p>
+    Your options now are:
+  </p>
+
+  <form action="@DecontrolsApplyController.handleSubmit" method="POST">
+
+    @contextFormParams()
+
+    <ul class="list list-bullet text">
+    @for(button <- display.buttons) {
+      <li>
+        <button class="link underlined" name="action" value="@button.value" data-skip-validation>@button.content</button>
+      </li>
+    }
+    </ul>
+    
+  </form>
+
+  <h2 class="heading-medium">
+    Need some help?
+  </h2>
+  <p>
+    You can contact the Export Control Organisation to discuss your export, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@beis.gsi.gov.uk">eco.help@@beis.gsi.gov.uk</a>.
+  </p>
+  
+}

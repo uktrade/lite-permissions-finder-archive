@@ -35,25 +35,29 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-GET     /export/:controlCodeVariant/:goodsType/control-code/summary                       controllers.controlcode.ControlCodeSummaryController.renderForm(controlCodeVariant, goodsType)
+GET     /export/:controlCodeVariant/:goodsType/control-code/summary                         controllers.controlcode.ControlCodeSummaryController.renderForm(controlCodeVariant, goodsType)
 
-POST    /export/control-code/summary                                                      controllers.controlcode.ControlCodeSummaryController.handleSubmit
+POST    /export/control-code/summary                                                        controllers.controlcode.ControlCodeSummaryController.handleSubmit
 
-GET     /export/:controlCodeVariant/:goodsType/control-code/additional-specifications     controllers.controlcode.AdditionalSpecificationsController.renderForm(controlCodeVariant, goodsType)
+GET     /export/:controlCodeVariant/:goodsType/control-code/additional-specifications       controllers.controlcode.AdditionalSpecificationsController.renderForm(controlCodeVariant, goodsType)
 
-POST    /export/control-code/additional-specifications                                    controllers.controlcode.AdditionalSpecificationsController.handleSubmit
+POST    /export/control-code/additional-specifications                                      controllers.controlcode.AdditionalSpecificationsController.handleSubmit
 
-GET     /export/:controlCodeVariant/:goodsType/control-code/decontrols                    controllers.controlcode.DecontrolsController.renderForm(controlCodeVariant, goodsType)
+GET     /export/:controlCodeVariant/:goodsType/control-code/decontrols                      controllers.controlcode.DecontrolsController.renderForm(controlCodeVariant, goodsType)
 
-POST    /export/control-code/decontrols                                                   controllers.controlcode.DecontrolsController.handleSubmit
+POST    /export/control-code/decontrols                                                     controllers.controlcode.DecontrolsController.handleSubmit
 
-GET     /export/:controlCodeVariant/:goodsType/control-code/not-applicable                controllers.controlcode.NotApplicableController.renderForm(controlCodeVariant, goodsType, extended)
+GET     /export/:controlCodeVariant/:goodsType/control-code/decontrols-apply-to-your-good   controllers.controlcode.DecontrolsApplyController.renderForm(controlCodeVariant, goodsType)
 
-POST    /control-code/not-applicable                                                      controllers.controlcode.NotApplicableController.handleSubmit
+POST    /export/control-code/decontrols-apply-to-your-good                                  controllers.controlcode.DecontrolsApplyController.handleSubmit
 
-GET     /export/:controlCodeVariant/:goodsType/control-code/technical-notes               controllers.controlcode.TechnicalNotesController.renderForm(controlCodeVariant, goodsType)
+GET     /export/:controlCodeVariant/:goodsType/control-code/not-applicable                  controllers.controlcode.NotApplicableController.renderForm(controlCodeVariant, goodsType, extended)
 
-POST    /control-code/technical-notes                                                     controllers.controlcode.TechnicalNotesController.handleSubmit
+POST    /control-code/not-applicable                                                        controllers.controlcode.NotApplicableController.handleSubmit
+
+GET     /export/:controlCodeVariant/:goodsType/control-code/technical-notes                 controllers.controlcode.TechnicalNotesController.renderForm(controlCodeVariant, goodsType)
+
+POST    /control-code/technical-notes                                                       controllers.controlcode.TechnicalNotesController.handleSubmit
 
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 

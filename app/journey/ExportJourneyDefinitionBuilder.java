@@ -55,6 +55,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final DecisionStage<Boolean> softwareRelationshipWithTechnologyExistsDecision;
   private final DecisionStage<Boolean> softwareRelationshipWithSoftwareExistsDecision;
 
+  private final JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftTechCategories", "What is your software for?",
+      controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.SOFTWARE.urlString()));
+
   private final JourneyStage searchRTS = defineStage("searchRTS", "Describe your items",
       controllers.search.routes.SearchController.renderForm(GoodsType.SOFTWARE.urlString()));
 
@@ -323,6 +326,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage decontrols = defineStage("decontrols", "Decontrols",
         controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
+    JourneyStage decontrolsApply = defineStage("decontrolsApply", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
+
     JourneyStage technicalNotes = defineStage("technicalNotes", "Technical notes",
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
@@ -358,6 +364,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindControlCodeStageTransitions(
         decontrols,
+        decontrolsApply,
         controlCodeSummary,
         controlCodeNotApplicable,
         additionalSpecifications,
@@ -367,6 +374,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         additionalSpecsDecision,
         technicalNotesDecision
     );
+
+    atStage(decontrolsApply)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.SEARCH, backTo(search))
+        .when(BackType.RESULTS, backTo(searchResults))
+        .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
 
     bindControlCodeNotApplicableFromSearchStageJourneyTransitions(
         controlCodeNotApplicable,
@@ -436,9 +450,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     JourneyStage softwareExemptionsNLR2 = defineStage("softwareExemptionsNLR2", "Software exemptions apply",
         controllers.routes.StaticContentController.renderSoftwareExemptionsNLR2());
-
-    JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftTechCategories", "What is your software for?",
-        controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.SOFTWARE.urlString()));
 
     atDecisionStage(dualUseOrMilitarySoftwareDecision)
         .decide()
@@ -538,6 +549,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage decontrolsSC = defineStage("decontrolsSC", "Decontrols",
         controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
+    JourneyStage decontrolsApplySC = defineStage("decontrolsApplySC", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+
     JourneyStage technicalNotesSC = defineStage("technicalNotesSC", "Technical notes",
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
@@ -557,6 +571,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindControlCodeStageTransitions(
         decontrolsSC,
+        decontrolsApplySC,
         controlCodeSummarySC,
         controlCodeNotApplicableSC,
         additionalSpecificationsSC,
@@ -571,6 +586,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controlsListSC,
         softwareRelatedToEquipmentOrMaterials
     );
+
+    atStage(decontrolsApplySC)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.MATCHES, backTo(controlsListSC))
+        .when(BackType.SOFT_TECH_CATEGORY, backTo(dualUseSoftwareCategories))
+        .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
   }
 
   /**
@@ -592,6 +614,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     JourneyStage decontrolsRTS = defineStage("decontrolsRTS", "Decontrols",
         controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage decontrolsApplyRTS = defineStage("decontrolsApplyRTS", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage technicalNotesRTS = defineStage("technicalNotesRTS", "Technical notes",
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
@@ -627,6 +652,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindControlCodeStageTransitions(
         decontrolsRTS,
+        decontrolsApplyRTS,
         controlCodeSummaryRTS,
         controlCodeNotApplicableRTS,
         additionalSpecificationsRTS,
@@ -641,6 +667,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         searchRTS,
         searchResultsRTS
     );
+
+    atStage(decontrolsApplyRTS)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.SEARCH, backTo(searchRTS))
+        .when(BackType.RESULTS, backTo(searchResultsRTS))
+        .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
 
   }
 
@@ -658,6 +691,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     JourneyStage decontrolsSCRTPG = defineStage("decontrolsSCRTPG", "Decontrols",
         controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage decontrolsApplySCRTPG = defineStage("decontrolsApplySCRTPG", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage technicalNotesRelatedSCRTPG = defineStage("technicalNotesRelatedSCRTPG", "Technical notes",
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
@@ -678,6 +714,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindControlCodeStageTransitions(
         decontrolsSCRTPG,
+        decontrolsApplySCRTPG,
         controlCodeSummarySCRTPG,
         controlCodeNotApplicableSCRTPG,
         additionalSpecificationsSCRTPG,
@@ -692,6 +729,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controlsListSCRTPG,
         applicableCatchallControlsDecision
     );
+
+    atStage(controlsListSCRTPG)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.MATCHES, backTo(controlsListSCC))
+        .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
 
   }
 
@@ -708,6 +751,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     JourneyStage decontrolsSCC = defineStage("decontrolsSCC", "Decontrols",
         controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage decontrolsApplySCC = defineStage("decontrolsApplySCC", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage technicalNotesSCC = defineStage("technicalNotesSCC", "Technical notes",
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
@@ -728,6 +774,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindControlCodeStageTransitions(
         decontrolsSCC,
+        decontrolsApplySCC,
         controlCodeSummarySCC,
         controlCodeNotApplicableSCC,
         additionalSpecificationSCC,
@@ -742,6 +789,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controlsListSCC,
         softwareRelationshipWithTechnologyExistsDecision
     );
+
+    atStage(decontrolsApplySCC)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.MATCHES, backTo(controlsListSCC))
+        .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
   }
 
   private void softwareRelatedToTechnology() {
@@ -802,6 +855,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   }
 
   private void bindControlCodeStageTransitions(JourneyStage decontrolsStage,
+                                               JourneyStage decontrolsApplyStage,
                                                JourneyStage controlCodeSummaryStage,
                                                JourneyStage controlCodeNotApplicableStage,
                                                JourneyStage additionalSpecificationsStage,
@@ -821,7 +875,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(decontrolsStage)
         .onEvent(Events.CONTROL_CODE_NOT_APPLICABLE)
-        .then(moveTo(notImplemented)); // TODO new decontrolsApplyStage
+        .then(moveTo(decontrolsApplyStage));
 
     atStage(controlCodeSummaryStage)
         .onEvent(StandardEvents.NEXT)
