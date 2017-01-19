@@ -78,7 +78,8 @@ public class SearchResultsController {
   }
 
   public CompletionStage<Result> handleSubmit() {
-    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveContextToSubJourney();
+    return handleSubmitInternal(controlCodeSubJourney);
   }
 
   private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {

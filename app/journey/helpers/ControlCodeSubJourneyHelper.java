@@ -2,10 +2,6 @@ package journey.helpers;
 
 import journey.SubJourneyContextParamProvider;
 import models.controlcode.ControlCodeSubJourney;
-import play.mvc.Result;
-
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 public class ControlCodeSubJourneyHelper {
 
@@ -21,10 +17,9 @@ public class ControlCodeSubJourneyHelper {
     subJourneyContextParamProvider.updateSubJourneyValueOnContext(controlCodeSubJourney);
   }
 
-  public static CompletionStage<Result> resolveContextToSubJourney(Function<ControlCodeSubJourney, CompletionStage<Result>> resultFunction) {
+  public static ControlCodeSubJourney resolveContextToSubJourney() {
     SubJourneyContextParamProvider subJourneyContextParamProvider = new SubJourneyContextParamProvider();
-    ControlCodeSubJourney controlCodeSubJourney = subJourneyContextParamProvider.getSubJourneyValueFromRequest();
-    return resultFunction.apply(controlCodeSubJourney);
+    return subJourneyContextParamProvider.getSubJourneyValueFromRequest();
   }
 
 }
