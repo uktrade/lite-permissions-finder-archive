@@ -59,6 +59,10 @@ GET     /export/:controlCodeVariant/:goodsType/control-code/technical-notes     
 
 POST    /control-code/technical-notes                                                       controllers.controlcode.TechnicalNotesController.handleSubmit
 
+GET     /export/:controlCodeVariant/:goodsType/software-and-technology-lists/   controllers.softtech.controls.SoftTechControlsController.renderForm(controlCodeVariant, goodsType)
+
+POST    /export/software-and-technology-lists/                                  controllers.softtech.controls.SoftTechControlsController.handleSubmit
+
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
@@ -224,18 +228,6 @@ GET     /select-trade-type                    controllers.TradeTypeController.re
 POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
 
 GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
-
-GET     /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCatchallControlsForm(goodsType)
-
-POST    /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCatchallControlsSubmit(goodsType)
-
-GET     /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCategoryForm(goodsType)
-
-POST    /controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleCategorySubmit(goodsType)
-
-GET     /controls-related-to-a-physical-good/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderRelatedToPhysicalGoodForm(goodsType)
-
-POST    /controls-related-to-a-physical-good/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.handleRelatedToPhysicalGoodSubmit(goodsType)
 
 GET     /start-application                    controllers.StartApplicationController.renderForm
 
