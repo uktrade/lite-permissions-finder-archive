@@ -37,7 +37,7 @@ public class DecontrolsApplyDisplay {
       }
 
       if (controlCodeSubJourney.isSoftTechCatchallControlsVariant() && softTechCategory.isPresent()) {
-        this.buttons.add(new ActionButton(BackType.SOFT_TECH_CATEGORY.toString(), "Change your dual use software category (currently " + softTechCategory.get().toString() + ")"));
+        this.buttons.add(new ActionButton(BackType.SOFT_TECH_CATEGORY.toString(), "Change your dual use software category (currently " + softTechCategory.get().getHeading() + ")"));
       }
     }
     else {
