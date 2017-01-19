@@ -4,32 +4,34 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public enum ExportCategory {
-  ARTS_CULTURAL("ARTS_CULTURAL"),
-  CHEMICALS_COSMETICS("CHEMICALS_COSMETICS"),
-  DUAL_USE("DUAL_USE"),
-  FINANCIAL_ASSISTANCE("FINANCIAL_ASSISTANCE"),
-  FOOD("FOOD"),
-  MEDICINES_DRUGS("MEDICINES_DRUGS"),
-  MILITARY("MILITARY"),
-  NONE("NONE"),
-  NON_MILITARY("NON_MILITARY"),
-  PLANTS_ANIMALS("PLANTS_ANIMALS"),
-  RADIOACTIVE("RADIOACTIVE"),
-  TECHNICAL_ASSISTANCE("TECHNICAL_ASSISTANCE"),
-  TORTURE_RESTRAINT("TORTURE_RESTRAINT"),
-  WASTE("WASTE");
+  ARTS_CULTURAL("Arts and cultural goods"),
+  CHEMICALS_COSMETICS("Cosmetics, chemicals, and pesticides"),
+  DUAL_USE("Dual-use goods, software and technical information"),
+  FINANCIAL_ASSISTANCE("Financing and financial assistance"),
+  FOOD("Food"),
+  MEDICINES_DRUGS("Medicines and drugs"),
+  MILITARY("Military weapons and equipment"),
+  NONE("None of the above"),
+  NON_MILITARY("Personal-use firearms"),
+  PLANTS_ANIMALS("Plants and animals"),
+  RADIOACTIVE("Radioactive goods"),
+  TECHNICAL_ASSISTANCE("Technical assistance"),
+  TORTURE_RESTRAINT("Goods that could be used for torture, restraint or execution"),
+  WASTE("Waste");
 
-  private String value;
+  private final String heading;
 
-  ExportCategory(String value) {
-    this.value = value;
+  ExportCategory(String heading) {
+    this.heading = heading;
   }
 
-  public String value() {
-    return this.value;
+  public String getHeading() {
+    return heading;
   }
 
-  public static Optional<ExportCategory> getMatched(String exportCategory) {
-    return EnumSet.allOf(ExportCategory.class).stream().filter(e -> e.value().equals(exportCategory)).findFirst();
+  public static Optional<ExportCategory> getMatched(String name) {
+    return EnumSet.allOf(ExportCategory.class).stream()
+        .filter(e -> e.toString().equals(name))
+        .findFirst();
   }
 }
