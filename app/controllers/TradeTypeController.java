@@ -59,8 +59,9 @@ public class TradeTypeController extends Controller {
       case IMPORT:
         return journeyManager.startJourney(JourneyDefinitionNames.IMPORT);
       case TRANSSHIPMENT:
+        return completedFuture(redirect(routes.StaticContentController.renderTranshipment()));
       case BROKERING:
-        return completedFuture(redirect(routes.StaticContentController.renderBrokeringTranshipment()));
+        return completedFuture(redirect(routes.StaticContentController.renderBrokering()));
       default:
         throw new FormStateException("Unknown trade type " + tradeType);
     }

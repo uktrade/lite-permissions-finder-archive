@@ -227,7 +227,9 @@ GET     /select-trade-type                    controllers.TradeTypeController.re
 
 POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
 
-GET     /select-trade-type/brokering-transhipment   controllers.StaticContentController.renderBrokeringTranshipment
+GET     /select-trade-type/brokering          controllers.StaticContentController.renderBrokering
+
+GET     /select-trade-type/transhipment       controllers.StaticContentController.renderTranshipment
 
 GET     /category-catchall-controls/:goodsType/show-controls               controllers.softtech.controls.SoftTechControlsController.renderCatchallControlsForm(goodsType)
 
