@@ -4,8 +4,8 @@
 @import views.html.common.state._
 
 @(form: Form[_], ogels: List[ApplicableOgelView], physicalGoodControlCode: String, destinationCountryNamesHtml: String)
-@standardPage(if (ogels.length > 0) "Based on your answers, you may be able to use one of the following licences" else "No open licences available"
-  , Some(Html(if (ogels.length > 0) "Based on your answers, you may be able to use one of the following licences" else "No open licences available"))){
+@standardPage(if (ogels.length > 0) "Your possible licences" else "No open licences available"
+  , Some(Html(if (ogels.length > 0) "Your possible licences" else "No open licences available"))){
   @errorSummary(form)
 }{
 
