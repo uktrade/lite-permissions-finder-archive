@@ -10,11 +10,12 @@ import components.services.controlcode.controls.category.CategoryControlsService
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeSubJourneyHelper;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
-import models.softtech.controls.SoftTechControlsJourney;
 import models.softtech.controls.SoftTechControlsDisplay;
+import models.softtech.controls.SoftTechControlsJourney;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -51,6 +52,8 @@ public class SoftTechControlsController {
   }
 
   private CompletionStage<Result> renderForm(SoftTechControlsJourney softTechControlsJourney) {
+    // Set SubJourney context
+    ControlCodeSubJourneyHelper.updateSubJourneyContext(softTechControlsJourney.getMappedControlCodeSubJourney());
     return renderWithForm(softTechControlsJourney, formFactory.form(SoftTechControlsForm.class));
   }
 

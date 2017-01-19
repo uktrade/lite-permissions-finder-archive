@@ -44,7 +44,8 @@ public class DecontrolsApplyController {
 
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText, this::renderFormInternal);
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
+    return renderFormInternal(controlCodeSubJourney);
   }
 
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {

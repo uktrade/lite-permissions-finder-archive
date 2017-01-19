@@ -38,8 +38,8 @@ public class NotApplicableController {
 
   // TODO remove showExtendedContent
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText, String showExtendedContent) {
-    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText,
-        controlCodeSubJourney -> notApplicableControllerHelper.renderFormInternal(controlCodeSubJourney, this::renderNotApplicable));
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
+    return notApplicableControllerHelper.renderFormInternal(controlCodeSubJourney, this::renderNotApplicable);
   }
 
   private Result renderNotApplicable(NotApplicableDisplayCommon displayCommon) {

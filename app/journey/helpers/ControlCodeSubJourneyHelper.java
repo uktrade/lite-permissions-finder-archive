@@ -9,16 +9,16 @@ import java.util.function.Function;
 
 public class ControlCodeSubJourneyHelper {
 
-  public static CompletionStage<Result> resolveUrlToSubJourneyAndUpdateContext(String controlCodeVariantText, String goodsTypeText, Function<ControlCodeSubJourney, CompletionStage<Result>> resultFunction) {
+  public static ControlCodeSubJourney resolveUrlToSubJourneyAndUpdateContext(String controlCodeVariantText, String goodsTypeText) {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourney.getMatched(controlCodeVariantText, goodsTypeText).get();
-    return resolveUrlToSubJourneyAndUpdateContext(controlCodeSubJourney, resultFunction);
+    updateSubJourneyContext(controlCodeSubJourney);
+    return controlCodeSubJourney;
   }
 
-  public static CompletionStage<Result> resolveUrlToSubJourneyAndUpdateContext(ControlCodeSubJourney controlCodeSubJourney, Function<ControlCodeSubJourney, CompletionStage<Result>> resultFunction) {
+  public static void updateSubJourneyContext(ControlCodeSubJourney controlCodeSubJourney) {
     SubJourneyContextParamProvider subJourneyContextParamProvider = new SubJourneyContextParamProvider();
     subJourneyContextParamProvider.updateSubJourneyValueOnContext(controlCodeSubJourney);
-    return resultFunction.apply(controlCodeSubJourney);
   }
 
   public static CompletionStage<Result> resolveContextToSubJourney(Function<ControlCodeSubJourney, CompletionStage<Result>> resultFunction) {

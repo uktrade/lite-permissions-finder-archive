@@ -40,7 +40,8 @@ public class SearchController {
   }
 
   public CompletionStage<Result> renderForm(String goodsTypeText) {
-    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(ControlCodeVariant.SEARCH.urlString(), goodsTypeText, this::renderFormInternal);
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(ControlCodeVariant.SEARCH.urlString(), goodsTypeText);
+    return renderFormInternal(controlCodeSubJourney);
   }
 
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
