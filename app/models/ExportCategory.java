@@ -1,6 +1,7 @@
 package models;
 
-import java.util.EnumSet;
+import com.google.common.base.Enums;
+
 import java.util.Optional;
 
 public enum ExportCategory {
@@ -30,8 +31,8 @@ public enum ExportCategory {
   }
 
   public static Optional<ExportCategory> getMatched(String name) {
-    return EnumSet.allOf(ExportCategory.class).stream()
-        .filter(e -> e.toString().equals(name))
-        .findFirst();
+    return Enums.getIfPresent(ExportCategory.class, name)
+        .transform(java.util.Optional::of)
+        .or(java.util.Optional.empty());
   }
 }
