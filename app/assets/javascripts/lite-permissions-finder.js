@@ -147,12 +147,12 @@ LITEPermissionsFinder.SearchResults = {
           $("#searchResults").append(
               $("<li/>").append(
                 $("<button/>")
-                  .attr("id", result.code + "-button")
+                  .attr("id", result.controlCode + "-button")
                   .attr("type", "submit")
                   .attr("name", "result")
-                  .attr("value", result.code)
+                  .attr("value", result.controlCode)
                   .addClass("link font-medium")
-                  .text(result.highlightedText)
+                  .text(result.displayText)
               )
             );
           });

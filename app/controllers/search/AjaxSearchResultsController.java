@@ -94,8 +94,8 @@ public class AjaxSearchResultsController {
           .stream()
           .map(result -> {
             ObjectNode resultJson = Json.newObject();
-            resultJson.put("code", result.code);
-            resultJson.put("highlightedText", result.highlightedText);
+            resultJson.put("controlCode", result.controlCode);
+            resultJson.put("displayText", result.displayText);
             return resultJson;
           }).collect(Collectors.toList());
 
