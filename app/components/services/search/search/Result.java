@@ -3,6 +3,7 @@ package components.services.search.search;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Result {
 
@@ -13,9 +14,10 @@ public class Result {
   public Result(@JsonProperty("controlCode") String controlCode,
                 @JsonProperty("displayText") String displayText,
                 @JsonProperty("additionalMatches") List<String> additionalControlCodeMatches) {
-    this.controlCode = controlCode != null ? controlCode : "";
+    // Default to an empty string if null
+    this.controlCode = Objects.toString(controlCode, "");
     // Default to controlCode if null
-    this.displayText = displayText != null ? displayText : this.controlCode;
+    this.displayText = Objects.toString(displayText, this.controlCode);
     this.additionalControlCodeMatches = additionalControlCodeMatches;
   }
 
