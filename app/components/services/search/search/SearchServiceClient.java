@@ -1,4 +1,4 @@
-package components.services.search;
+package components.services.search.search;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.search.SearchServiceClient;
+import components.services.search.search.SearchServiceClient;
 import models.controlcode.ControlCodeSubJourney;
 import play.Logger;
 import play.libs.Json;
@@ -81,7 +81,7 @@ public class AjaxSearchResultsController {
 
   }
 
-  private ObjectNode buildResponseJson(List<components.services.search.Result> results, int fromIndex, int toIndex) {
+  private ObjectNode buildResponseJson(List<components.services.search.search.Result> results, int fromIndex, int toIndex) {
     ObjectNode json = Json.newObject();
     json.put("status", "ok");
     ArrayNode resultsNode = json.putArray("results");
