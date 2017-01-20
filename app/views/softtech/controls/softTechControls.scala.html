@@ -3,13 +3,14 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
+@import controllers.softtech.controls.routes.SoftTechControlsController
 
-@(display: SoftTechControlsDisplay)
+@(form: Form[_], display: SoftTechControlsDisplay)
 @standardPage(display.pageTitle, Some(Html(display.pageTitle))){
-  @errorSummary(display.form)
+  @errorSummary(form)
 }{
 
-  <form action="@display.formAction" method="POST">
+  <form action="@SoftTechControlsController.handleSubmit" method="POST">
 
     @contextFormParams()
 

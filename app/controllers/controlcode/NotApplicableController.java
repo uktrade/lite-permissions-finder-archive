@@ -5,121 +5,50 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
-import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
-import components.services.controlcode.FrontendServiceResult;
+import controllers.controlcode.notapplicable.NotApplicableControllerHelper;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
-import journey.helpers.SoftTechJourneyHelper;
-import models.GoodsType;
 import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.NotApplicableDisplay;
-import models.softtech.SoftTechCategory;
+import models.controlcode.NotApplicableDisplayCommon;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.controlcode.notApplicable;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class NotApplicableController {
 
   private final FormFactory formFactory;
   private final JourneyManager journeyManager;
-  private final PermissionsFinderDao permissionsFinderDao;
-  private final HttpExecutionContext httpExecutionContext;
-  private final FrontendServiceClient frontendServiceClient;
-  private final SoftTechJourneyHelper softTechJourneyHelper;
+  private final NotApplicableControllerHelper notApplicableControllerHelper;
 
   @Inject
   public NotApplicableController(FormFactory formFactory,
                                  JourneyManager journeyManager,
-                                 PermissionsFinderDao permissionsFinderDao,
-                                 HttpExecutionContext httpExecutionContext,
-                                 FrontendServiceClient frontendServiceClient,
-                                 SoftTechJourneyHelper softTechJourneyHelper) {
+                                 NotApplicableControllerHelper notApplicableControllerHelper) {
     this.formFactory = formFactory;
     this.journeyManager = journeyManager;
-    this.permissionsFinderDao = permissionsFinderDao;
-    this.httpExecutionContext = httpExecutionContext;
-    this.frontendServiceClient = frontendServiceClient;
-    this.softTechJourneyHelper = softTechJourneyHelper;
+    this.notApplicableControllerHelper = notApplicableControllerHelper;
   }
 
+  // TODO remove showExtendedContent
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText, String showExtendedContent) {
-    return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText,
-        controlCodeSubJourney -> renderFormInternal(controlCodeSubJourney, showExtendedContent));
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
+    return notApplicableControllerHelper.renderFormInternal(controlCodeSubJourney, this::renderNotApplicable);
   }
 
-  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney, String showExtendedContent) {
-    if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
-      return frontendServiceClient
-          .get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
-          .thenApplyAsync(result ->
-                  ok(notApplicable.render(new NotApplicableDisplay(controlCodeSubJourney,
-                      formFactory.form(NotApplicableForm.class),
-                      result.getControlCodeData().alias,
-                      Boolean.parseBoolean(showExtendedContent))))
-              , httpExecutionContext.current());
-    }
-    else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
-      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-      // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-      String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
-      CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkSoftTechControls(goodsType, softTechCategory)
-          .thenCombineAsync(frontendStage, (controls, result) -> ok(
-              notApplicable.render(
-                  new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
-                      result.getControlCodeData().alias, Boolean.parseBoolean(showExtendedContent), controls))
-          ), httpExecutionContext.current());
-    }
-    else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
-      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-      ControlCodeSubJourney physicalControlCodeSubJourney;
-      if (controlCodeSubJourney == ControlCodeSubJourney.SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD) {
-        physicalControlCodeSubJourney = ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE;
-      }
-      else {
-        // ControlCodeSubJourney.TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD
-        physicalControlCodeSubJourney = ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY;
-      }
-      // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
-      String physicalGoodControlCode = permissionsFinderDao.getSelectedControlCode(physicalControlCodeSubJourney);
-      String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
-      CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      return softTechJourneyHelper.checkRelatedSoftwareControls(goodsType, physicalGoodControlCode)
-          .thenCombineAsync(frontendStage, (controls, result) -> ok(
-              notApplicable.render(
-                  new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
-                      result.getControlCodeData().alias, Boolean.parseBoolean(showExtendedContent), controls))
-          ), httpExecutionContext.current());
-    }
-    else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
-      GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
-      // If on the software control journey, check the amount of applicable controls. This feeds into the display logic
-      String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
-      CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
-      SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
-      return softTechJourneyHelper.checkCatchtallSoftwareControls(goodsType, softTechCategory)
-          .thenCombineAsync(frontendStage, (controls, result) -> ok(
-              notApplicable.render(
-                  new NotApplicableDisplay(controlCodeSubJourney, formFactory.form(NotApplicableForm.class),
-                      result.getControlCodeData().alias, Boolean.parseBoolean(showExtendedContent), controls))
-          ), httpExecutionContext.current());
-    }
-    else {
-      throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
-          , controlCodeSubJourney.toString()));
-    }
+  private Result renderNotApplicable(NotApplicableDisplayCommon displayCommon) {
+    return ok(notApplicable.render(formFactory.form(NotApplicableForm.class), new NotApplicableDisplay(displayCommon)));
   }
 
   public CompletionStage<Result> handleSubmit() {
-    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveContextToSubJourney();
+    return handleSubmitInternal(controlCodeSubJourney);
   }
 
   private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
@@ -130,14 +59,11 @@ public class NotApplicableController {
           controlCodeSubJourney.isSoftTechControlsVariant() ||
           controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
           controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
-        if ("backToSearch".equals(action)) {
-          return journeyManager.performTransition(Events.BACK, BackType.SEARCH);
-        }
-        else if ("backToResults".equals(action)) {
-          return journeyManager.performTransition(Events.BACK, BackType.RESULTS);
-        }
-        else if ("backToMatches".equals(action)) {
-          return journeyManager.performTransition(Events.BACK, BackType.MATCHES);
+
+        Optional<BackType> backTypeOptional = BackType.getMatched(action);
+
+        if (backTypeOptional.isPresent()) {
+          return journeyManager.performTransition(Events.BACK, backTypeOptional.get());
         }
         else if ("continue".equals(action)) {
           return journeyManager.performTransition(StandardEvents.NEXT);
@@ -155,8 +81,6 @@ public class NotApplicableController {
   }
 
   public static class NotApplicableForm {
-
     public String action;
-
   }
 }

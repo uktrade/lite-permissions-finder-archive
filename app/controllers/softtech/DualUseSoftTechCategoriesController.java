@@ -19,6 +19,7 @@ import play.data.FormFactory;
 import play.mvc.Result;
 import views.html.softtech.dualUseSoftTechCategories;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class DualUseSoftTechCategoriesController {
@@ -54,7 +55,7 @@ public class DualUseSoftTechCategoriesController {
     if (form.hasErrors()) {
       return completedFuture(ok(dualUseSoftTechCategories.render(form, new DualUseSoftTechCategoriesDisplay(goodsType))));
     }
-    String dualUseSoftwareCategoryText = form.get().dualUseSoftTechCategory;
+    Optional<SoftTechCategory> softTechCategoryOptional = SoftTechCategory.getMatched(form.get().dualUseSoftTechCategory);
     String action = form.get().action;
 
     if (StringUtils.isNotEmpty(action)) {
@@ -67,8 +68,8 @@ public class DualUseSoftTechCategoriesController {
         throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
       }
     }
-    else if (StringUtils.isNotEmpty(dualUseSoftwareCategoryText)) {
-      SoftTechCategory softTechCategory = SoftTechCategory.valueOf(dualUseSoftwareCategoryText);
+    else if (softTechCategoryOptional.isPresent()) {
+      SoftTechCategory softTechCategory = softTechCategoryOptional.get();
       if (softTechCategory.isDualUseSoftTechCategory()) {
         permissionsFinderDao.saveSoftTechCategory(goodsType, softTechCategory);
         return journeyManager.performTransition(StandardEvents.NEXT);

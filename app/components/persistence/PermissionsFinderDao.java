@@ -108,7 +108,7 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   public void saveExportCategory(ExportCategory exportCategory) {
-    writeString(EXPORT_CATEGORY, exportCategory.value());
+    writeString(EXPORT_CATEGORY, exportCategory.toString());
   }
 
   public Optional<ExportCategory> getExportCategory() {

@@ -1,5 +1,6 @@
 package models.controlcode;
 
+import com.google.common.base.Preconditions;
 import models.GoodsType;
 
 import java.util.EnumSet;
@@ -105,6 +106,7 @@ public enum ControlCodeSubJourney {
    * @return the {@link GoodsType} mapping or null
    */
   public static GoodsType getGoodsType(ControlCodeSubJourney controlCodeSubJourney) {
+    Preconditions.checkNotNull(controlCodeSubJourney);
     if (controlCodeSubJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE ||
         controlCodeSubJourney == SOFTWARE_CONTROLS ||
         controlCodeSubJourney == SOFTWARE_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
@@ -121,22 +123,25 @@ public enum ControlCodeSubJourney {
       return GoodsType.PHYSICAL;
     }
     else {
-      return null;
+      throw new RuntimeException(String.format("Missing ControlCodeSubJourney to GoodsType mapping for " +
+          "param controlCodeSubJourney: %s", controlCodeSubJourney.toString()));
     }
   }
 
   /**
    * Returns the software or technology {@link GoodsType} mapping
+   * @throws com.sun.javaws.exceptions.InvalidArgumentException when controlCodeSubJourney would return {@link GoodsType#PHYSICAL}
    * @param controlCodeSubJourney
-   * @return either {@link GoodsType#SOFTWARE} or {@link GoodsType#TECHNOLOGY} or null
+   * @return either {@link GoodsType#SOFTWARE} or {@link GoodsType#TECHNOLOGY}
    */
   public static GoodsType getSoftTechGoodsType(ControlCodeSubJourney controlCodeSubJourney) {
+    Preconditions.checkNotNull(controlCodeSubJourney);
     GoodsType goodsType = getGoodsType(controlCodeSubJourney);
     if (goodsType == GoodsType.SOFTWARE || goodsType == GoodsType.TECHNOLOGY) {
       return goodsType;
     }
     else {
-      return null;
+      throw new IllegalArgumentException(String.format("controlCodeSubJourney is mapped to %s", goodsType.toString()));
     }
   }
 

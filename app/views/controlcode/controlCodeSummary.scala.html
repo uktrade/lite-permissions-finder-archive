@@ -47,7 +47,7 @@
 
       @contextFormParams()
 
-      @if(display.decontrolsExist || display.additionalSpecificationsExist || display.technicalNotesExist) {
+      @if(display.additionalSpecificationsExist || display.technicalNotesExist) {
 
         @formRadioBooleanWithContent(form("couldDescribeItems"), Html(display.couldDescribeItemsLabel), "Yes", "No")(HtmlFormat.empty){
           <p>
@@ -56,7 +56,6 @@
 
           <ul class="list list-bullet text">
             @if(display.additionalSpecificationsExist){ <li>a fuller description of this item, or the items related to it</li> }
-            @if(display.decontrolsExist){ <li>items that fit this description but which are actually controlled elsewhere, or not at all</li> }
             @if(display.technicalNotesExist){ <li>technical notes that give examples or define terms</li> }
           </ul>
 

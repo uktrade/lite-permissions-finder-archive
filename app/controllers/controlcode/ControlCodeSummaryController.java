@@ -50,7 +50,8 @@ public class ControlCodeSummaryController extends Controller {
   }
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
-   return ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText, this::renderFormInternal);
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
+    return renderFormInternal(controlCodeSubJourney);
   }
 
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
@@ -61,7 +62,8 @@ public class ControlCodeSummaryController extends Controller {
   }
 
   public CompletionStage<Result> handleSubmit() {
-    return ControlCodeSubJourneyHelper.resolveContextToSubJourney(this::handleSubmitInternal);
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveContextToSubJourney();
+    return handleSubmitInternal(controlCodeSubJourney);
   }
 
   private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {

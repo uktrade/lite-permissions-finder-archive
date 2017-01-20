@@ -44,11 +44,12 @@ public class ExportCategoryController extends Controller {
       permissionsFinderDao.clearGoodsType();
       return journeyManager.performTransition(Events.EXPORT_CATEGORY_SELECTED, exportCategoryOptional.get());
     }
-    if ("true".equals(form.get().couldBeDualUse)) {
+    else if ("true".equals(form.get().couldBeDualUse)) {
       return journeyManager.performTransition(Events.EXPORT_CATEGORY_COULD_BE_DUAL_USE);
     }
-
-    throw new FormStateException("Unknown export category: \"" + form.get().category + "\"");
+    else {
+      throw new FormStateException("Unknown export category: \"" + form.get().category + "\"");
+    }
   }
 
   public static class ExportCategoryForm {

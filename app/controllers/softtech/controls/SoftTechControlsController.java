@@ -10,10 +10,10 @@ import components.services.controlcode.controls.category.CategoryControlsService
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
+import journey.helpers.ControlCodeSubJourneyHelper;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
-import models.softtech.controls.SoftTechControlsJourney;
 import models.softtech.controls.SoftTechControlsDisplay;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
@@ -50,45 +50,33 @@ public class SoftTechControlsController {
     this.httpExecutionContext = httpExecutionContext;
   }
 
-  private CompletionStage<Result> renderForm(SoftTechControlsJourney softTechControlsJourney) {
-    return renderWithForm(softTechControlsJourney, formFactory.form(SoftTechControlsForm.class));
+  public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
+    return renderWithForm(controlCodeSubJourney, formFactory.form(SoftTechControlsForm.class));
   }
 
-  public CompletionStage<Result> renderCategoryForm(String goodsTypeText) {
-    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
-    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getCategoryVariant(goodsType);
-    return renderForm(softTechControlsJourney);
+  public CompletionStage<Result> handleSubmit() {
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveContextToSubJourney();
+    return handleSubmitInternal(controlCodeSubJourney);
   }
 
-  public CompletionStage<Result> renderRelatedToPhysicalGoodForm(String goodsTypeText) {
-    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
-    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getRelatedToPhysicalGoodsVariant(goodsType);
-    return renderForm(softTechControlsJourney);
-  }
-
-  public CompletionStage<Result> renderCatchallControlsForm(String goodsTypeText) {
-    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
-    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getCatchallVariant(goodsType);
-    return renderForm(softTechControlsJourney);
-  }
-
-  private CompletionStage<Result> handleSubmit(SoftTechControlsJourney softTechControlsJourney) {
+  private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<SoftTechControlsForm> form = formFactory.form(SoftTechControlsForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      renderWithForm(softTechControlsJourney, form);
+      renderWithForm(controlCodeSubJourney, form);
     }
     String action = form.get().action;
     String controlCode = form.get().controlCode;
     if (StringUtils.isNotEmpty(action)) {
       if ("noMatchedControlCode".equals(action)) {
-        if (softTechControlsJourney.isCategoryVariant() ||
-            softTechControlsJourney.isRelatedToPhysicalGoodsVariant() ||
-            softTechControlsJourney.isCatchallVariant()) {
+        if (controlCodeSubJourney.isSoftTechControlsVariant() ||
+            controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
+            controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
           return journeyManager.performTransition(Events.NONE_MATCHED);
         }
         else {
-          throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
-              , softTechControlsJourney.toString()));
+          throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
+              , controlCodeSubJourney.toString()));
         }
       }
       else {
@@ -97,7 +85,7 @@ public class SoftTechControlsController {
     }
     else if (StringUtils.isNotEmpty(controlCode)) {
       // Setup DAO state based on view variant
-      permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(softTechControlsJourney.getMappedControlCodeSubJourney(), controlCode);
+      permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
     else {
@@ -105,72 +93,48 @@ public class SoftTechControlsController {
     }
   }
 
-  public CompletionStage<Result> handleCategorySubmit(String goodsTypeText) {
-    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
-    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getCategoryVariant(goodsType);
-    return handleSubmit(softTechControlsJourney);
-  }
-
-  public CompletionStage<Result> handleRelatedToPhysicalGoodSubmit(String goodsTypeText) {
-    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
-    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getRelatedToPhysicalGoodsVariant(goodsType);
-    return handleSubmit(softTechControlsJourney);
-  }
-
-  public CompletionStage<Result> handleCatchallControlsSubmit(String goodsTypeText) {
-    GoodsType goodsType = GoodsType.getMatchedByUrlString(goodsTypeText).get();
-    SoftTechControlsJourney softTechControlsJourney = SoftTechControlsJourney.getCatchallVariant(goodsType);
-    return handleSubmit(softTechControlsJourney);
-  }
-
-  private CompletionStage<Result> renderWithForm(SoftTechControlsJourney softTechControlsJourney, Form<SoftTechControlsForm> form) {
+  private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<SoftTechControlsForm> form) {
     // Setup DAO state based on view variant
-    GoodsType goodsType = softTechControlsJourney.getSoftTechGoodsType();
-    ControlCodeSubJourney subJourney = softTechControlsJourney.getMappedControlCodeSubJourney();
-    if (softTechControlsJourney.isCategoryVariant()) {
+    GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+    if (controlCodeSubJourney.isSoftTechControlsVariant()) {
       // Software category is expected at this stage of the journey
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return categoryControlsServiceClient.get(goodsType, softTechCategory)
           .thenApplyAsync(result ->
-              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
-          , httpExecutionContext.current());
+              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.controlCodes))))
+              , httpExecutionContext.current());
     }
-    else if (softTechControlsJourney.isRelatedToPhysicalGoodsVariant()) {
+    else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
       // Find the selected code of the prior sub journey (physical goods search variant)
       ControlCodeSubJourney priorSubJourney = ControlCodeSubJourney.getPhysicalGoodsSearchVariant(goodsType);
       String controlCode = permissionsFinderDao.getSelectedControlCode(priorSubJourney);
       return relatedControlsServiceClient.get(goodsType, controlCode)
           .thenApplyAsync(result ->
-              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
+              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.controlCodes))))
               , httpExecutionContext.current());
     }
-    else if (softTechControlsJourney.isCatchallVariant()) {
+    else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return catchallControlsServiceClient.get(goodsType, softTechCategory)
           .thenApplyAsync(result ->
-              validateResultsSizeAndRender(new SoftTechControlsDisplay(form, softTechControlsJourney, result.controlCodes))
+              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.controlCodes))))
               , httpExecutionContext.current());
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of SoftTechControlsJourney enum: \"%s\""
-          , softTechControlsJourney.toString()));
+      throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
+          , controlCodeSubJourney.toString()));
     }
   }
 
   /**
    * Takes a SoftTechControlsDisplay object and performs a belt and braces check for the size of the control code list
    * An empty list shouldn't be possible.
-   * It's a little hacky, validating the display object instead of the source service result.
    * @param display
-   * @return rendered softTechControls view or a RuntimeException for an invalid controlCode.size()
+   * @return the display object
    */
-  private Result validateResultsSizeAndRender(SoftTechControlsDisplay display) {
+  private SoftTechControlsDisplay checkResultsSize(SoftTechControlsDisplay display) {
     if (display.controlCodes.size() > 1) {
-      /**
-       * Expecting more than one control code here. 1 or 0 control codes should not reach this point (and should
-       * have prompted a different transition)
-       */
-      return ok(softTechControls.render(display));
+      return display;
     }
     else {
       throw new RuntimeException(String.format("Invalid value for size: \"%d\"", display.controlCodes.size()));

@@ -3,6 +3,7 @@
 @import views.html.common.form._
 @import views.html.common.state._
 @import controllers.search.SearchResultsController
+@import controllers.search.routes
 @import models.controlcode.ControlCodeSubJourney
 @import models.search.SearchResultsDisplay
 
@@ -11,7 +12,7 @@
     @errorSummary(display.form)
   }{
 
-    <form action="@display.formAction" method="POST">
+    <form action="@routes.SearchResultsController.handleSubmit()" method="POST">
 
     @contextFormParams()
 

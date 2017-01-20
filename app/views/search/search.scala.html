@@ -2,15 +2,16 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-
+@import controllers.search.routes.SearchController
 @import models.search.SearchDisplay
+
 @(display: SearchDisplay)
 @standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("search")){
   @errorSummary(display.form)
 
 }{
 
-  <form action="@display.formAction" method="POST">
+  <form action="@SearchController.handleSubmit()" method="POST">
 
     @contextFormParams()
 
