@@ -11,7 +11,7 @@ public enum ExportCategory {
   FINANCIAL_ASSISTANCE("Financing and financial assistance"),
   FOOD("Food"),
   MEDICINES_DRUGS("Medicines and drugs"),
-  MILITARY("Military weapons and equipment"),
+  MILITARY("Military goods, software and technical information"),
   NONE("None of the above"),
   NON_MILITARY("Personal-use firearms"),
   PLANTS_ANIMALS("Plants and animals"),
