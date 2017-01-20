@@ -2,6 +2,7 @@ package controllers.search;
 
 import static play.mvc.Results.ok;
 
+import com.google.common.base.Enums;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
@@ -38,7 +39,13 @@ public class SearchResultsController {
     NONE_MATCHED,
     SHOW_MORE,
     EDIT_DESCRIPTION,
-    CONTINUE
+    CONTINUE;
+
+    public static Optional<SearchResultAction> getMatched(String name) {
+      return Enums.getIfPresent(SearchResultAction.class, name)
+          .transform(java.util.Optional::of)
+          .or(java.util.Optional.empty());
+    }
   }
 
   @Inject
@@ -98,7 +105,7 @@ public class SearchResultsController {
           }, httpExecutionContext.current());
     }
 
-    Optional<SearchResultAction> action = getAction(form.get());
+    Optional<SearchResultAction> action = SearchResultAction.getMatched(form.get().action);
     if (action.isPresent()){
       switch (action.get()) {
         case NONE_MATCHED:
@@ -140,28 +147,6 @@ public class SearchResultsController {
 
   public Optional<String> getResult(SearchResultsForm form) {
     return !(form.result == null || form.result.isEmpty()) ? Optional.of(form.result) : Optional.empty();
-  }
-
-  public Optional<SearchResultAction> getAction(SearchResultsForm form) {
-    String action = form.action;
-    if (action == null || action.isEmpty()){
-      return Optional.empty();
-    }
-    else if("no-matched-result".equals(action)){
-      return Optional.of(SearchResultAction.NONE_MATCHED);
-    }
-    else if("show-more-results".equals(action)){
-      return Optional.of(SearchResultAction.SHOW_MORE);
-    }
-    else if("edit-description".equals(action)){
-      return Optional.of(SearchResultAction.EDIT_DESCRIPTION);
-    }
-    else if("continue".equals(action)){
-      return Optional.of(SearchResultAction.CONTINUE);
-    }
-    else {
-      return Optional.empty();
-    }
   }
 
   public static class SearchResultsForm {

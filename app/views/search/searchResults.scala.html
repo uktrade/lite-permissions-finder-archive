@@ -6,6 +6,7 @@
 @import controllers.search.routes
 @import models.controlcode.ControlCodeSubJourney
 @import models.search.SearchResultsDisplay
+@import controllers.search.SearchResultsController.SearchResultAction
 
 @(display: SearchResultsDisplay)
   @standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchResults")) {
@@ -45,13 +46,13 @@
         <div class="search-result-actions">
           @if(display.resultsDisplayCount < display.results.size) {
             <p class="js-hidden">
-              <button type="submit" name="action" value="show-more-results" class="button secondary show-more-results-button">Show more results</button>
+              <button type="submit" name="action" value="@SearchResultAction.SHOW_MORE" class="button secondary show-more-results-button">Show more results</button>
             </p>
             <p id="showMoreResultsWrapper" class="js-only">
               <button type="button" id="showMoreResultsButton" class="button secondary show-more-results-button">Show more results</button>
             </p>
           }
-          <button type="submit" name="action" value="no-matched-result" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
+          <button type="submit" name="action" value="@SearchResultAction.NONE_MATCHED" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
         </div>
 
     } else {
@@ -60,7 +61,7 @@
         display.controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
 
         <p>
-          <button type="submit" name="action" value="edit-description" class="link underlined font-small no-matched-result-link">Edit your description</button>, and:
+          <button type="submit" name="action" value="@SearchResultAction.EDIT_DESCRIPTION" class="link underlined font-small no-matched-result-link">Edit your description</button>, and:
         </p>
 
         <ul class="list list-bullet text">
@@ -70,7 +71,7 @@
         </ul>
 
         <p>
-          If you cannot find the item related to your software, <button type="submit" name="action" value="continue" class="link underlined font-small no-matched-result-link">continue to use this service</button> to find out if other controls might apply.
+          If you cannot find the item related to your software, <button type="submit" name="action" value="@SearchResultAction.CONTINUE" class="link underlined font-small no-matched-result-link">continue to use this service</button> to find out if other controls might apply.
         </p>
 
       } else {
