@@ -1,0 +1,17 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import controllers.search.SearchResultsController
+@import controllers.search.routes
+@import models.controlcode.ControlCodeSubJourney
+@import models.search.SearchResultsDisplay
+@import controllers.search.SearchResultsController.SearchResultAction
+@import models.search.SearchRelatedCodesDisplay
+
+@(form: Form[_], display: SearchRelatedCodesDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchResults")) {
+  @errorSummary(form)
+} {
+
+}

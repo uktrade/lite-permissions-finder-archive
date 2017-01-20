@@ -70,14 +70,14 @@ public class SearchResultsController {
     return physicalGoodsSearch(controlCodeSubJourney)
         .thenApplyAsync(result -> {
           int displayCount = Math.min(result.results.size(), PAGINATION_SIZE);
-          Optional<Integer> optionalDisplayCount = permissionsFinderDao.getPhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney);
+          Optional<Integer> optionalDisplayCount = permissionsFinderDao.getSearchResultsPaginationDisplayCount(controlCodeSubJourney);
           if (optionalDisplayCount.isPresent()) {
             displayCount = Math.min(result.results.size(), optionalDisplayCount.get());
           }
           else {
-            permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, displayCount);
+            permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, displayCount);
           }
-          String lastChosenControlCode = permissionsFinderDao.getPhysicalGoodSearchLastChosenControlCode(controlCodeSubJourney);
+          String lastChosenControlCode = permissionsFinderDao.getSearchResultsLastChosenControlCode(controlCodeSubJourney);
           SearchResultsDisplay display = new SearchResultsDisplay(controlCodeSubJourney, formFactory.form(SearchResultsForm.class),
               result.results, displayCount, lastChosenControlCode);
           return ok(searchResults.render(display));
@@ -98,7 +98,7 @@ public class SearchResultsController {
             int displayCount = Integer.parseInt(form.field("resultsDisplayCount").value());
             int newDisplayCount = Math.min(displayCount, result.results.size());
             if (displayCount != newDisplayCount) {
-              permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
+              permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
             }
             SearchResultsDisplay display = new SearchResultsDisplay(controlCodeSubJourney, form, result.results, newDisplayCount);
             return ok(searchResults.render(display));
@@ -116,7 +116,7 @@ public class SearchResultsController {
                 int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
                 int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, result.results.size());
                 if (displayCount != newDisplayCount) {
-                  permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
+                  permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
                 }
                 SearchResultsDisplay display = new SearchResultsDisplay(controlCodeSubJourney, form, result.results, newDisplayCount);
                 return ok(searchResults.render(display));
@@ -132,8 +132,8 @@ public class SearchResultsController {
     if (result.isPresent()) {
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
       permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, result.get());
-      permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, displayCount);
-      permissionsFinderDao.savePhysicalGoodSearchLastChosenControlCode(controlCodeSubJourney, result.get());
+      permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, displayCount);
+      permissionsFinderDao.saveSearchResultsLastChosenControlCode(controlCodeSubJourney, result.get());
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 

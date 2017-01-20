@@ -7,9 +7,9 @@ import java.util.List;
 
 public class RelatedCodesServiceResult {
 
-  public final List<Result> results;
+  public final List<RelatedCode> relatedCodes;
 
-  public RelatedCodesServiceResult(@JsonProperty("results") Result[] results) {
-    this.results = Arrays.asList(results);
+  public RelatedCodesServiceResult(@JsonProperty("results") RelatedCode[] relatedCodes) {
+    this.relatedCodes = Arrays.asList(relatedCodes);
   }
 }
