@@ -185,7 +185,13 @@ GET     /export-search-physical-goods/results/:goodsType  controllers.search.Sea
 
 POST    /export-search-physical-goods/results/            controllers.search.SearchResultsController.handleSubmit
 
+GET     /export-search-physical-goods/results/related-codes/:goodsType  controllers.search.SearchRelatedCodesController.renderForm(goodsType)
+
+POST    /export-search-physical-goods/results/related-codes/            controllers.search.SearchRelatedCodesController.handleSubmit
+
 GET     /export-search-physical-goods/show-more-results/  controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney: String, fromIndex: Int, toIndex: Int, transactionId: String)
+
+GET     /export-search-physical-goods/show-more-related-codes/  controllers.search.AjaxSearchRelatedCodesController.getRelatedCodes(controlCodeSubJourney: String, fromIndex: Int, toIndex: Int, transactionId: String)
 
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 

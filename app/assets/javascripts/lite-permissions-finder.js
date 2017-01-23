@@ -43,7 +43,7 @@ LITEPermissionsFinder.Utils = {
   }
 };
 
-LITEPermissionsFinder.DestinationCountry = {
+LITEPermissionsFinder.DestinationCountry = {  
   setupPage: function() {
     LITEPermissionsFinder.countrySetup.setup();
 
@@ -193,7 +193,7 @@ LITEPermissionsFinder.SearchResults = {
 LITEPermissionsFinder.SearchRelatedCodes = {
   setupPage: function() {
     var showMoreRelatedCodesButton = LITEPermissionsFinder.SearchRelatedCodes._showMoreRelatedCodesButton();
-    showMoreRelatedCodesButton.click(LITEPermissionsFinder.SearchResults._showMoreRelatedCodes);
+    showMoreRelatedCodesButton.click(LITEPermissionsFinder.SearchRelatedCodes._showMoreRelatedCodes);
     // Focus the last chosen control code (triggered using the back link)
     var lastChosenRelatedCode = $('#lastChosenRelatedCodeHiddenInput').val();
     if (lastChosenRelatedCode !== null && lastChosenRelatedCode != "undefined") {
@@ -213,7 +213,7 @@ LITEPermissionsFinder.SearchRelatedCodes = {
   },
   _showMoreRelatedCodes: function() {
     var paginationSize = parseInt(LITEPermissionsFinder.SearchRelatedCodes._paginationSizeHiddenInput().val());
-    var currentRelatedCodesCount = parseInt(LITEPermissionsFinder.SearchRelatedCodes._currentResultsCount());
+    var currentRelatedCodesCount = parseInt(LITEPermissionsFinder.SearchRelatedCodes._currentRelatedCodesCount());
     var fromIndex = currentRelatedCodesCount;
     var toIndex = currentRelatedCodesCount + paginationSize;
     LITEPermissionsFinder.SearchRelatedCodes._fetchRelatedCodes(fromIndex, toIndex);
@@ -233,7 +233,7 @@ LITEPermissionsFinder.SearchRelatedCodes = {
       success : function(response) {
         if (typeof response != "undefined" && response.status == "ok") {
           $.each(response.relatedCodes, function (index, relatedCode) {
-            $("#searchResults").append(
+            $("#searchRelatedCodes").append(
               $("<li/>").append(
                 $("<button/>")
                   .attr("id", relatedCode.controlCode + "-button")

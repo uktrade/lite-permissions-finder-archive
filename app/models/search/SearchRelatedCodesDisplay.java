@@ -14,12 +14,16 @@ public class SearchRelatedCodesDisplay {
   public final String lastChosenRelatedCode;
   public final String preRelatedCodesLabel;
 
-  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, List<RelatedCode> relatedCodes, int relatedCodesDisplayCount, String lastChosenRelatedCode) {
+  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String resultsControlCode, List<RelatedCode> relatedCodes, int relatedCodesDisplayCount, String lastChosenRelatedCode) {
     this.controlCodeSubJourney = controlCodeSubJourney;
     this.relatedCodes = relatedCodes;
     this.relatedCodesDisplayCount = relatedCodesDisplayCount;
     this.lastChosenRelatedCode = lastChosenRelatedCode;
-    this.pageTitle = "PLACEHOLDER";
+    this.pageTitle = relatedCodes.stream()
+        .filter(c -> resultsControlCode.equals(c.controlCode))
+        .findFirst()
+        .get()
+        .displayText;
     if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
       this.preRelatedCodesLabel = "";
     }
@@ -35,7 +39,7 @@ public class SearchRelatedCodesDisplay {
     }
   }
 
-  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, List<RelatedCode> relatedCodes, int relatedCodesDisplayCount) {
-    this(controlCodeSubJourney,relatedCodes, relatedCodesDisplayCount, null);
+  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String resultsControlCode, List<RelatedCode> relatedCodes, int relatedCodesDisplayCount) {
+    this(controlCodeSubJourney, resultsControlCode, relatedCodes, relatedCodesDisplayCount, null);
   }
 }

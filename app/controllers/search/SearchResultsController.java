@@ -16,6 +16,7 @@ import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.ControlCodeVariant;
 import models.search.SearchResultsDisplay;
+import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -42,9 +43,14 @@ public class SearchResultsController {
     CONTINUE;
 
     public static Optional<SearchResultAction> getMatched(String name) {
-      return Enums.getIfPresent(SearchResultAction.class, name)
-          .transform(java.util.Optional::of)
-          .or(java.util.Optional.empty());
+      if (StringUtils.isEmpty(name)) {
+        return Optional.empty();
+      }
+      else {
+        return Enums.getIfPresent(SearchResultAction.class, name)
+            .transform(java.util.Optional::of)
+            .or(java.util.Optional.empty());
+      }
     }
   }
 
@@ -131,10 +137,10 @@ public class SearchResultsController {
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
-      permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, result.get());
+      // Note, saving selected control code is handled during the decision stage
       permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, displayCount);
       permissionsFinderDao.saveSearchResultsLastChosenControlCode(controlCodeSubJourney, result.get());
-      return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
+      return journeyManager.performTransition(StandardEvents.NEXT);
     }
 
     throw new FormStateException("Unhandled form state");

@@ -43,9 +43,14 @@ public class SearchRelatedCodesController {
     CONTINUE;
 
     public static Optional<SearchRelatedCodesAction> getMatched(String name) {
-      return Enums.getIfPresent(SearchRelatedCodesAction.class, name)
-          .transform(java.util.Optional::of)
-          .or(java.util.Optional.empty());
+      if (StringUtils.isEmpty(name)) {
+        return Optional.empty();
+      }
+      else {
+        return Enums.getIfPresent(SearchRelatedCodesAction.class, name)
+            .transform(java.util.Optional::of)
+            .or(java.util.Optional.empty());
+      }
     }
   }
 
@@ -68,7 +73,8 @@ public class SearchRelatedCodesController {
   }
 
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
-    return relatedCodes(controlCodeSubJourney)
+    String resultsControlCode = permissionsFinderDao.getSearchResultsLastChosenControlCode(controlCodeSubJourney);
+    return relatedCodes(resultsControlCode)
         .thenApplyAsync(result -> {
           int displayCount = Math.min(result.relatedCodes.size(), PAGINATION_SIZE);
           Optional<Integer> optionalDisplayCount = permissionsFinderDao.getSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney);
@@ -78,9 +84,8 @@ public class SearchRelatedCodesController {
           else {
             permissionsFinderDao.saveSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney, displayCount);
           }
-
           String lastChosenControlCode = permissionsFinderDao.getSearchRelatedCodesLastChosenControlCode(controlCodeSubJourney);
-          SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, result.relatedCodes, displayCount, lastChosenControlCode);
+          SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, resultsControlCode, result.relatedCodes, displayCount, lastChosenControlCode);
           return ok(searchRelatedCodes.render(formFactory.form(SearchRelatedCodesForm.class), display));
         }, httpExecutionContext.current());
   }
@@ -94,14 +99,15 @@ public class SearchRelatedCodesController {
     Form<SearchRelatedCodesForm> form = formFactory.form(SearchRelatedCodesForm.class).bindFromRequest();
 
     if (form.hasErrors()) {
-      return relatedCodes(controlCodeSubJourney)
+      String resultsControlCode = permissionsFinderDao.getSearchResultsLastChosenControlCode(controlCodeSubJourney);
+      return relatedCodes(resultsControlCode)
           .thenApplyAsync(result -> {
             int displayCount = Integer.parseInt(form.field("relatedCodesDisplayCount").value());
             int newDisplayCount = Math.min(displayCount, result.relatedCodes.size());
             if (displayCount != newDisplayCount) {
               permissionsFinderDao.saveSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
             }
-            SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, result.relatedCodes, newDisplayCount);
+            SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, resultsControlCode, result.relatedCodes, newDisplayCount);
             return ok(searchRelatedCodes.render(form, display));
           }, httpExecutionContext.current());
     }
@@ -112,14 +118,15 @@ public class SearchRelatedCodesController {
         case NONE_MATCHED:
           return journeyManager.performTransition(Events.NONE_MATCHED);
         case SHOW_MORE:
-          return relatedCodes(controlCodeSubJourney)
+          String resultsControlCode = permissionsFinderDao.getSearchResultsLastChosenControlCode(controlCodeSubJourney);
+          return relatedCodes(resultsControlCode)
               .thenApplyAsync(result -> {
                 int displayCount = Integer.parseInt(form.get().relatedCodesDisplayCount);
                 int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, result.relatedCodes.size());
                 if (displayCount != newDisplayCount) {
                   permissionsFinderDao.saveSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
                 }
-                SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, result.relatedCodes, newDisplayCount);
+                SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, resultsControlCode, result.relatedCodes, newDisplayCount);
                 return ok(searchRelatedCodes.render(form, display));
               }, httpExecutionContext.current());
         case PICK_FROM_RESULTS_AGAIN:
@@ -135,14 +142,13 @@ public class SearchRelatedCodesController {
       permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, relatedCode);
       permissionsFinderDao.saveSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney, displayCount);
       permissionsFinderDao.saveSearchRelatedCodesLastChosenControlCode(controlCodeSubJourney, relatedCode);
-      return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
+      return journeyManager.performTransition(StandardEvents.NEXT);
     }
 
     throw new FormStateException("Unhandled form state");
   }
 
-  public CompletionStage<RelatedCodesServiceResult> relatedCodes(ControlCodeSubJourney controlCodeSubJourney) {
-    String resultsControlCode = permissionsFinderDao.getSearchResultsLastChosenControlCode(controlCodeSubJourney);
+  public CompletionStage<RelatedCodesServiceResult> relatedCodes(String resultsControlCode) {
     return relatedCodesServiceClient.get(resultsControlCode);
   }
 
