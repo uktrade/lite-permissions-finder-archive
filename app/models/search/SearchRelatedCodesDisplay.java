@@ -1,7 +1,7 @@
 package models.search;
 
-import components.services.search.relatedcodes.RelatedCode;
 import models.controlcode.ControlCodeSubJourney;
+import uk.gov.bis.lite.searchmanagement.api.view.RelatedCodeView;
 
 import java.util.List;
 
@@ -9,21 +9,21 @@ public class SearchRelatedCodesDisplay {
 
   public final ControlCodeSubJourney controlCodeSubJourney;
   public final String pageTitle;
-  public final List<RelatedCode> relatedCodes;
+  public final List<RelatedCodeView> relatedCodes;
   public final int relatedCodesDisplayCount;
   public final String lastChosenRelatedCode;
   public final String preRelatedCodesLabel;
 
-  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String resultsControlCode, List<RelatedCode> relatedCodes, int relatedCodesDisplayCount, String lastChosenRelatedCode) {
+  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String resultsControlCode, List<RelatedCodeView> relatedCodes, int relatedCodesDisplayCount, String lastChosenRelatedCode) {
     this.controlCodeSubJourney = controlCodeSubJourney;
     this.relatedCodes = relatedCodes;
     this.relatedCodesDisplayCount = relatedCodesDisplayCount;
     this.lastChosenRelatedCode = lastChosenRelatedCode;
     this.pageTitle = relatedCodes.stream()
-        .filter(c -> resultsControlCode.equals(c.controlCode))
+        .filter(c -> resultsControlCode.equals(c.getControlCode()))
         .findFirst()
         .get()
-        .displayText;
+        .getDisplayText(); // TODO replace with title from RelatedCodesView
     if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
       this.preRelatedCodesLabel = "";
     }
@@ -39,7 +39,7 @@ public class SearchRelatedCodesDisplay {
     }
   }
 
-  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String resultsControlCode, List<RelatedCode> relatedCodes, int relatedCodesDisplayCount) {
+  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String resultsControlCode, List<RelatedCodeView> relatedCodes, int relatedCodesDisplayCount) {
     this(controlCodeSubJourney, resultsControlCode, relatedCodes, relatedCodesDisplayCount, null);
   }
 }

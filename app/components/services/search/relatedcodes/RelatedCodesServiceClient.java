@@ -7,6 +7,7 @@ import exceptions.ServiceException;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
+import uk.gov.bis.lite.searchmanagement.api.view.RelatedCodesView;
 
 import java.util.concurrent.CompletionStage;
 
@@ -46,7 +47,7 @@ public class RelatedCodesServiceClient {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
           }
           else {
-            return Json.fromJson(response.asJson(), RelatedCodesServiceResult.class);
+            return new RelatedCodesServiceResult(response.asJson());
           }
         }, httpExecutionContext.current());
   }

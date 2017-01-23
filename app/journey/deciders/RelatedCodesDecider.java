@@ -37,7 +37,7 @@ public class RelatedCodesDecider implements Decider<Boolean> {
     return relatedCodesServiceClient.get(resultsControlCode)
         .thenApplyAsync(result -> {
 
-          if (result.relatedCodes.isEmpty() || (result.relatedCodes.size() == 1 && resultsControlCode.equals(result.relatedCodes.get(0).controlCode))) {
+          if (result.relatedCodes.isEmpty() || (result.relatedCodes.size() == 1 && resultsControlCode.equals(result.relatedCodes.get(0).getControlCode()))) {
             dao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(subJourney, resultsControlCode);
             return false;
           }

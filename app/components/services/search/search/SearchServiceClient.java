@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
-import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
@@ -49,7 +48,7 @@ public class SearchServiceClient {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
           }
           else {
-            return Json.fromJson(response.asJson(), SearchServiceResult.class);
+            return new SearchServiceResult(response.asJson());
           }
         }, httpExecutionContext.current());
   }

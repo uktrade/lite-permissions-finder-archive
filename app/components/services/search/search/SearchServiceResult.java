@@ -1,16 +1,18 @@
 package components.services.search.search;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import play.libs.Json;
+import uk.gov.bis.lite.searchmanagement.api.view.SearchResultView;
+import uk.gov.bis.lite.searchmanagement.api.view.SearchResultsView;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class SearchServiceResult {
 
-  public final List<Result> results;
+  public final List<SearchResultView> results;
 
-  public SearchServiceResult(@JsonProperty("results") Result[] results) {
-    this.results = Arrays.asList(results);
+  public SearchServiceResult(JsonNode responseJson) {
+    this.results = Json.fromJson(responseJson, SearchResultsView.class).getResults();
   }
 
 }

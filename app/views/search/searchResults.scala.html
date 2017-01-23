@@ -38,7 +38,7 @@
         <ol id="searchResults" class="search-results">
           @for(i <- 0 until Math.min(display.results.size, display.resultsDisplayCount)) {
             <li>
-              <button id="@display.results.get(i).controlCode-button" type="submit" class="link font-medium" name="result" value="@display.results.get(i).controlCode">@Html(display.results.get(i).displayText)</button>
+              <button id="@display.results.get(i).getControlCode-button" type="submit" class="link font-medium" name="result" value="@display.results.get(i).getControlCode">@Html(display.results.get(i).getDisplayText)</button>
             </li>
           }
         </ol>

@@ -30,10 +30,10 @@
       <input id="lastChosenRelatedCodeHiddenInput" type="hidden" name="lastChosenRelatedCode" value="@display.lastChosenRelatedCode">
     }
 
-    <ol id="searchRelatedCodes" class="search-results">
+    <ol id="searchRelatedCodes" class="search-results">s
     @for(i <- 0 until Math.min(display.relatedCodes.size, display.relatedCodesDisplayCount)) {
       <li>
-        <button id="@display.relatedCodes.get(i).controlCode-button" type="submit" class="link font-medium" name="relatedCode" value="@display.relatedCodes.get(i).controlCode">@Html(display.relatedCodes.get(i).displayText)</button>
+        <button id="@display.relatedCodes.get(i).getControlCode-button" type="submit" class="link font-medium" name="relatedCode" value="@display.relatedCodes.get(i).getControlCode">@Html(display.relatedCodes.get(i).getDisplayText)</button>
       </li>
     }
     </ol>

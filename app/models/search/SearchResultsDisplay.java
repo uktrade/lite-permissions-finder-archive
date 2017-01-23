@@ -1,8 +1,8 @@
 package models.search;
 
-import components.services.search.search.Result;
 import models.controlcode.ControlCodeSubJourney;
 import play.data.Form;
+import uk.gov.bis.lite.searchmanagement.api.view.SearchResultView;
 
 import java.util.List;
 
@@ -10,12 +10,12 @@ public class SearchResultsDisplay {
   public final ControlCodeSubJourney controlCodeSubJourney;
   public final Form<?> form;
   public final String pageTitle;
-  public final List<Result> results;
+  public final List<SearchResultView> results;
   public final int resultsDisplayCount;
   public final String lastChosenControlCode;
   public final String preResultsLabel;
 
-  public SearchResultsDisplay(ControlCodeSubJourney controlCodeSubJourney, Form<?> form, List<Result> results, int resultsDisplayCount, String lastChosenControlCode) {
+  public SearchResultsDisplay(ControlCodeSubJourney controlCodeSubJourney, Form<?> form, List<SearchResultView> results, int resultsDisplayCount, String lastChosenControlCode) {
     this.controlCodeSubJourney = controlCodeSubJourney;
     this.form = form;
     this.results = results;
@@ -51,7 +51,7 @@ public class SearchResultsDisplay {
     }
   }
 
-  public SearchResultsDisplay(ControlCodeSubJourney controlCodeSubJourney, Form<?> form, List<Result> results, int resultsDisplayCount) {
+  public SearchResultsDisplay(ControlCodeSubJourney controlCodeSubJourney, Form<?> form, List<SearchResultView> results, int resultsDisplayCount) {
     this(controlCodeSubJourney, form, results, resultsDisplayCount, null);
   }
 }

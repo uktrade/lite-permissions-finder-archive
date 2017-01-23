@@ -1,6 +1,5 @@
 package controllers.search;
 
-import static controllers.search.SearchPaginationUtility.buildControlCodeJsonList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
@@ -9,18 +8,18 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.search.ControlCode;
-import components.services.search.relatedcodes.RelatedCode;
 import components.services.search.relatedcodes.RelatedCodesServiceClient;
 import models.controlcode.ControlCodeSubJourney;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
+import uk.gov.bis.lite.searchmanagement.api.view.RelatedCodeView;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public class AjaxSearchRelatedCodesController {
 
@@ -79,7 +78,7 @@ public class AjaxSearchRelatedCodesController {
     }
   }
 
-  private ObjectNode buildResponseJson(List<RelatedCode> relatedCodes, int fromIndex, int toIndex) {
+  private ObjectNode buildResponseJson(List<RelatedCodeView> relatedCodes, int fromIndex, int toIndex) {
     ObjectNode json = Json.newObject();
     json.put("status", "ok");
     ArrayNode relatedCodesNode = json.putArray("relatedCodes");
@@ -96,5 +95,16 @@ public class AjaxSearchRelatedCodesController {
     }
 
     return json;
+  }
+
+  private List<ObjectNode> buildControlCodeJsonList(List<RelatedCodeView> relatedCodes) {
+    return relatedCodes
+        .stream()
+        .map(code -> {
+          ObjectNode codeJson = Json.newObject();
+          codeJson.put("controlCode", code.getControlCode());
+          codeJson.put("displayText", code.getDisplayText());
+          return codeJson;
+        }).collect(Collectors.toList());
   }
 }
