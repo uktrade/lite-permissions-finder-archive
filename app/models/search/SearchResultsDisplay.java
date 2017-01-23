@@ -1,6 +1,6 @@
 package models.search;
 
-import components.services.search.Result;
+import components.services.search.search.Result;
 import models.controlcode.ControlCodeSubJourney;
 import play.data.Form;
 

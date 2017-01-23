@@ -64,9 +64,9 @@ public class SearchController {
       return completedFuture(ok(search.render(new SearchDisplay(controlCodeSubJourney, form))));
     }
     permissionsFinderDao.savePhysicalGoodSearchForm(controlCodeSubJourney, form.get());
-    permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney,
+    permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney,
         SearchResultsController.PAGINATION_SIZE);
-    permissionsFinderDao.clearPhysicalGoodSearchLastChosenControlCode(controlCodeSubJourney);
+    permissionsFinderDao.clearSearchResultsLastChosenControlCode(controlCodeSubJourney);
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 

@@ -35,8 +35,8 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   public static final String EXPORT_CATEGORY = "exportCategory";
   public static final String APPLICATION_CODE = "applicationCode";
   public static final String EMAIL_ADDRESS = "emailAddress";
-  public static final String PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT = "physicalGoodSearchPaginationDisplayCount";
-  public static final String PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE = "physicalGoodSearchLastChosenControlCode";
+  public static final String SEARCH_PAGINATION_DISPLAY_COUNT = "searchPaginationDisplayCount";
+  public static final String SEARCH_LAST_CHOSEN_CONTROL_CODE = "searchLastChosenControlCode";
   public static final String TRADE_TYPE = "tradeType";
   public static final String ARTS_CULTURAL_GOODS = "artsCulturalGoods";
   public static final String IS_DUAL_USE_GOOD = "isDualUseGood";
@@ -131,12 +131,29 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     return readString(EMAIL_ADDRESS);
   }
 
-  public void savePhysicalGoodSearchPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney, int physicalGoodSearchPaginationDisplayCount) {
-    writeString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT), Integer.toString(physicalGoodSearchPaginationDisplayCount));
+
+  public void saveSearchResultsPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney, int searchPaginationDisplayCount) {
+    saveSearchPaginationDisplayCount("results", controlCodeSubJourney, searchPaginationDisplayCount);
   }
 
-  public Optional<Integer> getPhysicalGoodSearchPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney) {
-    String count = readString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_PAGINATION_DISPLAY_COUNT));
+  public void saveSearchRelatedCodesPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney, int searchPaginationDisplayCount) {
+    saveSearchPaginationDisplayCount("relatedCodes", controlCodeSubJourney, searchPaginationDisplayCount);
+  }
+
+  private void saveSearchPaginationDisplayCount(String searchType, ControlCodeSubJourney controlCodeSubJourney, int searchPaginationDisplayCount) {
+    writeString(prependFieldName(controlCodeSubJourney, SEARCH_PAGINATION_DISPLAY_COUNT + ":" + searchType), Integer.toString(searchPaginationDisplayCount));
+  }
+
+  public Optional<Integer> getSearchResultsPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney) {
+    return getSearchPaginationDisplayCount("results", controlCodeSubJourney);
+  }
+
+  public Optional<Integer> getSearchRelatedCodesPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney) {
+    return getSearchPaginationDisplayCount("relatedCodes", controlCodeSubJourney);
+  }
+
+  private Optional<Integer> getSearchPaginationDisplayCount(String searchType, ControlCodeSubJourney controlCodeSubJourney) {
+    String count = readString(prependFieldName(controlCodeSubJourney, SEARCH_PAGINATION_DISPLAY_COUNT + ":" + searchType));
     if (count != null) {
       return Optional.of(Integer.parseInt(count));
     }
@@ -145,16 +162,40 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     }
   }
 
-  public void savePhysicalGoodSearchLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
-    writeString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE), controlCode);
+  public void saveSearchResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
+    saveSearchLastChosenControlCode("results", controlCodeSubJourney, controlCode);
   }
 
-  public String getPhysicalGoodSearchLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
-    return readString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE));
+  public void saveSearchRelatedCodesLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
+    saveSearchLastChosenControlCode("relatedCodes", controlCodeSubJourney, controlCode);
   }
 
-  public void clearPhysicalGoodSearchLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
-    deleteString(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH_LAST_CHOSEN_CONTROL_CODE));
+  private void saveSearchLastChosenControlCode(String searchType, ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
+    writeString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType), controlCode);
+  }
+
+  public String getSearchResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
+    return getSearchLastChosenControlCode("results", controlCodeSubJourney);
+  }
+
+  public String getSearchRelatedCodesLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
+    return getSearchLastChosenControlCode("relatedCodes", controlCodeSubJourney);
+  }
+
+  private String getSearchLastChosenControlCode(String searchType, ControlCodeSubJourney controlCodeSubJourney) {
+    return readString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType));
+  }
+
+  public void clearSearchResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
+    clearSearchLastChosenControlCode("results", controlCodeSubJourney);
+  }
+
+  public void clearSearchRelatedCodesLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
+    clearSearchLastChosenControlCode("relatedCodes", controlCodeSubJourney);
+  }
+
+  private void clearSearchLastChosenControlCode(String searchType, ControlCodeSubJourney controlCodeSubJourney) {
+    deleteString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType));
   }
 
   public void saveTradeType(TradeType tradeType) {

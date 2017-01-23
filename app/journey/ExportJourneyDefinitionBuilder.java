@@ -12,6 +12,7 @@ import controllers.routes;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ExportCategoryDecider;
+import journey.deciders.RelatedCodesDecider;
 import journey.deciders.RelatedControlsDecider;
 import journey.deciders.RelationshipWithSoftwareDecider;
 import journey.deciders.RelationshipWithTechnologyDecider;
@@ -36,6 +37,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.GoodsTypeController.renderForm());
   private final JourneyStage search = defineStage("search", "Describe your items",
       controllers.search.routes.SearchController.renderForm(GoodsType.PHYSICAL.urlString()));
+  private final DecisionStage<Boolean> searchRelatedCodesDecision;
   private final JourneyStage destinationCountries = defineStage("destinationCountries", "Countries and territories",
       routes.DestinationCountryController.renderForm());
   private final JourneyStage ogelQuestions = defineStage("ogelQuestions", "Refining your licence results",
@@ -60,6 +62,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private final JourneyStage searchRTS = defineStage("searchRTS", "Describe your items",
       controllers.search.routes.SearchController.renderForm(GoodsType.SOFTWARE.urlString()));
+  private final DecisionStage<Boolean> searchRelatedCodesDecisionRTS;
 
   private final JourneyStage controlCodeSummarySC = defineStage("controlCodeSummarySC", "Summary",
       controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
@@ -96,6 +99,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final CatchallControlsDecider catchallControlsDecider;
   private final RelationshipWithTechnologyDecider relationshipWithTechnologyDecider;
   private final RelationshipWithSoftwareDecider relationshipWithSoftwareDecider;
+  private final RelatedCodesDecider relatedCodesDecider;
 
   @Inject
   public ExportJourneyDefinitionBuilder(AdditionalSpecificationsDecider additionalSpecificationsDecider,
@@ -106,7 +110,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
                                         RelatedControlsDecider relatedControlsDecider,
                                         CatchallControlsDecider catchallControlsDecider,
                                         RelationshipWithTechnologyDecider relationshipWithTechnologyDecider,
-                                        RelationshipWithSoftwareDecider relationshipWithSoftwareDecider) {
+                                        RelationshipWithSoftwareDecider relationshipWithSoftwareDecider,
+                                        RelatedCodesDecider relatedCodesDecider) {
     this.additionalSpecificationsDecider = additionalSpecificationsDecider;
     this.decontrolsDecider = decontrolsDecider;
     this.technicalNotesDecider = technicalNotesDecider;
@@ -116,12 +121,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     this.catchallControlsDecider = catchallControlsDecider;
     this.relationshipWithTechnologyDecider = relationshipWithTechnologyDecider;
     this.relationshipWithSoftwareDecider = relationshipWithSoftwareDecider;
+    this.relatedCodesDecider = relatedCodesDecider;
     this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("isDualUseSoftwareDecision", this.exportCategoryDecider);
     this.applicableSoftwareControlsDecision = defineDecisionStage("applicableSoftwareControlsDecision", this.categoryControlsDecider);
     this.applicableRelatedControlsDecision = defineDecisionStage("applicableRelatedControlsDecision", this.relatedControlsDecider);
     this.applicableCatchallControlsDecision = defineDecisionStage("applicableCatchallControlsDecision", this.catchallControlsDecider);
     this.softwareRelationshipWithTechnologyExistsDecision = defineDecisionStage("softwareRelationshipWithTechnologyExistsDecision", this.relationshipWithTechnologyDecider);
     this.softwareRelationshipWithSoftwareExistsDecision = defineDecisionStage("softwareRelationshipWithSoftwareExistsDecision", this.relationshipWithSoftwareDecider);
+    this.searchRelatedCodesDecision = defineDecisionStage("searchRelatedCodesDecision", this.relatedCodesDecider);
+    this.searchRelatedCodesDecisionRTS = defineDecisionStage("searchRelatedCodesDecisionRTS", this.relatedCodesDecider);
   }
 
   @Override
@@ -314,6 +322,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage searchResults = defineStage("searchResults", "Possible matches",
         controllers.search.routes.SearchResultsController.renderForm(GoodsType.PHYSICAL.urlString()));
 
+    JourneyStage searchRelatedCodes = defineStage("searchRelatedCodes", "Related to your item",
+        controllers.search.routes.SearchRelatedCodesController.renderForm(GoodsType.PHYSICAL.urlString()));
+
     JourneyStage controlCodeSummary = defineStage("controlCodeSummary", "Summary",
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
@@ -356,11 +367,29 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(searchResults)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(decontrolsDecision));
+        .then(moveTo(searchRelatedCodesDecision));
 
     atStage(searchResults)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(notApplicable));
+
+    atDecisionStage(searchRelatedCodesDecision)
+        .decide()
+        .when(true, moveTo(searchRelatedCodes))
+        .when(false, moveTo(decontrolsDecision));
+
+    atStage(searchRelatedCodes)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
+        .then(moveTo(decontrolsDecision));
+
+    atStage(searchRelatedCodes)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(notApplicable));
+
+    atStage(searchRelatedCodes)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.RESULTS, backTo(searchResults));
 
     bindControlCodeStageTransitions(
         decontrols,
@@ -603,6 +632,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage searchResultsRTS = defineStage("searchResultsRTS", "Possible matches",
         controllers.search.routes.SearchResultsController.renderForm(GoodsType.SOFTWARE.urlString()));
 
+    JourneyStage searchRelatedCodesRTS = defineStage("searchRelatedCodesRTS", "Related to your item",
+        controllers.search.routes.SearchRelatedCodesController.renderForm(GoodsType.SOFTWARE.urlString()));
+
     JourneyStage controlCodeSummaryRTS = defineStage("controlCodeSummaryRTS", "Summary",
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
 
@@ -635,7 +667,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(searchResultsRTS)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(decontrolsDecisionRTS));
+        .then(moveTo(searchRelatedCodesDecisionRTS));
 
     atStage(searchResultsRTS)
         .onEvent(Events.BACK)
@@ -649,6 +681,24 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(searchResultsRTS)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(applicableCatchallControlsDecision));
+
+    atDecisionStage(searchRelatedCodesDecisionRTS)
+        .decide()
+        .when(true, moveTo(searchRelatedCodesRTS))
+        .when(false, moveTo(decontrolsDecisionRTS));
+
+    atStage(searchRelatedCodesRTS)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
+        .then(moveTo(decontrolsDecisionRTS));
+
+    atStage(searchRelatedCodesRTS)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(applicableCatchallControlsDecision));
+
+    atStage(searchRelatedCodesRTS)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.RESULTS, backTo(searchResultsRTS));
 
     bindControlCodeStageTransitions(
         decontrolsRTS,

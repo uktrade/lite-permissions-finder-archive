@@ -6,14 +6,14 @@ import static play.mvc.Results.ok;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import com.google.inject.Inject;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.search.ControlCode;
-import components.services.search.search.SearchServiceClient;
+import components.services.search.relatedcodes.RelatedCode;
+import components.services.search.relatedcodes.RelatedCodesServiceClient;
 import models.controlcode.ControlCodeSubJourney;
-import play.Logger;
+import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
@@ -21,39 +21,37 @@ import play.mvc.Result;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 
-public class AjaxSearchResultsController {
+public class AjaxSearchRelatedCodesController {
 
   private final TransactionManager transactionManager;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
+  private final RelatedCodesServiceClient relatedCodesServiceClient;
 
   @Inject
-  public AjaxSearchResultsController(TransactionManager transactionManager, PermissionsFinderDao permissionsFinderDao, HttpExecutionContext httpExecutionContext, SearchServiceClient searchServiceClient) {
+  public AjaxSearchRelatedCodesController(TransactionManager transactionManager, PermissionsFinderDao permissionsFinderDao, HttpExecutionContext httpExecutionContext, RelatedCodesServiceClient relatedCodesServiceClient) {
     this.transactionManager = transactionManager;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
-    this.searchServiceClient = searchServiceClient;
+    this.relatedCodesServiceClient = relatedCodesServiceClient;
   }
-
-  private final SearchServiceClient searchServiceClient;
 
   /**
    * AJAX request handler, creating a JSON object of the additional results to show.
    * <br/><br/>
    * Example OK response:
-   * <code>{"status": "ok", "results": [{ "controlCode": "ML1a", "displayText": "Some text"}], "moreResults": true}</code>
+   * <code>{"status": "ok", "relatedCodes": [{ "controlCode": "ML1a", "displayText": "Some text"}], "moreRelatedCodes": true}</code>
    * <br/><br/>
    * Example ERROR response:
    * <code>{"status": "error", "message": "Some error message"}</code>
    *
-   * @param fromIndex the low endpoint (inclusive) of the results list
-   * @param toIndex the high endpoint (exclusive) of the results list
+   * @param fromIndex the low endpoint (inclusive) of the related codes list
+   * @param toIndex the high endpoint (exclusive) of the related codes list
    * @param transactionId the transaction ID
    * @return a Result with JSON content of the additional results to show
    */
-  public CompletionStage<Result> getResults(String controlCodeSubJourney, int fromIndex, int toIndex, String transactionId) {
+  public CompletionStage<Result> getRelatedCodes(String controlCodeSubJourney, int fromIndex, int toIndex, String transactionId) {
 
     if (transactionId == null || transactionId.isEmpty()) {
       return completedFuture(ok(SearchPaginationUtility.buildErrorJsonAndLog(
@@ -66,37 +64,35 @@ public class AjaxSearchResultsController {
     Optional<ControlCodeSubJourney> controlCodeSubJourneyOptional = ControlCodeSubJourney.getMatched(controlCodeSubJourney);
 
     if (controlCodeSubJourneyOptional.isPresent()) {
-      Optional<SearchController.SearchForm> optionalForm =
-          permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourneyOptional.get());
-      if (optionalForm.isPresent()) {
-        return searchServiceClient.get(SearchController.getSearchTerms(optionalForm.get()))
-            .thenApplyAsync(searchResult -> ok(buildResponseJson(searchResult.results, fromIndex, toIndex))
+      String resultsControlCode = permissionsFinderDao.getSearchResultsLastChosenControlCode(controlCodeSubJourneyOptional.get());
+      if (StringUtils.isNotEmpty(resultsControlCode)) {
+        return relatedCodesServiceClient.get(resultsControlCode)
+            .thenApplyAsync(result -> ok(buildResponseJson(result.relatedCodes, fromIndex, toIndex))
                 , httpExecutionContext.current());
       }
       else {
-        return completedFuture(ok(SearchPaginationUtility.buildErrorJsonAndLog("Unable to lookup search terms")));
+        return completedFuture(ok(SearchPaginationUtility.buildErrorJsonAndLog("Unable to lookup related codes")));
       }
     }
     else {
       return completedFuture(ok(SearchPaginationUtility.buildErrorJsonAndLog(String.format("Unknown value for controlCodeSubJourney %s", controlCodeSubJourney))));
     }
-
   }
 
-  private ObjectNode buildResponseJson(List<components.services.search.search.Result> results, int fromIndex, int toIndex) {
+  private ObjectNode buildResponseJson(List<RelatedCode> relatedCodes, int fromIndex, int toIndex) {
     ObjectNode json = Json.newObject();
     json.put("status", "ok");
-    ArrayNode resultsNode = json.putArray("results");
+    ArrayNode relatedCodesNode = json.putArray("relatedCodes");
 
-    if (results != null && !results.isEmpty()) {
-      int newFromIndex = Math.max(Math.min(fromIndex, results.size()), 0);
-      int newToIndex = Math.min(Math.max(toIndex, 0), results.size());
+    if (relatedCodes != null && !relatedCodes.isEmpty()) {
+      int newFromIndex = Math.max(Math.min(fromIndex, relatedCodes.size()), 0);
+      int newToIndex = Math.min(Math.max(toIndex, 0), relatedCodes.size());
 
-      List<ObjectNode> list = buildControlCodeJsonList(results.subList(newFromIndex, newToIndex));
+      List<ObjectNode> list = buildControlCodeJsonList(relatedCodes.subList(newFromIndex, newToIndex));
 
-      resultsNode.addAll(list);
+      relatedCodesNode.addAll(list);
 
-      json.put("moreResults", !(list.isEmpty() || newToIndex == results.size()));
+      json.put("moreRelatedCodes", !(list.isEmpty() || newToIndex == relatedCodes.size()));
     }
 
     return json;

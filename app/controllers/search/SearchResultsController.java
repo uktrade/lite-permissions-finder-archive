@@ -2,12 +2,13 @@ package controllers.search;
 
 import static play.mvc.Results.ok;
 
+import com.google.common.base.Enums;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import components.services.search.SearchServiceClient;
-import components.services.search.SearchServiceResult;
+import components.services.search.search.SearchServiceClient;
+import components.services.search.search.SearchServiceResult;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
@@ -15,6 +16,7 @@ import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.ControlCodeVariant;
 import models.search.SearchResultsDisplay;
+import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -38,7 +40,18 @@ public class SearchResultsController {
     NONE_MATCHED,
     SHOW_MORE,
     EDIT_DESCRIPTION,
-    CONTINUE
+    CONTINUE;
+
+    public static Optional<SearchResultAction> getMatched(String name) {
+      if (StringUtils.isEmpty(name)) {
+        return Optional.empty();
+      }
+      else {
+        return Enums.getIfPresent(SearchResultAction.class, name)
+            .transform(java.util.Optional::of)
+            .or(java.util.Optional.empty());
+      }
+    }
   }
 
   @Inject
@@ -63,14 +76,14 @@ public class SearchResultsController {
     return physicalGoodsSearch(controlCodeSubJourney)
         .thenApplyAsync(result -> {
           int displayCount = Math.min(result.results.size(), PAGINATION_SIZE);
-          Optional<Integer> optionalDisplayCount = permissionsFinderDao.getPhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney);
+          Optional<Integer> optionalDisplayCount = permissionsFinderDao.getSearchResultsPaginationDisplayCount(controlCodeSubJourney);
           if (optionalDisplayCount.isPresent()) {
             displayCount = Math.min(result.results.size(), optionalDisplayCount.get());
           }
           else {
-            permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, displayCount);
+            permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, displayCount);
           }
-          String lastChosenControlCode = permissionsFinderDao.getPhysicalGoodSearchLastChosenControlCode(controlCodeSubJourney);
+          String lastChosenControlCode = permissionsFinderDao.getSearchResultsLastChosenControlCode(controlCodeSubJourney);
           SearchResultsDisplay display = new SearchResultsDisplay(controlCodeSubJourney, formFactory.form(SearchResultsForm.class),
               result.results, displayCount, lastChosenControlCode);
           return ok(searchResults.render(display));
@@ -91,14 +104,14 @@ public class SearchResultsController {
             int displayCount = Integer.parseInt(form.field("resultsDisplayCount").value());
             int newDisplayCount = Math.min(displayCount, result.results.size());
             if (displayCount != newDisplayCount) {
-              permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
+              permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
             }
             SearchResultsDisplay display = new SearchResultsDisplay(controlCodeSubJourney, form, result.results, newDisplayCount);
             return ok(searchResults.render(display));
           }, httpExecutionContext.current());
     }
 
-    Optional<SearchResultAction> action = getAction(form.get());
+    Optional<SearchResultAction> action = SearchResultAction.getMatched(form.get().action);
     if (action.isPresent()){
       switch (action.get()) {
         case NONE_MATCHED:
@@ -109,7 +122,7 @@ public class SearchResultsController {
                 int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
                 int newDisplayCount = Math.min(displayCount + PAGINATION_SIZE, result.results.size());
                 if (displayCount != newDisplayCount) {
-                  permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
+                  permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
                 }
                 SearchResultsDisplay display = new SearchResultsDisplay(controlCodeSubJourney, form, result.results, newDisplayCount);
                 return ok(searchResults.render(display));
@@ -124,9 +137,9 @@ public class SearchResultsController {
     Optional<String> result = getResult(form.get());
     if (result.isPresent()) {
       int displayCount = Integer.parseInt(form.get().resultsDisplayCount);
-      permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, result.get());
-      permissionsFinderDao.savePhysicalGoodSearchPaginationDisplayCount(controlCodeSubJourney, displayCount);
-      permissionsFinderDao.savePhysicalGoodSearchLastChosenControlCode(controlCodeSubJourney, result.get());
+      // Note, saving selected control code is handled during the decision stage
+      permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, displayCount);
+      permissionsFinderDao.saveSearchResultsLastChosenControlCode(controlCodeSubJourney, result.get());
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
@@ -140,28 +153,6 @@ public class SearchResultsController {
 
   public Optional<String> getResult(SearchResultsForm form) {
     return !(form.result == null || form.result.isEmpty()) ? Optional.of(form.result) : Optional.empty();
-  }
-
-  public Optional<SearchResultAction> getAction(SearchResultsForm form) {
-    String action = form.action;
-    if (action == null || action.isEmpty()){
-      return Optional.empty();
-    }
-    else if("no-matched-result".equals(action)){
-      return Optional.of(SearchResultAction.NONE_MATCHED);
-    }
-    else if("show-more-results".equals(action)){
-      return Optional.of(SearchResultAction.SHOW_MORE);
-    }
-    else if("edit-description".equals(action)){
-      return Optional.of(SearchResultAction.EDIT_DESCRIPTION);
-    }
-    else if("continue".equals(action)){
-      return Optional.of(SearchResultAction.CONTINUE);
-    }
-    else {
-      return Optional.empty();
-    }
   }
 
   public static class SearchResultsForm {

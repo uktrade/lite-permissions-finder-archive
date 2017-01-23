@@ -1,4 +1,4 @@
-package components.services.search;
+package components.services.search.relatedcodes;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -10,7 +10,7 @@ import play.libs.ws.WSClient;
 
 import java.util.concurrent.CompletionStage;
 
-public class SearchServiceClient {
+public class RelatedCodesServiceClient {
 
   private final HttpExecutionContext httpExecutionContext;
   private final WSClient wsClient;
@@ -18,23 +18,20 @@ public class SearchServiceClient {
   private final String webServiceUrl;
 
   @Inject
-  public SearchServiceClient(HttpExecutionContext httpExecutionContext,
-                             WSClient wsClient,
-                             @Named("searchServiceAddress") String webServiceAddress,
-                             @Named("searchServiceTimeout") int webServiceTimeout
-  ){
+  public RelatedCodesServiceClient(HttpExecutionContext httpExecutionContext,
+                                   WSClient wsClient,
+                                   @Named("searchServiceAddress") String webServiceAddress,
+                                   @Named("searchServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl = webServiceAddress + "/search";
+    this.webServiceUrl = webServiceAddress + "/related-codes";
   }
 
-  public CompletionStage<SearchServiceResult> get(String searchTerm){
-    return wsClient.url(webServiceUrl)
+  public CompletionStage<RelatedCodesServiceResult> get(String controlCode){
+    return wsClient.url(webServiceUrl + "/" + controlCode)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
-        .setQueryParameter("term", searchTerm)
-        .setQueryParameter("goodsType", "physical") // Hard coded to physical search for now
         .get()
         .handleAsync((response, throwable) -> {
           if (throwable != null) {
@@ -49,9 +46,8 @@ public class SearchServiceClient {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
           }
           else {
-            return Json.fromJson(response.asJson(), SearchServiceResult.class);
+            return Json.fromJson(response.asJson(), RelatedCodesServiceResult.class);
           }
         }, httpExecutionContext.current());
   }
-
 }

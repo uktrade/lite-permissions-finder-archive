@@ -1,0 +1,58 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import controllers.search.SearchRelatedCodesController
+@import controllers.search.routes
+@import controllers.search.SearchRelatedCodesController.SearchRelatedCodesAction
+@import models.search.SearchRelatedCodesDisplay
+
+@(form: Form[_], display: SearchRelatedCodesDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchRelatedCodes")) {
+  @errorSummary(form)
+} {
+
+  <form action="@routes.SearchRelatedCodesController.handleSubmit()" method="POST">
+
+    @contextFormParams()
+
+    <p class="pre-search-results font-small">
+      @display.preRelatedCodesLabel
+    </p>
+
+    <input id="controlCodeSubJourneyHiddenInput" type="hidden" name="controlCodeSubJourney" value="@display.controlCodeSubJourney.value">
+
+    <input id="relatedCodesDisplayCountHiddenInput" type="hidden" name="relatedCodesDisplayCount" value="@display.relatedCodesDisplayCount">
+
+    <input id="paginationSizeHiddenInput" type="hidden" name="paginationSize" value="@SearchRelatedCodesController.PAGINATION_SIZE">
+
+    @if(display.lastChosenRelatedCode != null && !"".equals(display.lastChosenRelatedCode)) {
+      <input id="lastChosenRelatedCodeHiddenInput" type="hidden" name="lastChosenRelatedCode" value="@display.lastChosenRelatedCode">
+    }
+
+    <ol id="searchRelatedCodes" class="search-results">
+    @for(i <- 0 until Math.min(display.relatedCodes.size, display.relatedCodesDisplayCount)) {
+      <li>
+        <button id="@display.relatedCodes.get(i).controlCode-button" type="submit" class="link font-medium" name="relatedCode" value="@display.relatedCodes.get(i).controlCode">@Html(display.relatedCodes.get(i).displayText)</button>
+      </li>
+    }
+    </ol>
+
+    <div class="search-result-actions">
+      @if(display.relatedCodesDisplayCount < display.relatedCodes.size) {
+        <p class="js-hidden">
+          <button type="submit" name="action" value="@SearchRelatedCodesAction.SHOW_MORE" class="button secondary show-more-results-button">Show more results</button>
+        </p>
+        <p id="showMoreRelatedCodesWrapper" class="js-only">
+          <button type="button" id="showMoreRelatedCodesButton" class="button secondary show-more-results-button">Show more results</button>
+        </p>
+      }
+      <p>
+        <button type="submit" name="action" value="@SearchRelatedCodesAction.NONE_MATCHED" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
+      </p>
+      <p>
+        <button type="submit" name="action" value="@SearchRelatedCodesAction.PICK_FROM_RESULTS_AGAIN" class="link underlined font-small no-matched-result-link">Back to previous list of results</button>
+      </p>
+    </div>
+  </form>
+}
