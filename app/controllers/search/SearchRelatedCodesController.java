@@ -131,8 +131,6 @@ public class SearchRelatedCodesController {
               }, httpExecutionContext.current());
         case PICK_FROM_RESULTS_AGAIN:
           return journeyManager.performTransition(Events.BACK, BackType.RESULTS);
-        case CONTINUE:
-          return journeyManager.performTransition(StandardEvents.NEXT);
       }
     }
 
@@ -142,7 +140,7 @@ public class SearchRelatedCodesController {
       permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, relatedCode);
       permissionsFinderDao.saveSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney, displayCount);
       permissionsFinderDao.saveSearchRelatedCodesLastChosenControlCode(controlCodeSubJourney, relatedCode);
-      return journeyManager.performTransition(StandardEvents.NEXT);
+      return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
     throw new FormStateException("Unhandled form state");

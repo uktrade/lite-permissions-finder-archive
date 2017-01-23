@@ -140,7 +140,7 @@ public class SearchResultsController {
       // Note, saving selected control code is handled during the decision stage
       permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney, displayCount);
       permissionsFinderDao.saveSearchResultsLastChosenControlCode(controlCodeSubJourney, result.get());
-      return journeyManager.performTransition(StandardEvents.NEXT);
+      return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
 
     throw new FormStateException("Unhandled form state");

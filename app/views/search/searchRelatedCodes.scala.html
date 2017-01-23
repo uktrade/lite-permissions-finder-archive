@@ -47,7 +47,12 @@
           <button type="button" id="showMoreRelatedCodesButton" class="button secondary show-more-results-button">Show more results</button>
         </p>
       }
-      <button type="submit" name="action" value="@SearchRelatedCodesAction.NONE_MATCHED" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
+      <p>
+        <button type="submit" name="action" value="@SearchRelatedCodesAction.NONE_MATCHED" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
+      </p>
+      <p>
+        <button type="submit" name="action" value="@SearchRelatedCodesAction.PICK_FROM_RESULTS_AGAIN" class="link underlined font-small no-matched-result-link">Back to previous list of results</button>
+      </p>
     </div>
   </form>
 }

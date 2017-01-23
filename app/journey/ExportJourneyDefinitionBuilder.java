@@ -62,6 +62,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private final JourneyStage searchRTS = defineStage("searchRTS", "Describe your items",
       controllers.search.routes.SearchController.renderForm(GoodsType.SOFTWARE.urlString()));
+  private final DecisionStage<Boolean> searchRelatedCodesDecisionRTS;
 
   private final JourneyStage controlCodeSummarySC = defineStage("controlCodeSummarySC", "Summary",
       controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
@@ -128,6 +129,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     this.softwareRelationshipWithTechnologyExistsDecision = defineDecisionStage("softwareRelationshipWithTechnologyExistsDecision", this.relationshipWithTechnologyDecider);
     this.softwareRelationshipWithSoftwareExistsDecision = defineDecisionStage("softwareRelationshipWithSoftwareExistsDecision", this.relationshipWithSoftwareDecider);
     this.searchRelatedCodesDecision = defineDecisionStage("searchRelatedCodesDecision", this.relatedCodesDecider);
+    this.searchRelatedCodesDecisionRTS = defineDecisionStage("searchRelatedCodesDecisionRTS", this.relatedCodesDecider);
   }
 
   @Override
@@ -364,7 +366,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .then(moveTo(searchResults));
 
     atStage(searchResults)
-        .onEvent(StandardEvents.NEXT)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(searchRelatedCodesDecision));
 
     atStage(searchResults)
@@ -377,12 +379,17 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .when(false, moveTo(decontrolsDecision));
 
     atStage(searchRelatedCodes)
-        .onEvent(StandardEvents.NEXT)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(decontrolsDecision));
 
     atStage(searchRelatedCodes)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(notApplicable));
+
+    atStage(searchRelatedCodes)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.RESULTS, backTo(searchResults));
 
     bindControlCodeStageTransitions(
         decontrols,
@@ -625,6 +632,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage searchResultsRTS = defineStage("searchResultsRTS", "Possible matches",
         controllers.search.routes.SearchResultsController.renderForm(GoodsType.SOFTWARE.urlString()));
 
+    JourneyStage searchRelatedCodesRTS = defineStage("searchRelatedCodesRTS", "Related to your item",
+        controllers.search.routes.SearchRelatedCodesController.renderForm(GoodsType.SOFTWARE.urlString()));
+
     JourneyStage controlCodeSummaryRTS = defineStage("controlCodeSummaryRTS", "Summary",
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
 
@@ -657,7 +667,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(searchResultsRTS)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(decontrolsDecisionRTS));
+        .then(moveTo(searchRelatedCodesDecisionRTS));
 
     atStage(searchResultsRTS)
         .onEvent(Events.BACK)
@@ -671,6 +681,24 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(searchResultsRTS)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(applicableCatchallControlsDecision));
+
+    atDecisionStage(searchRelatedCodesDecisionRTS)
+        .decide()
+        .when(true, moveTo(searchRelatedCodesRTS))
+        .when(false, moveTo(decontrolsDecisionRTS));
+
+    atStage(searchRelatedCodesRTS)
+        .onEvent(Events.CONTROL_CODE_SELECTED)
+        .then(moveTo(decontrolsDecisionRTS));
+
+    atStage(searchRelatedCodesRTS)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(applicableCatchallControlsDecision));
+
+    atStage(searchRelatedCodesRTS)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.RESULTS, backTo(searchResultsRTS));
 
     bindControlCodeStageTransitions(
         decontrolsRTS,
