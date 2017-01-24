@@ -84,6 +84,10 @@ public class SearchRelatedCodesController {
           else {
             permissionsFinderDao.saveSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney, displayCount);
           }
+
+          // TODO, remove to enable "Show more results" functionality
+          displayCount = result.relatedCodes.size();
+
           String lastChosenControlCode = permissionsFinderDao.getSearchRelatedCodesLastChosenControlCode(controlCodeSubJourney);
           SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, resultsControlCode, result.relatedCodes, displayCount, lastChosenControlCode);
           return ok(searchRelatedCodes.render(formFactory.form(SearchRelatedCodesForm.class), display));
