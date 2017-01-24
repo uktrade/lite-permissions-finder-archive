@@ -321,7 +321,6 @@ LITEPermissionsFinder.OgelQuestions = {
 
 LITEPermissionsFinder.StartApplication = {
   setupPage: function() {
-    console.log("Page setup");
     LITEPermissionsFinder.StartApplication._bindAnalyticsTriggers();
   },
   _bindAnalyticsTriggers: function() {
