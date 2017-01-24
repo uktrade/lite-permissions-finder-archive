@@ -5,7 +5,6 @@ import static play.mvc.Results.ok;
 import com.google.common.base.Enums;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
-import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import components.services.search.relatedcodes.RelatedCodesServiceClient;
 import components.services.search.relatedcodes.RelatedCodesServiceResult;
@@ -39,8 +38,7 @@ public class SearchRelatedCodesController {
   public enum SearchRelatedCodesAction{
     NONE_MATCHED,
     SHOW_MORE,
-    PICK_FROM_RESULTS_AGAIN,
-    CONTINUE;
+    PICK_FROM_RESULTS_AGAIN;
 
     public static Optional<SearchRelatedCodesAction> getMatched(String name) {
       if (StringUtils.isEmpty(name)) {
@@ -89,7 +87,7 @@ public class SearchRelatedCodesController {
           displayCount = result.relatedCodes.size();
 
           String lastChosenControlCode = permissionsFinderDao.getSearchRelatedCodesLastChosenControlCode(controlCodeSubJourney);
-          SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, resultsControlCode, result.relatedCodes, displayCount, lastChosenControlCode);
+          SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, result.groupTitle, result.relatedCodes, displayCount, lastChosenControlCode);
           return ok(searchRelatedCodes.render(formFactory.form(SearchRelatedCodesForm.class), display));
         }, httpExecutionContext.current());
   }
@@ -111,7 +109,7 @@ public class SearchRelatedCodesController {
             if (displayCount != newDisplayCount) {
               permissionsFinderDao.saveSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
             }
-            SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, resultsControlCode, result.relatedCodes, newDisplayCount);
+            SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, result.groupTitle, result.relatedCodes, newDisplayCount);
             return ok(searchRelatedCodes.render(form, display));
           }, httpExecutionContext.current());
     }
@@ -130,7 +128,7 @@ public class SearchRelatedCodesController {
                 if (displayCount != newDisplayCount) {
                   permissionsFinderDao.saveSearchRelatedCodesPaginationDisplayCount(controlCodeSubJourney, newDisplayCount);
                 }
-                SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, resultsControlCode, result.relatedCodes, newDisplayCount);
+                SearchRelatedCodesDisplay display = new SearchRelatedCodesDisplay(controlCodeSubJourney, result.groupTitle, result.relatedCodes, newDisplayCount);
                 return ok(searchRelatedCodes.render(form, display));
               }, httpExecutionContext.current());
         case PICK_FROM_RESULTS_AGAIN:

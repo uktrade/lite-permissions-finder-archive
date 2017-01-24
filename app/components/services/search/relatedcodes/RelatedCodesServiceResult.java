@@ -9,10 +9,13 @@ import java.util.List;
 
 public class RelatedCodesServiceResult {
 
+  public final String groupTitle;
   public final List<RelatedCodeView> relatedCodes;
 
   public RelatedCodesServiceResult(JsonNode responseJson) {
-    this.relatedCodes = Json.fromJson(responseJson, RelatedCodesView.class).getResults();
+    RelatedCodesView relatedCodesView = Json.fromJson(responseJson, RelatedCodesView.class);
+    this.groupTitle = relatedCodesView.getGroupTitle();
+    this.relatedCodes = relatedCodesView.getResults();
   }
 
   public boolean shouldShowRelatedCodes(String controlCode) {

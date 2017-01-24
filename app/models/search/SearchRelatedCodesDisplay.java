@@ -14,16 +14,12 @@ public class SearchRelatedCodesDisplay {
   public final String lastChosenRelatedCode;
   public final String preRelatedCodesLabel;
 
-  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String resultsControlCode, List<RelatedCodeView> relatedCodes, int relatedCodesDisplayCount, String lastChosenRelatedCode) {
+  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String pageTitle, List<RelatedCodeView> relatedCodes, int relatedCodesDisplayCount, String lastChosenRelatedCode) {
     this.controlCodeSubJourney = controlCodeSubJourney;
     this.relatedCodes = relatedCodes;
     this.relatedCodesDisplayCount = relatedCodesDisplayCount;
     this.lastChosenRelatedCode = lastChosenRelatedCode;
-    this.pageTitle = relatedCodes.stream()
-        .filter(c -> resultsControlCode.equals(c.getControlCode()))
-        .findFirst()
-        .get()
-        .getDisplayText(); // TODO replace with title from RelatedCodesView
+    this.pageTitle = pageTitle;
     if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH) {
       this.preRelatedCodesLabel = "";
     }
@@ -39,7 +35,7 @@ public class SearchRelatedCodesDisplay {
     }
   }
 
-  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String resultsControlCode, List<RelatedCodeView> relatedCodes, int relatedCodesDisplayCount) {
-    this(controlCodeSubJourney, resultsControlCode, relatedCodes, relatedCodesDisplayCount, null);
+  public SearchRelatedCodesDisplay(ControlCodeSubJourney controlCodeSubJourney, String pageTitle, List<RelatedCodeView> relatedCodes, int relatedCodesDisplayCount) {
+    this(controlCodeSubJourney, pageTitle, relatedCodes, relatedCodesDisplayCount, null);
   }
 }
