@@ -13,7 +13,15 @@
 
     @contextFormParams()
 
-    @formRadioBoolean(form.field("isRelatedToGoodsType"), Html(display.questionLabel))
+    <h2 class="heading-medium">
+      @display.questionLabel
+    </h2>
+
+    <p>
+      @display.questionContent
+    </p>
+
+    @formRadioBoolean(form.field("isRelatedToGoodsType"), Html(display.questionLabel), hideHeading = true)
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>
