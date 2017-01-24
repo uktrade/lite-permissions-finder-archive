@@ -14,4 +14,8 @@ public class RelatedCodesServiceResult {
   public RelatedCodesServiceResult(JsonNode responseJson) {
     this.relatedCodes = Json.fromJson(responseJson, RelatedCodesView.class).getResults();
   }
+
+  public boolean shouldShowRelatedCodes(String controlCode) {
+    return relatedCodes.size() > 0 && !(relatedCodes.size() == 1 && controlCode.equals(relatedCodes.get(0).getControlCode()));
+  }
 }
