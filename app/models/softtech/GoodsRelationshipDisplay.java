@@ -15,9 +15,9 @@ public class GoodsRelationshipDisplay {
 
     if (goodsType == GoodsType.SOFTWARE) {
       if (relatedToGoodsType == GoodsType.SOFTWARE) {
-        this.pageTitle = "Is software related to software?";
-        this.questionLabel = "Is software related to software?";
-        this.questionContent = null;
+        this.pageTitle = "Software related to other software";
+        this.questionLabel = "Are you exporting software for the development, production or use of other software related to licensable items?";
+        this.questionContent = "For example software to create computer programs for use with goods that themselves need a licence to be exported.";
       }
       else if (relatedToGoodsType == GoodsType.TECHNOLOGY) {
         this.pageTitle = "Software related to technology";
