@@ -95,17 +95,13 @@ LITEPermissionsFinder.Search = {
   _bindAnalyticsTriggers: function() {
     $('form:last').submit(function(event) {
       var textareas = $(this).find("textarea");
-      var inputs = $(this).find("input[type='text']");
       var description = textareas.filter("[name='description']").val();
       var component = textareas.filter("[name='component']").val();
-      var brand = inputs.filter("[name='brand']").val();
-      var partNumber = inputs.filter("[name='partNumber']").val();
-      var eventValue = "description: " + description + ";" +
-        " component: " + component + ";" +
-        " brand: " + brand + ";" +
-        " partNumber: " + partNumber + ";";
-
-      _paq.push(['trackSiteSearch', eventValue, "physical", false]);
+      var eventValue = "description: " + description + ";" + " component: " + component + ";";
+      // Use the sub journey to determine what variant of the search is being used
+      var ctxSubJourney = $(this).find("input[name='ctx_sub_journey']").val();
+      var searchType = ctxSubJourney.substring(ctxSubJourney.lastIndexOf(':') + 1);
+      _paq.push(['trackSiteSearch', eventValue, searchType, false]);
     });
   }
 };
