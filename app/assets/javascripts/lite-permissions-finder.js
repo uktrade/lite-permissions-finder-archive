@@ -25,6 +25,9 @@ LITEPermissionsFinder.Utils = {
       else if (pageName == "ogelQuestions") {
         LITEPermissionsFinder.OgelQuestions.setupPage();
       }
+      else if (pageName == "startApplication") {
+        LITEPermissionsFinder.StartApplication.setupPage();
+      }
     }
   },
   load: function() {
@@ -313,6 +316,22 @@ LITEPermissionsFinder.OgelQuestions = {
       _paq.push(['trackEvent', 'ogelQuestions', 'before1897upto35k', before1897upto35k]);
     });
 
+  }
+};
+
+LITEPermissionsFinder.StartApplication = {
+  setupPage: function() {
+    console.log("Page setup");
+    LITEPermissionsFinder.StartApplication._bindAnalyticsTriggers();
+  },
+  _bindAnalyticsTriggers: function() {
+    var form = $('form:last');
+    form.submit(function (event) {
+      var emailAddress = $("input[name='emailAddress']", $('form:last')).val();
+      if (typeof emailAddress != "undefined" && emailAddress !== "") {
+        _paq.push(['trackEvent', 'emailAddress', 'emailAddress', emailAddress]);
+      }
+    });
   }
 };
 

@@ -5,7 +5,7 @@
 @import views.html.common.state._
 
 @(form: Form[_], applicationCode: String)
-@standardPage("Before you begin", Some(Html("Before you begin"))) {
+@standardPage("Before you begin", Some(Html("Before you begin")), pageName = Some("startApplication")) {
   @errorSummary(form)
 } {
 
