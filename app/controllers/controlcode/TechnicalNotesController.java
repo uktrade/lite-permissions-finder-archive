@@ -56,7 +56,7 @@ public class TechnicalNotesController {
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<Boolean> technicalNotesApply = permissionsFinderDao.getControlCodeTechnicalNotesApply(controlCodeSubJourney);
     TechnicalNotesForm templateForm = new TechnicalNotesForm();
-    templateForm.stillDescribesItems = technicalNotesApply.isPresent() ? technicalNotesApply.get().toString() : "";
+    templateForm.stillDescribesItems = technicalNotesApply.orElse(null);
     return renderWithForm(controlCodeSubJourney, formFactory.form(TechnicalNotesForm.class).fill(templateForm));
   }
 
@@ -71,20 +71,17 @@ public class TechnicalNotesController {
       return renderWithForm(controlCodeSubJourney, form);
     }
     else {
-      String stillDescribesItems = form.get().stillDescribesItems;
-      if("true".equals(stillDescribesItems)) {
+      Boolean stillDescribesItems = form.get().stillDescribesItems;
+      if(stillDescribesItems) {
         // Note, setting the DAO state here
         String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
         permissionsFinderDao.saveControlCodeForRegistration(controlCode);
         permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeSubJourney, true);
         return journeyManager.performTransition(StandardEvents.NEXT);
       }
-      else if ("false".equals(stillDescribesItems)) {
+      else {
         permissionsFinderDao.saveControlCodeTechnicalNotesApply(controlCodeSubJourney, false);
         return journeyManager.performTransition(Events.CONTROL_CODE_NOT_APPLICABLE);
-      }
-      else {
-        throw new FormStateException("Unhandled form state");
       }
     }
   }
@@ -92,7 +89,7 @@ public class TechnicalNotesController {
   public static class TechnicalNotesForm {
 
     @Required(message = "You must answer this question")
-    public String stillDescribesItems;
+    public Boolean stillDescribesItems;
 
   }
 

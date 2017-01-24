@@ -7,7 +7,6 @@ import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
-import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.AdditionalSpecificationsDisplay;
@@ -59,9 +58,7 @@ public class AdditionalSpecificationsController {
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<Boolean> additionalSpecificationsApply = permissionsFinderDao.getControlCodeAdditionalSpecificationsApply(controlCodeSubJourney);
     AdditionalSpecificationsForm templateForm = new AdditionalSpecificationsForm();
-    templateForm.stillDescribesItems = additionalSpecificationsApply.isPresent()
-        ? additionalSpecificationsApply.get().toString()
-        : "";
+    templateForm.stillDescribesItems = additionalSpecificationsApply.orElse(null);
     return renderWithForm(controlCodeSubJourney, formFactory.form(AdditionalSpecificationsForm.class).fill(templateForm));
   }
 
@@ -76,17 +73,14 @@ public class AdditionalSpecificationsController {
       return renderWithForm(controlCodeSubJourney, form);
     }
     else {
-      String stillDescribesItems = form.get().stillDescribesItems;
-      if("true".equals(stillDescribesItems)) {
+      Boolean stillDescribesItems = form.get().stillDescribesItems;
+      if(stillDescribesItems) {
         permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeSubJourney, true);
         return journeyManager.performTransition(StandardEvents.NEXT);
       }
-      else if ("false".equals(stillDescribesItems)) {
+      else {
         permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeSubJourney, false);
         return journeyManager.performTransition(Events.CONTROL_CODE_NOT_APPLICABLE);
-      }
-      else {
-        throw new FormStateException("Unhandled form state");
       }
     }
   }
@@ -94,7 +88,7 @@ public class AdditionalSpecificationsController {
   public static class AdditionalSpecificationsForm {
 
     @Required(message = "You must answer this question")
-    public String stillDescribesItems;
+    public Boolean stillDescribesItems;
 
   }
 }

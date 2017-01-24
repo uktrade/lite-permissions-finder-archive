@@ -30,15 +30,15 @@ public class FinancialTechnicalAssistanceController {
 
   public CompletionStage<Result> handleSubmit() {
     Form<FinancialTechnicalAssistanceForm> form = formFactory.form(FinancialTechnicalAssistanceForm.class).bindFromRequest();
-    if ("true".equals(form.get().goToSearch)) {
+    if ("goToSearch".equals(form.get().action)) {
       return journeyManager.performTransition(StandardEvents.NEXT);
     }
-    throw new FormStateException("Unknown value of goToSearch: \"" + form.get().goToSearch + "\"");
+    throw new FormStateException("Unknown value of action: \"" + form.get().action + "\"");
   }
 
   public static class FinancialTechnicalAssistanceForm {
 
-    public String goToSearch;
+    public String action;
 
   }
 

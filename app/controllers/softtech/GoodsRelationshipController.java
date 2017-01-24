@@ -42,7 +42,7 @@ public class GoodsRelationshipController {
   private CompletionStage<Result> renderFormInternal(GoodsType goodsType, GoodsType relatedToGoodsType) {
     GoodsRelationshipForm templateForm = new GoodsRelationshipForm();
     Optional<Boolean> isRelatedToGoodsType = permissionsFinderDao.getIsRelatedToGoodsType(goodsType, relatedToGoodsType);
-    templateForm.isRelatedToGoodsType = isRelatedToGoodsType.isPresent() ? isRelatedToGoodsType.get().toString() : "";
+    templateForm.isRelatedToGoodsType = isRelatedToGoodsType.orElse(null);
     return completedFuture(ok(goodsRelationship.render(formFactory.form(GoodsRelationshipForm.class).fill(templateForm),
         new GoodsRelationshipDisplay(goodsType, relatedToGoodsType))));
   }
@@ -64,17 +64,14 @@ public class GoodsRelationshipController {
       return renderFormInternal(goodsType, relatedToGoodsType);
     }
 
-    String isRelatedToGoodsType = form.get().isRelatedToGoodsType;
-    if ("true".equals(isRelatedToGoodsType)) {
+    Boolean isRelatedToGoodsType = form.get().isRelatedToGoodsType;
+    if (isRelatedToGoodsType) {
       permissionsFinderDao.saveIsRelatedToGoodsType(goodsType, relatedToGoodsType, true);
       return journeyManager.performTransition(StandardEvents.YES);
     }
-    else if ("false".equals(isRelatedToGoodsType)) {
+    else {
       permissionsFinderDao.saveIsRelatedToGoodsType(goodsType, relatedToGoodsType, false);
       return journeyManager.performTransition(StandardEvents.NO);
-    }
-    else {
-      throw new FormStateException(String.format("Unknown value for isRelatedToGoodsType: \"%s\"", isRelatedToGoodsType));
     }
   }
 
@@ -99,7 +96,7 @@ public class GoodsRelationshipController {
   public static class GoodsRelationshipForm {
 
     @Required
-    public String isRelatedToGoodsType;
+    public Boolean isRelatedToGoodsType;
 
   }
 }

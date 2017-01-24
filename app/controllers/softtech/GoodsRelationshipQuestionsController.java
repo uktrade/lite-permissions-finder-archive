@@ -62,7 +62,7 @@ public class GoodsRelationshipQuestionsController {
   private CompletionStage<Result> renderFormInternal(GoodsType goodsType, GoodsType relatedToGoodsType, int currentQuestionIndex) {
     GoodsRelationshipQuestionsForm templateForm = new GoodsRelationshipQuestionsForm();
     Optional<Boolean> questionAnswerOptional = permissionsFinderDao.getGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex);
-    templateForm.questionAnswer = questionAnswerOptional.isPresent() ? questionAnswerOptional.get().toString() : "";
+    templateForm.questionAnswer = questionAnswerOptional.orElse(null);
     templateForm.currentQuestionIndex = currentQuestionIndex;
     return renderWithForm(goodsType, relatedToGoodsType, formFactory.form(GoodsRelationshipQuestionsForm.class).fill(templateForm), currentQuestionIndex);
   }
@@ -92,11 +92,11 @@ public class GoodsRelationshipQuestionsController {
       return renderWithForm(goodsType, relatedToGoodsType, form, currentQuestionIndex);
     }
 
-    String questionAnswer = form.get().questionAnswer;
+    Boolean questionAnswer = form.get().questionAnswer;
 
     int currentQuestionIndex = form.get().currentQuestionIndex;
 
-    if ("true".equals(questionAnswer)) {
+    if (questionAnswer) {
       return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
           .thenComposeAsync(result -> {
             if (result.isValidRelationshipIndex(currentQuestionIndex)) {
@@ -111,7 +111,7 @@ public class GoodsRelationshipQuestionsController {
             }
           }, httpExecutionContext.current());
     }
-    else if ("false".equals(questionAnswer)) {
+    else {
       // Belt and braces check
       return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
           .thenComposeAsync(result -> {
@@ -125,7 +125,7 @@ public class GoodsRelationshipQuestionsController {
                 permissionsFinderDao.saveGoodsRelationshipQuestionCurrentIndex(goodsType, relatedToGoodsType, newCurrentQuestionIndex);
                 GoodsRelationshipQuestionsForm templateForm = new GoodsRelationshipQuestionsForm();
                 Optional<Boolean> questionAnswerOptional = permissionsFinderDao.getGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, newCurrentQuestionIndex);
-                templateForm.questionAnswer = questionAnswerOptional.isPresent() ? questionAnswerOptional.get().toString() : "";
+                templateForm.questionAnswer = questionAnswerOptional.orElse(null);
                 templateForm.currentQuestionIndex = newCurrentQuestionIndex;
                 return renderWithForm(goodsType, relatedToGoodsType, formFactory.form(GoodsRelationshipQuestionsForm.class).fill(templateForm), newCurrentQuestionIndex);
               }
@@ -137,9 +137,6 @@ public class GoodsRelationshipQuestionsController {
               throw new RuntimeException(String.format("Invalid value for currentQuestionIndex: %d", currentQuestionIndex));
             }
           }, httpExecutionContext.current());
-    }
-    else {
-      throw new FormStateException(String.format("Invalid value for questionAnswer: %s", questionAnswer));
     }
   }
 
@@ -168,7 +165,7 @@ public class GoodsRelationshipQuestionsController {
     public int currentQuestionIndex;
 
     @Required(message = "You must answer this question")
-    public String questionAnswer;
+    public Boolean questionAnswer;
 
   }
 }

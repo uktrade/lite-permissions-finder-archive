@@ -41,9 +41,7 @@ public class RelatedEquipmentController {
   private CompletionStage<Result> renderFormInternal(GoodsType goodsType) {
     RelatedEquipmentForm templateForm = new RelatedEquipmentForm();
     Optional<Boolean> relatedToEquipmentOrMaterialsOptional = permissionsFinderDao.getRelatedToEquipmentOrMaterials(goodsType);
-    templateForm.relatedToEquipmentOrMaterials = relatedToEquipmentOrMaterialsOptional.isPresent()
-        ? relatedToEquipmentOrMaterialsOptional.get().toString()
-        : "";
+    templateForm.relatedToEquipmentOrMaterials = relatedToEquipmentOrMaterialsOptional.orElse(null);
     return completedFuture(ok(relatedEquipment.render(formFactory.form(RelatedEquipmentForm.class).fill(templateForm),
         new RelatedEquipmentDisplay(goodsType))));
   }
@@ -58,26 +56,22 @@ public class RelatedEquipmentController {
       return completedFuture(ok(relatedEquipment.render(form, new RelatedEquipmentDisplay(goodsType))));
     }
 
-    String relatedToEquipmentOrMaterials = form.get().relatedToEquipmentOrMaterials;
+    Boolean relatedToEquipmentOrMaterials = form.get().relatedToEquipmentOrMaterials;
 
-    if ("true".equals(relatedToEquipmentOrMaterials)) {
+    if (relatedToEquipmentOrMaterials) {
       permissionsFinderDao.saveRelatedToEquipmentOrMaterials(goodsType, true);
       return journeyManager.performTransition(StandardEvents.YES);
     }
-    else if ("false".equals(relatedToEquipmentOrMaterials)) {
+    else {
       permissionsFinderDao.saveRelatedToEquipmentOrMaterials(goodsType, false);
       return journeyManager.performTransition(StandardEvents.NO);
-    }
-    else {
-      throw new FormStateException(String.format("Unknown value for relatedToEquipmentOrMaterials: \"%s\"",
-          relatedToEquipmentOrMaterials));
     }
   }
 
   public static class RelatedEquipmentForm {
 
     @Required(message = "You must answer this question")
-    public String relatedToEquipmentOrMaterials;
+    public Boolean relatedToEquipmentOrMaterials;
 
   }
 }

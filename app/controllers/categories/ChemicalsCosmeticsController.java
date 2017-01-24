@@ -34,16 +34,16 @@ public class ChemicalsCosmeticsController {
 
   public CompletionStage<Result> handleSubmit() {
     Form<ChemicalsCosmeticsForm> form = formFactory.form(ChemicalsCosmeticsForm.class).bindFromRequest();
-    if ("true".equals(form.get().goToSearch)) {
+    if ("goToSearch".equals(form.get().action)) {
       permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
       return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
     }
-    throw new FormStateException("Unknown value of goToSearch: \"" + form.get().goToSearch + "\"");
+    throw new FormStateException("Unknown value of action: \"" + form.get().action + "\"");
   }
 
   public static class ChemicalsCosmeticsForm {
 
-    public String goToSearch;
+    public String action;
 
   }
 }

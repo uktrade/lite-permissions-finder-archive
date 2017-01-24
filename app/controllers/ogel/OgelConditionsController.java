@@ -56,9 +56,7 @@ public class OgelConditionsController {
   public CompletionStage<Result> renderForm() {
     OgelConditionsForm templateForm = new OgelConditionsForm();
     Optional<Boolean> doesRestrictionApplyOptional = permissionsFinderDao.getOgelConditionsApply();
-    templateForm.doConditionsApply = doesRestrictionApplyOptional.isPresent()
-        ? Boolean.toString(doesRestrictionApplyOptional.get())
-        : "";
+    templateForm.doConditionsApply = doesRestrictionApplyOptional.orElse(null);
 
     return renderWithForm(formFactory.form(OgelConditionsForm.class).fill(templateForm));
   }
@@ -69,64 +67,53 @@ public class OgelConditionsController {
       return renderWithForm(form);
     }
 
-    String doConditionsApplyText = form.get().doConditionsApply;
+    boolean doConditionsApply = form.get().doConditionsApply;
+    permissionsFinderDao.saveOgelConditionsApply(doConditionsApply);
+    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
 
-    // Check for missing control codes
-    if ("true".equals(doConditionsApplyText) || "false".equals(doConditionsApplyText)) {
-      boolean doConditionsApply = Boolean.parseBoolean(doConditionsApplyText);
-      permissionsFinderDao.saveOgelConditionsApply(doConditionsApply);
-      String controlCode = permissionsFinderDao.getControlCodeForRegistration();
+    // Check this ogel required conditions
+    return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
+        permissionsFinderDao.getControlCodeForRegistration())
+        .thenComposeAsync(conditionsResult -> {
+          if (conditionsResult.isEmpty) {
+            throw new BusinessRuleException("Should not be able to progress without conditions");
+          }
+          else if (conditionsResult.isMissingControlCodes) {
+            throw new BusinessRuleException("Should not be able to progress with missing control codes");
+          }
+          else {
+            String sourceCountry = permissionsFinderDao.getSourceCountry();
+            List<String> destinationCountries = CountryUtils.getDestinationCountries(
+                permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
+            List<String> activityTypes = OgelQuestionsController.OgelQuestionsForm
+                .formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
-      // Check this ogel required conditions
-      return ogelConditionsServiceClient.get(permissionsFinderDao.getOgelId(),
-          permissionsFinderDao.getControlCodeForRegistration())
-          .thenApplyAsync(conditionsResult -> {
-            if (conditionsResult.isEmpty) {
-              throw new BusinessRuleException("Should not be able to progress without conditions");
-            }
-            else if (conditionsResult.isMissingControlCodes) {
-              throw new BusinessRuleException("Should not be able to progress with missing control codes");
-            }
-            else {
-
-              String sourceCountry = permissionsFinderDao.getSourceCountry();
-              List<String> destinationCountries = CountryUtils.getDestinationCountries(
-                  permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
-              List<String> activityTypes = OgelQuestionsController.OgelQuestionsForm
-                  .formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
-
-              // branch on this ogel being a virtual eu or not
-              return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry,
-                  destinationCountries, activityTypes)
-                  .thenApplyAsync(virtualEUResult -> {
-                    if(virtualEUResult.isVirtualEu()) {
-                      // Optional.get() should be fine, doConditionApply checks the state of this optional
-                      if (OgelConditionsServiceClient.isItemAllowed(conditionsResult, doConditionsApply)) {
-                        return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
-                            VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_APPLY);
-                      }
-                      else {
-                        return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
-                            VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_NOT_APPLY);
-                      }
+            // branch on this ogel being a virtual eu or not
+            return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry,
+                destinationCountries, activityTypes)
+                .thenComposeAsync(virtualEUResult -> {
+                  if(virtualEUResult.isVirtualEu()) {
+                    // Optional.get() should be fine, doConditionApply checks the state of this optional
+                    if (OgelConditionsServiceClient.isItemAllowed(conditionsResult, doConditionsApply)) {
+                      return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
+                          VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_APPLY);
                     }
                     else {
-                      if (OgelConditionsServiceClient.isItemAllowed(conditionsResult, doConditionsApply)) {
-                        return journeyManager.performTransition(Events.OGEL_CONDITIONS_DO_APPLY);
-                      }
-                      else {
-                        return journeyManager.performTransition(Events.OGEL_CONDITIONS_DO_NOT_APPLY);
-                      }
+                      return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
+                          VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_NOT_APPLY);
                     }
-                  }, httpExecutionContext.current())
-                  .thenCompose(Function.identity());
-            }
-          }, httpExecutionContext.current())
-          .thenCompose(Function.identity());
-    }
-    else {
-      throw new FormStateException("Invalid value for doConditionsApply: \"" + doConditionsApplyText + "\"");
-    }
+                  }
+                  else {
+                    if (OgelConditionsServiceClient.isItemAllowed(conditionsResult, doConditionsApply)) {
+                      return journeyManager.performTransition(Events.OGEL_CONDITIONS_DO_APPLY);
+                    }
+                    else {
+                      return journeyManager.performTransition(Events.OGEL_CONDITIONS_DO_NOT_APPLY);
+                    }
+                  }
+                }, httpExecutionContext.current());
+          }
+        }, httpExecutionContext.current());
   }
 
   private CompletionStage<Result> renderWithForm(Form<OgelConditionsForm> form) {
@@ -165,7 +152,7 @@ public class OgelConditionsController {
   public static class OgelConditionsForm {
 
     @Required(message = "You must answer this question")
-    public String doConditionsApply;
+    public Boolean doConditionsApply;
 
   }
 

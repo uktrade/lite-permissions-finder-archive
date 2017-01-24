@@ -57,7 +57,7 @@ public class DecontrolsController {
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<Boolean> decontrolsApply = permissionsFinderDao.getControlCodeDecontrolsApply(controlCodeSubJourney);
     DecontrolsForm templateForm = new DecontrolsForm();
-    templateForm.decontrolsDescribeItem = decontrolsApply.isPresent() ? decontrolsApply.get().toString() : "";
+    templateForm.decontrolsDescribeItem = decontrolsApply.orElse(null);
     return renderWithForm(controlCodeSubJourney, formFactory.form(DecontrolsForm.class).fill(templateForm));
   }
   public CompletionStage<Result> handleSubmit() {
@@ -71,17 +71,14 @@ public class DecontrolsController {
       return renderWithForm(controlCodeSubJourney, form);
     }
     else {
-      String decontrolsDescribeItem = form.get().decontrolsDescribeItem;
-      if("true".equals(decontrolsDescribeItem)) {
+      Boolean decontrolsDescribeItem = form.get().decontrolsDescribeItem;
+      if(decontrolsDescribeItem) {
         permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeSubJourney, true);
         return journeyManager.performTransition(Events.CONTROL_CODE_NOT_APPLICABLE);
       }
-      else if ("false".equals(decontrolsDescribeItem)) {
+      else {
         permissionsFinderDao.saveControlCodeDecontrolsApply(controlCodeSubJourney, false);
         return journeyManager.performTransition(StandardEvents.NEXT);
-      }
-      else {
-        throw new FormStateException("Unhandled form state");
       }
     }
   }
@@ -89,7 +86,7 @@ public class DecontrolsController {
   public static class DecontrolsForm {
 
     @Required(message = "You must answer this question")
-    public String decontrolsDescribeItem;
+    public Boolean decontrolsDescribeItem;
 
   }
 

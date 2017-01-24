@@ -35,17 +35,19 @@ public class TortureRestraintController {
 
   public CompletionStage<Result> handleSubmit() {
     Form<TortureRestraintForm> form = formFactory.form(TortureRestraintForm.class).bindFromRequest();
-    if ("true".equals(form.get().goToSearch)) {
+    if ("goToSearch".equals(form.get().action)) {
       permissionsFinderDao.saveExportCategory(ExportCategory.TORTURE_RESTRAINT);
       permissionsFinderDao.saveGoodsType(GoodsType.PHYSICAL);
       return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
     }
-    throw new FormStateException("Unknown value of goToSearch: \"" + form.get().goToSearch + "\"");
+    else {
+      throw new FormStateException("Unknown value of action: \"" + form.get().action + "\"");
+    }
   }
 
   public static class TortureRestraintForm {
 
-    public String goToSearch;
+    public String action;
 
   }
 }

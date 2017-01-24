@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import exceptions.FormStateException;
 import models.GoodsType;
 import models.softtech.ExemptionsDisplay;
 import models.softtech.ExemptionQuestion;
@@ -39,7 +38,7 @@ public class ExemptionsController {
   private Result renderForm(ExemptionQuestion exemptionQuestion) {
     ExemptionsForm templateForm = new ExemptionsForm();
     Optional<Boolean> doExemptionsApply = permissionsFinderDao.getSoftwareExemptionQuestion(exemptionQuestion);
-    templateForm.doExemptionsApply = doExemptionsApply.isPresent() ? doExemptionsApply.get().toString() : "";
+    templateForm.doExemptionsApply = doExemptionsApply.orElse(null);
     return ok(exemptions.render(formFactory.form(ExemptionsForm.class).fill(templateForm), new ExemptionsDisplay(exemptionQuestion)));
   }
 
@@ -61,21 +60,18 @@ public class ExemptionsController {
       return completedFuture(ok(exemptions.render(form, new ExemptionsDisplay(exemptionQuestion))));
     }
 
-    String doExemptionsApply = form.get().doExemptionsApply;
+    Boolean doExemptionsApply = form.get().doExemptionsApply;
 
-    if ("true".equals(doExemptionsApply)) {
+    if (doExemptionsApply) {
       if (exemptionQuestion == ExemptionQuestion.Q2) {
         permissionsFinderDao.saveSoftTechCategory(GoodsType.SOFTWARE, SoftTechCategory.TELECOMS);
       }
       permissionsFinderDao.saveSoftwareExemptionQuestion(exemptionQuestion, true);
       return journeyManager.performTransition(StandardEvents.YES);
     }
-    else if ("false".equals(doExemptionsApply)) {
+    else {
       permissionsFinderDao.saveSoftwareExemptionQuestion(exemptionQuestion, false);
       return journeyManager.performTransition(StandardEvents.NO);
-    }
-    else {
-      throw new FormStateException(String.format("Unknown value for doExemptionsApply: \"%s\"", doExemptionsApply));
     }
   }
 
@@ -94,7 +90,7 @@ public class ExemptionsController {
   public static class ExemptionsForm {
 
     @Required(message = "You must answer this question")
-    public String doExemptionsApply;
+    public Boolean doExemptionsApply;
 
   }
 }

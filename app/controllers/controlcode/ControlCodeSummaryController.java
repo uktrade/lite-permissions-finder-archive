@@ -57,7 +57,7 @@ public class ControlCodeSummaryController extends Controller {
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies(controlCodeSubJourney);
     ControlCodeSummaryForm templateForm = new ControlCodeSummaryForm();
-    templateForm.couldDescribeItems = controlCodeApplies.isPresent() ? controlCodeApplies.get().toString() : "";
+    templateForm.couldDescribeItems = controlCodeApplies.orElse(null);
     return renderWithForm(controlCodeSubJourney, formFactory.form(ControlCodeSummaryForm.class).fill(templateForm));
   }
 
@@ -73,24 +73,22 @@ public class ControlCodeSummaryController extends Controller {
       return renderWithForm(controlCodeSubJourney, form);
     }
 
-    String couldDescribeItems = form.get().couldDescribeItems;
-    if("true".equals(couldDescribeItems)) {
+    Boolean couldDescribeItems = form.get().couldDescribeItems;
+
+    if(couldDescribeItems) {
       permissionsFinderDao.saveControlCodeApplies(controlCodeSubJourney, true);
       return journeyManager.performTransition(StandardEvents.NEXT);
     }
-    else if ("false".equals(couldDescribeItems)) {
+    else {
       permissionsFinderDao.saveControlCodeApplies(controlCodeSubJourney, false);
       return journeyManager.performTransition(Events.CONTROL_CODE_NOT_APPLICABLE);
-    }
-    else {
-      throw new FormStateException("Unhandled form state");
     }
   }
 
   public static class ControlCodeSummaryForm {
 
     @Required(message = "You must answer this question")
-    public String couldDescribeItems;
+    public Boolean couldDescribeItems;
 
   }
 
