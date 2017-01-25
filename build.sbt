@@ -29,6 +29,7 @@ libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.
 
 libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.0"
 libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
+libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.1"
 
 resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
 

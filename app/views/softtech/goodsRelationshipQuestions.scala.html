@@ -3,6 +3,7 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
+@import org.apache.commons.lang3.StringUtils
 @(form: Form[_], display: GoodsRelationshipQuestionsDisplay)
 @standardPage(display.pageTitle, Some(Html(display.pageTitle))){
   @errorSummary(form)
@@ -14,15 +15,17 @@
 
     @contextFormParams()
 
-    <p>
-      @display.relationship.description
-    </p>
+    <h2 class="heading-medium">
+      @display.relationship.getControlEntryQuestion
+    </h2>
 
-    <p>
-      @display.relationship.notes
-    </p>
+    @if(StringUtils.isNotEmpty(display.relationship.getControlEntryContent)) {
+      <div class="stored-content-container">
+        @Html(display.relationship.getControlEntryContent)
+      </div>
+    }
 
-    @formRadioBoolean(form.field("questionAnswer"), Html(display.relationship.controlEntryQuestion))
+    @formRadioBoolean(form.field("questionAnswer"), Html(display.relationship.getControlEntryQuestion), hideHeading = true)
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

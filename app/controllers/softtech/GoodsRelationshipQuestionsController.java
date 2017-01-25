@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.controls.relationships.GoodsRelationship;
 import components.services.controlcode.controls.relationships.GoodsRelationshipsServiceClient;
 import exceptions.FormStateException;
 import models.GoodsType;
@@ -16,6 +15,7 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
+import uk.gov.bis.lite.controlcode.api.view.GoodsRelationshipFullView;
 import views.html.softtech.goodsRelationshipQuestions;
 
 import java.util.Optional;
@@ -70,7 +70,7 @@ public class GoodsRelationshipQuestionsController {
   private CompletionStage<Result> renderWithForm(GoodsType goodsType, GoodsType relatedToGoodsType, Form<GoodsRelationshipQuestionsForm> form, int currentQuestionIndex){
     return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
         .thenApplyAsync(result -> {
-          GoodsRelationship relationship = result.getRelationship(currentQuestionIndex);
+          GoodsRelationshipFullView relationship = result.getRelationship(currentQuestionIndex);
           GoodsRelationshipQuestionsDisplay display = new GoodsRelationshipQuestionsDisplay(goodsType, relatedToGoodsType, relationship, currentQuestionIndex);
           return ok(goodsRelationshipQuestions.apply(form, display));
         }, httpExecutionContext.current());
@@ -103,7 +103,7 @@ public class GoodsRelationshipQuestionsController {
               permissionsFinderDao.saveGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex, true);
               permissionsFinderDao.saveGoodsRelationshipQuestionCurrentIndex(goodsType, relatedToGoodsType, currentQuestionIndex);
               // Save control code for registration
-              permissionsFinderDao.saveControlCodeForRegistration(result.getRelationship(currentQuestionIndex).controlCode.controlCodeData.controlCode);
+              permissionsFinderDao.saveControlCodeForRegistration(result.getRelationship(currentQuestionIndex).getControlCode());
               return journeyManager.performTransition(StandardEvents.YES);
             }
             else {

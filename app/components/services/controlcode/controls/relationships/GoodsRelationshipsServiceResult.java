@@ -2,23 +2,24 @@ package components.services.controlcode.controls.relationships;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import play.libs.Json;
+import uk.gov.bis.lite.controlcode.api.view.GoodsRelationshipFullView;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class GoodsRelationshipsServiceResult {
 
-  public final List<GoodsRelationship> relationships;
+  public final List<GoodsRelationshipFullView> relationships;
 
   public GoodsRelationshipsServiceResult(JsonNode responseJson) {
-    this.relationships = Arrays.asList(Json.fromJson(responseJson, GoodsRelationship[].class));
+    this.relationships = Arrays.asList(Json.fromJson(responseJson, GoodsRelationshipFullView[].class));
   }
 
   public boolean relationshipsExist() {
     return relationships != null &&  !relationships.isEmpty();
   }
 
-  public GoodsRelationship getRelationship(int index) {
+  public GoodsRelationshipFullView getRelationship(int index) {
     return this.relationships.get(index);
   }
 
