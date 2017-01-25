@@ -91,6 +91,17 @@ LITEPermissionsFinder.countrySetup = {
 LITEPermissionsFinder.Search = {
   setupPage: function() {
     LITEPermissionsFinder.Search._bindAnalyticsTriggers();
+    $("#isComponent-T").change(function() {
+      if ($(this).is(":checked")) {
+        LITECommon.showContent($("#componentWrapper"));
+      }
+    }).trigger("change");
+
+    $("#isComponent-F").change(function() {
+      if ($(this).is(":checked")) {
+        LITECommon.hideContent($("#componentWrapper"));
+      }
+    }).trigger("change");
   },
   _bindAnalyticsTriggers: function() {
     $('form:last').submit(function(event) {
