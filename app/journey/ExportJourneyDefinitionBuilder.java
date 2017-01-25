@@ -383,10 +383,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .then(moveTo(decontrolsDecision));
 
     atStage(searchRelatedCodes)
-        .onEvent(Events.NONE_MATCHED)
-        .then(moveTo(notApplicable));
-
-    atStage(searchRelatedCodes)
         .onEvent(Events.BACK)
         .branch()
         .when(BackType.RESULTS, backTo(searchResults));
@@ -690,10 +686,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(searchRelatedCodesRTS)
         .onEvent(Events.CONTROL_CODE_SELECTED)
         .then(moveTo(decontrolsDecisionRTS));
-
-    atStage(searchRelatedCodesRTS)
-        .onEvent(Events.NONE_MATCHED)
-        .then(moveTo(applicableCatchallControlsDecision));
 
     atStage(searchRelatedCodesRTS)
         .onEvent(Events.BACK)

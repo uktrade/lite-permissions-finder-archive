@@ -36,7 +36,6 @@ public class SearchRelatedCodesController {
   private final PermissionsFinderDao permissionsFinderDao;
 
   public enum SearchRelatedCodesAction{
-    NONE_MATCHED,
     SHOW_MORE,
     PICK_FROM_RESULTS_AGAIN;
 
@@ -117,8 +116,6 @@ public class SearchRelatedCodesController {
     Optional<SearchRelatedCodesAction> action = SearchRelatedCodesAction.getMatched(form.get().action);
     if (action.isPresent()){
       switch (action.get()) {
-        case NONE_MATCHED:
-          return journeyManager.performTransition(Events.NONE_MATCHED);
         case SHOW_MORE:
           String resultsControlCode = permissionsFinderDao.getSearchResultsLastChosenControlCode(controlCodeSubJourney);
           return relatedCodes(resultsControlCode)
