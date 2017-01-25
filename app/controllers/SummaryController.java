@@ -96,8 +96,8 @@ public class SummaryController {
     String action = form.get().action;
 
     if (isResumedApplication && StringUtils.equals("continue", action)) {
-      if (journeyManager.isJourneySerialised()) {
-        return journeyManager.restoreCurrentStage();
+      if (journeyManager.isJourneySerialised(JourneyDefinitionNames.EXPORT)) {
+        return journeyManager.restoreCurrentStage(JourneyDefinitionNames.EXPORT);
       }
       else {
         return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);

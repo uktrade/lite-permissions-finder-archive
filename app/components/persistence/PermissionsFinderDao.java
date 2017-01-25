@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class PermissionsFinderDao extends CommonRedisDao implements JourneySerialiser {
+public class PermissionsFinderDao extends CommonRedisDao {
 
   public static final String JOURNEY = "journey";
   public static final String SOURCE_COUNTRY = "sourceCountry";
@@ -317,12 +317,10 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
     }
   }
 
-  @Override
   public String readJourneyString() {
     return readString(JOURNEY);
   }
 
-  @Override
   public void writeJourneyString(String journeyString) {
     writeString(JOURNEY, journeyString);
   }

@@ -5,6 +5,7 @@ import components.common.journey.JourneyDefinition;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ExportCategoryDecider;
+import journey.deciders.RelatedCodesDecider;
 import journey.deciders.RelatedControlsDecider;
 import journey.deciders.RelationshipWithSoftwareDecider;
 import journey.deciders.RelationshipWithTechnologyDecider;
@@ -30,7 +31,8 @@ public class JourneyPrint {
         new RelatedControlsDecider(null, null, null, null),
         new CatchallControlsDecider(null, null, null, null),
         new RelationshipWithTechnologyDecider(null, null),
-        new RelationshipWithSoftwareDecider(null, null)
+        new RelationshipWithSoftwareDecider(null, null),
+        new RelatedCodesDecider(null, null, null, null)
     ).buildAll();
     Optional<JourneyDefinition> serialiseJourney = journeyDefinitions.stream().filter(j -> JourneyDefinitionNames.EXPORT.equals(j.getJourneyName())).findFirst();
 
