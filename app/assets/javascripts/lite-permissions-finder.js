@@ -50,19 +50,17 @@ LITEPermissionsFinder.DestinationCountry = {
   setupPage: function() {
     LITEPermissionsFinder.countrySetup.setup();
 
-    $("#through-destination-countries-wrapper").hide();
-
     $("#itemThroughMultipleCountries-T").change(function() {
       if ($(this).is(":checked")) {
-        $("#through-destination-countries-wrapper").show();
+        LITECommon.showContent($("#through-destination-countries-wrapper"));
       }
     }).trigger("change");
 
     $("#itemThroughMultipleCountries-F").change(function() {
       if ($(this).is(":checked")) {
-        $("#through-destination-countries-wrapper").hide();
+        LITECommon.hideContent($("#through-destination-countries-wrapper"));
       }
-    });
+    }).trigger("change");
   }
 };
 
