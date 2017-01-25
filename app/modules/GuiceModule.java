@@ -22,6 +22,7 @@ import components.common.transaction.TransactionContextParamProvider;
 import components.persistence.PermissionsFinderDao;
 import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
+import journey.PermissionsFinderJourneySerialiser;
 import journey.SubJourneyContextParamProvider;
 import play.Configuration;
 import play.Environment;
@@ -95,7 +96,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
         .annotatedWith(Names.named("applicationCodeDaoHash"))
         .toInstance(createApplicationCodeKeyConfig());
 
-    bind(JourneySerialiser.class).to(PermissionsFinderDao.class);
+    bind(JourneySerialiser.class).to(PermissionsFinderJourneySerialiser.class);
 
     requestInjection(this);
   }
