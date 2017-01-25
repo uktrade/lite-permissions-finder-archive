@@ -14,7 +14,7 @@ import models.search.SearchDisplay;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
-import play.data.validation.Constraints;
+import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import views.html.search.search;
 
@@ -47,8 +47,8 @@ public class SearchController {
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<SearchForm> templateFormOptional = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney);
     SearchForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new SearchForm();
-    return completedFuture(ok(search.render(
-        new SearchDisplay(controlCodeSubJourney, formFactory.form(SearchForm.class).fill(templateForm))
+    return completedFuture(ok(search.render(formFactory.form(SearchForm.class).fill(templateForm),
+        new SearchDisplay(controlCodeSubJourney)
     )));
   }
 
@@ -61,7 +61,7 @@ public class SearchController {
     Form<SearchForm> form = bindSearchForm();
 
     if(form.hasErrors()) {
-      return completedFuture(ok(search.render(new SearchDisplay(controlCodeSubJourney, form))));
+      return completedFuture(ok(search.render(form, new SearchDisplay(controlCodeSubJourney))));
     }
     permissionsFinderDao.savePhysicalGoodSearchForm(controlCodeSubJourney, form.get());
     permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney,
@@ -85,14 +85,22 @@ public class SearchController {
   }
 
   public static String getSearchTerms(SearchForm form) {
-    return Arrays.asList(form.description, form.component).stream()
-        .filter(StringUtils::isNoneBlank)
-        .collect(Collectors.joining(", "));
+    if (form.isComponent) {
+     return Arrays.asList(form.description, form.component).stream()
+          .filter(StringUtils::isNoneBlank)
+          .collect(Collectors.joining(", "));
+    }
+    else {
+      return form.description;
+    }
   }
 
   public static class SearchForm {
 
-    @Constraints.Required(message = "You must enter a description of your goods")
+    @Required(message = "You must answer this question")
+    public Boolean isComponent;
+
+    @Required(message = "You must enter a description of your goods")
     public String description;
 
     public String component;

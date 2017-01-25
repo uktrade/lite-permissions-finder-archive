@@ -5,9 +5,9 @@
 @import controllers.search.routes.SearchController
 @import models.search.SearchDisplay
 
-@(display: SearchDisplay)
+@(form: Form[_], display: SearchDisplay)
 @standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("search")){
-  @errorSummary(display.form)
+  @errorSummary(form)
 
 }{
 
@@ -15,13 +15,21 @@
 
     @contextFormParams()
 
-    @formTextarea(display.form("description"), cssClass = "form-control-wide", rows = "4") {
+    @formTextarea(form("description"), cssClass = "form-control-wide", rows = "4") {
       @display.descriptionLabel
     }
 
-    @formTextarea(display.form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide", rows = "4"){
-      @display.componentLabel
-    }
+    @formRadioBoolean(form("isComponent"), Html("Is your item a component, attachment or part for another item?"))
+
+    <p class="js-hidden">
+      <span class="bold-medium">If yes, answer the question below</span>
+    </p>
+
+    <div id="componentWrapper" class="js-hidden">
+      @formTextarea(form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide", rows = "4"){
+        @display.componentLabel
+      }
+    </div>
 
     <div class="form-group">
       <button type="submit" class="button">Search</button>

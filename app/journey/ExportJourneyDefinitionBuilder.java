@@ -35,7 +35,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.categories.routes.ExportCategoryController.renderForm());
   private final JourneyStage goodsType = defineStage("goodsType", "Are you exporting goods, software or technical information?",
       routes.GoodsTypeController.renderForm());
-  private final JourneyStage search = defineStage("search", "Describe your items",
+  private final JourneyStage search = defineStage("search", "Describe your item",
       controllers.search.routes.SearchController.renderForm(GoodsType.PHYSICAL.urlString()));
   private final DecisionStage<Boolean> searchRelatedCodesDecision;
   private final JourneyStage destinationCountries = defineStage("destinationCountries", "Countries and territories",
@@ -60,7 +60,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftTechCategories", "What is your software for?",
       controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.SOFTWARE.urlString()));
 
-  private final JourneyStage searchRTS = defineStage("searchRTS", "Describe your items",
+  private final JourneyStage searchRTS = defineStage("searchRTS", "Describe the equipment or materials your software is related to",
       controllers.search.routes.SearchController.renderForm(GoodsType.SOFTWARE.urlString()));
   private final DecisionStage<Boolean> searchRelatedCodesDecisionRTS;
 
