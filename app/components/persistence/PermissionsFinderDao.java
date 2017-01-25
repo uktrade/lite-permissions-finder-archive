@@ -318,13 +318,13 @@ public class PermissionsFinderDao extends CommonRedisDao implements JourneySeria
   }
 
   @Override
-  public String readJourneyString() {
-    return readString(JOURNEY);
+  public String readJourneyString(String journeyName) {
+    return readString(JOURNEY + ":" + journeyName);
   }
 
   @Override
-  public void writeJourneyString(String journeyString) {
-    writeString(JOURNEY, journeyString);
+  public void writeJourneyString(String journeyName, String journeyString) {
+    writeString(JOURNEY + ":" + journeyName, journeyString);
   }
 
   public void saveOgelRegistrationServiceTransactionExists (boolean transactionCreated) {
