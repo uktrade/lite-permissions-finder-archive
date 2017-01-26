@@ -207,10 +207,6 @@ GET     /licence-not-available-through-this-service/software/      controllers.S
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
 
-GET     /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
-
-POST    /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
-
 GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
 
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
