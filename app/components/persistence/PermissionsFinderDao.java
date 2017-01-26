@@ -2,7 +2,6 @@ package components.persistence;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.common.journey.JourneySerialiser;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
@@ -14,7 +13,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
 import models.controlcode.ControlCodeSubJourney;
-import models.softtech.ExemptionQuestion;
+import models.softtech.SoftwareExemptionQuestion;
 import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
@@ -451,12 +450,12 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readBoolean(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, IS_RELATED_TO_GOODS_TYPE)));
   }
 
-  public void saveSoftwareExemptionQuestion(ExemptionQuestion exemptionQuestion, boolean doExemptionsApply) {
-    writeBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + exemptionQuestion.toString(), doExemptionsApply);
+  public void saveSoftwareExemptionQuestion(SoftwareExemptionQuestion softwareExemptionQuestion, boolean doExemptionsApply) {
+    writeBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + softwareExemptionQuestion.toString(), doExemptionsApply);
   }
 
-  public Optional<Boolean> getSoftwareExemptionQuestion(ExemptionQuestion exemptionQuestion) {
-    return readBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + exemptionQuestion.toString());
+  public Optional<Boolean> getSoftwareExemptionQuestion(SoftwareExemptionQuestion softwareExemptionQuestion) {
+    return readBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + softwareExemptionQuestion.toString());
   }
 
   public void saveGoodsRelationshipQuestionAnswer(GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex, boolean answer) {

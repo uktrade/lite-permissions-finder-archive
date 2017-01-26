@@ -71,17 +71,17 @@ GET     /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTe
 
 POST    /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit(goodsType)
 
-GET     /exemptions-may-apply/question-one        controllers.softtech.ExemptionsController.renderFormQ1
+GET     /exemptions-may-apply/question-one        controllers.softtech.SoftwareExemptionsController.renderFormQ1
 
-POST    /exemptions-may-apply/question-one        controllers.softtech.ExemptionsController.handleSubmitQ1
+POST    /exemptions-may-apply/question-one        controllers.softtech.SoftwareExemptionsController.handleSubmitQ1
 
-GET     /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.renderFormQ2
+GET     /exemptions-may-apply/question-two        controllers.softtech.SoftwareExemptionsController.renderFormQ2
 
-POST    /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.handleSubmitQ2
+POST    /exemptions-may-apply/question-two        controllers.softtech.SoftwareExemptionsController.handleSubmitQ2
 
-GET     /exemptions-may-apply/question-three      controllers.softtech.ExemptionsController.renderFormQ3
+GET     /exemptions-may-apply/question-three      controllers.softtech.SoftwareExemptionsController.renderFormQ3
 
-POST    /exemptions-may-apply/question-three      controllers.softtech.ExemptionsController.handleSubmitQ3
+POST    /exemptions-may-apply/question-three      controllers.softtech.SoftwareExemptionsController.handleSubmitQ3
 
 GET     /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
 

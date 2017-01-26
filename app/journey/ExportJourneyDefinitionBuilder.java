@@ -462,13 +462,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private void softwareStages() {
 
     JourneyStage softwareExemptionsQ1 = defineStage("softwareExemptionsQ1", "Some types of software do not need a licence",
-        controllers.softtech.routes.ExemptionsController.renderFormQ1());
+        controllers.softtech.routes.SoftwareExemptionsController.renderFormQ1());
 
     JourneyStage softwareExemptionsQ2 = defineStage("softwareExemptionsQ2", "Some types of software do not need a licence",
-        controllers.softtech.routes.ExemptionsController.renderFormQ2());
+        controllers.softtech.routes.SoftwareExemptionsController.renderFormQ2());
 
     JourneyStage softwareExemptionsQ3 = defineStage("softwareExemptionsQ3", "Some types of software do not need a licence",
-        controllers.softtech.routes.ExemptionsController.renderFormQ3());
+        controllers.softtech.routes.SoftwareExemptionsController.renderFormQ3());
 
     JourneyStage softwareExemptionsNLR1 = defineStage("softwareExemptionsNLR1", "Software exemptions apply",
         controllers.routes.StaticContentController.renderSoftwareExemptionsNLR1());
