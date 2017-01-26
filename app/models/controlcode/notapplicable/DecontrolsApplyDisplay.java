@@ -37,13 +37,13 @@ public class DecontrolsApplyDisplay {
       }
 
       if (controlCodeSubJourney.isSoftTechCatchallControlsVariant() && softTechCategory.isPresent()) {
-        this.buttons.add(new ActionButton(BackType.SOFT_TECH_CATEGORY.toString(), "Change your dual use software category (currently " + softTechCategory.get().getHeading() + ")"));
+        this.buttons.add(new ActionButton(BackType.SOFT_TECH_CATEGORY.toString(), "change your dual use software category (currently " + softTechCategory.get().getHeading() + ")"));
       }
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
           , controlCodeSubJourney.toString()));
     }
-    this.buttons.add(new ActionButton(BackType.EXPORT_CATEGORY.toString(), "Change your item category (currently " + exportCategory.getHeading() + ")"));
+    this.buttons.add(new ActionButton(BackType.EXPORT_CATEGORY.toString(), "change your item category (currently " + exportCategory.getHeading() + ")"));
   }
 }
