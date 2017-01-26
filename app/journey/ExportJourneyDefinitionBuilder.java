@@ -90,6 +90,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private JourneyStage softwareRelatedToSoftwareQuestion = defineStage("softwareRelatedToSoftwareQuestion", "Is your software related to other software?",
       controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
 
+  /** Technology **/
+  JourneyStage technologyExemptions = defineStage("technologyExemptions", "Is technology in the public domain?",
+      controllers.softtech.routes.TechnologyExemptionsController.renderForm());
+
   private final AdditionalSpecificationsDecider additionalSpecificationsDecider;
   private final DecontrolsDecider decontrolsDecider;
   private final TechnicalNotesDecider technicalNotesDecider;
@@ -143,11 +147,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(search))
         .when(GoodsType.SOFTWARE, moveTo(dualUseOrMilitarySoftwareDecision))
-        .when(GoodsType.TECHNOLOGY, moveTo(notImplemented));
+        .when(GoodsType.TECHNOLOGY, moveTo(technologyExemptions));
 
     physicalGoodsStages();
 
     softwareStages();
+
+    technologyStages();
 
     // *** Journeys ***
 
@@ -560,6 +566,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   }
 
+  private void technologyStages() {
+    atStage(technologyExemptions)
+        .onEvent(StandardEvents.YES)
+        .then(moveTo(notImplemented));
+
+    atStage(technologyExemptions)
+        .onEvent(StandardEvents.NO)
+        .then(moveTo(notImplemented));
+  }
   /**
    * Software controls per software category
    */

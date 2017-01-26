@@ -1,0 +1,25 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import controllers.softtech.routes
+@import models.softtech.TechnologyExemptionsDisplay
+
+@(form: Form[_], display: TechnologyExemptionsDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+  @errorSummary(form)
+}{
+
+  <form action="@routes.TechnologyExemptionsController.handleSubmit" method="POST">
+
+    @contextFormParams()
+
+    @formRadioBoolean(form("doExemptionsApply"), Html("Is technology in the public domain? STUB"))
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+
+  </form>
+
+}

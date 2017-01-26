@@ -59,6 +59,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String LAST_STARTED_CONTROL_CODE_SUB_JOURNEY = "lastStartedControlCodeSubJourney";
   public static final String IS_RELATED_TO_GOODS_TYPE = "isRelatedToGoodsType";
   public static final String SOFTWARE_EXEMPTION_QUESTION = "softwareExemptionQuestion";
+  public static final String TECHNOLOGY_EXEMPTIONS_APPLY = "technologyExemptionsApply";
   public static final String GOODS_RELATIONSHIP_QUESTION_ANSWER = "goodsRelationshipQuestionAnswer";
   public static final String GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX = "goodsRelationshipQuestionCurrentIndex";
   public static final String CONTROL_CODE_FOR_REGISTRATION = "controlCodeForRegistration";
@@ -456,6 +457,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<Boolean> getSoftwareExemptionQuestion(SoftwareExemptionQuestion softwareExemptionQuestion) {
     return readBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + softwareExemptionQuestion.toString());
+  }
+
+  public void saveTechnologyExemptionsApply(boolean doExemptionsApply) {
+    writeBoolean(TECHNOLOGY_EXEMPTIONS_APPLY, doExemptionsApply);
+  }
+
+  public Optional<Boolean> getTechnologyExemptionsApply() {
+    return readBoolean(TECHNOLOGY_EXEMPTIONS_APPLY);
   }
 
   public void saveGoodsRelationshipQuestionAnswer(GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex, boolean answer) {
