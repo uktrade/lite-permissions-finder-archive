@@ -567,9 +567,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   }
 
   private void technologyStages() {
+
+    JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR", "Technology exemptions apply",
+        controllers.routes.StaticContentController.renderTechnologyExemptionsNLR());
+
     atStage(technologyExemptions)
         .onEvent(StandardEvents.YES)
-        .then(moveTo(notImplemented));
+        .then(moveTo(technologyExemptionsNLR));
 
     atStage(technologyExemptions)
         .onEvent(StandardEvents.NO)

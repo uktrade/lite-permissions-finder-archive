@@ -83,14 +83,17 @@ GET     /exemptions-may-apply/software/question-three      controllers.softtech.
 
 POST    /exemptions-may-apply/software/question-three      controllers.softtech.SoftwareExemptionsController.handleSubmitQ3
 
-GET     /exemptions-apply/software/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
-
-GET     /exemptions-apply/software/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
-
 
 GET     /exemptions-may-apply/technology      controllers.softtech.TechnologyExemptionsController.renderForm
 
 POST    /exemptions-may-apply/technolgoy      controllers.softtech.TechnologyExemptionsController.handleSubmit
+
+
+GET     /exemptions-apply/software/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
+
+GET     /exemptions-apply/software/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
+
+GET     /exemptions-apply/technology/icence-not-available          controllers.StaticContentController.renderTechnologyExemptionsNLR
 
 
 GET     /export-category                      controllers.categories.ExportCategoryController.renderForm

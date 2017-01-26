@@ -31,6 +31,7 @@ public class StaticContentController extends Controller {
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     SOFTWARE_EXEMPTIONS_NLR1("software/exemptionsNLR1.html", "No licence available"),
     SOFTWARE_EXEMPTIONS_NLR2("software/exemptionsNLR2.html", "No licence available"),
+    TECHNOLOGY_EXEMPTIONS_NLR("technology/exemptionsNLR.html", "No licence available"),
     SOFTWARE_JOURNEY_END_NLR("software/journeyEndNLR.html", "No licence available"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
 
@@ -127,6 +128,10 @@ public class StaticContentController extends Controller {
 
   public Result renderSoftwareJourneyEndNLR() {
     return renderStaticHtml(StaticHtml.SOFTWARE_JOURNEY_END_NLR);
+  }
+
+  public Result renderTechnologyExemptionsNLR() {
+    return renderStaticHtml(StaticHtml.TECHNOLOGY_EXEMPTIONS_NLR);
   }
 
   public Result renderVirtualEU() {
