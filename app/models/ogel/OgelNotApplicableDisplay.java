@@ -8,7 +8,7 @@ public class OgelNotApplicableDisplay {
   public final String controlCode;
 
   public OgelNotApplicableDisplay(OgelFullView ogelServiceResult, String controlCode) {
-    this.pageTitle = "Not all items within the classification " + controlCode + " can be exported using " + ogelServiceResult.getName();
+    this.pageTitle = "You cannot use this licence";
     this.ogelTitle = ogelServiceResult.getName();
     this.controlCode = controlCode;
   }
