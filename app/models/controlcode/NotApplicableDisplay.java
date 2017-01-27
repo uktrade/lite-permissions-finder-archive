@@ -31,7 +31,8 @@ public class NotApplicableDisplay{
     }
     else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
         controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
-        controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
+        controlCodeSubJourney.isSoftTechCatchallControlsVariant() ||
+        controlCodeSubJourney.isNonExemptControlsVariant()) {
       if (NotApplicableDisplayCommon.canPickAgain(applicableSoftTechControls)) {
         this.buttons = Collections.singletonList(new ActionButton(BackType.MATCHES.toString(), "return to the list of possible matches and choose again"));
       }

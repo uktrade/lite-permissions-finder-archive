@@ -92,6 +92,15 @@ public class NotApplicableControllerHelper {
             , httpExecutionContext.current());
   }
 
+  public CompletionStage<Result> nonExemptTechnologyHandleSubmit(ControlCodeSubJourney controlCodeSubJourney, Function<NotApplicableDisplayCommon, Result> renderFunction) {
+    String selectedControlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
+    CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(selectedControlCode);
+    return softTechJourneyHelper.checkNonExemptTechnologyControls()
+        .thenCombineAsync(frontendStage, (controls, result) ->
+                renderFunction.apply(new NotApplicableDisplayCommon(controlCodeSubJourney, result.getFrontendControlCode(), controls))
+            , httpExecutionContext.current());
+  }
+
   public CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney, Function<NotApplicableDisplayCommon, Result> renderFunction) {
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
       return physicalGoodsSearchVariant(controlCodeSubJourney, renderFunction);
@@ -104,6 +113,9 @@ public class NotApplicableControllerHelper {
     }
     else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       return softTechCatchallControlsVariant(controlCodeSubJourney, renderFunction);
+    }
+    else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
+      return nonExemptTechnologyHandleSubmit(controlCodeSubJourney, renderFunction);
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""

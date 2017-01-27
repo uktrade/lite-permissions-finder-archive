@@ -58,7 +58,8 @@ public class NotApplicableController {
       if (controlCodeSubJourney.isPhysicalGoodsSearchVariant() ||
           controlCodeSubJourney.isSoftTechControlsVariant() ||
           controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
-          controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
+          controlCodeSubJourney.isSoftTechCatchallControlsVariant() ||
+          controlCodeSubJourney.isNonExemptControlsVariant()) {
 
         Optional<BackType> backTypeOptional = BackType.getMatched(action);
 

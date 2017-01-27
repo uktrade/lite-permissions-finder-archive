@@ -15,7 +15,8 @@ public enum ControlCodeSubJourney {
   SOFTWARE_CATCHALL_CONTROLS(ControlCodeVariant.CATCHALL_CONTROLS, GoodsType.SOFTWARE),
   TECHNOLOGY_CONTROLS(ControlCodeVariant.CONTROLS, GoodsType.TECHNOLOGY),
   TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, GoodsType.TECHNOLOGY),
-  TECHNOLOGY_CATCHALL_CONTROLS(ControlCodeVariant.CATCHALL_CONTROLS, GoodsType.SOFTWARE);
+  TECHNOLOGY_CATCHALL_CONTROLS(ControlCodeVariant.CATCHALL_CONTROLS, GoodsType.SOFTWARE),
+  TECHNOLOGY_NON_EXEMPT_CONTROLS(ControlCodeVariant.NON_EXEMPT, GoodsType.TECHNOLOGY);
 
   private final ControlCodeVariant controlCodeVariant;
   private final GoodsType goodsType;
@@ -41,6 +42,10 @@ public enum ControlCodeSubJourney {
 
   public boolean isSoftTechControlsRelatedToPhysicalGoodVariant() {
     return isSoftTechControlsRelatedToPhysicalGoodVariant(this);
+  }
+
+  public boolean isNonExemptControlsVariant() {
+    return isNonExemptControlsVariant(this);
   }
 
   public boolean isSoftTechCatchallControlsVariant() {
@@ -100,6 +105,10 @@ public enum ControlCodeSubJourney {
     return controlCodeSubJourney == SOFTWARE_CATCHALL_CONTROLS || controlCodeSubJourney == TECHNOLOGY_CATCHALL_CONTROLS;
   }
 
+  public static boolean isNonExemptControlsVariant(ControlCodeSubJourney controlCodeSubJourney) {
+    return controlCodeSubJourney == TECHNOLOGY_NON_EXEMPT_CONTROLS;
+  }
+
   /**
    * Returns the {@link GoodsType} mapping for a given {@link ControlCodeSubJourney}. When no mapping is found returns null
    * @param controlCodeSubJourney
@@ -116,7 +125,8 @@ public enum ControlCodeSubJourney {
     else if (controlCodeSubJourney == PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY ||
         controlCodeSubJourney == TECHNOLOGY_CONTROLS ||
         controlCodeSubJourney == TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD ||
-        controlCodeSubJourney == TECHNOLOGY_CATCHALL_CONTROLS) {
+        controlCodeSubJourney == TECHNOLOGY_CATCHALL_CONTROLS ||
+        controlCodeSubJourney == TECHNOLOGY_NON_EXEMPT_CONTROLS) {
       return GoodsType.TECHNOLOGY;
     }
     else if (controlCodeSubJourney == PHYSICAL_GOODS_SEARCH){
@@ -219,7 +229,8 @@ public enum ControlCodeSubJourney {
     return controlCodeSubJourney == PHYSICAL_GOODS_SEARCH ||
         controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
         controlCodeSubJourney.isSoftTechControlsVariant() ||
-        controlCodeSubJourney.isSoftTechCatchallControlsVariant();
+        controlCodeSubJourney.isSoftTechCatchallControlsVariant() ||
+        controlCodeSubJourney.isNonExemptControlsVariant();
   }
 
 }

@@ -7,7 +7,8 @@ public enum ControlCodeVariant {
   SEARCH("search"),
   CONTROLS("controls"),
   CONTROLS_RELATED_TO_A_PHYSICAL_GOOD("controls-related-to-physical-good"),
-  CATCHALL_CONTROLS("catchall");
+  CATCHALL_CONTROLS("catchall"),
+  NON_EXEMPT("non-exempt");
 
   private final String value;
   private final String urlString;

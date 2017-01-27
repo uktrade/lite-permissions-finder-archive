@@ -96,6 +96,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   JourneyStage technologyExemptions = defineStage("technologyExemptions", "Is technology in the public domain?",
       controllers.softtech.routes.TechnologyExemptionsController.renderForm());
 
+  JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR", "Technology exemptions apply",
+      controllers.routes.StaticContentController.renderTechnologyExemptionsNLR());
+
+  private final JourneyStage controlsListNEC = defineStage("controlsListNEC", "Showing technology that is not covered by exemptions",
+      controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
   private final AdditionalSpecificationsDecider additionalSpecificationsDecider;
   private final DecontrolsDecider decontrolsDecider;
   private final TechnicalNotesDecider technicalNotesDecider;
@@ -571,9 +577,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private void technologyStages() {
 
-    JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR", "Technology exemptions apply",
-        controllers.routes.StaticContentController.renderTechnologyExemptionsNLR());
-
     JourneyStage technologyNonExempt = defineStage("technologyNonExempt", "Is technology minimum for installation, maintenance, operation or repair? STUB",
         controllers.softtech.routes.TechnologyNonExemptController.renderForm());
 
@@ -585,15 +588,77 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindYesNoJourneyTransition(
         technologyNonExempt,
-        notImplemented,
-        dualUseOrMilitaryTechnologyDecision
+        dualUseOrMilitaryTechnologyDecision,
+        notImplemented
     );
 
     atDecisionStage(dualUseOrMilitaryTechnologyDecision)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(notImplemented))
-        .when(ExportCategory.DUAL_USE, moveTo(notImplemented));
+        .when(ExportCategory.MILITARY, moveTo(technologyExemptionsNLR)) // TODO is this the same NLR?
+        .when(ExportCategory.DUAL_USE, moveTo(controlsListNEC));
 
+    technologyNonExemptControls();
+
+  }
+
+  private void technologyNonExemptControls() {
+    /** Technology non exempt controls journey stages */
+    JourneyStage controlCodeSummaryNEC = defineStage("controlCodeSummaryNEC", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage controlCodeNotApplicableNEC = defineStage("controlCodeNotApplicableNEC", "Description not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString(), Boolean.FALSE.toString()));
+
+    JourneyStage additionalSpecificationsNEC = defineStage("additionalSpecificationsNEC", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage decontrolsNEC = defineStage("decontrolsNEC", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage decontrolsApplyNEC = defineStage("decontrolsApplyNEC", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage technicalNotesNEC = defineStage("technicalNotesNEC", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    /** Software controls decision stages */
+    DecisionStage<Boolean> additionalSpecificationsDecisionNEC = defineDecisionStage("additionalSpecificationsDecisionNEC", additionalSpecificationsDecider);
+
+    DecisionStage<Boolean> decontrolsDecisionNEC = defineDecisionStage("decontrolsDecisionNEC", decontrolsDecider);
+
+    DecisionStage<Boolean> technicalNotesDecisionNEC = defineDecisionStage("technicalNotesDecisionNEC", technicalNotesDecider);
+
+    /** Software control journey stage transitions */
+    bindControlCodeListStageJourneyTransitions(
+        controlsListNEC,
+        decontrolsDecisionNEC,
+        technologyExemptionsNLR
+    );
+
+    bindControlCodeStageTransitions(
+        decontrolsNEC,
+        decontrolsApplyNEC,
+        controlCodeSummaryNEC,
+        controlCodeNotApplicableNEC,
+        additionalSpecificationsNEC,
+        technicalNotesNEC,
+        destinationCountries,
+        decontrolsDecisionNEC,
+        additionalSpecificationsDecisionNEC,
+        technicalNotesDecisionNEC
+    );
+
+    bindControlCodeNotApplicableFromListStageJourneyTransitions(
+        controlCodeNotApplicableNEC,
+        controlsListNEC,
+        notImplemented
+    );
+
+    atStage(decontrolsApplyNEC)
+        .onEvent(Events.BACK)
+        .branch()
+        .when(BackType.MATCHES, backTo(controlsListNEC))
+        .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
   }
   /**
    * Software controls per software category
