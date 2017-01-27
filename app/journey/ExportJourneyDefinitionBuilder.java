@@ -91,6 +91,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
 
   /** Technology **/
+  private final DecisionStage<ExportCategory> dualUseOrMilitaryTechnologyDecision;
+
   JourneyStage technologyExemptions = defineStage("technologyExemptions", "Is technology in the public domain?",
       controllers.softtech.routes.TechnologyExemptionsController.renderForm());
 
@@ -127,6 +129,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     this.relationshipWithSoftwareDecider = relationshipWithSoftwareDecider;
     this.relatedCodesDecider = relatedCodesDecider;
     this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("isDualUseSoftwareDecision", this.exportCategoryDecider);
+    this.dualUseOrMilitaryTechnologyDecision = defineDecisionStage("isDualUseTechnologyDecision", this.exportCategoryDecider);
     this.applicableSoftwareControlsDecision = defineDecisionStage("applicableSoftwareControlsDecision", this.categoryControlsDecider);
     this.applicableRelatedControlsDecision = defineDecisionStage("applicableRelatedControlsDecision", this.relatedControlsDecider);
     this.applicableCatchallControlsDecision = defineDecisionStage("applicableCatchallControlsDecision", this.catchallControlsDecider);
@@ -571,13 +574,26 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR", "Technology exemptions apply",
         controllers.routes.StaticContentController.renderTechnologyExemptionsNLR());
 
-    atStage(technologyExemptions)
-        .onEvent(StandardEvents.YES)
-        .then(moveTo(technologyExemptionsNLR));
+    JourneyStage technologyNonExempt = defineStage("technologyNonExempt", "Is technology minimum for installation, maintenance, operation or repair? STUB",
+        controllers.softtech.routes.TechnologyNonExemptController.renderForm());
 
-    atStage(technologyExemptions)
-        .onEvent(StandardEvents.NO)
-        .then(moveTo(notImplemented));
+    bindYesNoJourneyTransition(
+        technologyExemptions,
+        technologyExemptionsNLR,
+        technologyNonExempt
+    );
+
+    bindYesNoJourneyTransition(
+        technologyNonExempt,
+        notImplemented,
+        dualUseOrMilitaryTechnologyDecision
+    );
+
+    atDecisionStage(dualUseOrMilitaryTechnologyDecision)
+        .decide()
+        .when(ExportCategory.MILITARY, moveTo(notImplemented))
+        .when(ExportCategory.DUAL_USE, moveTo(notImplemented));
+
   }
   /**
    * Software controls per software category

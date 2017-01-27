@@ -60,6 +60,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String IS_RELATED_TO_GOODS_TYPE = "isRelatedToGoodsType";
   public static final String SOFTWARE_EXEMPTION_QUESTION = "softwareExemptionQuestion";
   public static final String TECHNOLOGY_EXEMPTIONS_APPLY = "technologyExemptionsApply";
+  public static final String TECHNOLOGY_IS_NON_EXEMPT = "technologyIsNonExempt";
   public static final String GOODS_RELATIONSHIP_QUESTION_ANSWER = "goodsRelationshipQuestionAnswer";
   public static final String GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX = "goodsRelationshipQuestionCurrentIndex";
   public static final String CONTROL_CODE_FOR_REGISTRATION = "controlCodeForRegistration";
@@ -491,5 +492,13 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   private String goodsRelationshipFieldNamePrefix(GoodsType goodsType, GoodsType relatedToGoodsType) {
     return goodsType.urlString() + ":" + relatedToGoodsType.urlString();
+  }
+
+  public void saveTechnologyIsNonExempt(boolean isNonExempt) {
+    writeBoolean(TECHNOLOGY_IS_NON_EXEMPT, isNonExempt);
+  }
+
+  public Optional<Boolean> getTechnologyIsNonExempt() {
+    return readBoolean(TECHNOLOGY_IS_NON_EXEMPT);
   }
 }
