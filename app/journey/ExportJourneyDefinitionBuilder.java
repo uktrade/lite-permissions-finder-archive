@@ -686,19 +686,19 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     /** Software/Technology controls journey stages */
     JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "CategoryControlCodeNotApplicable", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
 
     JourneyStage additionalSpecifications = defineStage(goodsTypeText + "CategoryAdditionalSpecifications", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
     JourneyStage decontrols = defineStage(goodsTypeText + "CategoryDecontrols", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
     JourneyStage decontrolsApply = defineStage(goodsTypeText + "CategoryDecontrolsApply", "Choose a different item type",
-        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
     JourneyStage technicalNotes = defineStage(goodsTypeText + "CategoryTechnicalNotes", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
     /** Software/Technology controls decision stages */
     DecisionStage<Boolean> additionalSpecificationsDecision = defineDecisionStage(goodsTypeText + "CategoryAdditionalSpecsDecision", additionalSpecificationsDecider);
