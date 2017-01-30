@@ -59,13 +59,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private final DecisionStage<Boolean> softwareSearchRelatedCodesDecision;
 
-  private final JourneyStage controlCodeSummarySCRTPG = defineStage("controlCodeSummarySCRTPG", "Summary",
-      controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
   private final JourneyStage controlCodeSummarySCC = defineStage("controlCodeSummarySCC", "Summary",
       controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
-  private final JourneyStage controlsListSCRTPG = defineStage("controlsListSCRTPG", "Showing controls related to your selected physical good",
-      controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.SOFTWARE.urlString()));
   private final JourneyStage controlsListSCC = defineStage("controlsListSCC", "Showing catchall controls related to your items category",
       controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(),GoodsType.SOFTWARE.urlString()));
 
@@ -489,8 +485,14 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage controlsList = defineStage("softwareCategoryControlsList", "Showing controls related to software category",
         controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
-    JourneyStage controlCodeSummary = defineStage("softwareCategoryControlCodeSummary", "Summary",
+    JourneyStage relatedToPhysicalGoodsControlsList = defineStage("softwareControlsRelatedToPhysicalGoodsControlsList", "Showing controls related to your selected physical good",
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage categoryControlCodeSummary = defineStage("softwareCategoryControlCodeSummary", "Summary",
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage relatedToPhysicalGoodsControlCodeSummary = defineStage("softwareRelatedToPhysicalGoodsControlCodeSummary", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage searchRelatedTo = defineStage("softwareSearchRelatedTo", "Describe the equipment or materials your software is related to",
         controllers.search.routes.SearchController.renderForm(GoodsType.SOFTWARE.urlString()));
@@ -532,13 +534,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atDecisionStage(applicableSoftwareControlsDecision)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
-        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummary))
+        .when(ApplicableSoftTechControls.ONE, moveTo(categoryControlCodeSummary))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlsList));
 
     softTechCategoryControls(
         GoodsType.SOFTWARE,
         controlsList,
-        controlCodeSummary,
+        categoryControlCodeSummary,
         relatedToEquipmentOrMaterials,
         dualUseCategories
     );
@@ -562,10 +564,15 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atDecisionStage(softwareApplicableRelatedControlsDecision)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelationshipWithTechnologyExistsDecision))
-        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySCRTPG))
-        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlsListSCRTPG));
+        .when(ApplicableSoftTechControls.ONE, moveTo(relatedToPhysicalGoodsControlCodeSummary))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(relatedToPhysicalGoodsControlsList));
 
-    softwareControlsRelatedToAPhysicalGood();
+    softTechControlsRelatedToAPhysicalGood(
+        GoodsType.SOFTWARE,
+        relatedToPhysicalGoodsControlsList,
+        relatedToPhysicalGoodsControlCodeSummary,
+        softwareApplicableCatchallControlsDecision
+    );
 
     atDecisionStage(softwareApplicableCatchallControlsDecision)
         .decide()
@@ -843,63 +850,64 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
 
   /**
-   * Software controls for a selected physical good
+   * Software/Technology controls for a selected physical good
    */
-  private void softwareControlsRelatedToAPhysicalGood() {
-    /** Software controls related to physical goods  */
-    JourneyStage controlCodeNotApplicableSCRTPG= defineStage("controlCodeNotApplicableSCRTPG", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
+  private void softTechControlsRelatedToAPhysicalGood(GoodsType goodsType, JourneyStage relatedToPhysicalGoodsControlsList, JourneyStage relatedToPhysicalGoodsControlCodeSummary, DecisionStage<ApplicableSoftTechControls> applicableCatchallControlsDecision) {
+    String goodsTypeText = goodsType.value().toLowerCase();
 
-    JourneyStage additionalSpecificationsSCRTPG = defineStage("additionalSpecificationsSCRTPG", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+    /** Software/Technology controls related to physical goods  */
+    JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsControlCodeNotApplicable", "Description not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
 
-    JourneyStage decontrolsSCRTPG = defineStage("decontrolsSCRTPG", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage additionalSpecifications = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsAdditionalSpecifications", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
-    JourneyStage decontrolsApplySCRTPG = defineStage("decontrolsApplySCRTPG", "Choose a different item type",
-        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrols = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsDecontrols", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
-    JourneyStage technicalNotesRelatedSCRTPG = defineStage("technicalNotesRelatedSCRTPG", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrolsApply = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsDecontrolsApply", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
-    /** Software controls related to physical goods decision stages */
-    DecisionStage<Boolean> additionalSpecificationsDecisionSCRTPG = defineDecisionStage("additionalSpecificationsDecisionSCRTPG", additionalSpecificationsDecider);
+    JourneyStage technicalNotes = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsTechnicalNotes", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
-    DecisionStage<Boolean> decontrolsDecisionSCRTPG = defineDecisionStage("decontrolsDecisionSCRTPG", decontrolsDecider);
+    /** Software/Technology controls related to physical goods decision stages */
+    DecisionStage<Boolean> additionalSpecificationsDecision = defineDecisionStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsAdditionalSpecificationsDecision", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionSCRTPG = defineDecisionStage("technicalNotesDecisionSCRTPG", technicalNotesDecider);
+    DecisionStage<Boolean> decontrolsDecision = defineDecisionStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsDecontrolsDecision", decontrolsDecider);
 
-    /** Software control journey stage transitions */
+    DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsTechnicalNotesDecision", technicalNotesDecider);
+
+    /** Software/Technology control journey stage transitions */
     bindControlCodeListStageJourneyTransitions(
-        controlsListSCRTPG,
-        decontrolsDecisionSCRTPG,
-        softwareApplicableCatchallControlsDecision
+        relatedToPhysicalGoodsControlsList,
+        decontrolsDecision,
+        applicableCatchallControlsDecision
     );
 
     bindControlCodeStageTransitions(
-        decontrolsSCRTPG,
-        decontrolsApplySCRTPG,
-        controlCodeSummarySCRTPG,
-        controlCodeNotApplicableSCRTPG,
-        additionalSpecificationsSCRTPG,
-        technicalNotesRelatedSCRTPG,
+        decontrols,
+        decontrolsApply,
+        relatedToPhysicalGoodsControlCodeSummary,
+        controlCodeNotApplicable,
+        additionalSpecifications,
+        technicalNotes,
         destinationCountries,
-        decontrolsDecisionSCRTPG, additionalSpecificationsDecisionSCRTPG,
-        technicalNotesDecisionSCRTPG
+        decontrolsDecision, additionalSpecificationsDecision,
+        technicalNotesDecision
     );
 
     bindControlCodeNotApplicableFromListStageJourneyTransitions(
-        controlCodeNotApplicableSCRTPG,
-        controlsListSCRTPG,
-        softwareApplicableCatchallControlsDecision
+        controlCodeNotApplicable,
+        relatedToPhysicalGoodsControlsList,
+        applicableCatchallControlsDecision
     );
 
-    atStage(controlsListSCRTPG)
+    atStage(relatedToPhysicalGoodsControlsList)
         .onEvent(Events.BACK)
         .branch()
-        .when(BackType.MATCHES, backTo(controlsListSCC))
+        .when(BackType.MATCHES, backTo(relatedToPhysicalGoodsControlsList))
         .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
-
   }
 
   /**
