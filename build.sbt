@@ -11,6 +11,8 @@ lazy val root = (project in file("."))
     buildInfoPackage := "buildinfo"
   )
 
+pipelineStages ++= Seq(digest)
+
 scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
