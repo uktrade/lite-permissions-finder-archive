@@ -5,8 +5,11 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import components.services.controlcode.controls.ControlCode;
 import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
 import components.services.controlcode.controls.category.CategoryControlsServiceClient;
+import components.services.controlcode.controls.nonexempt.NonExemptControlServiceClient;
+import components.services.controlcode.controls.nonexempt.NonExemptControlsServiceResult;
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
@@ -22,6 +25,8 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import views.html.softtech.controls.softTechControls;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 public class SoftTechControlsController {
@@ -31,6 +36,7 @@ public class SoftTechControlsController {
   private final CategoryControlsServiceClient categoryControlsServiceClient;
   private final RelatedControlsServiceClient relatedControlsServiceClient;
   private final CatchallControlsServiceClient catchallControlsServiceClient;
+  private final NonExemptControlServiceClient nonExemptControlServiceClient;
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
@@ -40,6 +46,7 @@ public class SoftTechControlsController {
                                     CategoryControlsServiceClient categoryControlsServiceClient,
                                     RelatedControlsServiceClient relatedControlsServiceClient,
                                     CatchallControlsServiceClient catchallControlsServiceClient,
+                                    NonExemptControlServiceClient nonExemptControlServiceClient,
                                     HttpExecutionContext httpExecutionContext) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
@@ -47,6 +54,7 @@ public class SoftTechControlsController {
     this.categoryControlsServiceClient = categoryControlsServiceClient;
     this.relatedControlsServiceClient = relatedControlsServiceClient;
     this.catchallControlsServiceClient = catchallControlsServiceClient;
+    this.nonExemptControlServiceClient = nonExemptControlServiceClient;
     this.httpExecutionContext = httpExecutionContext;
   }
 
@@ -71,7 +79,8 @@ public class SoftTechControlsController {
       if ("noMatchedControlCode".equals(action)) {
         if (controlCodeSubJourney.isSoftTechControlsVariant() ||
             controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
-            controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
+            controlCodeSubJourney.isSoftTechCatchallControlsVariant() ||
+            controlCodeSubJourney.isNonExemptControlsVariant()) {
           return journeyManager.performTransition(Events.NONE_MATCHED);
         }
         else {
@@ -119,6 +128,15 @@ public class SoftTechControlsController {
           .thenApplyAsync(result ->
               ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.controlCodes))))
               , httpExecutionContext.current());
+    }
+    else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
+      CompletionStage<NonExemptControlsServiceResult> specialMaterialsStage = nonExemptControlServiceClient.get(goodsType, SoftTechCategory.SPECIAL_MATERIALS);
+      CompletionStage<NonExemptControlsServiceResult> marineStage = nonExemptControlServiceClient.get(goodsType, SoftTechCategory.MARINE);
+      return specialMaterialsStage.thenCombineAsync(marineStage, (specialMaterialsResult, marineResult) -> {
+        List<ControlCode> controlCodes = new ArrayList<>(specialMaterialsResult.controlCodes);
+        controlCodes.addAll(marineResult.controlCodes);
+        return ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, controlCodes))));
+      }, httpExecutionContext.current());
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""

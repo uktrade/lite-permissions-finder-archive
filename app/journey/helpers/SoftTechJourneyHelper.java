@@ -1,8 +1,11 @@
 package journey.helpers;
 
 import com.google.inject.Inject;
+import components.services.controlcode.controls.ControlCode;
 import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
 import components.services.controlcode.controls.category.CategoryControlsServiceClient;
+import components.services.controlcode.controls.nonexempt.NonExemptControlServiceClient;
+import components.services.controlcode.controls.nonexempt.NonExemptControlsServiceResult;
 import components.services.controlcode.controls.related.RelatedControlsServiceClient;
 import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
@@ -11,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -19,16 +24,19 @@ public class SoftTechJourneyHelper {
   private final CategoryControlsServiceClient categoryControlsServiceClient;
   private final RelatedControlsServiceClient relatedControlsServiceClient;
   private final CatchallControlsServiceClient catchallControlsServiceClient;
+  private final NonExemptControlServiceClient nonExemptControlServiceClient;
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
   public SoftTechJourneyHelper(CategoryControlsServiceClient categoryControlsServiceClient,
                                RelatedControlsServiceClient relatedControlsServiceClient,
                                CatchallControlsServiceClient catchallControlsServiceClient,
+                               NonExemptControlServiceClient nonExemptControlServiceClient,
                                HttpExecutionContext httpExecutionContext) {
     this.categoryControlsServiceClient = categoryControlsServiceClient;
     this.relatedControlsServiceClient = relatedControlsServiceClient;
     this.catchallControlsServiceClient = catchallControlsServiceClient;
+    this.nonExemptControlServiceClient = nonExemptControlServiceClient;
     this.httpExecutionContext = httpExecutionContext;
   }
 
@@ -46,6 +54,16 @@ public class SoftTechJourneyHelper {
   public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(GoodsType goodsType, SoftTechCategory softTechCategory) {
     return catchallControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.controlCodes.size()), httpExecutionContext.current());
+  }
+
+  public CompletionStage<ApplicableSoftTechControls> checkNonExemptTechnologyControls() {
+    CompletionStage<NonExemptControlsServiceResult> specialMaterialsStage = nonExemptControlServiceClient.get(GoodsType.TECHNOLOGY, SoftTechCategory.SPECIAL_MATERIALS);
+    CompletionStage<NonExemptControlsServiceResult> marineStage = nonExemptControlServiceClient.get(GoodsType.TECHNOLOGY, SoftTechCategory.MARINE);
+    return specialMaterialsStage.thenCombineAsync(marineStage, (specialMaterialsResult, marineResult) -> {
+      List<ControlCode> controlCodes = new ArrayList<>(specialMaterialsResult.controlCodes);
+      controlCodes.addAll(marineResult.controlCodes);
+      return ApplicableSoftTechControls.fromInt(controlCodes.size());
+    }, httpExecutionContext.current());
   }
 
   // TODO remove this function

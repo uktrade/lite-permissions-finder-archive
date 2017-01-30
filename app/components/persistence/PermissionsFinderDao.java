@@ -2,7 +2,6 @@ package components.persistence;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.common.journey.JourneySerialiser;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
@@ -14,7 +13,7 @@ import models.GoodsType;
 import models.LifeType;
 import models.TradeType;
 import models.controlcode.ControlCodeSubJourney;
-import models.softtech.ExemptionQuestion;
+import models.softtech.SoftwareExemptionQuestion;
 import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
@@ -60,6 +59,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String LAST_STARTED_CONTROL_CODE_SUB_JOURNEY = "lastStartedControlCodeSubJourney";
   public static final String IS_RELATED_TO_GOODS_TYPE = "isRelatedToGoodsType";
   public static final String SOFTWARE_EXEMPTION_QUESTION = "softwareExemptionQuestion";
+  public static final String TECHNOLOGY_EXEMPTIONS_APPLY = "technologyExemptionsApply";
+  public static final String TECHNOLOGY_IS_NON_EXEMPT = "technologyIsNonExempt";
   public static final String GOODS_RELATIONSHIP_QUESTION_ANSWER = "goodsRelationshipQuestionAnswer";
   public static final String GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX = "goodsRelationshipQuestionCurrentIndex";
   public static final String CONTROL_CODE_FOR_REGISTRATION = "controlCodeForRegistration";
@@ -451,12 +452,20 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readBoolean(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, IS_RELATED_TO_GOODS_TYPE)));
   }
 
-  public void saveSoftwareExemptionQuestion(ExemptionQuestion exemptionQuestion, boolean doExemptionsApply) {
-    writeBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + exemptionQuestion.toString(), doExemptionsApply);
+  public void saveSoftwareExemptionQuestion(SoftwareExemptionQuestion softwareExemptionQuestion, boolean doExemptionsApply) {
+    writeBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + softwareExemptionQuestion.toString(), doExemptionsApply);
   }
 
-  public Optional<Boolean> getSoftwareExemptionQuestion(ExemptionQuestion exemptionQuestion) {
-    return readBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + exemptionQuestion.toString());
+  public Optional<Boolean> getSoftwareExemptionQuestion(SoftwareExemptionQuestion softwareExemptionQuestion) {
+    return readBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + softwareExemptionQuestion.toString());
+  }
+
+  public void saveTechnologyExemptionsApply(boolean doExemptionsApply) {
+    writeBoolean(TECHNOLOGY_EXEMPTIONS_APPLY, doExemptionsApply);
+  }
+
+  public Optional<Boolean> getTechnologyExemptionsApply() {
+    return readBoolean(TECHNOLOGY_EXEMPTIONS_APPLY);
   }
 
   public void saveGoodsRelationshipQuestionAnswer(GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex, boolean answer) {
@@ -483,5 +492,13 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   private String goodsRelationshipFieldNamePrefix(GoodsType goodsType, GoodsType relatedToGoodsType) {
     return goodsType.urlString() + ":" + relatedToGoodsType.urlString();
+  }
+
+  public void saveTechnologyIsNonExempt(boolean isNonExempt) {
+    writeBoolean(TECHNOLOGY_IS_NON_EXEMPT, isNonExempt);
+  }
+
+  public Optional<Boolean> getTechnologyIsNonExempt() {
+    return readBoolean(TECHNOLOGY_IS_NON_EXEMPT);
   }
 }

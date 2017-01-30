@@ -61,6 +61,9 @@ public class DecontrolsApplyController {
     else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       return notApplicableControllerHelper.softTechCatchallControlsVariant(controlCodeSubJourney, this::renderDecontrolsApply);
     }
+    else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
+      return notApplicableControllerHelper.nonExemptTechnologyHandleSubmit(controlCodeSubJourney, this::renderDecontrolsApply);
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
           , controlCodeSubJourney.toString()));

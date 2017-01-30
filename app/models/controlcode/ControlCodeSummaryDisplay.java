@@ -53,7 +53,8 @@ public class ControlCodeSummaryDisplay {
     }
     else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
         controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
-        controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
+        controlCodeSubJourney.isSoftTechCatchallControlsVariant() ||
+        controlCodeSubJourney.isNonExemptControlsVariant()) {
       this.couldDescribeItemsLabel = "Could this describe your items?";
     }
     else {

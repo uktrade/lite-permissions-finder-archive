@@ -71,22 +71,33 @@ GET     /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTe
 
 POST    /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit(goodsType)
 
-GET     /exemptions-may-apply/question-one        controllers.softtech.ExemptionsController.renderFormQ1
+GET     /exemptions-may-apply/software/question-one        controllers.softtech.SoftwareExemptionsController.renderFormQ1
 
-POST    /exemptions-may-apply/question-one        controllers.softtech.ExemptionsController.handleSubmitQ1
+POST    /exemptions-may-apply/software/question-one        controllers.softtech.SoftwareExemptionsController.handleSubmitQ1
 
-GET     /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.renderFormQ2
+GET     /exemptions-may-apply/software/question-two        controllers.softtech.SoftwareExemptionsController.renderFormQ2
 
-POST    /exemptions-may-apply/question-two        controllers.softtech.ExemptionsController.handleSubmitQ2
+POST    /exemptions-may-apply/software/question-two        controllers.softtech.SoftwareExemptionsController.handleSubmitQ2
 
-GET     /exemptions-may-apply/question-three      controllers.softtech.ExemptionsController.renderFormQ3
+GET     /exemptions-may-apply/software/question-three      controllers.softtech.SoftwareExemptionsController.renderFormQ3
 
-POST    /exemptions-may-apply/question-three      controllers.softtech.ExemptionsController.handleSubmitQ3
+POST    /exemptions-may-apply/software/question-three      controllers.softtech.SoftwareExemptionsController.handleSubmitQ3
 
-GET     /exemptions-apply/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
 
-GET     /exemptions-apply/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
+GET     /exemptions-may-apply/technology      controllers.softtech.TechnologyExemptionsController.renderForm
 
+POST    /exemptions-may-apply/technolgoy      controllers.softtech.TechnologyExemptionsController.handleSubmit
+
+GET     /exemptions-do-not-apply/technology      controllers.softtech.TechnologyNonExemptController.renderForm
+
+POST    /exemptions-do-not-apply/technology      controllers.softtech.TechnologyNonExemptController.handleSubmit
+
+
+GET     /exemptions-apply/software/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
+
+GET     /exemptions-apply/software/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
+
+GET     /exemptions-apply/technology/icence-not-available          controllers.StaticContentController.renderTechnologyExemptionsNLR
 
 
 GET     /export-category                      controllers.categories.ExportCategoryController.renderForm
@@ -202,10 +213,6 @@ GET     /licence-not-available-through-this-service   controllers.StaticContentC
 GET     /licence-not-available-through-this-service/software/      controllers.StaticContentController.renderSoftwareJourneyEndNLR
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
-
-GET     /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
-
-POST    /no-controls-exist/software/licence-may-not-be-required         controllers.StaticContentController.renderSoftwareControlsNLR
 
 GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
 

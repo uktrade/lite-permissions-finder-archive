@@ -36,6 +36,10 @@ public class SoftTechControlsDisplay {
       this.pageTitle = "Showing catchall controls related to your items category";
       this.preResultsLabel = "";
     }
+    else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
+      this.pageTitle = "Showing technology that is not covered by exemptions STUB";
+      this.preResultsLabel = "";
+    }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
           , controlCodeSubJourney.toString()));
