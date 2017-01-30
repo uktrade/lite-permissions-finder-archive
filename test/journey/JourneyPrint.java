@@ -2,6 +2,7 @@ package journey;
 
 import components.common.journey.GraphvizSerialiser;
 import components.common.journey.JourneyDefinition;
+import importcontent.ImportJourneyDefinitionBuilder;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ExportCategoryDecider;
@@ -35,6 +36,14 @@ public class JourneyPrint {
         new RelatedCodesDecider(null, null, null, null)
     ).buildAll();
     Optional<JourneyDefinition> serialiseJourney = journeyDefinitions.stream().filter(j -> JourneyDefinitionNames.EXPORT.equals(j.getJourneyName())).findFirst();
+
+    System.out.println(new GraphvizSerialiser().generateGraphvizSyntax(Collections.singletonList(serialiseJourney.get())));
+  }
+
+  @Test
+  public void printImportJourney() {
+    Collection<JourneyDefinition> journeyDefinitions = new ImportJourneyDefinitionBuilder().buildAll();
+    Optional<JourneyDefinition> serialiseJourney = journeyDefinitions.stream().filter(j -> JourneyDefinitionNames.IMPORT.equals(j.getJourneyName())).findFirst();
 
     System.out.println(new GraphvizSerialiser().generateGraphvizSyntax(Collections.singletonList(serialiseJourney.get())));
   }
