@@ -212,6 +212,8 @@ GET     /licence-not-available-through-this-service   controllers.StaticContentC
 
 GET     /licence-not-available-through-this-service/software/      controllers.StaticContentController.renderSoftwareJourneyEndNLR
 
+GET     /licence-not-available-through-this-service/technology/      controllers.StaticContentController.renderTechnologyJourneyEndNLR
+
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
 
 GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
