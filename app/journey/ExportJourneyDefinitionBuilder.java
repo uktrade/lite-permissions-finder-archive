@@ -645,7 +645,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private void technologyStages() {
 
-    JourneyStage technologyNonExempt = defineStage("technologyNonExempt", "Is technology minimum for installation, maintenance, operation or repair? STUB",
+    JourneyStage technologyNonExempt = defineStage("technologyNonExempt", "Minimum required technology",
         controllers.softtech.routes.TechnologyNonExemptController.renderForm());
 
     JourneyStage relatedToEquipmentOrMaterials = defineStage("technologyRelatedToEquipmentOrMaterials", "Is your software any of the following?",
