@@ -40,7 +40,6 @@ public class NonExemptControlServiceClient {
     else {
       throw new RuntimeException(String.format("Unexpected member of SoftTechCategory enum: \"%s\"", softTechCategory.toString()));
     }
-    Logger.debug(url);
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
