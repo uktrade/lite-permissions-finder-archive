@@ -19,13 +19,17 @@ import java.util.stream.IntStream;
 public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   // Import key/JourneyStage map
-  private Map<String, JourneyStage> stageMap;
+  private final Map<String, JourneyStage> stageMap;
+
+  public ImportJourneyDefinitionBuilder() {
+    this.stageMap = constructStageMap();
+  }
 
   /**
    * Create import JourneyStages
    */
-  public void initStages() {
-    stageMap = new HashMap<>();
+  private  Map<String, JourneyStage> constructStageMap() {
+    Map<String, JourneyStage> stageMap = new HashMap<>();
 
     // Create non-static JourneyStages
     stageMap.put(ImportQuestion.WHERE.key(), initWhereStage(ImportQuestion.WHERE));
@@ -44,6 +48,8 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     for (String key : IntStream.range(1, 32).boxed().map(n -> "importEp" + n).collect(Collectors.toList())) {
       stageMap.put(key, initStaticStage(key));
     }
+
+    return stageMap;
   }
 
   @Override

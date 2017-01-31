@@ -19,7 +19,6 @@ import components.common.journey.JourneySerialiser;
 import components.common.persistence.RedisKeyConfig;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionContextParamProvider;
-import components.persistence.PermissionsFinderDao;
 import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
@@ -110,8 +109,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Provides
   public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportJourneyDefinitionBuilder) {
     ImportJourneyDefinitionBuilder importJourneyDefinitionBuilder = new ImportJourneyDefinitionBuilder();
-    importJourneyDefinitionBuilder.initStages();
-
     return Arrays.asList(exportJourneyDefinitionBuilder, importJourneyDefinitionBuilder);
   }
 

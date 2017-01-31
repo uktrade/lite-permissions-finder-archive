@@ -2,17 +2,17 @@ package importcontent;
 
 
 public enum ImportQuestion {
-  WHERE("import-where", "Where are you importing from?"),
-  WHAT("import-what", "What are you importing?"),
-  CHARCOAL("import-charcoal", "Are you importing charcoal or charcoal products?"),
-  MILITARY("import-military", "Are you importing military goods or technology?"),
-  SHOT("import-shot", "Are you importing single-shot rifles or shotguns?"),
-  SUBSTANCES("import-substances", "Are you importing substances that potentially cause cancer, eg asbestos?"),
-  OZONE("import-ozone", "Are you importing ozone-depleting substances?"),
-  DRUGS("import-drugs", "Are you importing controlled drugs?"),
-  FOOD_WHAT("import-food-what", "What are you importing?"),
-  ENDANGERED("import-endangered", "Are the animals endangered?"),
-  BELARUS_TEXTILES("import-belarus-textiles", "Are you importing textiles that you previously sent to Belarus from the UK for processing?");
+  WHERE("importWhere", "Where are you importing from?"),
+  WHAT("importWhat", "What are you importing?"),
+  CHARCOAL("importCharcoal", "Are you importing charcoal or charcoal products?"),
+  MILITARY("importMilitary", "Are you importing military goods or technology?"),
+  SHOT("importShot", "Are you importing single-shot rifles or shotguns?"),
+  SUBSTANCES("importSubstances", "Are you importing substances that potentially cause cancer, eg asbestos?"),
+  OZONE("importOzone", "Are you importing ozone-depleting substances?"),
+  DRUGS("importDrugs", "Are you importing controlled drugs?"),
+  FOOD_WHAT("importFoodWhat", "What are you importing?"),
+  ENDANGERED("importEndangered", "Are the animals endangered?"),
+  BELARUS_TEXTILES("importBelarusTextiles", "Are you importing textiles that you previously sent to Belarus from the UK for processing?");
 
   private String key;
   private String question;
