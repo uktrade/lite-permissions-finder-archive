@@ -2,13 +2,11 @@ package controllers.softtech;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
-import static play.mvc.Results.badRequest;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import exceptions.FormStateException;
 import models.softtech.TechnologyNonExemptDisplay;
 import play.data.Form;
 import play.data.FormFactory;
@@ -53,7 +51,7 @@ public class TechnologyNonExemptController {
   }
 
   public static class TechnologyNonExemptForm {
-    @Required(message = "This is required")
+    @Required(message = "You must answer this question")
     public Boolean isNonExempt;
   }
 

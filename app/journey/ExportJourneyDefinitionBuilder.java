@@ -35,9 +35,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.categories.routes.ExportCategoryController.renderForm());
   private final JourneyStage goodsType = defineStage("goodsType", "Are you exporting goods, software or technical information?",
       routes.GoodsTypeController.renderForm());
-  private final JourneyStage search = defineStage("search", "Describe your item",
-      controllers.search.routes.SearchController.renderForm(GoodsType.PHYSICAL.urlString()));
-  private final DecisionStage<Boolean> searchRelatedCodesDecision;
   private final JourneyStage destinationCountries = defineStage("destinationCountries", "Countries and territories",
       routes.DestinationCountryController.renderForm());
   private final JourneyStage ogelQuestions = defineStage("ogelQuestions", "Refining your licence results",
@@ -49,59 +46,39 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage notApplicable = defineStage("notApplicable", "No licence available",
       routes.StaticContentController.renderNotApplicable());
 
+  /** Physical **/
+  private final JourneyStage search = defineStage("search", "Describe your item",
+      controllers.search.routes.SearchController.renderForm(GoodsType.PHYSICAL.urlString()));
+  private final DecisionStage<Boolean> searchRelatedCodesDecision;
+
   /** Software **/
   private final DecisionStage<ExportCategory> dualUseOrMilitarySoftwareDecision;
-  private final DecisionStage<ApplicableSoftTechControls> applicableSoftwareControlsDecision;
-  private final DecisionStage<ApplicableSoftTechControls> applicableRelatedControlsDecision;
-  private final DecisionStage<ApplicableSoftTechControls> applicableCatchallControlsDecision;
+  private final DecisionStage<ApplicableSoftTechControls> softwareApplicableControlsDecision;
+  private final DecisionStage<ApplicableSoftTechControls> softwareApplicableRelatedControlsDecision;
+  private final DecisionStage<ApplicableSoftTechControls> softwareApplicableCatchallControlsDecision;
   private final DecisionStage<Boolean> softwareRelationshipWithTechnologyExistsDecision;
   private final DecisionStage<Boolean> softwareRelationshipWithSoftwareExistsDecision;
-
-  private final JourneyStage dualUseSoftwareCategories = defineStage("dualUseSoftTechCategories", "What is your software for?",
-      controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.SOFTWARE.urlString()));
-
-  private final JourneyStage searchRTS = defineStage("searchRTS", "Describe the equipment or materials your software is related to",
-      controllers.search.routes.SearchController.renderForm(GoodsType.SOFTWARE.urlString()));
-  private final DecisionStage<Boolean> searchRelatedCodesDecisionRTS;
-
-  private final JourneyStage controlCodeSummarySC = defineStage("controlCodeSummarySC", "Summary",
-      controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
-  private final JourneyStage controlCodeSummarySCRTPG = defineStage("controlCodeSummarySCRTPG", "Summary",
-      controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
-  private final JourneyStage controlCodeSummarySCC = defineStage("controlCodeSummarySCC", "Summary",
-      controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
-
-  private final JourneyStage controlsListSC = defineStage("controlsListSC", "Showing controls related to software category",
-      controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
-  private final JourneyStage controlsListSCRTPG = defineStage("controlsListSCRTPG", "Showing controls related to your selected physical good",
-      controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.SOFTWARE.urlString()));
-  private final JourneyStage controlsListSCC = defineStage("controlsListSCC", "Showing catchall controls related to your items category",
-      controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(),GoodsType.SOFTWARE.urlString()));
-
-  private JourneyStage softwareRelatedToEquipmentOrMaterials = defineStage("softwareRelatedToEquipmentOrMaterials", "Is your software any of the following?",
-      controllers.softtech.routes.RelatedEquipmentController.renderForm(GoodsType.SOFTWARE.urlString()));
+  private final DecisionStage<Boolean> softwareSearchRelatedCodesDecision;
 
   private JourneyStage softwareJourneyEndNLR = defineStage("softwareJourneyEndNLR", "No licence available",
       routes.StaticContentController.renderSoftwareJourneyEndNLR());
 
-  private JourneyStage softwareRelatedToTechnologyQuestion = defineStage("softwareRelatedToTechnologyQuestion", "Is your software related to a technology?",
-      controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.TECHNOLOGY.urlString()));
-
-  private JourneyStage softwareRelatedToSoftwareQuestion = defineStage("softwareRelatedToSoftwareQuestion", "Is your software related to other software?",
-      controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
-
   /** Technology **/
   private final DecisionStage<ExportCategory> dualUseOrMilitaryTechnologyDecision;
+  private final DecisionStage<ExportCategory> dualUseOrMilitaryNonExemptTechnologyDecision;
+  private final DecisionStage<ApplicableSoftTechControls> technologyApplicableControlsDecision;
+  private final DecisionStage<ApplicableSoftTechControls> technologyApplicableRelatedControlsDecision;
+  private final DecisionStage<ApplicableSoftTechControls> technologyApplicableCatchallControlsDecision;
+  private final DecisionStage<Boolean> technologyRelationshipWithSoftwareExistsDecision;
+  private final DecisionStage<Boolean> technologySearchRelatedCodesDecision;
 
-  JourneyStage technologyExemptions = defineStage("technologyExemptions", "Is technology in the public domain?",
+  private final JourneyStage technologyExemptions = defineStage("technologyExemptions", "Is technology in the public domain?",
       controllers.softtech.routes.TechnologyExemptionsController.renderForm());
 
-  JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR", "Technology exemptions apply",
+  private final JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR", "Technology exemptions apply",
       controllers.routes.StaticContentController.renderTechnologyExemptionsNLR());
 
-  private final JourneyStage controlsListNEC = defineStage("controlsListNEC", "Showing technology that is not covered by exemptions",
-      controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
-
+  /** Deciders **/
   private final AdditionalSpecificationsDecider additionalSpecificationsDecider;
   private final DecontrolsDecider decontrolsDecider;
   private final TechnicalNotesDecider technicalNotesDecider;
@@ -134,15 +111,21 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     this.relationshipWithTechnologyDecider = relationshipWithTechnologyDecider;
     this.relationshipWithSoftwareDecider = relationshipWithSoftwareDecider;
     this.relatedCodesDecider = relatedCodesDecider;
-    this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("isDualUseSoftwareDecision", this.exportCategoryDecider);
-    this.dualUseOrMilitaryTechnologyDecision = defineDecisionStage("isDualUseTechnologyDecision", this.exportCategoryDecider);
-    this.applicableSoftwareControlsDecision = defineDecisionStage("applicableSoftwareControlsDecision", this.categoryControlsDecider);
-    this.applicableRelatedControlsDecision = defineDecisionStage("applicableRelatedControlsDecision", this.relatedControlsDecider);
-    this.applicableCatchallControlsDecision = defineDecisionStage("applicableCatchallControlsDecision", this.catchallControlsDecider);
+    this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("dualUseOrMilitarySoftwareDecision", this.exportCategoryDecider);
+    this.dualUseOrMilitaryTechnologyDecision = defineDecisionStage("dualUseOrMilitaryTechnologyDecision", this.exportCategoryDecider);
+    this.dualUseOrMilitaryNonExemptTechnologyDecision = defineDecisionStage("dualUseOrMilitaryNonExemptTechnologyDecision", this.exportCategoryDecider);
+    this.softwareApplicableControlsDecision = defineDecisionStage("softwareApplicableControlsDecision", this.categoryControlsDecider);
+    this.technologyApplicableControlsDecision = defineDecisionStage("technologyApplicableControlsDecision", this.categoryControlsDecider);
+    this.softwareApplicableRelatedControlsDecision = defineDecisionStage("softwareApplicableRelatedControlsDecision", this.relatedControlsDecider);
+    this.technologyApplicableRelatedControlsDecision = defineDecisionStage("technologyApplicableRelatedControlsDecision", this.relatedControlsDecider);
+    this.softwareApplicableCatchallControlsDecision = defineDecisionStage("softwareApplicableCatchallControlsDecision", this.catchallControlsDecider);
+    this.technologyApplicableCatchallControlsDecision = defineDecisionStage("technologyApplicableCatchallControlsDecision", this.catchallControlsDecider);
     this.softwareRelationshipWithTechnologyExistsDecision = defineDecisionStage("softwareRelationshipWithTechnologyExistsDecision", this.relationshipWithTechnologyDecider);
     this.softwareRelationshipWithSoftwareExistsDecision = defineDecisionStage("softwareRelationshipWithSoftwareExistsDecision", this.relationshipWithSoftwareDecider);
+    this.technologyRelationshipWithSoftwareExistsDecision = defineDecisionStage("technologyRelationshipWithSoftwareExistsDecision", this.relationshipWithSoftwareDecider);
     this.searchRelatedCodesDecision = defineDecisionStage("searchRelatedCodesDecision", this.relatedCodesDecider);
-    this.searchRelatedCodesDecisionRTS = defineDecisionStage("searchRelatedCodesDecisionRTS", this.relatedCodesDecider);
+    this.softwareSearchRelatedCodesDecision = defineDecisionStage("softwareSearchRelatedCodesDecision", this.relatedCodesDecider);
+    this.technologySearchRelatedCodesDecision = defineDecisionStage("technologySearchRelatedCodesDecision", this.relatedCodesDecider);
   }
 
   @Override
@@ -491,9 +474,48 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage softwareExemptionsNLR2 = defineStage("softwareExemptionsNLR2", "Software exemptions apply",
         controllers.routes.StaticContentController.renderSoftwareExemptionsNLR2());
 
+    JourneyStage relatedToEquipmentOrMaterials = defineStage("softwareRelatedToEquipmentOrMaterials", "Is your software any of the following?",
+        controllers.softtech.routes.RelatedEquipmentController.renderForm(GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage dualUseCategories = defineStage("softwareDualUseCategories", "What is your software for?",
+        controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage categoryControlsList = defineStage("softwareCategoryControlsList", "Showing controls related to software category",
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage catchallControlsList = defineStage("softwareCatchallControlsList", "Showing catchall controls related to your items category",
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(),GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage relatedToPhysicalGoodsControlsList = defineStage("softwareControlsRelatedToPhysicalGoodsControlsList", "Showing controls related to your selected physical good",
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage categoryControlCodeSummary = defineStage("softwareCategoryControlCodeSummary", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage relatedToPhysicalGoodsControlCodeSummary = defineStage("softwareRelatedToPhysicalGoodsControlCodeSummary", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage catchallControlCodeSummary = defineStage("softwareCatchallControlCodeSummary", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage searchRelatedTo = defineStage("softwareSearchRelatedTo", "Describe the equipment or materials your software is related to",
+        controllers.search.routes.SearchController.renderForm(GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage relatedToTechnologyQuestion = defineStage("softwareRelatedToTechnologyQuestion", "Is your software related to a technology?",
+        controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage goodsRelatedToTechnologyQuestions = defineStage("softwareGoodsRelatedToTechnologyQuestions", "Software related to technology",
+        controllers.softtech.routes.GoodsRelationshipQuestionsController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage relatedToSoftwareQuestion = defineStage("softwareRelatedToSoftwareQuestion", "Is your software related to other software?",
+        controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage goodsRelatedToSoftwareQuestions = defineStage("softwareGoodsRelatedToSoftwareQuestions", "Software related to software",
+        controllers.softtech.routes.GoodsRelationshipQuestionsController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
+
     atDecisionStage(dualUseOrMilitarySoftwareDecision)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(applicableSoftwareControlsDecision))
+        .when(ExportCategory.MILITARY, moveTo(softwareApplicableControlsDecision))
         .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
 
     // softwareExemptionsQ1 journey transitions
@@ -506,7 +528,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     // softwareExemptionsQ2 journey transitions
     bindYesNoJourneyTransition(
         softwareExemptionsQ2,
-        applicableSoftwareControlsDecision,
+        softwareApplicableControlsDecision,
         softwareExemptionsQ3
     );
 
@@ -514,71 +536,156 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     bindYesNoJourneyTransition(
         softwareExemptionsQ3,
         softwareExemptionsNLR2,
-        dualUseSoftwareCategories
+        dualUseCategories
     );
 
-    atStage(dualUseSoftwareCategories)
+    atStage(dualUseCategories)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(applicableSoftwareControlsDecision));
+        .then(moveTo(softwareApplicableControlsDecision));
 
-    atStage(dualUseSoftwareCategories)
+    atStage(dualUseCategories)
         .onEvent(Events.NONE_MATCHED)
-        .then(moveTo(softwareRelatedToEquipmentOrMaterials));
+        .then(moveTo(relatedToEquipmentOrMaterials));
 
-    atDecisionStage(applicableSoftwareControlsDecision)
+    atDecisionStage(softwareApplicableControlsDecision)
         .decide()
-        .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelatedToEquipmentOrMaterials))
-        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySC))
-        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlsListSC));
+        .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
+        .when(ApplicableSoftTechControls.ONE, moveTo(categoryControlCodeSummary))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(categoryControlsList));
 
-    softwareCategoryControls();
+    softTechCategoryControls(
+        GoodsType.SOFTWARE,
+        categoryControlsList,
+        categoryControlCodeSummary,
+        relatedToEquipmentOrMaterials,
+        dualUseCategories
+    );
 
-    atStage(softwareRelatedToEquipmentOrMaterials)
+    atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.YES)
-        .then(moveTo(searchRTS));
+        .then(moveTo(searchRelatedTo));
 
-    atStage(softwareRelatedToEquipmentOrMaterials)
+    atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.NO)
-        .then(moveTo(applicableCatchallControlsDecision));
+        .then(moveTo(softwareApplicableCatchallControlsDecision));
 
-    searchRelatedToSoftware();
+    softTechSearchRelatedTo(
+        GoodsType.SOFTWARE,
+        searchRelatedTo,
+        softwareSearchRelatedCodesDecision,
+        softwareApplicableCatchallControlsDecision,
+        softwareApplicableRelatedControlsDecision
+    );
 
-    atDecisionStage(applicableRelatedControlsDecision)
+    atDecisionStage(softwareApplicableRelatedControlsDecision)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelationshipWithTechnologyExistsDecision))
-        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySCRTPG))
-        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlsListSCRTPG));
+        .when(ApplicableSoftTechControls.ONE, moveTo(relatedToPhysicalGoodsControlCodeSummary))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(relatedToPhysicalGoodsControlsList));
 
-    softwareControlsRelatedToAPhysicalGood();
+    softTechControlsRelatedToAPhysicalGood(
+        GoodsType.SOFTWARE,
+        relatedToPhysicalGoodsControlsList,
+        relatedToPhysicalGoodsControlCodeSummary,
+        softwareApplicableCatchallControlsDecision
+    );
 
-    atDecisionStage(applicableCatchallControlsDecision)
+    atDecisionStage(softwareApplicableCatchallControlsDecision)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelationshipWithTechnologyExistsDecision))
-        .when(ApplicableSoftTechControls.ONE, moveTo(controlCodeSummarySCC))
-        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(controlsListSCC));
+        .when(ApplicableSoftTechControls.ONE, moveTo(catchallControlCodeSummary))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(catchallControlsList));
 
-    softwareCatchallControls();
+    softTechCatchallControls(
+        GoodsType.SOFTWARE,
+        catchallControlsList,
+        catchallControlCodeSummary,
+        softwareRelationshipWithTechnologyExistsDecision
+    );
+
+    /** Software related to technology **/
 
     atDecisionStage(softwareRelationshipWithTechnologyExistsDecision)
         .decide()
-        .when(true, moveTo(softwareRelatedToTechnologyQuestion))
+        .when(true, moveTo(relatedToTechnologyQuestion))
         .when(false, moveTo(softwareRelationshipWithSoftwareExistsDecision));
 
-    softwareRelatedToTechnology();
+    bindYesNoJourneyTransition(
+        relatedToTechnologyQuestion,
+        goodsRelatedToTechnologyQuestions,
+        softwareRelationshipWithSoftwareExistsDecision
+    );
+
+    bindYesNoJourneyTransition(
+        goodsRelatedToTechnologyQuestions,
+        destinationCountries,
+        relatedToSoftwareQuestion
+    );
+
+    /** Software related to software **/
 
     atDecisionStage(softwareRelationshipWithSoftwareExistsDecision)
         .decide()
-        .when(true, moveTo(softwareRelatedToSoftwareQuestion))
+        .when(true, moveTo(relatedToSoftwareQuestion))
         .when(false, moveTo(softwareJourneyEndNLR));
 
-    softwareRelatedToSoftware();
+    bindYesNoJourneyTransition(
+        relatedToSoftwareQuestion,
+        goodsRelatedToSoftwareQuestions,
+        softwareJourneyEndNLR
+    );
+
+    bindYesNoJourneyTransition(
+        goodsRelatedToSoftwareQuestions,
+        destinationCountries,
+        softwareJourneyEndNLR
+    );
 
   }
 
   private void technologyStages() {
 
-    JourneyStage technologyNonExempt = defineStage("technologyNonExempt", "Is technology minimum for installation, maintenance, operation or repair? STUB",
+    JourneyStage technologyNonExempt = defineStage("technologyNonExempt", "Minimum required technology",
         controllers.softtech.routes.TechnologyNonExemptController.renderForm());
+
+    JourneyStage relatedToEquipmentOrMaterials = defineStage("technologyRelatedToEquipmentOrMaterials", "Is your software any of the following?",
+        controllers.softtech.routes.RelatedEquipmentController.renderForm(GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage dualUseCategories = defineStage("technologyDualUseCategories", "What is your software for?",
+        controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage nonExemptControlsControlsList = defineStage("technologyNonExemptControlsControlsList", "Showing technology that is not covered by exemptions",
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage categoryControlsList = defineStage("technologyCategoryControlsList", "Showing controls related to software category",
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage catchallControlsList = defineStage("technologyCatchallControlsList", "Showing catchall controls related to your items category",
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(),GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage relatedToPhysicalGoodsControlsList = defineStage("technologyControlsRelatedToPhysicalGoodsControlsList", "Showing controls related to your selected physical good",
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage categoryControlCodeSummary = defineStage("technologyCategoryControlCodeSummary", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage relatedToPhysicalGoodsControlCodeSummary = defineStage("technologyRelatedToPhysicalGoodsControlCodeSummary", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage catchallControlCodeSummary = defineStage("technologyCatchallControlCodeSummary", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage searchRelatedTo = defineStage("technologySearchRelatedTo", "Describe the equipment or materials your software is related to",
+        controllers.search.routes.SearchController.renderForm(GoodsType.TECHNOLOGY.urlString()));
+
+    JourneyStage relatedToSoftwareQuestion = defineStage("technologyRelatedToSoftwareQuestion", "Is your technology related to other software?",
+        controllers.softtech.routes.GoodsRelationshipController.renderForm(GoodsType.TECHNOLOGY.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage goodsRelatedToSoftwareQuestions = defineStage("technologyGoodsRelatedToSoftwareQuestions", "Software related to software",
+        controllers.softtech.routes.GoodsRelationshipQuestionsController.renderForm(GoodsType.TECHNOLOGY.urlString(), GoodsType.SOFTWARE.urlString()));
+
+    JourneyStage journeyEndNLR = defineStage("technologyJourneyEndNLR", "No licence available",
+        routes.StaticContentController.renderTechnologyJourneyEndNLR());
 
     bindYesNoJourneyTransition(
         technologyExemptions,
@@ -588,389 +695,448 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindYesNoJourneyTransition(
         technologyNonExempt,
-        dualUseOrMilitaryTechnologyDecision,
-        notImplemented
+        dualUseOrMilitaryNonExemptTechnologyDecision,
+        dualUseOrMilitaryTechnologyDecision
     );
+
+    atDecisionStage(dualUseOrMilitaryNonExemptTechnologyDecision)
+        .decide()
+        .when(ExportCategory.MILITARY, moveTo(technologyExemptionsNLR)) // TODO is this the same NLR?
+        .when(ExportCategory.DUAL_USE, moveTo(nonExemptControlsControlsList));
 
     atDecisionStage(dualUseOrMilitaryTechnologyDecision)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(technologyExemptionsNLR)) // TODO is this the same NLR?
-        .when(ExportCategory.DUAL_USE, moveTo(controlsListNEC));
+        .when(ExportCategory.MILITARY, moveTo(technologyApplicableControlsDecision)) // TODO is this the same NLR?
+        .when(ExportCategory.DUAL_USE, moveTo(dualUseCategories));
 
-    technologyNonExemptControls();
+    technologyNonExemptControls(nonExemptControlsControlsList);
 
+    atStage(dualUseCategories)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(technologyApplicableControlsDecision));
+
+    atStage(dualUseCategories)
+        .onEvent(Events.NONE_MATCHED)
+        .then(moveTo(relatedToEquipmentOrMaterials));
+
+    atDecisionStage(technologyApplicableControlsDecision)
+        .decide()
+        .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
+        .when(ApplicableSoftTechControls.ONE, moveTo(categoryControlCodeSummary))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(categoryControlsList));
+
+    softTechCategoryControls(
+        GoodsType.TECHNOLOGY,
+        categoryControlsList,
+        categoryControlCodeSummary,
+        relatedToEquipmentOrMaterials,
+        dualUseCategories
+    );
+
+    atStage(relatedToEquipmentOrMaterials)
+        .onEvent(StandardEvents.YES)
+        .then(moveTo(searchRelatedTo));
+
+    atStage(relatedToEquipmentOrMaterials)
+        .onEvent(StandardEvents.NO)
+        .then(moveTo(technologyApplicableCatchallControlsDecision));
+
+    softTechSearchRelatedTo(
+        GoodsType.TECHNOLOGY,
+        searchRelatedTo,
+        technologySearchRelatedCodesDecision,
+        technologyApplicableCatchallControlsDecision,
+        technologyApplicableRelatedControlsDecision
+    );
+
+    atDecisionStage(technologyApplicableRelatedControlsDecision)
+        .decide()
+        .when(ApplicableSoftTechControls.ZERO, moveTo(technologyRelationshipWithSoftwareExistsDecision))
+        .when(ApplicableSoftTechControls.ONE, moveTo(relatedToPhysicalGoodsControlCodeSummary))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(relatedToPhysicalGoodsControlsList));
+
+    softTechControlsRelatedToAPhysicalGood(
+        GoodsType.TECHNOLOGY,
+        relatedToPhysicalGoodsControlsList,
+        relatedToPhysicalGoodsControlCodeSummary,
+        technologyApplicableCatchallControlsDecision
+    );
+
+    atDecisionStage(technologyApplicableCatchallControlsDecision)
+        .decide()
+        .when(ApplicableSoftTechControls.ZERO, moveTo(technologyRelationshipWithSoftwareExistsDecision))
+        .when(ApplicableSoftTechControls.ONE, moveTo(catchallControlCodeSummary))
+        .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(catchallControlsList));
+
+    softTechCatchallControls(
+        GoodsType.TECHNOLOGY,
+        catchallControlsList,
+        catchallControlCodeSummary,
+        technologyRelationshipWithSoftwareExistsDecision
+    );
+
+    atDecisionStage(technologyRelationshipWithSoftwareExistsDecision)
+        .decide()
+        .when(true, moveTo(relatedToSoftwareQuestion))
+        .when(false, moveTo(journeyEndNLR));
+
+    bindYesNoJourneyTransition(
+        relatedToSoftwareQuestion,
+        goodsRelatedToSoftwareQuestions,
+        journeyEndNLR
+    );
+
+    bindYesNoJourneyTransition(
+        goodsRelatedToSoftwareQuestions,
+        destinationCountries,
+        journeyEndNLR
+    );
   }
 
-  private void technologyNonExemptControls() {
+  private void technologyNonExemptControls(JourneyStage controlsList) {
     /** Technology non exempt controls journey stages */
-    JourneyStage controlCodeSummaryNEC = defineStage("controlCodeSummaryNEC", "Summary",
+    JourneyStage controlCodeSummary = defineStage("technologyNonExemptControlsControlCodeSummary", "Summary",
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
-    JourneyStage controlCodeNotApplicableNEC = defineStage("controlCodeNotApplicableNEC", "Description not applicable",
+    JourneyStage controlCodeNotApplicable = defineStage("technologyNonExemptControlsControlCodeNotApplicable", "Description not applicable",
         controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString(), Boolean.FALSE.toString()));
 
-    JourneyStage additionalSpecificationsNEC = defineStage("additionalSpecificationsNEC", "Additional specifications",
+    JourneyStage additionalSpecifications = defineStage("technologyNonExemptControlsAdditionalSpecifications", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
-    JourneyStage decontrolsNEC = defineStage("decontrolsNEC", "Decontrols",
+    JourneyStage decontrols = defineStage("technologyNonExemptControlsDecontrols", "Decontrols",
         controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
-    JourneyStage decontrolsApplyNEC = defineStage("decontrolsApplyNEC", "Choose a different item type",
+    JourneyStage decontrolsApply = defineStage("technologyNonExemptControlsDecontrolsApply", "Choose a different item type",
         controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
-    JourneyStage technicalNotesNEC = defineStage("technicalNotesNEC", "Technical notes",
+    JourneyStage technicalNotes = defineStage("technologyNonExemptControlsTechnicalNotes", "Technical notes",
         controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     /** Software controls decision stages */
-    DecisionStage<Boolean> additionalSpecificationsDecisionNEC = defineDecisionStage("additionalSpecificationsDecisionNEC", additionalSpecificationsDecider);
+    DecisionStage<Boolean> additionalSpecificationsDecision = defineDecisionStage("technologyNonExemptControlsAdditionalSpecificationsDecision", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> decontrolsDecisionNEC = defineDecisionStage("decontrolsDecisionNEC", decontrolsDecider);
+    DecisionStage<Boolean> decontrolsDecision = defineDecisionStage("technologyNonExemptControlsDecontrolsDecision", decontrolsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionNEC = defineDecisionStage("technicalNotesDecisionNEC", technicalNotesDecider);
+    DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage("technologyNonExemptControlsTechnicalNotesDecision", technicalNotesDecider);
 
     /** Software control journey stage transitions */
     bindControlCodeListStageJourneyTransitions(
-        controlsListNEC,
-        decontrolsDecisionNEC,
+        controlsList,
+        decontrolsDecision,
         technologyExemptionsNLR
     );
 
     bindControlCodeStageTransitions(
-        decontrolsNEC,
-        decontrolsApplyNEC,
-        controlCodeSummaryNEC,
-        controlCodeNotApplicableNEC,
-        additionalSpecificationsNEC,
-        technicalNotesNEC,
+        decontrols,
+        decontrolsApply,
+        controlCodeSummary,
+        controlCodeNotApplicable,
+        additionalSpecifications,
+        technicalNotes,
         destinationCountries,
-        decontrolsDecisionNEC,
-        additionalSpecificationsDecisionNEC,
-        technicalNotesDecisionNEC
+        decontrolsDecision,
+        additionalSpecificationsDecision,
+        technicalNotesDecision
     );
 
     bindControlCodeNotApplicableFromListStageJourneyTransitions(
-        controlCodeNotApplicableNEC,
-        controlsListNEC,
-        notImplemented
-    );
+        controlCodeNotApplicable,
+        controlsList,
+        technologyExemptionsNLR
+      );
 
-    atStage(decontrolsApplyNEC)
+    atStage(decontrolsApply)
         .onEvent(Events.BACK)
         .branch()
-        .when(BackType.MATCHES, backTo(controlsListNEC))
+        .when(BackType.MATCHES, backTo(controlsList))
         .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
   }
+
   /**
-   * Software controls per software category
+   * Software/Technology controls per software category
    */
-  private void softwareCategoryControls() {
-    /** Software controls journey stages */
-    JourneyStage controlCodeNotApplicableSC = defineStage("controlCodeNotApplicableSC", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
+  private void softTechCategoryControls(GoodsType goodsType, JourneyStage controlsList, JourneyStage controlCodeSummary, JourneyStage relatedToEquipmentOrMaterials, JourneyStage dualUseCategories) {
+    String goodsTypeText = goodsType.value().toLowerCase();
 
-    JourneyStage additionalSpecificationsSC = defineStage("additionalSpecificationsSC", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+    /** Software/Technology controls journey stages */
+    JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "CategoryControlCodeNotApplicable", "Description not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
 
-    JourneyStage decontrolsSC = defineStage("decontrolsSC", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage additionalSpecifications = defineStage(goodsTypeText + "CategoryAdditionalSpecifications", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
-    JourneyStage decontrolsApplySC = defineStage("decontrolsApplySC", "Choose a different item type",
-        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrols = defineStage(goodsTypeText + "CategoryDecontrols", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
-    JourneyStage technicalNotesSC = defineStage("technicalNotesSC", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrolsApply = defineStage(goodsTypeText + "CategoryDecontrolsApply", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
-    /** Software controls decision stages */
-    DecisionStage<Boolean> additionalSpecificationsDecisionSC = defineDecisionStage("additionalSpecsDecisionSC", additionalSpecificationsDecider);
+    JourneyStage technicalNotes = defineStage(goodsTypeText + "CategoryTechnicalNotes", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
-    DecisionStage<Boolean> decontrolsDecisionSC = defineDecisionStage("decontrolsDecisionSC", decontrolsDecider);
+    /** Software/Technology controls decision stages */
+    DecisionStage<Boolean> additionalSpecificationsDecision = defineDecisionStage(goodsTypeText + "CategoryAdditionalSpecsDecision", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionSC = defineDecisionStage("technicalNotesDecisionSC", technicalNotesDecider);
+    DecisionStage<Boolean> decontrolsDecision = defineDecisionStage(goodsTypeText + "CategoryDecontrolsDecision", decontrolsDecider);
 
-    /** Software control journey stage transitions */
+    DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage(goodsTypeText + "CategoryTechnicalNotesDecision", technicalNotesDecider);
+
+    /** Software/Technology control journey stage transitions */
     bindControlCodeListStageJourneyTransitions(
-        controlsListSC,
-        decontrolsDecisionSC,
-        softwareRelatedToEquipmentOrMaterials
+        controlsList,
+        decontrolsDecision,
+        relatedToEquipmentOrMaterials
     );
 
     bindControlCodeStageTransitions(
-        decontrolsSC,
-        decontrolsApplySC,
-        controlCodeSummarySC,
-        controlCodeNotApplicableSC,
-        additionalSpecificationsSC,
-        technicalNotesSC,
+        decontrols,
+        decontrolsApply,
+        controlCodeSummary,
+        controlCodeNotApplicable,
+        additionalSpecifications,
+        technicalNotes,
         destinationCountries,
-        decontrolsDecisionSC, additionalSpecificationsDecisionSC,
-        technicalNotesDecisionSC
+        decontrolsDecision,
+        additionalSpecificationsDecision,
+        technicalNotesDecision
     );
 
     bindControlCodeNotApplicableFromListStageJourneyTransitions(
-        controlCodeNotApplicableSC,
-        controlsListSC,
-        softwareRelatedToEquipmentOrMaterials
+        controlCodeNotApplicable,
+        controlsList,
+        relatedToEquipmentOrMaterials
     );
 
-    atStage(decontrolsApplySC)
+    atStage(decontrolsApply)
         .onEvent(Events.BACK)
         .branch()
-        .when(BackType.MATCHES, backTo(controlsListSC))
-        .when(BackType.SOFT_TECH_CATEGORY, backTo(dualUseSoftwareCategories))
+        .when(BackType.MATCHES, backTo(controlsList))
+        .when(BackType.SOFT_TECH_CATEGORY, backTo(dualUseCategories))
         .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
   }
 
   /**
-   * Search related to software journey
+   * Search related to software/technology journey
    */
-  private void searchRelatedToSoftware() {
-    /** Search related to software journey stages */
-    JourneyStage searchResultsRTS = defineStage("searchResultsRTS", "Possible matches",
-        controllers.search.routes.SearchResultsController.renderForm(GoodsType.SOFTWARE.urlString()));
+  private void softTechSearchRelatedTo(GoodsType goodsType, JourneyStage searchRelatedTo, DecisionStage<Boolean> searchRelatedCodesDecision, DecisionStage<ApplicableSoftTechControls> applicableCatchallControlsDecision, DecisionStage<ApplicableSoftTechControls> applicableRelatedControlsDecision) {
+    String goodsTypeText = goodsType.value().toLowerCase();
 
-    JourneyStage searchRelatedCodesRTS = defineStage("searchRelatedCodesRTS", "Related to your item",
-        controllers.search.routes.SearchRelatedCodesController.renderForm(GoodsType.SOFTWARE.urlString()));
+    /** Search related to software/technology journey stages */
+    JourneyStage searchResults = defineStage(goodsTypeText + "SearchResultsRelatedTo", "Possible matches",
+        controllers.search.routes.SearchResultsController.renderForm(goodsType.urlString()));
 
-    JourneyStage controlCodeSummaryRTS = defineStage("controlCodeSummaryRTS", "Summary",
-        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage searchRelatedCodes = defineStage(goodsTypeText + "SearchRelatedCodesRelatedTo", "Related to your item",
+        controllers.search.routes.SearchRelatedCodesController.renderForm(goodsType.urlString()));
 
-    JourneyStage controlCodeNotApplicableRTS = defineStage("controlCodeNotApplicableRTS", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
+    JourneyStage controlCodeSummary = defineStage(goodsTypeText + "ControlCodeSummaryRelatedTo", "Summary",
+        controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString()));
 
-    JourneyStage additionalSpecificationsRTS = defineStage("additionalSpecificationsRTS", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "ControlCodeNotApplicableRelatedTo", "Description not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
 
-    JourneyStage decontrolsRTS = defineStage("decontrolsRTS", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage additionalSpecifications = defineStage(goodsTypeText + "AdditionalSpecificationsRelatedTo", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString()));
 
-    JourneyStage decontrolsApplyRTS = defineStage("decontrolsApplyRTS", "Choose a different item type",
-        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrols = defineStage(goodsTypeText + "DecontrolsRelatedTo", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString()));
 
-    JourneyStage technicalNotesRTS = defineStage("technicalNotesRTS", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrolsApply = defineStage(goodsTypeText + "DecontrolsApplyRelatedTo", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString()));
 
-    /** Search related to software decision stages */
-    DecisionStage<Boolean> additionalSpecsDecisionRTS = defineDecisionStage("additionalSpecsDecisionRTS", additionalSpecificationsDecider);
+    JourneyStage technicalNotes = defineStage(goodsTypeText + "TechnicalNotesRelatedTo", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString()));
 
-    DecisionStage<Boolean> decontrolsDecisionRTS = defineDecisionStage("decontrolsDecisionRTS", decontrolsDecider);
+    /** Search related to software/technology decision stages */
+    DecisionStage<Boolean> additionalSpecsDecision = defineDecisionStage(goodsTypeText + "AdditionalSpecsDecisionRelatedTo", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionRTS = defineDecisionStage("technicalNotesDecisionRTS", technicalNotesDecider);
+    DecisionStage<Boolean> decontrolsDecision = defineDecisionStage(goodsTypeText + "DecontrolsDecisionRelatedTo", decontrolsDecider);
 
-    /** Search related to software journey stage transitions */
-    atStage(searchRTS)
+    DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage(goodsTypeText + "TechnicalNotesDecisionRelatedTo", technicalNotesDecider);
+
+    /** Search related to software/technology journey stage transitions */
+    atStage(searchRelatedTo)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
-        .then(moveTo(searchResultsRTS));
+        .then(moveTo(searchResults));
 
-    atStage(searchResultsRTS)
+    atStage(searchResults)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(searchRelatedCodesDecisionRTS));
+        .then(moveTo(searchRelatedCodesDecision));
 
-    atStage(searchResultsRTS)
+    atStage(searchResults)
         .onEvent(Events.BACK)
         .branch()
-        .when(BackType.SEARCH, backTo(searchRTS));
+        .when(BackType.SEARCH, backTo(searchRelatedTo));
 
-    atStage(searchResultsRTS)
+    atStage(searchResults)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(applicableCatchallControlsDecision));
 
-    atStage(searchResultsRTS)
+    atStage(searchResults)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(applicableCatchallControlsDecision));
 
-    atDecisionStage(searchRelatedCodesDecisionRTS)
+    atDecisionStage(searchRelatedCodesDecision)
         .decide()
-        .when(true, moveTo(searchRelatedCodesRTS))
-        .when(false, moveTo(decontrolsDecisionRTS));
+        .when(true, moveTo(searchRelatedCodes))
+        .when(false, moveTo(decontrolsDecision));
 
-    atStage(searchRelatedCodesRTS)
+    atStage(searchRelatedCodes)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(decontrolsDecisionRTS));
+        .then(moveTo(decontrolsDecision));
 
-    atStage(searchRelatedCodesRTS)
+    atStage(searchRelatedCodes)
         .onEvent(Events.BACK)
         .branch()
-        .when(BackType.RESULTS, backTo(searchResultsRTS));
+        .when(BackType.RESULTS, backTo(searchResults));
 
     bindControlCodeStageTransitions(
-        decontrolsRTS,
-        decontrolsApplyRTS,
-        controlCodeSummaryRTS,
-        controlCodeNotApplicableRTS,
-        additionalSpecificationsRTS,
-        technicalNotesRTS,
+        decontrols,
+        decontrolsApply,
+        controlCodeSummary,
+        controlCodeNotApplicable,
+        additionalSpecifications,
+        technicalNotes,
         applicableRelatedControlsDecision,
-        decontrolsDecisionRTS, additionalSpecsDecisionRTS,
-        technicalNotesDecisionRTS
+        decontrolsDecision, additionalSpecsDecision,
+        technicalNotesDecision
     );
 
     bindControlCodeNotApplicableFromSearchStageJourneyTransitions(
-        controlCodeNotApplicableRTS,
-        searchRTS,
-        searchResultsRTS
+        controlCodeNotApplicable,
+        searchRelatedTo,
+        searchResults
     );
 
-    atStage(decontrolsApplyRTS)
+    atStage(decontrolsApply)
         .onEvent(Events.BACK)
         .branch()
-        .when(BackType.SEARCH, backTo(searchRTS))
-        .when(BackType.RESULTS, backTo(searchResultsRTS))
+        .when(BackType.SEARCH, backTo(searchRelatedTo))
+        .when(BackType.RESULTS, backTo(searchResults))
         .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
-
   }
 
 
   /**
-   * Software controls for a selected physical good
+   * Software/Technology controls for a selected physical good
    */
-  private void softwareControlsRelatedToAPhysicalGood() {
-    /** Software controls related to physical goods  */
-    JourneyStage controlCodeNotApplicableSCRTPG= defineStage("controlCodeNotApplicableSCRTPG", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
+  private void softTechControlsRelatedToAPhysicalGood(GoodsType goodsType, JourneyStage relatedToPhysicalGoodsControlsList, JourneyStage relatedToPhysicalGoodsControlCodeSummary, DecisionStage<ApplicableSoftTechControls> applicableCatchallControlsDecision) {
+    String goodsTypeText = goodsType.value().toLowerCase();
 
-    JourneyStage additionalSpecificationsSCRTPG = defineStage("additionalSpecificationsSCRTPG", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+    /** Software/Technology controls related to physical goods  */
+    JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsControlCodeNotApplicable", "Description not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
 
-    JourneyStage decontrolsSCRTPG = defineStage("decontrolsSCRTPG", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage additionalSpecifications = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsAdditionalSpecifications", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
-    JourneyStage decontrolsApplySCRTPG = defineStage("decontrolsApplySCRTPG", "Choose a different item type",
-        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrols = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsDecontrols", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
-    JourneyStage technicalNotesRelatedSCRTPG = defineStage("technicalNotesRelatedSCRTPG", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrolsApply = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsDecontrolsApply", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
-    /** Software controls related to physical goods decision stages */
-    DecisionStage<Boolean> additionalSpecificationsDecisionSCRTPG = defineDecisionStage("additionalSpecificationsDecisionSCRTPG", additionalSpecificationsDecider);
+    JourneyStage technicalNotes = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsTechnicalNotes", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
-    DecisionStage<Boolean> decontrolsDecisionSCRTPG = defineDecisionStage("decontrolsDecisionSCRTPG", decontrolsDecider);
+    /** Software/Technology controls related to physical goods decision stages */
+    DecisionStage<Boolean> additionalSpecificationsDecision = defineDecisionStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsAdditionalSpecificationsDecision", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionSCRTPG = defineDecisionStage("technicalNotesDecisionSCRTPG", technicalNotesDecider);
+    DecisionStage<Boolean> decontrolsDecision = defineDecisionStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsDecontrolsDecision", decontrolsDecider);
 
-    /** Software control journey stage transitions */
+    DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsTechnicalNotesDecision", technicalNotesDecider);
+
+    /** Software/Technology control journey stage transitions */
     bindControlCodeListStageJourneyTransitions(
-        controlsListSCRTPG,
-        decontrolsDecisionSCRTPG,
+        relatedToPhysicalGoodsControlsList,
+        decontrolsDecision,
         applicableCatchallControlsDecision
     );
 
     bindControlCodeStageTransitions(
-        decontrolsSCRTPG,
-        decontrolsApplySCRTPG,
-        controlCodeSummarySCRTPG,
-        controlCodeNotApplicableSCRTPG,
-        additionalSpecificationsSCRTPG,
-        technicalNotesRelatedSCRTPG,
+        decontrols,
+        decontrolsApply,
+        relatedToPhysicalGoodsControlCodeSummary,
+        controlCodeNotApplicable,
+        additionalSpecifications,
+        technicalNotes,
         destinationCountries,
-        decontrolsDecisionSCRTPG, additionalSpecificationsDecisionSCRTPG,
-        technicalNotesDecisionSCRTPG
+        decontrolsDecision, additionalSpecificationsDecision,
+        technicalNotesDecision
     );
 
     bindControlCodeNotApplicableFromListStageJourneyTransitions(
-        controlCodeNotApplicableSCRTPG,
-        controlsListSCRTPG,
+        controlCodeNotApplicable,
+        relatedToPhysicalGoodsControlsList,
         applicableCatchallControlsDecision
     );
 
-    atStage(controlsListSCRTPG)
+    atStage(relatedToPhysicalGoodsControlsList)
         .onEvent(Events.BACK)
         .branch()
-        .when(BackType.MATCHES, backTo(controlsListSCC))
+        .when(BackType.MATCHES, backTo(relatedToPhysicalGoodsControlsList))
         .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
-
   }
 
   /**
-   * Software catchall controls
+   * Software/Technology catchall controls
    */
-  private void softwareCatchallControls() {
-    /** Software catchall controls journey stages */
-    JourneyStage controlCodeNotApplicableSCC = defineStage("controlCodeNotApplicableSCC", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString(), Boolean.FALSE.toString()));
+  private void softTechCatchallControls(GoodsType goodsType, JourneyStage controlsList, JourneyStage controlCodeSummary, DecisionStage<Boolean> relationshipWithSoftTechExists) {
+    String goodsTypeText = goodsType.value().toLowerCase();
 
-    JourneyStage additionalSpecificationSCC = defineStage("additionalSpecificationSCC", "Additional specifications",
-        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+    /** Software/Technology catchall controls journey stages */
+    JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "ControlCodeNotApplicable", "Description not applicable",
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
 
-    JourneyStage decontrolsSCC = defineStage("decontrolsSCC", "Decontrols",
-        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage additionalSpecification = defineStage(goodsTypeText + "AdditionalSpecification", "Additional specifications",
+        controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), goodsType.urlString()));
 
-    JourneyStage decontrolsApplySCC = defineStage("decontrolsApplySCC", "Choose a different item type",
-        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrols = defineStage(goodsTypeText + "Decontrols", "Decontrols",
+        controllers.controlcode.routes.DecontrolsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), goodsType.urlString()));
 
-    JourneyStage technicalNotesSCC = defineStage("technicalNotesSCC", "Technical notes",
-        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
+    JourneyStage decontrolsApply = defineStage(goodsTypeText + "DecontrolsApply", "Choose a different item type",
+        controllers.controlcode.routes.DecontrolsApplyController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), goodsType.urlString()));
 
-    /** Software catchall controls decision stages */
-    DecisionStage<Boolean> additionalSpecificationsDecisionSCC = defineDecisionStage("additionalSpecificationsDecisionSCC", additionalSpecificationsDecider);
+    JourneyStage technicalNotes = defineStage(goodsTypeText + "TechnicalNotes", "Technical notes",
+        controllers.controlcode.routes.TechnicalNotesController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), goodsType.urlString()));
 
-    DecisionStage<Boolean> decontrolsDecisionSCC = defineDecisionStage("decontrolsDecisionSCC", decontrolsDecider);
+    /** Software/Technology catchall controls decision stages */
+    DecisionStage<Boolean> additionalSpecificationsDecision = defineDecisionStage(goodsTypeText + "AdditionalSpecificationsDecision", additionalSpecificationsDecider);
 
-    DecisionStage<Boolean> technicalNotesDecisionSCC = defineDecisionStage("technicalNotesDecisionSCC", technicalNotesDecider);
+    DecisionStage<Boolean> decontrolsDecision = defineDecisionStage(goodsTypeText + "DecontrolsDecision", decontrolsDecider);
 
-    /** Software catchall controls stage transitions */
+    DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage(goodsTypeText + "TechnicalNotesDecision", technicalNotesDecider);
+
+    /** Software/Technology catchall controls stage transitions */
     bindControlCodeListStageJourneyTransitions(
-        controlsListSCC,
-        decontrolsDecisionSCC,
-        softwareRelationshipWithTechnologyExistsDecision
+        controlsList,
+        decontrolsDecision,
+        relationshipWithSoftTechExists
     );
 
     bindControlCodeStageTransitions(
-        decontrolsSCC,
-        decontrolsApplySCC,
-        controlCodeSummarySCC,
-        controlCodeNotApplicableSCC,
-        additionalSpecificationSCC,
-        technicalNotesSCC,
+        decontrols,
+        decontrolsApply,
+        controlCodeSummary,
+        controlCodeNotApplicable,
+        additionalSpecification,
+        technicalNotes,
         destinationCountries,
-        decontrolsDecisionSCC, additionalSpecificationsDecisionSCC,
-        technicalNotesDecisionSCC
+        decontrolsDecision, additionalSpecificationsDecision,
+        technicalNotesDecision
     );
 
     bindControlCodeNotApplicableFromListStageJourneyTransitions(
-        controlCodeNotApplicableSCC,
-        controlsListSCC,
-        softwareRelationshipWithTechnologyExistsDecision
+        controlCodeNotApplicable,
+        controlsList,
+        relationshipWithSoftTechExists
     );
 
-    atStage(decontrolsApplySCC)
+    atStage(decontrolsApply)
         .onEvent(Events.BACK)
         .branch()
-        .when(BackType.MATCHES, backTo(controlsListSCC))
+        .when(BackType.MATCHES, backTo(controlsList))
         .when(BackType.EXPORT_CATEGORY, backTo(exportCategory));
-  }
-
-  private void softwareRelatedToTechnology() {
-    JourneyStage softwareGoodsRelatedToTechnologyQuestions = defineStage("softwareGoodsRelatedToTechnologyQuestions", "Software related to technology",
-        controllers.softtech.routes.GoodsRelationshipQuestionsController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.TECHNOLOGY.urlString()));
-
-    bindYesNoJourneyTransition(
-        softwareRelatedToTechnologyQuestion,
-        softwareGoodsRelatedToTechnologyQuestions,
-        softwareRelationshipWithSoftwareExistsDecision
-    );
-
-    bindYesNoJourneyTransition(
-        softwareGoodsRelatedToTechnologyQuestions,
-        destinationCountries,
-        softwareRelatedToSoftwareQuestion
-    );
-  }
-
-  private void softwareRelatedToSoftware() {
-    JourneyStage softwareGoodsRelatedToSoftwareQuestions = defineStage("softwareGoodsRelatedToSoftwareQuestions", "Software related to software",
-        controllers.softtech.routes.GoodsRelationshipQuestionsController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
-
-    bindYesNoJourneyTransition(
-        softwareRelatedToSoftwareQuestion,
-        softwareGoodsRelatedToSoftwareQuestions,
-        softwareJourneyEndNLR
-    );
-
-    bindYesNoJourneyTransition(
-        softwareGoodsRelatedToSoftwareQuestions,
-        destinationCountries,
-        softwareJourneyEndNLR
-    );
   }
 
   private void bindControlCodeNotApplicableFromSearchStageJourneyTransitions(JourneyStage controlCodeNotApplicableStage,

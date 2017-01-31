@@ -14,7 +14,13 @@
     
     @contextFormParams()
 
-    @formRadioBoolean(form("isNonExempt"), Html("Is technology minimum for installation, maintenance, operation or repair? STUB"))
+    <h2 class="heading-medium">@display.questionHeading</h2>
+
+    <p>
+      For example, a manual containing instructions on how to install an aero gas turbine engine or operate a military vehicle.
+    </p>
+
+    @formRadioBoolean(form("isNonExempt"), Html(display.questionHeading), hideHeading = true)
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>
