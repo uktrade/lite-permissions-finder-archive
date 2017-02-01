@@ -15,7 +15,7 @@ public enum ControlCodeSubJourney {
   SOFTWARE_CATCHALL_CONTROLS(ControlCodeVariant.CATCHALL_CONTROLS, GoodsType.SOFTWARE),
   TECHNOLOGY_CONTROLS(ControlCodeVariant.CONTROLS, GoodsType.TECHNOLOGY),
   TECHNOLOGY_CONTROLS_RELATED_TO_A_PHYSICAL_GOOD(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD, GoodsType.TECHNOLOGY),
-  TECHNOLOGY_CATCHALL_CONTROLS(ControlCodeVariant.CATCHALL_CONTROLS, GoodsType.SOFTWARE),
+  TECHNOLOGY_CATCHALL_CONTROLS(ControlCodeVariant.CATCHALL_CONTROLS, GoodsType.TECHNOLOGY),
   TECHNOLOGY_NON_EXEMPT_CONTROLS(ControlCodeVariant.NON_EXEMPT, GoodsType.TECHNOLOGY);
 
   private final ControlCodeVariant controlCodeVariant;
@@ -72,7 +72,7 @@ public enum ControlCodeSubJourney {
 
   public static Optional<ControlCodeSubJourney> getMatched(String controlCodeVariantText, String goodsTypeText) {
     Optional<ControlCodeVariant> controlCodeVariantOptional = ControlCodeVariant.getMatchedByUrlString(controlCodeVariantText);
-    Optional<GoodsType> goodsTypeOptional =  GoodsType.getMatchedByUrlString(goodsTypeText);
+    Optional<GoodsType> goodsTypeOptional = GoodsType.getMatchedByUrlString(goodsTypeText);
     if (controlCodeVariantOptional.isPresent() && goodsTypeOptional.isPresent()) {
       return EnumSet.allOf(ControlCodeSubJourney.class).stream()
           .filter(e -> e.controlCodeVariant == controlCodeVariantOptional.get() && e.goodsType == goodsTypeOptional.get())
