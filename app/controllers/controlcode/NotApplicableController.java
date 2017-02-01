@@ -38,11 +38,11 @@ public class NotApplicableController {
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
     ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
-    return notApplicableControllerHelper.renderFormInternal(controlCodeSubJourney, this::renderNotApplicable);
+    return notApplicableControllerHelper.renderFormInternal(controlCodeSubJourney, formFactory.form(NotApplicableForm.class), this::renderNotApplicable);
   }
 
-  private Result renderNotApplicable(NotApplicableDisplayCommon displayCommon) {
-    return ok(notApplicable.render(formFactory.form(NotApplicableForm.class), new NotApplicableDisplay(displayCommon)));
+  private Result renderNotApplicable(Form<?> form, NotApplicableDisplayCommon displayCommon) {
+    return ok(notApplicable.render(form, new NotApplicableDisplay(displayCommon)));
   }
 
   public CompletionStage<Result> handleSubmit() {
