@@ -1,6 +1,7 @@
 package models.controlcode.notapplicable;
 
 import models.ExportCategory;
+import models.GoodsType;
 import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.NotApplicableDisplayCommon;
@@ -31,14 +32,15 @@ public class DecontrolsApplyDisplay {
     else if (controlCodeSubJourney.isSoftTechControlsVariant() ||
         controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
         controlCodeSubJourney.isSoftTechCatchallControlsVariant() ||
-        controlCodeSubJourney.isNonExemptControlsVariant()){
+        controlCodeSubJourney.isNonExemptControlsVariant()) {
 
       if (NotApplicableDisplayCommon.canPickAgain(applicableSoftTechControls)) {
         this.buttons.add(new ActionButton(BackType.MATCHES.toString(), "return to the list of possible matches and choose again"));
       }
 
-      if (controlCodeSubJourney.isSoftTechCatchallControlsVariant() && softTechCategory.isPresent()) {
-        this.buttons.add(new ActionButton(BackType.SOFT_TECH_CATEGORY.toString(), "change your dual use software category (currently " + softTechCategory.get().getHeading() + ")"));
+      if (controlCodeSubJourney.isSoftTechControlsVariant() && softTechCategory.isPresent() && softTechCategory.get().isDualUseSoftTechCategory()) {
+        GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+        this.buttons.add(new ActionButton(BackType.SOFT_TECH_CATEGORY.toString(), "change your dual use " + goodsType.value().toLowerCase() + " category (currently " + softTechCategory.get().getHeading() + ")"));
       }
     }
     else {
