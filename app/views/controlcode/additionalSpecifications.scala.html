@@ -43,7 +43,14 @@
   </ul>
 
   @twoThirdsColumn {
-    <p>@Html(display.clauseText)</p>
+
+    <h2 class="heading-medium">
+      Additional information about this item
+    </h2>
+
+    <div class="stored-content-container">
+    @Html(display.clauseText)
+    </div>
 
     @if(!display.specifications.isEmpty) {
       <ul class="list list-bullet">
