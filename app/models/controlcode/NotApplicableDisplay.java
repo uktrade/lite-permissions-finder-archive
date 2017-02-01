@@ -14,7 +14,6 @@ public class NotApplicableDisplay{
   public final FrontendControlCode frontendControlCode;
   public final ApplicableSoftTechControls applicableSoftTechControls;
   public final String controlCodeAlias;
-  public final boolean showExtendedContent;
   public final List<ActionButton> buttons;
 
   public NotApplicableDisplay(NotApplicableDisplayCommon displayCommon) {
@@ -22,7 +21,6 @@ public class NotApplicableDisplay{
     this.frontendControlCode = displayCommon.frontendControlCode;
     this.applicableSoftTechControls = displayCommon.applicableSoftTechControls;
     this.controlCodeAlias = frontendControlCode.controlCodeData.alias;
-    this.showExtendedContent = false; // TODO REMOVE
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
       this.buttons = Arrays.asList(
           new ActionButton(BackType.RESULTS.toString(), "return to the list of possible matches and choose again"),
