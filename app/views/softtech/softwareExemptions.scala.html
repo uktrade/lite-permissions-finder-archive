@@ -28,15 +28,11 @@
         </p>
       }
 
-      <div class="form-group">
-        @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel), hideHeading = true)
-      </div>
+      @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel), hideHeading = true)
 
     } else {
 
-      <div class="form-group">
-        @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel))
-      </div>
+      @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel))
 
     }
 

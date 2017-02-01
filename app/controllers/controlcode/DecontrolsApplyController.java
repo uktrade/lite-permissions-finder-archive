@@ -45,24 +45,24 @@ public class DecontrolsApplyController {
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
     ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
-    return renderFormInternal(controlCodeSubJourney);
+    return renderFormInternal(formFactory.form(DecontrolsApplyForm.class), controlCodeSubJourney);
   }
 
-  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
+  private CompletionStage<Result> renderFormInternal(Form<?> form, ControlCodeSubJourney controlCodeSubJourney) {
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
-      return notApplicableControllerHelper.physicalGoodsSearchVariant(controlCodeSubJourney, this::renderDecontrolsApply);
+      return notApplicableControllerHelper.physicalGoodsSearchVariant(controlCodeSubJourney, form, this::renderDecontrolsApply);
     }
     else if (controlCodeSubJourney.isSoftTechControlsVariant()) {
-      return notApplicableControllerHelper.softTechControlsVariantHandleSubmit(controlCodeSubJourney, this::renderDecontrolsApply);
+      return notApplicableControllerHelper.softTechControlsVariantHandleSubmit(controlCodeSubJourney, form, this::renderDecontrolsApply);
     }
     else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
-      return notApplicableControllerHelper.softTechControlsRelatedToPhysicalGoodVariant(controlCodeSubJourney, this::renderDecontrolsApply);
+      return notApplicableControllerHelper.softTechControlsRelatedToPhysicalGoodVariant(controlCodeSubJourney, form, this::renderDecontrolsApply);
     }
     else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
-      return notApplicableControllerHelper.softTechCatchallControlsVariant(controlCodeSubJourney, this::renderDecontrolsApply);
+      return notApplicableControllerHelper.softTechCatchallControlsVariant(controlCodeSubJourney, form, this::renderDecontrolsApply);
     }
     else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
-      return notApplicableControllerHelper.nonExemptTechnologyHandleSubmit(controlCodeSubJourney, this::renderDecontrolsApply);
+      return notApplicableControllerHelper.nonExemptTechnologyHandleSubmit(controlCodeSubJourney, form, this::renderDecontrolsApply);
     }
     else {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
@@ -70,12 +70,12 @@ public class DecontrolsApplyController {
     }
   }
 
-  private Result renderDecontrolsApply(NotApplicableDisplayCommon displayCommon) {
+  private Result renderDecontrolsApply(Form<?> form, NotApplicableDisplayCommon displayCommon) {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
     GoodsType goodsType = displayCommon.controlCodeSubJourney.getGoodsType();
     Optional<SoftTechCategory> softTechCategoryOptional = permissionsFinderDao.getSoftTechCategory(goodsType);
-    return ok(decontrolsApply.render(formFactory.form(DecontrolsApplyForm.class), new DecontrolsApplyDisplay(displayCommon, exportCategory, softTechCategoryOptional)));
+    return ok(decontrolsApply.render(form, new DecontrolsApplyDisplay(displayCommon, exportCategory, softTechCategoryOptional)));
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -87,7 +87,7 @@ public class DecontrolsApplyController {
     Form<DecontrolsApplyForm> form = formFactory.form(DecontrolsApplyForm.class).bindFromRequest();
     if (form.hasErrors()) {
       // TODO this should render with the form.
-      return renderFormInternal(controlCodeSubJourney);
+      return renderFormInternal(form, controlCodeSubJourney);
     }
     String action = form.get().action;
     BackType backType = BackType.valueOf(action);

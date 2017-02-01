@@ -277,7 +277,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(categoryFinancialTechnicalAssistance)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(notImplemented)); // TODO This should go through to the technical information search (when implemented)
+        .then(moveTo(notImplemented)); // TODO This should go through to the technical information search (when implemented) LITE-453
 
     atStage(categoryMedicinesDrugs)
         .onEvent(Events.IS_USED_FOR_EXECUTION_TORTURE)
@@ -327,7 +327,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
     JourneyStage controlCodeNotApplicable = defineStage("controlCodeNotApplicable", "Rating is not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
 
     JourneyStage additionalSpecifications = defineStage("additionalSpecifications", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.SEARCH.urlString(), GoodsType.PHYSICAL.urlString()));
@@ -799,7 +799,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     JourneyStage controlCodeNotApplicable = defineStage("technologyNonExemptControlsControlCodeNotApplicable", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     JourneyStage additionalSpecifications = defineStage("technologyNonExemptControlsAdditionalSpecifications", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
@@ -861,7 +861,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     /** Software/Technology controls journey stages */
     JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "CategoryControlCodeNotApplicable", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
 
     JourneyStage additionalSpecifications = defineStage(goodsTypeText + "CategoryAdditionalSpecifications", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), goodsType.urlString()));
@@ -933,7 +933,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString()));
 
     JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "ControlCodeNotApplicableRelatedTo", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString()));
 
     JourneyStage additionalSpecifications = defineStage(goodsTypeText + "AdditionalSpecificationsRelatedTo", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.SEARCH.urlString(), goodsType.urlString()));
@@ -1025,7 +1025,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     /** Software/Technology controls related to physical goods  */
     JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsControlCodeNotApplicable", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
 
     JourneyStage additionalSpecifications = defineStage(goodsTypeText + "ControlsRelatedToPhysicalGoodsAdditionalSpecifications", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), goodsType.urlString()));
@@ -1086,7 +1086,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     /** Software/Technology catchall controls journey stages */
     JourneyStage controlCodeNotApplicable = defineStage(goodsTypeText + "ControlCodeNotApplicable", "Description not applicable",
-        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), goodsType.urlString(), Boolean.FALSE.toString()));
+        controllers.controlcode.routes.NotApplicableController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), goodsType.urlString()));
 
     JourneyStage additionalSpecification = defineStage(goodsTypeText + "AdditionalSpecification", "Additional specifications",
         controllers.controlcode.routes.AdditionalSpecificationsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), goodsType.urlString()));

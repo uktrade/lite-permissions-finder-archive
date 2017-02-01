@@ -1,6 +1,7 @@
 package models;
 
 import com.google.common.base.Enums;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
@@ -31,8 +32,13 @@ public enum ExportCategory {
   }
 
   public static Optional<ExportCategory> getMatched(String name) {
-    return Enums.getIfPresent(ExportCategory.class, name)
-        .transform(java.util.Optional::of)
-        .or(java.util.Optional.empty());
+    if (StringUtils.isEmpty(name)) {
+      return Optional.empty();
+    }
+    else {
+      return Enums.getIfPresent(ExportCategory.class, name)
+          .transform(java.util.Optional::of)
+          .or(java.util.Optional.empty());
+    }
   }
 }

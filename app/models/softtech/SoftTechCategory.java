@@ -1,6 +1,7 @@
 package models.softtech;
 
 import com.google.common.base.Enums;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
@@ -41,9 +42,14 @@ public enum SoftTechCategory {
   }
 
   public static Optional<SoftTechCategory> getMatched(String name) {
-    return Enums.getIfPresent(SoftTechCategory.class, name)
-        .transform(java.util.Optional::of)
-        .or(java.util.Optional.empty());
+    if (StringUtils.isEmpty(name)) {
+      return Optional.empty();
+    }
+    else {
+      return Enums.getIfPresent(SoftTechCategory.class, name)
+          .transform(java.util.Optional::of)
+          .or(java.util.Optional.empty());
+    }
   }
 
 }

@@ -51,7 +51,7 @@ GET     /export/:controlCodeVariant/:goodsType/control-code/decontrols-apply-to-
 
 POST    /export/control-code/decontrols-apply-to-your-good                                  controllers.controlcode.DecontrolsApplyController.handleSubmit
 
-GET     /export/:controlCodeVariant/:goodsType/control-code/not-applicable                  controllers.controlcode.NotApplicableController.renderForm(controlCodeVariant, goodsType, extended)
+GET     /export/:controlCodeVariant/:goodsType/control-code/not-applicable                  controllers.controlcode.NotApplicableController.renderForm(controlCodeVariant, goodsType)
 
 POST    /control-code/not-applicable                                                        controllers.controlcode.NotApplicableController.handleSubmit
 
