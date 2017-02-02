@@ -49,28 +49,28 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   /** Physical **/
   private final JourneyStage search = defineStage("search", "Describe your item",
       controllers.search.routes.SearchController.renderForm(GoodsType.PHYSICAL.urlString()));
-  private final DecisionStage<Boolean> searchRelatedCodesDecision;
+  private final DecisionStage<Boolean> hasSearchRelatedCodes;
 
   /** Software **/
-  private final DecisionStage<ExportCategory> dualUseOrMilitarySoftwareDecision;
-  private final DecisionStage<ApplicableSoftTechControls> softwareApplicableControlsDecision;
-  private final DecisionStage<ApplicableSoftTechControls> softwareApplicableRelatedControlsDecision;
-  private final DecisionStage<ApplicableSoftTechControls> softwareApplicableCatchallControlsDecision;
-  private final DecisionStage<Boolean> softwareRelationshipWithTechnologyExistsDecision;
-  private final DecisionStage<Boolean> softwareRelationshipWithSoftwareExistsDecision;
-  private final DecisionStage<Boolean> softwareSearchRelatedCodesDecision;
+  private final DecisionStage<ExportCategory> isDualUseOrMilitarySoftware;
+  private final DecisionStage<ApplicableSoftTechControls> hasSoftwareApplicableControls;
+  private final DecisionStage<ApplicableSoftTechControls> hasSoftwareApplicableRelatedControls;
+  private final DecisionStage<ApplicableSoftTechControls> hasSoftwareApplicableCatchallControls;
+  private final DecisionStage<Boolean> doesSoftwareRelationshipWithTechnologyExists;
+  private final DecisionStage<Boolean> doesSoftwareRelationshipWithSoftwareExists;
+  private final DecisionStage<Boolean> hasSoftwareSearchRelatedCodes;
 
   private JourneyStage softwareJourneyEndNLR = defineStage("softwareJourneyEndNLR", "No licence available",
       routes.StaticContentController.renderSoftwareJourneyEndNLR());
 
   /** Technology **/
-  private final DecisionStage<ExportCategory> dualUseOrMilitaryTechnologyDecision;
-  private final DecisionStage<ExportCategory> dualUseOrMilitaryNonExemptTechnologyDecision;
-  private final DecisionStage<ApplicableSoftTechControls> technologyApplicableControlsDecision;
-  private final DecisionStage<ApplicableSoftTechControls> technologyApplicableRelatedControlsDecision;
-  private final DecisionStage<ApplicableSoftTechControls> technologyApplicableCatchallControlsDecision;
-  private final DecisionStage<Boolean> technologyRelationshipWithSoftwareExistsDecision;
-  private final DecisionStage<Boolean> technologySearchRelatedCodesDecision;
+  private final DecisionStage<ExportCategory> isDualUseOrMilitaryTechnology;
+  private final DecisionStage<ExportCategory> isDualUseOrMilitaryNonExemptTechnology;
+  private final DecisionStage<ApplicableSoftTechControls> hasTechnologyApplicableControls;
+  private final DecisionStage<ApplicableSoftTechControls> hasTechnologyApplicableRelatedControls;
+  private final DecisionStage<ApplicableSoftTechControls> hasTechnologyApplicableCatchallControls;
+  private final DecisionStage<Boolean> doesTechnologyRelationshipWithSoftwareExists;
+  private final DecisionStage<Boolean> hasTechnologySearchRelatedCodes;
 
   private final JourneyStage technologyExemptions = defineStage("technologyExemptions", "Technology exemptions",
       controllers.softtech.routes.TechnologyExemptionsController.renderForm());
@@ -111,21 +111,21 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     this.relationshipWithTechnologyDecider = relationshipWithTechnologyDecider;
     this.relationshipWithSoftwareDecider = relationshipWithSoftwareDecider;
     this.relatedCodesDecider = relatedCodesDecider;
-    this.dualUseOrMilitarySoftwareDecision = defineDecisionStage("dualUseOrMilitarySoftwareDecision", this.exportCategoryDecider);
-    this.dualUseOrMilitaryTechnologyDecision = defineDecisionStage("dualUseOrMilitaryTechnologyDecision", this.exportCategoryDecider);
-    this.dualUseOrMilitaryNonExemptTechnologyDecision = defineDecisionStage("dualUseOrMilitaryNonExemptTechnologyDecision", this.exportCategoryDecider);
-    this.softwareApplicableControlsDecision = defineDecisionStage("softwareApplicableControlsDecision", this.categoryControlsDecider);
-    this.technologyApplicableControlsDecision = defineDecisionStage("technologyApplicableControlsDecision", this.categoryControlsDecider);
-    this.softwareApplicableRelatedControlsDecision = defineDecisionStage("softwareApplicableRelatedControlsDecision", this.relatedControlsDecider);
-    this.technologyApplicableRelatedControlsDecision = defineDecisionStage("technologyApplicableRelatedControlsDecision", this.relatedControlsDecider);
-    this.softwareApplicableCatchallControlsDecision = defineDecisionStage("softwareApplicableCatchallControlsDecision", this.catchallControlsDecider);
-    this.technologyApplicableCatchallControlsDecision = defineDecisionStage("technologyApplicableCatchallControlsDecision", this.catchallControlsDecider);
-    this.softwareRelationshipWithTechnologyExistsDecision = defineDecisionStage("softwareRelationshipWithTechnologyExistsDecision", this.relationshipWithTechnologyDecider);
-    this.softwareRelationshipWithSoftwareExistsDecision = defineDecisionStage("softwareRelationshipWithSoftwareExistsDecision", this.relationshipWithSoftwareDecider);
-    this.technologyRelationshipWithSoftwareExistsDecision = defineDecisionStage("technologyRelationshipWithSoftwareExistsDecision", this.relationshipWithSoftwareDecider);
-    this.searchRelatedCodesDecision = defineDecisionStage("searchRelatedCodesDecision", this.relatedCodesDecider);
-    this.softwareSearchRelatedCodesDecision = defineDecisionStage("softwareSearchRelatedCodesDecision", this.relatedCodesDecider);
-    this.technologySearchRelatedCodesDecision = defineDecisionStage("technologySearchRelatedCodesDecision", this.relatedCodesDecider);
+    this.isDualUseOrMilitarySoftware = defineDecisionStage("isDualUseOrMilitarySoftware", this.exportCategoryDecider);
+    this.isDualUseOrMilitaryTechnology = defineDecisionStage("isDualUseOrMilitaryTechnology", this.exportCategoryDecider);
+    this.isDualUseOrMilitaryNonExemptTechnology = defineDecisionStage("isDualUseOrMilitaryNonExemptTechnology", this.exportCategoryDecider);
+    this.hasSoftwareApplicableControls = defineDecisionStage("hasSoftwareApplicableControls", this.categoryControlsDecider);
+    this.hasTechnologyApplicableControls = defineDecisionStage("hasTechnologyApplicableControls", this.categoryControlsDecider);
+    this.hasSoftwareApplicableRelatedControls = defineDecisionStage("hasSoftwareApplicableRelatedControls", this.relatedControlsDecider);
+    this.hasTechnologyApplicableRelatedControls = defineDecisionStage("hasTechnologyApplicableRelatedControls", this.relatedControlsDecider);
+    this.hasSoftwareApplicableCatchallControls = defineDecisionStage("hasSoftwareApplicableCatchallControls", this.catchallControlsDecider);
+    this.hasTechnologyApplicableCatchallControls = defineDecisionStage("hasTechnologyApplicableCatchallControls", this.catchallControlsDecider);
+    this.doesSoftwareRelationshipWithTechnologyExists = defineDecisionStage("doesSoftwareRelationshipWithTechnologyExists", this.relationshipWithTechnologyDecider);
+    this.doesSoftwareRelationshipWithSoftwareExists = defineDecisionStage("doesSoftwareRelationshipWithSoftwareExists", this.relationshipWithSoftwareDecider);
+    this.doesTechnologyRelationshipWithSoftwareExists = defineDecisionStage("doesTechnologyRelationshipWithSoftwareExists", this.relationshipWithSoftwareDecider);
+    this.hasSearchRelatedCodes = defineDecisionStage("hasSearchRelatedCodes", this.relatedCodesDecider);
+    this.hasSoftwareSearchRelatedCodes = defineDecisionStage("hasSoftwareSearchRelatedCodes", this.relatedCodesDecider);
+    this.hasTechnologySearchRelatedCodes = defineDecisionStage("hasTechnologySearchRelatedCodes", this.relatedCodesDecider);
   }
 
   @Override
@@ -138,7 +138,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.GOODS_TYPE_SELECTED)
         .branch()
         .when(GoodsType.PHYSICAL, moveTo(search))
-        .when(GoodsType.SOFTWARE, moveTo(dualUseOrMilitarySoftwareDecision))
+        .when(GoodsType.SOFTWARE, moveTo(isDualUseOrMilitarySoftware))
         .when(GoodsType.TECHNOLOGY, moveTo(technologyExemptions));
 
     physicalGoodsStages();
@@ -365,13 +365,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(searchResults)
         .onEvent(Events.CONTROL_CODE_SELECTED)
-        .then(moveTo(searchRelatedCodesDecision));
+        .then(moveTo(hasSearchRelatedCodes));
 
     atStage(searchResults)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(notApplicable));
 
-    atDecisionStage(searchRelatedCodesDecision)
+    atDecisionStage(hasSearchRelatedCodes)
         .decide()
         .when(true, moveTo(searchRelatedCodes))
         .when(false, moveTo(decontrolsDecision));
@@ -513,9 +513,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage goodsRelatedToSoftwareQuestions = defineStage("softwareGoodsRelatedToSoftwareQuestions", "Software related to software",
         controllers.softtech.routes.GoodsRelationshipQuestionsController.renderForm(GoodsType.SOFTWARE.urlString(), GoodsType.SOFTWARE.urlString()));
 
-    atDecisionStage(dualUseOrMilitarySoftwareDecision)
+    atDecisionStage(isDualUseOrMilitarySoftware)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(softwareApplicableControlsDecision))
+        .when(ExportCategory.MILITARY, moveTo(hasSoftwareApplicableControls))
         .when(ExportCategory.DUAL_USE, moveTo(softwareExemptionsQ1));
 
     // softwareExemptionsQ1 journey transitions
@@ -528,7 +528,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     // softwareExemptionsQ2 journey transitions
     bindYesNoJourneyTransition(
         softwareExemptionsQ2,
-        softwareApplicableControlsDecision,
+        hasSoftwareApplicableControls,
         softwareExemptionsQ3
     );
 
@@ -541,13 +541,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(dualUseCategories)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(softwareApplicableControlsDecision));
+        .then(moveTo(hasSoftwareApplicableControls));
 
     atStage(dualUseCategories)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(relatedToEquipmentOrMaterials));
 
-    atDecisionStage(softwareApplicableControlsDecision)
+    atDecisionStage(hasSoftwareApplicableControls)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
         .when(ApplicableSoftTechControls.ONE, moveTo(categoryControlCodeSummary))
@@ -567,19 +567,19 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.NO)
-        .then(moveTo(softwareApplicableCatchallControlsDecision));
+        .then(moveTo(hasSoftwareApplicableCatchallControls));
 
     softTechSearchRelatedTo(
         GoodsType.SOFTWARE,
         searchRelatedTo,
-        softwareSearchRelatedCodesDecision,
-        softwareApplicableCatchallControlsDecision,
-        softwareApplicableRelatedControlsDecision
+        hasSoftwareSearchRelatedCodes,
+        hasSoftwareApplicableCatchallControls,
+        hasSoftwareApplicableRelatedControls
     );
 
-    atDecisionStage(softwareApplicableRelatedControlsDecision)
+    atDecisionStage(hasSoftwareApplicableRelatedControls)
         .decide()
-        .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelationshipWithTechnologyExistsDecision))
+        .when(ApplicableSoftTechControls.ZERO, moveTo(doesSoftwareRelationshipWithTechnologyExists))
         .when(ApplicableSoftTechControls.ONE, moveTo(relatedToPhysicalGoodsControlCodeSummary))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(relatedToPhysicalGoodsControlsList));
 
@@ -587,12 +587,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         GoodsType.SOFTWARE,
         relatedToPhysicalGoodsControlsList,
         relatedToPhysicalGoodsControlCodeSummary,
-        softwareApplicableCatchallControlsDecision
+        hasSoftwareApplicableCatchallControls
     );
 
-    atDecisionStage(softwareApplicableCatchallControlsDecision)
+    atDecisionStage(hasSoftwareApplicableCatchallControls)
         .decide()
-        .when(ApplicableSoftTechControls.ZERO, moveTo(softwareRelationshipWithTechnologyExistsDecision))
+        .when(ApplicableSoftTechControls.ZERO, moveTo(doesSoftwareRelationshipWithTechnologyExists))
         .when(ApplicableSoftTechControls.ONE, moveTo(catchallControlCodeSummary))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(catchallControlsList));
 
@@ -600,20 +600,20 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         GoodsType.SOFTWARE,
         catchallControlsList,
         catchallControlCodeSummary,
-        softwareRelationshipWithTechnologyExistsDecision
+        doesSoftwareRelationshipWithTechnologyExists
     );
 
     /** Software related to technology **/
 
-    atDecisionStage(softwareRelationshipWithTechnologyExistsDecision)
+    atDecisionStage(doesSoftwareRelationshipWithTechnologyExists)
         .decide()
         .when(true, moveTo(relatedToTechnologyQuestion))
-        .when(false, moveTo(softwareRelationshipWithSoftwareExistsDecision));
+        .when(false, moveTo(doesSoftwareRelationshipWithSoftwareExists));
 
     bindYesNoJourneyTransition(
         relatedToTechnologyQuestion,
         goodsRelatedToTechnologyQuestions,
-        softwareRelationshipWithSoftwareExistsDecision
+        doesSoftwareRelationshipWithSoftwareExists
     );
 
     bindYesNoJourneyTransition(
@@ -624,7 +624,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     /** Software related to software **/
 
-    atDecisionStage(softwareRelationshipWithSoftwareExistsDecision)
+    atDecisionStage(doesSoftwareRelationshipWithSoftwareExists)
         .decide()
         .when(true, moveTo(relatedToSoftwareQuestion))
         .when(false, moveTo(softwareJourneyEndNLR));
@@ -702,31 +702,31 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindYesNoJourneyTransition(
         technologyNonExempt,
-        dualUseOrMilitaryNonExemptTechnologyDecision,
-        dualUseOrMilitaryTechnologyDecision
+        isDualUseOrMilitaryNonExemptTechnology,
+        isDualUseOrMilitaryTechnology
     );
 
-    atDecisionStage(dualUseOrMilitaryNonExemptTechnologyDecision)
+    atDecisionStage(isDualUseOrMilitaryNonExemptTechnology)
         .decide()
         .when(ExportCategory.MILITARY, moveTo(technologyExemptionsNLR))
         .when(ExportCategory.DUAL_USE, moveTo(nonExemptControlsControlsList));
 
-    atDecisionStage(dualUseOrMilitaryTechnologyDecision)
+    atDecisionStage(isDualUseOrMilitaryTechnology)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(technologyApplicableControlsDecision))
+        .when(ExportCategory.MILITARY, moveTo(hasTechnologyApplicableControls))
         .when(ExportCategory.DUAL_USE, moveTo(dualUseCategories));
 
     technologyNonExemptControls(nonExemptControlsControlsList);
 
     atStage(dualUseCategories)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(technologyApplicableControlsDecision));
+        .then(moveTo(hasTechnologyApplicableControls));
 
     atStage(dualUseCategories)
         .onEvent(Events.NONE_MATCHED)
         .then(moveTo(relatedToEquipmentOrMaterials));
 
-    atDecisionStage(technologyApplicableControlsDecision)
+    atDecisionStage(hasTechnologyApplicableControls)
         .decide()
         .when(ApplicableSoftTechControls.ZERO, moveTo(relatedToEquipmentOrMaterials))
         .when(ApplicableSoftTechControls.ONE, moveTo(categoryControlCodeSummary))
@@ -746,19 +746,19 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(relatedToEquipmentOrMaterials)
         .onEvent(StandardEvents.NO)
-        .then(moveTo(technologyApplicableCatchallControlsDecision));
+        .then(moveTo(hasTechnologyApplicableCatchallControls));
 
     softTechSearchRelatedTo(
         GoodsType.TECHNOLOGY,
         searchRelatedTo,
-        technologySearchRelatedCodesDecision,
-        technologyApplicableCatchallControlsDecision,
-        technologyApplicableRelatedControlsDecision
+        hasTechnologySearchRelatedCodes,
+        hasTechnologyApplicableCatchallControls,
+        hasTechnologyApplicableRelatedControls
     );
 
-    atDecisionStage(technologyApplicableRelatedControlsDecision)
+    atDecisionStage(hasTechnologyApplicableRelatedControls)
         .decide()
-        .when(ApplicableSoftTechControls.ZERO, moveTo(technologyRelationshipWithSoftwareExistsDecision))
+        .when(ApplicableSoftTechControls.ZERO, moveTo(doesTechnologyRelationshipWithSoftwareExists))
         .when(ApplicableSoftTechControls.ONE, moveTo(relatedToPhysicalGoodsControlCodeSummary))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(relatedToPhysicalGoodsControlsList));
 
@@ -766,12 +766,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         GoodsType.TECHNOLOGY,
         relatedToPhysicalGoodsControlsList,
         relatedToPhysicalGoodsControlCodeSummary,
-        technologyApplicableCatchallControlsDecision
+        hasTechnologyApplicableCatchallControls
     );
 
-    atDecisionStage(technologyApplicableCatchallControlsDecision)
+    atDecisionStage(hasTechnologyApplicableCatchallControls)
         .decide()
-        .when(ApplicableSoftTechControls.ZERO, moveTo(technologyRelationshipWithSoftwareExistsDecision))
+        .when(ApplicableSoftTechControls.ZERO, moveTo(doesTechnologyRelationshipWithSoftwareExists))
         .when(ApplicableSoftTechControls.ONE, moveTo(catchallControlCodeSummary))
         .when(ApplicableSoftTechControls.GREATER_THAN_ONE, moveTo(catchallControlsList));
 
@@ -779,10 +779,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         GoodsType.TECHNOLOGY,
         catchallControlsList,
         catchallControlCodeSummary,
-        technologyRelationshipWithSoftwareExistsDecision
+        doesTechnologyRelationshipWithSoftwareExists
     );
 
-    atDecisionStage(technologyRelationshipWithSoftwareExistsDecision)
+    atDecisionStage(doesTechnologyRelationshipWithSoftwareExists)
         .decide()
         .when(true, moveTo(relatedToSoftwareQuestion))
         .when(false, moveTo(journeyEndNLR));
