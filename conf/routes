@@ -97,7 +97,11 @@ GET     /exemptions-apply/software/licence-not-available/type-1    controllers.S
 
 GET     /exemptions-apply/software/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
 
-GET     /exemptions-apply/technology/icence-not-available          controllers.StaticContentController.renderTechnologyExemptionsNLR
+GET     /exemptions-apply/technology/licence-not-available          controllers.StaticContentController.renderTechnologyExemptionsNLR
+
+GET     /exemptions-apply/technology/public-domain/licence-not-available          controllers.softtech.TechnologyPublicDomainExemptionNLRController.renderForm
+
+POST     /exemptions-apply/technology/public-domain/licence-not-available         controllers.softtech.TechnologyPublicDomainExemptionNLRController.handleSubmit
 
 
 GET     /export-category                      controllers.categories.ExportCategoryController.renderForm

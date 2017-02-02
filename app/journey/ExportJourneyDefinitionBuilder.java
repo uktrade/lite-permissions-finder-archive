@@ -645,6 +645,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private void technologyStages() {
 
+    JourneyStage technologyPublicDomainExemption = defineStage("technologyPublicDomainExemption", "No licence available",
+        controllers.softtech.routes.TechnologyPublicDomainExemptionNLRController.renderForm());
+
     JourneyStage technologyNonExempt = defineStage("technologyNonExempt", "Minimum required technology",
         controllers.softtech.routes.TechnologyNonExemptController.renderForm());
 
@@ -689,9 +692,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     bindYesNoJourneyTransition(
         technologyExemptions,
-        technologyExemptionsNLR,
+        technologyPublicDomainExemption,
         technologyNonExempt
     );
+
+    atStage(technologyPublicDomainExemption)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(technologyNonExempt));
 
     bindYesNoJourneyTransition(
         technologyNonExempt,
@@ -701,12 +708,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atDecisionStage(dualUseOrMilitaryNonExemptTechnologyDecision)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(technologyExemptionsNLR)) // TODO is this the same NLR?
+        .when(ExportCategory.MILITARY, moveTo(technologyExemptionsNLR))
         .when(ExportCategory.DUAL_USE, moveTo(nonExemptControlsControlsList));
 
     atDecisionStage(dualUseOrMilitaryTechnologyDecision)
         .decide()
-        .when(ExportCategory.MILITARY, moveTo(technologyApplicableControlsDecision)) // TODO is this the same NLR?
+        .when(ExportCategory.MILITARY, moveTo(technologyApplicableControlsDecision))
         .when(ExportCategory.DUAL_USE, moveTo(dualUseCategories));
 
     technologyNonExemptControls(nonExemptControlsControlsList);
