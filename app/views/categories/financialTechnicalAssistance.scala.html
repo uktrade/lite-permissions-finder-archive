@@ -3,7 +3,7 @@
 @import views.html.common.form._
 @import views.html.common.state._
 
-@import controllers.categories.routes.FinancialTechnicalAssistanceController;
+@import controllers.categories.routes.FinancialTechnicalAssistanceController
 
 @(form: Form[_])
 @standardPage("You should contact the Export Control Organisation to find out if you need a licence", Some(Html("You should contact the Export Control Organisation to find out if you need a licence"))){
@@ -31,8 +31,13 @@
     @contextFormParams()
 
     <p>
-      If a service engineer takes documentation, such as manuals or blueprints, overseas in servicing goods or technology then the documentation may need a licence. If this applies to your export, or you are not sure, <button type="submit" class="link underlined font-small" name="action" value="goToSearch">use the search facility</button> to check whether your export needs a licence.
+      If this applies to your export, or you are not sure, continue to use this service to check whether you need a licence to export documentation for:
     </p>
+
+    <ul class="list list-bullet text">
+      <li><button type="submit" class="link underlined font-small" name="action" value="goToMilitary">military items</button></li>
+      <li><button type="submit" class="link underlined font-small" name="action" value="goToDualUse">non-military (dual-use) items</button></li>
+    </ul>
 
   </form>
 

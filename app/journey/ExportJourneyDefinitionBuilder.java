@@ -277,7 +277,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(categoryFinancialTechnicalAssistance)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(notImplemented)); // TODO This should go through to the technical information search (when implemented) LITE-453
+        .then(moveTo(technologyExemptions)); // Move to technology flow
 
     atStage(categoryMedicinesDrugs)
         .onEvent(Events.IS_USED_FOR_EXECUTION_TORTURE)
