@@ -72,7 +72,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final DecisionStage<Boolean> technologyRelationshipWithSoftwareExistsDecision;
   private final DecisionStage<Boolean> technologySearchRelatedCodesDecision;
 
-  private final JourneyStage technologyExemptions = defineStage("technologyExemptions", "Is technology in the public domain?",
+  private final JourneyStage technologyExemptions = defineStage("technologyExemptions", "Technology exemptions",
       controllers.softtech.routes.TechnologyExemptionsController.renderForm());
 
   private final JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR", "Technology exemptions apply",
