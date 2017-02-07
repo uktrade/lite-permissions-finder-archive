@@ -6,9 +6,13 @@
 @import controllers.importcontent.ImportWhereController
 
 @(form: Form[_], countries: List[Country])
-@standardPage("Countries and territories", Some(Html("Countries and territories")), pageName = Some("importCountry")){
+@standardPageWithJavascript("Countries and territories", Some(Html("Countries and territories"))){
   @errorSummary(form)
-}{
+} {
+  <script>
+    $(document).ready(LITEPermissionsFinder.ImportCountry.setupPage);
+  </script>
+} {
 
   <form action="@controllers.importcontent.routes.ImportWhereController.handleSubmit()" method="POST">
 

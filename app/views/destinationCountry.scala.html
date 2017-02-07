@@ -6,9 +6,13 @@
 @import controllers.DestinationCountryController
 
 @(form: Form[_], countries: List[Country], numberOfThroughDestinationCountries: Int, fieldOrderList: List[String])
-@standardPage("Countries and territories", Some(Html("Countries and territories")), pageName = Some("destinationCountry")){
+@standardPageWithJavascript("Countries and territories", Some(Html("Countries and territories"))){
   @errorSummary(form, fieldOrder = fieldOrderList)
-}{
+} {
+  <script type="text/javascript">
+    $(document).ready(LITEPermissionsFinder.DestinationCountry.setupPage);
+  </script>
+} {
 
   <form action="@routes.DestinationCountryController.handleSubmit()" method="POST">
 

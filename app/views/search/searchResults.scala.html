@@ -9,9 +9,14 @@
 @import controllers.search.SearchResultsController.SearchResultAction
 
 @(display: SearchResultsDisplay)
-  @standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchResults")) {
+  @standardPageWithJavascript(display.pageTitle, Some(Html(display.pageTitle))) {
     @errorSummary(display.form)
-  }{
+  } {
+  <script>
+    $(document).ready(LITEPermissionsFinder.SearchResults.setupPage);
+    $(window).load(LITEPermissionsFinder.SearchResults.onload);
+  </script>
+  } {
 
     <form action="@routes.SearchResultsController.handleSubmit()" method="POST">
 

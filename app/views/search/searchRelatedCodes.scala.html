@@ -8,8 +8,13 @@
 @import models.search.SearchRelatedCodesDisplay
 
 @(form: Form[_], display: SearchRelatedCodesDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchRelatedCodes")) {
+@standardPageWithJavascript(display.pageTitle, Some(Html(display.pageTitle))) {
   @errorSummary(form)
+} {
+  <script>
+    $(document).ready(LITEPermissionsFinder.SearchRelatedCodes.setupPage);
+    $(window).load(LITEPermissionsFinder.SearchRelatedCodes.onload);
+  </script>
 } {
 
   <form action="@routes.SearchRelatedCodesController.handleSubmit()" method="POST">

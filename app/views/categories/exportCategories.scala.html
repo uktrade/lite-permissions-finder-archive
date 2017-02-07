@@ -4,9 +4,13 @@
 @import models.ExportCategory
 
 @(form: Form[_])
-@standardPage(htmlTitle = "Your exports", pageHeading = Some(Html("What are you exporting?")), pageName = Some("selectExportCategories")){
+@standardPageWithJavascript(htmlTitle = "Your exports", pageHeading = Some(Html("What are you exporting?"))){
   @errorSummary(form)
-}{
+} {
+  <script>
+    $(document).ready(LITEPermissionsFinder.ExportCategories.setupPage);
+  </script>
+} {
 
   <div class="panel panel-border-wide">
     <p>
