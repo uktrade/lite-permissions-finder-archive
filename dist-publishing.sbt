@@ -13,6 +13,9 @@ val publishDistSettings = Seq[Setting[_]](
 
 Seq(publishDistSettings: _*)
 
+// disable using the Scala version in output paths and artifacts
+crossPaths := false
+
 // Publish to the LITE Nexus sbt-dist repository
 publishTo := Some("Sonatype Nexus" at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/raw-test")
 
