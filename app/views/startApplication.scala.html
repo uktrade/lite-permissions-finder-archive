@@ -5,7 +5,7 @@
 @import views.html.common.state._
 
 @(form: Form[_], applicationCode: String)
-@standardPage("Before you begin", Some(Html("Before you begin")), pageName = Some("startApplication")) {
+@standardPage("Before you begin", Some(Html("Before you begin"))) {
   @errorSummary(form)
 } {
 
@@ -40,4 +40,7 @@
 
   </form>
 
+  <script type="text/javascript">
+    $(document).ready(function(){LITEPermissionsFinder.StartApplication.setupPage()});
+  </script>
 }

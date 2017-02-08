@@ -4,9 +4,9 @@
 @import views.html.common.state._
 
 @(form: Form[_])
-@standardPage(htmlTitle = "Refining your licence results", pageHeading = Some(Html("Refining your licence results")), pageName = Some("ogelQuestions")){
+@standardPage(htmlTitle = "Refining your licence results", pageHeading = Some(Html("Refining your licence results"))){
   @errorSummary(form, fieldOrder = scala.List("forRepairReplacement", "forExhibitionDemonstration", "before1897upto35k"))
-}{
+} {
 
   <form action="@controllers.ogel.routes.OgelQuestionsController.handleSubmit()" method="POST">
 
@@ -23,4 +23,8 @@
     </div>
 
   </form>
+
+  <script type="text/javascript">
+    $(document).ready(function(){LITEPermissionsFinder.OgelQuestions.setupPage()});
+  </script>
 }
