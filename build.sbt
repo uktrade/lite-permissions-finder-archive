@@ -74,8 +74,8 @@ filterJs := { (mappings: Seq[PathMapping]) =>
     .toSeq
 }
 
-// Production pipeline
-pipelineStages := Seq(concat, filterJs, digest)
-
-// Dev pipeline
+// Production and dev pipeline stages
 pipelineStages in Assets := Seq(concat, filterJs)
+
+// Production only pipeline stages, (after the above production and dev pipeline stages)
+pipelineStages := Seq(digest)
