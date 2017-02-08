@@ -6,12 +6,8 @@
 @import models.search.SearchDisplay
 
 @(form: Form[_], display: SearchDisplay)
-@standardPageWithJavascript(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
   @errorSummary(form)
-} {
-  <script>
-    $(document).ready(LITEPermissionsFinder.Search.setupPage);
-  </script>
 } {
 
   <form action="@SearchController.handleSubmit()" method="POST">
@@ -40,4 +36,7 @@
 
   </form>
 
+  <script type="text/javascript">
+    $(document).ready(LITEPermissionsFinder.Search.setupPage);
+  </script>
 }

@@ -1,4 +1,0 @@
-@import util._
-
-@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-large", twoThirdsColumn: Boolean = true)(beforeHeader: Html)(javascript: Html)(content: Html)
-@standardPage(htmlTitle = htmlTitle, pageHeading = pageHeading, headingCssClass = headingCssClass, twoThirdsColumn = twoThirdsColumn, javascript = Some(javascript))(beforeHeader = beforeHeader)(content = content)

@@ -1,6 +1,6 @@
 @import views.html.common.page.govukTemplate
 
-@(htmlTitle: String, propositionHeading: Option[Html] = None, javascript: Option[Html] = None)(content: Html)
+@(htmlTitle: String, propositionHeading: Option[Html] = None)(content: Html)
 
 @head = {
   <!--[if gt IE 8]><!-->
@@ -10,9 +10,6 @@
 
   <script src="@controllers.routes.JavaScriptRoutesController.jsRoutes"></script>
   <script src="@controllers.routes.Assets.versioned("javascripts/lite-permissions-finder.js")"></script>
-  @if(javascript.isDefined){
-    @javascript.get
-  }
 }
 
 @bodyEnd = {

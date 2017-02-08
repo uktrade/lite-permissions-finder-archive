@@ -5,12 +5,8 @@
 @import views.html.common.state._
 
 @(form: Form[_], applicationCode: String)
-@standardPageWithJavascript("Before you begin", Some(Html("Before you begin"))) {
+@standardPage("Before you begin", Some(Html("Before you begin"))) {
   @errorSummary(form)
-} {
-  <script>
-    $(document).ready(LITEPermissionsFinder.StartApplication.setupPage);
-  </script>
 } {
 
   <p>
@@ -44,4 +40,7 @@
 
   </form>
 
+  <script type="text/javascript">
+    $(document).ready(LITEPermissionsFinder.StartApplication.setupPage);
+  </script>
 }

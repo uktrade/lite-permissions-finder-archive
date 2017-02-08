@@ -8,13 +8,8 @@
 @import models.search.SearchRelatedCodesDisplay
 
 @(form: Form[_], display: SearchRelatedCodesDisplay)
-@standardPageWithJavascript(display.pageTitle, Some(Html(display.pageTitle))) {
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))) {
   @errorSummary(form)
-} {
-  <script>
-    $(document).ready(LITEPermissionsFinder.SearchRelatedCodes.setupPage);
-    $(window).load(LITEPermissionsFinder.SearchRelatedCodes.onload);
-  </script>
 } {
 
   <form action="@routes.SearchRelatedCodesController.handleSubmit()" method="POST">
@@ -57,4 +52,9 @@
       </p>
     </div>
   </form>
+
+  <script type="text/javascript">
+    $(document).ready(LITEPermissionsFinder.SearchRelatedCodes.setupPage);
+    $(window).load(LITEPermissionsFinder.SearchRelatedCodes.onload);
+  </script>
 }

@@ -6,12 +6,8 @@
 @import controllers.importcontent.ImportWhereController
 
 @(form: Form[_], countries: List[Country])
-@standardPageWithJavascript("Countries and territories", Some(Html("Countries and territories"))){
+@standardPage("Countries and territories", Some(Html("Countries and territories"))){
   @errorSummary(form)
-} {
-  <script>
-    $(document).ready(LITEPermissionsFinder.ImportCountry.setupPage);
-  </script>
 } {
 
   <form action="@controllers.importcontent.routes.ImportWhereController.handleSubmit()" method="POST">
@@ -30,4 +26,7 @@
     </div>
   </form>
 
+  <script type="text/javascript">
+    $(document).ready(LITEPermissionsFinder.ImportCountry.setupPage);
+  </script>
 }

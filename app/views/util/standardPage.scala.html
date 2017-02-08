@@ -1,9 +1,9 @@
 @import util._
 @import views.html.common.page._
 
-@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-large", twoThirdsColumn: Boolean = true, javascript: Option[Html] = None)(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-large", twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
 
-@govukTemplateDefaults(htmlTitle + " - Import & Export Licensing", javascript = javascript) {
+@govukTemplateDefaults(htmlTitle + " - Import & Export Licensing") {
 
   <main id="content" role="main">
 
