@@ -1,3 +1,5 @@
+var LITEPermissionsFinder = LITEPermissionsFinder || {};
+
 LITEPermissionsFinder.DestinationCountry = {
   setupPage: function() {
     LITEPermissionsFinder.Utils.countrySetup();

@@ -1,10 +1,6 @@
+var LITEPermissionsFinder = LITEPermissionsFinder || {};
+
 LITEPermissionsFinder.Utils = {
-  ready: function() {
-    // Triggered on $(document).ready()
-  },
-  load: function() {
-    // Triggered on $(window).load()
-  },
   countrySetup: function() {
     $("select[ui-autocomplete='ui-autocomplete']").selectToAutocomplete({"alternative-spellings-attr":"data-alternative-spelling", "autoFocus":false});
 

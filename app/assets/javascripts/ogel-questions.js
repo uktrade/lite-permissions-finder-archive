@@ -1,3 +1,5 @@
+var LITEPermissionsFinder = LITEPermissionsFinder || {};
+
 LITEPermissionsFinder.OgelQuestions = {
   setupPage: function() {
     LITEPermissionsFinder.OgelQuestions._bindAnalyticsTriggers();

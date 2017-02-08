@@ -1,3 +1,5 @@
+var LITEPermissionsFinder = LITEPermissionsFinder || {};
+
 LITEPermissionsFinder.StartApplication = {
   setupPage: function() {
     LITEPermissionsFinder.StartApplication._bindAnalyticsTriggers();

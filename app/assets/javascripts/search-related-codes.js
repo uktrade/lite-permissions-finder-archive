@@ -1,3 +1,5 @@
+var LITEPermissionsFinder = LITEPermissionsFinder || {};
+
 LITEPermissionsFinder.SearchRelatedCodes = {
   setupPage: function() {
     var showMoreRelatedCodesButton = LITEPermissionsFinder.SearchRelatedCodes._showMoreRelatedCodesButton();

@@ -1,3 +1,5 @@
+var LITEPermissionsFinder = LITEPermissionsFinder || {};
+
 LITEPermissionsFinder.SearchResults = {
   setupPage: function() {
     var showMoreResultsButton = LITEPermissionsFinder.SearchResults._showMoreResultsButton();

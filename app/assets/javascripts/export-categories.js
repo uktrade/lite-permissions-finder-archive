@@ -1,3 +1,5 @@
+var LITEPermissionsFinder = LITEPermissionsFinder || {};
+
 LITEPermissionsFinder.ExportCategories = {
   setupPage: function() {
     LITEPermissionsFinder.ExportCategories._bindAnalyticsTriggers();

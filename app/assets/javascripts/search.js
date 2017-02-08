@@ -1,3 +1,5 @@
+var LITEPermissionsFinder = LITEPermissionsFinder || {};
+
 LITEPermissionsFinder.Search = {
   setupPage: function() {
     LITEPermissionsFinder.Search._bindAnalyticsTriggers();
