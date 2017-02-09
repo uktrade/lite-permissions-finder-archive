@@ -16,17 +16,17 @@
     @fieldContainer(form("goodsType")) {
 
       <div class="form-group">
-        @formRadio(form("goodsType"), "<span class=\"heading-small\">I am exporting physical goods</span><br>For example vehicles, protective hardware, nuclear materials, electronic equipment, or any other physical items",
+        @formRadio(form("goodsType"), "<span class=\"heading-small\">Physical goods</span><br>For example vehicles, protective hardware, nuclear materials, electronic equipment, or any other physical items",
           GoodsType.PHYSICAL.value(), true, "label-goods-type")
       </div>
 
       <div class="form-group">
-        @formRadio(form("goodsType"), "<span class=\"heading-small\">I am exporting software</span><br>For example programmes or source code to enable the use of goods that themselves require an export licence",
+        @formRadio(form("goodsType"), "<span class=\"heading-small\">Software</span><br>For example programmes or source code to enable the use of goods that themselves require an export licence",
           GoodsType.SOFTWARE.value(), true, "label-goods-type")
       </div>
 
       <div class="form-group">
-        @formRadio(form("goodsType"), "<span class=\"heading-small\">I am exporting technical information</span><br>For example manuals, designs, models or blueprints for goods that themselves require an export licence",
+        @formRadio(form("goodsType"), "<span class=\"heading-small\">Technical information</span><br>For example manuals, designs, models or blueprints for goods that themselves require an export licence",
           GoodsType.TECHNOLOGY.value(), true, "label-goods-type")
       </div>
 
