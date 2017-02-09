@@ -14,10 +14,12 @@ public class TechnicalNotesDisplay {
   public final List<Ancestor> otherAncestors;
   public final boolean showGreatestAncestor;
   public final String technicalNotes;
+  public final String questionHeading;
 
   public TechnicalNotesDisplay(FrontendControlCode frontendControlCode) {
     ControlCodeData controlCodeData = frontendControlCode.controlCodeData;
-    this.title = controlCodeData.title;
+    this.title = "Technical notes for " + controlCodeData.controlCode;
+    this.questionHeading = "Does " + controlCodeData.controlCode + " still describe your item?";
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
     this.technicalNotes = controlCodeData.technicalNotes;

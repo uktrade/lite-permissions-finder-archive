@@ -43,8 +43,8 @@ public class AdditionalSpecificationsController {
     this.frontendServiceClient = frontendServiceClient;
   }
 
-  private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<AdditionalSpecificationsForm> form) {
-    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
+  private CompletionStage<Result> renderWithForm(String controlCode, Form<AdditionalSpecificationsForm> form) {
+    return frontendServiceClient.get(controlCode)
         .thenApplyAsync(result ->
             ok(additionalSpecifications.render(form, new AdditionalSpecificationsDisplay(result.getFrontendControlCode())))
             , httpExecutionContext.current());
@@ -52,14 +52,17 @@ public class AdditionalSpecificationsController {
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
     ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
-    return renderFormInternal(controlCodeSubJourney);
+    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
+    return renderFormInternal(controlCodeSubJourney, controlCode);
   }
 
-  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
+  private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
     Optional<Boolean> additionalSpecificationsApply = permissionsFinderDao.getControlCodeAdditionalSpecificationsApply(controlCodeSubJourney);
+    Optional<Boolean> showTechNotes = permissionsFinderDao.getShowTechNotes(controlCodeSubJourney, controlCode);
     AdditionalSpecificationsForm templateForm = new AdditionalSpecificationsForm();
     templateForm.stillDescribesItems = additionalSpecificationsApply.orElse(null);
-    return renderWithForm(controlCodeSubJourney, formFactory.form(AdditionalSpecificationsForm.class).fill(templateForm));
+    templateForm.showTechNotes = showTechNotes.orElse(null);
+    return renderWithForm(controlCode, formFactory.form(AdditionalSpecificationsForm.class).fill(templateForm));
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -69,11 +72,20 @@ public class AdditionalSpecificationsController {
 
   private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<AdditionalSpecificationsForm> form = formFactory.form(AdditionalSpecificationsForm.class).bindFromRequest();
+    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
+
     if (form.hasErrors()) {
-      return renderWithForm(controlCodeSubJourney, form);
+      return renderWithForm(controlCode, form);
     }
     else {
       Boolean stillDescribesItems = form.get().stillDescribesItems;
+
+      Boolean showTechNotes = form.get().showTechNotes;
+
+      if (showTechNotes != null) {
+        permissionsFinderDao.saveShowTechNotes(controlCodeSubJourney, controlCode, showTechNotes);
+      }
+
       if(stillDescribesItems) {
         permissionsFinderDao.saveControlCodeAdditionalSpecificationsApply(controlCodeSubJourney, true);
         return journeyManager.performTransition(StandardEvents.NEXT);
@@ -89,6 +101,8 @@ public class AdditionalSpecificationsController {
 
     @Required(message = "You must answer this question")
     public Boolean stillDescribesItems;
+
+    public Boolean showTechNotes;
 
   }
 }

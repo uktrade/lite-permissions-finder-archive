@@ -66,11 +66,29 @@
 
       @formRadioBoolean(form("stillDescribesItems"), Html("Does this still describe your items?"), "Yes", "No")
 
+      @if(display.showTechNotesQuestion) {
+        <div class="js-hidden" id="showTechNotes-wrapper">
+          <h2 class="heading-medium">
+            Do you want to read technical information about this item?
+          </h2>
+
+          <p>
+            These notes can include measurements and definitions of technical terms.
+          </p>
+
+          @formRadioBoolean(form("showTechNotes"), Html("Do you want to read technical information about this item?"), "Yes", "No", hideHeading = true)
+        </div>
+      }
+
       <div class="form-group">
         <button type="submit" class="button">Continue</button>
       </div>
 
     </form>
+
+    <script type="application/javascript">
+      $(document).ready(function(){LITEPermissionsFinder.AdditionalSpecifications.setupPage()})
+    </script>
   }
 
 }

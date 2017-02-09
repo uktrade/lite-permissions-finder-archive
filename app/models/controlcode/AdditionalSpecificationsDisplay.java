@@ -18,6 +18,7 @@ public class AdditionalSpecificationsDisplay {
   public final boolean showGreatestAncestor;
   public final String clauseText;
   public final List<String> specifications;
+  public final boolean showTechNotesQuestion;
 
   public AdditionalSpecificationsDisplay(FrontendControlCode frontendControlCode) {
     ControlCodeData controlCodeData = frontendControlCode.controlCodeData;
@@ -47,6 +48,7 @@ public class AdditionalSpecificationsDisplay {
       this.clauseText = null;
       this.specifications = Collections.emptyList();
     }
+    this.showTechNotesQuestion = controlCodeData.canShowTechnicalNotes();
   }
 
 }

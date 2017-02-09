@@ -16,9 +16,8 @@ public class ControlCodeSummaryDisplay {
   public final boolean showGreatestAncestor;
   public final String couldDescribeItemsLabel;
   public final ControlCodeSubJourney controlCodeSubJourney;
-  public final boolean decontrolsExist;
-  public final boolean additionalSpecificationsExist;
-  public final boolean technicalNotesExist;
+  public final boolean showTechNotesQuestion;
+  public final boolean showAdditionalSpecsPanel;
 
   public ControlCodeSummaryDisplay(ControlCodeSubJourney controlCodeSubJourney, FrontendControlCode frontendControlCode) {
     ControlCodeData controlCodeData = frontendControlCode.controlCodeData;
@@ -26,9 +25,8 @@ public class ControlCodeSummaryDisplay {
     this.friendlyDescription = controlCodeData.friendlyDescription;
     this.controlCodeAlias = controlCodeData.alias;
     this.controlCodeSubJourney = controlCodeSubJourney;
-    this.decontrolsExist = controlCodeData.canShowDecontrols();
-    this.additionalSpecificationsExist = controlCodeData.canShowAdditionalSpecifications();
-    this.technicalNotesExist = controlCodeData.canShowTechnicalNotes();
+    this.showTechNotesQuestion = controlCodeData.canShowTechnicalNotes() && !controlCodeData.canShowAdditionalSpecifications();
+    this.showAdditionalSpecsPanel = controlCodeData.canShowAdditionalSpecifications();
     if (frontendControlCode.greatestAncestor.isPresent()) {
       this.greatestAncestor = frontendControlCode.greatestAncestor.get();
       this.showGreatestAncestor = true;

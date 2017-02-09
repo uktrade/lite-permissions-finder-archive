@@ -64,6 +64,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String GOODS_RELATIONSHIP_QUESTION_ANSWER = "goodsRelationshipQuestionAnswer";
   public static final String GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX = "goodsRelationshipQuestionCurrentIndex";
   public static final String CONTROL_CODE_FOR_REGISTRATION = "controlCodeForRegistration";
+  public static final String SHOW_TECH_NOTES = "showTechNotes";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -501,4 +502,13 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public Optional<Boolean> getTechnologyIsNonExempt() {
     return readBoolean(TECHNOLOGY_IS_NON_EXEMPT);
   }
+
+  public void saveShowTechNotes(ControlCodeSubJourney controlCodeSubJourney, String controlCode, boolean showTechNotes) {
+    writeBoolean(SHOW_TECH_NOTES + ":" + controlCodeSubJourney.value() + ":" + controlCode, showTechNotes);
+  }
+
+  public Optional<Boolean> getShowTechNotes(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
+    return readBoolean(SHOW_TECH_NOTES + ":" + controlCodeSubJourney.value() + ":" + controlCode);
+  }
+
 }
