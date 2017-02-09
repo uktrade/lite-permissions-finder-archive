@@ -1,6 +1,6 @@
 name := """lite-permissions-finder"""
 
-version := "1.0-SNAPSHOT"
+version := scala.util.Properties.envOrElse("BUILD_VERSION", new java.text.SimpleDateFormat("YYYYMMDD.HHmmss").format(new java.util.Date()) + "-SNAPSHOT")
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayJava)
