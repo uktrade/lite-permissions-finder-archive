@@ -30,9 +30,9 @@ public class GoodsRelationshipDisplay {
     }
     else if (goodsType == GoodsType.TECHNOLOGY) {
       if (relatedToGoodsType == GoodsType.SOFTWARE) {
-        this.pageTitle = "Is technology related to software?";
-        this.questionLabel = "Is technology related to software";
-        this.questionContent = null;
+        this.pageTitle = "Technology related to software";
+        this.questionLabel = "Are you exporting technical information for the development, production or use of software for licensable items?";
+        this.questionContent = "For example manuals for software used to operate or control equipment that itself needs a licence to be exported.";
       }
       else {
         throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\" for parameter relatedToGoodsType", relatedToGoodsType.toString()));
