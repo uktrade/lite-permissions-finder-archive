@@ -50,17 +50,15 @@
       @if(display.showAdditionalSpecsPanel) {
 
         @formRadioBooleanWithContent(form("couldDescribeItems"), Html(display.couldDescribeItemsLabel), "Yes", "No")(HtmlFormat.empty){
-          <p>
-            If you are not sure whether @display.controlCodeAlias describes your item, you can read more details about it before you decide. The extra information for this item is:
-          </p>
-
-          <ul class="list list-bullet text">
-            <li>a fuller description of this item, or the items related to it</li>
-          </ul>
 
           <p>
-            If you want to read this extra information before deciding, answer <strong class="bold-small">Yes</strong> to this question. You can change your answer later if you decide for sure this item does not apply.
+            If you're certain this doesn't describe your item, click Continue now.
           </p>
+
+          <p>
+            If you want to read a fuller description of this item before deciding whether it applies to your export, change your answer to <strong class="bold-small">Yes</strong> before continuing. You can confirm on the next screen if you decide for sure this item does not apply.
+          </p>
+
         }
 
       } else {
