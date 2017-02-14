@@ -29,12 +29,12 @@ public class SearchResultsDisplay {
       pageTitleWithoutMatches = "Your search did not return any results";
     }
     else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_SOFTWARE) {
-      this.preResultsLabel = "Select the closest match to the item your software is used with";
+      this.preResultsLabel = "Select the closest match to the physical item your software is used with";
       pageTitleWithMatches = "Item related to your software";
       pageTitleWithoutMatches = "Your search did not return any results";
     }
     else if (controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
-      this.preResultsLabel = "Select the closest match to the item your technology is used with";
+      this.preResultsLabel = "Select the closest match to the physical item your technology is used with";
       pageTitleWithMatches = "Item related to your technology";
       pageTitleWithoutMatches = "Your search did not return any results";
     }
