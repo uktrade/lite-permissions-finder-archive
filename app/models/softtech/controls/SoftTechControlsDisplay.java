@@ -33,7 +33,7 @@ public class SoftTechControlsDisplay {
       }
     }
     else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
-      this.pageTitle = "Showing catchall controls related to your items category";
+      this.pageTitle = "Matches related to your item category";
       this.preResultsLabel = "";
     }
     else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
