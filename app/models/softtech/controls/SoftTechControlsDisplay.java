@@ -37,7 +37,7 @@ public class SoftTechControlsDisplay {
       this.preResultsLabel = "";
     }
     else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
-      this.pageTitle = "Showing technology that is not covered by exemptions STUB";
+      this.pageTitle = "Possible matches";
       this.preResultsLabel = "";
     }
     else {

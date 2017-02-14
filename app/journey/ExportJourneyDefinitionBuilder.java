@@ -657,7 +657,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage dualUseCategories = defineStage("technologyDualUseCategories", "What is your software for?",
         controllers.softtech.routes.DualUseSoftTechCategoriesController.renderForm(GoodsType.TECHNOLOGY.urlString()));
 
-    JourneyStage nonExemptControlsControlsList = defineStage("technologyNonExemptControlsControlsList", "Showing technology that is not covered by exemptions",
+    JourneyStage nonExemptControlsControlsList = defineStage("technologyNonExemptControlsControlsList", "Possible matches",
         controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.NON_EXEMPT.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     JourneyStage categoryControlsList = defineStage("technologyCategoryControlsList", "Showing controls related to software category",
