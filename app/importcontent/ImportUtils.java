@@ -34,8 +34,8 @@ public class ImportUtils {
     dataMap.put(ImportQuestion.MILITARY.key(), new ImportStageData(ImportQuestion.MILITARY.question(),
         ImportMilitaryYesNo.getSelectOptions(), (jm, opt) -> jm.performTransition(IMPORT_MILITARY_YES_NO_SELECTED, ImportMilitaryYesNo.valueOf(opt))));
 
-    // Stages with yes/no select options
-    BiFunction<JourneyManager, String, CompletionStage<Result>> yesNoBiFunction = (jm, opt) -> jm.performTransition(IMPORT_YES_NO_SELECTED, ImportYesNo.valueOf(opt));
+    // Stages with yes/no select options - derived from ImportYesNo aliases
+    BiFunction<JourneyManager, String, CompletionStage<Result>> yesNoBiFunction = (jm, opt) -> jm.performTransition(IMPORT_YES_NO_SELECTED, ImportYesNo.fromAlias(opt));
     List<SelectOption> options = ImportYesNo.getSelectOptions();
     dataMap.put(ImportQuestion.CHARCOAL.key(), new ImportStageData(ImportQuestion.CHARCOAL.question(), options, yesNoBiFunction));
     dataMap.put(ImportQuestion.SHOT.key(), new ImportStageData(ImportQuestion.SHOT.question(), options, yesNoBiFunction));

@@ -1,6 +1,7 @@
 package models.importcontent;
 
 import components.common.journey.JourneyManager;
+import importcontent.models.ImportYesNo;
 import play.mvc.Result;
 import utils.common.SelectOption;
 
@@ -27,6 +28,15 @@ public class ImportStageData {
 
   public boolean isValidStageOption(String option) {
     return options.stream().anyMatch(so -> so.value.equals(option));
+  }
+
+  /**
+   * Do we have 2 SelectOptions whose values match ImportYesNo aliases ("true" and "false")?
+   */
+  public boolean isYesNoQuestion() {
+    boolean yes = options.stream().anyMatch(so -> so.value.equals(ImportYesNo.YES.getAlias()));
+    boolean no = options.stream().anyMatch(so -> so.value.equals(ImportYesNo.NO.getAlias()));
+    return yes && no && (options.size() == 2);
   }
 
   public String getQuestion() {
