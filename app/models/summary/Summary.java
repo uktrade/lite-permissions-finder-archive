@@ -47,6 +47,10 @@ public class Summary {
     }
   }
 
+  public boolean isValid() {
+    return this.summaryFields.stream().allMatch(f -> f.isValid);
+  }
+
   public static CompletionStage<Summary> composeSummary(ContextParamManager contextParamManager,
                                                         PermissionsFinderDao permissionsFinderDao,
                                                         HttpExecutionContext httpExecutionContext,

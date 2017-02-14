@@ -60,7 +60,7 @@
 
     } else {
 
-      <button class="button" type="submit" name="action" value="register">Continue to licence registration</button>
+      <button class="button" type="submit" name="action" value="register" @if(!summary.isValid){disabled="disabled"}>Continue to licence registration</button>
 
     }
 

@@ -118,9 +118,18 @@ public class SummaryController {
         ), httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> redirectToRegistration() {
-    String transactionId = transactionManager.getTransactionId();
-    return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
+  private CompletionStage<Result> redirectToRegistration() {
+    return Summary.composeSummary(contextParamManager, permissionsFinderDao, httpExecutionContext,
+        frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProviderExport)
+        .thenComposeAsync(summary -> {
+          if (summary.isValid()) {
+            String transactionId = transactionManager.getTransactionId();
+            return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
+          }
+          else {
+            throw new RuntimeException("Summary invalid, cannot redirect to registration");
+          }
+        }, httpExecutionContext.current());
   }
 
   public static class SummaryForm {
