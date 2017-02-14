@@ -18,7 +18,7 @@ public class GoodsRelationshipQuestionsDisplay {
     this.relationship = relationship;
     /** Override back link handling if prior question exists */
     if (currentQuestionIndex > 0) {
-      ViewUtil.overrideBackLink(BackLink.to(routes.GoodsRelationshipQuestionsController.handleBack(goodsType.urlString(), relatedToGoodsType.urlString(), Integer.toString(currentQuestionIndex)), pageTitle));
+      ViewUtil.overrideBackLink(BackLink.to(routes.GoodsRelationshipQuestionsController.handleBack(goodsType.urlString(), relatedToGoodsType.urlString(), Integer.toString(currentQuestionIndex)), "Back"));
     }
   }
 }

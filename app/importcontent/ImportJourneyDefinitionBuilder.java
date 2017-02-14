@@ -55,7 +55,7 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   @Override
   protected void journeys() {
 
-    defineJourney(JourneyDefinitionNames.IMPORT, stage(ImportQuestion.WHERE), BackLink.to(routes.TradeTypeController.renderForm(), "Where are your items going?"));
+    defineJourney(JourneyDefinitionNames.IMPORT, stage(ImportQuestion.WHERE), BackLink.to(routes.TradeTypeController.renderForm(), "Back"));
 
     // Where are you importing from?
     atStage(stage(ImportQuestion.WHERE))
@@ -157,16 +157,16 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private JourneyStage initWhereStage(ImportQuestion importQuestion) {
     String stageKey = importQuestion.key();
-    return defineStage(stageKey, importQuestion.question(), controllers.importcontent.routes.ImportWhereController.renderForm());
+    return defineStage(stageKey, controllers.importcontent.routes.ImportWhereController.renderForm());
   }
 
   private JourneyStage initStage(ImportQuestion importQuestion) {
     String stageKey = importQuestion.key();
-    return defineStage(stageKey, importQuestion.question(), controllers.importcontent.routes.ImportController.renderForm(stageKey));
+    return defineStage(stageKey, controllers.importcontent.routes.ImportController.renderForm(stageKey));
   }
 
   private JourneyStage initStaticStage(String key) {
-    return defineStage(key, key, controllers.importcontent.routes.StaticController.render(key));
+    return defineStage(key, controllers.importcontent.routes.StaticController.render(key));
   }
 
   private JourneyStage stage(String key) {
