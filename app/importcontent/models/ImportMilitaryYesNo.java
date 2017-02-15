@@ -3,9 +3,7 @@ package importcontent.models;
 import utils.common.SelectOption;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public enum ImportMilitaryYesNo {
@@ -41,10 +39,6 @@ public enum ImportMilitaryYesNo {
     return enums.stream()
         .filter(ImportMilitaryYesNo::getIncludeAsOption)
         .map(e -> new SelectOption(e.name(), e.getPrompt())).collect(Collectors.toList());
-  }
-
-  public static Optional<ImportYesNo> getMatched(String name) {
-    return EnumSet.allOf(ImportYesNo.class).stream().filter(e -> e.name().equals(name)).findFirst();
   }
 
 }
