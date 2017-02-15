@@ -3,7 +3,7 @@ package journey.deciders.controlcode;
 import com.google.inject.Inject;
 import components.common.journey.Decider;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceClient;
 import journey.SubJourneyContextParamProvider;
 import models.controlcode.ControlCodeSubJourney;
 import play.libs.concurrent.HttpExecutionContext;

@@ -1,4 +1,4 @@
-package components.services.controlcode.controls.category;
+package components.services.controlcode.category;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import play.libs.Json;

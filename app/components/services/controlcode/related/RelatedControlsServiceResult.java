@@ -1,4 +1,4 @@
-package components.services.controlcode.controls.nonexempt;
+package components.services.controlcode.related;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import play.libs.Json;
@@ -7,11 +7,10 @@ import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import java.util.Arrays;
 import java.util.List;
 
-public class NonExemptControlsServiceResult {
+public class RelatedControlsServiceResult {
   public final List<ControlCodeFullView> controlCodes;
 
-  public NonExemptControlsServiceResult(JsonNode responseJson) {
+  public RelatedControlsServiceResult(JsonNode responseJson) {
     this.controlCodes = Arrays.asList(Json.fromJson(responseJson, ControlCodeFullView[].class));
   }
-
 }

@@ -1,4 +1,4 @@
-package components.services.controlcode.controls.catchall;
+package components.services.controlcode.catchall;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import play.libs.Json;

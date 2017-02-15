@@ -3,7 +3,7 @@ package journey.deciders;
 import com.google.inject.Inject;
 import components.common.journey.Decider;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
+import components.services.controlcode.catchall.CatchallControlsServiceClient;
 import journey.SubJourneyContextParamProvider;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;

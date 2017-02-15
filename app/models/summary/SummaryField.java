@@ -1,6 +1,6 @@
 package models.summary;
 
-import components.services.controlcode.FrontendServiceResult;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import models.common.Country;
 import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;

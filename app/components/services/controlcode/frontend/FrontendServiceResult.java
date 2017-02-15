@@ -1,4 +1,4 @@
-package components.services.controlcode;
+package components.services.controlcode.frontend;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;

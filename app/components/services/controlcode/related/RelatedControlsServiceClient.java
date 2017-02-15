@@ -1,44 +1,39 @@
-package components.services.controlcode.controls.nonexempt;
+package components.services.controlcode.related;
 
+import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
 import models.GoodsType;
-import models.softtech.SoftTechCategory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
 import java.util.concurrent.CompletionStage;
 
-public class NonExemptControlServiceClient {
+public class RelatedControlsServiceClient {
+
   private final HttpExecutionContext httpExecutionContext;
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
 
   @Inject
-  public NonExemptControlServiceClient(HttpExecutionContext httpExecutionContext,
+  public RelatedControlsServiceClient(HttpExecutionContext httpExecutionContext,
                                        WSClient wsClient,
                                        @Named("controlCodeServiceAddress") String webServiceAddress,
                                        @Named("controlCodeServiceTimeout") int webServiceTimeout){
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl = webServiceAddress + "/non-exempt";
+    this.webServiceUrl = webServiceAddress + "/mapped-controls";
   }
 
-  public CompletionStage<NonExemptControlsServiceResult> get(GoodsType goodsType, SoftTechCategory softTechCategory) {
+  public CompletionStage<RelatedControlsServiceResult> get(GoodsType goodsType, String controlCode) {
     if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
       throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\"", goodsType.toString()));
     }
-    String url;
-    if (softTechCategory.isDualUseSoftTechCategory()) {
-      url = webServiceUrl + "/" + goodsType.urlString() +  "/dual-use/" + softTechCategory.toUrlString();
-    }
-    else {
-      throw new RuntimeException(String.format("Unexpected member of SoftTechCategory enum: \"%s\"", softTechCategory.toString()));
-    }
+    String url = webServiceUrl + "/" + goodsType.urlString() +  "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode);
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
@@ -46,13 +41,12 @@ public class NonExemptControlServiceClient {
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {
             String errorMessage = response.asJson() != null ? response.asJson().get("message").asText() : "";
-            throw new ServiceException(String.format("Unexpected HTTP status code from control code service /non-exempt: %s %s"
-                , response.getStatus(), errorMessage));
+            throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /mapped-" +
+                "controls: %s %s", response.getStatus(), errorMessage));
           }
           else {
-            return new NonExemptControlsServiceResult(response.asJson());
+            return new RelatedControlsServiceResult(response.asJson());
           }
         }, httpExecutionContext.current());
   }
-
 }

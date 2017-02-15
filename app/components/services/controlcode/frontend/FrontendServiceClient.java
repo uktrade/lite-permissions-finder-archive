@@ -1,11 +1,10 @@
-package components.services.controlcode;
+package components.services.controlcode.frontend;
 
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
-import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 

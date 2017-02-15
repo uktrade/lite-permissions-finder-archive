@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceClient;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.ControlCodeSubJourney;

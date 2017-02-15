@@ -1,11 +1,11 @@
 package journey.helpers;
 
 import com.google.inject.Inject;
-import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
-import components.services.controlcode.controls.category.CategoryControlsServiceClient;
-import components.services.controlcode.controls.nonexempt.NonExemptControlServiceClient;
-import components.services.controlcode.controls.nonexempt.NonExemptControlsServiceResult;
-import components.services.controlcode.controls.related.RelatedControlsServiceClient;
+import components.services.controlcode.catchall.CatchallControlsServiceClient;
+import components.services.controlcode.category.CategoryControlsServiceClient;
+import components.services.controlcode.nonexempt.NonExemptControlServiceClient;
+import components.services.controlcode.nonexempt.NonExemptControlsServiceResult;
+import components.services.controlcode.related.RelatedControlsServiceClient;
 import models.GoodsType;
 import models.softtech.ApplicableSoftTechControls;
 import models.softtech.SoftTechCategory;

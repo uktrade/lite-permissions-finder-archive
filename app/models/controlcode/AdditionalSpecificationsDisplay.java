@@ -1,6 +1,6 @@
 package models.controlcode;
 
-import components.services.controlcode.FrontendServiceResult;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeSummary;
 import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData;
 import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData.FormattedAdditionalSpecifications;
