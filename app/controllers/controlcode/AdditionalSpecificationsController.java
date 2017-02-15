@@ -46,7 +46,7 @@ public class AdditionalSpecificationsController {
   private CompletionStage<Result> renderWithForm(String controlCode, Form<AdditionalSpecificationsForm> form) {
     return frontendServiceClient.get(controlCode)
         .thenApplyAsync(result ->
-            ok(additionalSpecifications.render(form, new AdditionalSpecificationsDisplay(result.getFrontendControlCode())))
+            ok(additionalSpecifications.render(form, new AdditionalSpecificationsDisplay(result)))
             , httpExecutionContext.current());
   }
 

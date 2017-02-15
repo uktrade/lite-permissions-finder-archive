@@ -1,7 +1,6 @@
 package journey.helpers;
 
 import com.google.inject.Inject;
-import components.services.controlcode.controls.ControlCode;
 import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
 import components.services.controlcode.controls.category.CategoryControlsServiceClient;
 import components.services.controlcode.controls.nonexempt.NonExemptControlServiceClient;
@@ -13,6 +12,7 @@ import models.softtech.SoftTechCategory;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class SoftTechJourneyHelper {
     CompletionStage<NonExemptControlsServiceResult> specialMaterialsStage = nonExemptControlServiceClient.get(GoodsType.TECHNOLOGY, SoftTechCategory.SPECIAL_MATERIALS);
     CompletionStage<NonExemptControlsServiceResult> marineStage = nonExemptControlServiceClient.get(GoodsType.TECHNOLOGY, SoftTechCategory.MARINE);
     return specialMaterialsStage.thenCombineAsync(marineStage, (specialMaterialsResult, marineResult) -> {
-      List<ControlCode> controlCodes = new ArrayList<>(specialMaterialsResult.controlCodes);
+      List<ControlCodeFullView> controlCodes = new ArrayList<>(specialMaterialsResult.controlCodes);
       controlCodes.addAll(marineResult.controlCodes);
       return ApplicableSoftTechControls.fromInt(controlCodes.size());
     }, httpExecutionContext.current());

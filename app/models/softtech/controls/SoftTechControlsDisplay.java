@@ -1,8 +1,8 @@
 package models.softtech.controls;
 
-import components.services.controlcode.controls.ControlCode;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ public class SoftTechControlsDisplay {
 
   public final String pageTitle;
   public final String preResultsLabel;
-  public List<ControlCode> controlCodes;
+  public List<ControlCodeFullView> controlCodes;
 
-  public SoftTechControlsDisplay(ControlCodeSubJourney controlCodeSubJourney, List<ControlCode> controlCodes) {
+  public SoftTechControlsDisplay(ControlCodeSubJourney controlCodeSubJourney, List<ControlCodeFullView> controlCodes) {
     if (controlCodeSubJourney.isSoftTechControlsVariant()) {
       this.pageTitle = "Possible matches";
       this.preResultsLabel = "";

@@ -44,7 +44,7 @@ public class ControlCodeSummaryController extends Controller {
   private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, String controlCode, Form<ControlCodeSummaryForm> form) {
     return frontendServiceClient.get(controlCode)
         .thenApplyAsync(frontendServiceResult ->
-                ok(controlCodeSummary.render(form, new ControlCodeSummaryDisplay(controlCodeSubJourney, frontendServiceResult.getFrontendControlCode())))
+                ok(controlCodeSummary.render(form, new ControlCodeSummaryDisplay(controlCodeSubJourney, frontendServiceResult)))
             , httpExecutionContext.current());
   }
 

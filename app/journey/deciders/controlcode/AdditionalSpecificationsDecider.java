@@ -29,6 +29,6 @@ public class AdditionalSpecificationsDecider implements Decider<Boolean> {
 
     String controlCode = dao.getSelectedControlCode(controlCodeSubJourney);
 
-    return client.get(controlCode).thenApply(e -> e.getControlCodeData().canShowAdditionalSpecifications());
+    return client.get(controlCode).thenApply(e -> e.canShowAdditionalSpecifications());
   }
 }

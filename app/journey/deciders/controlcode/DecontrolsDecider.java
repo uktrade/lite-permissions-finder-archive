@@ -28,6 +28,6 @@ public class DecontrolsDecider implements Decider<Boolean> {
 
     String controlCode = dao.getSelectedControlCode(controlCodeSubJourney);
 
-    return client.get(controlCode).thenApply(e -> e.getControlCodeData().canShowDecontrols());
+    return client.get(controlCode).thenApply(e -> e.canShowDecontrols());
   }
 }

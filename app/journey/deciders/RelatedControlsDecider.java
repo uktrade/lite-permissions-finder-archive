@@ -53,7 +53,7 @@ public class RelatedControlsDecider implements Decider<ApplicableSoftTechControl
             // TODO This is a massive hack, relies on knowing where the stage transition for ApplicableSoftTechControls.ONE will go
             subJourneyContextParamProvider.updateSubJourneyValueOnContext(newSubJourney);
 
-            dao.saveSelectedControlCode(newSubJourney, result.controlCodes.get(0).controlCode);
+            dao.saveSelectedControlCode(newSubJourney, result.controlCodes.get(0).getControlCode());
 
           }
           return applicableSoftTechControls;

@@ -22,7 +22,7 @@ public class DecontrolsApplyDisplay {
 
   public DecontrolsApplyDisplay(NotApplicableDisplayCommon displayCommon, ExportCategory exportCategory, Optional<SoftTechCategory> softTechCategory) {
     this.controlCodeSubJourney = displayCommon.controlCodeSubJourney;
-    this.controlCodeTitle = displayCommon.frontendControlCode.controlCodeData.title;
+    this.controlCodeTitle = displayCommon.frontendControlCode.getControlCodeData().getTitle();
     this.applicableSoftTechControls = displayCommon.applicableSoftTechControls;
     this.buttons = new ArrayList<>();
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {

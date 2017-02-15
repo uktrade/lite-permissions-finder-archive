@@ -6,7 +6,6 @@ import components.common.logging.CorrelationId;
 import exceptions.ServiceException;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
-import play.Logger;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
@@ -46,7 +45,7 @@ public class NonExemptControlServiceClient {
         .get()
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {
-            String errorMessage = response.asJson() != null ? errorMessage = response.asJson().get("message").asText() : "";
+            String errorMessage = response.asJson() != null ? response.asJson().get("message").asText() : "";
             throw new ServiceException(String.format("Unexpected HTTP status code from control code service /non-exempt: %s %s"
                 , response.getStatus(), errorMessage));
           }

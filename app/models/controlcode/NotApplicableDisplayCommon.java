@@ -1,12 +1,12 @@
 package models.controlcode;
 
-import components.services.controlcode.FrontendControlCode;
 import models.softtech.ApplicableSoftTechControls;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView;
 
 public class NotApplicableDisplayCommon {
 
   public final ControlCodeSubJourney controlCodeSubJourney;
-  public final FrontendControlCode frontendControlCode;
+  public final FrontEndControlCodeView frontendControlCode;
   public final ApplicableSoftTechControls applicableSoftTechControls;
 
   public static class ActionButton {
@@ -20,7 +20,7 @@ public class NotApplicableDisplayCommon {
 
   }
 
-  public NotApplicableDisplayCommon(ControlCodeSubJourney controlCodeSubJourney, FrontendControlCode frontendControlCode, ApplicableSoftTechControls applicableSoftTechControls) {
+  public NotApplicableDisplayCommon(ControlCodeSubJourney controlCodeSubJourney, FrontEndControlCodeView frontendControlCode, ApplicableSoftTechControls applicableSoftTechControls) {
     this.controlCodeSubJourney = controlCodeSubJourney;
     this.frontendControlCode = frontendControlCode;
     this.applicableSoftTechControls = applicableSoftTechControls;

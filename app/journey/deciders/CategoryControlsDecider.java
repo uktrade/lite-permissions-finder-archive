@@ -52,7 +52,7 @@ public class CategoryControlsDecider implements Decider<ApplicableSoftTechContro
             // TODO This is a massive hack, relies on knowing where the stage transition for ApplicableSoftTechControls.ONE will go
             subJourneyContextParamProvider.updateSubJourneyValueOnContext(subJourney);
 
-            dao.saveSelectedControlCode(subJourney, result.controlCodes.get(0).controlCode);
+            dao.saveSelectedControlCode(subJourney, result.controlCodes.get(0).getControlCode());
           }
 
           return applicableSoftTechControls;

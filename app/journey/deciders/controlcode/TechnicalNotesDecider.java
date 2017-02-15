@@ -35,7 +35,7 @@ public class TechnicalNotesDecider implements Decider<Boolean> {
     boolean showTechNotes = dao.getShowTechNotes(controlCodeSubJourney, controlCode).orElse(false);
 
     return client.get(controlCode).thenApplyAsync(result ->  {
-      boolean canShowTechnicalNotes = result.getControlCodeData().canShowTechnicalNotes();
+      boolean canShowTechnicalNotes = result.canShowTechnicalNotes();
       if (canShowTechnicalNotes && showTechNotes) {
         return true;
       }

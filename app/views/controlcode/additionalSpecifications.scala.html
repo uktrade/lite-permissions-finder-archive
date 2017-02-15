@@ -16,9 +16,9 @@
       <li>
         <span class="tree-dot"></span>
         <span class="tree-desc">
-          <span class="tree-desc-wrapper">@Html(display.greatestAncestor.friendlyDescription)</span>
+          <span class="tree-desc-wrapper">@Html(display.greatestAncestor.getFriendlyDescription)</span>
         </span>
-        <span class="tree-code">@display.greatestAncestor.alias</span>
+        <span class="tree-code">@display.greatestAncestor.getAlias</span>
       </li>
     }
 
@@ -26,9 +26,9 @@
       <li>
         <span class="tree-dot"></span>
         <span class="tree-desc">
-          <span class="tree-desc-wrapper">@Html(otherAncestorCode.friendlyDescription)</span>
+          <span class="tree-desc-wrapper">@Html(otherAncestorCode.getFriendlyDescription)</span>
         </span>
-        <span class="tree-code">@otherAncestorCode.alias</span>
+        <span class="tree-code">@otherAncestorCode.getAlias</span>
       </li>
     }
 

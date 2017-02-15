@@ -7,7 +7,6 @@ import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.FrontendServiceClient;
-import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.ControlCodeSubJourney;
@@ -45,7 +44,7 @@ public class DecontrolsController {
 
   private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<DecontrolsForm> form) {
     return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
-        .thenApplyAsync(result -> ok(decontrols.render(form, new DecontrolsDisplay(result.getFrontendControlCode())))
+        .thenApplyAsync(result -> ok(decontrols.render(form, new DecontrolsDisplay(result)))
             , httpExecutionContext.current());
   }
 

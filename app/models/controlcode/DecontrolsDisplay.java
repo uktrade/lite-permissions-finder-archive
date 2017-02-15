@@ -1,7 +1,7 @@
 package models.controlcode;
 
-import components.services.controlcode.ControlCodeData;
-import components.services.controlcode.FrontendControlCode;
+import components.services.controlcode.FrontendServiceResult;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,11 +10,11 @@ public class DecontrolsDisplay {
   public final String friendlyDescription;
   public final List<String> decontrols;
 
-  public DecontrolsDisplay(FrontendControlCode frontendControlCode) {
-    ControlCodeData controlCodeData = frontendControlCode.controlCodeData;
-    this.friendlyDescription = controlCodeData.friendlyDescription;
-    this.decontrols = controlCodeData.decontrols.stream()
-        .map(decontrol -> decontrol.text)
+  public DecontrolsDisplay(FrontendServiceResult frontendServiceResult) {
+    FrontEndControlCodeData controlCodeData = frontendServiceResult.getControlCodeData();
+    this.friendlyDescription = controlCodeData.getFriendlyDescription();
+    this.decontrols = controlCodeData.getDecontrols().stream()
+        .map(decontrol -> decontrol.getText())
         .collect(Collectors.toList());
   }
 

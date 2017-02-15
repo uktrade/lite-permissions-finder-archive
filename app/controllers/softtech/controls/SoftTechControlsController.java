@@ -5,7 +5,6 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.controls.ControlCode;
 import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
 import components.services.controlcode.controls.category.CategoryControlsServiceClient;
 import components.services.controlcode.controls.nonexempt.NonExemptControlServiceClient;
@@ -23,6 +22,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import views.html.softtech.controls.softTechControls;
 
 import java.util.ArrayList;
@@ -133,7 +133,7 @@ public class SoftTechControlsController {
       CompletionStage<NonExemptControlsServiceResult> specialMaterialsStage = nonExemptControlServiceClient.get(goodsType, SoftTechCategory.SPECIAL_MATERIALS);
       CompletionStage<NonExemptControlsServiceResult> marineStage = nonExemptControlServiceClient.get(goodsType, SoftTechCategory.MARINE);
       return specialMaterialsStage.thenCombineAsync(marineStage, (specialMaterialsResult, marineResult) -> {
-        List<ControlCode> controlCodes = new ArrayList<>(specialMaterialsResult.controlCodes);
+        List<ControlCodeFullView> controlCodes = new ArrayList<>(specialMaterialsResult.controlCodes);
         controlCodes.addAll(marineResult.controlCodes);
         return ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, controlCodes))));
       }, httpExecutionContext.current());
