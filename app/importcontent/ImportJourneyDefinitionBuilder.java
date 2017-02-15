@@ -8,7 +8,6 @@ import importcontent.models.ImportFoodWhat;
 import importcontent.models.ImportMilitaryYesNo;
 import importcontent.models.ImportWhat;
 import importcontent.models.ImportWhere;
-import importcontent.models.ImportYesNo;
 import journey.JourneyDefinitionNames;
 
 import java.util.HashMap;
@@ -71,8 +70,8 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(stage(ImportQuestion.CHARCOAL))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp5")))
-        .when(ImportYesNo.NO, moveTo(stage(ImportQuestion.WHAT)));
+        .when(true, moveTo(stage("importEp5")))
+        .when(false, moveTo(stage(ImportQuestion.WHAT)));
 
     // Are you importing military goods or technology?
     atStage(stage(ImportQuestion.MILITARY))
@@ -107,29 +106,29 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(stage(ImportQuestion.SHOT))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp7")))
-        .when(ImportYesNo.NO, moveTo(stage("importEp8")));
+        .when(true, moveTo(stage("importEp7")))
+        .when(false, moveTo(stage("importEp8")));
 
     // Are you importing substances that potentially cause cancer, eg asbestos?
     atStage(stage(ImportQuestion.SUBSTANCES))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp28")))
-        .when(ImportYesNo.NO, moveTo(stage(ImportQuestion.OZONE)));
+        .when(true, moveTo(stage("importEp28")))
+        .when(false, moveTo(stage(ImportQuestion.OZONE)));
 
     // Are you importing ozone-depleting substances?
     atStage(stage(ImportQuestion.OZONE))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp29")))
-        .when(ImportYesNo.NO, moveTo(stage("importEp30")));
+        .when(true, moveTo(stage("importEp29")))
+        .when(false, moveTo(stage("importEp30")));
 
     // Are you importing controlled drugs?
     atStage(stage(ImportQuestion.DRUGS))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp18")))
-        .when(ImportYesNo.NO, moveTo(stage("importEp19")));
+        .when(true, moveTo(stage("importEp18")))
+        .when(false, moveTo(stage("importEp19")));
 
     // What are you importing? (food)
     atStage(stage(ImportQuestion.FOOD_WHAT))
@@ -144,15 +143,15 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(stage(ImportQuestion.ENDANGERED))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp26")))
-        .when(ImportYesNo.NO, moveTo(stage("importEp27")));
+        .when(true, moveTo(stage("importEp26")))
+        .when(false, moveTo(stage("importEp27")));
 
     // Are you sending textiles to Belarus for processing before being returned to the UK?
     atStage(stage(ImportQuestion.BELARUS_TEXTILES))
         .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
-        .when(ImportYesNo.YES, moveTo(stage("importEp9")))
-        .when(ImportYesNo.NO, moveTo(stage("importEp12")));
+        .when(true, moveTo(stage("importEp9")))
+        .when(false, moveTo(stage("importEp12")));
   }
 
   private JourneyStage initWhereStage(ImportQuestion importQuestion) {

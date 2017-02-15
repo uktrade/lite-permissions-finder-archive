@@ -1,7 +1,6 @@
 package models.importcontent;
 
 import components.common.journey.JourneyManager;
-import importcontent.models.ImportYesNo;
 import play.mvc.Result;
 import utils.common.SelectOption;
 
@@ -12,9 +11,13 @@ import java.util.function.BiFunction;
 public class ImportStageData {
 
   private String question;
+  private boolean yesNoQuestion = false;
   private List<SelectOption> options;
   private BiFunction<JourneyManager, String, CompletionStage<Result>> journeyTransitionFunction;
 
+  /**
+   * Use where SelectOptions required
+   */
   public ImportStageData(String question, List<SelectOption> options,
                          BiFunction<JourneyManager, String, CompletionStage<Result>> journeyTransitionFunction) {
     this.question = question;
@@ -22,21 +25,31 @@ public class ImportStageData {
     this.journeyTransitionFunction = journeyTransitionFunction;
   }
 
+  /**
+   * Use for a yes/no question - no SelectOptions required
+   */
+  public ImportStageData(String question, BiFunction<JourneyManager, String, CompletionStage<Result>> journeyTransitionFunction) {
+    this.question = question;
+    this.journeyTransitionFunction = journeyTransitionFunction;
+    this.yesNoQuestion = true;
+  }
+
   public CompletionStage<Result> completeTransition(JourneyManager journeyManager, String selectedOption) {
     return journeyTransitionFunction.apply(journeyManager, selectedOption);
   }
 
   public boolean isValidStageOption(String option) {
-    return options.stream().anyMatch(so -> so.value.equals(option));
+    boolean valid;
+    if(yesNoQuestion) {
+      valid = option.equals("true") || option.equals("false") ;
+    } else {
+      valid = options.stream().anyMatch(so -> so.value.equals(option));
+    }
+    return valid;
   }
 
-  /**
-   * Do we have 2 SelectOptions whose values match ImportYesNo aliases ("true" and "false")?
-   */
   public boolean isYesNoQuestion() {
-    boolean yes = options.stream().anyMatch(so -> so.value.equals(ImportYesNo.YES.getAlias()));
-    boolean no = options.stream().anyMatch(so -> so.value.equals(ImportYesNo.NO.getAlias()));
-    return yes && no && (options.size() == 2);
+    return yesNoQuestion;
   }
 
   public String getQuestion() {
@@ -49,10 +62,6 @@ public class ImportStageData {
 
   public List<SelectOption> getOptions() {
     return options;
-  }
-
-  public void setOptions(List<SelectOption> options) {
-    this.options = options;
   }
 
 }
