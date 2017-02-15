@@ -1,4 +1,4 @@
-package components.services.controlcode.controls.relationships;
+package components.services.controlcode.relationships;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import play.libs.Json;

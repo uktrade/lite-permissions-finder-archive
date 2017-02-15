@@ -3,8 +3,8 @@ package journey.deciders;
 import com.google.inject.Inject;
 import components.common.journey.Decider;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.controls.relationships.GoodsRelationshipsServiceClient;
-import components.services.controlcode.controls.relationships.GoodsRelationshipsServiceResult;
+import components.services.controlcode.relationships.GoodsRelationshipsServiceClient;
+import components.services.controlcode.relationships.GoodsRelationshipsServiceResult;
 import models.GoodsType;
 
 import java.util.concurrent.CompletionStage;

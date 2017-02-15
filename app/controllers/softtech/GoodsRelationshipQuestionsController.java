@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.controls.relationships.GoodsRelationshipsServiceClient;
+import components.services.controlcode.relationships.GoodsRelationshipsServiceClient;
 import exceptions.FormStateException;
 import models.GoodsType;
 import models.softtech.GoodsRelationshipQuestionsDisplay;

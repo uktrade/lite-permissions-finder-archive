@@ -1,4 +1,4 @@
-package components.services.controlcode.controls.relationships;
+package components.services.controlcode.relationships;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
