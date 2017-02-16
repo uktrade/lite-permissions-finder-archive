@@ -93,7 +93,7 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .decide()
         .when(ImportMilitaryCountry.IRAN, moveTo(stage("importEp1")))
         .when(ImportMilitaryCountry.RUSSIA, moveTo(stage("importEp2")))
-        .when(ImportMilitaryCountry.MYANMAR, moveTo(stage("importEp4")));
+        .when(ImportMilitaryCountry.BURMA, moveTo(stage("importEp4")));
 
     // What are you importing?
     atStage(stage(ImportQuestion.WHAT))

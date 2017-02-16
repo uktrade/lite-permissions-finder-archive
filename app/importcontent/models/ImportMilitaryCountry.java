@@ -9,7 +9,7 @@ public enum ImportMilitaryCountry {
 
   RUSSIA("CTRY220"),
   IRAN("CTRY1952"),
-  MYANMAR("CTRY1989");
+  BURMA("CTRY1989");
 
   private String code;
 
