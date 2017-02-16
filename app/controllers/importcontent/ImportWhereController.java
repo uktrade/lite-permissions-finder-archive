@@ -8,6 +8,7 @@ import components.common.journey.JourneyManager;
 import components.persistence.ImportJourneyDao;
 import exceptions.FormStateException;
 import importcontent.ImportEvents;
+import importcontent.models.ImportMilitaryCountry;
 import importcontent.models.ImportWhere;
 import models.common.Country;
 import play.data.Form;
@@ -73,7 +74,7 @@ public class ImportWhereController extends Controller {
    * Returns appropriate ImportWhere enum from selected Spire country code
    */
   private ImportWhere getImportWhereRoute(String spireCode) {
-    if (ImportController.MILITARY_COUNTRY_SPIRE_CODES.contains(spireCode)) {
+    if (ImportMilitaryCountry.getImportMilitaryCountryCodes().contains(spireCode)) {
       return ImportWhere.MILITARY_COUNTRIES;
     } else if (spireCode.equals(ImportController.SOMALIA_SPIRE_CODE)) {
       return ImportWhere.CHARCOAL_COUNTRIES;
