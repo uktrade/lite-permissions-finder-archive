@@ -107,9 +107,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   }
 
   @Provides
-  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportJourneyDefinitionBuilder) {
-    ImportJourneyDefinitionBuilder importJourneyDefinitionBuilder = new ImportJourneyDefinitionBuilder();
-    return Arrays.asList(exportJourneyDefinitionBuilder, importJourneyDefinitionBuilder);
+  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportBuilder,
+                                                                               ImportJourneyDefinitionBuilder importBuilder) {
+    return Arrays.asList(exportBuilder, importBuilder);
   }
 
   @Provides @Singleton

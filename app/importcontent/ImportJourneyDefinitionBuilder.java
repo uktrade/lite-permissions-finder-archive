@@ -1,14 +1,17 @@
 package importcontent;
 
+import com.google.inject.Inject;
 import components.common.journey.BackLink;
+import components.common.journey.DecisionStage;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
 import controllers.routes;
 import importcontent.models.ImportFoodWhat;
-import importcontent.models.ImportMilitaryYesNo;
+import importcontent.models.ImportMilitaryCountry;
 import importcontent.models.ImportWhat;
 import importcontent.models.ImportWhere;
 import journey.JourneyDefinitionNames;
+import journey.deciders.importcontent.ImportMilitaryDecider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +23,14 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   // Import key/JourneyStage map
   private final Map<String, JourneyStage> stageMap;
 
-  public ImportJourneyDefinitionBuilder() {
+  private final ImportMilitaryDecider importMilitaryDecider;
+  private final DecisionStage<ImportMilitaryCountry> isImportMilitary;
+
+  @Inject
+  public ImportJourneyDefinitionBuilder(ImportMilitaryDecider importMilitaryDecider) {
+    this.importMilitaryDecider = importMilitaryDecider;
     this.stageMap = constructStageMap();
+    this.isImportMilitary = defineDecisionStage("isImportMilitary", this.importMilitaryDecider);
   }
 
   /**
@@ -75,12 +84,16 @@ public class ImportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     // Are you importing military goods or technology?
     atStage(stage(ImportQuestion.MILITARY))
-        .onEvent(ImportEvents.IMPORT_MILITARY_YES_NO_SELECTED)
+        .onEvent(ImportEvents.IMPORT_YES_NO_SELECTED)
         .branch()
-        .when(ImportMilitaryYesNo.YES_IRAN, moveTo(stage("importEp1")))
-        .when(ImportMilitaryYesNo.YES_RUSSIA, moveTo(stage("importEp2")))
-        .when(ImportMilitaryYesNo.YES_MYANMAR, moveTo(stage("importEp4")))
-        .when(ImportMilitaryYesNo.NO, moveTo(stage(ImportQuestion.WHAT)));
+        .when(true, moveTo(isImportMilitary))
+        .when(false, moveTo(stage(ImportQuestion.WHAT)));
+
+    atDecisionStage(isImportMilitary)
+        .decide()
+        .when(ImportMilitaryCountry.IRAN, moveTo(stage("importEp1")))
+        .when(ImportMilitaryCountry.RUSSIA, moveTo(stage("importEp2")))
+        .when(ImportMilitaryCountry.MYANMAR, moveTo(stage("importEp4")));
 
     // What are you importing?
     atStage(stage(ImportQuestion.WHAT))
