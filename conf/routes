@@ -63,6 +63,10 @@ GET     /export/:controlCodeVariant/:goodsType/software-and-technology-lists/   
 
 POST    /export/software-and-technology-lists/                                  controllers.softtech.controls.SoftTechControlsController.handleSubmit
 
+GET     /export/:controlCodeVariant/:goodsType/software-and-technology-lists/related   controllers.softtech.controls.SoftTechRelatedControlsController.renderForm(controlCodeVariant, goodsType)
+
+POST    /export/software-and-technology-lists/related                                  controllers.softtech.controls.SoftTechRelatedControlsController.handleSubmit
+
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit

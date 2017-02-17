@@ -42,26 +42,26 @@ public class SoftTechJourneyHelper {
 
   public CompletionStage<ApplicableSoftTechControls> checkSoftTechControls(GoodsType goodsType, SoftTechCategory softTechCategory) {
     return categoryControlsServiceClient.get(goodsType, softTechCategory)
-        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.controlCodes.size()), httpExecutionContext.current());
+        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.getControlCodes().size()), httpExecutionContext.current());
   }
 
 
   public CompletionStage<ApplicableSoftTechControls> checkRelatedSoftwareControls(GoodsType goodsType, String controlCode) {
     return relatedControlsServiceClient.get(goodsType, controlCode)
-        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.controlCodes.size()), httpExecutionContext.current());
+        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.getControlCodes().size()), httpExecutionContext.current());
   }
 
   public CompletionStage<ApplicableSoftTechControls> checkCatchtallSoftwareControls(GoodsType goodsType, SoftTechCategory softTechCategory) {
     return catchallControlsServiceClient.get(goodsType, softTechCategory)
-        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.controlCodes.size()), httpExecutionContext.current());
+        .thenApplyAsync(result -> ApplicableSoftTechControls.fromInt(result.getControlCodes().size()), httpExecutionContext.current());
   }
 
   public CompletionStage<ApplicableSoftTechControls> checkNonExemptTechnologyControls() {
     CompletionStage<NonExemptControlsServiceResult> specialMaterialsStage = nonExemptControlServiceClient.get(GoodsType.TECHNOLOGY, SoftTechCategory.SPECIAL_MATERIALS);
     CompletionStage<NonExemptControlsServiceResult> marineStage = nonExemptControlServiceClient.get(GoodsType.TECHNOLOGY, SoftTechCategory.MARINE);
     return specialMaterialsStage.thenCombineAsync(marineStage, (specialMaterialsResult, marineResult) -> {
-      List<ControlCodeFullView> controlCodes = new ArrayList<>(specialMaterialsResult.controlCodes);
-      controlCodes.addAll(marineResult.controlCodes);
+      List<ControlCodeFullView> controlCodes = new ArrayList<>(specialMaterialsResult.getControlCodes());
+      controlCodes.addAll(marineResult.getControlCodes());
       return ApplicableSoftTechControls.fromInt(controlCodes.size());
     }, httpExecutionContext.current());
   }

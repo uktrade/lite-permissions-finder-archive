@@ -1,16 +1,14 @@
 package components.services.controlcode.catchall;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import components.services.controlcode.ControlCodeFullViewResult;
 import play.libs.Json;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
 import java.util.Arrays;
-import java.util.List;
 
-public class CatchallControlsServiceResult {
-  public final List<ControlCodeFullView> controlCodes;
-
+public class CatchallControlsServiceResult extends ControlCodeFullViewResult {
   public CatchallControlsServiceResult(JsonNode responseJson) {
-    this.controlCodes = Arrays.asList(Json.fromJson(responseJson, ControlCodeFullView[].class));
+    super(Arrays.asList(Json.fromJson(responseJson, ControlCodeFullView[].class)));
   }
 }

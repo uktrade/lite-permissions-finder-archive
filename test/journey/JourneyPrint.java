@@ -6,7 +6,11 @@ import importcontent.ImportJourneyDefinitionBuilder;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ExportCategoryDecider;
-import journey.deciders.RelatedCodesDecider;
+import journey.deciders.relatedcodes.CatchallRelatedControlsDecider;
+import journey.deciders.relatedcodes.CategoryRelatedControlsDecider;
+import journey.deciders.relatedcodes.NonExemptRelatedControlsDecider;
+import journey.deciders.relatedcodes.RelatedRelatedControlsDecider;
+import journey.deciders.relatedcodes.SearchRelatedControlsDecider;
 import journey.deciders.RelatedControlsDecider;
 import journey.deciders.RelationshipWithSoftwareDecider;
 import journey.deciders.RelationshipWithTechnologyDecider;
@@ -33,7 +37,11 @@ public class JourneyPrint {
         new CatchallControlsDecider(null, null, null, null),
         new RelationshipWithTechnologyDecider(null, null),
         new RelationshipWithSoftwareDecider(null, null),
-        new RelatedCodesDecider(null, null, null, null)
+        new SearchRelatedControlsDecider(null, null, null, null),
+        new CatchallRelatedControlsDecider(null, null, null, null),
+        new CategoryRelatedControlsDecider(null, null, null, null),
+        new RelatedRelatedControlsDecider(null, null, null, null),
+        new NonExemptRelatedControlsDecider(null, null, null, null)
     ).buildAll();
     Optional<JourneyDefinition> serialiseJourney = journeyDefinitions.stream().filter(j -> JourneyDefinitionNames.EXPORT.equals(j.getJourneyName())).findFirst();
 

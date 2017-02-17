@@ -14,6 +14,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.GoodsType;
+import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
 import models.softtech.controls.SoftTechControlsDisplay;
@@ -23,13 +24,14 @@ import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
-import views.html.softtech.controls.softTechControls;
+import views.html.softtech.controls.softTechRelatedControls;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
-public class SoftTechControlsController {
+public class SoftTechRelatedControlsController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -40,7 +42,7 @@ public class SoftTechControlsController {
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public SoftTechControlsController(JourneyManager journeyManager,
+  public SoftTechRelatedControlsController(JourneyManager journeyManager,
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
                                     CategoryControlsServiceClient categoryControlsServiceClient,
@@ -60,7 +62,7 @@ public class SoftTechControlsController {
 
   public CompletionStage<Result> renderForm(String controlCodeVariantText, String goodsTypeText) {
     ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveUrlToSubJourneyAndUpdateContext(controlCodeVariantText, goodsTypeText);
-    return renderWithForm(controlCodeSubJourney, formFactory.form(SoftTechControlsForm.class));
+    return renderWithForm(controlCodeSubJourney, formFactory.form(SoftTechRelatedControlsForm.class));
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -69,24 +71,16 @@ public class SoftTechControlsController {
   }
 
   private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
-    Form<SoftTechControlsForm> form = formFactory.form(SoftTechControlsForm.class).bindFromRequest();
+    Form<SoftTechRelatedControlsForm> form = formFactory.form(SoftTechRelatedControlsForm.class).bindFromRequest();
     if (form.hasErrors()) {
       renderWithForm(controlCodeSubJourney, form);
     }
     String action = form.get().action;
     String controlCode = form.get().controlCode;
     if (StringUtils.isNotEmpty(action)) {
-      if ("noMatchedControlCode".equals(action)) {
-        if (controlCodeSubJourney.isSoftTechControlsVariant() ||
-            controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant() ||
-            controlCodeSubJourney.isSoftTechCatchallControlsVariant() ||
-            controlCodeSubJourney.isNonExemptControlsVariant()) {
-          return journeyManager.performTransition(Events.NONE_MATCHED);
-        }
-        else {
-          throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
-              , controlCodeSubJourney.toString()));
-        }
+      Optional<BackType> backTypeOptional = BackType.getMatched(action);
+      if (backTypeOptional.isPresent() && backTypeOptional.get() == BackType.RESULTS) {
+        return journeyManager.performTransition(Events.BACK, backTypeOptional.get());
       }
       else {
         throw new FormStateException(String.format("Unknown value for action: \"%s\"", action));
@@ -94,7 +88,6 @@ public class SoftTechControlsController {
     }
     else if (StringUtils.isNotEmpty(controlCode)) {
       // Setup DAO state based on view variant
-      permissionsFinderDao.saveSoftTechControlsResultsLastChosenControlCode(controlCodeSubJourney, controlCode);
       permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
@@ -103,15 +96,16 @@ public class SoftTechControlsController {
     }
   }
 
-  private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<SoftTechControlsForm> form) {
+  private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<SoftTechRelatedControlsForm> form) {
     // Setup DAO state based on view variant
     GoodsType goodsType = controlCodeSubJourney.getSoftTechGoodsType();
+    String resultsControlCode = permissionsFinderDao.getSoftTechControlsResultsLastChosenControlCode(controlCodeSubJourney);
     if (controlCodeSubJourney.isSoftTechControlsVariant()) {
       // Software category is expected at this stage of the journey
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return categoryControlsServiceClient.get(goodsType, softTechCategory)
           .thenApplyAsync(result ->
-              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getControlCodesGroupedByTitle()))))
+                  ok(softTechRelatedControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getRelatedControlCodes(resultsControlCode)))))
               , httpExecutionContext.current());
     }
     else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
@@ -120,23 +114,23 @@ public class SoftTechControlsController {
       String controlCode = permissionsFinderDao.getSelectedControlCode(priorSubJourney);
       return relatedControlsServiceClient.get(goodsType, controlCode)
           .thenApplyAsync(result ->
-              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getControlCodesGroupedByTitle()))))
+                  ok(softTechRelatedControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getRelatedControlCodes(resultsControlCode)))))
               , httpExecutionContext.current());
     }
     else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return catchallControlsServiceClient.get(goodsType, softTechCategory)
           .thenApplyAsync(result ->
-              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getControlCodesGroupedByTitle()))))
+                  ok(softTechRelatedControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getRelatedControlCodes(resultsControlCode)))))
               , httpExecutionContext.current());
     }
     else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
       CompletionStage<NonExemptControlsServiceResult> specialMaterialsStage = nonExemptControlServiceClient.get(goodsType, SoftTechCategory.SPECIAL_MATERIALS);
       CompletionStage<NonExemptControlsServiceResult> marineStage = nonExemptControlServiceClient.get(goodsType, SoftTechCategory.MARINE);
       return specialMaterialsStage.thenCombineAsync(marineStage, (specialMaterialsResult, marineResult) -> {
-        List<ControlCodeFullView> controlCodes = new ArrayList<>(specialMaterialsResult.getControlCodesGroupedByTitle());
+        List<ControlCodeFullView> controlCodes = new ArrayList<>(specialMaterialsResult.getRelatedControlCodes(resultsControlCode));
         controlCodes.addAll(marineResult.getControlCodesGroupedByTitle());
-        return ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, controlCodes))));
+        return ok(softTechRelatedControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, controlCodes))));
       }, httpExecutionContext.current());
     }
     else {
@@ -160,12 +154,11 @@ public class SoftTechControlsController {
     }
   }
 
-  public static class SoftTechControlsForm {
+  public static class SoftTechRelatedControlsForm {
 
     public String controlCode;
 
     public String action;
 
   }
-
 }

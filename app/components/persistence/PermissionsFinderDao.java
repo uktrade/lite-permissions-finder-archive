@@ -65,6 +65,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX = "goodsRelationshipQuestionCurrentIndex";
   public static final String CONTROL_CODE_FOR_REGISTRATION = "controlCodeForRegistration";
   public static final String SHOW_TECH_NOTES = "showTechNotes";
+  public static final String SOFT_TECH_CONTROLS_RESULTS_LAST_CHOSEN_CONTROL_CODE = "softTechControlsResultsLastChosenControlCode";
 
   @Inject
   public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
@@ -509,6 +510,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<Boolean> getShowTechNotes(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
     return readBoolean(SHOW_TECH_NOTES + ":" + controlCodeSubJourney.value() + ":" + controlCode);
+  }
+
+  public void saveSoftTechControlsResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
+    writeString(prependFieldName(controlCodeSubJourney, SOFT_TECH_CONTROLS_RESULTS_LAST_CHOSEN_CONTROL_CODE), controlCode);
+  }
+
+  public String getSoftTechControlsResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
+    return readString(prependFieldName(controlCodeSubJourney, SOFT_TECH_CONTROLS_RESULTS_LAST_CHOSEN_CONTROL_CODE));
   }
 
 }

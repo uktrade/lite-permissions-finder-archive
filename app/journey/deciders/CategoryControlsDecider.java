@@ -42,7 +42,7 @@ public class CategoryControlsDecider implements Decider<ApplicableSoftTechContro
     return categoryControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> {
 
-          ApplicableSoftTechControls applicableSoftTechControls = ApplicableSoftTechControls.fromInt(result.controlCodes.size());
+          ApplicableSoftTechControls applicableSoftTechControls = ApplicableSoftTechControls.fromInt(result.getControlCodes().size());
 
           // TODO Setting DAO state here is very hacky and needs rethinking
           if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
@@ -52,7 +52,7 @@ public class CategoryControlsDecider implements Decider<ApplicableSoftTechContro
             // TODO This is a massive hack, relies on knowing where the stage transition for ApplicableSoftTechControls.ONE will go
             subJourneyContextParamProvider.updateSubJourneyValueOnContext(subJourney);
 
-            dao.saveSelectedControlCode(subJourney, result.controlCodes.get(0).getControlCode());
+            dao.saveSelectedControlCode(subJourney, result.getControlCodes().get(0).getControlCode());
           }
 
           return applicableSoftTechControls;

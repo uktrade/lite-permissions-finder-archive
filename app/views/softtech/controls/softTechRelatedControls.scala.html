@@ -3,14 +3,15 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.softtech.controls.routes.SoftTechControlsController
+@import controllers.softtech.controls.routes.SoftTechRelatedControlsController
 
+@import models.controlcode.BackType
 @(form: Form[_], display: SoftTechControlsDisplay)
 @standardPage(display.pageTitle, Some(Html(display.pageTitle))){
   @errorSummary(form)
 }{
 
-  <form action="@SoftTechControlsController.handleSubmit" method="POST">
+  <form action="@SoftTechRelatedControlsController.handleSubmit" method="POST">
 
     @contextFormParams()
 
@@ -23,13 +24,13 @@
     <ol class="search-results">
       @for(i <- 0 until display.controlCodes.size) {
         <li>
-          <button id="@display.controlCodes.get(i).getControlCode-button" type="submit" class="link font-medium" name="controlCode" value="@display.controlCodes.get(i).getControlCode">@Html(display.controlCodes.get(i).getTitle)</button>
+          <button id="@display.controlCodes.get(i).getControlCode-button" type="submit" class="link font-medium" name="controlCode" value="@display.controlCodes.get(i).getControlCode">@Html(display.controlCodes.get(i).getFriendlyDescription)</button>
         </li>
       }
     </ol>
 
     <div class="search-result-actions">
-      <button type="submit" name="action" value="noMatchedControlCode" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
+      <button type="submit" name="action" value="@BackType.RESULTS" class="link underlined font-small no-matched-result-link">Back to previous list of results</button>
     </div>
 
   </form>

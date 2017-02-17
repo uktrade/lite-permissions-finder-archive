@@ -1,4 +1,4 @@
-package journey.deciders;
+package journey.deciders.relatedcodes;
 
 import com.google.inject.Inject;
 import components.common.journey.Decider;
@@ -10,7 +10,7 @@ import play.libs.concurrent.HttpExecutionContext;
 
 import java.util.concurrent.CompletionStage;
 
-public class RelatedCodesDecider implements Decider<Boolean> {
+public class SearchRelatedControlsDecider implements Decider<Boolean> {
 
   private final PermissionsFinderDao dao;
   private final SubJourneyContextParamProvider subJourneyContextParamProvider;
@@ -18,10 +18,10 @@ public class RelatedCodesDecider implements Decider<Boolean> {
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public RelatedCodesDecider(PermissionsFinderDao dao,
-                             SubJourneyContextParamProvider subJourneyContextParamProvider,
-                             RelatedCodesServiceClient relatedCodesServiceClient,
-                             HttpExecutionContext httpExecutionContext) {
+  public SearchRelatedControlsDecider(PermissionsFinderDao dao,
+                                      SubJourneyContextParamProvider subJourneyContextParamProvider,
+                                      RelatedCodesServiceClient relatedCodesServiceClient,
+                                      HttpExecutionContext httpExecutionContext) {
     this.dao = dao;
     this.subJourneyContextParamProvider = subJourneyContextParamProvider;
     this.relatedCodesServiceClient = relatedCodesServiceClient;

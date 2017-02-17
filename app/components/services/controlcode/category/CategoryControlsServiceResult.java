@@ -1,16 +1,14 @@
 package components.services.controlcode.category;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import components.services.controlcode.ControlCodeFullViewResult;
 import play.libs.Json;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
 import java.util.Arrays;
-import java.util.List;
 
-public class CategoryControlsServiceResult {
-  public final List<ControlCodeFullView> controlCodes;
-
+public class CategoryControlsServiceResult extends ControlCodeFullViewResult {
   public CategoryControlsServiceResult(JsonNode responseJson) {
-    this.controlCodes = Arrays.asList(Json.fromJson(responseJson, ControlCodeFullView[].class));
+    super(Arrays.asList(Json.fromJson(responseJson, ControlCodeFullView[].class)));
   }
 }
