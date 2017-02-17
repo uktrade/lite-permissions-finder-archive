@@ -6,7 +6,7 @@
 @import controllers.DestinationCountryController
 
 @(form: Form[_], countries: List[Country], numberOfThroughDestinationCountries: Int, fieldOrderList: List[String])
-@standardPage("Countries and territories", Some(Html("Countries and territories"))){
+@standardPage("Finding the right licence", None){
   @errorSummary(form, fieldOrder = fieldOrderList)
 } {
 
