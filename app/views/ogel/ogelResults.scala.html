@@ -1,11 +1,10 @@
-@import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView
 @import util._
 @import views.html.common.page._
 @import views.html.common.state._
+@import models.ogel.OgelResultsDisplay
 
-@(form: Form[_], ogels: List[ApplicableOgelView], physicalGoodControlCode: String, destinationCountryNamesHtml: String)
-@standardPage(if (ogels.length > 0) "Your possible licences" else "No open licences available"
-  , Some(Html(if (ogels.length > 0) "Your possible licences" else "No open licences available"))){
+@(form: Form[_], display: OgelResultsDisplay)
+@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
   @errorSummary(form)
 }{
 
@@ -13,11 +12,11 @@
 
     @contextFormParams()
 
-    @if(ogels.length > 0) {
+    @if(display.ogels.size > 0) {
 
       <div class="form-group">
         <ol class="ogel-results search-results">
-          @for(ogel <- ogels) {
+          @for(ogel <- display.ogels) {
             <li>
               <button type="submit" class="link" name="chosenOgel" value="@ogel.getId">@ogel.getName</button>
               <div class="font-xsmall">
@@ -47,7 +46,7 @@
     } else {
 
       <p>
-        At the moment there are no open general export licences (OGELs) you can use to send or take items under the classification <strong class="bold-small">@physicalGoodControlCode</strong> to <strong class="bold-small">@Html(destinationCountryNamesHtml)</strong>.
+        At the moment there are no open general export licences (OGELs) you can use to send or take items under the classification <strong class="bold-small">@display.controlCodeTitle</strong> to <strong class="bold-small">@Html(display.destinationCountryNamesHtml)</strong>.
       </p>
 
       <p>
