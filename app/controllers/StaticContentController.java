@@ -28,13 +28,13 @@ public class StaticContentController extends Controller {
     CATEGORY_PLANTS("categories/plant.html", "You may need approval from the destination country"),
     CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines"),
     CATEGORY_WASTE("categories/waste.html", "You must have a licence to export most types of waste"),
-    NOT_APPLICABLE("notApplicable.html", "No licence available"),
+    NOT_APPLICABLE("notApplicable.html", "No licence available", false),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
-    SOFTWARE_EXEMPTIONS_NLR1("software/exemptionsNLR1.html", "No licence available"),
-    SOFTWARE_EXEMPTIONS_NLR2("software/exemptionsNLR2.html", "No licence available"),
-    SOFTWARE_JOURNEY_END_NLR("software/journeyEndNLR.html", "No licence available"),
-    TECHNOLOGY_EXEMPTIONS_NLR("technology/exemptionsNLR.html", "No licence available"),
-    TECHNOLOGY_JOURNEY_END_NLR("technology/journeyEndNLR.html", "No licence available"),
+    SOFTWARE_EXEMPTIONS_NLR1("software/exemptionsNLR1.html", "No licence available", false),
+    SOFTWARE_EXEMPTIONS_NLR2("software/exemptionsNLR2.html", "No licence available", false),
+    SOFTWARE_JOURNEY_END_NLR("software/journeyEndNLR.html", "No licence available", false),
+    TECHNOLOGY_EXEMPTIONS_NLR("technology/exemptionsNLR.html", "No licence available", false),
+    TECHNOLOGY_JOURNEY_END_NLR("technology/journeyEndNLR.html", "No licence available", false),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
 
     StaticHtml(String filename, String title, boolean showPageHeading) {
