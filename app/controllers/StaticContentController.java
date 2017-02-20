@@ -6,6 +6,7 @@ import com.google.common.io.Resources;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.twirl.api.Html;
+import scala.Option;
 import views.html.staticContent;
 
 import java.io.IOException;
@@ -36,13 +37,20 @@ public class StaticContentController extends Controller {
     TECHNOLOGY_JOURNEY_END_NLR("technology/journeyEndNLR.html", "No licence available"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
 
-    StaticHtml(String filename, String title) {
+    StaticHtml(String filename, String title, boolean showPageHeading) {
       this.filename = filename;
       this.title = title;
+      this.showPageHeading = showPageHeading;
+    }
+
+    StaticHtml(String filename, String title) {
+      // Page headings are shown by default
+      this(filename, title, true);
     }
 
     private final String filename;
     private final String title;
+    private final boolean showPageHeading;
   }
 
   public Result renderStaticHtml(StaticHtml staticHtml) {
@@ -52,7 +60,9 @@ public class StaticContentController extends Controller {
         throw new RuntimeException("Not a file: " + staticHtml.filename);
       }
 
-      return ok(staticContent.render(staticHtml.title, new Html(Resources.toString(resource, Charsets.UTF_8))));
+      Option<Html> pageHeadingOption = staticHtml.showPageHeading ? Option.apply(new Html(staticHtml.title)) : Option.empty();
+
+      return ok(staticContent.render(staticHtml.title, pageHeadingOption, new Html(Resources.toString(resource, Charsets.UTF_8))));
 
     } catch (IOException e) {
       throw new RuntimeException("Failed to read", e);
