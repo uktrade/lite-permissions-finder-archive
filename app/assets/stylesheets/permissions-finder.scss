@@ -11,6 +11,10 @@
 // GOV.UK elements
 @import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/elements/helpers";                       // Helper functions and classes
 
+// Utils
+@import "utils/standardPage";
+
+// Sections
 @import "sections/categories";
 @import "sections/confirmation";
 @import "sections/controlCode";
