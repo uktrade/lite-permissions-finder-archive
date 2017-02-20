@@ -81,10 +81,10 @@ public class ArtsCulturalController extends Controller {
 
   public static class ArtsCulturalForm {
 
-    @Required(message = "Please select the items age")
+    @Required(message = "Select the item's age")
     public String itemAge;
 
-    @Required(message = "Please specify if the item is a firearm")
+    @Required(message = "Answer this question")
     public Boolean firearm;
   }
 

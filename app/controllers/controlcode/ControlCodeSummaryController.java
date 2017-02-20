@@ -95,7 +95,7 @@ public class ControlCodeSummaryController extends Controller {
 
   public static class ControlCodeSummaryForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean couldDescribeItems;
 
     public Boolean showTechNotes;

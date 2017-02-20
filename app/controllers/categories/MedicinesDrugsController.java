@@ -34,7 +34,7 @@ public class MedicinesDrugsController {
     MedicinesDrugsForm templateForm = new MedicinesDrugsForm();
     Optional<Boolean> isUsedForExecutionTorture = permissionsFinderDao.getIsUsedForExecutionTorture();
     if (isUsedForExecutionTorture.isPresent()) {
-      templateForm.isUsedForExecutionTorture= isUsedForExecutionTorture.get().toString();
+      templateForm.isUsedForExecutionTorture = isUsedForExecutionTorture.get().toString();
     }
     return ok(medicinesDrugs.render(formFactory.form(MedicinesDrugsForm.class).fill(templateForm)));
   }
@@ -60,7 +60,7 @@ public class MedicinesDrugsController {
 
   public static class MedicinesDrugsForm {
 
-    @Required(message = "You must pick an option")
+    @Required(message = "Answer this question")
     public String isUsedForExecutionTorture;
 
   }

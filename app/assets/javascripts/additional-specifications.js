@@ -6,7 +6,7 @@ LITEPermissionsFinder.AdditionalSpecifications = {
     $("#stillDescribesItems-T").change(function() {
       if ($(this).is(":checked")) {
         LITECommon.showContent($("#showTechNotes-wrapper"));
-        $("#showTechNotes").attr("data-validation", '{"required":{"message":"You must answer this question"}}');
+        $("#showTechNotes").attr("data-validation", '{"required":{"message":"Answer this question"}}');
       }
     }).trigger("change");
 

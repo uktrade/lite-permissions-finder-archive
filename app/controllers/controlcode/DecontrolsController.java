@@ -84,7 +84,7 @@ public class DecontrolsController {
 
   public static class DecontrolsForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean decontrolsDescribeItem;
 
   }

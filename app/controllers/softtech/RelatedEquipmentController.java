@@ -70,7 +70,7 @@ public class RelatedEquipmentController {
 
   public static class RelatedEquipmentForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean relatedToEquipmentOrMaterials;
 
   }

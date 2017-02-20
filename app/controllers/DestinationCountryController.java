@@ -119,7 +119,7 @@ public class DestinationCountryController extends Controller {
           .forEach(i -> {
             String country = boundForm.throughDestinationCountries.get(i);
             if (country == null || country.isEmpty()) {
-              form.reject(throughDestinationCountriesIndexedFieldName(i), "You must enter a destination or territory");
+              form.reject(throughDestinationCountriesIndexedFieldName(i), "Enter a country or territory");
             }  // Set.add() returns false if the item was already in the set
             else if (!allCountries.add(country) || country.equals(boundForm.finalDestinationCountry)) {
               form.reject(throughDestinationCountriesIndexedFieldName(i), "You cannot have duplicate destination, " +
@@ -135,7 +135,7 @@ public class DestinationCountryController extends Controller {
       permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
     }
     else if (boundForm.itemThroughMultipleCountries == null || boundForm.itemThroughMultipleCountries.isEmpty()) {
-      form.reject(ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME, "You must answer this question");
+      form.reject(ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME, "Answer this question");
     }
     else {
       throw new FormStateException("Unknown value for " + ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME + " \""
@@ -143,7 +143,7 @@ public class DestinationCountryController extends Controller {
     }
 
     if (boundForm.finalDestinationCountry == null || boundForm.finalDestinationCountry.isEmpty()) {
-      form.reject(FINAL_DESTINATION_COUNTRY_FIELD_NAME, "You must enter a destination or territory");
+      form.reject(FINAL_DESTINATION_COUNTRY_FIELD_NAME, "Enter a country or territory");
     }
 
     // Check again for errors raised during manual validation

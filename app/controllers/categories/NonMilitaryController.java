@@ -56,7 +56,7 @@ public class NonMilitaryController {
   }
 
   private String getQuestion(String stageName) {
-    String question = "";
+    String question;
     if (stageName.equals(TAKE_YOURSELF_KEY)) {
       question = TAKE_YOURSELF_QUESTION;
     } else if (stageName.equals(PERSONAL_EFFECTS_KEY)) {

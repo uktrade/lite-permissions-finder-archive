@@ -164,7 +164,7 @@ public class GoodsRelationshipQuestionsController {
 
     public int currentQuestionIndex;
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean questionAnswer;
 
   }

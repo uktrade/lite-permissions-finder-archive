@@ -97,10 +97,10 @@ public class SearchController {
 
   public static class SearchForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean isComponent;
 
-    @Required(message = "You must enter a description of your goods")
+    @Required(message = "Enter a description of the item")
     public String description;
 
     public String component;
