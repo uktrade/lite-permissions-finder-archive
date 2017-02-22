@@ -1,8 +1,6 @@
 package controllers;
 
-import static components.common.journey.JourneyManager.JOURNEY_SUPPRESS_BACK_LINK_CONTEXT_PARAM;
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Controller.ctx;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -70,8 +68,7 @@ public class SummaryController {
   }
 
   public CompletionStage<Result> renderForm() {
-    // TODO remove the flag once back link handling is overhauled
-    ctx().args.put(JOURNEY_SUPPRESS_BACK_LINK_CONTEXT_PARAM, true);
+    journeyManager.hideBackLink();
     return renderWithForm(formFactory.form(SummaryForm.class), false);
   }
 
