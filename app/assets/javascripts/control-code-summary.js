@@ -6,14 +6,14 @@ LITEPermissionsFinder.ControlCodeSummary = {
     $("#couldDescribeItems-T").change(function() {
       if ($(this).is(":checked")) {
         LITECommon.showContent($("#showTechNotes-wrapper"));
-        $("#showTechNotes").attr("data-validation", '{"required":{"message":"Answer this question"}}');
+        $("#showTechNotes").data("validation").required = {"message" : "Answer this question"};
       }
     }).trigger("change");
 
     $("#couldDescribeItems-F").change(function() {
       if ($(this).is(":checked")) {
         LITECommon.hideContent($("#showTechNotes-wrapper"));
-        $("#showTechNotes").removeAttr("data-validation");
+        $("#showTechNotes").data("validation", {});
       }
     }).trigger("change");
 
