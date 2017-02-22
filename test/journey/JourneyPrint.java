@@ -50,7 +50,7 @@ public class JourneyPrint {
 
   @Test
   public void printImportJourney() {
-    Collection<JourneyDefinition> journeyDefinitions = new ImportJourneyDefinitionBuilder().buildAll();
+    Collection<JourneyDefinition> journeyDefinitions = new ImportJourneyDefinitionBuilder(null).buildAll();
     Optional<JourneyDefinition> serialiseJourney = journeyDefinitions.stream().filter(j -> JourneyDefinitionNames.IMPORT.equals(j.getJourneyName())).findFirst();
 
     System.out.println(new GraphvizSerialiser().generateGraphvizSyntax(Collections.singletonList(serialiseJourney.get())));
