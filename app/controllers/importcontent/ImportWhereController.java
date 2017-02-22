@@ -96,7 +96,7 @@ public class ImportWhereController extends Controller {
    * ImportCountryForm
    */
   public static class ImportCountryForm {
-    @Constraints.Required(message = "Please select one option")
+    @Constraints.Required(message = "Enter a country or territory")
     public String importCountry;
   }
 }

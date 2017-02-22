@@ -5,6 +5,9 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.ImportJourneyDao;
+import controllers.importcontent.forms.ImportFoodWhatForm;
+import controllers.importcontent.forms.ImportForm;
+import controllers.importcontent.forms.ImportWhatForm;
 import exceptions.FormStateException;
 import importcontent.ImportEvents;
 import importcontent.ImportQuestion;
@@ -13,7 +16,6 @@ import importcontent.models.ImportWhat;
 import models.importcontent.ImportStageData;
 import play.data.Form;
 import play.data.FormFactory;
-import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.importcontent.importQuestion;
@@ -45,19 +47,22 @@ public class ImportController extends Controller {
   }
 
   public Result renderForm(String stageKey) {
-    return ok(importQuestion.render(formFactory.form(), stageDataMap.get(journeyManager.getCurrentInternalStageName())));
+    ImportStageData importStageData = stageDataMap.get(journeyManager.getCurrentInternalStageName());
+    return ok(importQuestion.render(formFactory.form(importStageData.getFormClass()), importStageData));
   }
 
   public CompletionStage<Result> handleSubmit() {
     String stageKey = journeyManager.getCurrentInternalStageName();
     ImportStageData importStageData = stageDataMap.get(stageKey);
 
-    Form<ImportStageForm> form = formFactory.form(ImportStageForm.class).bindFromRequest();
+    Form<?> form = formFactory.form(importStageData.getFormClass()).bindFromRequest();
+
     if (form.hasErrors()) {
       return completedFuture(ok(importQuestion.render(form, importStageData)));
     }
 
-    String option = form.get().selectedOption;
+    String option = getSelectedOption(form);
+
     if (importStageData.isValidStageOption(option)) {
 
       // Get selected country for custom transitions
@@ -84,12 +89,21 @@ public class ImportController extends Controller {
     }
   }
 
-  /**
-   * ImportStageForm
-   */
-  public static class ImportStageForm {
-    @Required(message = "Please select one option")
-    public String selectedOption;
+  private String getSelectedOption (Form<?> form) {
+    // Converts wildcard parametrised type to a concrete instance using the forms backed type class
+    if (form.getBackedType() == ImportForm.class) {
+      return ((Form<ImportForm>) form).get().selectedOption;
+    }
+    else if (form.getBackedType() == ImportWhatForm.class) {
+      return ((Form<ImportWhatForm>) form).get().selectedOption;
+    }
+    else if (form.getBackedType() == ImportFoodWhatForm.class) {
+      return ((Form<ImportFoodWhatForm>) form).get().selectedOption;
+    }
+    else {
+      throw new FormStateException("Unknown backed type for form: " + form.getBackedType().toString());
+    }
   }
+
 }
 
