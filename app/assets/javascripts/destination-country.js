@@ -2,7 +2,9 @@ var LITEPermissionsFinder = LITEPermissionsFinder || {};
 
 LITEPermissionsFinder.DestinationCountry = {
   setupPage: function() {
-    LITEPermissionsFinder.Utils.countrySetup();
+    $("select[ui-autocomplete='ui-autocomplete']").each(function() {
+      LITECommon.countrySelectInitialise($(this));
+    });
 
     $("#itemThroughMultipleCountries-T").change(function() {
       if ($(this).is(":checked")) {

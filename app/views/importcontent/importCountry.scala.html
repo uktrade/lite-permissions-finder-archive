@@ -18,7 +18,7 @@
 
     <h2 class="heading-medium">Where are you importing from?</h2>
 
-    @countrySelect(form(ImportWhereController.COUNTRY_FIELD_NAME), Some("Type the country or territory the import will come from"), null, false, false, countries)
+    @countrySelect(form(ImportWhereController.COUNTRY_FIELD_NAME), countries, Some("Type the country or territory the import will come from"), None, None)
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>
