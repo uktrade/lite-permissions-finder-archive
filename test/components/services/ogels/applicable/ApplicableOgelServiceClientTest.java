@@ -28,7 +28,7 @@ public class ApplicableOgelServiceClientTest {
 
   @Before
   public void setUp() {
-    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("services/applicable-ogels.json");
+    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("services/ogels/applicable-ogels.json");
     applicableOgels = Json.parse(inputStream);
 
     Router router = new RoutingDsl().GET("/applicable-ogels").routeTo(() -> ok(applicableOgels)).build();
