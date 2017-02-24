@@ -20,16 +20,14 @@ import java.util.Arrays;
 import java.util.concurrent.CompletionStage;
 
 public class ApplicableOgelServiceClientTest {
-
   private ApplicableOgelServiceClient client;
   private WSClient ws;
   private Server server;
-  private JsonNode applicableOgels;
 
   @Before
   public void setUp() {
     InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("services/ogels/applicable-ogels.json");
-    applicableOgels = Json.parse(inputStream);
+    JsonNode applicableOgels = Json.parse(inputStream);
 
     Router router = new RoutingDsl().GET("/applicable-ogels").routeTo(() -> ok(applicableOgels)).build();
 

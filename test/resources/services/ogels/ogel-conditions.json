@@ -1,12 +1,7 @@
 {
-  "id": "OGL991",
-  "name": "OGEL 991",
-  "description": "OGEL 991 Description",
-  "link": "link",
-  "summary": {
-    "canList": [],
-    "cantList": [],
-    "mustList": [],
-    "howToUseList": []
-  }
+  "controlCode": "0C002",
+  "conditionDescriptionControlCodes": null,
+  "ogelId": "OGL61",
+  "conditionDescription": "<ul><li>separated plutonium</li></ul>",
+  "itemsAllowed": false
 }

@@ -23,14 +23,13 @@ public class OgelServiceClientTest {
   private OgelServiceClient client;
   private WSClient ws;
   private Server server;
-  private JsonNode ogelConditions;
 
   @Before
   public void setUp() {
-    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("services/ogels/ogel-conditions.json");
-    ogelConditions = Json.parse(inputStream);
+    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("services/ogels/ogel.json");
+    JsonNode ogel = Json.parse(inputStream);
 
-    Router router = new RoutingDsl().GET("/ogels/OGL61").routeTo(() -> ok(ogelConditions)).build();
+    Router router = new RoutingDsl().GET("/ogels/OGL61").routeTo(() -> ok(ogel)).build();
     server = Server.forRouter(router);
     int port = server.httpPort();
     ws = WS.newClient(port);
