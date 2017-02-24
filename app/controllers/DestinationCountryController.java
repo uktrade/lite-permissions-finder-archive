@@ -17,12 +17,9 @@ import views.html.destinationCountry;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.IntStream;
 
 import javax.inject.Named;
 
@@ -113,19 +110,12 @@ public class DestinationCountryController extends Controller {
      * Otherwise raise an exception
      */
     if ("true".equals(boundForm.itemThroughMultipleCountries)) {
-      Set<String> allCountries = new HashSet<>();
-      IntStream.range(0, boundForm.throughDestinationCountries.size())
-          .boxed()
-          .forEach(i -> {
-            String country = boundForm.throughDestinationCountries.get(i);
-            if (country == null || country.isEmpty()) {
-              form.reject(throughDestinationCountriesIndexedFieldName(i), "Enter a country or territory");
-            }  // Set.add() returns false if the item was already in the set
-            else if (!allCountries.add(country) || country.equals(boundForm.finalDestinationCountry)) {
-              form.reject(throughDestinationCountriesIndexedFieldName(i), "You cannot have duplicate destination, " +
-                  "country or territories. Please change or remove one");
-            }
-          });
+      for (int i = 0; i < boundForm.throughDestinationCountries.size(); i++) {
+        String country = boundForm.throughDestinationCountries.get(i);
+        if (country == null || country.isEmpty()) {
+          form.reject(throughDestinationCountriesIndexedFieldName(i), "Enter a country or territory");
+        }  // Set.add() returns false if the item was already in the set
+      }
       permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
       permissionsFinderDao.saveItemThroughMultipleCountries(true);
     }
