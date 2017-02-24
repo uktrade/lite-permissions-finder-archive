@@ -66,6 +66,23 @@ public class ApplicationCodeDao {
     return transactionId;
   }
 
+  /**
+   * Refreshes the TTL of the key associated with <code>applicationCode</code>
+   * @param applicationCode the key
+   */
+  public void refreshTTL(String applicationCode) {
+    Stopwatch stopwatch = Stopwatch.createStarted();
+    try (Jedis jedis = jedisPool.getResource()) {
+      int reply = jedis.expire(hashKey(applicationCode), redisKeyConfig.getHashTtlSeconds()).intValue();
+      if (reply == 0) {
+        Logger.error(String.format("Could not refresh TTL of '%s', key does not exist", FIELD_NAME));
+      }
+    }
+    finally {
+      Logger.debug(String.format("TTL of '%s' refresh completed in %d ms", FIELD_NAME, stopwatch.elapsed(TimeUnit.MILLISECONDS)));
+    }
+  }
+
   public String hashKey(String applicationCode) {
     return redisKeyConfig.getKeyPrefix() + ":" + redisKeyConfig.getHashName() + ":" + applicationCode;
   }

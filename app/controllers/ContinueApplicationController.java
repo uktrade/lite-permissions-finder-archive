@@ -62,6 +62,11 @@ public class ContinueApplicationController {
       String transactionId = applicationCodeDao.readTransactionId(applicationCode.trim());
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.setTransaction(transactionId);
+
+        // Refresh hash key TTLs of the both DAOs
+        applicationCodeDao.refreshTTL(applicationCode.trim());
+        permissionsFinderDao.refreshTTL();
+
         // Overwrite stored search form data
         permissionsFinderDao.savePhysicalGoodSearchForm(ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH,
             new SearchController.SearchForm());
