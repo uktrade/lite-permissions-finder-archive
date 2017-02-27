@@ -44,15 +44,16 @@ public class VirtualEUOgelClient {
 
     activityTypes.forEach(activityType -> request.setQueryParameter("activityType", activityType));
 
-    return request.get().thenApplyAsync(response -> {
-      if (response.getStatus() != 200) {
-        throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /virtual-eu: %s",
-            response.getStatus()));
-      }
-      else {
-        return Json.fromJson(response.asJson(), VirtualEuView.class);
-      }
-    }, httpExecutionContext.current());
+    return request.get()
+        .thenApplyAsync(response -> {
+          if (response.getStatus() != 200) {
+            throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /virtual-eu: %s",
+                response.getStatus()));
+          }
+          else {
+            return Json.fromJson(response.asJson(), VirtualEuView.class);
+          }
+        }, httpExecutionContext.current());
   }
 
 }

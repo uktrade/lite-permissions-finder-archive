@@ -33,14 +33,6 @@ public class RelatedCodesServiceClient {
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
         .get()
-        .handleAsync((response, throwable) -> {
-          if (throwable != null) {
-            throw new ServiceException("Error during Search service request", throwable);
-          }
-          else {
-            return response;
-          }
-        })
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));

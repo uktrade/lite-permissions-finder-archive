@@ -44,7 +44,7 @@ public class GoodsRelationshipsServiceClient {
         .get()
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200 ) {
-            String errorMessage = response.asJson() != null ? errorMessage = response.asJson().get("message").asText() : "";
+            String errorMessage = response.asJson() != null ? response.asJson().get("message").asText() : "";
             throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /goods-relationships: %s %s", response.getStatus(), errorMessage));
           }
           else {

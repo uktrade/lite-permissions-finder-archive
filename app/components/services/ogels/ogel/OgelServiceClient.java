@@ -34,7 +34,8 @@ public class OgelServiceClient {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId))
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
-        .get().handleAsync((response, error) -> {
+        .get()
+        .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /ogels/%s: %s",
                 ogelId, response.getStatus()));

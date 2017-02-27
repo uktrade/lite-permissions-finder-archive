@@ -35,7 +35,8 @@ public class OgelConditionsServiceClient {
         UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .withRequestFilter(CorrelationId.requestFilter)
         .setRequestTimeout(webServiceTimeout)
-        .get().handleAsync((response, error) -> {
+        .get()
+        .thenApplyAsync(response -> {
           if (response.getStatus() == 200 || response.getStatus() == 206) {
             // Condition apply (204) or conditions apply, but with missing control codes (206)
             return OgelConditionsServiceResult.buildFrom(response.asJson());
