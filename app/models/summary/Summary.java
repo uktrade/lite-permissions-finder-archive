@@ -99,9 +99,10 @@ public class Summary {
       CompletionStage<ApplicableOgelServiceResult> applicableOgelStage = applicableOgelServiceClient.get(
           controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric);
 
-      CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombine(applicableOgelStage,
+      CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombineAsync(applicableOgelStage,
           (ogelResult, applicableOgelResult) ->
-              new ValidatedOgel(ogelResult, applicableOgelResult.findResultById(ogelResult.getId()).isPresent()));
+              new ValidatedOgel(ogelResult, applicableOgelResult.findResultById(ogelResult.getId()).isPresent())
+          , httpExecutionContext.current());
 
       summaryCompletionStage = summaryCompletionStage
           .thenCombineAsync(validatedStage, (summary, validatedOgel)

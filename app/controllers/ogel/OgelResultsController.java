@@ -127,7 +127,7 @@ public class OgelResultsController {
 
     // Combines with the stage above, allowing any exceptions to propagate
     return checkOgelStage
-        .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getControlCodeForRegistration()),
+        .thenCombineAsync(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getControlCodeForRegistration()),
             (empty, conditionsResult) -> {
               if (!conditionsResult.isEmpty) {
                 return journeyManager.performTransition(Events.OGEL_CONDITIONS_APPLY);
@@ -135,7 +135,8 @@ public class OgelResultsController {
               else {
                 return journeyManager.performTransition(Events.OGEL_SELECTED);
               }
-            }).thenCompose(Function.identity());
+            }, httpExecutionContext.current())
+        .thenCompose(Function.identity());
 
   }
 
