@@ -3,6 +3,7 @@ package components.services.controlcode.relationships;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
+import components.services.ServiceClientLogger;
 import exceptions.ServiceException;
 import models.GoodsType;
 import play.libs.concurrent.HttpExecutionContext;
@@ -15,16 +16,19 @@ public class GoodsRelationshipsServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public GoodsRelationshipsServiceClient(HttpExecutionContext httpExecutionContext,
                                          WSClient wsClient,
                                          @Named("controlCodeServiceAddress") String webServiceAddress,
-                                         @Named("controlCodeServiceTimeout") int webServiceTimeout){
+                                         @Named("controlCodeServiceTimeout") int webServiceTimeout,
+                                         ServiceClientLogger serviceClientLogger){
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/goods-relationships";
+    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<GoodsRelationshipsServiceResult> get(GoodsType goodsType, GoodsType relatedToGoodsType) {
@@ -40,6 +44,7 @@ public class GoodsRelationshipsServiceClient {
 
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(serviceClientLogger.requestFilter("Control Code", "GET"))
         .setRequestTimeout(webServiceTimeout)
         .get()
         .thenApplyAsync(response -> {

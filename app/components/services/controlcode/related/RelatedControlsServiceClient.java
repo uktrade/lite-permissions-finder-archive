@@ -4,6 +4,7 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
+import components.services.ServiceClientLogger;
 import exceptions.ServiceException;
 import models.GoodsType;
 import play.libs.concurrent.HttpExecutionContext;
@@ -17,16 +18,19 @@ public class RelatedControlsServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public RelatedControlsServiceClient(HttpExecutionContext httpExecutionContext,
-                                       WSClient wsClient,
-                                       @Named("controlCodeServiceAddress") String webServiceAddress,
-                                       @Named("controlCodeServiceTimeout") int webServiceTimeout){
+                                      WSClient wsClient,
+                                      @Named("controlCodeServiceAddress") String webServiceAddress,
+                                      @Named("controlCodeServiceTimeout") int webServiceTimeout,
+                                      ServiceClientLogger serviceClientLogger) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/mapped-controls";
+    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<RelatedControlsServiceResult> get(GoodsType goodsType, String controlCode) {
@@ -36,6 +40,7 @@ public class RelatedControlsServiceClient {
     String url = webServiceUrl + "/" + goodsType.urlString() +  "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode);
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(serviceClientLogger.requestFilter("Control Code", "GET"))
         .setRequestTimeout(webServiceTimeout)
         .get()
         .thenApplyAsync(response -> {
