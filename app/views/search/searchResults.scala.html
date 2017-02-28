@@ -91,7 +91,9 @@
   </form>
 
   <script type="text/javascript">
-    $(document).ready(function(){LITEPermissionsFinder.SearchResults.setupPage()});
-    $(window).load(function(){LITEPermissionsFinder.SearchResults.onload()});
+    @if(!display.results.isEmpty()) {
+      $(document).ready(function(){LITEPermissionsFinder.SearchResults.setupPage()});
+      $(window).load(function(){LITEPermissionsFinder.SearchResults.onload()});
+    }
   </script>
 }
