@@ -8,6 +8,7 @@ import components.common.cache.CountryProvider;
 import components.common.logging.CorrelationId;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
+import components.services.ServiceClientLogger;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
@@ -39,6 +40,7 @@ public class OgelRegistrationServiceClient {
   private final CountryProvider countryProviderExport;
   private final OgelServiceClient ogelServiceClient;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
+  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public OgelRegistrationServiceClient(WSClient wsClient,
@@ -51,7 +53,8 @@ public class OgelRegistrationServiceClient {
                                        FrontendServiceClient frontendServiceClient,
                                        @Named("countryProviderExport") CountryProvider countryProviderExport,
                                        OgelServiceClient ogelServiceClient,
-                                       ApplicableOgelServiceClient applicableOgelServiceClient) {
+                                       ApplicableOgelServiceClient applicableOgelServiceClient,
+                                       ServiceClientLogger serviceClientLogger) {
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceSharedSecret = webServiceSharedSecret;
@@ -64,11 +67,13 @@ public class OgelRegistrationServiceClient {
     this.countryProviderExport = countryProviderExport;
     this.ogelServiceClient = ogelServiceClient;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
+    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<Result> updateTransactionAndRedirect(String transactionId) {
     WSRequest wsRequest = wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(serviceClientLogger.requestFilter("OGEL Registration", "POST"))
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("securityToken", webServiceSharedSecret);
 
