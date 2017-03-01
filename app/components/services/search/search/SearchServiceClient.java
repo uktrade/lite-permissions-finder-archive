@@ -3,7 +3,7 @@ package components.services.search.search;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
-import components.services.ServiceClientLogger;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -34,10 +34,10 @@ public class SearchServiceClient {
   public CompletionStage<SearchServiceResult> get(String searchTerm){
     return wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(serviceClientLogger.requestFilter("Search", "GET"))
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("term", searchTerm)
         .setQueryParameter("goodsType", "physical") // Hard coded to physical search for now
-        .withRequestFilter(serviceClientLogger.requestFilter("Search", "GET"))
         .get()
         .thenApplyAsync(response -> {
           if (response.getStatus() != 200) {

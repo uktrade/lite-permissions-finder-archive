@@ -8,7 +8,7 @@ import components.common.cache.CountryProvider;
 import components.common.logging.CorrelationId;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.ServiceClientLogger;
+import components.common.logging.ServiceClientLogger;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;

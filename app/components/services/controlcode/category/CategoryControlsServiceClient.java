@@ -3,7 +3,7 @@ package components.services.controlcode.category;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
-import components.services.ServiceClientLogger;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;

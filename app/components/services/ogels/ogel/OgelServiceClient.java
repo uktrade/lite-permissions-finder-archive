@@ -4,7 +4,7 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
-import components.services.ServiceClientLogger;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
