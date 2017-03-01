@@ -2,9 +2,7 @@ package components.services;
 
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import play.Logger;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSRequest;
@@ -13,10 +11,9 @@ import play.libs.ws.WSRequestFilter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class ServiceClientLogger {
   private final HttpExecutionContext httpExecutionContext;
@@ -33,18 +30,21 @@ public class ServiceClientLogger {
    * @return the URL with parameters, defaults to the requests {@link play.libs.ws.WSRequest#getUrl()} if the build is unsuccessful
    */
   private String requestToURL(WSRequest request) {
+    // Default to request URL without parameters
     String url = request.getUrl();
     Map<String, Collection<String>> queryParameters = request.getQueryParameters();
     if (!queryParameters.isEmpty()) {
+      // Build a URL which includes parameters
       try {
         URIBuilder uriBuilder = new URIBuilder(request.getUrl());
-        List<NameValuePair> nvpList = request.getQueryParameters().entrySet()
-            .stream()
-            .flatMap(entry -> entry.getValue()
-                .stream()
-                .map(value -> new BasicNameValuePair(entry.getKey(), value)))
-            .collect(Collectors.toList());
-        uriBuilder.addParameters(nvpList);
+        // Loop through params
+        for (Entry<String, Collection<String>> paramEntry: queryParameters.entrySet()) {
+          // Loop through param values, add to URI builder
+          for (String paramValue: paramEntry.getValue()) {
+            uriBuilder.addParameter(paramEntry.getKey(), paramValue);
+          }
+        }
+        // Build URI and construct URL
         url = uriBuilder.build().toURL().toString();
       }
       catch (URISyntaxException e) {
