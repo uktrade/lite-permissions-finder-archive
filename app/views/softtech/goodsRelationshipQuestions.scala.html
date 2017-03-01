@@ -5,7 +5,7 @@
 @import views.html.common.state._
 @import org.apache.commons.lang3.StringUtils
 @(form: Form[_], display: GoodsRelationshipQuestionsDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
 

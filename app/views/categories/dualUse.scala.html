@@ -5,7 +5,7 @@
 @import controllers.categories.routes.DualUseController;
 
 @(form: Form[_])
-@standardPage("Do your items have a dual use?", Some(Html("Do your items have a dual use?"))){
+@standardPage("Do your items have a dual use?", Some(heading("Do your items have a dual use?"))){
   @errorSummary(form)
 }{
 

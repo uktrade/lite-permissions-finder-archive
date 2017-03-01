@@ -3,7 +3,7 @@
 @import views.html.ogel._
 
 @(ogel: OgelFullView)
-@standardPage(ogel.getName, Some(Html(ogel.getName))) {
+@standardPage(ogel.getName, Some(heading(ogel.getName))) {
 
 }{
   @ogelConditionSummary(ogel)

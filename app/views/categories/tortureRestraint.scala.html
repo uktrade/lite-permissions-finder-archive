@@ -5,7 +5,7 @@
 @import controllers.categories.routes.TortureRestraintController
 
 @(form: Form[_])
-@standardPage("You may not be allowed to export your goods", Some(Html("You may not be allowed to export your goods"))){
+@standardPage("You may not be allowed to export your goods", Some(heading("You may not be allowed to export your goods"))){
   @errorSummary(form)
 }{
 

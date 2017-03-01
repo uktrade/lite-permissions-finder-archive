@@ -4,7 +4,7 @@
 @import views.html.common.state._
 
 @(form: Form[_], question: java.lang.String)
-@standardPage(question, Some(Html(question))){
+@standardPage(question, Some(heading(question))){
   @errorSummary(form)
 }{
 

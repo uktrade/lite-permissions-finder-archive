@@ -6,7 +6,7 @@
 
 @(form: Form[_], summary: Summary, isResumedApplication: Boolean)
 
-@standardPage("Check your answers so far", Some(Html("Check your answers so far")), twoThirdsColumn = false) {
+@standardPage("Check your answers so far", Some(heading("Check your answers so far")), twoThirdsColumn = false) {
   @errorSummary(form)
 }{
 

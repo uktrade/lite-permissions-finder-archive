@@ -5,7 +5,7 @@
 @import controllers.routes.ContinueApplicationController;
 
 @(form: Form[_])
-@standardPage("Returning to this service", Some(Html("Returning to this service"))){
+@standardPage("Returning to this service", Some(heading("Returning to this service"))){
   @errorSummary(form)
 }{
 

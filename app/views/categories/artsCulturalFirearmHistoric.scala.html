@@ -5,7 +5,7 @@
 @import controllers.categories.ArtsCulturalFirearmHistoricController
 
 @(form: Form[_])
-@standardPage("You may need an Arts Council licence, and an export licence", Some(Html("You may need an Arts Council licence, and an export licence"))){
+@standardPage("You may need an Arts Council licence, and an export licence", Some(heading("You may need an Arts Council licence, and an export licence"))){
   @errorSummary(form)
 }{
 

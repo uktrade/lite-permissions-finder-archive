@@ -6,7 +6,7 @@
 @import controllers.controlcode.routes._
 
 @(form: Form[_], display: NotApplicableDisplay)
-@standardPage("Description not applicable", Some(Html("Description not applicable"))){
+@standardPage("Description not applicable", Some(heading("Description not applicable"))){
   @errorSummary(form)
 }{
   <form action="@NotApplicableController.handleSubmit()" method="POST">

@@ -7,7 +7,7 @@
 
 @import models.controlcode.BackType
 @(form: Form[_], display: SoftTechControlsDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
 

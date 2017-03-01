@@ -4,7 +4,7 @@
 @import models.ogel.OgelResultsDisplay
 
 @(form: Form[_], display: OgelResultsDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
 

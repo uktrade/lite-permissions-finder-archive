@@ -6,7 +6,7 @@
 @import components.services.ogels.conditions.OgelConditionsServiceResult
 
 @(form: Form[_], ogel: OgelFullView, ogelRestriction: OgelConditionsServiceResult, missingControlCodes: Boolean, isVirtualEUOgel: Boolean)
-@standardPage("Additional conditions apply", Some(Html("Additional conditions apply"))){
+@standardPage("Additional conditions apply", Some(heading("Additional conditions apply"))){
   @errorSummary(form)
 }{
 

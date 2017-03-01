@@ -6,7 +6,7 @@
 @import views.html.ogel._
 
 @(form: Form[OgelSummaryForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean)
-@standardPage(ogel.getName, Some(Html(ogel.getName))){
+@standardPage(ogel.getName, Some(heading(ogel.getName))){
   @errorSummary(form)
 }{
 

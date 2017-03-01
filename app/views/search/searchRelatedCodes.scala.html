@@ -8,7 +8,7 @@
 @import models.search.SearchRelatedCodesDisplay
 
 @(form: Form[_], display: SearchRelatedCodesDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))) {
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))) {
   @errorSummary(form)
 } {
 

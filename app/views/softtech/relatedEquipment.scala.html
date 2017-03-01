@@ -5,7 +5,7 @@
 @import models.softtech.RelatedEquipmentDisplay
 
 @(form: Form[_], display: RelatedEquipmentDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
 

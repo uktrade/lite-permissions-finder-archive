@@ -8,6 +8,7 @@ import play.mvc.Result;
 import play.twirl.api.Html;
 import scala.Option;
 import views.html.staticContent;
+import views.html.util.heading;
 
 import java.io.IOException;
 import java.net.URL;
@@ -60,7 +61,7 @@ public class StaticContentController extends Controller {
         throw new RuntimeException("Not a file: " + staticHtml.filename);
       }
 
-      Option<Html> pageHeadingOption = staticHtml.showPageHeading ? Option.apply(new Html(staticHtml.title)) : Option.empty();
+      Option<Html> pageHeadingOption = staticHtml.showPageHeading ? Option.apply(heading.render(staticHtml.title, "heading-large")) : Option.empty();
 
       return ok(staticContent.render(staticHtml.title, pageHeadingOption, new Html(Resources.toString(resource, Charsets.UTF_8))));
 

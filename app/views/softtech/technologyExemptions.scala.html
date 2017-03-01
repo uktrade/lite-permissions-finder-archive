@@ -6,7 +6,7 @@
 @import models.softtech.TechnologyExemptionsDisplay
 
 @(form: Form[_], display: TechnologyExemptionsDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
 

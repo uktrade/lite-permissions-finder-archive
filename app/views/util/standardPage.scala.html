@@ -1,7 +1,7 @@
 @import util._
 @import views.html.common.page._
 
-@(htmlTitle: String, pageHeading: Option[Html], headingCssClass: String = "heading-large", twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, pageHeading: Option[Html], twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle + " - Import & Export Licensing") {
 
@@ -21,13 +21,9 @@
     @beforeHeader
 
     <header class="page-header">
-
-      @if(pageHeading.isDefined) {
-        <div>
-          <h1 class="@headingCssClass">@pageHeading</h1>
-        </div>
-      }
-
+    @if(pageHeading.isDefined) {
+      @pageHeading
+    }
     </header>
 
     @content

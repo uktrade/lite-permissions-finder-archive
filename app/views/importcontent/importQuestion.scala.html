@@ -4,7 +4,7 @@
 @import views.html.common.state._
 @import models.importcontent.ImportStageData
 @(form: Form[_], data: ImportStageData)
-@standardPage(data.getQuestion, Some(Html(data.getQuestion))) {
+@standardPage(data.getQuestion, Some(heading(data.getQuestion))) {
   @errorSummary(form)
 } {
 
