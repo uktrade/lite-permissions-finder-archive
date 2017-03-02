@@ -6,7 +6,8 @@
 @import models.controlcode.notapplicable.DecontrolsApplyDisplay
 
 @(form: Form[_], display: DecontrolsApplyDisplay)
-@standardPage("Finding the right licence", None){
+
+@standardPage("Finding the right licence", Some(headingSpacer())) {
   @errorSummary(form)
 }{
 

@@ -1,0 +1,6 @@
+.heading-spacer {
+  height: 25px;
+  @include media(tablet) {
+    height: 45px;
+  }
+}

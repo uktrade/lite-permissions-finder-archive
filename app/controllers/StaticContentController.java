@@ -9,6 +9,7 @@ import play.twirl.api.Html;
 import scala.Option;
 import views.html.staticContent;
 import views.html.util.heading;
+import views.html.util.headingSpacer;
 
 import java.io.IOException;
 import java.net.URL;
@@ -61,9 +62,11 @@ public class StaticContentController extends Controller {
         throw new RuntimeException("Not a file: " + staticHtml.filename);
       }
 
-      Option<Html> pageHeadingOption = staticHtml.showPageHeading ? Option.apply(heading.render(staticHtml.title, "heading-large")) : Option.empty();
+      Html pageHeading = staticHtml.showPageHeading
+          ? heading.render(staticHtml.title, "heading-large")
+          : headingSpacer.render();
 
-      return ok(staticContent.render(staticHtml.title, pageHeadingOption, new Html(Resources.toString(resource, Charsets.UTF_8))));
+      return ok(staticContent.render(staticHtml.title, Option.apply(pageHeading), new Html(Resources.toString(resource, Charsets.UTF_8))));
 
     } catch (IOException e) {
       throw new RuntimeException("Failed to read", e);
