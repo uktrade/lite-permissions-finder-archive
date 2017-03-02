@@ -5,15 +5,13 @@
 @import models.softtech.RelatedEquipmentDisplay
 
 @(form: Form[_], display: RelatedEquipmentDisplay)
-@standardPage("Finding the right licence", None){
+@standardPage("Finding the right licence", Some(heading(display.questionHeading, "heading-medium"))){
   @errorSummary(form)
 }{
 
   <form action="@display.formAction" method="POST">
     
     @contextFormParams()
-
-    <h2 class="heading-medium">@display.questionHeading</h2>
 
     <ul class="list list-bullet text">
       @for(bullet <- display.questionBullets){

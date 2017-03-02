@@ -5,17 +5,13 @@
 @import controllers.softtech.routes
 
 @(form: Form[_])
-@standardPage("Finding the right licence", None){
+@standardPage("Finding the right licence", Some(heading("Are you exporting any of the following?", "heading-medium"))){
   @errorSummary(form)
 }{
 
   <form action="@routes.TechnologyExemptionsController.handleSubmit" method="POST">
 
     @contextFormParams()
-
-    <h2 class="heading-medium">
-      Are you exporting any of the following?
-    </h2>
 
     <ul class="list list-bullet text">
       <li>Technical information that is in the public domain, for example available as a free download that does not require permission or payment to use</li>

@@ -18,7 +18,7 @@
 
 }
 
-@standardPage("Finding the right licence", None){
+@standardPage("Finding the right licence", Some(heading("Where is the final destination of your items?", "heading-medium"))){
   @errorSummary(form, fieldOrder = fieldOrderList)
 } {
 
@@ -27,8 +27,6 @@
     @contextFormParams()
 
     <input type="submit" class="hidden"></input>
-
-    <h2 class="heading-medium">Where is the final destination of your items?</h2>
 
     @countrySelect(form(DestinationCountryController.FINAL_DESTINATION_COUNTRY_FIELD_NAME), countries, Some("Type your destination country or territory"), None, Some(countryDetailPanel))
 

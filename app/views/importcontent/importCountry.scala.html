@@ -6,7 +6,7 @@
 @import controllers.importcontent.ImportWhereController
 
 @(form: Form[_], countries: List[Country])
-@standardPage("Finding the right licence", None){
+@standardPage("Finding the right licence", Some(heading("Where are you importing from?", "heading-medium"))){
   @errorSummary(form)
 } {
 
@@ -15,8 +15,6 @@
     @contextFormParams()
 
     <input type="submit" class="hidden"></input>
-
-    <h2 class="heading-medium">Where are you importing from?</h2>
 
     @countrySelect(form(ImportWhereController.COUNTRY_FIELD_NAME), countries, Some("Type the country or territory the import will come from"), None, None)
 

@@ -6,15 +6,13 @@
 @import models.softtech.TechnologyNonExemptDisplay
 
 @(form: Form[_], display: TechnologyNonExemptDisplay)
-@standardPage("Finding the right licence", None){
+@standardPage("Finding the right licence", Some(heading(display.questionHeading, "heading-medium"))){
   @errorSummary(form)
 }{
 
   <form action="@routes.TechnologyNonExemptController.handleSubmit" method="POST">
     
     @contextFormParams()
-
-    <h2 class="heading-medium">@display.questionHeading</h2>
 
     <p>
       For example, a manual containing instructions on how to install an aero gas turbine engine or operate a military vehicle.

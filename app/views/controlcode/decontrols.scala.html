@@ -6,30 +6,26 @@
 @import controllers.controlcode.routes._
 
 @(form: Form[_], display: DecontrolsDisplay)
-@standardPage("Finding the right licence", None, twoThirdsColumn = false){
+@standardPage("Finding the right licence", Some(heading("Check if your item is listed below:", "heading-medium"))){
   @errorSummary(form)
 } {
 
-  @twoThirdsColumn {
-    <h2 class="heading-medium">Check if your item is listed below:</h2>
-
-    <ul class="list list-bullet">
-    @for(decontrol <- display.decontrols) {
-        <li>@Html(decontrol)</li>
-    }
-    </ul>
-
-    <form action="@DecontrolsController.handleSubmit()" method="POST">
-
-        @contextFormParams()
-
-        @formRadioBoolean(form("decontrolsDescribeItem"), Html("Is your item listed above?"), "Yes", "No")
-
-        <div class="form-group">
-            <button type="submit" class="button">Continue</button>
-        </div>
-
-    </form>
+  <ul class="list list-bullet">
+  @for(decontrol <- display.decontrols) {
+      <li>@Html(decontrol)</li>
   }
+  </ul>
+
+  <form action="@DecontrolsController.handleSubmit()" method="POST">
+
+      @contextFormParams()
+
+      @formRadioBoolean(form("decontrolsDescribeItem"), Html("Is your item listed above?"), "Yes", "No")
+
+      <div class="form-group">
+          <button type="submit" class="button">Continue</button>
+      </div>
+
+  </form>
 
 }
