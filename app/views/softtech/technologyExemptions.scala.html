@@ -3,10 +3,9 @@
 @import views.html.common.form._
 @import views.html.common.state._
 @import controllers.softtech.routes
-@import models.softtech.TechnologyExemptionsDisplay
 
-@(form: Form[_], display: TechnologyExemptionsDisplay)
-@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
+@(form: Form[_])
+@standardPage("Finding the right licence", None){
   @errorSummary(form)
 }{
 

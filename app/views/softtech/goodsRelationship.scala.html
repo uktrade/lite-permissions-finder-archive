@@ -5,17 +5,18 @@
 @import models.softtech.GoodsRelationshipDisplay
 
 @(form: Form[_], display: GoodsRelationshipDisplay)
-@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
+@questionHeading = {
+  <h2 class="heading-medium">
+    @display.questionLabel
+  </h2>
+}
+@standardPage("Finding the right licence", Some(questionHeading)){
   @errorSummary(form)
 }{
 
   <form action="@display.formAction" method="POST">
 
     @contextFormParams()
-
-    <h2 class="heading-medium">
-      @display.questionLabel
-    </h2>
 
     <p>
       @display.questionContent

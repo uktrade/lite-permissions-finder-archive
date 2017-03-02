@@ -8,14 +8,12 @@ import java.util.List;
 
 public class RelatedEquipmentDisplay {
   public final String formAction;
-  public final String pageTitle;
   public final String questionHeading;
   public final List<String> questionBullets;
 
   public RelatedEquipmentDisplay(GoodsType goodsType) {
     if (goodsType == GoodsType.SOFTWARE) {
       this.formAction = routes.RelatedEquipmentController.handleSubmit(goodsType.urlString()).url();
-      this.pageTitle = "Software related to equipment or materials";
       this.questionHeading = "Is your software any of the following?";
       this.questionBullets = Arrays.asList("For the development, production, use, operation, repair or maintenance of equipment or materials",
           "To enhance or modify equipment to exceed its normal performance limits",
@@ -23,7 +21,6 @@ public class RelatedEquipmentDisplay {
     }
     else if (goodsType == GoodsType.TECHNOLOGY) {
       this.formAction = routes.RelatedEquipmentController.handleSubmit(goodsType.urlString()).url();
-      this.pageTitle = "Technology related to equipment or materials";
       this.questionHeading = "Is your technology any of the following?";
       this.questionBullets = Arrays.asList("For the development, production, use, operation, repair or maintenance of equipment or materials",
           "To enable equipment to exceed its normal performance limits",

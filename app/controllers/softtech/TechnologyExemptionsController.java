@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import models.softtech.TechnologyExemptionsDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -33,13 +32,13 @@ public class TechnologyExemptionsController {
   public Result renderForm() {
     TechnologyExemptionsForm templateForm = new TechnologyExemptionsForm();
     templateForm.doExemptionsApply = permissionsFinderDao.getTechnologyExemptionsApply().orElse(null);
-    return ok(technologyExemptions.render(formFactory.form(TechnologyExemptionsForm.class).fill(templateForm), new TechnologyExemptionsDisplay()));
+    return ok(technologyExemptions.render(formFactory.form(TechnologyExemptionsForm.class).fill(templateForm)));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<TechnologyExemptionsForm> form = formFactory.form(TechnologyExemptionsForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      completedFuture(ok(technologyExemptions.render(form, new TechnologyExemptionsDisplay())));
+      completedFuture(ok(technologyExemptions.render(form)));
     }
     Boolean doExemptionsApply = form.get().doExemptionsApply;
     permissionsFinderDao.saveTechnologyExemptionsApply(doExemptionsApply);
