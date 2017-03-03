@@ -5,7 +5,7 @@
 @import models.softtech.RelatedEquipmentDisplay
 
 @(form: Form[_], display: RelatedEquipmentDisplay)
-@standardPage("Finding the right licence", Some(heading(display.questionHeading, "heading-medium"))){
+@standardPage("Finding the right licence", Some(heading(display.questionHeading))){
   @errorSummary(form)
 }{
 

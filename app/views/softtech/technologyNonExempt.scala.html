@@ -6,7 +6,7 @@
 @import models.softtech.TechnologyNonExemptDisplay
 
 @(form: Form[_], display: TechnologyNonExemptDisplay)
-@standardPage("Finding the right licence", Some(heading(display.questionHeading, "heading-medium"))){
+@standardPage("Finding the right licence", Some(heading(display.questionHeading))){
   @errorSummary(form)
 }{
 
