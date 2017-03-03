@@ -28,7 +28,7 @@
 
     <input type="submit" class="hidden"></input>
 
-    @countrySelect(form(DestinationCountryController.FINAL_DESTINATION_COUNTRY_FIELD_NAME), countries, Some("Type your destination country or territory"), None, Some(countryDetailPanel))
+    @countrySelect(form(DestinationCountryController.FINAL_DESTINATION_COUNTRY_FIELD_NAME), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(countryDetailPanel))
 
     @formRadioBoolean(form(DestinationCountryController.ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME), Html("Will your items be received by anyone in a different country or territory, such as a consignee, before reaching their final destination?"))
 
@@ -45,7 +45,7 @@
         Type the country or territory where the first consignee or other party will receive the items
       </p>
 
-      @countrySelect(form(DestinationCountryController.THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + "[0]"), countries, None, None, None)
+      @countrySelect(form(DestinationCountryController.THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + "[0]"), countries, None, None, None, None)
 
       @* Uncomment for multiple through destination countries
       @if(numberOfThroughDestinationCountries < DestinationCountryController.MAX_NUMBER_OF_THROUGH_COUNTRIES) {
