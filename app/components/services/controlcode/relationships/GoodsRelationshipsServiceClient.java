@@ -6,6 +6,8 @@ import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import models.GoodsType;
+import models.softtech.SoftTechCategory;
+import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
@@ -31,7 +33,8 @@ public class GoodsRelationshipsServiceClient {
     this.serviceClientLogger = serviceClientLogger;
   }
 
-  public CompletionStage<GoodsRelationshipsServiceResult> get(GoodsType goodsType, GoodsType relatedToGoodsType) {
+  public CompletionStage<GoodsRelationshipsServiceResult> get(GoodsType goodsType, GoodsType relatedToGoodsType, SoftTechCategory softTechCategory) {
+
     if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
       throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\" for parameter goodsType", goodsType.toString()));
     }
@@ -40,9 +43,20 @@ public class GoodsRelationshipsServiceClient {
       throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\" for parameter relatedToGoodsType", relatedToGoodsType.toString()));
     }
 
-    String url = webServiceUrl + "/" + goodsType.urlString() + "/for/" + relatedToGoodsType.urlString();
+    StringBuilder url = new StringBuilder(webServiceUrl + "/" + goodsType.urlString() + "/for/" + relatedToGoodsType.urlString());
 
-    return wsClient.url(url)
+    if (softTechCategory.isDualUseSoftTechCategory()) {
+      url.append("/dual-use");
+      String categoryUrl = softTechCategory.toUrlString();
+      if (StringUtils.isNotEmpty(categoryUrl)) {
+        url.append("/" + categoryUrl);
+      }
+    }
+    else {
+      url.append("/military");
+    }
+
+    return wsClient.url(url.toString())
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(serviceClientLogger.requestFilter("Control Code", "GET"))
         .setRequestTimeout(webServiceTimeout)

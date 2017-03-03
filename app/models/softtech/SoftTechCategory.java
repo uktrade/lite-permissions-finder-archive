@@ -6,27 +6,29 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Optional;
 
 public enum SoftTechCategory {
-  AEROSPACE("Propulsion systems"),
-  COMPUTERS("Computers"),
-  ELECTRONICS("Other electronic equipment"),
-  MARINE("Marine vehicles, vessels and non-navigation equipment"),
-  MATERIALS_PROCESSING("Equipment for processing materials into finished goods"),
-  MILITARY(null),
-  NAVIGATION("Navigation systems"),
-  NUCLEAR("Nuclear facilities, equipment and materials"),
-  SENSORS("Sensors, lasers and real-time data processing"),
-  SPECIAL_MATERIALS("Non-nuclear materials and chemicals"),
-  TELECOMS("Telecommunications and information security"),
-  DUAL_USE_UNSPECIFIED(null); // Used following a "NONE MATCHED" route
+  AEROSPACE("aerospace", "Propulsion systems"),
+  COMPUTERS("computers", "Computers"),
+  ELECTRONICS("electronics", "Other electronic equipment"),
+  MARINE("marine", "Marine vehicles, vessels and non-navigation equipment"),
+  MATERIALS_PROCESSING("materials-processing", "Equipment for processing materials into finished goods"),
+  MILITARY("military", null),
+  NAVIGATION("navigation", "Navigation systems"),
+  NUCLEAR("nuclear", "Nuclear facilities, equipment and materials"),
+  SENSORS("sensors", "Sensors, lasers and real-time data processing"),
+  SPECIAL_MATERIALS("special-materials", "Non-nuclear materials and chemicals"),
+  TELECOMS("telecoms", "Telecommunications and information security"),
+  DUAL_USE_UNSPECIFIED(null, null); // Used following a "NONE MATCHED" route
 
   private String heading;
+  private String urlString;
 
-  SoftTechCategory(String heading) {
+  SoftTechCategory(String heading, String urlString) {
     this.heading = heading;
+    this.urlString = urlString;
   }
 
   public String toUrlString() {
-    return this.toString().replace('_','-').toLowerCase();
+    return this.urlString;
   }
 
   public static boolean isDualUseSoftTechCategory(SoftTechCategory softTechCategory) {

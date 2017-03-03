@@ -6,6 +6,7 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.relationships.GoodsRelationshipsServiceClient;
 import components.services.controlcode.relationships.GoodsRelationshipsServiceResult;
 import models.GoodsType;
+import models.softtech.SoftTechCategory;
 
 import java.util.concurrent.CompletionStage;
 
@@ -23,7 +24,8 @@ public class RelationshipWithSoftwareDecider implements Decider<Boolean> {
   @Override
   public CompletionStage<Boolean> decide() {
     GoodsType goodsType = permissionsFinderDao.getGoodsType().get();
-    return goodsRelationshipsServiceClient.get(goodsType, GoodsType.SOFTWARE)
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+    return goodsRelationshipsServiceClient.get(goodsType, GoodsType.SOFTWARE, softTechCategory)
         .thenApply(GoodsRelationshipsServiceResult::relationshipsExist);
   }
 }
