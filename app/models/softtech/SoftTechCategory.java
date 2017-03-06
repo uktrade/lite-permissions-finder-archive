@@ -22,7 +22,7 @@ public enum SoftTechCategory {
   private String heading;
   private String urlString;
 
-  SoftTechCategory(String heading, String urlString) {
+  SoftTechCategory(String urlString, String heading) {
     this.heading = heading;
     this.urlString = urlString;
   }
@@ -43,12 +43,15 @@ public enum SoftTechCategory {
     return this.heading;
   }
 
+  /**
+   * Checks for match using name - case insensitive
+   */
   public static Optional<SoftTechCategory> getMatched(String name) {
     if (StringUtils.isEmpty(name)) {
       return Optional.empty();
     }
     else {
-      return Enums.getIfPresent(SoftTechCategory.class, name)
+      return Enums.getIfPresent(SoftTechCategory.class, name.toUpperCase())
           .transform(java.util.Optional::of)
           .or(java.util.Optional.empty());
     }
