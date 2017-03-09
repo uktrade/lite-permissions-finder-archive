@@ -86,8 +86,11 @@ public class OgelRegistrationServiceClient {
 
     return requestStage.thenApplyAsync(request -> wsRequest.post(Json.toJson(request)), httpExecutionContext.current())
         .thenCompose(Function.identity())
-        .thenApplyAsync(response -> {
-          if (response.getStatus() != 200) {
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("OGEL Registration service request failed", error);
+          }
+          else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from OGEL Registration service /update-transaction: %s",
                 response.getStatus()));
           }
