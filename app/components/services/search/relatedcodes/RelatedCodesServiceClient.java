@@ -38,8 +38,11 @@ public class RelatedCodesServiceClient {
         .withRequestFilter(serviceClientLogger.requestFilter("Search", "GET"))
         .setRequestTimeout(webServiceTimeout)
         .get()
-        .thenApplyAsync(response -> {
-          if (response.getStatus() != 200) {
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("Search service request failed", error);
+          }
+          else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
           }
           else {

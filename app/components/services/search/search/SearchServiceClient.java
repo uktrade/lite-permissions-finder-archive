@@ -39,8 +39,11 @@ public class SearchServiceClient {
         .setQueryParameter("term", searchTerm)
         .setQueryParameter("goodsType", "physical") // Hard coded to physical search for now
         .get()
-        .thenApplyAsync(response -> {
-          if (response.getStatus() != 200) {
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("Search service request failed", error);
+          }
+          else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
           }
           else {
