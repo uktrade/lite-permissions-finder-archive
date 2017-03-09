@@ -50,8 +50,11 @@ public class ApplicableOgelServiceClient {
 
     activityTypes.forEach(activityType -> req.setQueryParameter("activityType", activityType));
 
-    return req.get().thenApplyAsync(response -> {
-      if (response.getStatus() != 200) {
+    return req.get().handleAsync((response, error) -> {
+      if (error != null) {
+        throw new ServiceException("OGEL service request failed", error);
+      }
+      else if (response.getStatus() != 200) {
         throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /applicable-ogels: %s",
             response.getStatus()));
       }

@@ -39,8 +39,11 @@ public class OgelConditionsServiceClient {
         .withRequestFilter(serviceClientLogger.requestFilter("OGEL", "GET"))
         .setRequestTimeout(webServiceTimeout)
         .get()
-        .thenApplyAsync(response -> {
-          if (response.getStatus() == 200 || response.getStatus() == 206) {
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("OGEL service request failed", error);
+          }
+          else if (response.getStatus() == 200 || response.getStatus() == 206) {
             // Condition apply (204) or conditions apply, but with missing control codes (206)
             return OgelConditionsServiceResult.buildFrom(response.asJson());
           }
