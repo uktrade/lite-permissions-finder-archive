@@ -28,15 +28,15 @@ public class JourneyPrint {
   @Test
   public void printExportJourney() {
     Collection<JourneyDefinition> journeyDefinitions = new ExportJourneyDefinitionBuilder(
-        new AdditionalSpecificationsDecider(null, null),
-        new DecontrolsDecider(null, null),
+        new AdditionalSpecificationsDecider(null, null, null),
+        new DecontrolsDecider(null, null, null),
         new TechnicalNotesDecider(null, null, null),
         new ExportCategoryDecider(null),
         new CategoryControlsDecider(null, null, null, null),
         new RelatedControlsDecider(null, null, null, null),
         new CatchallControlsDecider(null, null, null, null),
-        new RelationshipWithTechnologyDecider(null, null),
-        new RelationshipWithSoftwareDecider(null, null),
+        new RelationshipWithTechnologyDecider(null, null, null),
+        new RelationshipWithSoftwareDecider(null, null, null),
         new SearchRelatedControlsDecider(null, null, null, null),
         new CatchallRelatedControlsDecider(null, null, null, null),
         new CategoryRelatedControlsDecider(null, null, null, null),
