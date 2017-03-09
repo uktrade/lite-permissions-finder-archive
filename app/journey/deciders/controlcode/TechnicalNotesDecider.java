@@ -34,18 +34,18 @@ public class TechnicalNotesDecider implements Decider<Boolean> {
 
     boolean showTechNotes = dao.getShowTechNotes(controlCodeSubJourney, controlCode).orElse(false);
 
-    return client.get(controlCode).thenApplyAsync(result ->  {
-      boolean canShowTechnicalNotes = result.canShowTechnicalNotes();
-      if (canShowTechnicalNotes && showTechNotes) {
-        return true;
-      }
-      else {
-        // TODO This is a hack to set the DAO state on leaving the control code sub journey
-        if (controlCodeSubJourney.shouldSetDAOStateOnJourneyTransition()) {
-          dao.saveControlCodeForRegistration(controlCode);
-        }
-        return false;
-      }
-    }, httpExecutionContext.current());
+    return client.get(controlCode)
+        .thenApplyAsync(result ->  {
+          if (result.canShowTechnicalNotes() && showTechNotes) {
+            return true;
+          }
+          else {
+            // TODO This is a hack to set the DAO state on leaving the control code sub journey
+            if (controlCodeSubJourney.shouldSetDAOStateOnJourneyTransition()) {
+              dao.saveControlCodeForRegistration(controlCode);
+            }
+            return false;
+          }
+        }, httpExecutionContext.current());
   }
 }

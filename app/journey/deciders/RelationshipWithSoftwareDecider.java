@@ -7,6 +7,7 @@ import components.services.controlcode.relationships.GoodsRelationshipsServiceCl
 import components.services.controlcode.relationships.GoodsRelationshipsServiceResult;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
+import play.libs.concurrent.HttpExecutionContext;
 
 import java.util.concurrent.CompletionStage;
 
@@ -14,11 +15,13 @@ public class RelationshipWithSoftwareDecider implements Decider<Boolean> {
 
   private final GoodsRelationshipsServiceClient goodsRelationshipsServiceClient;
   private final PermissionsFinderDao permissionsFinderDao;
+  private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public RelationshipWithSoftwareDecider(GoodsRelationshipsServiceClient goodsRelationshipsServiceClient, PermissionsFinderDao permissionsFinderDao) {
+  public RelationshipWithSoftwareDecider(GoodsRelationshipsServiceClient goodsRelationshipsServiceClient, PermissionsFinderDao permissionsFinderDao, HttpExecutionContext httpExecutionContext) {
     this.goodsRelationshipsServiceClient = goodsRelationshipsServiceClient;
     this.permissionsFinderDao = permissionsFinderDao;
+    this.httpExecutionContext = httpExecutionContext;
   }
 
   @Override
@@ -26,6 +29,6 @@ public class RelationshipWithSoftwareDecider implements Decider<Boolean> {
     GoodsType goodsType = permissionsFinderDao.getGoodsType().get();
     SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
     return goodsRelationshipsServiceClient.get(goodsType, GoodsType.SOFTWARE, softTechCategory)
-        .thenApply(GoodsRelationshipsServiceResult::relationshipsExist);
+        .thenApplyAsync(GoodsRelationshipsServiceResult::relationshipsExist, httpExecutionContext.current());
   }
 }
