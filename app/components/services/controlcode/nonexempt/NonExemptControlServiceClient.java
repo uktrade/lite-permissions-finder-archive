@@ -48,8 +48,11 @@ public class NonExemptControlServiceClient {
         .withRequestFilter(serviceClientLogger.requestFilter("Control Code", "GET"))
         .setRequestTimeout(webServiceTimeout)
         .get()
-        .thenApplyAsync(response -> {
-          if (response.getStatus() != 200) {
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("Control Code service request failed", error);
+          }
+          else if (response.getStatus() != 200) {
             String errorMessage = response.asJson() != null ? response.asJson().get("message").asText() : "";
             throw new ServiceException(String.format("Unexpected HTTP status code from control code service /non-exempt: %s %s"
                 , response.getStatus(), errorMessage));
