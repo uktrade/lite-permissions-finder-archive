@@ -19,25 +19,22 @@ public class OgelServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
-  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public OgelServiceClient(HttpExecutionContext httpExecutionContext,
                            WSClient wsClient,
                            @Named("ogelServiceAddress") String webServiceAddress,
-                           @Named("ogelServiceTimeout") int webServiceTimeout,
-                           ServiceClientLogger serviceClientLogger) {
+                           @Named("ogelServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/ogels";
-    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<OgelFullView> get(String ogelId) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId))
         .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(serviceClientLogger.requestFilter("OGEL", "GET"))
+        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .get()
         .handleAsync((response, error) -> {

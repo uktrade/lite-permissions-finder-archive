@@ -17,25 +17,22 @@ public class FrontendServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
-  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public FrontendServiceClient(HttpExecutionContext httpExecutionContext,
                                WSClient wsClient,
                                @Named("controlCodeServiceAddress") String webServiceAddress,
-                               @Named("controlCodeServiceTimeout") int webServiceTimeout,
-                               ServiceClientLogger serviceClientLogger) {
+                               @Named("controlCodeServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/frontend-control-codes";
-    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<FrontendServiceResult> get(String controlCode) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(serviceClientLogger.requestFilter("Control Code", "GET"))
+        .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .get()
         .handleAsync((response, error) -> {

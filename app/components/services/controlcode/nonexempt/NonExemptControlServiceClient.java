@@ -17,19 +17,16 @@ public class NonExemptControlServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
-  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public NonExemptControlServiceClient(HttpExecutionContext httpExecutionContext,
                                        WSClient wsClient,
                                        @Named("controlCodeServiceAddress") String webServiceAddress,
-                                       @Named("controlCodeServiceTimeout") int webServiceTimeout,
-                                       ServiceClientLogger serviceClientLogger) {
+                                       @Named("controlCodeServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/non-exempt";
-    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<NonExemptControlsServiceResult> get(GoodsType goodsType, SoftTechCategory softTechCategory) {
@@ -45,7 +42,7 @@ public class NonExemptControlServiceClient {
     }
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(serviceClientLogger.requestFilter("Control Code", "GET"))
+        .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .get()
         .handleAsync((response, error) -> {

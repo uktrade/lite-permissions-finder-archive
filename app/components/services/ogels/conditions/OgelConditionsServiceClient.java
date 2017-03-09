@@ -17,26 +17,23 @@ public class OgelConditionsServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
-  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public OgelConditionsServiceClient(HttpExecutionContext httpExecutionContext,
                                      WSClient wsClient,
                                      @Named("ogelServiceAddress") String webServiceAddress,
-                                     @Named("ogelServiceTimeout") int webServiceTimeout,
-                                     ServiceClientLogger serviceClientLogger) {
+                                     @Named("ogelServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/control-code-conditions";
-    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<OgelConditionsServiceResult> get(String ogelId, String controlCode) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId) + "/" +
         UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(serviceClientLogger.requestFilter("OGEL", "GET"))
+        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .get()
         .handleAsync((response, error) -> {

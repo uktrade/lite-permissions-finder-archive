@@ -16,25 +16,22 @@ public class SearchServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
-  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public SearchServiceClient(HttpExecutionContext httpExecutionContext,
                              WSClient wsClient,
                              @Named("searchServiceAddress") String webServiceAddress,
-                             @Named("searchServiceTimeout") int webServiceTimeout,
-                             ServiceClientLogger serviceClientLogger) {
+                             @Named("searchServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/search";
-    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<SearchServiceResult> get(String searchTerm){
     return wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(serviceClientLogger.requestFilter("Search", "GET"))
+        .withRequestFilter(ServiceClientLogger.requestFilter("Search", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("term", searchTerm)
         .setQueryParameter("goodsType", "physical") // Hard coded to physical search for now

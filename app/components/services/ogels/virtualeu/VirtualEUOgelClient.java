@@ -20,19 +20,16 @@ public class VirtualEUOgelClient {
   private final WSClient wsClient;
   private final String webServiceUrl;
   private final int webServiceTimeout;
-  private final ServiceClientLogger serviceClientLogger;
 
   @Inject
   public VirtualEUOgelClient(HttpExecutionContext httpExecutionContext,
                              WSClient wsClient,
                              @Named("ogelServiceAddress") String webServiceAddress,
-                             @Named("ogelServiceTimeout") int webServiceTimeout,
-                             ServiceClientLogger serviceClientLogger) {
+                             @Named("ogelServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceUrl = webServiceAddress + "/virtual-eu";
     this.webServiceTimeout = webServiceTimeout;
-    this.serviceClientLogger = serviceClientLogger;
   }
 
   public CompletionStage<VirtualEuView> sendServiceRequest(String controlCode, String sourceCountry,
@@ -40,7 +37,7 @@ public class VirtualEUOgelClient {
 
     WSRequest request = wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(serviceClientLogger.requestFilter("OGEL", "GET"))
+        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("controlCode", controlCode)
         .setQueryParameter("sourceCountry", sourceCountry);
