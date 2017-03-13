@@ -9,7 +9,7 @@
 <ul class="ogel-summary-bullet-list">
 @for(can <- ogel.getSummary.getCanList) {
   <li>
-  @can
+  @Html(can)
   </li>
 }
 </ul>
@@ -21,7 +21,7 @@
 <ul class="ogel-summary-bullet-list">
 @for(cant <- ogel.getSummary.getCantList) {
   <li>
-  @cant
+  @Html(cant)
   </li>
 }
 </ul>
@@ -33,7 +33,7 @@
 <ul class="list ogel-summary-bullet-list">
 @for(must <- ogel.getSummary.getMustList) {
   <li>
-  @must
+  @Html(must)
   </li>
 }
 </ul>
