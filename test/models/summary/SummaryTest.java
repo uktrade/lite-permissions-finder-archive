@@ -5,6 +5,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,7 +19,6 @@ import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import components.services.ogels.ogel.OgelServiceClient;
 import controllers.ogel.OgelQuestionsController;
 import models.common.Country;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -127,4 +127,49 @@ public class SummaryTest {
     assertThat(field.isPresent()).isTrue();
   }
 
+  @Test
+  public void summaryFieldsAreValidated() throws Exception {
+    Summary summary = Summary.composeSummary(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider).toCompletableFuture().get();
+    assertThat(summary.summaryFields.size()).isEqualTo(3);
+    assertThat(summary.isValid()).isTrue();
+
+    // Add invalid field
+    SummaryField invalidField = mock(SummaryField.class);
+    when(invalidField.isValid()).thenReturn(false);
+    summary.addSummaryField(invalidField);
+
+    assertThat(summary.summaryFields.size()).isEqualTo(4);
+    assertThat(summary.isValid()).isFalse();
+  }
+
+  @Test
+  public void emptySummaryIsValid() throws Exception {
+    Summary summary = new Summary(APPLICATION_CODE);
+    assertThat(summary.summaryFields.isEmpty()).isTrue();
+    assertThat(summary.isValid()).isTrue();
+  }
+
+  @Test
+  public void summaryIsValidWithValidField() throws Exception {
+    SummaryField validField = mock(SummaryField.class);
+    when(validField.isValid()).thenReturn(true);
+
+    Summary summary = new Summary(APPLICATION_CODE);
+    summary.addSummaryField(validField);
+
+    assertThat(summary.summaryFields.size()).isEqualTo(1);
+    assertThat(summary.isValid()).isTrue();
+  }
+
+  @Test
+  public void summaryIsInvalidWithInvalidField() throws Exception {
+    SummaryField invalidField = mock(SummaryField.class);
+    when(invalidField.isValid()).thenReturn(false);
+
+    Summary summary = new Summary(APPLICATION_CODE);
+    summary.addSummaryField(invalidField);
+
+    assertThat(summary.summaryFields.size()).isEqualTo(1);
+    assertThat(summary.isValid()).isFalse();
+  }
 }
