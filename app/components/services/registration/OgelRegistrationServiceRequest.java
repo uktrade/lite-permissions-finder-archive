@@ -27,13 +27,13 @@ public class OgelRegistrationServiceRequest {
   public OgelRegistrationServiceRequest(String transactionId, Summary summary) {
     // Find OGEL ID, throw RuntimeException if not found
     Optional<SummaryField> ogelSummaryField = summary.findSummaryField(SummaryFieldType.OGEL_TYPE);
-    if (!ogelSummaryField.isPresent() || StringUtils.isBlank(ogelSummaryField.get().data)) {
+    if (!ogelSummaryField.isPresent() || StringUtils.isBlank(ogelSummaryField.get().getData())) {
       throw new RuntimeException("Attempted to build OgelRegistrationServiceRequest object without an OGEL ID");
     }
 
     // Only set the ogelType if it's valid
-    this.transactionData = ogelSummaryField.get().isValid
-        ? new TransactionData(ogelSummaryField.get().data)
+    this.transactionData = ogelSummaryField.get().isValid()
+        ? new TransactionData(ogelSummaryField.get().getData())
         : new TransactionData("");
 
     this.transactionId = transactionId;

@@ -29,8 +29,8 @@ public class EditSummaryField {
   }
 
   public static EditSummaryField buildEditSummaryField (SummaryField summaryField) {
-    return new EditSummaryField(summaryField.heading, summaryField.content, summaryField.isContentHtml,
-        summaryField.isValid, summaryField.editLinkUrl);
+    return new EditSummaryField(summaryField.getHeading(), summaryField.getContent(), summaryField.isContentHtml(),
+        summaryField.isValid(), summaryField.getEditLinkUrl());
   }
 
 }

@@ -40,7 +40,7 @@ public class Summary {
 
   public Optional<SummaryField> findSummaryField(SummaryFieldType summaryFieldType) {
     if (!summaryFields.isEmpty()) {
-      return summaryFields.stream().filter(field -> field.summaryFieldType == summaryFieldType).findFirst();
+      return summaryFields.stream().filter(field -> field.getSummaryFieldType() == summaryFieldType).findFirst();
     }
     else {
       return Optional.empty();
@@ -48,7 +48,7 @@ public class Summary {
   }
 
   public boolean isValid() {
-    return this.summaryFields.stream().allMatch(f -> f.isValid);
+    return this.summaryFields.stream().allMatch(f -> f.isValid());
   }
 
   public static CompletionStage<Summary> composeSummary(ContextParamManager contextParamManager,

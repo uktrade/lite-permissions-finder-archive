@@ -1,8 +1,7 @@
+@import models.summary.Summary
 @import util._
 @import views.html.common.page._
-@import views.html.common.form._
 @import views.html.common.state._
-@import models.summary.Summary
 
 @(form: Form[_], summary: Summary, isResumedApplication: Boolean)
 
@@ -35,13 +34,13 @@
           <tbody>
           @for(summaryField <- summary.summaryFields) {
             <tr class="@{if (!summaryField.isValid) "invalid-field"}">
-              <td class="summary-item-heading">@summaryField.heading</td>
+              <td class="summary-item-heading">@summaryField.getHeading</td>
               @if(summaryField.isContentHtml) {
-                <td>@Html(summaryField.content)</td>
+                <td>@Html(summaryField.getContent)</td>
               } else {
-                <td>@summaryField.content</td>
+                <td>@summaryField.getContent</td>
               }
-              <td class="change-answer"><a class="not-visited" href="@summaryField.editLinkUrl">Change <span class="visuallyhidden">@summaryField.heading</span></a></td>
+              <td class="change-answer"><a class="not-visited" href="@summaryField.getEditLinkUrl">Change <span class="visuallyhidden">@summaryField.getHeading</span></a></td>
             </tr>
           }
           </tbody>
