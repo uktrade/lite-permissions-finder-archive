@@ -31,7 +31,6 @@ public class OgelRegistrationServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceSharedSecret;
-  private final String webServiceAddress;
   private final String webServiceUrl;
   private final ContextParamManager contextParamManager;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -56,7 +55,6 @@ public class OgelRegistrationServiceClient {
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceSharedSecret = webServiceSharedSecret;
-    this.webServiceAddress = webServiceAddress;
     this.webServiceUrl = webServiceAddress + "/update-transaction";
     this.contextParamManager = contextParamManager;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -103,7 +101,7 @@ public class OgelRegistrationServiceClient {
             }
             else {
               permissionsFinderDao.saveOgelRegistrationServiceTransactionExists(true);
-              return redirect(webServiceAddress + result.redirectUrl);
+              return redirect(result.redirectUrl);
             }
           }
         }, httpExecutionContext.current());
