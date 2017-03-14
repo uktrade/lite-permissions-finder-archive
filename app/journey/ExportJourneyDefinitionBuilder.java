@@ -657,7 +657,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     bindYesNoJourneyTransition(
         goodsRelatedToTechnologyQuestions,
         destinationCountries,
-        relatedToSoftwareQuestion
+        doesSoftwareRelationshipWithSoftwareExists
     );
 
     /** Software related to software **/
