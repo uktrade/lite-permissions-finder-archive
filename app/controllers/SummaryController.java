@@ -93,11 +93,13 @@ public class SummaryController {
     String action = form.get().action;
 
     if (isResumedApplication && StringUtils.equals("continue", action)) {
-      if (journeyManager.isJourneySerialised(JourneyDefinitionNames.EXPORT)) {
-        return journeyManager.restoreCurrentStage(JourneyDefinitionNames.EXPORT);
+      // The journeyName to check for is not known, check and restore whatever is saved
+      if (journeyManager.isJourneySerialised(null)) {
+        return journeyManager.restoreCurrentStage(null);
       }
       else {
-        return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
+        // If there is no journey yet, start at the trade types page as in ContinueApplicationController
+        return contextParamManager.addParamsAndRedirect(routes.TradeTypeController.renderForm());
       }
     }
     else if (!isResumedApplication && StringUtils.equals("register", action)) {
