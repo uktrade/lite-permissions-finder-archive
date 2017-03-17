@@ -1,4 +1,4 @@
-package models.persistence;
+package models.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
