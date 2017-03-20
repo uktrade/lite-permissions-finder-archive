@@ -25,8 +25,7 @@ public class FrontendServiceClientTest {
   private FrontendServiceClient client;
   private WSClient ws;
 
-  private static final String MINIMUM = "MINIMUM";
-  private static final String MAXIMUM = "MAXIMUM";
+  private static final String EXISTING = "EXISTING";
   private static final String MISSING = "MISSING";
 
   @Rule
@@ -34,23 +33,9 @@ public class FrontendServiceClientTest {
 
   @Pact(provider = "lite-control-code-service", consumer="lite-permissions-finder")
   public PactFragment createFragment(PactDslWithProvider builder) {
-
-    PactDslJsonBody minimal = new PactDslJsonBody()
+    PactDslJsonBody existing = new PactDslJsonBody()
         .object("controlCodeData")
-          .stringType("controlCode", MINIMUM)
-          .stringType("friendlyDescription")
-          .nullValue("title")
-          .stringValue("technicalNotes", "")
-          .stringType("alias")
-          .nullValue("additionalSpecifications")
-          .array("decontrols").closeArray()
-        .closeObject()
-        .array("lineage").closeArray()
-        .asBody();
-
-    PactDslJsonBody maximal = new PactDslJsonBody()
-        .object("controlCodeData")
-          .stringType("controlCode", MAXIMUM)
+          .stringType("controlCode", EXISTING)
           .stringType("friendlyDescription")
           .stringType("title")
           .stringType("technicalNotes")
@@ -86,20 +71,13 @@ public class FrontendServiceClientTest {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .uponReceiving("Minimal existing frontend control code request")
-          .path("/frontend-control-codes/" + MINIMUM)
+        .uponReceiving("Existing frontend control code request")
+          .path("/frontend-control-codes/" + EXISTING)
           .method("GET")
           .willRespondWith()
             .status(200)
             .headers(headers)
-            .body(minimal)
-        .uponReceiving("Maximal existing frontend control code request")
-          .path("/frontend-control-codes/" + MAXIMUM)
-          .method("GET")
-          .willRespondWith()
-            .status(200)
-            .headers(headers)
-            .body(maximal)
+            .body(existing)
         .uponReceiving("Missing frontend control code request")
           .path("/frontend-control-codes/" + MISSING)
           .willRespondWith()
@@ -118,37 +96,28 @@ public class FrontendServiceClientTest {
   @Test
   @PactVerification("lite-control-code-service")
   public void testControlCodeServicePact() throws Exception {
-    // MINIMUM
+    testExistingControlCode();
+    testMissingControlCode();
+  }
+
+  private void testExistingControlCode() {
     FrontendServiceResult frontendServiceResult;
     try {
-      frontendServiceResult = client.get(MINIMUM).toCompletableFuture().get();
+      frontendServiceResult = client.get(EXISTING).toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(frontendServiceResult).isNotNull();
     String controlCode = frontendServiceResult.getFrontendControlCode().getControlCodeData().getControlCode();
-    assertThat(controlCode).isEqualTo(MINIMUM);
-    assertThat(frontendServiceResult.canShowDecontrols()).isFalse();
-    assertThat(frontendServiceResult.canShowAdditionalSpecifications()).isFalse();
-    assertThat(frontendServiceResult.canShowTechnicalNotes()).isFalse();
-
-    // MAX
-    try {
-      frontendServiceResult = client.get(MAXIMUM).toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException(e);
-    }
-    assertThat(frontendServiceResult).isNotNull();
-    controlCode = frontendServiceResult.getFrontendControlCode().getControlCodeData().getControlCode();
-    assertThat(controlCode).isEqualTo(MAXIMUM);
+    assertThat(controlCode).isEqualTo(EXISTING);
     assertThat(frontendServiceResult.canShowDecontrols()).isTrue();
     assertThat(frontendServiceResult.canShowAdditionalSpecifications()).isTrue();
     assertThat(frontendServiceResult.canShowTechnicalNotes()).isTrue();
+  }
 
-    // MISSING
-    frontendServiceResult = null;
+  private void testMissingControlCode() {
+    FrontendServiceResult frontendServiceResult = null;
     try {
       frontendServiceResult = client.get(MISSING).toCompletableFuture().get();
     }
