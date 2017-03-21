@@ -11,10 +11,12 @@
 // GOV.UK elements
 @import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/elements/helpers";                       // Helper functions and classes
 
+// Sections
 @import "sections/categories";
 @import "sections/confirmation";
 @import "sections/controlCode";
 @import "sections/goodsType";
+@import "sections/heading";
 @import "sections/index";
 @import "sections/ogelResults";
 @import "sections/ogelSummary";

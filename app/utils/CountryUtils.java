@@ -3,35 +3,41 @@ package utils;
 import models.common.Country;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CountryUtils {
 
+  private CountryUtils() {}
+
   /**
-   * Utility to combine the final destination country and list of through countries
+   * Utility to combine the final destination country and list of through countries, filtering out blanks and duplicates
    * @param finalDestinationCountry The final destination country
    * @param throughDestinationCountries The list of through countries
-   * @return The combined list of both final and through destination countries, with any blanks removed. If the final
-   * destination country is blank, then the through destination countries are not included in the result.
+   * @return The combined list of both final and through destination countries, with any blanks or duplicates removed.
+   * If the final destination country is blank, then the through destination countries are not included in the result.
    */
   public static List<String> getDestinationCountries(String finalDestinationCountry, List<String> throughDestinationCountries) {
-    List<String> destinationCountries = new ArrayList<>();
+    // List of unique countries from both finalDestinationCountry and throughDestinationCountries
+    Set<String> seenCountries = new HashSet<>();
 
     // If there is no final destination, there should be no through destinations
     if (StringUtils.isNotBlank(finalDestinationCountry)) {
-      destinationCountries.add(finalDestinationCountry);
+      seenCountries.add(finalDestinationCountry);
 
       // Filter out empty of blank countries (occurs when initialising the throughDestinationCountries dao)
-      destinationCountries.addAll(
-          throughDestinationCountries.stream()
-              .filter(countryRef -> StringUtils.isNotBlank(countryRef))
-              .collect(Collectors.toList())
-      );
-    }
+      Stream<String> throughDestinationCountriesStream = throughDestinationCountries.stream()
+          .filter(countryRef -> StringUtils.isNotBlank(countryRef) && seenCountries.add(countryRef));
 
-    return destinationCountries;
+      return Stream.concat(Stream.of(finalDestinationCountry), throughDestinationCountriesStream).collect(Collectors.toList());
+    }
+    else {
+      return Collections.emptyList();
+    }
   }
 
   /**

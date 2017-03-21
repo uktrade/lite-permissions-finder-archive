@@ -62,7 +62,7 @@ public class DualUseController {
 
   public static class DualUseForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public String isDualUse;
 
   }

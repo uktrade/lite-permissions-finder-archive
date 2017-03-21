@@ -3,7 +3,7 @@ package journey.deciders.controlcode;
 import com.google.inject.Inject;
 import components.common.journey.Decider;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceClient;
 import journey.SubJourneyContextParamProvider;
 import models.controlcode.ControlCodeSubJourney;
 import play.libs.concurrent.HttpExecutionContext;
@@ -32,18 +32,20 @@ public class TechnicalNotesDecider implements Decider<Boolean> {
 
     String controlCode = dao.getSelectedControlCode(controlCodeSubJourney);
 
-    return client.get(controlCode).thenApplyAsync(result ->  {
-      boolean canShowTechnicalNotes = result.getControlCodeData().canShowTechnicalNotes();
-      if (canShowTechnicalNotes) {
-        return true;
-      }
-      else {
-        // TODO This is a hack to set the DAO state on leaving the control code sub journey
-        if (controlCodeSubJourney.shouldSetDAOStateOnJourneyTransition()) {
-          dao.saveControlCodeForRegistration(controlCode);
-        }
-        return false;
-      }
-    }, httpExecutionContext.current());
+    boolean showTechNotes = dao.getShowTechNotes(controlCodeSubJourney, controlCode).orElse(false);
+
+    return client.get(controlCode)
+        .thenApplyAsync(result ->  {
+          if (result.canShowTechnicalNotes() && showTechNotes) {
+            return true;
+          }
+          else {
+            // TODO This is a hack to set the DAO state on leaving the control code sub journey
+            if (controlCodeSubJourney.shouldSetDAOStateOnJourneyTransition()) {
+              dao.saveControlCodeForRegistration(controlCode);
+            }
+            return false;
+          }
+        }, httpExecutionContext.current());
   }
 }

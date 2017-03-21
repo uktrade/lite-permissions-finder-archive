@@ -1,8 +1,6 @@
 package controllers;
 
-import static components.common.journey.JourneyManager.JOURNEY_SUPPRESS_BACK_LINK_CONTEXT_PARAM;
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Controller.ctx;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -11,7 +9,7 @@ import components.common.journey.JourneyManager;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import components.services.registration.OgelRegistrationServiceClient;
@@ -70,8 +68,7 @@ public class SummaryController {
   }
 
   public CompletionStage<Result> renderForm() {
-    // TODO remove the flag once back link handling is overhauled
-    ctx().args.put(JOURNEY_SUPPRESS_BACK_LINK_CONTEXT_PARAM, true);
+    journeyManager.hideBackLink();
     return renderWithForm(formFactory.form(SummaryForm.class), false);
   }
 
@@ -96,11 +93,13 @@ public class SummaryController {
     String action = form.get().action;
 
     if (isResumedApplication && StringUtils.equals("continue", action)) {
-      if (journeyManager.isJourneySerialised(JourneyDefinitionNames.EXPORT)) {
-        return journeyManager.restoreCurrentStage(JourneyDefinitionNames.EXPORT);
+      // The journeyName to check for is not known, check and restore whatever is saved
+      if (journeyManager.isJourneySerialised(null)) {
+        return journeyManager.restoreCurrentStage(null);
       }
       else {
-        return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
+        // If there is no journey yet, start at the trade types page as in ContinueApplicationController
+        return contextParamManager.addParamsAndRedirect(routes.TradeTypeController.renderForm());
       }
     }
     else if (!isResumedApplication && StringUtils.equals("register", action)) {
@@ -118,9 +117,18 @@ public class SummaryController {
         ), httpExecutionContext.current());
   }
 
-  public CompletionStage<Result> redirectToRegistration() {
-    String transactionId = transactionManager.getTransactionId();
-    return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
+  private CompletionStage<Result> redirectToRegistration() {
+    return Summary.composeSummary(contextParamManager, permissionsFinderDao, httpExecutionContext,
+        frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProviderExport)
+        .thenComposeAsync(summary -> {
+          if (summary.isValid()) {
+            String transactionId = transactionManager.getTransactionId();
+            return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
+          }
+          else {
+            throw new RuntimeException("Summary invalid, cannot redirect to registration");
+          }
+        }, httpExecutionContext.current());
   }
 
   public static class SummaryForm {

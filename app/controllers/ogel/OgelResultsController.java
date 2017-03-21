@@ -1,6 +1,5 @@
 package controllers.ogel;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -8,12 +7,15 @@ import com.google.inject.name.Named;
 import components.common.cache.CountryProvider;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import exceptions.FormStateException;
 import journey.Events;
 import models.common.Country;
+import models.ogel.OgelResultsDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -23,7 +25,6 @@ import utils.CountryUtils;
 import views.html.ogel.ogelResults;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -38,6 +39,7 @@ public class OgelResultsController {
   private final HttpExecutionContext httpExecutionContext;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
   private final OgelConditionsServiceClient ogelConditionsServiceClient;
+  private final FrontendServiceClient frontendServiceClient;
   private final CountryProvider countryProviderExport;
 
   @Inject
@@ -47,6 +49,7 @@ public class OgelResultsController {
                                HttpExecutionContext httpExecutionContext,
                                ApplicableOgelServiceClient applicableOgelServiceClient,
                                OgelConditionsServiceClient ogelConditionsServiceClient,
+                               FrontendServiceClient frontendServiceClient,
                                @Named("countryProviderExport") CountryProvider countryProviderExport) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
@@ -54,6 +57,7 @@ public class OgelResultsController {
     this.httpExecutionContext = httpExecutionContext;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.ogelConditionsServiceClient = ogelConditionsServiceClient;
+    this.frontendServiceClient = frontendServiceClient;
     this.countryProviderExport = countryProviderExport;
   }
 
@@ -63,35 +67,36 @@ public class OgelResultsController {
 
   public CompletionStage<Result> renderWithForm(Form<OgelResultsForm> form) {
     String controlCode = permissionsFinderDao.getControlCodeForRegistration();
+
     String sourceCountry = permissionsFinderDao.getSourceCountry();
 
     List<String> destinationCountries = CountryUtils.getDestinationCountries(permissionsFinderDao.getFinalDestinationCountry(),
         permissionsFinderDao.getThroughDestinationCountries());
 
     Optional<OgelQuestionsForm> ogelQuestionsFormOptional = permissionsFinderDao.getOgelQuestionsForm();
+
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
+
     boolean isGoodHistoric =  OgelQuestionsForm.isGoodHistoric(ogelQuestionsFormOptional);
 
+    CompletionStage<FrontendServiceResult> frontendServiceStage = frontendServiceClient.get(controlCode);
+
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric)
-        .thenComposeAsync(result -> {
-          if (!result.results.isEmpty()) {
-            return completedFuture(ok(ogelResults.render(form, result.results, null, null)));
+        .thenCombineAsync(frontendServiceStage, (applicableOgelServiceResult, frontendServiceResult) -> {
+          if (!applicableOgelServiceResult.results.isEmpty()) {
+            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelServiceResult.results, frontendServiceResult.getFrontendControlCode(), null);
+            return ok(ogelResults.render(form, display));
           }
           else {
-
             List<Country> countries = new ArrayList<>(countryProviderExport.getCountries());
+
             List<String> countryNames = CountryUtils.getFilteredCountries(countries, destinationCountries).stream()
                 .map(Country::getCountryName)
                 .collect(Collectors.toList());
 
-            // Creates a string in the form "A, B and C"
-            String destinationCountryNamesHtml = countryNames.size() == 1
-                ? countryNames.get(0)
-                : countryNames.subList(0, countryNames.size() -1).stream()
-                .collect(Collectors.joining(", ", "", " "))
-                .concat("and " + countryNames.get(countryNames.size() -1));
+            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelServiceResult.results, frontendServiceResult.getFrontendControlCode(), countryNames);
 
-            return completedFuture(ok(ogelResults.render(form, Collections.emptyList(), controlCode, destinationCountryNamesHtml)));
+            return ok(ogelResults.render(form, display));
           }
         }, httpExecutionContext.current());
   }
@@ -122,7 +127,7 @@ public class OgelResultsController {
 
     // Combines with the stage above, allowing any exceptions to propagate
     return checkOgelStage
-        .thenCombine(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getControlCodeForRegistration()),
+        .thenCombineAsync(ogelConditionsServiceClient.get(chosenOgel, permissionsFinderDao.getControlCodeForRegistration()),
             (empty, conditionsResult) -> {
               if (!conditionsResult.isEmpty) {
                 return journeyManager.performTransition(Events.OGEL_CONDITIONS_APPLY);
@@ -130,7 +135,8 @@ public class OgelResultsController {
               else {
                 return journeyManager.performTransition(Events.OGEL_SELECTED);
               }
-            }).thenCompose(Function.identity());
+            }, httpExecutionContext.current())
+        .thenCompose(Function.identity());
 
   }
 

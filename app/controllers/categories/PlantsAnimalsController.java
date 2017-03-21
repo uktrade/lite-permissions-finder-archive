@@ -63,7 +63,7 @@ public class PlantsAnimalsController {
 
   public static class PlantsAnimalsForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Select the type of animal or plant")
     public String lifeType;
 
   }

@@ -5,13 +5,13 @@
 @import views.html.common.state._
 
 @(form: Form[_], applicationCode: String)
-@standardPage("Before you begin", Some(Html("Before you begin")), pageName = Some("startApplication")) {
+@standardPage("Before you begin", Some(heading("Before you begin"))) {
   @errorSummary(form)
 } {
 
   <p>
     You don't have to complete everything in one go.
-    If you want to return to this service later, you can use this code to recover your previously answered questions:
+    If you want to return to this service later, you can use this code to recover your previous answers:
   </p>
 
   <div class="panel panel-border-wide">
@@ -40,4 +40,7 @@
 
   </form>
 
+  <script type="text/javascript">
+    $(document).ready(function(){LITEPermissionsFinder.StartApplication.setupPage()});
+  </script>
 }

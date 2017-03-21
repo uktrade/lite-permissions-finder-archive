@@ -1,8 +1,8 @@
 package models.controlcode;
 
-import components.services.controlcode.FrontendControlCode;
 import models.controlcode.NotApplicableDisplayCommon.ActionButton;
 import models.softtech.ApplicableSoftTechControls;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.List;
 public class NotApplicableDisplay{
 
   public final ControlCodeSubJourney controlCodeSubJourney;
-  public final FrontendControlCode frontendControlCode;
+  public final FrontEndControlCodeView frontendControlCode;
   public final ApplicableSoftTechControls applicableSoftTechControls;
   public final String controlCodeAlias;
   public final List<ActionButton> buttons;
@@ -20,7 +20,7 @@ public class NotApplicableDisplay{
     this.controlCodeSubJourney = displayCommon.controlCodeSubJourney;
     this.frontendControlCode = displayCommon.frontendControlCode;
     this.applicableSoftTechControls = displayCommon.applicableSoftTechControls;
-    this.controlCodeAlias = frontendControlCode.controlCodeData.alias;
+    this.controlCodeAlias = frontendControlCode.getControlCodeData().getAlias();
     if (controlCodeSubJourney.isPhysicalGoodsSearchVariant()) {
       this.buttons = Arrays.asList(
           new ActionButton(BackType.RESULTS.toString(), "return to the list of possible matches and choose again"),

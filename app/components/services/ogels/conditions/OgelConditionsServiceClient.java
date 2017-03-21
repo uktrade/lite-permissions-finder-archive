@@ -4,11 +4,10 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
-import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
-import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 
 import java.util.concurrent.CompletionStage;
 
@@ -34,9 +33,14 @@ public class OgelConditionsServiceClient {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId) + "/" +
         UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
-        .get().handleAsync((response, error) -> {
-          if (response.getStatus() == 200 || response.getStatus() == 206) {
+        .get()
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("OGEL service request failed", error);
+          }
+          else if (response.getStatus() == 200 || response.getStatus() == 206) {
             // Condition apply (204) or conditions apply, but with missing control codes (206)
             return OgelConditionsServiceResult.buildFrom(response.asJson());
           }

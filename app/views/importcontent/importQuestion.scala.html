@@ -4,7 +4,7 @@
 @import views.html.common.state._
 @import models.importcontent.ImportStageData
 @(form: Form[_], data: ImportStageData)
-@standardPage(data.getQuestion, Some(Html(data.getQuestion))) {
+@standardPage(data.getQuestion, Some(heading(data.getQuestion))) {
   @errorSummary(form)
 } {
 
@@ -12,7 +12,13 @@
 
     @contextFormParams()
 
-    @formRadioGroup(form("selectedOption"), data.getOptions) { }
+    @if(!data.isYesNoQuestion) {
+      @formRadioGroup(form("selectedOption"), data.getOptions) { }
+    }
+
+    @if(data.isYesNoQuestion) {
+      @formRadioBoolean(form("selectedOption"), Html(""))
+    }
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

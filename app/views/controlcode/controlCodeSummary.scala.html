@@ -6,7 +6,7 @@
 @import controllers.controlcode.routes._
 
 @(form: Form[_], display: ControlCodeSummaryDisplay)
-@standardPage(display.title, Some(Html(display.title)), twoThirdsColumn = false){
+@standardPage(display.title, Some(heading(display.title)), twoThirdsColumn = false){
   @errorSummary(form)
 }{
 
@@ -16,9 +16,9 @@
       <li>
         <span class="tree-dot"></span>
         <span class="tree-desc">
-          <span class="tree-desc-wrapper">@Html(display.greatestAncestor.friendlyDescription)</span>
+          <span class="tree-desc-wrapper">@Html(display.greatestAncestor.getFriendlyDescription)</span>
         </span>
-        <span class="tree-code">@display.greatestAncestor.alias</span>
+        <span class="tree-code">@display.greatestAncestor.getAlias</span>
       </li>
     }
 
@@ -26,9 +26,9 @@
       <li>
         <span class="tree-dot"></span>
         <span class="tree-desc">
-          <span class="tree-desc-wrapper">@Html(otherAncestorCode.friendlyDescription)</span>
+          <span class="tree-desc-wrapper">@Html(otherAncestorCode.getFriendlyDescription)</span>
         </span>
-        <span class="tree-code">@otherAncestorCode.alias</span>
+        <span class="tree-code">@otherAncestorCode.getAlias</span>
       </li>
     }
 
@@ -47,21 +47,18 @@
 
       @contextFormParams()
 
-      @if(display.additionalSpecificationsExist || display.technicalNotesExist) {
+      @if(display.showAdditionalSpecsPanel) {
 
         @formRadioBooleanWithContent(form("couldDescribeItems"), Html(display.couldDescribeItemsLabel), "Yes", "No")(HtmlFormat.empty){
-          <p>
-            If you are not sure whether @display.controlCodeAlias describes your item, you can read more details about it before you decide. The extra information for this item is:
-          </p>
-
-          <ul class="list list-bullet text">
-            @if(display.additionalSpecificationsExist){ <li>a fuller description of this item, or the items related to it</li> }
-            @if(display.technicalNotesExist){ <li>technical notes that give examples or define terms</li> }
-          </ul>
 
           <p>
-            If you want to read this extra information before deciding, answer <strong class="bold-small">Yes</strong> to this question. You can change your answer later if you decide for sure this item does not apply.
+            If you're certain this doesn't describe your item, click Continue now.
           </p>
+
+          <p>
+            If you want to read a fuller description of this item before deciding whether it applies to your export, change your answer to <strong class="bold-small">Yes</strong> before continuing. You can confirm on the next screen if you decide for sure this item does not apply.
+          </p>
+
         }
 
       } else {
@@ -70,11 +67,31 @@
 
       }
 
+      @if(!display.showAdditionalSpecsPanel && display.showTechNotesQuestion) {
+
+        <div class="js-hidden" id="showTechNotes-wrapper">
+          <h2 class="heading-medium">
+            Do you want to read technical information about this item?
+          </h2>
+
+          <p>
+            These notes can include measurements and definitions of technical terms.
+          </p>
+
+          @formRadioBoolean(form("showTechNotes"), Html("Do you want to read technical information about this item?"), "Yes", "No", hideHeading = true)
+        </div>
+
+      }
+
       <div class="form-group">
         <button type="submit" class="button">Continue</button>
       </div>
 
     </form>
+
+    <script type="application/javascript">
+      $(document).ready(function(){LITEPermissionsFinder.ControlCodeSummary.setupPage()})
+    </script>
   }
 
 }

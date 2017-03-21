@@ -4,6 +4,7 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -31,18 +32,14 @@ public class RelatedCodesServiceClient {
   public CompletionStage<RelatedCodesServiceResult> get(String controlCode){
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(ServiceClientLogger.requestFilter("Search", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .get()
-        .handleAsync((response, throwable) -> {
-          if (throwable != null) {
-            throw new ServiceException("Error during Search service request", throwable);
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("Search service request failed", error);
           }
-          else {
-            return response;
-          }
-        })
-        .thenApplyAsync(response -> {
-          if (response.getStatus() != 200) {
+          else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
           }
           else {

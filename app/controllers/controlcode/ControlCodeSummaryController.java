@@ -4,8 +4,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
-import exceptions.FormStateException;
+import components.services.controlcode.frontend.FrontendServiceClient;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.ControlCodeSubJourney;
@@ -42,10 +41,10 @@ public class ControlCodeSummaryController extends Controller {
     this.frontendServiceClient = frontendServiceClient;
   }
 
-  private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, Form<ControlCodeSummaryForm> form) {
-    return frontendServiceClient.get(permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney))
+  private CompletionStage<Result> renderWithForm(ControlCodeSubJourney controlCodeSubJourney, String controlCode, Form<ControlCodeSummaryForm> form) {
+    return frontendServiceClient.get(controlCode)
         .thenApplyAsync(frontendServiceResult ->
-                ok(controlCodeSummary.render(form, new ControlCodeSummaryDisplay(controlCodeSubJourney, frontendServiceResult.getFrontendControlCode())))
+                ok(controlCodeSummary.render(form, new ControlCodeSummaryDisplay(controlCodeSubJourney, frontendServiceResult)))
             , httpExecutionContext.current());
   }
 
@@ -55,10 +54,13 @@ public class ControlCodeSummaryController extends Controller {
   }
 
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
+    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
     Optional<Boolean> controlCodeApplies = permissionsFinderDao.getControlCodeApplies(controlCodeSubJourney);
+    Optional<Boolean> showTechNotes = permissionsFinderDao.getShowTechNotes(controlCodeSubJourney, controlCode);
     ControlCodeSummaryForm templateForm = new ControlCodeSummaryForm();
     templateForm.couldDescribeItems = controlCodeApplies.orElse(null);
-    return renderWithForm(controlCodeSubJourney, formFactory.form(ControlCodeSummaryForm.class).fill(templateForm));
+    templateForm.showTechNotes = showTechNotes.orElse(null);
+    return renderWithForm(controlCodeSubJourney, controlCode, formFactory.form(ControlCodeSummaryForm.class).fill(templateForm));
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -68,12 +70,18 @@ public class ControlCodeSummaryController extends Controller {
 
   private CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<ControlCodeSummaryForm> form = formFactory.form(ControlCodeSummaryForm.class).bindFromRequest();
+    String controlCode = permissionsFinderDao.getSelectedControlCode(controlCodeSubJourney);
 
     if (form.hasErrors()) {
-      return renderWithForm(controlCodeSubJourney, form);
+      return renderWithForm(controlCodeSubJourney, controlCode, form);
     }
 
     Boolean couldDescribeItems = form.get().couldDescribeItems;
+    Boolean showTechNotes = form.get().showTechNotes;
+
+    if (showTechNotes != null) {
+      permissionsFinderDao.saveShowTechNotes(controlCodeSubJourney, controlCode, showTechNotes);
+    }
 
     if(couldDescribeItems) {
       permissionsFinderDao.saveControlCodeApplies(controlCodeSubJourney, true);
@@ -87,8 +95,10 @@ public class ControlCodeSummaryController extends Controller {
 
   public static class ControlCodeSummaryForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean couldDescribeItems;
+
+    public Boolean showTechNotes;
 
   }
 

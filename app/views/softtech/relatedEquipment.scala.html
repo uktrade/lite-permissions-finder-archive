@@ -5,7 +5,7 @@
 @import models.softtech.RelatedEquipmentDisplay
 
 @(form: Form[_], display: RelatedEquipmentDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage("Finding the right licence", Some(heading(display.questionHeading))){
   @errorSummary(form)
 }{
 
@@ -13,18 +13,10 @@
     
     @contextFormParams()
 
-    <h2 class="heading-medium">@display.questionHeading</h2>
-
     <ul class="list list-bullet text">
-      <li>
-        For the development, production, use, operation, repair or maintenance of equipment or materials
-      </li>
-      <li>
-        To enhance or modify equipment to exceed its normal performance limits
-      </li>
-      <li>
-        To perform or simulate the functions of cryptographic equipment, such as secure communications equipment
-      </li>
+      @for(bullet <- display.questionBullets){
+        <li>@bullet</li>
+      }
     </ul>
 
     @formRadioBoolean(field = form("relatedToEquipmentOrMaterials"), prompt = Html(display.questionHeading), hideHeading = true)

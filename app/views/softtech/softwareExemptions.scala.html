@@ -5,7 +5,8 @@
 @import views.html.common.state._
 
 @(form: Form[_], display: SoftwareExemptionsDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+
+@standardPage("Finding the right licence", Some(heading(display.questionLabel))){
   @errorSummary(form)
 }{
 
@@ -14,7 +15,6 @@
     @contextFormParams()
 
     @if(!display.questionContent.isEmpty) {
-      <h2 class="heading-medium">@display.questionLabel</h2>
 
       @if(display.questionContent.size() > 1) {
         <ul class="list list-bullet text">
@@ -28,13 +28,9 @@
         </p>
       }
 
-      @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel), hideHeading = true)
-
-    } else {
-
-      @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel))
-
     }
+
+    @formRadioBoolean(field = form("doExemptionsApply"), prompt = Html(display.questionLabel), hideHeading = true)
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

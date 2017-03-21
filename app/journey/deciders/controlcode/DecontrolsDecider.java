@@ -3,9 +3,11 @@ package journey.deciders.controlcode;
 import com.google.inject.Inject;
 import components.common.journey.Decider;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import journey.SubJourneyContextParamProvider;
 import models.controlcode.ControlCodeSubJourney;
+import play.libs.concurrent.HttpExecutionContext;
 
 import java.util.concurrent.CompletionStage;
 
@@ -13,12 +15,14 @@ public class DecontrolsDecider implements Decider<Boolean> {
   private final PermissionsFinderDao dao;
   private final FrontendServiceClient client;
   private final SubJourneyContextParamProvider subJourneyContextParamProvider;
+  private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public DecontrolsDecider(PermissionsFinderDao dao, FrontendServiceClient client) {
+  public DecontrolsDecider(PermissionsFinderDao dao, FrontendServiceClient client, HttpExecutionContext httpExecutionContext) {
     this.dao = dao;
     this.client = client;
     this.subJourneyContextParamProvider = new SubJourneyContextParamProvider();
+    this.httpExecutionContext = httpExecutionContext;
   }
 
   @Override
@@ -28,6 +32,7 @@ public class DecontrolsDecider implements Decider<Boolean> {
 
     String controlCode = dao.getSelectedControlCode(controlCodeSubJourney);
 
-    return client.get(controlCode).thenApply(e -> e.getControlCodeData().canShowDecontrols());
+    return client.get(controlCode)
+        .thenApplyAsync(FrontendServiceResult::canShowDecontrols, httpExecutionContext.current());
   }
 }

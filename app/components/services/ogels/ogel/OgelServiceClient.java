@@ -4,6 +4,7 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
@@ -33,9 +34,14 @@ public class OgelServiceClient {
   public CompletionStage<OgelFullView> get(String ogelId) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId))
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
-        .get().handleAsync((response, error) -> {
-          if (response.getStatus() != 200) {
+        .get()
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("OGEL service request failed", error);
+          }
+          else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /ogels/%s: %s",
                 ogelId, response.getStatus()));
           }

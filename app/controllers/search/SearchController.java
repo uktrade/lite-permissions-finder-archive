@@ -18,7 +18,6 @@ import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import views.html.search.search;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -85,10 +84,8 @@ public class SearchController {
   }
 
   public static String getSearchTerms(SearchForm form) {
-    if (form.isComponent) {
-     return Arrays.asList(form.description, form.component).stream()
-          .filter(StringUtils::isNoneBlank)
-          .collect(Collectors.joining(", "));
+    if (form.isComponent != null && form.isComponent && StringUtils.isNotBlank(form.component)) {
+     return form.description + ", " + form.component;
     }
     else {
       return form.description;
@@ -97,10 +94,10 @@ public class SearchController {
 
   public static class SearchForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean isComponent;
 
-    @Required(message = "You must enter a description of your goods")
+    @Required(message = "Enter a description of the item")
     public String description;
 
     public String component;

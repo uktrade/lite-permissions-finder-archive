@@ -1,9 +1,0 @@
-@import util._
-@import models.common.Country
-@(form: Form[_], fieldName: String, count: Int, hintText: String, countries: List[Country])
-
-@for(i <- 0 to count - 1) {
-
-  @countrySelect(form(fieldName + '[' + i + ']'), hintText, i, i != 0, false, countries)
-
-}

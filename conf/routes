@@ -63,6 +63,10 @@ GET     /export/:controlCodeVariant/:goodsType/software-and-technology-lists/   
 
 POST    /export/software-and-technology-lists/                                  controllers.softtech.controls.SoftTechControlsController.handleSubmit
 
+GET     /export/:controlCodeVariant/:goodsType/software-and-technology-lists/related   controllers.softtech.controls.SoftTechRelatedControlsController.renderForm(controlCodeVariant, goodsType)
+
+POST    /export/software-and-technology-lists/related                                  controllers.softtech.controls.SoftTechRelatedControlsController.handleSubmit
+
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
@@ -271,3 +275,11 @@ GET     /assets/*file                         controllers.Assets.versioned(path=
 #Build info
 
 GET     /admin/build                          controllers.admin.AdminController.buildInfo
+
+GET     /admin/transactions                   controllers.admin.AdminController.permissionsFinderTransactions
+
+GET     /admin/transactions/:id               controllers.admin.AdminController.permissionsFinderTransactionById(id)
+
+GET     /admin/application-codes              controllers.admin.AdminController.applicationCodes
+
+GET     /admin/application-codes/:applicationCode   controllers.admin.AdminController.applicationCodeByCode(applicationCode)

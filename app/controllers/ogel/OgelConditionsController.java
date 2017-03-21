@@ -151,7 +151,7 @@ public class OgelConditionsController {
 
   public static class OgelConditionsForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean doConditionsApply;
 
   }

@@ -1,8 +1,8 @@
 package models.summary;
 
-import components.services.controlcode.ControlCodeData;
-import components.services.controlcode.FrontendServiceResult;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import models.common.Country;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
 import java.util.List;
@@ -13,38 +13,38 @@ public class SummaryField {
   /**
    * Type of summary field
    */
-  public final SummaryFieldType summaryFieldType;
+  private final SummaryFieldType summaryFieldType;
 
   /**
    * The fields heading, describing the type of content to be shown
    */
-  public final String heading;
+  private final String heading;
 
   /**
    * Displays the fields data
    */
-  public final String content;
+  private final String content;
 
   /**
    * Raw value used to drive the content, e.g. what's stored in the DAO. This is optional
    */
-  public final String data;
+  private final String data;
 
   /**
    * URL which will place a user on a journey allowing them to alter this fields data
    */
-  public final String editLinkUrl;
+  private final String editLinkUrl;
 
   /**
    * States whether the value stored in content is HTML
    */
-  public final boolean isContentHtml;
+  private final boolean isContentHtml;
 
 
   /**
    * State whether the data associated with this field is valid
    */
-  public final boolean isValid;
+  private final boolean isValid;
 
   public SummaryField(SummaryFieldType summaryFieldType, String heading, String content, String data,
                       String editLinkUrl, boolean isContentHtml, boolean isValid) {
@@ -64,9 +64,9 @@ public class SummaryField {
    * @return a SummaryField for the control code
    */
   public static SummaryField fromFrontendServiceResult(FrontendServiceResult frontendServiceResult, String editLinkUrl) {
-    ControlCodeData controlCodeData = frontendServiceResult.getControlCodeData();
-    String content =  "<strong class=\"bold-small\">" + controlCodeData.controlCode
-        + "</strong> - " + controlCodeData.title;
+    FrontEndControlCodeData controlCodeData = frontendServiceResult.getControlCodeData();
+    String content =  "<strong class=\"bold-small\">" + controlCodeData.getControlCode()
+        + "</strong> - " + controlCodeData.getTitle();
     return new SummaryField(SummaryFieldType.CONTROL_CODE, "Classification", content, null, editLinkUrl, true, true);
   }
 
@@ -98,4 +98,31 @@ public class SummaryField {
         editLinkUrl, true, true);
   }
 
+  public SummaryFieldType getSummaryFieldType() {
+    return summaryFieldType;
+  }
+
+  public String getHeading() {
+    return heading;
+  }
+
+  public String getContent() {
+    return content;
+  }
+
+  public String getData() {
+    return data;
+  }
+
+  public String getEditLinkUrl() {
+    return editLinkUrl;
+  }
+
+  public boolean isContentHtml() {
+    return isContentHtml;
+  }
+
+  public boolean isValid() {
+    return isValid;
+  }
 }

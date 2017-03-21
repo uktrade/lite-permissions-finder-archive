@@ -1,0 +1,18 @@
+{
+  "controlCodeData": {
+    "controlCode": "ML21b",
+    "friendlyDescription": "Specific military-use software",
+    "title": null,
+    "technicalNotes": "",
+    "alias": "ML21b",
+    "additionalSpecifications": null,
+    "decontrols": []
+  },
+  "lineage": [
+    {
+      "controlCode": "ML21",
+      "alias": "ML21",
+      "friendlyDescription": "Military software"
+    }
+  ]
+}

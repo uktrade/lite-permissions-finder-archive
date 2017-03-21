@@ -3,7 +3,7 @@ package journey.deciders;
 import com.google.inject.Inject;
 import components.common.journey.Decider;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
+import components.services.controlcode.catchall.CatchallControlsServiceClient;
 import journey.SubJourneyContextParamProvider;
 import models.GoodsType;
 import models.controlcode.ControlCodeSubJourney;
@@ -41,7 +41,7 @@ public class CatchallControlsDecider implements Decider<ApplicableSoftTechContro
     return catchallControlsServiceClient.get(goodsType, softTechCategory)
         .thenApplyAsync(result -> {
 
-          ApplicableSoftTechControls applicableSoftTechControls = ApplicableSoftTechControls.fromInt(result.controlCodes.size());
+          ApplicableSoftTechControls applicableSoftTechControls = ApplicableSoftTechControls.fromInt(result.getControlCodes().size());
 
           // TODO Setting DAO state here is very hacky and needs rethinking
           if (applicableSoftTechControls == ApplicableSoftTechControls.ONE) {
@@ -51,7 +51,7 @@ public class CatchallControlsDecider implements Decider<ApplicableSoftTechContro
             // TODO This is a massive hack, relies on knowing where the stage transition for ApplicableSoftTechControls.ONE will go
             subJourneyContextParamProvider.updateSubJourneyValueOnContext(subJourney);
 
-            dao.saveSelectedControlCode(subJourney, result.controlCodes.get(0).controlCode);
+            dao.saveSelectedControlCode(subJourney, result.getControlCodes().get(0).getControlCode());
           }
 
           return applicableSoftTechControls;

@@ -5,7 +5,15 @@
 @import models.softtech.{DualUseSoftTechCategoriesDisplay, SoftTechCategory}
 
 @(form: Form[_], display: DualUseSoftTechCategoriesDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@categoryPanel(category: SoftTechCategory) = {
+  @detailPanel(category.name()){@category.getHeading} {
+    <p>
+    @display.getContent(category)
+    </p>
+    <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@category.name()">Continue</button>
+  }
+}
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
 
@@ -19,75 +27,25 @@
     
     @contextFormParams()
 
-    @detailPanel("NUCLEAR"){@SoftTechCategory.NUCLEAR.getHeading()} {
-      <p>
-        This includes software for equipment used in connection with nuclear reactors, thorium, deuterium, plutonium, uranium, depleted uranium or special fissile materials, nuclear reactor fuel elements, and auxiliary systems, equipment and components for isotope separation plant.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.NUCLEAR">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.NUCLEAR)
 
-    @detailPanel("TELECOMS"){@SoftTechCategory.TELECOMS.getHeading()} {
-      <p>
-        This includes software for communications systems, signal processors, radio receivers, interception, jamming and monitoring equipment, location detection and tracking systems, surveillance systems, and equipment to ensure the security of information or communications, including cryptography, cryptographic activation and cryptanalysis.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.TELECOMS">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.TELECOMS)
 
-    @detailPanel("SPECIAL_MATERIALS"){@SoftTechCategory.SPECIAL_MATERIALS.getHeading()} {
-      <p>
-        This is software for equipment used to develop or produce non-nuclear materials and chemicals, including composite structures or laminates, fibrous or filamentary materials, metal alloys, metal alloy powder, alloyed materials, superplastic forming or diffusion bonding, explosive residue detection and analysis of reduced observables.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.SPECIAL_MATERIALS">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.SPECIAL_MATERIALS)
 
-    @detailPanel("MATERIALS_PROCESSING"){@SoftTechCategory.MATERIALS_PROCESSING.getHeading()} {
-      <p>
-        This is software for equipment used in the manufacture of raw materials into finished goods, such as machine tools and assemblies, isostatic presses, spin-forming and flow-forming machines, balancing machines and anti-friction bearing systems.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.MATERIALS_PROCESSING">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.MATERIALS_PROCESSING)
 
-    @detailPanel("MARINE"){@SoftTechCategory.MARINE.getHeading()} {
-      <p>
-        This includes software for submersible vehicles and surface vessels, marine systems and water tunnels.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.MARINE">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.MARINE)
 
-    @detailPanel("NAVIGATION"){@SoftTechCategory.NAVIGATION.getHeading()} {
-      <p>
-        This includes software for flight control systems, altimeters, Global Navigation Satellite System receiving equipment, accelerometers, gyros, inertial measurement equipment, star trackers, underwater sonar navigation systems, and integration software for navigation and avionics equipment.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.NAVIGATION">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.NAVIGATION)
 
-    @detailPanel("AEROSPACE"){@SoftTechCategory.AEROSPACE.getHeading()} {
-      <p>
-        This includes software for engines, space launch vehicles and spacecraft, re-entry vehicles, liquid, solid and hybrid rocket propulsion systems, unmanned aerial vehicles and airships, hybrid rocket motors, and launch support equipment.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.AEROSPACE">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.AEROSPACE)
 
-    @detailPanel("COMPUTERS"){@SoftTechCategory.COMPUTERS.getHeading()} {
-      <p>
-        This includes software for electronic computers, digital computers, systolic array computers, neural computers and optical computers, as well as intrusion software.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.COMPUTERS">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.COMPUTERS)
 
-    @detailPanel("SENSORS"){@SoftTechCategory.SENSORS.getHeading()} {
-      <p>
-        This includes software for optical equipment, lasers, radar systems, monospectral imaging sensors, multispectral imaging sensors, real-time data processing equipment, cameras, magnetic sensors, gravity meters or gradiometers, and Air Traffic Control software.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.SENSORS">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.SENSORS)
 
-    @detailPanel("ELECTRONICS"){@SoftTechCategory.ELECTRONICS.getHeading()} {
-      <p>
-        This includes software for recording equipment and oscilloscopes, acoustic wave devices, high energy devices, encoders, thyristor devices and modules, semiconductor devices, signal analysers or generators, network analysers, microwave test receivers, thermal management systems, accelerators, frequency changers or generators, and devices and circuits containing superconductive materials.
-      </p>
-      <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@SoftTechCategory.ELECTRONICS">Continue</button>
-    }
+    @categoryPanel(SoftTechCategory.ELECTRONICS)
 
     <p class="category-or">
       <span class="font-medium">or</span>

@@ -71,7 +71,7 @@ public class GoodsTypeController extends Controller {
 
   public static class GoodsTypeForm {
 
-    @Required(message = "You must select what you are exporting")
+    @Required(message = "Choose an item type")
     public String goodsType;
 
   }

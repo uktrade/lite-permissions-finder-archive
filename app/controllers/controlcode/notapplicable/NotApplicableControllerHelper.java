@@ -2,8 +2,8 @@ package controllers.controlcode.notapplicable;
 
 import com.google.inject.Inject;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
-import components.services.controlcode.FrontendServiceResult;
+import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import controllers.controlcode.NotApplicableController;
 import journey.helpers.SoftTechJourneyHelper;
 import models.GoodsType;

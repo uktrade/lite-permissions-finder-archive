@@ -8,7 +8,8 @@ import components.common.cache.CountryProvider;
 import components.common.logging.CorrelationId;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
+import components.common.logging.ServiceClientLogger;
+import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import exceptions.ServiceException;
@@ -30,7 +31,6 @@ public class OgelRegistrationServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceSharedSecret;
-  private final String webServiceAddress;
   private final String webServiceUrl;
   private final ContextParamManager contextParamManager;
   private final PermissionsFinderDao permissionsFinderDao;
@@ -55,7 +55,6 @@ public class OgelRegistrationServiceClient {
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceSharedSecret = webServiceSharedSecret;
-    this.webServiceAddress = webServiceAddress;
     this.webServiceUrl = webServiceAddress + "/update-transaction";
     this.contextParamManager = contextParamManager;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -69,6 +68,7 @@ public class OgelRegistrationServiceClient {
   public CompletionStage<Result> updateTransactionAndRedirect(String transactionId) {
     WSRequest wsRequest = wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL Registration", "POST", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("securityToken", webServiceSharedSecret);
 
@@ -81,8 +81,11 @@ public class OgelRegistrationServiceClient {
 
     return requestStage.thenApplyAsync(request -> wsRequest.post(Json.toJson(request)), httpExecutionContext.current())
         .thenCompose(Function.identity())
-        .thenApplyAsync(response -> {
-          if (response.getStatus() != 200) {
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("OGEL Registration service request failed", error);
+          }
+          else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from OGEL Registration service /update-transaction: %s",
                 response.getStatus()));
           }
@@ -98,7 +101,7 @@ public class OgelRegistrationServiceClient {
             }
             else {
               permissionsFinderDao.saveOgelRegistrationServiceTransactionExists(true);
-              return redirect(webServiceAddress + result.redirectUrl);
+              return redirect(result.redirectUrl);
             }
           }
         }, httpExecutionContext.current());

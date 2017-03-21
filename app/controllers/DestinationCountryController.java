@@ -17,12 +17,9 @@ import views.html.destinationCountry;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.IntStream;
 
 import javax.inject.Named;
 
@@ -113,19 +110,12 @@ public class DestinationCountryController extends Controller {
      * Otherwise raise an exception
      */
     if ("true".equals(boundForm.itemThroughMultipleCountries)) {
-      Set<String> allCountries = new HashSet<>();
-      IntStream.range(0, boundForm.throughDestinationCountries.size())
-          .boxed()
-          .forEach(i -> {
-            String country = boundForm.throughDestinationCountries.get(i);
-            if (country == null || country.isEmpty()) {
-              form.reject(throughDestinationCountriesIndexedFieldName(i), "You must enter a destination or territory");
-            }  // Set.add() returns false if the item was already in the set
-            else if (!allCountries.add(country) || country.equals(boundForm.finalDestinationCountry)) {
-              form.reject(throughDestinationCountriesIndexedFieldName(i), "You cannot have duplicate destination, " +
-                  "country or territories. Please change or remove one");
-            }
-          });
+      for (int i = 0; i < boundForm.throughDestinationCountries.size(); i++) {
+        String country = boundForm.throughDestinationCountries.get(i);
+        if (country == null || country.isEmpty()) {
+          form.reject(throughDestinationCountriesIndexedFieldName(i), "Enter a country or territory");
+        }  // Set.add() returns false if the item was already in the set
+      }
       permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
       permissionsFinderDao.saveItemThroughMultipleCountries(true);
     }
@@ -135,7 +125,7 @@ public class DestinationCountryController extends Controller {
       permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
     }
     else if (boundForm.itemThroughMultipleCountries == null || boundForm.itemThroughMultipleCountries.isEmpty()) {
-      form.reject(ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME, "You must answer this question");
+      form.reject(ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME, "Answer this question");
     }
     else {
       throw new FormStateException("Unknown value for " + ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME + " \""
@@ -143,7 +133,7 @@ public class DestinationCountryController extends Controller {
     }
 
     if (boundForm.finalDestinationCountry == null || boundForm.finalDestinationCountry.isEmpty()) {
-      form.reject(FINAL_DESTINATION_COUNTRY_FIELD_NAME, "You must enter a destination or territory");
+      form.reject(FINAL_DESTINATION_COUNTRY_FIELD_NAME, "Enter a country or territory");
     }
 
     // Check again for errors raised during manual validation

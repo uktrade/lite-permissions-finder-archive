@@ -5,12 +5,11 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.controls.ControlCode;
-import components.services.controlcode.controls.catchall.CatchallControlsServiceClient;
-import components.services.controlcode.controls.category.CategoryControlsServiceClient;
-import components.services.controlcode.controls.nonexempt.NonExemptControlServiceClient;
-import components.services.controlcode.controls.nonexempt.NonExemptControlsServiceResult;
-import components.services.controlcode.controls.related.RelatedControlsServiceClient;
+import components.services.controlcode.catchall.CatchallControlsServiceClient;
+import components.services.controlcode.category.CategoryControlsServiceClient;
+import components.services.controlcode.nonexempt.NonExemptControlServiceClient;
+import components.services.controlcode.nonexempt.NonExemptControlsServiceResult;
+import components.services.controlcode.related.RelatedControlsServiceClient;
 import exceptions.FormStateException;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
@@ -23,6 +22,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import views.html.softtech.controls.softTechControls;
 
 import java.util.ArrayList;
@@ -94,6 +94,7 @@ public class SoftTechControlsController {
     }
     else if (StringUtils.isNotEmpty(controlCode)) {
       // Setup DAO state based on view variant
+      permissionsFinderDao.saveSoftTechControlsResultsLastChosenControlCode(controlCodeSubJourney, controlCode);
       permissionsFinderDao.clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(controlCodeSubJourney, controlCode);
       return journeyManager.performTransition(Events.CONTROL_CODE_SELECTED);
     }
@@ -110,7 +111,7 @@ public class SoftTechControlsController {
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return categoryControlsServiceClient.get(goodsType, softTechCategory)
           .thenApplyAsync(result ->
-              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.controlCodes))))
+              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getControlCodesGroupedByTitle()))))
               , httpExecutionContext.current());
     }
     else if (controlCodeSubJourney.isSoftTechControlsRelatedToPhysicalGoodVariant()) {
@@ -119,22 +120,22 @@ public class SoftTechControlsController {
       String controlCode = permissionsFinderDao.getSelectedControlCode(priorSubJourney);
       return relatedControlsServiceClient.get(goodsType, controlCode)
           .thenApplyAsync(result ->
-              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.controlCodes))))
+              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getControlCodesGroupedByTitle()))))
               , httpExecutionContext.current());
     }
     else if (controlCodeSubJourney.isSoftTechCatchallControlsVariant()) {
       SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
       return catchallControlsServiceClient.get(goodsType, softTechCategory)
           .thenApplyAsync(result ->
-              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.controlCodes))))
+              ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, result.getControlCodesGroupedByTitle()))))
               , httpExecutionContext.current());
     }
     else if (controlCodeSubJourney.isNonExemptControlsVariant()) {
       CompletionStage<NonExemptControlsServiceResult> specialMaterialsStage = nonExemptControlServiceClient.get(goodsType, SoftTechCategory.SPECIAL_MATERIALS);
       CompletionStage<NonExemptControlsServiceResult> marineStage = nonExemptControlServiceClient.get(goodsType, SoftTechCategory.MARINE);
       return specialMaterialsStage.thenCombineAsync(marineStage, (specialMaterialsResult, marineResult) -> {
-        List<ControlCode> controlCodes = new ArrayList<>(specialMaterialsResult.controlCodes);
-        controlCodes.addAll(marineResult.controlCodes);
+        List<ControlCodeFullView> controlCodes = new ArrayList<>(specialMaterialsResult.getControlCodesGroupedByTitle());
+        controlCodes.addAll(marineResult.getControlCodesGroupedByTitle());
         return ok(softTechControls.render(form, checkResultsSize(new SoftTechControlsDisplay(controlCodeSubJourney, controlCodes))));
       }, httpExecutionContext.current());
     }

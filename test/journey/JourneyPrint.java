@@ -6,7 +6,11 @@ import importcontent.ImportJourneyDefinitionBuilder;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
 import journey.deciders.ExportCategoryDecider;
-import journey.deciders.RelatedCodesDecider;
+import journey.deciders.relatedcodes.CatchallRelatedControlsDecider;
+import journey.deciders.relatedcodes.CategoryRelatedControlsDecider;
+import journey.deciders.relatedcodes.NonExemptRelatedControlsDecider;
+import journey.deciders.relatedcodes.RelatedRelatedControlsDecider;
+import journey.deciders.relatedcodes.SearchRelatedControlsDecider;
 import journey.deciders.RelatedControlsDecider;
 import journey.deciders.RelationshipWithSoftwareDecider;
 import journey.deciders.RelationshipWithTechnologyDecider;
@@ -24,16 +28,20 @@ public class JourneyPrint {
   @Test
   public void printExportJourney() {
     Collection<JourneyDefinition> journeyDefinitions = new ExportJourneyDefinitionBuilder(
-        new AdditionalSpecificationsDecider(null, null),
-        new DecontrolsDecider(null, null),
+        new AdditionalSpecificationsDecider(null, null, null),
+        new DecontrolsDecider(null, null, null),
         new TechnicalNotesDecider(null, null, null),
         new ExportCategoryDecider(null),
         new CategoryControlsDecider(null, null, null, null),
         new RelatedControlsDecider(null, null, null, null),
         new CatchallControlsDecider(null, null, null, null),
-        new RelationshipWithTechnologyDecider(null, null),
-        new RelationshipWithSoftwareDecider(null, null),
-        new RelatedCodesDecider(null, null, null, null)
+        new RelationshipWithTechnologyDecider(null, null, null),
+        new RelationshipWithSoftwareDecider(null, null, null),
+        new SearchRelatedControlsDecider(null, null, null, null),
+        new CatchallRelatedControlsDecider(null, null, null, null),
+        new CategoryRelatedControlsDecider(null, null, null, null),
+        new RelatedRelatedControlsDecider(null, null, null, null),
+        new NonExemptRelatedControlsDecider(null, null, null, null)
     ).buildAll();
     Optional<JourneyDefinition> serialiseJourney = journeyDefinitions.stream().filter(j -> JourneyDefinitionNames.EXPORT.equals(j.getJourneyName())).findFirst();
 
@@ -42,7 +50,7 @@ public class JourneyPrint {
 
   @Test
   public void printImportJourney() {
-    Collection<JourneyDefinition> journeyDefinitions = new ImportJourneyDefinitionBuilder().buildAll();
+    Collection<JourneyDefinition> journeyDefinitions = new ImportJourneyDefinitionBuilder(null).buildAll();
     Optional<JourneyDefinition> serialiseJourney = journeyDefinitions.stream().filter(j -> JourneyDefinitionNames.IMPORT.equals(j.getJourneyName())).findFirst();
 
     System.out.println(new GraphvizSerialiser().generateGraphvizSyntax(Collections.singletonList(serialiseJourney.get())));

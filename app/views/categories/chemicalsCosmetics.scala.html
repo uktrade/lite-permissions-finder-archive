@@ -5,7 +5,7 @@
 @import controllers.categories.routes.ChemicalsCosmeticsController
 
 @(form: Form[_])
-@standardPage("You may need a licence if you are exporting dual-use goods", Some(Html("You may need a licence if you are exporting dual-use goods"))){
+@standardPage("You may need a licence if you are exporting dual-use goods", Some(heading("You may need a licence if you are exporting dual-use goods"))){
   @errorSummary(form)
 }{
 

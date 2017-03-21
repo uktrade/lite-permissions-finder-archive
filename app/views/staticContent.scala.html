@@ -1,4 +1,4 @@
 @import util._
 
-@(title: String, content: Html)
-@standardPage(title, Some(Html(title))){ }(content)
+@(title: String, pageHeading: Option[Html], content: Html)
+@standardPage(title, pageHeading){ }(content)

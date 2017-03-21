@@ -6,7 +6,7 @@
 @import controllers.softtech.controls.routes.SoftTechControlsController
 
 @(form: Form[_], display: SoftTechControlsDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
 
@@ -23,7 +23,7 @@
     <ol class="search-results">
       @for(i <- 0 until display.controlCodes.size) {
         <li>
-          <button id="@display.controlCodes.get(i).controlCode-button" type="submit" class="link font-medium" name="controlCode" value="@display.controlCodes.get(i).controlCode">@Html(display.controlCodes.get(i).friendlyDescription)</button>
+          <button id="@display.controlCodes.get(i).getControlCode-button" type="submit" class="link font-medium" name="controlCode" value="@display.controlCodes.get(i).getControlCode">@Html(display.controlCodes.get(i).getTitle)</button>
         </li>
       }
     </ol>

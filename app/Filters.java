@@ -1,5 +1,6 @@
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import filters.common.ExcludingCsrfFilter;
 import play.http.HttpFilters;
 import play.mvc.EssentialFilter;
 

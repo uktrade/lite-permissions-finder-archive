@@ -6,10 +6,11 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.controls.relationships.GoodsRelationshipsServiceClient;
+import components.services.controlcode.relationships.GoodsRelationshipsServiceClient;
 import exceptions.FormStateException;
 import models.GoodsType;
 import models.softtech.GoodsRelationshipQuestionsDisplay;
+import models.softtech.SoftTechCategory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -61,14 +62,15 @@ public class GoodsRelationshipQuestionsController {
 
   private CompletionStage<Result> renderFormInternal(GoodsType goodsType, GoodsType relatedToGoodsType, int currentQuestionIndex) {
     GoodsRelationshipQuestionsForm templateForm = new GoodsRelationshipQuestionsForm();
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
     Optional<Boolean> questionAnswerOptional = permissionsFinderDao.getGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex);
     templateForm.questionAnswer = questionAnswerOptional.orElse(null);
     templateForm.currentQuestionIndex = currentQuestionIndex;
-    return renderWithForm(goodsType, relatedToGoodsType, formFactory.form(GoodsRelationshipQuestionsForm.class).fill(templateForm), currentQuestionIndex);
+    return renderWithForm(goodsType, relatedToGoodsType, softTechCategory, formFactory.form(GoodsRelationshipQuestionsForm.class).fill(templateForm), currentQuestionIndex);
   }
 
-  private CompletionStage<Result> renderWithForm(GoodsType goodsType, GoodsType relatedToGoodsType, Form<GoodsRelationshipQuestionsForm> form, int currentQuestionIndex){
-    return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
+  private CompletionStage<Result> renderWithForm(GoodsType goodsType, GoodsType relatedToGoodsType, SoftTechCategory softTechCategory, Form<GoodsRelationshipQuestionsForm> form, int currentQuestionIndex){
+    return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType, softTechCategory)
         .thenApplyAsync(result -> {
           GoodsRelationshipFullView relationship = result.getRelationship(currentQuestionIndex);
           GoodsRelationshipQuestionsDisplay display = new GoodsRelationshipQuestionsDisplay(goodsType, relatedToGoodsType, relationship, currentQuestionIndex);
@@ -87,9 +89,11 @@ public class GoodsRelationshipQuestionsController {
 
     Form<GoodsRelationshipQuestionsForm> form = formFactory.form(GoodsRelationshipQuestionsForm.class).bindFromRequest();
 
+    SoftTechCategory softTechCategory = permissionsFinderDao.getSoftTechCategory(goodsType).get();
+
     if (form.hasErrors()) {
       int currentQuestionIndex = Integer.parseInt(form.field("currentQuestionIndex").value());
-      return renderWithForm(goodsType, relatedToGoodsType, form, currentQuestionIndex);
+      return renderWithForm(goodsType, relatedToGoodsType, softTechCategory, form, currentQuestionIndex);
     }
 
     Boolean questionAnswer = form.get().questionAnswer;
@@ -97,7 +101,7 @@ public class GoodsRelationshipQuestionsController {
     int currentQuestionIndex = form.get().currentQuestionIndex;
 
     if (questionAnswer) {
-      return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
+      return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType, softTechCategory)
           .thenComposeAsync(result -> {
             if (result.isValidRelationshipIndex(currentQuestionIndex)) {
               permissionsFinderDao.saveGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex, true);
@@ -113,7 +117,7 @@ public class GoodsRelationshipQuestionsController {
     }
     else {
       // Belt and braces check
-      return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType)
+      return goodsRelationshipsServiceClient.get(goodsType, relatedToGoodsType, softTechCategory)
           .thenComposeAsync(result -> {
             if (result.isValidRelationshipIndex(currentQuestionIndex)) {
               permissionsFinderDao.saveGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, currentQuestionIndex, false);
@@ -127,7 +131,7 @@ public class GoodsRelationshipQuestionsController {
                 Optional<Boolean> questionAnswerOptional = permissionsFinderDao.getGoodsRelationshipQuestionAnswer(goodsType, relatedToGoodsType, newCurrentQuestionIndex);
                 templateForm.questionAnswer = questionAnswerOptional.orElse(null);
                 templateForm.currentQuestionIndex = newCurrentQuestionIndex;
-                return renderWithForm(goodsType, relatedToGoodsType, formFactory.form(GoodsRelationshipQuestionsForm.class).fill(templateForm), newCurrentQuestionIndex);
+                return renderWithForm(goodsType, relatedToGoodsType, softTechCategory, formFactory.form(GoodsRelationshipQuestionsForm.class).fill(templateForm), newCurrentQuestionIndex);
               }
               else {
                 return journeyManager.performTransition(StandardEvents.NO);
@@ -164,7 +168,7 @@ public class GoodsRelationshipQuestionsController {
 
     public int currentQuestionIndex;
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean questionAnswer;
 
   }

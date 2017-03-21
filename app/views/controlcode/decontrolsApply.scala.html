@@ -6,7 +6,8 @@
 @import models.controlcode.notapplicable.DecontrolsApplyDisplay
 
 @(form: Form[_], display: DecontrolsApplyDisplay)
-@standardPage("Choose a different item type", Some(Html("Choose a different item type"))){
+
+@standardPage("Finding the right licence", Some(headingSpacer())) {
   @errorSummary(form)
 }{
 
@@ -15,7 +16,7 @@
   </p>
 
   <p>
-    Your options now are:
+    You can export many decontrolled items without a licence. However, if you still think you may need a licence, your options now are:
   </p>
 
   <form action="@DecontrolsApplyController.handleSubmit" method="POST">

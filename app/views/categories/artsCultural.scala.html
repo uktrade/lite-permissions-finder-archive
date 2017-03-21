@@ -5,7 +5,7 @@
 @import controllers.categories.ArtsCulturalController
 
 @(form: Form[_])
-@standardPage("Arts and cultural goods", Some(Html("Arts and cultural goods"))){ @errorSummary(form, fieldOrder = scala.List("itemAge", "firearm")) }{
+@standardPage("Arts and cultural goods", Some(heading("Arts and cultural goods"))){ @errorSummary(form, fieldOrder = scala.List("itemAge", "firearm")) }{
 
   <form action="@controllers.categories.routes.ArtsCulturalController.handleSubmit()" method="POST">
 

@@ -8,7 +8,7 @@
 @import models.search.SearchRelatedCodesDisplay
 
 @(form: Form[_], display: SearchRelatedCodesDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle)), pageName = Some("searchRelatedCodes")) {
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))) {
   @errorSummary(form)
 } {
 
@@ -52,4 +52,9 @@
       </p>
     </div>
   </form>
+
+  <script type="text/javascript">
+    $(document).ready(function(){LITEPermissionsFinder.SearchRelatedCodes.setupPage()});
+    $(window).load(function(){LITEPermissionsFinder.SearchRelatedCodes.onload()});
+  </script>
 }

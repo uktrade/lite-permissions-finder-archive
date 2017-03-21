@@ -95,7 +95,7 @@ public class GoodsRelationshipController {
 
   public static class GoodsRelationshipForm {
 
-    @Required
+    @Required(message = "Answer this question")
     public Boolean isRelatedToGoodsType;
 
   }

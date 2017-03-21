@@ -62,9 +62,11 @@ public class ContinueApplicationController {
       String transactionId = applicationCodeDao.readTransactionId(applicationCode.trim());
       if (transactionId != null && !transactionId.isEmpty()) {
         transactionManager.setTransaction(transactionId);
-        // Overwrite stored search form data
-        permissionsFinderDao.savePhysicalGoodSearchForm(ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH,
-            new SearchController.SearchForm());
+
+        // Refresh hash key TTLs of the both DAOs
+        applicationCodeDao.refreshTTL(applicationCode.trim());
+        permissionsFinderDao.refreshTTL();
+
         Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
         if (ogelRegistrationExists.isPresent() && ogelRegistrationExists.get()) {
           return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);

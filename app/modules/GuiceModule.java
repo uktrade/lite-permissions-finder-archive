@@ -97,6 +97,15 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bind(JourneySerialiser.class).to(PermissionsFinderJourneySerialiser.class);
 
+    bindConstant().annotatedWith(Names.named("basicAuthUser"))
+        .to(configuration.getString("basicAuth.user"));
+
+    bindConstant().annotatedWith(Names.named("basicAuthPassword"))
+        .to(configuration.getString("basicAuth.password"));
+
+    bindConstant().annotatedWith(Names.named("basicAuthRealm"))
+        .to(configuration.getString("basicAuth.realm"));
+
     requestInjection(this);
   }
 
@@ -107,9 +116,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   }
 
   @Provides
-  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportJourneyDefinitionBuilder) {
-    ImportJourneyDefinitionBuilder importJourneyDefinitionBuilder = new ImportJourneyDefinitionBuilder();
-    return Arrays.asList(exportJourneyDefinitionBuilder, importJourneyDefinitionBuilder);
+  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportBuilder,
+                                                                               ImportJourneyDefinitionBuilder importBuilder) {
+    return Arrays.asList(exportBuilder, importBuilder);
   }
 
   @Provides @Singleton

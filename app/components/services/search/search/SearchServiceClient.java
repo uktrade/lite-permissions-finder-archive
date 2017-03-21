@@ -3,6 +3,7 @@ package components.services.search.search;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -20,8 +21,7 @@ public class SearchServiceClient {
   public SearchServiceClient(HttpExecutionContext httpExecutionContext,
                              WSClient wsClient,
                              @Named("searchServiceAddress") String webServiceAddress,
-                             @Named("searchServiceTimeout") int webServiceTimeout
-  ){
+                             @Named("searchServiceTimeout") int webServiceTimeout) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
@@ -31,20 +31,16 @@ public class SearchServiceClient {
   public CompletionStage<SearchServiceResult> get(String searchTerm){
     return wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(ServiceClientLogger.requestFilter("Search", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("term", searchTerm)
         .setQueryParameter("goodsType", "physical") // Hard coded to physical search for now
         .get()
-        .handleAsync((response, throwable) -> {
-          if (throwable != null) {
-            throw new ServiceException("Error during Search service request", throwable);
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("Search service request failed", error);
           }
-          else {
-            return response;
-          }
-        })
-        .thenApplyAsync(response -> {
-          if (response.getStatus() != 200) {
+          else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
           }
           else {

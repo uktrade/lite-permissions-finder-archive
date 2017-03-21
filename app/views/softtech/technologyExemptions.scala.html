@@ -3,20 +3,15 @@
 @import views.html.common.form._
 @import views.html.common.state._
 @import controllers.softtech.routes
-@import models.softtech.TechnologyExemptionsDisplay
 
-@(form: Form[_], display: TechnologyExemptionsDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@(form: Form[_])
+@standardPage("Finding the right licence", Some(heading("Are you exporting any of the following?"))){
   @errorSummary(form)
 }{
 
   <form action="@routes.TechnologyExemptionsController.handleSubmit" method="POST">
 
     @contextFormParams()
-
-    <h2 class="heading-medium">
-      Are you exporting any of the following?
-    </h2>
 
     <ul class="list list-bullet text">
       <li>Technical information that is in the public domain, for example available as a free download that does not require permission or payment to use</li>

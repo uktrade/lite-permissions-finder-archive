@@ -3,6 +3,7 @@ package components.services.ogels.virtualeu;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
@@ -36,6 +37,7 @@ public class VirtualEUOgelClient {
 
     WSRequest request = wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("controlCode", controlCode)
         .setQueryParameter("sourceCountry", sourceCountry);
@@ -44,15 +46,19 @@ public class VirtualEUOgelClient {
 
     activityTypes.forEach(activityType -> request.setQueryParameter("activityType", activityType));
 
-    return request.get().thenApplyAsync(response -> {
-      if (response.getStatus() != 200) {
-        throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /virtual-eu: %s",
-            response.getStatus()));
-      }
-      else {
-        return Json.fromJson(response.asJson(), VirtualEuView.class);
-      }
-    }, httpExecutionContext.current());
+    return request.get()
+        .handleAsync((response, error) -> {
+          if (error != null) {
+            throw new ServiceException("OGEL service request failed", error);
+          }
+          else if (response.getStatus() != 200) {
+            throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /virtual-eu: %s",
+                response.getStatus()));
+          }
+          else {
+            return Json.fromJson(response.asJson(), VirtualEuView.class);
+          }
+        }, httpExecutionContext.current());
   }
 
 }

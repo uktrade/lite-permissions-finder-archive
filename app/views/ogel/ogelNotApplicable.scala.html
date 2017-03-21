@@ -5,7 +5,7 @@
 @import models.ogel.OgelNotApplicableDisplay
 
 @(form: Form[_], display: OgelNotApplicableDisplay)
-@standardPage(display.pageTitle, Some(Html(display.pageTitle))){
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
 
@@ -14,7 +14,7 @@
     @contextFormParams()
 
     <p>
-      Although some items within the classification <strong class="bold-medium">@display.controlCode</strong> can be exported using the licence <strong class="bold-medium">@display.ogelTitle</strong>,
+      Although some items within the classification <strong class="bold-small">@display.controlCode</strong> can be exported using the licence <strong class="bold-small">@display.ogelTitle</strong>,
       your items are not covered by this licence. You can:
     </p>
 

@@ -89,7 +89,7 @@ public class SoftwareExemptionsController {
 
   public static class ExemptionsForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public Boolean doExemptionsApply;
 
   }

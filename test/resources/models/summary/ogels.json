@@ -1,0 +1,41 @@
+{
+  "id": "OGL8",
+  "name": "Export after repair/replacement under warranty: military goods",
+  "summary": {
+    "canList": [
+      "Export military items that have been temporarily in the UK for repair or replacement under warranty."
+    ],
+    "cantList": [
+      "Export or transfer items that perform any encryption function.",
+      "Export or transfer items if you know or suspect they will be used in the proliferation of chemical, biological or nuclear weapons, either directly or indirectly.",
+      "Export any item covered by <a href=\"http://eur-lex.europa.eu/legal-content/EN/TXT/?uri=URISERV%3Al14011\" target=\"_blank\">EU Council Directive 91/477/EEC</a>.",
+      "Export or transfer items classified as official-sensitive or above unless explicitly authorised by Ministry of Defence form 680 or 1686.",
+      "Export or transfer items to a Customs Free Zone.",
+      "Use this licence if it has been suspended or revoked."
+    ],
+    "mustList": [
+      "Export the items to the government or NATO agency who sent them to the UK or EU, or to any other person to whom the items have been sent previously under a valid UK export licence within the last five years.",
+      "Export items only to the country they were imported from, and to provide documentary evidence of this if requested.",
+      "Get your systems accredited if you are electronically transferring any software, data or technology classified as official-sensitive or above, and ensure the transfer is encrypted.",
+      "Provide written evidence of the original import date of the items and the nature of the repairs, if requested.",
+      "Register for this licence before your first export or transfer under the licence.",
+      "Inform the Export Control Organisation of any change of address within 30 days.",
+      "Include a note stating the name of this licence or your registration reference number with all physical exports.",
+      "Submit details of all export activity within each calendar year, even if you have not used the licence.",
+      "Allow audits by the Export Control Organisation, and complete a pre-visit questionnaire.",
+      "Comply with any conditions received in a compliance warning letter, within the timescale in the letter.",
+      "Keep all documentation and records for 4 years after the date of export, including the date and destination of each export and any MOD clearance or approval letters.",
+      "Use this licence at least once every 2 years, or your authorisation to use it may be withdrawn and you will have to register again."
+    ],
+    "howToUseList": [
+      "You must get government accreditation before exporting any data or technology classified as sensitive or restricted.",
+      "Provide written evidence of the original import date of the goods and the nature of the repairs, if requested.",
+      "Your exports should all be accompanied by a note stating the name of this OGEL and/or your SPIRE reference number.",
+      "Make sure you keep all documentation and proof of your exports for at least 4 years.",
+      "You must update your account details within 30 days if you change your main address, or the address of any sites you have registered.",
+      "You must submit a report of your exports under this licence once a year."
+    ]
+  },
+  "description": null,
+  "link": null
+}

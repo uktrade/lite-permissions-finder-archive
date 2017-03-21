@@ -101,13 +101,13 @@ public class OgelQuestionsController {
 
   public static class OgelQuestionsForm {
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public String forRepairReplacement;
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public String forExhibitionDemonstration;
 
-    @Required(message = "You must answer this question")
+    @Required(message = "Answer this question")
     public String before1897upto35k;
 
     public static List<String> formToActivityTypes(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {

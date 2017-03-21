@@ -3,8 +3,8 @@ package models.summary;
 import components.common.cache.CountryProvider;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.FrontendServiceClient;
-import components.services.controlcode.FrontendServiceResult;
+import components.services.controlcode.frontend.FrontendServiceClient;
+import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import components.services.ogels.ogel.OgelServiceClient;
@@ -40,11 +40,15 @@ public class Summary {
 
   public Optional<SummaryField> findSummaryField(SummaryFieldType summaryFieldType) {
     if (!summaryFields.isEmpty()) {
-      return summaryFields.stream().filter(field -> field.summaryFieldType == summaryFieldType).findFirst();
+      return summaryFields.stream().filter(field -> field.getSummaryFieldType() == summaryFieldType).findFirst();
     }
     else {
       return Optional.empty();
     }
+  }
+
+  public boolean isValid() {
+    return this.summaryFields.stream().allMatch(f -> f.isValid());
   }
 
   public static CompletionStage<Summary> composeSummary(ContextParamManager contextParamManager,
@@ -95,9 +99,10 @@ public class Summary {
       CompletionStage<ApplicableOgelServiceResult> applicableOgelStage = applicableOgelServiceClient.get(
           controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric);
 
-      CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombine(applicableOgelStage,
+      CompletionStage<ValidatedOgel> validatedStage = ogelStage.thenCombineAsync(applicableOgelStage,
           (ogelResult, applicableOgelResult) ->
-              new ValidatedOgel(ogelResult, applicableOgelResult.findResultById(ogelResult.getId()).isPresent()));
+              new ValidatedOgel(ogelResult, applicableOgelResult.findResultById(ogelResult.getId()).isPresent())
+          , httpExecutionContext.current());
 
       summaryCompletionStage = summaryCompletionStage
           .thenCombineAsync(validatedStage, (summary, validatedOgel)

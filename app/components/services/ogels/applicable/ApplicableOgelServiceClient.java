@@ -3,6 +3,7 @@ package components.services.ogels.applicable;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
+import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
@@ -28,7 +29,7 @@ public class ApplicableOgelServiceClient {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
-    this.webServiceUrl= webServiceAddress + "/applicable-ogels";
+    this.webServiceUrl = webServiceAddress + "/applicable-ogels";
   }
 
   public CompletionStage<ApplicableOgelServiceResult> get(String controlCode, String sourceCountry,
@@ -37,6 +38,7 @@ public class ApplicableOgelServiceClient {
 
     WSRequest req = wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
+        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("controlCode", controlCode)
         .setQueryParameter("sourceCountry", sourceCountry);
@@ -45,8 +47,11 @@ public class ApplicableOgelServiceClient {
 
     activityTypes.forEach(activityType -> req.setQueryParameter("activityType", activityType));
 
-    return req.get().thenApplyAsync(response -> {
-      if (response.getStatus() != 200) {
+    return req.get().handleAsync((response, error) -> {
+      if (error != null) {
+        throw new ServiceException("OGEL service request failed", error);
+      }
+      else if (response.getStatus() != 200) {
         throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /applicable-ogels: %s",
             response.getStatus()));
       }
