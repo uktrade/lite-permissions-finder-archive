@@ -1,14 +1,20 @@
-FROM java:8
+FROM openjdk:8-jre
 
-ENV SERVICE_DIR /opt/permissions-finder
-ENV ARTEFACT_NAME lite-permissions-finder-1.0-SNAPSHOT
+ARG NEXUS_BASE_URL=http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository
+ARG NEXUS_REPO=lite-builds-raw
+ARG CRYPTO_SECRET=abcdefghijk
+ARG BUILD_VERSION
 
-RUN mkdir -p $SERVICE_DIR
+ENV ARTEFACT_NAME lite-permissions-finder-$BUILD_VERSION
+ENV CONFIG_FILE /conf/permissions-finder-config.conf
 
-COPY ./target/universal/${ARTEFACT_NAME}.zip $SERVICE_DIR
+LABEL uk.gov.bis.lite.version=$BUILD_VERSION
 
-WORKDIR $SERVICE_DIR
+WORKDIR /opt/permissions-finder
 
+ADD $NEXUS_BASE_URL/$NEXUS_REPO/lite-permissions-finder/lite-permissions-finder/$BUILD_VERSION/$ARTEFACT_NAME.zip $ARTEFACT_NAME.zip
 RUN unzip ${ARTEFACT_NAME}.zip
 
-CMD ${ARTEFACT_NAME}/bin/lite-permissions-finder -Dplay.crypto.secret=abcdefghijk -Dconfig.file=/conf/permissions-finder-config.conf
+EXPOSE 9000
+
+CMD $ARTEFACT_NAME/bin/lite-permissions-finder -Dplay.crypto.secret=$CRYPTO_SECRET -Dconfig.file=$CONFIG_FILE

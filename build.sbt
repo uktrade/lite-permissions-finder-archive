@@ -1,10 +1,17 @@
+import java.util.SimpleTimeZone
 import com.typesafe.sbt.web.PathMapping
 import com.typesafe.sbt.web.pipeline.Pipeline
 import net.ground5hark.sbt.concat.Import.Concat
 
 name := """lite-permissions-finder"""
 
-version := "1.0-SNAPSHOT"
+version := scala.util.Properties.envOrElse("BUILD_VERSION", formatDateAsVersion() + "-SNAPSHOT")
+
+def formatDateAsVersion () : String = {
+  val sdf = new java.text.SimpleDateFormat("YYYYMMdd.HHmmss")
+  sdf.setTimeZone(new java.util.SimpleTimeZone(java.util.SimpleTimeZone.UTC_TIME, "UTC"))
+  sdf.format(new java.util.Date())
+}
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayJava)
