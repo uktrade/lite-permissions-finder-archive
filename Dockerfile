@@ -8,7 +8,7 @@ ARG BUILD_VERSION
 ENV ARTEFACT_NAME lite-permissions-finder-$BUILD_VERSION
 ENV CONFIG_FILE /conf/permissions-finder-config.conf
 
-LABEL uk.gov.bis.lite.permissions-finder.version=$BUILD_VERSION
+LABEL uk.gov.bis.lite.version=$BUILD_VERSION
 
 WORKDIR /opt/permissions-finder
 
