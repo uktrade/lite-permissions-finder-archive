@@ -1,7 +1,7 @@
 FROM openjdk:8-jre
 
 ARG NEXUS_BASE_URL=http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository
-ARG NEXUS_REPO=raw-test
+ARG NEXUS_REPO=lite-builds-raw
 ARG CRYPTO_SECRET=abcdefghijk
 ARG BUILD_VERSION
 
