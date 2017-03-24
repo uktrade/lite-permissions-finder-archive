@@ -14,7 +14,7 @@ node('jdk8') {
     sh 'sbt publish'
   }
   stage('Tag build'){
-    withCredentials([usernamePassword(credentialsId: '47ab58d4-2db9-4f6f-910d-badc2ee1cfc8', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+    withCredentials([usernamePassword(credentialsId: 'LITE-bot-github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
       sh("git -c 'user.name=Jenkins' -c 'user.email=jenkins@digital' tag  -a ${params.BUILD_VERSION} -m 'Jenkins'")
       sh("git push https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@${gitURL} --tags")
     }
