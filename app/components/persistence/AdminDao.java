@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.RedisKeyConfig;
 import controllers.admin.routes;
-import models.admin.TransactionInfo;
 import models.admin.ApplicationCodeInfo;
+import models.admin.TransactionInfo;
 import play.mvc.Http;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -14,6 +14,7 @@ import redis.clients.jedis.ScanResult;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -102,19 +103,23 @@ public class AdminDao {
   private TransactionInfo buildTransactionInfo(String key, Jedis jedis, boolean showFields) {
     String transactionId = key.split(":")[1];
     Long ttl = jedis.ttl(key);
+    Long idleSeconds = jedis.objectIdletime(key);
     String link = getPermissionsFinderTransactionByIdUrl(transactionId);
+    Date lastAccessed = new Date(System.currentTimeMillis() - (idleSeconds * 1000));
     if (showFields) {
       Map<String, String> fields = jedis.hgetAll(key);
-      return new TransactionInfo(transactionId, ttl, link, fields);
+      return new TransactionInfo(transactionId, ttl, link, lastAccessed, fields);
     }
     else {
-      return new TransactionInfo(transactionId, ttl, link);
+      return new TransactionInfo(transactionId, ttl, link, lastAccessed);
     }
   }
 
   private ApplicationCodeInfo buildApplicationCodeInfo(String key, Jedis jedis, boolean showFields) {
     String applicationCode = key.split(":")[2];
     Long ttl = jedis.ttl(key);
+    Long idleSeconds = jedis.objectIdletime(key);
+    Date lastAccessed = new Date(System.currentTimeMillis() - (idleSeconds * 1000));
     Map<String, String> fields = jedis.hgetAll(key);
 
     Optional<Map.Entry<String, String>> transactionIdOptional = fields.entrySet().stream()
@@ -126,10 +131,10 @@ public class AdminDao {
     String linkToApplicationCode = getApplicationCodeByCodeUrl(applicationCode);
 
     if (showFields) {
-      return new ApplicationCodeInfo(applicationCode, ttl, linkToTransaction, linkToApplicationCode, fields);
+      return new ApplicationCodeInfo(applicationCode, ttl, linkToTransaction, linkToApplicationCode, lastAccessed, fields);
     }
     else {
-      return new ApplicationCodeInfo(applicationCode, ttl, linkToTransaction, linkToApplicationCode);
+      return new ApplicationCodeInfo(applicationCode, ttl, linkToTransaction, linkToApplicationCode, lastAccessed);
     }
   }
 
