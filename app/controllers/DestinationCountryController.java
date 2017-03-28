@@ -13,6 +13,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import utils.CountryUtils;
 import views.html.destinationCountry;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class DestinationCountryController extends Controller {
   public static final String THROUGH_DESTINATION_COUNTRIES_FIELD_NAME = "throughDestinationCountries";
   public static final String ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME = "itemThroughMultipleCountries";
   public static final String ADD_ANOTHER_THROUGH_DESTINATION = "addAnotherThroughDestination";
+  public static final String UNITED_KINGDOM_COUNTRY_REF = "CTRY0";
 
   @Inject
   public DestinationCountryController(JourneyManager journeyManager,
@@ -61,7 +63,7 @@ public class DestinationCountryController extends Controller {
     templateForm.finalDestinationCountry = permissionsFinderDao.getFinalDestinationCountry();
     templateForm.throughDestinationCountries = throughDestinationCountries;
 
-    List<Country> countries = new ArrayList<>(countryProviderExport.getCountries());
+    List<Country> countries = getCountries();
 
     Optional<Boolean> itemThroughMultipleCountries = permissionsFinderDao.getItemThroughMultipleCountries();
     templateForm.itemThroughMultipleCountries = itemThroughMultipleCountries.isPresent()
@@ -75,7 +77,7 @@ public class DestinationCountryController extends Controller {
     Form <DestinationCountryForm> form = formFactory.form(DestinationCountryForm.class).bindFromRequest();
 
     DestinationCountryForm boundForm = form.get();
-    List<Country> countries = new ArrayList<>(countryProviderExport.getCountries());
+    List<Country> countries = getCountries();
 
     if (boundForm.addAnotherThroughDestination != null) {
       if ("true".equals(boundForm.addAnotherThroughDestination)) {
@@ -171,6 +173,12 @@ public class DestinationCountryController extends Controller {
 
   private String throughDestinationCountriesIndexedFieldName(int index) {
     return THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + "[" + index + "]";
+  }
+
+  private List<Country> getCountries() {
+    List<Country> allCountries = new ArrayList<>(countryProviderExport.getCountries());
+    List<String> countryRefs = Collections.singletonList(UNITED_KINGDOM_COUNTRY_REF);
+    return CountryUtils.getFilteredCountries(allCountries, countryRefs, true);
   }
 
   public static class DestinationCountryForm {

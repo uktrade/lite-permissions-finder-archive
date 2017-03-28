@@ -41,12 +41,26 @@ public class CountryUtils {
   }
 
   /**
-   * Returns filtered list of Country's, where we find matched country ref
+   * Returns filtered list of Country's, where we return Country's with a matching country ref.
    * @param allCountries Countries used to search for matched country refs
    * @param countryRefs Country refs
    * @return List country all matched Countries
    */
   public static List<Country> getFilteredCountries(List<Country> allCountries, List<String> countryRefs) {
-    return countryRefs.stream().flatMap(ref -> allCountries.stream().filter(c -> c.getCountryRef().equals(ref))).collect(Collectors.toList());
+    return getFilteredCountries(allCountries, countryRefs, false);
+  }
+
+  /**
+   * Returns a filtered list of Country's. When negate is set to true, countryRefs will be removed from the
+   * allCountries list. When false, only those countries which match a countryRef are returned.
+   * @param allCountries Countries used to search for matched country refs
+   * @param countryRefs Country refs
+   * @param negate match
+   * @return List of type Country, filtered as stated above.
+   */
+  public static List<Country> getFilteredCountries(List<Country> allCountries, List<String> countryRefs, boolean negate) {
+    return countryRefs.stream()
+        .flatMap(ref -> allCountries.stream().filter(c -> negate != c.getCountryRef().equals(ref)))
+        .collect(Collectors.toList());
   }
 }
