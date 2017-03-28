@@ -25,13 +25,16 @@ public class FrontendServiceClientTest {
   private FrontendServiceClient client;
   private WSClient ws;
 
+  private final static String PROVIDER = "lite-control-code-service#frontend-control-codes";
+  private final static String CONSUMER = "lite-permissions-finder";
+
   private static final String EXISTING = "EXISTING";
   private static final String MISSING = "MISSING";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule("lite-control-code-service", this);
+  public PactProviderRule mockProvider = new PactProviderRule(PROVIDER, this);
 
-  @Pact(provider = "lite-control-code-service", consumer="lite-permissions-finder")
+  @Pact(provider = PROVIDER, consumer = CONSUMER)
   public PactFragment createFragment(PactDslWithProvider builder) {
     PactDslJsonBody existing = new PactDslJsonBody()
         .object("controlCodeData")
@@ -94,7 +97,7 @@ public class FrontendServiceClientTest {
   }
 
   @Test
-  @PactVerification("lite-control-code-service")
+  @PactVerification(PROVIDER)
   public void testControlCodeServicePact() throws Exception {
     testExistingControlCode();
     testMissingControlCode();
