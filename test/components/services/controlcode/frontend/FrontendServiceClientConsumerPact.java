@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import pact.PactConfig;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WS;
 import play.libs.ws.WSClient;
@@ -21,21 +22,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class FrontendServiceClientTest {
+public class FrontendServiceClientConsumerPact {
   private FrontendServiceClient client;
   private WSClient ws;
-
-  private final static String PROVIDER = "lite-control-code-service#frontend-control-codes";
-  private final static String CONSUMER = "lite-permissions-finder";
 
   private static final String EXISTING = "EXISTING";
   private static final String MISSING = "MISSING";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PROVIDER, this);
+  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
-  @Pact(provider = PROVIDER, consumer = CONSUMER)
-  public PactFragment createFragment(PactDslWithProvider builder) {
+  @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
+  public PactFragment existingControlCode(PactDslWithProvider builder) {
     PactDslJsonBody existing = new PactDslJsonBody()
         .object("controlCodeData")
           .stringType("controlCode", EXISTING)
@@ -65,11 +63,6 @@ public class FrontendServiceClientTest {
         .closeArray()
         .asBody();
 
-    PactDslJsonBody missing = new PactDslJsonBody()
-        .integerType("code", 404)
-        .stringType("message")
-        .asBody();
-
     Map<String, String> headers = new HashMap<>();
     headers.put("Content-Type", "application/json");
 
@@ -81,9 +74,25 @@ public class FrontendServiceClientTest {
             .status(200)
             .headers(headers)
             .body(existing)
+        .toFragment();
+  }
+
+  @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
+  public PactFragment missingControlCode(PactDslWithProvider builder) {
+    PactDslJsonBody missing = new PactDslJsonBody()
+        .integerType("code", 404)
+        .stringType("message")
+        .asBody();
+
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Content-Type", "application/json");
+
+    return builder
+        .given("empty")
         .uponReceiving("Missing frontend control code request")
-          .path("/frontend-control-codes/" + MISSING)
-          .willRespondWith()
+        .path("/frontend-control-codes/" + MISSING)
+        .method("GET")
+        .willRespondWith()
             .status(404)
             .headers(headers)
             .body(missing)
@@ -97,13 +106,8 @@ public class FrontendServiceClientTest {
   }
 
   @Test
-  @PactVerification(PROVIDER)
-  public void testControlCodeServicePact() throws Exception {
-    testExistingControlCode();
-    testMissingControlCode();
-  }
-
-  private void testExistingControlCode() {
+  @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "existingControlCode")
+  public void testExistingControlCode() throws Exception {
     FrontendServiceResult frontendServiceResult;
     try {
       frontendServiceResult = client.get(EXISTING).toCompletableFuture().get();
@@ -119,7 +123,9 @@ public class FrontendServiceClientTest {
     assertThat(frontendServiceResult.canShowTechnicalNotes()).isTrue();
   }
 
-  private void testMissingControlCode() {
+  @Test
+  @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "missingControlCode")
+  public void testMissingControlCode() {
     FrontendServiceResult frontendServiceResult = null;
     try {
       frontendServiceResult = client.get(MISSING).toCompletableFuture().get();
