@@ -13,7 +13,7 @@ addSbtPlugin("net.ground5hark.sbt" % "sbt-concat" % "0.1.9")
 // basis using disablePlugins(PlayEnhancer) in your build.sbt
 addSbtPlugin("com.typesafe.sbt" % "sbt-play-enhancer" % "1.1.0")
 
-addSbtPlugin("com.itv.plugins" % "scalapact-plugin" % "2.1.2")
+addSbtPlugin("com.itv.plugins" % "scalapact-plugin" % "2.1.3")
 
 // Override sbt-play-enhancer use of javassist 3.18.2-GA, which fixes JASSIST-220
 // https://github.com/jboss-javassist/javassist/pull/10

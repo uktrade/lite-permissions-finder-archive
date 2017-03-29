@@ -59,9 +59,12 @@ buildInfoKeys ++= Seq[BuildInfoKey](
 buildInfoOptions += BuildInfoOption.BuildTime
 buildInfoOptions += BuildInfoOption.ToJson
 
+// Pact
+pactBrokerAddress := "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test"
+pactContractVersion := "1.0.0"
+
 // Concatenate the /assets/javascript directory into a single lite-permissions-finder.js
 Concat.groups := Seq("lite-permissions-finder.js" -> group((sourceDirectory in Assets).value / "javascripts" ** "*.js"))
-
 
 // Remove assets used in the concat stage. Then applies a manual asset mapping fix to the resulting asset
 // lite-permissions-finder.js. This is due to Concat.parentDir changing the new assets location in addition to it's
