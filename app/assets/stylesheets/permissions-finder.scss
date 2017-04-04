@@ -12,6 +12,7 @@
 @import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/elements/helpers";                       // Helper functions and classes
 
 // Sections
+@import "sections/applicationCode";
 @import "sections/categories";
 @import "sections/confirmation";
 @import "sections/controlCode";

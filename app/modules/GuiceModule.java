@@ -30,6 +30,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
+import utils.appcode.ApplicationCodeContextParamProvider;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -162,7 +163,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   public ContextParamManager provideContextParamManager() {
-    return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new SubJourneyContextParamProvider());
+    return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new SubJourneyContextParamProvider(), new ApplicationCodeContextParamProvider());
   }
 
 }

@@ -14,6 +14,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Email;
 import play.mvc.Result;
+import utils.appcode.ApplicationCodeContextParamProvider;
 import views.html.startApplication;
 
 import java.util.Arrays;
@@ -33,6 +34,7 @@ public class StartApplicationController {
   private final ApplicationCodeDao applicationCodeDao;
   private final PermissionsFinderDao permissionsFinderDao;
   private final PermissionsFinderNotificationClient notificationClient;
+  private final ApplicationCodeContextParamProvider applicationCodeContextParamProvider;
 
   @Inject
   public StartApplicationController(TransactionManager transactionManager,
@@ -40,13 +42,15 @@ public class StartApplicationController {
                                     FormFactory formFactory,
                                     PermissionsFinderDao permissionsFinderDao,
                                     ApplicationCodeDao applicationCodeDao,
-                                    PermissionsFinderNotificationClient notificationClient) {
+                                    PermissionsFinderNotificationClient notificationClient,
+                                    ApplicationCodeContextParamProvider applicationCodeContextParamProvider) {
     this.transactionManager = transactionManager;
     this.contextParamManager = contextParamManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.applicationCodeDao = applicationCodeDao;
     this.notificationClient = notificationClient;
+    this.applicationCodeContextParamProvider = applicationCodeContextParamProvider;
   }
 
   public Result renderForm() {
@@ -65,21 +69,26 @@ public class StartApplicationController {
       permissionsFinderDao.saveApplicationCode(applicationCode);
     }
 
+    applicationCodeContextParamProvider.updateParamValueOnContext(applicationCode);
+
     return ok(startApplication.render(formFactory.form(StartApplicationForm.class), applicationCode));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
+    String applicationCode = permissionsFinderDao.getApplicationCode();
     if (form.hasErrors()) {
-      return completedFuture(ok(startApplication.render(form, permissionsFinderDao.getApplicationCode())));
+      return completedFuture(ok(startApplication.render(form, applicationCode)));
     }
 
     String emailAddress = form.get().emailAddress;
 
     if (StringUtils.isNoneBlank(emailAddress)) {
       permissionsFinderDao.saveEmailAddress(emailAddress.trim());
-      notificationClient.sendApplicationReferenceEmail(emailAddress.trim(), permissionsFinderDao.getApplicationCode());
+      notificationClient.sendApplicationReferenceEmail(emailAddress.trim(), applicationCode);
     }
+
+    applicationCodeContextParamProvider.updateParamValueOnContext(applicationCode);
 
     return contextParamManager.addParamsAndRedirect(routes.TradeTypeController.renderForm());
   }

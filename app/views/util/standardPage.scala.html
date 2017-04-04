@@ -1,7 +1,10 @@
 @import util._
 @import views.html.common.page._
+@import play.mvc.Controller.ctx
 
 @(htmlTitle: String, pageHeading: Option[Html], twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
+
+@applicationCode = @{ctx().args.get("ctx_app_code")}
 
 @govukTemplateDefaults(htmlTitle + " - Import & Export Licensing") {
 
@@ -10,6 +13,12 @@
     @phaseBanner()
 
     @backLink()
+
+    @if(applicationCode != "") {
+      <div class="application-code-wrapper">
+        <div class="application-code bold-medium">@applicationCode</div>
+      </div>
+    }
 
     @if(twoThirdsColumn) {
       <div class="grid-row">
