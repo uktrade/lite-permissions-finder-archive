@@ -12,13 +12,19 @@
 
     @phaseBanner()
 
-    @backLink()
-
-    @if(applicationCode != "") {
-      <div class="application-code-wrapper">
-        <div class="application-code bold-medium">@applicationCode</div>
+    <div class="nav-container">
+      <div class="back-link-container">
+        @backLink()
       </div>
-    }
+
+      @if(applicationCode != "") {
+        <div class="application-code-container">
+          <div class="application-code bold-medium">@applicationCode</div>
+        </div>
+      }
+
+      <div class="nav-container-end"></div>
+    </div>
 
     @if(twoThirdsColumn) {
       <div class="grid-row">
