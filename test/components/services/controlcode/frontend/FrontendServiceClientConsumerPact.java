@@ -26,8 +26,7 @@ public class FrontendServiceClientConsumerPact {
   private FrontendServiceClient client;
   private WSClient ws;
 
-  private static final String EXISTING = "EXISTING";
-  private static final String MISSING = "MISSING";
+  private static final String CONTROL_CODE = "ControlCode";
 
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
@@ -36,7 +35,7 @@ public class FrontendServiceClientConsumerPact {
   public PactFragment existingControlCode(PactDslWithProvider builder) {
     PactDslJsonBody existing = new PactDslJsonBody()
         .object("controlCodeData")
-          .stringType("controlCode", EXISTING)
+          .stringType("controlCode", CONTROL_CODE)
           .stringType("friendlyDescription")
           .stringType("title")
           .stringType("technicalNotes")
@@ -67,8 +66,9 @@ public class FrontendServiceClientConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .uponReceiving("Existing frontend control code request")
-          .path("/frontend-control-codes/" + EXISTING)
+        .given("the code ControlCode does exists")
+        .uponReceiving("a request for code ControlCode")
+          .path("/frontend-control-codes/" + CONTROL_CODE)
           .method("GET")
           .willRespondWith()
             .status(200)
@@ -88,9 +88,9 @@ public class FrontendServiceClientConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("empty")
-        .uponReceiving("Missing frontend control code request")
-        .path("/frontend-control-codes/" + MISSING)
+        .given("the code ControlCode does not exist")
+        .uponReceiving("a request for code ControlCode")
+        .path("/frontend-control-codes/" + CONTROL_CODE)
         .method("GET")
         .willRespondWith()
             .status(404)
@@ -110,14 +110,14 @@ public class FrontendServiceClientConsumerPact {
   public void testExistingControlCode() throws Exception {
     FrontendServiceResult frontendServiceResult;
     try {
-      frontendServiceResult = client.get(EXISTING).toCompletableFuture().get();
+      frontendServiceResult = client.get(CONTROL_CODE).toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(frontendServiceResult).isNotNull();
     String controlCode = frontendServiceResult.getFrontendControlCode().getControlCodeData().getControlCode();
-    assertThat(controlCode).isEqualTo(EXISTING);
+    assertThat(controlCode).isEqualTo(CONTROL_CODE);
     assertThat(frontendServiceResult.canShowDecontrols()).isTrue();
     assertThat(frontendServiceResult.canShowAdditionalSpecifications()).isTrue();
     assertThat(frontendServiceResult.canShowTechnicalNotes()).isTrue();
@@ -128,7 +128,7 @@ public class FrontendServiceClientConsumerPact {
   public void testMissingControlCode() {
     FrontendServiceResult frontendServiceResult = null;
     try {
-      frontendServiceResult = client.get(MISSING).toCompletableFuture().get();
+      frontendServiceResult = client.get(CONTROL_CODE).toCompletableFuture().get();
     }
     catch (Exception e) {
       assertThat(e)
