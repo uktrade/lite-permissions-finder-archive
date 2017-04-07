@@ -18,8 +18,10 @@ import pact.PactConfig;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WS;
 import play.libs.ws.WSClient;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -28,14 +30,17 @@ public class CategoryControlsServiceConsumerPact {
   private CategoryControlsServiceClient client;
   private WSClient ws;
 
+  private final static String CONTROL_CODE = "ML1a";
+  private final static String TITLE = "Smooth-bore military weapons, components and accessories";
+
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareMilitary(PactDslWithProvider builder) {
-    PactDslJsonArray existing = PactDslJsonArray.arrayEachLike(3)
-        .stringType("controlCode")
-        .stringType("title")
+    PactDslJsonArray existing = PactDslJsonArray.arrayMinLike(1,3)
+        .stringType("controlCode", CONTROL_CODE)
+        .stringType("title", TITLE)
         .closeObject()
         .asArray();
 
@@ -72,9 +77,9 @@ public class CategoryControlsServiceConsumerPact {
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareDualUse(PactDslWithProvider builder) {
-    PactDslJsonArray existing = PactDslJsonArray.arrayEachLike(3)
-        .stringType("controlCode")
-        .stringType("title")
+    PactDslJsonArray existing = PactDslJsonArray.arrayMinLike(1,3)
+        .stringType("controlCode", CONTROL_CODE)
+        .stringType("title", TITLE)
         .closeObject()
         .asArray();
 
@@ -117,7 +122,7 @@ public class CategoryControlsServiceConsumerPact {
 
   @Test
   @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "softwareMilitary")
-  public void testSoftwareMilitary() throws Exception {
+  public void softwareMilitary() throws Exception {
     CategoryControlsServiceResult result;
     try {
       result = client.get(GoodsType.SOFTWARE, SoftTechCategory.MILITARY).toCompletableFuture().get();
@@ -126,12 +131,20 @@ public class CategoryControlsServiceConsumerPact {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
-    assertThat(result.getControlCodes().isEmpty()).isFalse();
+
+    List<ControlCodeFullView> controlCodes = result.getControlCodes();
+
+    assertThat(controlCodes.size()).isEqualTo(3);
+
+    ControlCodeFullView controlCode = result.getControlCodes().get(0);
+
+    assertThat(controlCode.getControlCode()).isEqualTo(CONTROL_CODE);
+    assertThat(controlCode.getTitle()).isEqualTo(TITLE);
   }
 
   @Test
   @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "softwareMilitaryEmpty")
-  public void testSoftwareMilitaryEmpty() throws Exception {
+  public void softwareMilitaryEmpty() throws Exception {
     CategoryControlsServiceResult result;
     try {
       result = client.get(GoodsType.SOFTWARE, SoftTechCategory.MILITARY).toCompletableFuture().get();
@@ -145,7 +158,7 @@ public class CategoryControlsServiceConsumerPact {
 
   @Test
   @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "softwareDualUse")
-  public void testSoftwareDualUse() throws Exception {
+  public void softwareDualUse() throws Exception {
     CategoryControlsServiceResult result;
     try {
       result = client.get(GoodsType.SOFTWARE, SoftTechCategory.TELECOMS).toCompletableFuture().get();
@@ -154,12 +167,20 @@ public class CategoryControlsServiceConsumerPact {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
-    assertThat(result.getControlCodes().isEmpty()).isFalse();
+
+    List<ControlCodeFullView> controlCodes = result.getControlCodes();
+
+    assertThat(controlCodes.size()).isEqualTo(3);
+
+    ControlCodeFullView controlCode = result.getControlCodes().get(0);
+
+    assertThat(controlCode.getControlCode()).isEqualTo(CONTROL_CODE);
+    assertThat(controlCode.getTitle()).isEqualTo(TITLE);
   }
 
   @Test
   @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "softwareDualUseEmpty")
-  public void testSoftwareDualUseEmpty() throws Exception {
+  public void softwareDualUseEmpty() throws Exception {
     CategoryControlsServiceResult result;
     try {
       result = client.get(GoodsType.SOFTWARE, SoftTechCategory.TELECOMS).toCompletableFuture().get();

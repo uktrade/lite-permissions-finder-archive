@@ -66,7 +66,7 @@ public class FrontendServiceClientConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("the code ControlCode does exists")
+        .given("the code ControlCode exists")
         .uponReceiving("a request for code ControlCode")
           .path("/frontend-control-codes/" + CONTROL_CODE)
           .method("GET")
@@ -107,7 +107,7 @@ public class FrontendServiceClientConsumerPact {
 
   @Test
   @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "existingControlCode")
-  public void testExistingControlCode() throws Exception {
+  public void existingControlCode() throws Exception {
     FrontendServiceResult frontendServiceResult;
     try {
       frontendServiceResult = client.get(CONTROL_CODE).toCompletableFuture().get();
@@ -125,7 +125,7 @@ public class FrontendServiceClientConsumerPact {
 
   @Test
   @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "missingControlCode")
-  public void testMissingControlCode() {
+  public void missingControlCode() {
     FrontendServiceResult frontendServiceResult = null;
     try {
       frontendServiceResult = client.get(CONTROL_CODE).toCompletableFuture().get();
