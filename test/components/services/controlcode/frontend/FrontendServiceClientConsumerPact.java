@@ -17,6 +17,12 @@ import pact.PactConfig;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WS;
 import play.libs.ws.WSClient;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeSummary;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData.Decontrol;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData.FormattedAdditionalSpecifications;
+import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData.FormattedAdditionalSpecifications.AdditionalSpecificationText;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +32,19 @@ public class FrontendServiceClientConsumerPact {
   private FrontendServiceClient client;
   private WSClient ws;
 
-  private static final String CONTROL_CODE = "ControlCode";
+  private static final String CONTROL_CODE = "ML1a";
+  private static final String FREINDLY_DESCRIPTION = "Rifles and combination guns, handguns, machine, sub-machine and volley guns";
+  private static final String TITLE = "Smooth-bore military weapons, components and accessories";
+  private static final String TECHNICAL_NOTES = "<p>Motion simulators or rate tables here remain controlled whether or not slip rings.</p>";
+  private static final String ALIAS = "ML1a";
+  private static final String CLAUSE_TEXT = "<p>The motion simulators or rate tables here must have any of the following:</p>";
+  private static final String SPECIFICATION_TEXT = "A positioning accuracy equal to or less better than 5 arc second";
+  private static final String LINKED_CONTROL_CODE = "ML1";
+  private static final String ORIGIN_CONTROL_CODE = "ML1";
+  private static final String DECONTROLS_TEXT = "Firearms designed for dummy ammunition, incapable of discharging a projectile";
+  private static final String LINEAGE_CONTROL_CODE = "ML1";
+  private static final String LINEAGE_ALIAS = "ML1";
+  private static final String LINEAGE_FRIENDLY_DESCRIPTION = "Smooth-bore weapons with a calibre of less than 20mm, other firearms and automatic weapons with a calibre of 12.7mm or less, and accessories and specially designed components";
 
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
@@ -36,28 +54,28 @@ public class FrontendServiceClientConsumerPact {
     PactDslJsonBody existing = new PactDslJsonBody()
         .object("controlCodeData")
           .stringType("controlCode", CONTROL_CODE)
-          .stringType("friendlyDescription")
-          .stringType("title")
-          .stringType("technicalNotes")
-          .stringType("alias")
+          .stringType("friendlyDescription", FREINDLY_DESCRIPTION)
+          .stringType("title", TITLE)
+          .stringType("technicalNotes", TECHNICAL_NOTES)
+          .stringType("alias", ALIAS)
           .object("additionalSpecifications")
-            .stringType("clauseText")
+            .stringType("clauseText", CLAUSE_TEXT)
             .eachLike("specificationText", 3)
-              .stringType("text")
-              .stringType("linkedControlCode")
+              .stringType("text", SPECIFICATION_TEXT)
+              .stringType("linkedControlCode", LINKED_CONTROL_CODE)
               .closeObject()
             .closeArray()
           .closeObject()
           .eachLike("decontrols", 3)
-            .stringType("originControlCode")
-            .stringType("text")
+            .stringType("originControlCode", ORIGIN_CONTROL_CODE)
+            .stringType("text", DECONTROLS_TEXT)
             .closeObject()
           .closeArray()
         .closeObject()
         .eachLike("lineage", 3)
-          .stringType("controlCode")
-          .stringType("alias")
-          .stringType("friendlyDescription")
+          .stringType("controlCode", LINEAGE_CONTROL_CODE)
+          .stringType("alias", LINEAGE_ALIAS)
+          .stringType("friendlyDescription", LINEAGE_FRIENDLY_DESCRIPTION)
           .closeObject()
         .closeArray()
         .asBody();
@@ -66,8 +84,8 @@ public class FrontendServiceClientConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("the code ControlCode exists")
-        .uponReceiving("a request for code ControlCode")
+        .given("control code " + CONTROL_CODE + " exists")
+        .uponReceiving("a request for code control code " + CONTROL_CODE)
           .path("/frontend-control-codes/" + CONTROL_CODE)
           .method("GET")
           .willRespondWith()
@@ -88,8 +106,8 @@ public class FrontendServiceClientConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("the code ControlCode does not exist")
-        .uponReceiving("a request for code ControlCode")
+        .given("control code " + CONTROL_CODE + " does not exist")
+        .uponReceiving("a request for code control code " + CONTROL_CODE)
         .path("/frontend-control-codes/" + CONTROL_CODE)
         .method("GET")
         .willRespondWith()
@@ -116,8 +134,34 @@ public class FrontendServiceClientConsumerPact {
       throw new RuntimeException(e);
     }
     assertThat(frontendServiceResult).isNotNull();
-    String controlCode = frontendServiceResult.getFrontendControlCode().getControlCodeData().getControlCode();
-    assertThat(controlCode).isEqualTo(CONTROL_CODE);
+
+    FrontEndControlCodeView frontEndControlCode = frontendServiceResult.getFrontendControlCode();
+    FrontEndControlCodeData controlCode = frontEndControlCode.getControlCodeData();
+    assertThat(controlCode.getControlCode()).isEqualTo(CONTROL_CODE);
+    assertThat(controlCode.getFriendlyDescription()).isEqualTo(FREINDLY_DESCRIPTION);
+    assertThat(controlCode.getTitle()).isEqualTo(TITLE);
+    assertThat(controlCode.getTechnicalNotes()).isEqualTo(TECHNICAL_NOTES);
+    assertThat(controlCode.getAlias()).isEqualTo(ALIAS);
+
+    FormattedAdditionalSpecifications additionalSpecifications = controlCode.getAdditionalSpecifications();
+    assertThat(additionalSpecifications.getClauseText()).isEqualTo(CLAUSE_TEXT);
+    assertThat(additionalSpecifications.getSpecificationText().size()).isEqualTo(3);
+
+    AdditionalSpecificationText additionalSpecificationText = additionalSpecifications.getSpecificationText().get(0);
+    assertThat(additionalSpecificationText.getLinkedControlCode()).isEqualTo(LINKED_CONTROL_CODE);
+    assertThat(additionalSpecificationText.getText()).isEqualTo(SPECIFICATION_TEXT);
+    assertThat(controlCode.getDecontrols().size()).isEqualTo(3);
+
+    Decontrol decontrol = controlCode.getDecontrols().get(0);
+    assertThat(decontrol.getOriginControlCode()).isEqualTo(ORIGIN_CONTROL_CODE);
+    assertThat(decontrol.getText()).isEqualTo(DECONTROLS_TEXT);
+    assertThat(frontEndControlCode.getLineage().size()).isEqualTo(3);
+
+    ControlCodeSummary summary = frontEndControlCode.getLineage().get(0);
+    assertThat(summary.getControlCode()).isEqualTo(LINEAGE_CONTROL_CODE);
+    assertThat(summary.getAlias()).isEqualTo(LINEAGE_ALIAS);
+    assertThat(summary.getFriendlyDescription()).isEqualTo(LINEAGE_FRIENDLY_DESCRIPTION);
+
     assertThat(frontendServiceResult.canShowDecontrols()).isTrue();
     assertThat(frontendServiceResult.canShowAdditionalSpecifications()).isTrue();
     assertThat(frontendServiceResult.canShowTechnicalNotes()).isTrue();
