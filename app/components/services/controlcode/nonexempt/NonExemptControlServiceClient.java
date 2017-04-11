@@ -38,7 +38,8 @@ public class NonExemptControlServiceClient {
       url = webServiceUrl + "/" + goodsType.urlString() +  "/dual-use/" + softTechCategory.toUrlString();
     }
     else {
-      throw new RuntimeException(String.format("Unexpected member of SoftTechCategory enum: \"%s\"", softTechCategory.toString()));
+      // Military
+      url = webServiceUrl + "/" + goodsType.urlString() + "/" + softTechCategory.toUrlString();
     }
     return wsClient.url(url)
         .withRequestFilter(CorrelationId.requestFilter)
