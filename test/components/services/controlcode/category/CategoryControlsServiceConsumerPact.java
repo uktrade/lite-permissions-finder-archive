@@ -36,6 +36,17 @@ public class CategoryControlsServiceConsumerPact {
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
+  @Before
+  public void setUp() throws Exception {
+    ws = WS.newClient(mockProvider.getConfig().getPort());
+    client = new CategoryControlsServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    ws.close();
+  }
+
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareMilitary(PactDslWithProvider builder) {
     PactDslJsonArray existing = PactDslJsonArray.arrayMinLike(1,3)
@@ -114,12 +125,6 @@ public class CategoryControlsServiceConsumerPact {
         .toFragment();
   }
 
-  @Before
-  public void setUp() throws Exception {
-    ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new CategoryControlsServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
-  }
-
   @Test
   @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "softwareMilitary")
   public void softwareMilitary() throws Exception {
@@ -190,10 +195,5 @@ public class CategoryControlsServiceConsumerPact {
     }
     assertThat(result).isNotNull();
     assertThat(result.getControlCodes().isEmpty()).isTrue();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    ws.close();
   }
 }

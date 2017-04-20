@@ -295,5 +295,4 @@ public class GoodsRelationshipsServiceConsumerPact {
     assertThat(result.relationships.isEmpty()).isTrue();
     assertThat(result.relationshipsExist()).isFalse();
   }
-
 }

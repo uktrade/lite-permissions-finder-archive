@@ -61,6 +61,7 @@ public class RelatedControlsServiceConsumerPact {
           .path("/mapped-controls/software/ML1a")
           .method("GET")
           .willRespondWith()
+            .status(200)
             .headers(headers)
             .body(codes)
         .toFragment();

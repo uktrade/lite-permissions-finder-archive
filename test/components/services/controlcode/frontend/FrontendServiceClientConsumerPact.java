@@ -49,6 +49,17 @@ public class FrontendServiceClientConsumerPact {
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
+  @Before
+  public void setUp() throws Exception {
+    ws = WS.newClient(mockProvider.getConfig().getPort());
+    client = new FrontendServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    ws.close();
+  }
+
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment existingControlCode(PactDslWithProvider builder) {
     PactDslJsonBody existing = new PactDslJsonBody()
@@ -117,12 +128,6 @@ public class FrontendServiceClientConsumerPact {
         .toFragment();
   }
 
-  @Before
-  public void setUp() throws Exception {
-    ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new FrontendServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
-  }
-
   @Test
   @PactVerification(value = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, fragment = "existingControlCode")
   public void existingControlCode() throws Exception {
@@ -180,10 +185,5 @@ public class FrontendServiceClientConsumerPact {
           .hasCauseInstanceOf(ServiceException.class);
     }
     assertThat(frontendServiceResult).isNull();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    ws.close();
   }
 }

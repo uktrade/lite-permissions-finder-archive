@@ -80,6 +80,7 @@ public class NonExemptControlServicePact {
           .path("/non-exempt/software/military")
           .method("GET")
           .willRespondWith()
+            .status(200)
             .headers(headers)
             .body(new PactDslJsonArray())
         .toFragment();
@@ -103,6 +104,7 @@ public class NonExemptControlServicePact {
           .path("/non-exempt/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
+            .status(200)
             .headers(headers)
             .body(codes)
         .toFragment();
@@ -119,6 +121,7 @@ public class NonExemptControlServicePact {
           .path("/non-exempt/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
+            .status(200)
             .headers(headers)
             .body(new PactDslJsonArray())
         .toFragment();

@@ -53,6 +53,7 @@ public class CatchallControlsServiceConsumerPact {
           .path("/catch-all-controls/software/military")
           .method("GET")
           .willRespondWith()
+            .status(200)
             .headers(headers)
             .body(codes)
         .toFragment();
@@ -69,6 +70,7 @@ public class CatchallControlsServiceConsumerPact {
           .path("/catch-all-controls/software/military")
           .method("GET")
           .willRespondWith()
+            .status(200)
             .headers(headers)
             .body(new PactDslJsonArray())
         .toFragment();
@@ -91,6 +93,7 @@ public class CatchallControlsServiceConsumerPact {
           .path("/catch-all-controls/software/dual-use")
           .method("GET")
           .willRespondWith()
+            .status(200)
             .headers(headers)
             .body(codes)
         .toFragment();
@@ -107,6 +110,7 @@ public class CatchallControlsServiceConsumerPact {
           .path("/catch-all-controls/software/dual-use")
           .method("GET")
           .willRespondWith()
+            .status(200)
             .headers(headers)
             .body(new PactDslJsonArray())
         .toFragment();
