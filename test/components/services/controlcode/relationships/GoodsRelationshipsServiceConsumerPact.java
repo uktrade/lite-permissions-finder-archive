@@ -74,6 +74,7 @@ public class GoodsRelationshipsServiceConsumerPact {
           .method("GET")
           .willRespondWith()
             .status(200)
+            .headers(headers)
             .body(software)
         .toFragment();
   }
@@ -90,6 +91,7 @@ public class GoodsRelationshipsServiceConsumerPact {
           .method("GET")
           .willRespondWith()
             .status(200)
+            .headers(headers)
             .body(new PactDslJsonArray())
         .toFragment();
   }
@@ -118,6 +120,7 @@ public class GoodsRelationshipsServiceConsumerPact {
           .method("GET")
           .willRespondWith()
             .status(200)
+            .headers(headers)
             .body(software)
         .toFragment();
   }
@@ -134,6 +137,7 @@ public class GoodsRelationshipsServiceConsumerPact {
           .method("GET")
           .willRespondWith()
             .status(200)
+            .headers(headers)
             .body(new PactDslJsonArray())
         .toFragment();
   }
@@ -162,6 +166,7 @@ public class GoodsRelationshipsServiceConsumerPact {
           .method("GET")
           .willRespondWith()
             .status(200)
+            .headers(headers)
             .body(software)
         .toFragment();
   }
@@ -178,6 +183,7 @@ public class GoodsRelationshipsServiceConsumerPact {
           .method("GET")
           .willRespondWith()
             .status(200)
+            .headers(headers)
             .body(new PactDslJsonArray())
         .toFragment();
   }
