@@ -19,7 +19,19 @@ node('jdk8') {
       sh("git push https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@${gitURL} --tags")
     }
   }
-  stage('build'){
-    build job: 'new-docker-build', parameters: [[$class: 'StringParameterValue', name: 'SERVICE_NAME', value: serviceName], [$class: 'StringParameterValue', name: 'BUILD_VERSION', value: params.BUILD_VERSION], [$class: 'StringParameterValue', name: 'DOCKERFILE_PATH', value: '.']]
+  stage('Docker build'){
+    build job: 'new-docker-build', parameters: [
+      [$class: 'StringParameterValue', name: 'SERVICE_NAME', value: serviceName],
+      [$class: 'StringParameterValue', name: 'BUILD_VERSION', value: params.BUILD_VERSION],
+      [$class: 'StringParameterValue', name: 'DOCKERFILE_PATH', value: '.']
+    ]
+  }
+  stage('Dev deploy'){
+    build job: 'new-release-job', parameters: [
+      [$class: 'StringParameterValue', name: 'IMAGE_NAME', value: 'app/permissions-finder'],
+      [$class: 'StringParameterValue', name: 'BUILD_VERSION', value: params.BUILD_VERSION],
+      [$class: 'StringParameterValue', name: 'TARGET_ENVIRONMENT', value: 'dev'],
+      [$class: 'BooleanParameterValue', name: 'COMMENT_REFERENCED_JIRAS', value: true]
+    ]
   }
 }
