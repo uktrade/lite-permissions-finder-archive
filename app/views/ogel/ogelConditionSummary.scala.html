@@ -1,4 +1,5 @@
 @import uk.gov.bis.lite.ogel.api.view.OgelFullView
+@import org.apache.commons.lang3.StringUtils
 
 @(ogel: OgelFullView)
 
@@ -38,7 +39,9 @@
 }
 </ul>
 
-<p class="bold-small">
-  <a class="external" href="@ogel.getLink" rel="external" target="_blank">Read the full licence</a>
-  for more on how to use it, what you can export and permitted export destinations.
-</p>
+@if(StringUtils.isNoneBlank(ogel.getLink)) {
+  <p class="bold-small">
+    <a class="external" href="@ogel.getLink" rel="external" target="_blank">Read the full licence</a>
+    for more on how to use it, what you can export and permitted export destinations.
+  </p>
+}
