@@ -88,7 +88,7 @@ public class OgelResultsController {
             return ok(ogelResults.render(form, display));
           }
           else {
-            List<Country> countries = new ArrayList<>(countryProviderExport.getCountries());
+            List<Country> countries = new ArrayList<>(countryProviderExport.getCountriesOrderedByName());
 
             List<String> countryNames = CountryUtils.getFilteredCountries(countries, destinationCountries).stream()
                 .map(Country::getCountryName)

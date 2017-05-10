@@ -176,7 +176,7 @@ public class DestinationCountryController extends Controller {
   }
 
   private List<Country> getCountries() {
-    List<Country> allCountries = new ArrayList<>(countryProviderExport.getCountries());
+    List<Country> allCountries = new ArrayList<>(countryProviderExport.getCountriesOrderedByName());
     List<String> countryRefs = Collections.singletonList(UNITED_KINGDOM_COUNTRY_REF);
     return CountryUtils.getFilteredCountries(allCountries, countryRefs, true);
   }

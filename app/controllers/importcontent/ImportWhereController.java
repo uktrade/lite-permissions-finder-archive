@@ -47,13 +47,13 @@ public class ImportWhereController extends Controller {
   }
 
   public Result renderForm() {
-    return ok(importCountry.render(formFactory.form(), new ArrayList<>(countryProviderExport.getCountries())));
+    return ok(importCountry.render(formFactory.form(), countryProviderExport.getCountriesOrderedByName()));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<ImportCountryForm> form = formFactory.form(ImportCountryForm.class).bindFromRequest();
 
-    List<Country> countries = new ArrayList<Country>(countryProviderExport.getCountries());
+    List<Country> countries = countryProviderExport.getCountriesOrderedByName();
 
     if (form.hasErrors()) {
       return completedFuture(ok(importCountry.render(form, countries)));

@@ -79,7 +79,7 @@ public class Summary {
     }
 
     if (destinationCountries.size() > 0) {
-      List<Country> countries = CountryUtils.getFilteredCountries(new ArrayList<>(countryProviderExport.getCountries()), destinationCountries);
+      List<Country> countries = CountryUtils.getFilteredCountries(countryProviderExport.getCountriesOrderedByName(), destinationCountries);
       newSummary.addSummaryField(SummaryField.fromDestinationCountryList(countries, contextParamManager.addParamsToCall(routes.ChangeController.changeDestinationCountries())));
     }
 
