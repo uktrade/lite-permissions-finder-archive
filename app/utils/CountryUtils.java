@@ -3,7 +3,9 @@ package utils;
 import models.common.Country;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +48,7 @@ public class CountryUtils {
    * @param countryRefs Country refs
    * @return List country all matched Countries
    */
-  public static List<Country> getFilteredCountries(List<Country> allCountries, List<String> countryRefs) {
+  public static List<Country> getFilteredCountries(Collection<Country> allCountries, List<String> countryRefs) {
     return getFilteredCountries(allCountries, countryRefs, false);
   }
 
@@ -58,9 +60,13 @@ public class CountryUtils {
    * @param negate match
    * @return List of type Country, filtered as stated above.
    */
-  public static List<Country> getFilteredCountries(List<Country> allCountries, List<String> countryRefs, boolean negate) {
+  public static List<Country> getFilteredCountries(Collection<Country> allCountries, List<String> countryRefs, boolean negate) {
     return countryRefs.stream()
         .flatMap(ref -> allCountries.stream().filter(c -> negate != c.getCountryRef().equals(ref)))
         .collect(Collectors.toList());
+  }
+
+  public static List<Country> getSortedCountries(Collection<Country> countries) {
+    return countries.stream().sorted(Comparator.comparing(Country::getCountryName)).collect(Collectors.toList());
   }
 }

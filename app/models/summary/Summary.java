@@ -78,9 +78,10 @@ public class Summary {
       ), httpExecutionContext.current());
     }
 
-    if (destinationCountries.size() > 0) {
-      List<Country> countries = CountryUtils.getFilteredCountries(new ArrayList<>(countryProviderExport.getCountries()), destinationCountries);
-      newSummary.addSummaryField(SummaryField.fromDestinationCountryList(countries, contextParamManager.addParamsToCall(routes.ChangeController.changeDestinationCountries())));
+    if (!destinationCountries.isEmpty()) {
+      List<Country> sortedCountries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
+      List<Country> filteredCountries = CountryUtils.getFilteredCountries(sortedCountries, destinationCountries);
+      newSummary.addSummaryField(SummaryField.fromDestinationCountryList(filteredCountries, contextParamManager.addParamsToCall(routes.ChangeController.changeDestinationCountries())));
     }
 
     if (StringUtils.isNoneBlank(ogelId)) {

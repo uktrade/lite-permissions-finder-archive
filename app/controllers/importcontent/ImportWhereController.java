@@ -16,9 +16,9 @@ import play.data.FormFactory;
 import play.data.validation.Constraints;
 import play.mvc.Controller;
 import play.mvc.Result;
+import utils.CountryUtils;
 import views.html.importcontent.importCountry;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -47,13 +47,14 @@ public class ImportWhereController extends Controller {
   }
 
   public Result renderForm() {
-    return ok(importCountry.render(formFactory.form(), new ArrayList<>(countryProviderExport.getCountries())));
+    List<Country> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
+    return ok(importCountry.render(formFactory.form(), countries));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<ImportCountryForm> form = formFactory.form(ImportCountryForm.class).bindFromRequest();
 
-    List<Country> countries = new ArrayList<Country>(countryProviderExport.getCountries());
+    List<Country> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
 
     if (form.hasErrors()) {
       return completedFuture(ok(importCountry.render(form, countries)));
