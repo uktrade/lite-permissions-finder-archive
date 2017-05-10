@@ -66,6 +66,11 @@ public class CountryUtils {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Returns a list of Country ordered by {@link Country#countryName}
+   * @param countries countries to sort
+   * @return a sorted list of countries
+   */
   public static List<Country> getSortedCountries(Collection<Country> countries) {
     return countries.stream().sorted(Comparator.comparing(Country::getCountryName)).collect(Collectors.toList());
   }
