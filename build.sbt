@@ -42,6 +42,9 @@ libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.0"
 libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
 libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.1"
 
+libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.3.6" % "test"
+libraryDependencies += "com.itv" %% "scalapact-scalatest" % "2.1.2" % "test"
+
 resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
 resolvers += Resolver.sonatypeRepo("releases")
 
@@ -63,9 +66,12 @@ buildInfoKeys ++= Seq[BuildInfoKey](
 buildInfoOptions += BuildInfoOption.BuildTime
 buildInfoOptions += BuildInfoOption.ToJson
 
+// Pact
+pactBrokerAddress := "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test"
+pactContractVersion := "1.0.0"
+
 // Concatenate the /assets/javascript directory into a single lite-permissions-finder.js
 Concat.groups := Seq("lite-permissions-finder.js" -> group((sourceDirectory in Assets).value / "javascripts" ** "*.js"))
-
 
 // Remove assets used in the concat stage. Then applies a manual asset mapping fix to the resulting asset
 // lite-permissions-finder.js. This is due to Concat.parentDir changing the new assets location in addition to it's
