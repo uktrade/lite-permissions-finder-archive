@@ -30,7 +30,7 @@ public class GoodsRelationshipsServiceConsumerPact {
   private GoodsRelationshipsServiceClient client;
   private WSClient ws;
 
-  private final static String CONTROL_ENTRY_HEADING = "Software to develop other military software";
+  private final static String CONTROL_ENTRY_HEADING = "software to develop other military software";
   private final static String CONTROL_ENTRY_QUESTION = "Is your software specially designed or modified for the development, production, operation or maintenance of other software with military applications?";
   private final static String CONTROL_ENTRY_CONTENT = "software for the test, inspection and production of telecommunications and information security systems and equipment";
   private final static String CONTROL_CODE = "ML1a";
@@ -68,8 +68,8 @@ public class GoodsRelationshipsServiceConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("Software control code related to military software exists")
-        .uponReceiving("A request for software control codes related to military software")
+        .given("software control code related to military software exists")
+        .uponReceiving("a request for software control codes related to military software")
           .path("/goods-relationships/software/for/software/military")
           .method("GET")
           .willRespondWith()
@@ -85,8 +85,8 @@ public class GoodsRelationshipsServiceConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("Software control code related to military software do not exist")
-        .uponReceiving("A request for software control codes related to military software")
+        .given("software control code related to military software do not exist")
+        .uponReceiving("a request for software control codes related to military software")
           .path("/goods-relationships/software/for/software/military")
           .method("GET")
           .willRespondWith()
@@ -114,8 +114,8 @@ public class GoodsRelationshipsServiceConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("Software control code related to military technology exists")
-        .uponReceiving("A request for software control codes related to military technology")
+        .given("software control code related to military technology exists")
+        .uponReceiving("a request for software control codes related to military technology")
           .path("/goods-relationships/software/for/technology/military")
           .method("GET")
           .willRespondWith()
@@ -131,8 +131,8 @@ public class GoodsRelationshipsServiceConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("Software control code related to military technology do not exist")
-        .uponReceiving("A request for software control codes related to military technology")
+        .given("software control code related to military technology do not exist")
+        .uponReceiving("a request for software control codes related to military technology")
           .path("/goods-relationships/software/for/technology/military")
           .method("GET")
           .willRespondWith()
@@ -160,8 +160,8 @@ public class GoodsRelationshipsServiceConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("Software control code related to dual use telecoms software exists")
-        .uponReceiving("A request for software control codes related to dual use telecoms software")
+        .given("software control code related to dual use telecoms software exists")
+        .uponReceiving("a request for software control codes related to dual use telecoms software")
           .path("/goods-relationships/software/for/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
@@ -177,8 +177,8 @@ public class GoodsRelationshipsServiceConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("Software control code related to dual use telecoms software do not exist")
-        .uponReceiving("A request for software control codes related to dual use telecoms software")
+        .given("software control code related to dual use telecoms software do not exist")
+        .uponReceiving("a request for software control codes related to dual use telecoms software")
         .path("/goods-relationships/software/for/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()

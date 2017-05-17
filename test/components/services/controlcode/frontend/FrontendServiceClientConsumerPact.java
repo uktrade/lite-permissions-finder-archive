@@ -95,7 +95,7 @@ public class FrontendServiceClientConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("control code " + CONTROL_CODE + " exists")
+        .given("provided control code exists")
         .uponReceiving("a request for code control code " + CONTROL_CODE)
           .path("/frontend-control-codes/" + CONTROL_CODE)
           .method("GET")
@@ -117,7 +117,7 @@ public class FrontendServiceClientConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("control code " + CONTROL_CODE + " does not exist")
+        .given("provided control code does not exist")
         .uponReceiving("a request for code control code " + CONTROL_CODE)
         .path("/frontend-control-codes/" + CONTROL_CODE)
         .method("GET")
