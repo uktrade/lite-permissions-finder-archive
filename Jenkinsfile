@@ -1,3 +1,6 @@
+@Library('lite-jenkins-pipeline') _
+def slackChannels = [started: ['#lite-jenkins'], successful: ['#lite-jenkins'], failed: ['#lite-builds', '#lite-jenkins']]
+
 node('jdk8') {
   currentBuild.displayName = "#${env.BUILD_NUMBER} - ${params.BUILD_VERSION}"
   slackBuildNotifier.notifyBuild("STARTED", slackChannels)
