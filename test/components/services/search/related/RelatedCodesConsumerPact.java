@@ -29,9 +29,10 @@ public class RelatedCodesConsumerPact {
   private RelatedCodesServiceClient client;
   private WSClient ws;
 
-  private final static String CONTROL_CODE = "ML1a";
-  private final static String GROUP_TITLE = "Smooth-bore military weapons, components and accessories";
-  private final static String DISPLAY_TEXT = "Rifles and combination guns, handguns, machine, sub-machine and volley guns";
+  private static final String CONTROL_CODE = "ML1a";
+  private static final String GROUP_TITLE = "Smooth-bore military weapons, components and accessories";
+  private static final String RELATED_CODE = "ML3a";
+  private static final String RELATED_CODE_DISPLAY_TEXT = "Ammunition for smooth-bore military weapons";
 
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PactConfig.SEARCH_MANAGEMENT_PROVIDER, this);
@@ -52,8 +53,8 @@ public class RelatedCodesConsumerPact {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("groupTitle", GROUP_TITLE)
         .eachLike("results", 3)
-          .stringType("controlCode", CONTROL_CODE)
-          .stringType("displayText", DISPLAY_TEXT)
+          .stringType("controlCode", RELATED_CODE)
+          .stringType("displayText", RELATED_CODE_DISPLAY_TEXT)
           .closeObject()
         .closeArray()
         .asBody();
@@ -78,8 +79,8 @@ public class RelatedCodesConsumerPact {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("groupTitle", GROUP_TITLE)
         .eachLike("results", 1)
-          .stringType("controlCode", CONTROL_CODE)
-          .stringType("displayText", DISPLAY_TEXT)
+          .stringType("controlCode", RELATED_CODE)
+          .stringType("displayText", RELATED_CODE_DISPLAY_TEXT)
           .closeObject()
         .closeArray()
         .asBody();
@@ -134,8 +135,8 @@ public class RelatedCodesConsumerPact {
     assertThat(result).isNotNull();
     assertThat(result.groupTitle).isEqualTo(GROUP_TITLE);
     assertThat(result.relatedCodes.size()).isEqualTo(3);
-    assertThat(result.relatedCodes.get(0).getControlCode()).isEqualTo(CONTROL_CODE);
-    assertThat(result.relatedCodes.get(0).getDisplayText()).isEqualTo(DISPLAY_TEXT);
+    assertThat(result.relatedCodes.get(0).getControlCode()).isEqualTo(RELATED_CODE);
+    assertThat(result.relatedCodes.get(0).getDisplayText()).isEqualTo(RELATED_CODE_DISPLAY_TEXT);
   }
 
   @Test
@@ -151,8 +152,8 @@ public class RelatedCodesConsumerPact {
     assertThat(result).isNotNull();
     assertThat(result.groupTitle).isEqualTo(GROUP_TITLE);
     assertThat(result.relatedCodes.size()).isEqualTo(1);
-    assertThat(result.relatedCodes.get(0).getControlCode()).isEqualTo(CONTROL_CODE);
-    assertThat(result.relatedCodes.get(0).getDisplayText()).isEqualTo(DISPLAY_TEXT);
+    assertThat(result.relatedCodes.get(0).getControlCode()).isEqualTo(RELATED_CODE);
+    assertThat(result.relatedCodes.get(0).getDisplayText()).isEqualTo(RELATED_CODE_DISPLAY_TEXT);
   }
 
   @Test
