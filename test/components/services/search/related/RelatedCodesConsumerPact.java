@@ -102,7 +102,7 @@ public class RelatedCodesConsumerPact {
   @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment controlCodeDoesNotExist(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
-        .stringType("code", "404")
+        .integerType("code", 404)
         .stringType("message", "Control code not known: " + CONTROL_CODE)
         .asBody();
 
