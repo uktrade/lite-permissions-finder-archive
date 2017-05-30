@@ -68,33 +68,6 @@ public class SearchConsumerPact {
   }
 
   @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment aResultIsFound(PactDslWithProvider builder) {
-    PactDslJsonBody body = new PactDslJsonBody()
-        .eachLike("results", 1)
-          .stringType("controlCode", CONTROL_CODE)
-          .stringType("displayText", DISPLAY_TEXT)
-          .array("relatedCodes").closeArray()
-          .closeObject()
-        .closeArray()
-        .asBody();
-
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
-    return builder
-        .given("a result exists for the search terms")
-        .uponReceiving("a search request for the given terms")
-          .path("/search")
-          .query("term=FOUND&goodsType=physical")
-          .method("GET")
-        .willRespondWith()
-          .status(200)
-          .headers(headers)
-          .body(body)
-        .toFragment();
-  }
-
-  @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment aResultIsFoundWithRelatedCodes(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .eachLike("results", 1)
@@ -162,24 +135,6 @@ public class SearchConsumerPact {
     }
     assertThat(result).isNotNull();
     assertThat(result.results.isEmpty()).isTrue();
-  }
-
-  @Test
-  @PactVerification(value = PactConfig.SEARCH_MANAGEMENT_PROVIDER, fragment = "aResultIsFound")
-  public void aResultIsFoundTest() throws Exception {
-    SearchServiceResult result;
-    try {
-      result = client.get("FOUND").toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException(e);
-    }
-    assertThat(result).isNotNull();
-    assertThat(result.results.size()).isEqualTo(1);
-    SearchResultView r = result.results.get(0);
-    assertThat(r.getControlCode()).isEqualTo(CONTROL_CODE);
-    assertThat(r.getDisplayText()).isEqualTo(DISPLAY_TEXT);
-    assertThat(r.getRelatedCodes().isEmpty()).isTrue();
   }
 
   @Test
