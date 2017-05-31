@@ -1,7 +1,6 @@
 package components.services.ogels.conditions;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import play.libs.Json;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
@@ -21,7 +20,7 @@ public class OgelConditionsServiceResult {
   private OgelConditionsServiceResult() {
     this.conditionDescription = null;
     this.ogelID = null;
-    this.conditionDescriptionControlCodes = null;
+    this.conditionDescriptionControlCodes = Optional.empty();
     this.itemsAllowed = false;
     this.controlCode = null;
     this.isEmpty = true;
