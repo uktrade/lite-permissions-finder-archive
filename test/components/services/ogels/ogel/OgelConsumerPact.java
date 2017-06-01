@@ -1,6 +1,5 @@
 package components.services.ogels.ogel;
 
-import static models.summary.SummaryFieldType.CONTROL_CODE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
@@ -10,9 +9,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
-import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import exceptions.ServiceException;
-import models.OgelActivityType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,9 +21,7 @@ import play.libs.ws.WSClient;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView.OgelConditionSummary;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -35,8 +30,7 @@ public class OgelConsumerPact {
   private WSClient ws;
 
   private static final String OGEL_ID = "OGL1";
-  private static final String OGEL_NAME = "Military goods, software and technology: government or NATO end us";
-  private static final String OGEL_DESC = "description";
+  private static final String OGEL_NAME = "name";
   private static final String OGEL_LINK = "http://example.org";
   private static final String OGEL_CAN = "can";
   private static final String OGEL_CANT = "can't";
@@ -62,7 +56,6 @@ public class OgelConsumerPact {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("id", OGEL_ID)
         .stringType("name", OGEL_NAME)
-        .stringType("description", OGEL_DESC)
         .stringType("link", OGEL_LINK)
         .object("summary")
           .minArrayLike("canList", 0, PactDslJsonRootValue.stringType(OGEL_CAN),3)
@@ -76,7 +69,7 @@ public class OgelConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("requested ogel exists")
+        .given("provided OGEL exists")
         .uponReceiving("a request for a given ogel id")
           .path("/ogels/" + OGEL_ID)
           .method("GET")
@@ -98,7 +91,7 @@ public class OgelConsumerPact {
     headers.put("Content-Type", "application/json");
 
     return builder
-        .given("requested ogel does not exist")
+        .given("provided OGEL does not exist")
         .uponReceiving("a request for a given ogel id")
           .path("/ogels/" + OGEL_ID)
           .method("GET")
@@ -122,7 +115,6 @@ public class OgelConsumerPact {
     assertThat(result).isNotNull();
     assertThat(result.getId()).isEqualTo(OGEL_ID);
     assertThat(result.getName()).isEqualTo(OGEL_NAME);
-    assertThat(result.getDescription()).isEqualTo(OGEL_DESC);
     assertThat(result.getLink()).isEqualTo(OGEL_LINK);
     OgelConditionSummary summary = result.getSummary();
     assertThat(summary).isNotNull();
