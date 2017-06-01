@@ -31,9 +31,9 @@ public class ApplicableOgelConsumerPact {
   private ApplicableOgelServiceClient client;
   private WSClient ws;
 
-  private static final String OGEL_ID = "OGL2";
-  private static final String OGEL_NAME = "Historic military goods";
-  private static final String OGEL_USAGE_SUMMARY = "Export historic military goods manufactured before 1897, up to a value of £35,000.";
+  private static final String OGEL_ID = "OGL1";
+  private static final String OGEL_NAME = "name";
+  private static final String OGEL_USAGE_SUMMARY = "can";
   private static final String CONTROL_CODE = "ML1a";
   private static final String ACTIVITY_TYPE_INVALID = "INVALID";
   private static final String SOURCE_COUNTRY = "CTRY0";
