@@ -41,7 +41,7 @@ public class OgelConditionsServiceClient {
             throw new ServiceException("OGEL service request failed", error);
           }
           else if (response.getStatus() == 200 || response.getStatus() == 206) {
-            // Condition apply (204) or conditions apply, but with missing control codes (206)
+            // Condition apply (200) or conditions apply, but with missing control codes (206)
             return OgelConditionsServiceResult.buildFrom(response.asJson());
           }
           else if (response.getStatus() == 204) {
