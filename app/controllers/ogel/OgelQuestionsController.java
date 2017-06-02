@@ -65,18 +65,17 @@ public class OgelQuestionsController {
     else {
       OgelQuestionsForm ogelQuestionsForm = form.get();
       permissionsFinderDao.saveOgelQuestionsForm(ogelQuestionsForm);
-      return getNextStage(OgelQuestionsForm.formToActivityTypes(Optional.of(ogelQuestionsForm)));
+      return getNextStage();
     }
   }
 
-  private CompletionStage<Result> getNextStage(List<String> activityTypes) {
-
+  private CompletionStage<Result> getNextStage() {
     String controlCode = permissionsFinderDao.getControlCodeForRegistration();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
 
-    return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry, destinationCountries, activityTypes)
+    return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry, destinationCountries)
         .thenApplyAsync((result) -> {
           if (result.isVirtualEu()) {
             permissionsFinderDao.saveOgelId(result.getOgelId());

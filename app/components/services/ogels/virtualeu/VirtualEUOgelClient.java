@@ -32,9 +32,7 @@ public class VirtualEUOgelClient {
     this.webServiceTimeout = webServiceTimeout;
   }
 
-  public CompletionStage<VirtualEuView> sendServiceRequest(String controlCode, String sourceCountry,
-                                                                 List<String> destinationCountries, List<String> activityTypes){
-
+  public CompletionStage<VirtualEuView> sendServiceRequest(String controlCode, String sourceCountry, List<String> destinationCountries){
     WSRequest request = wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
@@ -43,8 +41,6 @@ public class VirtualEUOgelClient {
         .setQueryParameter("sourceCountry", sourceCountry);
 
     destinationCountries.forEach(country -> request.setQueryParameter("destinationCountry", country));
-
-    activityTypes.forEach(activityType -> request.setQueryParameter("activityType", activityType));
 
     return request.get()
         .handleAsync((response, error) -> {

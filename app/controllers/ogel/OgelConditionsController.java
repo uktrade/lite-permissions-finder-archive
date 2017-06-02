@@ -85,12 +85,9 @@ public class OgelConditionsController {
             String sourceCountry = permissionsFinderDao.getSourceCountry();
             List<String> destinationCountries = CountryUtils.getDestinationCountries(
                 permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
-            List<String> activityTypes = OgelQuestionsController.OgelQuestionsForm
-                .formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
             // branch on this ogel being a virtual eu or not
-            return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry,
-                destinationCountries, activityTypes)
+            return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry, destinationCountries)
                 .thenComposeAsync(virtualEUResult -> {
                   if(virtualEUResult.isVirtualEu()) {
                     // Optional.get() should be fine, doConditionApply checks the state of this optional
@@ -133,11 +130,8 @@ public class OgelConditionsController {
                 String sourceCountry = permissionsFinderDao.getSourceCountry();
                 List<String> destinationCountries = CountryUtils.getDestinationCountries(
                     permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
-                List<String> activityTypes = OgelQuestionsController.OgelQuestionsForm
-                    .formToActivityTypes(permissionsFinderDao.getOgelQuestionsForm());
 
-                return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry,
-                    destinationCountries, activityTypes)
+                return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry, destinationCountries)
                     .thenApplyAsync(result -> ok(ogelConditions.render(form, ogelResult,
                         conditionsResult, conditionsResult.isMissingControlCodes, result.isVirtualEu())),
                         httpExecutionContext.current());
