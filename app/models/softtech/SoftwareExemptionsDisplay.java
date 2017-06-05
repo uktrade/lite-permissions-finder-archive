@@ -15,7 +15,7 @@ public class SoftwareExemptionsDisplay {
     if (exemptionDisplayType == SoftwareExemptionQuestion.Q1) {
       this.questionLabel = "Is your software in the public domain?";
       this.formAction = routes.SoftwareExemptionsController.handleSubmitQ1().url();
-      this.questionContent = Arrays.asList("For example, available as a free download that does not require permission or payment to use.");
+      this.questionContent = Arrays.asList("For example, available as a download that can be further shared without restriction.");
     }
     else if (exemptionDisplayType == SoftwareExemptionQuestion.Q2) {
       this.questionLabel = "Are you exporting information security software?";
@@ -27,7 +27,7 @@ public class SoftwareExemptionsDisplay {
       this.formAction = routes.SoftwareExemptionsController.handleSubmitQ3().url();
       this.questionContent = Arrays.asList("Software that is available to buy from retail outlets, e.g. shops open to the public",
           "Software that the end user can install without expert help, e.g. a technician or engineer provided by the software's manufacturer",
-          "Source code (excluding code within complete software) needed to install, operate, maintain or repair exported items, but that cannot be used for anything else");
+          "The minimum necessary object code for the installation, operation, maintenance (checking) or repair of exported items");
     }
 
   }

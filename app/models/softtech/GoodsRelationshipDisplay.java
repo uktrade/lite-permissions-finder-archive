@@ -14,11 +14,11 @@ public class GoodsRelationshipDisplay {
 
     if (goodsType == GoodsType.SOFTWARE) {
       if (relatedToGoodsType == GoodsType.SOFTWARE) {
-        this.questionLabel = "Are you exporting software for the development, production or use of other software related to licensable items?";
-        this.questionContent = "For example software to create computer programs for use with goods that themselves need a licence to be exported.";
+        this.questionLabel = "Are you exporting software for the development, production or use of other software?";
+        this.questionContent = "For example software to create computer programs for use with controlled goods.";
       }
       else if (relatedToGoodsType == GoodsType.TECHNOLOGY) {
-        this.questionLabel = "Are you exporting software for the development, production or use of technical information for licensable items?";
+        this.questionLabel = "Are you exporting software for the development, production or use of technical information?";
         this.questionContent = "For example software used to produce manuals, designs, models or blueprints for goods that themselves need a licence to be exported.";
       }
       else {
@@ -27,7 +27,7 @@ public class GoodsRelationshipDisplay {
     }
     else if (goodsType == GoodsType.TECHNOLOGY) {
       if (relatedToGoodsType == GoodsType.SOFTWARE) {
-        this.questionLabel = "Are you exporting technical information for the development, production or use of software for licensable items?";
+        this.questionLabel = "Are you exporting technical information for the development, production or use of software?";
         this.questionContent = "For example manuals for software used to operate or control equipment that itself needs a licence to be exported.";
       }
       else {
