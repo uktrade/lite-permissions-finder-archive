@@ -14,7 +14,11 @@ public class OgelResultsDisplay {
 
   public OgelResultsDisplay(List<ApplicableOgelView> ogels, FrontEndControlCodeView frontEndControlCodeView, List<String> countryNames) {
     this.ogels = ogels;
-    this.pageTitle = ogels.size() > 0 ? "Your possible licences" : "No open licences available";
+    if (!ogels.isEmpty()) {
+      this.pageTitle = "Your possible licences";
+    } else {
+      this.pageTitle = "You need a standard individual export licence";
+    }
     this.controlCodeTitle = frontEndControlCodeView.getControlCodeData().getTitle();
     // Creates a string in the form "A, B and C"
     if (countryNames != null && !countryNames.isEmpty()) {
