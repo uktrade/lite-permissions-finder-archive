@@ -128,7 +128,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
                                                          @Named("countryServiceAddress") String address,
                                                          @Named("countryServiceTimeout") int timeout,
                                                          ObjectMapper mapper) {
-    return new CountryProvider(new CountryServiceClient(httpContext, wsClient, address + "/countries/set/export-control", timeout, mapper));
+    CountryServiceClient client = CountryServiceClient.buildCountryServiceSetClient(httpContext, wsClient, timeout, address, "export-control", mapper);
+    return new CountryProvider(client);
   }
 
   @Provides @Singleton
@@ -137,7 +138,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
                                                      @Named("countryServiceAddress") String address,
                                                      @Named("countryServiceTimeout") int timeout,
                                                      ObjectMapper mapper) {
-    return new CountryProvider(new CountryServiceClient(httpContext, wsClient, address + "/countries/group/eu", timeout, mapper));
+    CountryServiceClient client = CountryServiceClient.buildCountryServiceGroupClient(httpContext, wsClient, timeout, address, "eu", mapper);
+    return new CountryProvider(client);
   }
 
   @Provides @Singleton
