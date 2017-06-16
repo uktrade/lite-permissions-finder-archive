@@ -38,6 +38,8 @@ libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
 libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.5.0"
 
+libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"
+
 libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.0"
 libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
 libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.1"
