@@ -11,7 +11,11 @@
   </appender>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-      <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <fieldNames>
+        <timestamp>@ts</timestamp>
+      </fieldNames>
+    </encoder>
   </appender>
 
   <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
