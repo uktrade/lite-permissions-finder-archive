@@ -41,11 +41,7 @@
       @countrySelectGenerator(form, DestinationCountryController.THROUGH_DESTINATION_COUNTRIES_FIELD_NAME, numberOfThroughDestinationCountries, "Type the country or territory where the first consignee or other party will receive the items", countries)
       *@
 
-      <p>
-        Type the country or territory where the first consignee or other party will receive the items
-      </p>
-
-      @countrySelect(form(DestinationCountryController.THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + "[0]"), countries, None, None, None, None)
+      @countrySelect(form(DestinationCountryController.THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + "[0]"), countries, Some("Type the country or territory where the first consignee or other party will receive the items"), None, None, None)
 
       @* Uncomment for multiple through destination countries
       @if(numberOfThroughDestinationCountries < DestinationCountryController.MAX_NUMBER_OF_THROUGH_COUNTRIES) {
