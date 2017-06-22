@@ -1,4 +1,10 @@
-@(headingText: String, headingClass: String = "heading-large")
+@(headingText: String, headingClass: String = "heading-large", visuallyHidden : Boolean = false)
 <div>
-  <h1 class="@headingClass">@headingText</h1>
+  <h1 class="@headingClass">
+    @if(visuallyHidden) {
+      <span class="visually-hidden">@headingText</span>
+    } else {
+      @headingText
+    }
+  </h1>
 </div>

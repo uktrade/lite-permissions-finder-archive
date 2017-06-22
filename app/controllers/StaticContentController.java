@@ -9,7 +9,6 @@ import play.twirl.api.Html;
 import scala.Option;
 import views.html.staticContent;
 import views.html.util.heading;
-import views.html.util.headingSpacer;
 import views.html.util.headingBanner;
 
 import java.io.IOException;
@@ -57,7 +56,7 @@ public class StaticContentController extends Controller {
     private final Html pageHeading;
 
   }
-  private static final Function<String, Html> headingStandardFunc = title -> heading.render(title, "heading-large");
+  private static final Function<String, Html> headingStandardFunc = title -> heading.render(title, "heading-large", false);
   private final static Function<String, Html> headingBannerFunc = headingBanner::render;
 
   public Result renderStaticHtml(StaticHtml staticHtml) {
