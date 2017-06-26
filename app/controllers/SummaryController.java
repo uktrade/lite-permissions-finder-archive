@@ -16,6 +16,7 @@ import components.services.registration.OgelRegistrationServiceClient;
 import exceptions.FormStateException;
 import journey.JourneyDefinitionNames;
 import models.summary.Summary;
+import models.summary.SummaryService;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -33,38 +34,26 @@ public class SummaryController {
   private final ContextParamManager contextParamManager;
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
-  private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
-  private final FrontendServiceClient frontendServiceClient;
-  private final CountryProvider countryProviderExport;
-  private final OgelServiceClient ogelServiceClient;
-  private final ApplicableOgelServiceClient applicableOgelServiceClient;
   private final OgelRegistrationServiceClient ogelRegistrationServiceClient;
+  private final SummaryService summaryService;
 
   @Inject
   public SummaryController(TransactionManager transactionManager,
                            ContextParamManager contextParamManager,
                            JourneyManager journeyManager,
                            FormFactory formFactory,
-                           PermissionsFinderDao permissionsFinderDao,
                            HttpExecutionContext httpExecutionContext,
-                           FrontendServiceClient frontendServiceClient,
-                           @Named("countryProviderExport") CountryProvider countryProviderExport,
-                           OgelServiceClient ogelServiceClient,
-                           ApplicableOgelServiceClient applicableOgelServiceClient,
-                           OgelRegistrationServiceClient ogelRegistrationServiceClient
+                           OgelRegistrationServiceClient ogelRegistrationServiceClient,
+                           SummaryService summaryService
   ) {
     this.transactionManager = transactionManager;
     this.contextParamManager = contextParamManager;
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
-    this.frontendServiceClient = frontendServiceClient;
-    this.countryProviderExport = countryProviderExport;
-    this.ogelServiceClient = ogelServiceClient;
-    this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.ogelRegistrationServiceClient = ogelRegistrationServiceClient;
+    this.summaryService = summaryService;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -111,15 +100,13 @@ public class SummaryController {
   }
 
   public CompletionStage<Result> renderWithForm(Form<SummaryForm> form, boolean isResumedApplication) {
-    return Summary.composeSummary(contextParamManager, permissionsFinderDao, httpExecutionContext,
-        frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProviderExport)
+    return summaryService.composeSummary()
         .thenComposeAsync(summaryDetails -> completedFuture(ok(summary.render(form, summaryDetails, isResumedApplication))
         ), httpExecutionContext.current());
   }
 
   private CompletionStage<Result> redirectToRegistration() {
-    return Summary.composeSummary(contextParamManager, permissionsFinderDao, httpExecutionContext,
-        frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProviderExport)
+    return summaryService.composeSummary()
         .thenComposeAsync(summary -> {
           if (summary.isValid()) {
             String transactionId = transactionManager.getTransactionId();

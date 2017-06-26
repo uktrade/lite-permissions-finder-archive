@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SummaryTest {
+public class SummaryServiceTest {
   private static final String APPLICATION_CODE = "RV8K-ZR17";
   private static final String DESTINATION_COUNTRY = "CTRY3";
   private static final String SOURCE_COUNTRY = "CTRY0";
@@ -54,6 +54,8 @@ public class SummaryTest {
   private ApplicableOgelServiceClient applicableOgelServiceClient;
   @Mock
   private CountryProvider countryProvider;
+
+  private SummaryService summaryService;
 
   @Before
   public void setUp() throws Exception {
@@ -95,11 +97,13 @@ public class SummaryTest {
         .thenReturn(CompletableFuture.completedFuture(applicableOgelServiceResult));
 
     when(countryProvider.getCountries()).thenReturn(Collections.singletonList(country));
+
+    summaryService = new SummaryServiceImpl(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider);
   }
 
   @Test
   public void summaryIsGenerated() throws Exception {
-    Summary summary = Summary.composeSummary(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider).toCompletableFuture().get();
+    Summary summary = summaryService.composeSummary().toCompletableFuture().get();
     assertThat(summary.applicationCode).isEqualTo(APPLICATION_CODE);
     assertThat(summary.isValid()).isTrue();
     assertThat(summary.summaryFields.isEmpty()).isFalse();
@@ -108,28 +112,28 @@ public class SummaryTest {
 
   @Test
   public void ogelSummaryFieldIsGenerated() throws Exception {
-    Summary summary = Summary.composeSummary(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider).toCompletableFuture().get();
+    Summary summary = summaryService.composeSummary().toCompletableFuture().get();
     Optional<SummaryField> field = summary.findSummaryField(SummaryFieldType.OGEL_TYPE);
     assertThat(field.isPresent()).isTrue();
   }
 
   @Test
   public void destinationCountriesFieldIsGenerated() throws Exception {
-    Summary summary = Summary.composeSummary(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider).toCompletableFuture().get();
+    Summary summary = summaryService.composeSummary().toCompletableFuture().get();
     Optional<SummaryField> field = summary.findSummaryField(SummaryFieldType.DESTINATION_COUNTRIES);
     assertThat(field.isPresent()).isTrue();
   }
 
   @Test
   public void controlCodeFieldIsGenerated() throws Exception {
-    Summary summary = Summary.composeSummary(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider).toCompletableFuture().get();
+    Summary summary = summaryService.composeSummary().toCompletableFuture().get();
     Optional<SummaryField> field = summary.findSummaryField(SummaryFieldType.CONTROL_CODE);
     assertThat(field.isPresent()).isTrue();
   }
 
   @Test
   public void summaryFieldsAreValidated() throws Exception {
-    Summary summary = Summary.composeSummary(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider).toCompletableFuture().get();
+    Summary summary = summaryService.composeSummary().toCompletableFuture().get();
     assertThat(summary.summaryFields.size()).isEqualTo(3);
     assertThat(summary.isValid()).isTrue();
 
