@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-//@RunWith(MockitoJUnitRunner.class)
 public class OgelRegistrationConsumerPact {
   private OgelRegistrationServiceClient client;
   private WSClient ws;
@@ -81,9 +80,29 @@ public class OgelRegistrationConsumerPact {
     return summary;
   }
 
+  private PactDslJsonBody buildRequestBody() {
+    return new PactDslJsonBody()
+        .stringType("transactionId", "12345")
+        .stringType("transactionType", "OGEL_REGISTRATION")
+        .object("transactionData")
+          .stringType("OGEL_TYPE", "some data")
+          .closeObject()
+        .minArrayLike("editSummaryFields", 0, 1)
+          .stringType("fieldName", "some heading")
+          .stringType("fieldValue", "some content")
+          .booleanType("isHtml", false)
+          .booleanType("isValid", true)
+          .stringType("editLink", "http://localhost/edit")
+          .closeObject()
+        .closeArray()
+        .asBody();
+  }
+
   @Pact(provider = PactConfig.OGEL_REGISTRATION_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment validTransactionData(PactDslWithProvider builder) {
-    PactDslJsonBody body = new PactDslJsonBody()
+    PactDslJsonBody requestBody = buildRequestBody();
+
+    PactDslJsonBody responseBody = new PactDslJsonBody()
         .stringType("status", OK_STATUS)
         .stringType("redirectUrl", REDIRECT_URL)
         .asBody();
@@ -97,16 +116,20 @@ public class OgelRegistrationConsumerPact {
           .path("/update-transaction")
           .query("securityToken=" + SHARED_SECRET)
           .method("POST")
+          .headers(headers)
+          .body(requestBody)
         .willRespondWith()
           .status(200)
           .headers(headers)
-          .body(body)
+          .body(responseBody)
         .toFragment();
   }
 
 
   @Pact(provider = PactConfig.OGEL_REGISTRATION_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment invalidTransactionData(PactDslWithProvider builder) {
+    PactDslJsonBody requestBody = buildRequestBody();
+
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("status", ERROR_STATUS)
         .stringType("errorMessage", "Invalid request transaction data.")
@@ -121,6 +144,8 @@ public class OgelRegistrationConsumerPact {
           .path("/update-transaction")
           .query("securityToken=" + SHARED_SECRET)
           .method("POST")
+          .headers(headers)
+          .body(requestBody)
         .willRespondWith()
           .status(400)
           .headers(headers)
