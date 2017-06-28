@@ -63,11 +63,7 @@ public class OgelRegistrationServiceClient {
         summaryStage.thenApplyAsync(summary -> new OgelRegistrationServiceRequest(transactionId, summary),
             httpExecutionContext.current());
 
-    return requestStage.thenApplyAsync(request -> {
-      Logger.debug(Json.toJson(request).toString());
-      return wsRequest.post(Json.toJson(request));
-    }
-    , httpExecutionContext.current())
+    return requestStage.thenApplyAsync(request -> wsRequest.post(Json.toJson(request)), httpExecutionContext.current())
         .thenCompose(Function.identity())
         .handleAsync((response, error) -> {
           if (error != null) {
