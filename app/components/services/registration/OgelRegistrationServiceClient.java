@@ -4,17 +4,14 @@ import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.common.cache.CountryProvider;
 import components.common.logging.CorrelationId;
-import components.common.state.ContextParamManager;
-import components.persistence.PermissionsFinderDao;
 import components.common.logging.ServiceClientLogger;
-import components.services.controlcode.frontend.FrontendServiceClient;
-import components.services.ogels.applicable.ApplicableOgelServiceClient;
-import components.services.ogels.ogel.OgelServiceClient;
+import components.persistence.PermissionsFinderDao;
 import exceptions.ServiceException;
 import models.summary.Summary;
+import models.summary.SummaryService;
 import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -32,37 +29,25 @@ public class OgelRegistrationServiceClient {
   private final int webServiceTimeout;
   private final String webServiceSharedSecret;
   private final String webServiceUrl;
-  private final ContextParamManager contextParamManager;
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
-  private final FrontendServiceClient frontendServiceClient;
-  private final CountryProvider countryProviderExport;
-  private final OgelServiceClient ogelServiceClient;
-  private final ApplicableOgelServiceClient applicableOgelServiceClient;
+  private final SummaryService summaryService;
 
   @Inject
   public OgelRegistrationServiceClient(WSClient wsClient,
                                        @Named("ogelRegistrationServiceAddress") String webServiceAddress,
                                        @Named("ogelRegistrationServiceTimeout") int webServiceTimeout,
                                        @Named("ogelRegistrationServiceSharedSecret") String webServiceSharedSecret,
-                                       ContextParamManager contextParamManager,
                                        PermissionsFinderDao permissionsFinderDao,
                                        HttpExecutionContext httpExecutionContext,
-                                       FrontendServiceClient frontendServiceClient,
-                                       @Named("countryProviderExport") CountryProvider countryProviderExport,
-                                       OgelServiceClient ogelServiceClient,
-                                       ApplicableOgelServiceClient applicableOgelServiceClient) {
+                                       SummaryService summaryService) {
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceSharedSecret = webServiceSharedSecret;
     this.webServiceUrl = webServiceAddress + "/update-transaction";
-    this.contextParamManager = contextParamManager;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
-    this.frontendServiceClient = frontendServiceClient;
-    this.countryProviderExport = countryProviderExport;
-    this.ogelServiceClient = ogelServiceClient;
-    this.applicableOgelServiceClient = applicableOgelServiceClient;
+    this.summaryService = summaryService;
   }
 
   public CompletionStage<Result> updateTransactionAndRedirect(String transactionId) {
@@ -72,8 +57,7 @@ public class OgelRegistrationServiceClient {
         .setRequestTimeout(webServiceTimeout)
         .setQueryParameter("securityToken", webServiceSharedSecret);
 
-    CompletionStage<Summary> summaryStage = Summary.composeSummary(contextParamManager, permissionsFinderDao,
-        httpExecutionContext, frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProviderExport);
+    CompletionStage<Summary> summaryStage = summaryService.composeSummary();
 
     CompletionStage<OgelRegistrationServiceRequest> requestStage =
         summaryStage.thenApplyAsync(summary -> new OgelRegistrationServiceRequest(transactionId, summary),
@@ -90,6 +74,7 @@ public class OgelRegistrationServiceClient {
                 response.getStatus()));
           }
           else {
+            Logger.debug(response.asJson().toString());
             OgelRegistrationServiceResult result = OgelRegistrationServiceResult.buildFromJson(response.asJson());
             if (!StringUtils.isNotBlank(result.redirectUrl)) {
               throw new ServiceException("Unexpected redirect URL supplied from OGEL Registration service /update-transaction:");

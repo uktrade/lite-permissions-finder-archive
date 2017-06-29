@@ -23,6 +23,8 @@ import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
 import journey.SubJourneyContextParamProvider;
+import models.summary.SummaryService;
+import models.summary.SummaryServiceImpl;
 import play.Configuration;
 import play.Environment;
 import play.libs.akka.AkkaGuiceSupport;
@@ -107,6 +109,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("basicAuthRealm"))
         .to(configuration.getString("basicAuth.realm"));
 
+    bind(SummaryService.class).to(SummaryServiceImpl.class);
+
     requestInjection(this);
   }
 
@@ -167,5 +171,4 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   public ContextParamManager provideContextParamManager() {
     return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new SubJourneyContextParamProvider(), new ApplicationCodeContextParamProvider());
   }
-
 }
