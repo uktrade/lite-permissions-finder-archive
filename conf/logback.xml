@@ -12,6 +12,11 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <!--
+      Exclude context because it adds a field "application.home" to the JSON which is an incompatible name with elastic search.
+      - https://github.com/elastic/elasticsearch/pull/12068
+      - https://github.com/playframework/playframework/issues/6612
+      -->
       <includeContext>false</includeContext>
     </encoder>
   </appender>
