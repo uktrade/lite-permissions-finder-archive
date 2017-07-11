@@ -4,11 +4,9 @@ The `export` journeys "objectives" are as follows:
   * determine a control code and destination country so that we can search for OGELs, or
   * send the user to an NLR (No Licence Required) page with a reasonable degree of confidence
 
-The following sections will run thorough a typical "best-case" export
- 
-[comment]: <> (TODO) 
+The following sections will run thorough a typical "best-case" export scenario. 
 
-### Setting up `export` journey for testing
+### Setting up the `export` journey for testing
 To set up the journey in a quick "best-case" state, do the following steps:
 1. On the page titled `Where are your items going? ` answer `From the UK to another country` 
 to start the `export` journey.
@@ -22,18 +20,16 @@ There are three "sub-journeys" which are part to the `export` journey definition
 * Software
 * Technical information
 
-### Physical goods
 The physical goods flow is the "simplest" of the three sub journeys and covers all key interactions with external 
 services. To start this journey, select `Physical Goods` on the page tiled `Are you exporting goods, software or technical information?`
 
-
 ### Searching for physical goods
-You should now be on page titled `Describe your item`. This page allows the user to enter search terms into the given 
-input fields, these terms are then forwarded onto the `/search` endpoint of the [lite-search-management](https://github.com/uktrade/lite-search-management) service via the 
-`SearchServiceClient`.
+You should now be on page titled `Describe your item`. This page allows the user to enter terms describing their physical
+good into the given input fields, which are then used as search terms, forwarded onto the `/search` endpoint of the 
+[lite-search-management](https://github.com/uktrade/lite-search-management) service via the `SearchServiceClient`.
 
 This endpoint returns a list of control codes which "match" the supplied search terms. The `GET` request may look like
-`/search?term=imaging&amp;goodsType=physical` which can return the response:
+`/search?term=imaging&goodsType=physical` which can return the response:
 ```json
 {
     "results": [
@@ -51,17 +47,17 @@ This endpoint returns a list of control codes which "match" the supplied search 
 }
 ```
 
-The two controls codes returned by the `/search` endpoint are `ML12b` and `6A002a2a`, the user would then see a list which
-showed the display text of this response. Which is this case would be `Testing equipment for fire control equipment for military use`
+The two controls codes returned by the `/search` endpoint are `ML12b` and `6A002a2a`. The user would then see a list displaying
+the `displayText` of this response json, which in this case would be `Testing equipment for fire control equipment for military use`
 and `Image intensifier tubes`.
 
 Picking either of these will move you through to the Decontrols, Technical Notes and Additional Specifications pages.
 
 ### Decontrols, Technical Notes and Additional Specifications
 Having selected a control code from the list of search results, `6A002a2a` for example, the permissions finder will then
-send a request to the [lite-control-code-service](https://github.com/uktrade/lite-control-code-service) `/frontend-control-codes` endpoint with the selected code as a path
-parameter. This endpoint will return a json object containing details on the control code (if found) which can map to 
-`FrontEndControlCodeView`. 
+send a request to the [lite-control-code-service](https://github.com/uktrade/lite-control-code-service) `/frontend-control-codes` 
+endpoint with the selected code as a path parameter. This endpoint will return a json object containing details on the 
+control code (if found) which can map to `FrontEndControlCodeView`. 
 
 The `GET` request may look like `/frontend-control-codes/6A002a2a` which can return the response:
 ```json
@@ -112,22 +108,22 @@ The `GET` request may look like `/frontend-control-codes/6A002a2a` which can ret
 }
 ```
 
-The response is fairly large, however there are a few properties of note which influence the users journey though this section.
+The response is fairly large, however there are a few properties of note which will influence the users journey though this section.
 * `technicalNotes` - If this property is non-null, then the Technical Notes page is able to be displayed
 * `additionalSpecifications` - If this property is non-null, then the Additional Specifications page is able to be displayed
 * `decontrols` - If this property is non-null, then the Decontrols page is able to be displayed
 
-The Decontrols, Technical Notes and Additional Specifications pages all display a yes/no question to the user, displaying 
-the information in the related property. Depending on the answer to this yes/no question, the user is either positively 
-asserting that the control code either does or does not apply to them. If in the affirmatives (the control code applies 
-to their good) then they are moved further through the process. If in the negative (the control code does not apply) then
-the user is thrown back to the list of results, as shown in an earlier section.
+The Decontrols, Technical Notes and Additional Specifications pages all display a yes/no question to the user, along side
+the text in the relative property. Depending on the answer to this yes/no question, the user is either positively 
+asserting that the control code does or does not apply to them. If in the affirmatives (the control code applies 
+to their good) then they are moved further through the `export` journey. If in the negative (the control code does not apply) then
+the user is thrown back to the list of results.
 
 ### Item destination 
-After finding a control code which applies to the export good, the user should then be on a page titled 
+After finding a control code which applies to the export good, the user will now be on a page titled 
 `Where is the final destination of your items?`. This page has a type-ahead selector over a list of countries and territories.
 This list is not baked into the permissions finder, but is provided by the 
-[lite-country-service](https://github.com/uktrade/lite-country-service). This list is loaded on startup of the permissions 
+[lite-country-service](https://github.com/uktrade/lite-country-service). This list is loaded at startup of the permissions 
 finder and kept in a local cache, the following components provide this behavior:
 * `CountryServiceClient` (in [lite-play-common](https://github.com/uktrade/lite-play-common)) requests a list countries 
 from [lite-country-service](https://github.com/uktrade/lite-country-service), this can be  configured to request a particular 
@@ -165,10 +161,11 @@ The next page, titled `Your possible licences` shows the list of possible OGELs 
 is determined by a request to the [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) `/applicable-ogels` 
 endpoint via the `ApplicableOgelServiceClient` when provided with the following data as query parameters:
 1. The control code (`controlCode`)
-2. The destination country or countries (`destinationCountry`)
-3. The activity types (`activityType`)
+2. The source country (`sourceCountry`) 
+3. The destination country or countries (`destinationCountry`)
+4. The activity types (`activityType`)
 
-An example `GET` request to the [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) of `/applicable-ogels?controlCode=6A002a2&amp;sourceCountry=CTRY0&amp;activityType=DU_ANY&amp;activityType=MIL_GOV&amp;activityType=EXHIBITION&amp;activityType=MIL_ANY&amp;activityType=REPAIR&amp;destinationCountry=CTRY3`
+An example `GET` request to the [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) of `/applicable-ogels?controlCode=6A002a2&sourceCountry=CTRY0&activityType=DU_ANY&activityType=MIL_GOV&activityType=EXHIBITION&activityType=MIL_ANY&activityType=REPAIR&destinationCountry=CTRY3`
 could return the json response:
 ```json
 [
@@ -190,7 +187,7 @@ could return the json response:
 ```
 
 ### Additional conditions apply
-Assuming the user finds and picks an OGEL in the list shown during on the prior page, the permissions finder will check 
+Assuming the user finds and picks an OGEL in the list shown on the prior page, the permissions finder will check 
 that the `OGEL` and `Control Code` tuple has any extra conditions which could restrict it's use. To find these conditions
 the permissions finder sends a request to the [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) 
 `/control-code-conditions` endpoint via `OgelConditionsServiceClient`. 
@@ -206,29 +203,32 @@ An example `GET` request to the [lite-ogel-service](https://github.com/uktrade/l
     "itemsAllowed": false
 }
 ```
-An http status code of `200` (with accompanying json content) indicates the presence of additional conditions of the 
+An http status code of `200` (with accompanying json content) indicates the presence of additional conditions for the  
 OGEL/Control Code tuple, `204` indicates no such conditions exist. The conditions are displayed to the user (should 
 they exist) in the form of a yes/no question. The answer to this question determines whether this OGEL can be used in 
-the scenario depicted by the user.
+the scenario understood by the user.
 
 ### Virtual EU OGEL
-There's a special case OGEL which supersedes all other OGELs if the user is applicable for it, this is called a Virtual 
-EU OGEL. The [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) `/virtual-eu` endpoint provides this check (accessible via `VirtualEUOgelClient`).
+There's a "special" OGEL which supersedes all other OGELs if applicable to the users answers so far, this is called a Virtual 
+EU OGEL. This must be checked before showing the user the list of applicable OGELs described in an earlier section. 
+The [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) `/virtual-eu` endpoint provides this check 
+(accessible via `VirtualEUOgelClient`).
 
 An example `GET` request to the [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) of 
-`/virtual-eu?sourceCountry=CRTY0&amp;destinationCountry=CRTY3&amp;controlCode=ML1a` could return the json response:
+`/virtual-eu?sourceCountry=CRTY0&destinationCountry=CRTY3&controlCode=ML1a` could return the json response:
 ```json
 {
     "virtualEu": false
 }
 ```
 
-The users journey through the permission finder could ends here, should the user be applicable for the Virtual EU OGEL. 
-This is effectively a type of NLR.
+The users journey through the permission finder can here should the user be applicable for the Virtual EU OGEL,  
+this is effectively a type of NLR. However if the user is not applicable for this "special" OGEL then they will progress
+further through the `export` flow, on to the `Applicable OGELs` page.
 
 ### OGEL Summary
-If all answers up until this point indicate that the user is applicable for the OGEL they've picked, then a summary of
-OGEL terms and conditions is displayed. This summary is populated from data accessed via the [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) 
+If all answers up until this point indicate that the user is applicable for the OGEL which they have selected, then a summary of
+OGEL terms and conditions will be displayed. This summary is populated from data accessed via the [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) 
 endpoint `/ogels` with the `OGEL ID` as a path parameter (See `OgelServiceClient`).
 
 An example `GET` request to the [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) of  `/ogels/OGL1` can return the json response:
@@ -274,12 +274,17 @@ An example `GET` request to the [lite-ogel-service](https://github.com/uktrade/l
     "link": "https://www.gov.uk/government/publications/open-general-export-licence-military-goods-government-or-nato-end-use--6"
 }
 ```
-
-It's down to the user to read through the points described on this summary page (the title of which is the OGEL name), 
-clicking the button labeled `Register for this licence` to register for the OGEL.
+It's now down to the user to read through the points described on this summary page (the title of which is the OGEL name).
+If all has gone well, and the user agrees to the terms as set out by this summary page, then they can register for the OGEL
+by clicking the button labeled `Register for this licence`.
 
 ### Answers so far, and handoff to OGEL Registration
-If the user has elected to register for the OGEL suggested to them by this service, then a final summary page is 
-displayed. This marks the end of the permissions finder `export` journey for `physical goods`. See the section labeled
-`Handoff to OGEL registration` in the [README.md](README.md) for more information on this handoff and interaction with 
+If the user has elected to register for the OGEL suggested to them by this service, then a final summary page is displayed. 
+This summary consists of the following data points, giving the user the ability to alter them prior to final submission:
+* A list of export destinations
+* The control code classification
+* The OGEL to register for
+
+This marks the end of the permissions finder `export` journey for `physical goods`. See the section labeled
+`Handoff to OGEL registration` in the [README.md](../README.md) for more information on this handoff and interaction with 
 [lite-ogel-registration](https://github.com/uktrade/lite-ogel-registration).

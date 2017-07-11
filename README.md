@@ -56,7 +56,7 @@ digraph journey {
 * copy this output into your favourite Graphvis rendering tool such as [WebGraphviz](http://www.webgraphviz.com/) and generate 
 
 ## Export journey in detail
-See [export](docs/EXPORT) for details run through of the export journey
+See [export](docs/EXPORT.md) for details run through of the export journey
 
 ## Storage and transaction 
 [Redis](https://redis.io/) is used for persistent storage and is accessed through two DAO classes, `PermissionsFinderDao` and `ApplicationCodeDao`.
