@@ -24,7 +24,7 @@ The permissions finder also makes use of the [lite-play-common](https://github.c
 provides various shared functionality such as base templates (`govukTemplate.template.scala`) and service clients (`CountryServiceClient`)
 
 ## Journey flow
-There are two major outcomes of this application, a user is applicable for OGEL registration or they are not. The journey 
+There are two major outcomes of this application, a user is applicable for [OGEL](https://www.gov.uk/government/collections/open-general-export-licences-ogels) registration or they are not. The journey 
 which makes this determination could be long and complex, but can be summarised as the following:
 * The user starts off on the root path `/` and is given an "application code" to remember `ABCD-1234` which can be used to
 resume their in-progress answers of this service
@@ -54,6 +54,9 @@ digraph journey {
  ...
 ```
 * copy this output into your favourite Graphvis rendering tool such as [WebGraphviz](http://www.webgraphviz.com/) and generate 
+
+## Export journey in detail
+See [export](docs/EXPORT) for details run through of the export journey
 
 ## Storage and transaction 
 [Redis](https://redis.io/) is used for persistent storage and is accessed through two DAO classes, `PermissionsFinderDao` and `ApplicationCodeDao`.
