@@ -16,7 +16,7 @@ node('jdk8') {
     }
     stage('SBT test') {
       try {
-        sh 'sbt publish'
+        sh 'sbt test'
       }
       finally {
         step([$class: 'JUnitResultArchiver', testResults: 'target/test-reports/**/*.xml'])
