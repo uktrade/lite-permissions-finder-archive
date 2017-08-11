@@ -14,6 +14,14 @@ node('jdk8') {
     stage('Checkout files'){
       checkout scm
     }
+    stage('SBT test') {
+      try {
+        sh 'sbt publish'
+      }
+      finally {
+        step([$class: 'JUnitResultArchiver', testResults: 'target/test-reports/**/*.xml'])
+      }
+    }
     stage('SBT publish'){
       sh 'sbt publish'
     }
