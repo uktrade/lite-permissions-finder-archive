@@ -100,13 +100,13 @@ public class OgelQuestionsController {
 
   public static class OgelQuestionsForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether you are exporting goods for or after repair or replacement")
     public String forRepairReplacement;
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether you are exporting goods for or after exhibition or demonstration")
     public String forExhibitionDemonstration;
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether you are exporting items manufactured before 1897 with a value of no more than £35,000")
     public String before1897upto35k;
 
     public static List<String> formToActivityTypes(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {

@@ -51,7 +51,7 @@ public class TechnologyNonExemptController {
   }
 
   public static class TechnologyNonExemptForm {
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether your export is the minimum needed to install, operate, maintain or repair goods that are authorised for export")
     public Boolean isNonExempt;
   }
 

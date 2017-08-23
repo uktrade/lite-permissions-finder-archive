@@ -94,7 +94,7 @@ public class SearchController {
 
   public static class SearchForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether this is a component or part of something else")
     public Boolean isComponent;
 
     @Required(message = "Enter a description of the item")

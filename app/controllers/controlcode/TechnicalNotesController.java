@@ -87,7 +87,7 @@ public class TechnicalNotesController {
 
   public static class TechnicalNotesForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether this still describes your item")
     public Boolean stillDescribesItems;
 
   }

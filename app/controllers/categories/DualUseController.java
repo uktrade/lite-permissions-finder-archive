@@ -62,7 +62,7 @@ public class DualUseController {
 
   public static class DualUseForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether your item could be dual use")
     public String isDualUse;
 
   }
