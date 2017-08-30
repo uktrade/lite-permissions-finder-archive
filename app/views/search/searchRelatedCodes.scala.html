@@ -33,7 +33,7 @@
     <ol id="searchRelatedCodes" class="search-results">
     @for(i <- 0 until Math.min(display.relatedCodes.size, display.relatedCodesDisplayCount)) {
       <li>
-        <button id="@display.relatedCodes.get(i).getControlCode-button" type="submit" class="link font-medium" name="relatedCode" value="@display.relatedCodes.get(i).getControlCode">@Html(display.relatedCodes.get(i).getDisplayText)</button>
+        <button id="@display.relatedCodes.get(i).getControlCode-button" type="submit" class="link font-medium" role="link" name="relatedCode" value="@display.relatedCodes.get(i).getControlCode">@Html(display.relatedCodes.get(i).getDisplayText)</button>
       </li>
     }
     </ol>
@@ -48,7 +48,7 @@
         </p>
       }
       <p>
-        <button type="submit" name="action" value="@SearchRelatedCodesAction.PICK_FROM_RESULTS_AGAIN" class="link underlined font-small no-matched-result-link">Back to previous list of results</button>
+        <button type="submit" name="action" value="@SearchRelatedCodesAction.PICK_FROM_RESULTS_AGAIN" class="link underlined font-small no-matched-result-link" role="link">Back to previous list of results</button>
       </p>
     </div>
   </form>

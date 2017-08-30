@@ -21,7 +21,7 @@
         <ol class="ogel-results search-results">
           @for(ogel <- display.ogels) {
             <li>
-              <button type="submit" class="link" name="chosenOgel" value="@ogel.getId">@ogel.getName</button>
+              <button type="submit" class="link" role="link" name="chosenOgel" value="@ogel.getId">@ogel.getName</button>
               <div class="font-xsmall">
               @for(entry <- ogel.getUsageSummary) {
                 @entry<br/>

@@ -20,7 +20,7 @@
     <ul class="list list-bullet text">
     @for(button <- display.buttons) {
       <li>
-        <button class="link underlined" name="action" value="@button.value" data-skip-validation>@button.content</button>
+        <button class="link underlined" role="link" name="action" value="@button.value" data-skip-validation>@button.content</button>
       </li>
     }
     </ul>
