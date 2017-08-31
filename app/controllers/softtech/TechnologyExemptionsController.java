@@ -52,7 +52,7 @@ public class TechnologyExemptionsController {
 
   public static class TechnologyExemptionsForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether you're exporting any of the types of technical information listed")
     public Boolean doExemptionsApply;
 
   }

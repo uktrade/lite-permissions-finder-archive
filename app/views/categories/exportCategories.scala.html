@@ -29,7 +29,7 @@
       <p>
         It also includes software and source code to enable the use of military goods, and technology such as manuals, designs, models or blueprints for goods that themselves require an export licence.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.MILITARY.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.MILITARY.toString()">Continue<span class="visually-hidden"> to @ExportCategory.MILITARY.getHeading()</span></button>
     }
 
     @detailPanel("non-mil"){@ExportCategory.NON_MILITARY.getHeading()} {
@@ -39,12 +39,12 @@
       <p>
         It also includes related ammunition and weapon sights using non-electronic image enhancement.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.NON_MILITARY.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.NON_MILITARY.toString()">Continue<span class="visually-hidden"> to @ExportCategory.NON_MILITARY.getHeading()</span></button>
     }
 
     @detailPanel("dual-use"){@ExportCategory.DUAL_USE.getHeading()}{
       <p>
-        <button type="submit" class="link underlined font-small" name="couldBeDualUse" value="true">Dual-use items</button> are civilian goods, equipment, technical information, documents or diagrams that can also be used for military purposes. They can be raw materials, components or finished systems.
+        <button type="submit" class="link underlined font-small" role="link" name="couldBeDualUse" value="true">Dual-use items</button> are civilian goods, equipment, technical information, documents or diagrams that can also be used for military purposes. They can be raw materials, components or finished systems.
       </p>
       <p>
         Dual-use items are typically high-tech, advanced products, often with military standard specifications. Encryption software is included here.
@@ -52,14 +52,14 @@
       <p>
         You should choose this category if you are exporting goods that you think could be used for military purposes, even if you are not sure.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.DUAL_USE.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.DUAL_USE.toString()">Continue<span class="visually-hidden"> to @ExportCategory.DUAL_USE.getHeading()</span></button>
     }
 
     @detailPanel("torture-restraint"){@ExportCategory.TORTURE_RESTRAINT.getHeading()}{
       <p>
         This covers items that could be used for capital punishment, torture or other cruel, inhuman or degrading treatment or punishment. It also includes goods designed for the execution of human beings such as gallows, electric chairs and automatic drug-injection systems.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.TORTURE_RESTRAINT.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.TORTURE_RESTRAINT.toString()">Continue<span class="visually-hidden"> to @ExportCategory.TORTURE_RESTRAINT.getHeading()</span></button>
     }
 
     @detailPanel("radioactive"){@ExportCategory.RADIOACTIVE.getHeading()}{
@@ -67,53 +67,53 @@
         This covers high-activity radioactive sources as defined by the International Atomic Energy Agency.
       <p>
       <p>
-      Read guidance on <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources" class="external" target="_blank" rel="external">controls on radioactive sources</a> for more information on the items covered in this category.
+      Read guidance on <a href="https://www.gov.uk/guidance/controls-on-radioactive-sources" class="external" target="_blank" rel="external">controls on radioactive sources<span class="visually-hidden"> (opens in a new tab)</span></a> for more information on the items covered in this category.
       </p>
       <p>
         For radioactive waste, use the Waste category below.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.RADIOACTIVE.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.RADIOACTIVE.toString()">Continue<span class="visually-hidden"> to @ExportCategory.RADIOACTIVE.getHeading()</span></button>
     }
     @detailPanel("waste"){@ExportCategory.WASTE.getHeading()}{
       <p>
         This includes household and commercial waste, hazardous, non-hazardous and green-list waste, and radioactive waste.
       <p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.WASTE.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.WASTE.toString()">Continue<span class="visually-hidden"> to @ExportCategory.WASTE.getHeading()</span></button>
     }
 
     @detailPanel("chemicals-cosmetics"){@ExportCategory.CHEMICALS_COSMETICS.getHeading()}{
       <p>
         This includes toiletries and beauty products, detergents, disinfectants, domestic cleaners, industrial chemicals, chemical raw materials and food-handling materials.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.CHEMICALS_COSMETICS.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.CHEMICALS_COSMETICS.toString()">Continue<span class="visually-hidden"> to @ExportCategory.CHEMICALS_COSMETICS.getHeading()</span></button>
     }
 
     @detailPanel("arts-cultural"){@ExportCategory.ARTS_CULTURAL.getHeading()}{
       <p>
         This includes cultural artefacts, works of art, antiques (including weapons), manuscripts and archaeological items.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.ARTS_CULTURAL.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.ARTS_CULTURAL.toString()">Continue<span class="visually-hidden"> to @ExportCategory.ARTS_CULTURAL.getHeading()</span></button>
     }
 
     @detailPanel("plants-animals"){@ExportCategory.PLANTS_ANIMALS.getHeading()}{
       <p>
         This includes live animals and birds, non-edible flowers and plants, seeds and other wildlife.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.PLANTS_ANIMALS.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.PLANTS_ANIMALS.toString()">Continue<span class="visually-hidden"> to @ExportCategory.PLANTS_ANIMALS.getHeading()</span></button>
     }
 
     @detailPanel("Food"){@ExportCategory.FOOD.getHeading()}{
       <p>
         This includes any products suitable for human consumption, including fresh food and processed food.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.FOOD.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.FOOD.toString()">Continue<span class="visually-hidden"> to @ExportCategory.FOOD.getHeading()</span></button>
     }
 
     @detailPanel("medicines-drugs"){@ExportCategory.MEDICINES_DRUGS.getHeading()}{
       <p>
         This includes medicinal products, prescription drugs and controlled drugs.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.MEDICINES_DRUGS.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.MEDICINES_DRUGS.toString()">Continue<span class="visually-hidden"> to @ExportCategory.MEDICINES_DRUGS.getHeading()</span></button>
     }
 
     @detailPanel("technical-assistance"){@ExportCategory.TECHNICAL_ASSISTANCE.getHeading()}{
@@ -131,14 +131,14 @@
       <p>
         You should choose this category if you are providing training, instruction or advice, working knowledge, skills or consulting services, either in person, verbally or electronically.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.TECHNICAL_ASSISTANCE.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.TECHNICAL_ASSISTANCE.toString()">Continue<span class="visually-hidden"> to @ExportCategory.TECHNICAL_ASSISTANCE.getHeading()</span></button>
     }
 
     @detailPanel("financial-assistance"){@ExportCategory.FINANCIAL_ASSISTANCE.getHeading()}{
       <p>
         This covers the provision of brokering services, insurance, financing and financial support related to the sale, supply, transfer or export of goods and technology to certain destinations. It includes the processing of payments for prohibited or restricted trade transactions.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.FINANCIAL_ASSISTANCE.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.FINANCIAL_ASSISTANCE.toString()">Continue<span class="visually-hidden"> to @ExportCategory.FINANCIAL_ASSISTANCE.getHeading()</span></button>
     }
 
     <p class="category-or">
@@ -149,7 +149,7 @@
       <p>
         Choose this if you are sure your items do not fall into any of the categories above.
       </p>
-      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.NONE.toString()">Continue</button>
+      <button type="submit" id="continue" class="button next" name="category" value="@ExportCategory.NONE.toString()">Continue<span class="visually-hidden"> to @ExportCategory.NONE.getHeading()</span></button>
     }
 
   </form>

@@ -99,7 +99,7 @@ public class AdditionalSpecificationsController {
 
   public static class AdditionalSpecificationsForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether the additional information still describes your items")
     public Boolean stillDescribesItems;
 
     public Boolean showTechNotes;

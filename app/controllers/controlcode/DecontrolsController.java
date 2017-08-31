@@ -84,7 +84,7 @@ public class DecontrolsController {
 
   public static class DecontrolsForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether your item is listed")
     public Boolean decontrolsDescribeItem;
 
   }

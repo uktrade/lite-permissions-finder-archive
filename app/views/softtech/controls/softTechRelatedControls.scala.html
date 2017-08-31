@@ -24,13 +24,13 @@
     <ol class="search-results">
       @for(i <- 0 until display.controlCodes.size) {
         <li>
-          <button id="@display.controlCodes.get(i).getControlCode-button" type="submit" class="link font-medium" name="controlCode" value="@display.controlCodes.get(i).getControlCode">@Html(display.controlCodes.get(i).getFriendlyDescription)</button>
+          <button id="@display.controlCodes.get(i).getControlCode-button" type="submit" class="link font-medium" role="link" name="controlCode" value="@display.controlCodes.get(i).getControlCode">@Html(display.controlCodes.get(i).getFriendlyDescription)</button>
         </li>
       }
     </ol>
 
     <div class="search-result-actions">
-      <button type="submit" name="action" value="@BackType.RESULTS" class="link underlined font-small no-matched-result-link">Back to previous list of results</button>
+      <button type="submit" name="action" value="@BackType.RESULTS" class="link underlined font-small no-matched-result-link" role="link">Back to previous list of results</button>
     </div>
 
   </form>

@@ -71,7 +71,7 @@ public class GoodsTypeController extends Controller {
 
   public static class GoodsTypeForm {
 
-    @Required(message = "Choose an item type")
+    @Required(message = "Select an item type")
     public String goodsType;
 
   }

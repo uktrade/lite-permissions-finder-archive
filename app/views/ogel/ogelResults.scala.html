@@ -14,14 +14,14 @@
 
     @if(display.ogels.size > 0) {
       <p>
-        These are <a href="https://www.gov.uk/government/collections/open-general-export-licences-ogels" class="external" rel="external" target="_blank">open licences</a>. You can register for these and use them multiple times, without waiting for approval, but you have to comply with each licence's conditions of use.
+        These are <a href="https://www.gov.uk/government/collections/open-general-export-licences-ogels" class="external" rel="external" target="_blank">open licences<span class="visually-hidden"> (opens in a new tab)</span></a>. You can register for these and use them multiple times, without waiting for approval, but you have to comply with each licence's conditions of use.
       </p>
 
       <div class="form-group">
         <ol class="ogel-results search-results">
           @for(ogel <- display.ogels) {
             <li>
-              <button type="submit" class="link" name="chosenOgel" value="@ogel.getId">@ogel.getName</button>
+              <button type="submit" class="link" role="link" name="chosenOgel" value="@ogel.getId">@ogel.getName</button>
               <div class="font-xsmall">
               @for(entry <- ogel.getUsageSummary) {
                 @entry<br/>
@@ -35,7 +35,7 @@
       <div class="form-group">
         @detailPanel("none-suitable")(Html("None of these are suitable for my export")){
           <p>
-            If you cannot use one of the open licences above, you should apply for a <a href="https://www.gov.uk/guidance/standard-individual-export-licences" class="external" rel="external" target="_blank">standard individual export licence</a> (SIEL).
+            If you cannot use one of the open licences above, you should apply for a <a href="https://www.gov.uk/guidance/standard-individual-export-licences" class="external" rel="external" target="_blank">standard individual export licence<span class="visually-hidden"> (opens in a new tab)</span></a> (SIEL).
           </p>
 
           <p>
@@ -53,7 +53,7 @@
       </p>
 
       <p>
-        You should use a <a href="https://www.gov.uk/guidance/standard-individual-export-licences" class="external" rel="external" target="_blank">standard individual export licence</a> (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
+        You should use a <a href="https://www.gov.uk/guidance/standard-individual-export-licences" class="external" rel="external" target="_blank">standard individual export licence<span class="visually-hidden"> (opens in a new tab)</span></a> (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
       </p>
 
       <p>

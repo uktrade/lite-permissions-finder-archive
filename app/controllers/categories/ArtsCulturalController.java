@@ -84,7 +84,7 @@ public class ArtsCulturalController extends Controller {
     @Required(message = "Select the item's age")
     public String itemAge;
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether this item is a gun or firearm")
     public Boolean firearm;
   }
 

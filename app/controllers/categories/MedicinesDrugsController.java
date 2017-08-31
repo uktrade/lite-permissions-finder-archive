@@ -60,7 +60,7 @@ public class MedicinesDrugsController {
 
   public static class MedicinesDrugsForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether your drugs are used for execution or torture")
     public String isUsedForExecutionTorture;
 
   }

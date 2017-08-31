@@ -69,7 +69,7 @@ public class TradeTypeController extends Controller {
 
   public static class TradeTypeForm {
 
-    @Required(message = "Choose a trade activity")
+    @Required(message = "Select where your items are going")
     public String tradeType;
 
   }

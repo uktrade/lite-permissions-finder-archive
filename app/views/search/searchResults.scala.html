@@ -38,7 +38,7 @@
       <ol id="searchResults" class="search-results">
         @for(i <- 0 until Math.min(display.results.size, display.resultsDisplayCount)) {
           <li>
-            <button id="@display.results.get(i).getControlCode-button" type="submit" class="link font-medium" name="result" value="@display.results.get(i).getControlCode">@Html(display.results.get(i).getDisplayText)</button>
+            <button id="@display.results.get(i).getControlCode-button" type="submit" role="link" class="link font-medium" name="result" value="@display.results.get(i).getControlCode">@Html(display.results.get(i).getDisplayText)</button>
           </li>
         }
       </ol>
@@ -52,7 +52,7 @@
             <button type="button" id="showMoreResultsButton" class="button secondary show-more-results-button">Show more results</button>
           </p>
         }
-        <button type="submit" name="action" value="@SearchResultAction.NONE_MATCHED" class="link underlined font-small no-matched-result-link">None of these describe my export</button>
+        <button type="submit" name="action" value="@SearchResultAction.NONE_MATCHED" class="link underlined font-small no-matched-result-link" role="link">None of these describe my export</button>
       </div>
 
   } else {
@@ -61,7 +61,7 @@
       display.controlCodeSubJourney == ControlCodeSubJourney.PHYSICAL_GOODS_SEARCH_RELATED_TO_TECHNOLOGY) {
 
       <p>
-        <button type="submit" name="action" value="@SearchResultAction.EDIT_DESCRIPTION" class="link underlined font-small no-matched-result-link">Edit your description</button>, and:
+        <button type="submit" name="action" value="@SearchResultAction.EDIT_DESCRIPTION" class="link underlined font-small no-matched-result-link" role="link">Edit your description</button>, and:
       </p>
 
       <ul class="list list-bullet text">
@@ -71,7 +71,7 @@
       </ul>
 
       <p>
-        If you cannot find the item related to your software, <button type="submit" name="action" value="@SearchResultAction.CONTINUE" class="link underlined font-small no-matched-result-link">continue to use this service</button> to find out if other controls might apply.
+        If you cannot find the item related to your software, <button type="submit" name="action" value="@SearchResultAction.CONTINUE" class="link underlined font-small no-matched-result-link" role="link">continue to use this service</button> to find out if other controls might apply.
       </p>
 
     } else {

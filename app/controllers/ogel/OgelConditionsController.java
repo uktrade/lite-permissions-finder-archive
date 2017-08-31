@@ -145,7 +145,7 @@ public class OgelConditionsController {
 
   public static class OgelConditionsForm {
 
-    @Required(message = "Answer this question")
+    @Required(message = "Select whether you're exporting any of the types of item listed")
     public Boolean doConditionsApply;
 
   }
