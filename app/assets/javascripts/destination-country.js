@@ -2,7 +2,7 @@ var LITEPermissionsFinder = LITEPermissionsFinder || {};
 
 LITEPermissionsFinder.DestinationCountry = {
   setupPage: function() {
-    $("select[ui-autocomplete='ui-autocomplete']").each(function() {
+    $("select[data-ui-autocomplete='ui-autocomplete']").each(function() {
       LITECommon.countrySelectInitialise($(this));
     });
 
