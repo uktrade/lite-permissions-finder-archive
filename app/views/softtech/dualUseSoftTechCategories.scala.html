@@ -10,7 +10,7 @@
     <p>
     @display.getContent(category)
     </p>
-    <button type="submit" id="continue" class="button next" name="dualUseSoftTechCategory" value="@category.name()">Continue<span class="visually-hidden"> to @category.getHeading()</span></button>
+    <button type="submit" class="button next" name="dualUseSoftTechCategory" value="@category.name()">Continue<span class="visually-hidden"> to @category.getHeading()</span></button>
   }
 }
 @standardPage(display.pageTitle, Some(heading(display.pageTitle))){
@@ -24,7 +24,7 @@
   </div>
 
   <form action="@display.formAction" method="POST">
-    
+
     @contextFormParams()
 
     @categoryPanel(SoftTechCategory.NUCLEAR)
@@ -54,7 +54,7 @@
     <div class="form-group">
       <button type="submit" id="continue" class="link underlined font-small no-matched-result-link" role="link" name="action" value="noneOfTheAbove">None of the above</button>
     </div>
-    
+
   </form>
-  
+
 }
