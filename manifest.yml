@@ -1,0 +1,10 @@
+---
+applications:
+- name: lite-permissions-finder-dev
+  buildpack: java_buildpack
+  path: target/universal/lite-permissions-finder-1.0-SNAPSHOT.zip
+  memory: 1G
+  instances: 1
+  env:
+    #JBP_CONFIG_JAVA_MAIN: '{ arguments: "-Dconfig.file=conf/application-paas.conf -Dplay.crypto.secret=abcd1234secret" }'
+    JAVA_OPTS: '-Dconfig.resource=application-paas.conf -Dplay.crypto.secret=abcd1234secret'
