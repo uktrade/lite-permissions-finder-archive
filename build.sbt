@@ -30,14 +30,14 @@ libraryDependencies ++= Seq(
   cache,
   javaWs,
   filters,
-  "redis.clients" % "jedis" % "2.8.1"
+  "redis.clients" % "jedis" % "2.9.0"
 )
 
 libraryDependencies += "org.pac4j" % "pac4j" % "1.9.0"
 libraryDependencies += "org.pac4j" % "pac4j-saml" % "1.9.0"
 libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
-libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.5.0"
+//libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.5.0"
 
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"
 
