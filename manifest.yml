@@ -2,7 +2,7 @@
 applications:
 - name: lite-permissions-finder-dev
   buildpack: java_buildpack
-  path: target/universal/lite-permissions-finder-1.0-SNAPSHOT.zip
+  path: target/universal/lite-permissions-finder-1.0.zip
   memory: 1G
   instances: 1
   env:
