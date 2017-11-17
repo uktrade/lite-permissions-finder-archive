@@ -41,14 +41,15 @@ libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"
 
-libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.0"
-libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
-libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.1"
+libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api-paas" % "1.1"
+libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api-paas" % "1.1"
+libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api-paas" % "1.2"
 
 libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.3.10" % "test"
 libraryDependencies += "com.itv" %% "scalapact-scalatest" % "2.1.2" % "test"
 
-resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+//resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+resolvers += "Lite Lib Releases " at "https://nexus.ci.uktrade.io/repository/maven-releases/"
 resolvers += Resolver.sonatypeRepo("releases")
 
 // Contains all files and libraries shared across other projects
@@ -70,8 +71,8 @@ buildInfoOptions += BuildInfoOption.BuildTime
 buildInfoOptions += BuildInfoOption.ToJson
 
 // Pact
-pactBrokerAddress := "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test"
-pactContractVersion := "1.0.0"
+//pactBrokerAddress := "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test"
+//pactContractVersion := "1.0.0"
 
 // Concatenate the /assets/javascript directory into a single lite-permissions-finder.js
 Concat.groups := Seq("lite-permissions-finder.js" -> group((sourceDirectory in Assets).value / "javascripts" ** "*.js"))
