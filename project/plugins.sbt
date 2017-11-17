@@ -13,13 +13,15 @@ addSbtPlugin("net.ground5hark.sbt" % "sbt-concat" % "0.1.9")
 // basis using disablePlugins(PlayEnhancer) in your build.sbt
 addSbtPlugin("com.typesafe.sbt" % "sbt-play-enhancer" % "1.1.0")
 
-addSbtPlugin("uk.gov.bis.lite" % "scalapact-plugin" % "1.0.0")
+//Disable Pact for PaaS prototype
+//addSbtPlugin("uk.gov.bis.lite" % "scalapact-plugin" % "1.0.0")
 
 // Override sbt-play-enhancer use of javassist 3.18.2-GA, which fixes JASSIST-220
 // https://github.com/jboss-javassist/javassist/pull/10
 libraryDependencies += "org.javassist" % "javassist" % "3.20.0-GA"
 
-resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+//Disable Pact for PaaS prototype
+//resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
 
 // Play Ebean support, to enable, uncomment this line, and enable in your build.sbt using
 // enablePlugins(PlayEbean).
