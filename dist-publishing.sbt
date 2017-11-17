@@ -17,6 +17,7 @@ Seq(publishDistSettings: _*)
 crossPaths := false
 
 // Publish to the LITE Nexus sbt-dist repository
+// Note: repo name must be exactly correct? https://stackoverflow.com/questions/44466800/how-to-configure-sbt-to-publish-to-private-nexus-maven-repo
 publishTo := Some("Sonatype Nexus Repository Manager" at "https://nexus.ci.uktrade.io/repository/lite-builds-raw")
 credentials += Credentials("Sonatype Nexus Repository Manager", "nexus.ci.uktrade.io", "admin", "admin123")
 
