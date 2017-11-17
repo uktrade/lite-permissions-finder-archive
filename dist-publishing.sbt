@@ -17,7 +17,8 @@ Seq(publishDistSettings: _*)
 crossPaths := false
 
 // Publish to the LITE Nexus sbt-dist repository
-publishTo := Some("Sonatype Nexus" at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/lite-builds-raw")
+publishTo := Some("Sonatype Nexus Repository Manager" at "https://nexus.ci.uktrade.io/repository/lite-builds-raw")
+credentials += Credentials("Sonatype Nexus Repository Manager", "nexus.ci.uktrade.io", "admin", "admin123")
 
 publishMavenStyle := true
 
