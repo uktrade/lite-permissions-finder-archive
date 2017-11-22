@@ -5,8 +5,7 @@ import net.ground5hark.sbt.concat.Import.Concat
 
 name := """lite-permissions-finder"""
 
-//version := scala.util.Properties.envOrElse("BUILD_VERSION", formatDateAsVersion() + "-SNAPSHOT")
-version := "1.0"
+version := scala.util.Properties.envOrElse("BUILD_VERSION", "unknown")
 
 def formatDateAsVersion () : String = {
   val sdf = new java.text.SimpleDateFormat("YYYYMMdd.HHmmss")
