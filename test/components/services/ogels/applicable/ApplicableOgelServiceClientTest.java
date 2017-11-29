@@ -39,7 +39,7 @@ public class ApplicableOgelServiceClientTest {
 
   @Test
   public void shouldGetApplicableOgel() throws Exception {
-    CompletionStage<ApplicableOgelServiceResult> result = client.get("ML1a", "UK", Arrays.asList("France, Spain"), Arrays.asList("test"), false);
+    CompletionStage<ApplicableOgelServiceResult> result = client.get("ML1a", "UK", Arrays.asList("France, Spain"), Arrays.asList("test"));
 
     ApplicableOgelServiceResult ogelServiceResult = result.toCompletableFuture().get();
     assertThat(ogelServiceResult.results.size()).isEqualTo(1);

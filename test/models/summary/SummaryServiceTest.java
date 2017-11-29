@@ -63,7 +63,7 @@ public class SummaryServiceTest {
     FrontendServiceResult frontendServiceResult = new FrontendServiceResult(frontendControlCodesJson);
 
     JsonNode applicableOgelsJson = Json.parse(this.getClass().getClassLoader().getResourceAsStream("models/summary/applicable-ogels.json"));
-    ApplicableOgelServiceResult applicableOgelServiceResult = new ApplicableOgelServiceResult(Json.fromJson(applicableOgelsJson, ApplicableOgelView[].class), false);
+    ApplicableOgelServiceResult applicableOgelServiceResult = new ApplicableOgelServiceResult(Json.fromJson(applicableOgelsJson, ApplicableOgelView[].class));
 
     JsonNode ogelsJson = Json.parse(this.getClass().getClassLoader().getResourceAsStream("models/summary/ogels.json"));
     OgelFullView ogelFullView = Json.fromJson(ogelsJson, OgelFullView.class);
@@ -76,7 +76,6 @@ public class SummaryServiceTest {
     };
 
     OgelQuestionsController.OgelQuestionsForm ogelQuestionsForm = new OgelQuestionsController.OgelQuestionsForm();
-    ogelQuestionsForm.before1897upto35k = "true";
     ogelQuestionsForm.forExhibitionDemonstration = "true";
     ogelQuestionsForm.forRepairReplacement = "true";
 
@@ -93,7 +92,7 @@ public class SummaryServiceTest {
 
     when(ogelServiceClient.get(anyString())).thenReturn(CompletableFuture.completedFuture(ogelFullView));
 
-    when(applicableOgelServiceClient.get(anyString(), anyString(), anyList(), anyList(), anyBoolean()))
+    when(applicableOgelServiceClient.get(anyString(), anyString(), anyList(), anyList()))
         .thenReturn(CompletableFuture.completedFuture(applicableOgelServiceResult));
 
     when(countryProvider.getCountries()).thenReturn(Collections.singletonList(country));

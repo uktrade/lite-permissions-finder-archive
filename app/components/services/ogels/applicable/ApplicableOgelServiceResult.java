@@ -14,9 +14,9 @@ public class ApplicableOgelServiceResult {
 
   public final List<ApplicableOgelView> results;
 
-  public ApplicableOgelServiceResult(ApplicableOgelView[] ogel, boolean showHistoricOgel) {
+  public ApplicableOgelServiceResult(ApplicableOgelView[] ogel) {
     this.results = Stream.of(ogel)
-    .filter(result -> showHistoricOgel || !StringUtils.containsIgnoreCase(result.getName(), HISTORIC_OGEL_NAME))
+    .filter(result -> !StringUtils.containsIgnoreCase(result.getName(), HISTORIC_OGEL_NAME))
     .collect(Collectors.toList());
   }
 

@@ -5,7 +5,7 @@
 
 @(form: Form[_])
 @standardPage("Refining your licence results", Some(heading("Refining your licence results"))){
-  @errorSummary(form, fieldOrder = scala.List("forRepairReplacement", "forExhibitionDemonstration", "before1897upto35k"))
+  @errorSummary(form, fieldOrder = scala.List("forRepairReplacement", "forExhibitionDemonstration"))
 } {
 
   <form action="@controllers.ogel.routes.OgelQuestionsController.handleSubmit()" method="POST">
@@ -15,8 +15,6 @@
     @formRadioBoolean(form("forRepairReplacement"), Html("Are you exporting goods for or after repair or replacement?"))
 
     @formRadioBoolean(form("forExhibitionDemonstration"), Html("Are you exporting goods for or after exhibition or demonstration?"))
-
-    @formRadioBoolean(form("before1897upto35k"), Html("Are you exporting items manufactured before 1897 with a value of no more than £35,000?"))
 
     <div class="form-group">
       <button type="submit" class="button">Continue</button>

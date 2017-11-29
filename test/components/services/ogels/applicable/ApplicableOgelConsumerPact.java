@@ -159,7 +159,7 @@ public class ApplicableOgelConsumerPact {
     List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.value());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
@@ -181,7 +181,7 @@ public class ApplicableOgelConsumerPact {
     List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.value());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
@@ -198,7 +198,7 @@ public class ApplicableOgelConsumerPact {
     List<String> activityTypes = Arrays.asList(ACTIVITY_TYPE_INVALID);
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
@@ -216,7 +216,7 @@ public class ApplicableOgelConsumerPact {
     List<String> activityTypes = Arrays.asList(OgelActivityType.MIL_GOV.value(), OgelActivityType.MIL_ANY.value());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {

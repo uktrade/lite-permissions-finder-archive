@@ -77,11 +77,9 @@ public class OgelResultsController {
 
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
 
-    boolean isGoodHistoric =  OgelQuestionsForm.isGoodHistoric(ogelQuestionsFormOptional);
-
     CompletionStage<FrontendServiceResult> frontendServiceStage = frontendServiceClient.get(controlCode);
 
-    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric)
+    return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenCombineAsync(frontendServiceStage, (applicableOgelServiceResult, frontendServiceResult) -> {
           if (!applicableOgelServiceResult.results.isEmpty()) {
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelServiceResult.results, frontendServiceResult.getFrontendControlCode(), null);
@@ -115,10 +113,9 @@ public class OgelResultsController {
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
     Optional<OgelQuestionsForm> ogelQuestionsFormOptional = permissionsFinderDao.getOgelQuestionsForm();
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
-    boolean isGoodHistoric =  OgelQuestionsForm.isGoodHistoric(ogelQuestionsFormOptional);
 
     CompletionStage<Void> checkOgelStage = applicableOgelServiceClient
-        .get(controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric)
+        .get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenAcceptAsync(result -> {
           if (!result.findResultById(chosenOgel).isPresent()) {
             throw new FormStateException(String.format("Chosen OGEL %s is not valid according to the applicable OGEL service response", chosenOgel));

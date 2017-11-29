@@ -88,10 +88,8 @@ public class SummaryServiceImpl implements SummaryService {
       List<String> ogelActivities =
           OgelQuestionsController.OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
 
-      boolean isGoodHistoric = OgelQuestionsController.OgelQuestionsForm.isGoodHistoric(ogelQuestionsFormOptional);
-
       CompletionStage<ApplicableOgelServiceResult> applicableOgelStage = applicableOgelServiceClient.get(
-          controlCode, sourceCountry, destinationCountries, ogelActivities, isGoodHistoric);
+          controlCode, sourceCountry, destinationCountries, ogelActivities);
 
       CompletionStage<Summary.ValidatedOgel> validatedStage = ogelStage.thenCombineAsync(applicableOgelStage,
           (ogelResult, applicableOgelResult) ->

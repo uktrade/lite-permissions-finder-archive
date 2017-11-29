@@ -106,9 +106,6 @@ public class OgelQuestionsController {
     @Required(message = "Select whether you are exporting goods for or after exhibition or demonstration")
     public String forExhibitionDemonstration;
 
-    @Required(message = "Select whether you are exporting items manufactured before 1897 with a value of no more than £35,000")
-    public String before1897upto35k;
-
     public static List<String> formToActivityTypes(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
       // TODO account for TECH
       Map<OgelActivityType, String> activityMap = new HashMap<>();
@@ -133,17 +130,6 @@ public class OgelQuestionsController {
           .map(es -> es.getValue())
           .collect(Collectors.toList());
     }
-
-    /**
-     * Whether the goods is historic. This is temporary due to pending enhancements with the OGEL service.
-     * @param ogelQuestionsFormOptional the OGEL Questions form
-     * @return A list of OGEL activity types
-     */
-    public static boolean isGoodHistoric(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
-      // Return false if not present, otherwise parse value from form
-      return ogelQuestionsFormOptional.isPresent() && Boolean.parseBoolean(ogelQuestionsFormOptional.get().before1897upto35k);
-    }
-
   }
 
 }
