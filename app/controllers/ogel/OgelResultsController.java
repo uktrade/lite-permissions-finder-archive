@@ -16,6 +16,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import models.common.Country;
 import models.ogel.OgelResultsDisplay;
+import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -24,7 +25,6 @@ import play.mvc.Result;
 import utils.CountryUtils;
 import views.html.ogel.ogelResults;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -80,19 +80,18 @@ public class OgelResultsController {
     CompletionStage<FrontendServiceResult> frontendServiceStage = frontendServiceClient.get(controlCode);
 
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
-        .thenCombineAsync(frontendServiceStage, (applicableOgelServiceResult, frontendServiceResult) -> {
-          if (!applicableOgelServiceResult.results.isEmpty()) {
-            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelServiceResult.results, frontendServiceResult.getFrontendControlCode(), null);
+        .thenCombineAsync(frontendServiceStage, (applicableOgelView, frontendServiceResult) -> {
+          if (!applicableOgelView.isEmpty()) {
+            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(), null);
             return ok(ogelResults.render(form, display));
-          }
-          else {
+          } else {
             List<Country> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
 
             List<String> countryNames = CountryUtils.getFilteredCountries(countries, destinationCountries).stream()
                 .map(Country::getCountryName)
                 .collect(Collectors.toList());
 
-            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelServiceResult.results, frontendServiceResult.getFrontendControlCode(), countryNames);
+            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(), countryNames);
 
             return ok(ogelResults.render(form, display));
           }
@@ -117,7 +116,7 @@ public class OgelResultsController {
     CompletionStage<Void> checkOgelStage = applicableOgelServiceClient
         .get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenAcceptAsync(result -> {
-          if (!result.findResultById(chosenOgel).isPresent()) {
+          if (!result.stream().filter(ogelView -> StringUtils.equals(ogelView.getId(), chosenOgel)).findFirst().isPresent()) {
             throw new FormStateException(String.format("Chosen OGEL %s is not valid according to the applicable OGEL service response", chosenOgel));
           }
         }, httpExecutionContext.current());
@@ -128,8 +127,7 @@ public class OgelResultsController {
             (empty, conditionsResult) -> {
               if (!conditionsResult.isEmpty) {
                 return journeyManager.performTransition(Events.OGEL_CONDITIONS_APPLY);
-              }
-              else {
+              } else {
                 return journeyManager.performTransition(Events.OGEL_SELECTED);
               }
             }, httpExecutionContext.current())

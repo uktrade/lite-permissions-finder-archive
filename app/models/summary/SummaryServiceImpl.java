@@ -8,13 +8,13 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
-import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import components.services.ogels.ogel.OgelServiceClient;
 import controllers.ogel.OgelQuestionsController;
 import controllers.routes;
 import models.common.Country;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import utils.CountryUtils;
 
@@ -88,13 +88,14 @@ public class SummaryServiceImpl implements SummaryService {
       List<String> ogelActivities =
           OgelQuestionsController.OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
 
-      CompletionStage<ApplicableOgelServiceResult> applicableOgelStage = applicableOgelServiceClient.get(
+      CompletionStage<List<ApplicableOgelView>> applicableOgelStage = applicableOgelServiceClient.get(
           controlCode, sourceCountry, destinationCountries, ogelActivities);
 
       CompletionStage<Summary.ValidatedOgel> validatedStage = ogelStage.thenCombineAsync(applicableOgelStage,
-          (ogelResult, applicableOgelResult) ->
-              new Summary.ValidatedOgel(ogelResult, applicableOgelResult.findResultById(ogelResult.getId()).isPresent())
-          , httpExecutionContext.current());
+          (ogelResult, applicableOgelView) -> new Summary.ValidatedOgel(ogelResult, applicableOgelView.stream()
+                    .filter(ogelView -> StringUtils.equals(ogelView.getId(), ogelId))
+                    .findFirst().isPresent()),
+          httpExecutionContext.current());
 
       summaryCompletionStage = summaryCompletionStage
           .thenCombineAsync(validatedStage, (summary, validatedOgel)
