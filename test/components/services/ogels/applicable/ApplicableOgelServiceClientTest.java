@@ -14,9 +14,11 @@ import play.libs.ws.WSClient;
 import play.routing.Router;
 import play.routing.RoutingDsl;
 import play.server.Server;
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 public class ApplicableOgelServiceClientTest {
@@ -39,13 +41,13 @@ public class ApplicableOgelServiceClientTest {
 
   @Test
   public void shouldGetApplicableOgel() throws Exception {
-    CompletionStage<ApplicableOgelServiceResult> result = client.get("ML1a", "UK", Arrays.asList("France, Spain"), Arrays.asList("test"), false);
+    CompletionStage<List<ApplicableOgelView>> result = client.get("ML1a", "UK", Arrays.asList("France, Spain"), Arrays.asList("test"));
 
-    ApplicableOgelServiceResult ogelServiceResult = result.toCompletableFuture().get();
-    assertThat(ogelServiceResult.results.size()).isEqualTo(1);
-    assertThat(ogelServiceResult.results.get(0).getId()).isEqualTo("OGL991");
-    assertThat(ogelServiceResult.results.get(0).getName()).isEqualTo("OGEL 991");
-    assertThat(ogelServiceResult.results.get(0).getUsageSummary().size()).isEqualTo(3);
+    List<ApplicableOgelView> ogelViews = result.toCompletableFuture().get();
+    assertThat(ogelViews.size()).isEqualTo(1);
+    assertThat(ogelViews.get(0).getId()).isEqualTo("OGL991");
+    assertThat(ogelViews.get(0).getName()).isEqualTo("OGEL 991");
+    assertThat(ogelViews.get(0).getUsageSummary().size()).isEqualTo(3);
   }
 
   @After

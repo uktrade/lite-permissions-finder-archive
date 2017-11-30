@@ -155,19 +155,19 @@ public class ApplicableOgelConsumerPact {
   @Test
   @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsExist")
   public void applicableOgelsExistTest() throws Exception {
-    ApplicableOgelServiceResult result;
+    List<ApplicableOgelView> result;
     List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.value());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
-    assertThat(result.results.size()).isEqualTo(3);
-    ApplicableOgelView ogel = result.results.get(0);
+    assertThat(result.size()).isEqualTo(3);
+    ApplicableOgelView ogel = result.get(0);
     assertThat(ogel.getId()).isEqualTo(OGEL_ID);
     assertThat(ogel.getName()).isEqualTo(OGEL_NAME);
     assertThat(ogel.getUsageSummary().size()).isEqualTo(1);
@@ -177,28 +177,28 @@ public class ApplicableOgelConsumerPact {
   @Test
   @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsDoNotExist")
   public void applicableOgelsDoNotExistTest() throws Exception {
-    ApplicableOgelServiceResult result;
+    List<ApplicableOgelView> result;
     List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.value());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
-    assertThat(result.results.isEmpty()).isTrue();
+    assertThat(result.isEmpty()).isTrue();
   }
 
   @Test
   @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "invalidActivityType")
   public void invalidActivityTypeTest() throws Exception {
-    ApplicableOgelServiceResult result = null;
+    List<ApplicableOgelView> result = null;
     List<String> activityTypes = Arrays.asList(ACTIVITY_TYPE_INVALID);
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
@@ -212,19 +212,19 @@ public class ApplicableOgelConsumerPact {
   @Test
   @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsExistForMultipleActivityTypes")
   public void applicableOgelsExistForMultipleActivityTypesTest() throws Exception {
-    ApplicableOgelServiceResult result;
+    List<ApplicableOgelView> result;
     List<String> activityTypes = Arrays.asList(OgelActivityType.MIL_GOV.value(), OgelActivityType.MIL_ANY.value());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
-    assertThat(result.results.size()).isEqualTo(3);
-    ApplicableOgelView ogel = result.results.get(0);
+    assertThat(result.size()).isEqualTo(3);
+    ApplicableOgelView ogel = result.get(0);
     assertThat(ogel.getId()).isEqualTo(OGEL_ID);
     assertThat(ogel.getName()).isEqualTo(OGEL_NAME);
     assertThat(ogel.getUsageSummary().size()).isEqualTo(1);

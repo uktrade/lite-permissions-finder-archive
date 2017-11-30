@@ -2,7 +2,6 @@ package models.summary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -15,7 +14,6 @@ import components.persistence.PermissionsFinderDao;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
-import components.services.ogels.applicable.ApplicableOgelServiceResult;
 import components.services.ogels.ogel.OgelServiceClient;
 import controllers.ogel.OgelQuestionsController;
 import models.common.Country;
@@ -31,8 +29,11 @@ import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SummaryServiceTest {
@@ -63,7 +64,7 @@ public class SummaryServiceTest {
     FrontendServiceResult frontendServiceResult = new FrontendServiceResult(frontendControlCodesJson);
 
     JsonNode applicableOgelsJson = Json.parse(this.getClass().getClassLoader().getResourceAsStream("models/summary/applicable-ogels.json"));
-    ApplicableOgelServiceResult applicableOgelServiceResult = new ApplicableOgelServiceResult(Json.fromJson(applicableOgelsJson, ApplicableOgelView[].class), false);
+    List<ApplicableOgelView> applicableOgelViews = Stream.of(Json.fromJson(applicableOgelsJson, ApplicableOgelView[].class)).collect(Collectors.toList());
 
     JsonNode ogelsJson = Json.parse(this.getClass().getClassLoader().getResourceAsStream("models/summary/ogels.json"));
     OgelFullView ogelFullView = Json.fromJson(ogelsJson, OgelFullView.class);
@@ -76,7 +77,6 @@ public class SummaryServiceTest {
     };
 
     OgelQuestionsController.OgelQuestionsForm ogelQuestionsForm = new OgelQuestionsController.OgelQuestionsForm();
-    ogelQuestionsForm.before1897upto35k = "true";
     ogelQuestionsForm.forExhibitionDemonstration = "true";
     ogelQuestionsForm.forRepairReplacement = "true";
 
@@ -93,8 +93,8 @@ public class SummaryServiceTest {
 
     when(ogelServiceClient.get(anyString())).thenReturn(CompletableFuture.completedFuture(ogelFullView));
 
-    when(applicableOgelServiceClient.get(anyString(), anyString(), anyList(), anyList(), anyBoolean()))
-        .thenReturn(CompletableFuture.completedFuture(applicableOgelServiceResult));
+    when(applicableOgelServiceClient.get(anyString(), anyString(), anyList(), anyList()))
+        .thenReturn(CompletableFuture.completedFuture(applicableOgelViews));
 
     when(countryProvider.getCountries()).thenReturn(Collections.singletonList(country));
 

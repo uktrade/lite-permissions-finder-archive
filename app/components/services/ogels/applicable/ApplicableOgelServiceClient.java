@@ -13,6 +13,8 @@ import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ApplicableOgelServiceClient {
 
@@ -32,9 +34,8 @@ public class ApplicableOgelServiceClient {
     this.webServiceUrl = webServiceAddress + "/applicable-ogels";
   }
 
-  public CompletionStage<ApplicableOgelServiceResult> get(String controlCode, String sourceCountry,
-                                                          List<String> destinationCountries, List<String> activityTypes,
-                                                          boolean showHistoricOgel){
+  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry,
+                                                       List<String> destinationCountries, List<String> activityTypes) {
 
     WSRequest req = wsClient.url(webServiceUrl)
         .withRequestFilter(CorrelationId.requestFilter)
@@ -50,17 +51,14 @@ public class ApplicableOgelServiceClient {
     return req.get().handleAsync((response, error) -> {
       if (error != null) {
         throw new ServiceException("OGEL service request failed", error);
-      }
-      else if (response.getStatus() != 200) {
+      } else if (response.getStatus() != 200) {
         throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /applicable-ogels: %s",
             response.getStatus()));
-      }
-      else {
+      } else {
         ApplicableOgelView[] applicableOgelView = Json.fromJson(response.asJson(), ApplicableOgelView[].class);
-        return new ApplicableOgelServiceResult(applicableOgelView, showHistoricOgel);
+        return Stream.of(applicableOgelView).collect(Collectors.toList());
       }
     }, httpExecutionContext.current());
   }
-
 
 }
