@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
+////todo: clean up ExportCategory enum
 public enum ExportCategory {
   ARTS_CULTURAL("Arts and cultural goods"),
   CHEMICALS_COSMETICS("Cosmetics, chemicals, and pesticides"),

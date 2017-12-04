@@ -49,6 +49,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       routes.StaticContentController.renderNotImplemented());
   private final JourneyStage notApplicable = defineStage("notApplicable",
       routes.StaticContentController.renderNotApplicable());
+  private final JourneyStage tradeType = defineStage("tradeType",
+      routes.TradeTypeController.renderForm());
 
   /** Physical **/
   private final JourneyStage search = defineStage("search",
@@ -162,7 +164,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   protected void journeys() {
     // *** Stages/transitions ***
 
-    goodsCategoryStages();
+//    goodsCategoryStages();
 
     atStage(goodsType)
         .onEvent(Events.GOODS_TYPE_SELECTED)
@@ -181,6 +183,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     defineJourney(JourneyDefinitionNames.EXPORT, goodsType,
         BackLink.to(routes.GoodsTypeController.renderForm(), "Back"));
+
     defineJourney(JourneyDefinitionNames.CHANGE_CONTROL_CODE, search,
         BackLink.to(routes.SummaryController.renderForm(), "Back"));
     defineJourney(JourneyDefinitionNames.CHANGE_DESTINATION_COUNTRIES, destinationCountries,
@@ -419,6 +422,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         additionalSpecsDecision,
         technicalNotesDecision
     );
+
+    atStage(tradeType)
+        .onEvent(Events.EXPORT_TRADE_TYPE)
+        .then(moveTo(destinationCountries));
 
     atStage(decontrolsApply)
         .onEvent(Events.BACK)
@@ -1300,7 +1307,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atDecisionStage(technicalNotesDecisionStage)
         .decide()
         .when(true, moveTo(technicalNotesStage))
-        .when(false, moveTo(exitStage));
+        .when(false, moveTo(tradeType));
   }
 
   private void bindControlCodeListStageJourneyTransitions(JourneyStage controlCodeListStage,

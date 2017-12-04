@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
+import journey.Events;
 import journey.JourneyDefinitionNames;
 import models.TradeType;
 import play.data.Form;
@@ -55,8 +56,9 @@ public class TradeTypeController extends Controller {
     switch (tradeType) {
       case EXPORT:
         permissionsFinderDao.saveSourceCountry(UNITED_KINGDOM);
-        return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
+        return journeyManager.performTransition(Events.EXPORT_TRADE_TYPE);
       case IMPORT:
+        //todo: not in use
         return journeyManager.startJourney(JourneyDefinitionNames.IMPORT);
       case TRANSSHIPMENT:
         return completedFuture(redirect(routes.StaticContentController.renderTranshipment()));

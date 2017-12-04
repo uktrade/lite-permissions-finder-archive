@@ -47,6 +47,7 @@ public class DecontrolsApplyDisplay {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
           , controlCodeSubJourney.toString()));
     }
-    this.buttons.add(new ActionButton(BackType.EXPORT_CATEGORY.toString(), "change your item category (currently " + exportCategory.getHeading() + ")"));
+    //todo: clean up ExportCategory enum
+//    this.buttons.add(new ActionButton(BackType.EXPORT_CATEGORY.toString(), "change your item category (currently " + exportCategory.getHeading() + ")"));
   }
 }

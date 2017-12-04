@@ -72,10 +72,11 @@ public class DecontrolsApplyController {
 
   private Result renderDecontrolsApply(Form<?> form, NotApplicableDisplayCommon displayCommon) {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
+    //todo: clean up ExportCategory enum
+//    ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
     GoodsType goodsType = displayCommon.controlCodeSubJourney.getGoodsType();
     Optional<SoftTechCategory> softTechCategoryOptional = permissionsFinderDao.getSoftTechCategory(goodsType);
-    return ok(decontrolsApply.render(form, new DecontrolsApplyDisplay(displayCommon, exportCategory, softTechCategoryOptional)));
+    return ok(decontrolsApply.render(form, new DecontrolsApplyDisplay(displayCommon, null, softTechCategoryOptional)));
   }
 
   public CompletionStage<Result> handleSubmit() {

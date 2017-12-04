@@ -65,4 +65,6 @@ public class Events {
 
   public static final ParameterisedJourneyEvent<BackType> BACK = new ParameterisedJourneyEvent<>("BACK", BackType.class);
 
+  public static final JourneyEvent EXPORT_TRADE_TYPE = new JourneyEvent("EXPORT_TRADE_TYPE");
+
 }
