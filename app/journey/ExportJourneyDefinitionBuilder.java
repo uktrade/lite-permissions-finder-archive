@@ -179,9 +179,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     // *** Journeys ***
 
-    defineJourney(JourneyDefinitionNames.EXPORT, exportCategory,
-        BackLink.to(routes.TradeTypeController.renderForm(), "Back"));
-
+    defineJourney(JourneyDefinitionNames.EXPORT, goodsType,
+        BackLink.to(routes.GoodsTypeController.renderForm(), "Back"));
     defineJourney(JourneyDefinitionNames.CHANGE_CONTROL_CODE, search,
         BackLink.to(routes.SummaryController.renderForm(), "Back"));
     defineJourney(JourneyDefinitionNames.CHANGE_DESTINATION_COUNTRIES, destinationCountries,
