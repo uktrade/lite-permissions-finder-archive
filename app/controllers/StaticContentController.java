@@ -20,17 +20,6 @@ public class StaticContentController extends Controller {
   public enum StaticHtml {
     BROKERING("tradetypes/brokering.html","Trade controls, trafficking and brokering"),
     TRANSHIPMENT("tradetypes/transhipment.html","Transhipment"),
-    CATEGORY_ARTS_CULTURAL_HISTORIC("categories/artsCultural/historic.html", "You may need an Arts Council licence"),
-    CATEGORY_ARTS_CULTURAL_NON_HISTORIC("categories/artsCultural/nonHistoric.html", "You need an Arts Council licence to export specific items"),
-    CATEGORY_FOOD("categories/food.html","You need to check the rules for your export destination"),
-    CATEGORY_ENDANGERED_ANIMALS("categories/endangeredAnimal.html", "You may need a CITES permit"),
-    CATEGORY_NON_ENDANGERED_ANIMALS("categories/nonEndangeredAnimal.html", "You may need approval from the destination country"),
-    CATEGORY_NON_MILITARY_TAKING("categories/nonMilitaryFirearms/takingLicence.html", "You need to check the rules for your destination country"),
-    CATEGORY_NON_MILITARY_SENDING("categories/nonMilitaryFirearms/sendingLicence.html", "You need to check the rules for your destination country"),
-    CATEGORY_NON_MILITARY_NEED_LICENCE("categories/nonMilitaryFirearms/needLicence.html", "You need an export licence"),
-    CATEGORY_PLANTS("categories/plant.html", "You may need approval from the destination country"),
-    CATEGORY_MEDICINES_DRUGS("categories/medicinesDrugs.html", "You need a licence to export most drugs and medicines"),
-    CATEGORY_WASTE("categories/waste.html", "You must have a licence to export most types of waste"),
     NOT_APPLICABLE("notApplicable.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     SOFTWARE_EXEMPTIONS_NLR1("software/exemptionsNLR1.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
@@ -79,50 +68,6 @@ public class StaticContentController extends Controller {
 
   public Result renderTranshipment() {
     return renderStaticHtml(StaticHtml.TRANSHIPMENT);
-  }
-
-  public Result renderCategoryArtsCulturalHistoric() {
-    return renderStaticHtml(StaticHtml.CATEGORY_ARTS_CULTURAL_HISTORIC);
-  }
-
-  public Result renderCategoryArtsCulturalNonHistoric() {
-    return renderStaticHtml(StaticHtml.CATEGORY_ARTS_CULTURAL_NON_HISTORIC);
-  }
-
-  public Result renderCategoryFood() {
-    return renderStaticHtml(StaticHtml.CATEGORY_FOOD);
-  }
-
-  public Result renderCategoryEndangeredAnimals() {
-    return renderStaticHtml(StaticHtml.CATEGORY_ENDANGERED_ANIMALS);
-  }
-
-  public Result renderCategoryNonEndangeredAnimals() {
-    return renderStaticHtml(StaticHtml.CATEGORY_NON_ENDANGERED_ANIMALS);
-  }
-
-  public Result renderCategoryNonMilitaryTaking() {
-    return renderStaticHtml(StaticHtml.CATEGORY_NON_MILITARY_TAKING);
-  }
-
-  public Result renderCategoryNonMilitarySending() {
-    return renderStaticHtml(StaticHtml.CATEGORY_NON_MILITARY_SENDING);
-  }
-
-  public Result renderCategoryNonMilitaryNeedLicence() {
-    return renderStaticHtml(StaticHtml.CATEGORY_NON_MILITARY_NEED_LICENCE);
-  }
-
-  public Result renderCategoryPlants() {
-    return renderStaticHtml(StaticHtml.CATEGORY_PLANTS);
-  }
-
-  public Result renderCategoryMedicinesDrugs() {
-    return renderStaticHtml(StaticHtml.CATEGORY_MEDICINES_DRUGS);
-  }
-
-  public Result renderCategoryWaste() {
-    return renderStaticHtml(StaticHtml.CATEGORY_WASTE);
   }
 
   public Result renderNotApplicable() {
