@@ -94,8 +94,7 @@ public class StartApplicationController {
     }
 
     applicationCodeContextParamProvider.updateParamValueOnContext(applicationCode);
-    journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
-    return contextParamManager.addParamsAndRedirect(routes.GoodsTypeController.renderForm());
+    return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
   }
 
   /**

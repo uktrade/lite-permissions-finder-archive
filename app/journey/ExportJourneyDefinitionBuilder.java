@@ -181,8 +181,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     // *** Journeys ***
 
-    defineJourney(JourneyDefinitionNames.EXPORT, goodsType,
-        BackLink.to(routes.GoodsTypeController.renderForm(), "Back"));
+    defineJourney(JourneyDefinitionNames.EXPORT, goodsType);
 
     defineJourney(JourneyDefinitionNames.CHANGE_CONTROL_CODE, search,
         BackLink.to(routes.SummaryController.renderForm(), "Back"));
@@ -417,7 +416,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controlCodeNotApplicable,
         additionalSpecifications,
         technicalNotes,
-        destinationCountries,
+        tradeType,
         decontrolsDecision,
         additionalSpecsDecision,
         technicalNotesDecision
@@ -1307,7 +1306,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atDecisionStage(technicalNotesDecisionStage)
         .decide()
         .when(true, moveTo(technicalNotesStage))
-        .when(false, moveTo(tradeType));
+        .when(false, moveTo(exitStage));
   }
 
   private void bindControlCodeListStageJourneyTransitions(JourneyStage controlCodeListStage,
