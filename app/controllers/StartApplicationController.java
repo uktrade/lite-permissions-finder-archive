@@ -4,11 +4,13 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
+import components.common.journey.JourneyManager;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
 import components.services.notification.PermissionsFinderNotificationClient;
+import journey.JourneyDefinitionNames;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -35,6 +37,7 @@ public class StartApplicationController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final PermissionsFinderNotificationClient notificationClient;
   private final ApplicationCodeContextParamProvider applicationCodeContextParamProvider;
+  private final JourneyManager journeyManager;
 
   @Inject
   public StartApplicationController(TransactionManager transactionManager,
@@ -43,7 +46,8 @@ public class StartApplicationController {
                                     PermissionsFinderDao permissionsFinderDao,
                                     ApplicationCodeDao applicationCodeDao,
                                     PermissionsFinderNotificationClient notificationClient,
-                                    ApplicationCodeContextParamProvider applicationCodeContextParamProvider) {
+                                    ApplicationCodeContextParamProvider applicationCodeContextParamProvider,
+                                    JourneyManager journeyManager) {
     this.transactionManager = transactionManager;
     this.contextParamManager = contextParamManager;
     this.formFactory = formFactory;
@@ -51,6 +55,7 @@ public class StartApplicationController {
     this.applicationCodeDao = applicationCodeDao;
     this.notificationClient = notificationClient;
     this.applicationCodeContextParamProvider = applicationCodeContextParamProvider;
+    this.journeyManager = journeyManager;
   }
 
   public Result renderForm() {
@@ -89,8 +94,7 @@ public class StartApplicationController {
     }
 
     applicationCodeContextParamProvider.updateParamValueOnContext(applicationCode);
-
-    return contextParamManager.addParamsAndRedirect(routes.TradeTypeController.renderForm());
+    return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
   }
 
   /**

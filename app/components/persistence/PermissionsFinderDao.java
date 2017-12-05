@@ -5,16 +5,13 @@ import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
-import controllers.categories.ArtsCulturalController.ArtsCulturalForm;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import controllers.search.SearchController.SearchForm;
-import models.ExportCategory;
 import models.GoodsType;
-import models.LifeType;
 import models.TradeType;
 import models.controlcode.ControlCodeSubJourney;
-import models.softtech.SoftwareExemptionQuestion;
 import models.softtech.SoftTechCategory;
+import models.softtech.SoftwareExemptionQuestion;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import redis.clients.jedis.JedisPool;
@@ -31,16 +28,11 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String SOURCE_COUNTRY = "sourceCountry";
   public static final String SELECTED_CONTROL_CODE = "selectedControlCode";
   public static final String OGEL_ID = "ogelId";
-  public static final String EXPORT_CATEGORY = "exportCategory";
   public static final String APPLICATION_CODE = "applicationCode";
   public static final String EMAIL_ADDRESS = "emailAddress";
   public static final String SEARCH_PAGINATION_DISPLAY_COUNT = "searchPaginationDisplayCount";
   public static final String SEARCH_LAST_CHOSEN_CONTROL_CODE = "searchLastChosenControlCode";
   public static final String TRADE_TYPE = "tradeType";
-  public static final String ARTS_CULTURAL_GOODS = "artsCulturalGoods";
-  public static final String IS_DUAL_USE_GOOD = "isDualUseGood";
-  public static final String IS_USED_FOR_EXECUTION_TORTURE = "isUsedForExecutionTorture";
-  public static final String PLANTS_ANIMALS_LIFE_TYPE = "plantsAnimalsLifeType";
   public static final String GOODS_TYPE = "goodsType";
   public static final String PHYSICAL_GOOD_SEARCH = "physicalGoodSearch";
   public static final String OGEL_QUESTIONS = "ogelQuestions";
@@ -49,7 +41,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String FINAL_DESTINATION_COUNTRY = "finalDestinationCountry";
   public static final String THROUGH_DESTINATION_COUNTRY_LIST = "throughDestinationCountryList";
   public static final String OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS = "ogelRegistrationServiceTransactionExists";
-  public static final String NON_MILITARY_FIREARMS_EXPORTED_BY_SELF = "nonMilitaryFirearmsExportedBySelf";
   public static final String CONTROL_CODE_APPLIES = "controlCodeAdditionalApplies";
   public static final String CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY = "controlCodeAdditionalSpecificationsApply";
   public static final String CONTROL_CODE_DECONTROLS_APPLY = "controlCodeDecontrolsApply";
@@ -85,11 +76,11 @@ public class PermissionsFinderDao extends CommonRedisDao {
     writeString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY, lastStartedControlCodeSubJourney.value());
   }
 
-  public void saveControlCodeForRegistration(String controlCode){
+  public void saveControlCodeForRegistration(String controlCode) {
     writeString(CONTROL_CODE_FOR_REGISTRATION, controlCode);
   }
 
-  public String getControlCodeForRegistration(){
+  public String getControlCodeForRegistration() {
     return readString(CONTROL_CODE_FOR_REGISTRATION);
   }
 
@@ -108,14 +99,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public String getOgelId() {
     return readString(OGEL_ID);
-  }
-
-  public void saveExportCategory(ExportCategory exportCategory) {
-    writeString(EXPORT_CATEGORY, exportCategory.toString());
-  }
-
-  public Optional<ExportCategory> getExportCategory() {
-    return ExportCategory.getMatched(readString(EXPORT_CATEGORY));
   }
 
   public void saveApplicationCode(String applicationCode) {
@@ -159,8 +142,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
     String count = readString(prependFieldName(controlCodeSubJourney, SEARCH_PAGINATION_DISPLAY_COUNT + ":" + searchType));
     if (count != null) {
       return Optional.of(Integer.parseInt(count));
-    }
-    else {
+    } else {
       return Optional.empty();
     }
   }
@@ -210,31 +192,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return StringUtils.isBlank(tradeType) ? Optional.empty() : Optional.of(TradeType.valueOf(tradeType));
   }
 
-  public void saveArtsCulturalForm (ArtsCulturalForm form) {
-    writeObject(ARTS_CULTURAL_GOODS, form);
-  }
-
-  public Optional<ArtsCulturalForm> getArtsCulturalForm() {
-    return readObject(ARTS_CULTURAL_GOODS, ArtsCulturalForm.class);
-  }
-
-  public void saveIsDualUseGood(boolean isDualUseGood) {
-    writeBoolean(IS_DUAL_USE_GOOD, isDualUseGood);
-  }
-
-  public Optional<Boolean> getIsDualUseGood() {
-    return readBoolean(IS_DUAL_USE_GOOD);
-  }
-
-  public void saveIsUsedForExecutionTorture(boolean isUsedForExecutionTorture) {
-    writeBoolean(IS_USED_FOR_EXECUTION_TORTURE, isUsedForExecutionTorture);
-  }
-
-  public Optional<Boolean> getIsUsedForExecutionTorture() {
-    return readBoolean(IS_USED_FOR_EXECUTION_TORTURE);
-  }
-
-  public void writeBoolean(String fieldName, boolean value){
+  public void writeBoolean(String fieldName, boolean value) {
     writeString(fieldName, Boolean.toString(value));
   }
 
@@ -244,14 +202,6 @@ public class PermissionsFinderDao extends CommonRedisDao {
       return Optional.empty();
     }
     return Optional.of(value.equalsIgnoreCase("true"));
-  }
-
-  public void savePlantsAnimalsLifeType(LifeType lifeType) {
-    writeString(PLANTS_ANIMALS_LIFE_TYPE, lifeType.value());
-  }
-
-  public Optional<LifeType> getPlantsAnimalsLifeType() {
-    return LifeType.getMatched(readString(PLANTS_ANIMALS_LIFE_TYPE));
   }
 
   public void saveGoodsType(GoodsType goodsType) {
@@ -290,7 +240,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readBoolean(OGEL_CONDITIONS_APPLY);
   }
 
-  public void saveItemThroughMultipleCountries (boolean itemThroughMultipleCountries) {
+  public void saveItemThroughMultipleCountries(boolean itemThroughMultipleCountries) {
     writeBoolean(ITEM_THROUGH_MULTIPLE_COUNTRIES, itemThroughMultipleCountries);
   }
 
@@ -328,20 +278,12 @@ public class PermissionsFinderDao extends CommonRedisDao {
     writeString(JOURNEY, journeyString);
   }
 
-  public void saveOgelRegistrationServiceTransactionExists (boolean transactionCreated) {
+  public void saveOgelRegistrationServiceTransactionExists(boolean transactionCreated) {
     writeBoolean(OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS, transactionCreated);
   }
 
   public Optional<Boolean> getOgelRegistrationServiceTransactionExists() {
     return readBoolean(OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS);
-  }
-
-  public void saveNonMilitaryFirearmsExportedBySelf(String nonMilitaryFirearmsExportedBySelf) {
-    writeString(NON_MILITARY_FIREARMS_EXPORTED_BY_SELF, nonMilitaryFirearmsExportedBySelf);
-  }
-
-  public String readNonMilitaryFirearmsExportedBySelf() {
-    return readString(NON_MILITARY_FIREARMS_EXPORTED_BY_SELF);
   }
 
   public void saveControlCodeApplies(ControlCodeSubJourney controlCodeSubJourney, boolean controlCodeApplies) {

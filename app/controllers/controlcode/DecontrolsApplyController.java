@@ -8,7 +8,6 @@ import components.persistence.PermissionsFinderDao;
 import controllers.controlcode.notapplicable.NotApplicableControllerHelper;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
-import models.ExportCategory;
 import models.GoodsType;
 import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
@@ -72,10 +71,9 @@ public class DecontrolsApplyController {
 
   private Result renderDecontrolsApply(Form<?> form, NotApplicableDisplayCommon displayCommon) {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    ExportCategory exportCategory = permissionsFinderDao.getExportCategory().get();
     GoodsType goodsType = displayCommon.controlCodeSubJourney.getGoodsType();
     Optional<SoftTechCategory> softTechCategoryOptional = permissionsFinderDao.getSoftTechCategory(goodsType);
-    return ok(decontrolsApply.render(form, new DecontrolsApplyDisplay(displayCommon, exportCategory, softTechCategoryOptional)));
+    return ok(decontrolsApply.render(form, new DecontrolsApplyDisplay(displayCommon, softTechCategoryOptional)));
   }
 
   public CompletionStage<Result> handleSubmit() {

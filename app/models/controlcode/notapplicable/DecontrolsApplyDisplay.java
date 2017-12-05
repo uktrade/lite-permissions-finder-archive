@@ -1,6 +1,5 @@
 package models.controlcode.notapplicable;
 
-import models.ExportCategory;
 import models.GoodsType;
 import models.controlcode.BackType;
 import models.controlcode.ControlCodeSubJourney;
@@ -20,7 +19,7 @@ public class DecontrolsApplyDisplay {
   public final List<ActionButton> buttons;
   public final String controlCodeTitle ;
 
-  public DecontrolsApplyDisplay(NotApplicableDisplayCommon displayCommon, ExportCategory exportCategory, Optional<SoftTechCategory> softTechCategory) {
+  public DecontrolsApplyDisplay(NotApplicableDisplayCommon displayCommon, Optional<SoftTechCategory> softTechCategory) {
     this.controlCodeSubJourney = displayCommon.controlCodeSubJourney;
     this.controlCodeTitle = displayCommon.frontendControlCode.getControlCodeData().getTitle();
     this.applicableSoftTechControls = displayCommon.applicableSoftTechControls;
@@ -47,6 +46,5 @@ public class DecontrolsApplyDisplay {
       throw new RuntimeException(String.format("Unexpected member of ControlCodeSubJourney enum: \"%s\""
           , controlCodeSubJourney.toString()));
     }
-    this.buttons.add(new ActionButton(BackType.EXPORT_CATEGORY.toString(), "change your item category (currently " + exportCategory.getHeading() + ")"));
   }
 }

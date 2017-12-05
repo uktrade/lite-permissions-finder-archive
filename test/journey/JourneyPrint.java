@@ -5,18 +5,17 @@ import components.common.journey.JourneyDefinition;
 import importcontent.ImportJourneyDefinitionBuilder;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
-import journey.deciders.ExportCategoryDecider;
-import journey.deciders.relatedcodes.CatchallRelatedControlsDecider;
-import journey.deciders.relatedcodes.CategoryRelatedControlsDecider;
-import journey.deciders.relatedcodes.NonExemptRelatedControlsDecider;
-import journey.deciders.relatedcodes.RelatedRelatedControlsDecider;
-import journey.deciders.relatedcodes.SearchRelatedControlsDecider;
 import journey.deciders.RelatedControlsDecider;
 import journey.deciders.RelationshipWithSoftwareDecider;
 import journey.deciders.RelationshipWithTechnologyDecider;
 import journey.deciders.controlcode.AdditionalSpecificationsDecider;
 import journey.deciders.controlcode.DecontrolsDecider;
 import journey.deciders.controlcode.TechnicalNotesDecider;
+import journey.deciders.relatedcodes.CatchallRelatedControlsDecider;
+import journey.deciders.relatedcodes.CategoryRelatedControlsDecider;
+import journey.deciders.relatedcodes.NonExemptRelatedControlsDecider;
+import journey.deciders.relatedcodes.RelatedRelatedControlsDecider;
+import journey.deciders.relatedcodes.SearchRelatedControlsDecider;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -31,7 +30,6 @@ public class JourneyPrint {
         new AdditionalSpecificationsDecider(null, null, null),
         new DecontrolsDecider(null, null, null),
         new TechnicalNotesDecider(null, null, null),
-        new ExportCategoryDecider(null),
         new CategoryControlsDecider(null, null, null, null),
         new RelatedControlsDecider(null, null, null, null),
         new CatchallControlsDecider(null, null, null, null),
