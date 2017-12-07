@@ -85,6 +85,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
         .to(configuration.getString("notificationService.address"));
     bindConstant().annotatedWith(Names.named("notificationServiceTimeout"))
         .to(configuration.getString("notificationService.timeout"));
+    bindConstant().annotatedWith(Names.named("notificationServiceCredentials"))
+        .to(configuration.getString("notificationService.credentials"));
 
     // ogelRegistration
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceAddress"))
