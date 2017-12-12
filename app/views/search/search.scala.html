@@ -14,21 +14,25 @@
 
     @contextFormParams()
 
-    @formTextarea(form("description"), cssClass = "form-control-wide", rows = "4") {
+    @formTextarea(form("itemName"), cssClass = "form-control-wide", rows = "2") {
+      @display.itemLabel
+    }
+
+    @formTextarea(form("description"), cssClass = "form-control-wide", rows = "2") {
       @display.descriptionLabel
     }
 
-    @formRadioBoolean(form("isComponent"), Html(display.isComponentLabel))
+    @formTextarea(form("partNumber"), cssClass = "form-control-wide", rows = "1") {
+      @display.partNumberLabel
+    }
 
-    <p class="js-hidden">
-      <span class="bold-medium">If yes, answer the question below</span>
-    </p>
-
-    <div id="componentWrapper" class="js-hidden">
-      @formTextarea(form("component"), Some(Html("For example 'engine for submersible vehicle'")), cssClass = "form-control-wide", rows = "4"){
+    @formRadioBooleanWithContent(form("isComponent"), HtmlFormat.empty, display.isComponentLabel, display.isCompleteLabel, false, None){
+      <div id="componentWrapper">
+      @formTextarea(form("component"), Some(Html("")), cssClass = "form-control-wide", rows = "4"){
         @display.componentLabel
       }
-    </div>
+      </div>
+    }(HtmlFormat.empty)
 
     <div class="form-group">
       <button type="submit" class="button">Search</button>

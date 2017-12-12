@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
+import play.data.validation.Constraints.MaxLength;
 import play.mvc.Result;
 import views.html.search.search;
 
@@ -84,12 +85,14 @@ public class SearchController {
   }
 
   public static String getSearchTerms(SearchForm form) {
+    String formSearchTerm = form.itemName + ", " + form.description ;
     if (form.isComponent != null && form.isComponent && StringUtils.isNotBlank(form.component)) {
-     return form.description + ", " + form.component;
+     formSearchTerm = formSearchTerm + ", " + form.component;
     }
-    else {
-      return form.description;
+    if (form.partNumber != null && StringUtils.isNotBlank(form.partNumber)) {
+      formSearchTerm = formSearchTerm + ", " + form.partNumber;
     }
+    return formSearchTerm;
   }
 
   public static class SearchForm {
@@ -100,6 +103,13 @@ public class SearchController {
     @Required(message = "Enter a description of the item")
     public String description;
 
+    @Required(message = "Enter the item name")
+    public String itemName;
+
+    @MaxLength(value = 500, message = "Partnumber cannot exceed 500 characters")
+    public String partNumber;
+
+    @MaxLength(value = 4000, message = "Component description cannot exceed 4000 characters")
     public String component;
 
   }
