@@ -20,20 +20,24 @@ public class VirtualEUOgelClient {
   private final WSClient wsClient;
   private final String webServiceUrl;
   private final int webServiceTimeout;
+  private final String credentials;
 
   @Inject
   public VirtualEUOgelClient(HttpExecutionContext httpExecutionContext,
                              WSClient wsClient,
                              @Named("ogelServiceAddress") String webServiceAddress,
-                             @Named("ogelServiceTimeout") int webServiceTimeout) {
+                             @Named("ogelServiceTimeout") int webServiceTimeout,
+                             @Named("ogelServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceUrl = webServiceAddress + "/virtual-eu";
     this.webServiceTimeout = webServiceTimeout;
+    this.credentials = credentials;
   }
 
-  public CompletionStage<VirtualEuView> sendServiceRequest(String controlCode, String sourceCountry, List<String> destinationCountries){
+  public CompletionStage<VirtualEuView> sendServiceRequest(String controlCode, String sourceCountry, List<String> destinationCountries) {
     WSRequest request = wsClient.url(webServiceUrl)
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
@@ -46,12 +50,10 @@ public class VirtualEUOgelClient {
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("OGEL service request failed", error);
-          }
-          else if (response.getStatus() != 200) {
+          } else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /virtual-eu: %s",
                 response.getStatus()));
-          }
-          else {
+          } else {
             return Json.fromJson(response.asJson(), VirtualEuView.class);
           }
         }, httpExecutionContext.current());

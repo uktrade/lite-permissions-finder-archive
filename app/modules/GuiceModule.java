@@ -79,6 +79,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
         .to(configuration.getString("ogelService.address"));
     bindConstant().annotatedWith(Names.named("ogelServiceTimeout"))
         .to(configuration.getString("ogelService.timeout"));
+    bindConstant().annotatedWith(Names.named("ogelServiceCredentials"))
+        .to(configuration.getString("ogelService.credentials"));
 
     // notificationService
     bindConstant().annotatedWith(Names.named("notificationServiceAddress"))
@@ -128,33 +130,37 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     return Arrays.asList(exportBuilder, importBuilder);
   }
 
-  @Provides @Singleton
+  @Provides
+  @Singleton
   @Named("countryProviderExport")
   CountryProvider provideCountryServiceExportClient(HttpExecutionContext httpContext, WSClient wsClient,
-                                                         @Named("countryServiceAddress") String address,
-                                                         @Named("countryServiceTimeout") int timeout,
-                                                         ObjectMapper mapper) {
+                                                    @Named("countryServiceAddress") String address,
+                                                    @Named("countryServiceTimeout") int timeout,
+                                                    ObjectMapper mapper) {
     CountryServiceClient client = CountryServiceClient.buildCountryServiceSetClient(httpContext, wsClient, timeout, address, "export-control", mapper);
     return new CountryProvider(client);
   }
 
-  @Provides @Singleton
+  @Provides
+  @Singleton
   @Named("countryProviderEu")
   CountryProvider provideCountryServiceEuClient(HttpExecutionContext httpContext, WSClient wsClient,
-                                                     @Named("countryServiceAddress") String address,
-                                                     @Named("countryServiceTimeout") int timeout,
-                                                     ObjectMapper mapper) {
+                                                @Named("countryServiceAddress") String address,
+                                                @Named("countryServiceTimeout") int timeout,
+                                                ObjectMapper mapper) {
     CountryServiceClient client = CountryServiceClient.buildCountryServiceGroupClient(httpContext, wsClient, timeout, address, "eu", mapper);
     return new CountryProvider(client);
   }
 
-  @Provides @Singleton
+  @Provides
+  @Singleton
   @Named("countryCacheActorRefEu")
   ActorRef provideCountryCacheActorRefEu(final ActorSystem system, @Named("countryProviderEu") CountryProvider countryProvider) {
     return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider)));
   }
 
-  @Provides @Singleton
+  @Provides
+  @Singleton
   @Named("countryCacheActorRefExport")
   ActorRef provideCountryCacheActorRefExport(final ActorSystem system, @Named("countryProviderExport") CountryProvider countryProvider) {
     return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider)));
@@ -162,7 +168,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Inject
   public void initActorScheduler(final ActorSystem actorSystem, @Named("countryCacheActorRefEu") ActorRef countryCacheActorRefEu,
-                                  @Named("countryCacheActorRefExport") ActorRef countryCacheActorRefExport) {
+                                 @Named("countryCacheActorRefExport") ActorRef countryCacheActorRefExport) {
     FiniteDuration delay = Duration.create(0, TimeUnit.MILLISECONDS);
     FiniteDuration frequency = Duration.create(1, TimeUnit.DAYS);
     actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "EU country cache", actorSystem.dispatcher(), null);

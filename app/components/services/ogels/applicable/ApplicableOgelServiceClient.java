@@ -22,22 +22,26 @@ public class ApplicableOgelServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final String credentials;
 
   @Inject
   public ApplicableOgelServiceClient(HttpExecutionContext httpExecutionContext,
                                      WSClient wsClient,
                                      @Named("ogelServiceAddress") String webServiceAddress,
-                                     @Named("ogelServiceTimeout") int webServiceTimeout) {
+                                     @Named("ogelServiceTimeout") int webServiceTimeout,
+                                     @Named("ogelServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/applicable-ogels";
+    this.credentials = credentials;
   }
 
   public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry,
                                                        List<String> destinationCountries, List<String> activityTypes) {
 
     WSRequest req = wsClient.url(webServiceUrl)
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)

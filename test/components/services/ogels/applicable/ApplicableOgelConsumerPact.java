@@ -9,6 +9,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import exceptions.ServiceException;
 import models.OgelActivityType;
 import org.junit.After;
@@ -22,7 +23,6 @@ import play.libs.ws.WSClient;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -30,6 +30,10 @@ import java.util.concurrent.ExecutionException;
 public class ApplicableOgelConsumerPact {
   private ApplicableOgelServiceClient client;
   private WSClient ws;
+
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
 
   private static final String OGEL_ID = "OGL1";
   private static final String OGEL_NAME = "name";
@@ -45,7 +49,11 @@ public class ApplicableOgelConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new ApplicableOgelServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new ApplicableOgelServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -64,18 +72,16 @@ public class ApplicableOgelConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("applicable ogels exist for given parameters")
         .uponReceiving("a request for applicable ogels")
+          .headers(AUTH_HEADERS)
           .path("/applicable-ogels")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY.value() + "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -84,18 +90,16 @@ public class ApplicableOgelConsumerPact {
   public PactFragment applicableOgelsDoNotExist(PactDslWithProvider builder) {
     PactDslJsonArray body = new PactDslJsonArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("no applicable ogels exist for given parameters")
         .uponReceiving("a request for applicable ogels")
+          .headers(AUTH_HEADERS)
           .path("/applicable-ogels")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY.value() + "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -107,18 +111,16 @@ public class ApplicableOgelConsumerPact {
         .stringType("message", "Invalid activity type: " + ACTIVITY_TYPE_INVALID)
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("activity type does not exist")
         .uponReceiving("a request for applicable ogels")
+          .headers(AUTH_HEADERS)
           .path("/applicable-ogels")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + ACTIVITY_TYPE_INVALID + "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(400)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -134,20 +136,18 @@ public class ApplicableOgelConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("applicable ogels exist for multiple activity types")
         .uponReceiving("a request for applicable ogels")
+          .headers(AUTH_HEADERS)
           .path("/applicable-ogels")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY +
-              "&activityType=" + OgelActivityType.MIL_GOV.value() + "&activityType=" + OgelActivityType.MIL_ANY.value() +
-              "&destinationCountry=" + DESTINATION_COUNTRY)
+            "&activityType=" + OgelActivityType.MIL_GOV.value() + "&activityType=" + OgelActivityType.MIL_ANY.value() +
+            "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -161,8 +161,7 @@ public class ApplicableOgelConsumerPact {
     try {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
@@ -183,8 +182,7 @@ public class ApplicableOgelConsumerPact {
     try {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
@@ -200,8 +198,7 @@ public class ApplicableOgelConsumerPact {
     try {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       assertThat(e)
           .isInstanceOf(ExecutionException.class)
           .hasCauseInstanceOf(ServiceException.class);
@@ -218,8 +215,7 @@ public class ApplicableOgelConsumerPact {
     try {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
           .toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();

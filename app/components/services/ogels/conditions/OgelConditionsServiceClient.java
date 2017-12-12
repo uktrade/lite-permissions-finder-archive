@@ -17,21 +17,25 @@ public class OgelConditionsServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final String credentials;
 
   @Inject
   public OgelConditionsServiceClient(HttpExecutionContext httpExecutionContext,
                                      WSClient wsClient,
                                      @Named("ogelServiceAddress") String webServiceAddress,
-                                     @Named("ogelServiceTimeout") int webServiceTimeout) {
+                                     @Named("ogelServiceTimeout") int webServiceTimeout,
+                                     @Named("ogelServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/control-code-conditions";
+    this.credentials = credentials;
   }
 
   public CompletionStage<OgelConditionsServiceResult> get(String ogelId, String controlCode) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId) + "/" +
         UrlEscapers.urlFragmentEscaper().escape(controlCode))
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
@@ -39,16 +43,13 @@ public class OgelConditionsServiceClient {
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("OGEL service request failed", error);
-          }
-          else if (response.getStatus() == 200 || response.getStatus() == 206) {
+          } else if (response.getStatus() == 200 || response.getStatus() == 206) {
             // Condition apply (200) or conditions apply, but with missing control codes (206)
             return OgelConditionsServiceResult.buildFrom(response.asJson());
-          }
-          else if (response.getStatus() == 204) {
+          } else if (response.getStatus() == 204) {
             // No conditions apply
             return OgelConditionsServiceResult.buildEmpty();
-          }
-          else {
+          } else {
             throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /control-code-conditions: %s",
                 response.getStatus()));
           }
@@ -58,7 +59,8 @@ public class OgelConditionsServiceClient {
   /**
    * Check the OgelConditionsServiceResult returned by this client against a user provided answer 'conditionsApply'
    * The result of this check indicates if the OGEL, control code, and 'conditionsApply' tuple are valid for licence registration
-   * @param result The result of this client
+   *
+   * @param result          The result of this client
    * @param conditionsApply Whether the conditions in the result apply to the users item
    * @return Business logic result of the OGEL, control code and answer tuple
    */
