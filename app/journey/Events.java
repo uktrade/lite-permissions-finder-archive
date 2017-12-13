@@ -13,6 +13,10 @@ public class Events {
 
   public static final JourneyEvent SEARCH_PHYSICAL_GOODS = new JourneyEvent("SEARCH_PHYSICAL_GOODS");
 
+  public static final JourneyEvent SEARCH_PHYSICAL_GOODS_COMPONENT = new JourneyEvent("SEARCH_PHYSICAL_GOODS_COMPONENT");
+
+  public static final JourneyEvent SEARCH_PHYSICAL_GOODS_COMPLETE = new JourneyEvent("SEARCH_PHYSICAL_GOODS_COMPLETE");
+
   public static final JourneyEvent NONE_MATCHED = new JourneyEvent("NONE_MATCHED");
 
   public static final JourneyEvent CONTROL_CODE_SELECTED = new JourneyEvent("CONTROL_CODE_SELECTED");

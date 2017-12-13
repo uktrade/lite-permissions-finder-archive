@@ -6,10 +6,14 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
+import journey.Events;
+import models.search.SearchDisplay;
 import models.search.SpeciallyModifiedDisplay;
+import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Result;
+import views.html.search.search;
 import views.html.search.searchSpeciallyModified;
 
 import java.util.concurrent.CompletionStage;
@@ -35,8 +39,8 @@ public class SearchSpeciallyModifiedController {
         new SpeciallyModifiedDisplay(isComponent))));
   }
 
-  public CompletionStage<Result> handleSubmit(String isModified) {
-    return null;
+  public CompletionStage<Result> handleSubmit() {
+      return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 
   public static class SpeciallyModifiedSearchForm {

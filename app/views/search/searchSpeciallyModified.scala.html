@@ -8,10 +8,9 @@
 
 @(form: Form[_], display: SpeciallyModifiedDisplay)
 @standardPage(display.pageTitle, Some(heading(display.pageTitle))){
-  @errorSummary(form)
 } {
 
-  <form action="@SearchSpeciallyModifiedController.handleSubmit("")" method="POST">
+  <form action="@SearchSpeciallyModifiedController.handleSubmit()" method="POST">
 
     @contextFormParams()
 
@@ -21,27 +20,6 @@
     @formRadioGroup(form("speciallyModified"), null)
     **@
 
-
-    <fieldset>
-      <legend class="visually-hidden"></legend>
-
-      @fieldContainer(form("speciallyModified")) {
-
-        <div class="form-group">
-        @formRadio(form("speciallyModified"), "<span class=\"heading-small\">Yes - specifically designed</span>", "", false, "label-specially-modified")
-        </div>
-
-        <div class="form-group">
-        @formRadio(form("speciallyModified"), "<span class=\"heading-small\">Yes - specifically modified</span>", "", false, "label-specially-modified")
-        </div>
-
-        <div class="form-group">
-        @formRadio(form("speciallyModified"), "<span class=\"heading-small\">No</span>", "", false, "label-specially-modified")
-        </div>
-
-      }
-
-    </fieldset>
 
     <button type="submit" class="button">Save and continue</button>
 
