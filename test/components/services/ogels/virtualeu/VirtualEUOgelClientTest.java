@@ -24,11 +24,15 @@ public class VirtualEUOgelClientTest {
   public void shouldGetVirtualEu() throws Exception {
     String ogelId = "OGL61";
     Router router = new RoutingDsl().GET("/virtual-eu").routeTo(() ->
-      ok(Json.parse("{\"virtualEu\":true, \"ogelId\":\"" + ogelId + "\"}"))
+        ok(Json.parse("{\"virtualEu\":true, \"ogelId\":\"" + ogelId + "\"}"))
     ).build();
     Server server = Server.forRouter(router);
     int port = server.httpPort();
-    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "http://localhost:" + port, 10000);
+    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run),
+        WS.newClient(port),
+        "http://localhost:" + port,
+        10000,
+        "service:password");
 
     VirtualEuView result = client.sendServiceRequest("ML1a", "CTRY0", Collections.singletonList("CTRY1"))
         .toCompletableFuture()
@@ -44,11 +48,15 @@ public class VirtualEUOgelClientTest {
   @Test
   public void shouldThowServiceException() throws Exception {
     Router router = new RoutingDsl().GET("/virtual-eu").routeTo(() ->
-      internalServerError()
+        internalServerError()
     ).build();
     Server server = Server.forRouter(router);
     int port = server.httpPort();
-    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), WS.newClient(port), "http://localhost:" + port, 10000);
+    VirtualEUOgelClient client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run),
+        WS.newClient(port),
+        "http://localhost:" + port,
+        10000,
+        "service:password");
 
     CompletableFuture<VirtualEuView> resultFuture = client.sendServiceRequest("ML1a", "CTRY0",
         Collections.singletonList("CTRY1"))

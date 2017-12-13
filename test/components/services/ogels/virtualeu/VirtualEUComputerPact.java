@@ -8,6 +8,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import exceptions.ServiceException;
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +30,10 @@ public class VirtualEUComputerPact {
   private VirtualEUOgelClient client;
   private WSClient ws;
 
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   private static final String OGEL_ID = "OGL1";
   private static final String CONTROL_CODE = "ML1a";
   private static final String SOURCE_COUNTRY = "CTRY0";
@@ -41,7 +46,11 @@ public class VirtualEUComputerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -56,18 +65,16 @@ public class VirtualEUComputerPact {
         .stringType("ogelId", OGEL_ID)
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("parameters match virtual EU ogel")
         .uponReceiving("a request to check parameters for a virtual EU ogel")
+          .headers(AUTH_HEADERS)
           .path("/virtual-eu")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -78,18 +85,16 @@ public class VirtualEUComputerPact {
         .booleanType("virtualEu", false)
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("parameters do not match virtual EU ogel")
         .uponReceiving("a request to check parameters for a virtual EU ogel")
+          .headers(AUTH_HEADERS)
           .path("/virtual-eu")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -101,18 +106,16 @@ public class VirtualEUComputerPact {
         .stringType("ogelId", OGEL_ID)
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("parameters match virtual EU ogel")
         .uponReceiving("a request to check parameters for a virtual EU ogel with multiple destinations")
+          .headers(AUTH_HEADERS)
           .path("/virtual-eu")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&destinationCountry=" + DESTINATION_COUNTRY + "&destinationCountry=" + ADDITIONAL_DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -122,6 +125,7 @@ public class VirtualEUComputerPact {
     return builder
         .given("parameters match virtual EU ogel")
         .uponReceiving("a request with a missing parameter")
+          .headers(AUTH_HEADERS)
           .path("/virtual-eu")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY)
           .method("GET")

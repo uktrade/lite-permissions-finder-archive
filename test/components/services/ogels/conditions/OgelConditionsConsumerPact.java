@@ -8,6 +8,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,13 +19,16 @@ import play.libs.ws.WS;
 import play.libs.ws.WSClient;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class OgelConditionsConsumerPact {
   private OgelConditionsServiceClient client;
   private WSClient ws;
+
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
 
   private static final String OGEL_ID = "OGL1";
   private static final String CONTROL_CODE = "ML1a";
@@ -37,7 +41,11 @@ public class OgelConditionsConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new OgelConditionsServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new OgelConditionsServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -55,17 +63,15 @@ public class OgelConditionsConsumerPact {
         .booleanValue("itemsAllowed", false)
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("conditions exist for given ogel and control code")
         .uponReceiving("a request for ogel conditions")
+          .headers(AUTH_HEADERS)
           .path("/control-code-conditions/" + OGEL_ID + "/" + CONTROL_CODE)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -75,8 +81,9 @@ public class OgelConditionsConsumerPact {
     return builder
         .given("no conditions exist for given ogel and control code")
         .uponReceiving("a request for ogel conditions")
-        .path("/control-code-conditions/" + OGEL_ID + "/" + CONTROL_CODE)
-        .method("GET")
+          .headers(AUTH_HEADERS)
+          .path("/control-code-conditions/" + OGEL_ID + "/" + CONTROL_CODE)
+          .method("GET")
         .willRespondWith()
           .status(204)
         .toFragment();
@@ -91,29 +98,27 @@ public class OgelConditionsConsumerPact {
         .nullValue("conditionDescriptionControlCodes")
         .booleanValue("itemsAllowed", false)
         .object("conditionDescriptionControlCodes")
-          .array("controlCodes")
-            .object()
-              .stringType("id")
-              .stringType("controlCode")
-              .stringType("friendlyDescription", CONTROL_CODE_FRIENDLY_DESC)
-              .closeObject()
-            .closeArray()
-          .array("missingControlCodes")
-          .closeArray()
+        .array("controlCodes")
+          .object()
+            .stringType("id")
+            .stringType("controlCode")
+            .stringType("friendlyDescription", CONTROL_CODE_FRIENDLY_DESC)
+          .closeObject()
+        .closeArray()
+        .array("missingControlCodes")
+        .closeArray()
         .closeObject()
         .asBody();
-
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
 
     return builder
         .given("conditions exist with related control codes for given ogel and control code")
         .uponReceiving("a request for ogel conditions")
+          .headers(AUTH_HEADERS)
           .path("/control-code-conditions/" + OGEL_ID + "/" + CONTROL_CODE)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -127,24 +132,23 @@ public class OgelConditionsConsumerPact {
         .nullValue("conditionDescriptionControlCodes")
         .booleanValue("itemsAllowed", false)
         .object("conditionDescriptionControlCodes")
-          .array("controlCodes").closeArray()
-          .array("missingControlCodes")
-            .stringType(CONTROL_CODE)
-            .closeArray()
+        .array("controlCodes")
+        .closeArray()
+        .array("missingControlCodes")
+          .stringType(CONTROL_CODE)
+        .closeArray()
         .closeObject()
         .asBody();
-
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
 
     return builder
         .given("conditions exist with missing related control codes for given ogel and control code")
         .uponReceiving("a request for ogel conditions")
+          .headers(AUTH_HEADERS)
           .path("/control-code-conditions/" + OGEL_ID + "/" + CONTROL_CODE)
           .method("GET")
         .willRespondWith()
           .status(206)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -155,8 +159,7 @@ public class OgelConditionsConsumerPact {
     OgelConditionsServiceResult result;
     try {
       result = client.get(OGEL_ID, CONTROL_CODE).toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
@@ -174,8 +177,7 @@ public class OgelConditionsConsumerPact {
     OgelConditionsServiceResult result;
     try {
       result = client.get(OGEL_ID, CONTROL_CODE).toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
@@ -188,8 +190,7 @@ public class OgelConditionsConsumerPact {
     OgelConditionsServiceResult result;
     try {
       result = client.get(OGEL_ID, CONTROL_CODE).toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
@@ -211,8 +212,7 @@ public class OgelConditionsConsumerPact {
     OgelConditionsServiceResult result;
     try {
       result = client.get(OGEL_ID, CONTROL_CODE).toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();

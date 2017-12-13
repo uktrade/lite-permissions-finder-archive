@@ -33,7 +33,11 @@ public class OgelServiceClientTest {
     server = Server.forRouter(router);
     int port = server.httpPort();
     ws = WS.newClient(port);
-    client = new OgelServiceClient(new HttpExecutionContext(Runnable::run), ws, "http://localhost:" + port, 10000);
+    client = new OgelServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        "http://localhost:" + port,
+        10000,
+        "service:password");
   }
 
   @Test
@@ -47,8 +51,7 @@ public class OgelServiceClientTest {
   public void cleanUp() throws Exception {
     try {
       ws.close();
-    }
-    finally {
+    } finally {
       server.stop();
     }
   }

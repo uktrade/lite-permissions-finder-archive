@@ -19,20 +19,24 @@ public class OgelServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final String credentials;
 
   @Inject
   public OgelServiceClient(HttpExecutionContext httpExecutionContext,
                            WSClient wsClient,
                            @Named("ogelServiceAddress") String webServiceAddress,
-                           @Named("ogelServiceTimeout") int webServiceTimeout) {
+                           @Named("ogelServiceTimeout") int webServiceTimeout,
+                           @Named("ogelServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/ogels";
+    this.credentials = credentials;
   }
 
   public CompletionStage<OgelFullView> get(String ogelId) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId))
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
@@ -40,12 +44,10 @@ public class OgelServiceClient {
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("OGEL service request failed", error);
-          }
-          else if (response.getStatus() != 200) {
+          } else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /ogels/%s: %s",
                 ogelId, response.getStatus()));
-          }
-          else {
+          } else {
             return Json.fromJson(response.asJson(), OgelFullView.class);
           }
         }, httpExecutionContext.current());
