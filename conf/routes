@@ -128,6 +128,10 @@ GET     /export-search-physical-goods/:goodsType          controllers.search.Sea
 
 POST    /export-search-physical-goods                     controllers.search.SearchController.handleSubmit
 
+GET     /export-search-physical-goods/speciallyModified/isComponent  controllers.search.SearchSpeciallyModifiedController.renderForm(isComponent: Boolean)
+
+POST    /export-search-physical-goods/speciallyModified/:isModified   controllers.search.SearchSpeciallyModifiedController.handleSubmit(isModified)
+
 GET     /export-search-physical-goods/results/:goodsType  controllers.search.SearchResultsController.renderForm(goodsType)
 
 POST    /export-search-physical-goods/results/            controllers.search.SearchResultsController.handleSubmit
