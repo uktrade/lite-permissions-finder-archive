@@ -67,7 +67,6 @@ public class SearchController {
     permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney,
         SearchResultsController.PAGINATION_SIZE);
     permissionsFinderDao.clearSearchResultsLastChosenControlCode(controlCodeSubJourney);
-
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS_SPECIAL);
   }
 

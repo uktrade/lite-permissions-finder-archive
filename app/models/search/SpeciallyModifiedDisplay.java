@@ -13,10 +13,10 @@ public class SpeciallyModifiedDisplay {
     this.componentQuestion = "Was this equipment, platform or system specifically designed or modifed for military use";
 
     if(isComponent) {
-      questionLabel = componentQuestion;
+      this.questionLabel = componentQuestion;
     } else {
-      questionLabel = completeItemQuestion;
+      this.questionLabel = completeItemQuestion;
     }
-
   }
+
 }
