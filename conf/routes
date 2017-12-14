@@ -128,9 +128,9 @@ GET     /export-search-physical-goods/:goodsType          controllers.search.Sea
 
 POST    /export-search-physical-goods                     controllers.search.SearchController.handleSubmit
 
-GET     /export-search-physical-goods/speciallyModified/isComponent  controllers.search.SearchSpeciallyModifiedController.renderForm(isComponent: Boolean)
+GET     /export-search-physical-goods/speciallyModified/  controllers.search.SearchSpecialGoodsController.renderForm()
 
-POST    /export-search-physical-goods/speciallyModified/   controllers.search.SearchSpeciallyModifiedController.handleSubmit()
+POST    /export-search-physical-goods/speciallyModified/optionSelected   controllers.search.SearchSpecialGoodsController.handleSubmit()
 
 GET     /export-search-physical-goods/results/:goodsType  controllers.search.SearchResultsController.renderForm(goodsType)
 

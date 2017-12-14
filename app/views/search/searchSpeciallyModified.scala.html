@@ -2,24 +2,23 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import controllers.search.routes.SearchSpeciallyModifiedController
+@import controllers.search.routes.SearchSpecialGoodsController
 @import models.search.SpeciallyModifiedDisplay
-@import models.search.SearchDisplay
+@import utils.common.SelectOption
 
-@(form: Form[_], display: SpeciallyModifiedDisplay)
+@(form: Form[_], display: SpeciallyModifiedDisplay, options: List[SelectOption])
+
 @standardPage(display.pageTitle, Some(heading(display.pageTitle))){
+  @errorSummary(form)
 } {
 
-  <form action="@SearchSpeciallyModifiedController.handleSubmit()" method="POST">
+  <form action="@SearchSpecialGoodsController.handleSubmit()" method="POST">
 
     @contextFormParams()
 
-    @display.questionLabel
-
-    @** to do after adding select option in controller
-    @formRadioGroup(form("speciallyModified"), null)
-    **@
-
+    @formRadioGroup(form("isSpecialItemOrComponent"), options) {
+      @display.questionLabel
+    }
 
     <button type="submit" class="button">Save and continue</button>
 

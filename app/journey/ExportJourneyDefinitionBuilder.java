@@ -48,10 +48,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage search = defineStage("search",
       controllers.search.routes.SearchController.renderForm(GoodsType.PHYSICAL.urlString()));
   private final DecisionStage<Boolean> hasSearchRelatedCodes;
-  private final JourneyStage speciallyModifiedCompleteType = defineStage("speciallyModifiedCompleteType",
-      controllers.search.routes.SearchSpeciallyModifiedController.renderForm(false));
-  private final JourneyStage speciallyModifiedComponentType = defineStage("speciallyModifiedComponentType",
-      controllers.search.routes.SearchSpeciallyModifiedController.renderForm(true));
+  private final JourneyStage searchSpecialGoodsType = defineStage("searchSpecialGoodsType",
+      controllers.search.routes.SearchSpecialGoodsController.renderForm());
 
   /** Software **/
 //  private final DecisionStage<ExportCategory> isDualUseOrMilitarySoftware;
@@ -226,19 +224,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage("hasTechNotes", technicalNotesDecider);
 
-//    atStage(search)
-//        .onEvent(Events.SEARCH_PHYSICAL_GOODS)
-//        .then(moveTo(searchResults));
-
     atStage(search)
-        .onEvent(Events.SEARCH_PHYSICAL_GOODS_COMPLETE)
-        .then(moveTo(speciallyModifiedCompleteType));
+        .onEvent(Events.SEARCH_PHYSICAL_GOODS_SPECIAL)
+        .then(moveTo(searchSpecialGoodsType));
 
-    atStage(search)
-        .onEvent(Events.SEARCH_PHYSICAL_GOODS_COMPONENT)
-        .then(moveTo(speciallyModifiedComponentType));
-
-    atStage(speciallyModifiedCompleteType)
+    atStage(searchSpecialGoodsType)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
         .then(moveTo(searchResults));
 

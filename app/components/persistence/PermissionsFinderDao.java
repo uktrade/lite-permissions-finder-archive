@@ -7,6 +7,7 @@ import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import controllers.search.SearchController.SearchForm;
+import controllers.search.enums.SpecialGoods;
 import models.GoodsType;
 import models.TradeType;
 import models.controlcode.ControlCodeSubJourney;
@@ -35,6 +36,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String TRADE_TYPE = "tradeType";
   public static final String GOODS_TYPE = "goodsType";
   public static final String PHYSICAL_GOOD_SEARCH = "physicalGoodSearch";
+  public static final String ITEM_DESIGNED_OR_MODIFIED = "itemDesignedOrModified";
   public static final String OGEL_QUESTIONS = "ogelQuestions";
   public static final String OGEL_CONDITIONS_APPLY = "ogelConditionsApply";
   public static final String ITEM_THROUGH_MULTIPLE_COUNTRIES = "itemThroughMultipleCountries";
@@ -222,6 +224,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
 
   public Optional<SearchForm> getPhysicalGoodsSearchForm(ControlCodeSubJourney controlCodeSubJourney) {
     return readObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), SearchForm.class);
+  }
+
+  public void saveIsItemModifiedOrDesigned(SpecialGoods isSpecial) {
+    writeObject(ITEM_DESIGNED_OR_MODIFIED, isSpecial);
+  }
+
+  public Optional<SpecialGoods> getIsItemModifiedOrDesigned() {
+    return readObject(ITEM_DESIGNED_OR_MODIFIED, SpecialGoods.class);
   }
 
   public void saveOgelQuestionsForm(OgelQuestionsForm ogelQuestionsForm) {
