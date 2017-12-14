@@ -3,10 +3,10 @@
 @import views.html.common.form._
 @import views.html.common.state._
 @import controllers.search.routes.SearchSpecialGoodsController
-@import models.search.SpeciallyModifiedDisplay
+@import models.search.SearchSpecialGoodsDisplay
 @import utils.common.SelectOption
 
-@(form: Form[_], display: SpeciallyModifiedDisplay, options: List[SelectOption])
+@(form: Form[_], display: SearchSpecialGoodsDisplay, options: List[SelectOption])
 
 @standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)

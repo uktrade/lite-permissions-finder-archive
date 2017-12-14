@@ -10,7 +10,7 @@ import controllers.search.enums.SpecialGoods;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.ControlCodeSubJourney;
-import models.search.SpeciallyModifiedDisplay;
+import models.search.SearchSpecialGoodsDisplay;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -36,24 +36,24 @@ public class SearchSpecialGoodsController {
   }
 
   public CompletionStage<Result> renderForm() {
-    SpeciallyModifiedSearchForm templateForm = new SpeciallyModifiedSearchForm();
+    SearchSpecialGoodsForm templateForm = new SearchSpecialGoodsForm();
     ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveContextToSubJourney();
     isComponent = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isComponent;
 
-    return completedFuture(ok(searchSpeciallyModified.render(formFactory.form(SpeciallyModifiedSearchForm.class).fill(templateForm),
-        new SpeciallyModifiedDisplay(isComponent), SpecialGoods.getSelectOptions())));
+    return completedFuture(ok(searchSpeciallyModified.render(formFactory.form(SearchSpecialGoodsForm.class).fill(templateForm),
+        new SearchSpecialGoodsDisplay(isComponent), SpecialGoods.getSelectOptions())));
   }
 
   public CompletionStage<Result> handleSubmit() {
-    Form<SpeciallyModifiedSearchForm> form = formFactory.form(SpeciallyModifiedSearchForm.class).bindFromRequest();
+    Form<SearchSpecialGoodsForm> form = formFactory.form(SearchSpecialGoodsForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(searchSpeciallyModified.render(form, new SpeciallyModifiedDisplay(isComponent), SpecialGoods.getSelectOptions())));
+      return completedFuture(ok(searchSpeciallyModified.render(form, new SearchSpecialGoodsDisplay(isComponent), SpecialGoods.getSelectOptions())));
     }
     permissionsFinderDao.saveIsItemModifiedOrDesigned(SpecialGoods.valueOf(form.get().isSpecialItemOrComponent));
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 
-  public static class SpeciallyModifiedSearchForm {
+  public static class SearchSpecialGoodsForm {
 
     @Required(message = "Select whether this item is specifically designed or modified")
     public String isSpecialItemOrComponent;
