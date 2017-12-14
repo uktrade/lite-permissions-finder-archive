@@ -9,6 +9,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import exceptions.ServiceException;
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +30,10 @@ public class OgelConsumerPact {
   private OgelServiceClient client;
   private WSClient ws;
 
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   private static final String OGEL_ID = "OGL1";
   private static final String OGEL_NAME = "name";
   private static final String OGEL_LINK = "http://example.org";
@@ -43,7 +48,11 @@ public class OgelConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new OgelServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new OgelServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -65,17 +74,15 @@ public class OgelConsumerPact {
         .closeObject()
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("provided OGEL exists")
         .uponReceiving("a request for a given ogel id")
+          .headers(AUTH_HEADERS)
           .path("/ogels/" + OGEL_ID)
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -93,11 +100,12 @@ public class OgelConsumerPact {
     return builder
         .given("provided OGEL does not exist")
         .uponReceiving("a request for a given ogel id")
+          .headers(AUTH_HEADERS)
           .path("/ogels/" + OGEL_ID)
           .method("GET")
         .willRespondWith()
-        .status(404)
-          .headers(headers)
+          .status(404)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
