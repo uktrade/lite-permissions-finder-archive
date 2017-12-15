@@ -8,6 +8,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +25,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class RelatedControlsServiceConsumerPact {
+
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   private RelatedControlsServiceClient client;
   private WSClient ws;
 
@@ -36,7 +42,11 @@ public class RelatedControlsServiceConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new RelatedControlsServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new RelatedControlsServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -52,34 +62,29 @@ public class RelatedControlsServiceConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software controls related to ML1a exist")
         .uponReceiving("a request for software controls related to ML1a")
+          .headers(AUTH_HEADERS)
           .path("/mapped-controls/software/ML1a")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareControlsRelatedToML1aDoNotExist(PactDslWithProvider builder) {
-
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software controls related to ML1a do not exist")
         .uponReceiving("a request for software controls related to ML1a")
+          .headers(AUTH_HEADERS)
           .path("/mapped-controls/software/ML1a")
           .method("GET")
           .willRespondWith()
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }

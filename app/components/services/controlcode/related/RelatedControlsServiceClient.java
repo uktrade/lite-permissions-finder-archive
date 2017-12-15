@@ -18,24 +18,28 @@ public class RelatedControlsServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final String credentials;
 
   @Inject
   public RelatedControlsServiceClient(HttpExecutionContext httpExecutionContext,
                                       WSClient wsClient,
                                       @Named("controlCodeServiceAddress") String webServiceAddress,
-                                      @Named("controlCodeServiceTimeout") int webServiceTimeout) {
+                                      @Named("controlCodeServiceTimeout") int webServiceTimeout,
+                                      @Named("controlCodeServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/mapped-controls";
+    this.credentials = credentials;
   }
 
   public CompletionStage<RelatedControlsServiceResult> get(GoodsType goodsType, String controlCode) {
     if (goodsType != GoodsType.SOFTWARE && goodsType != GoodsType.TECHNOLOGY) {
       throw new RuntimeException(String.format("Unexpected member of GoodsType enum: \"%s\"", goodsType.toString()));
     }
-    String url = webServiceUrl + "/" + goodsType.urlString() +  "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode);
+    String url = webServiceUrl + "/" + goodsType.urlString() + "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode);
     return wsClient.url(url)
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
@@ -43,13 +47,11 @@ public class RelatedControlsServiceClient {
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("Control Code service request failed", error);
-          }
-          else if (response.getStatus() != 200) {
+          } else if (response.getStatus() != 200) {
             String errorMessage = response.asJson() != null ? response.asJson().get("message").asText() : "";
             throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /mapped-" +
                 "controls: %s %s", response.getStatus(), errorMessage));
-          }
-          else {
+          } else {
             return new RelatedControlsServiceResult(response.asJson());
           }
         }, httpExecutionContext.current());

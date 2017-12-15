@@ -9,6 +9,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
 import org.junit.After;
@@ -27,6 +28,10 @@ import java.util.concurrent.ExecutionException;
 
 public class CatchallControlsServiceConsumerPact {
 
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   private CatchallControlsServiceClient client;
   private WSClient ws;
 
@@ -44,34 +49,30 @@ public class CatchallControlsServiceConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("military catchall controls exist for software")
         .uponReceiving("a request for military software catchall controls")
+          .headers(AUTH_HEADERS)
           .path("/catch-all-controls/software/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareMilitaryDoesNotExist(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("military catchall controls do not exist for software")
         .uponReceiving("a request for military software catchall controls")
+          .headers(AUTH_HEADERS)
           .path("/catch-all-controls/software/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }
@@ -84,34 +85,30 @@ public class CatchallControlsServiceConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("dual use catchall controls exist for software")
         .uponReceiving("a request for dual use software catchall controls")
+          .headers(AUTH_HEADERS)
           .path("/catch-all-controls/software/dual-use")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareDualUseDoesNotExist(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("dual use catchall controls do not exist for software")
         .uponReceiving("a request for dual use software catchall controls")
+          .headers(AUTH_HEADERS)
           .path("/catch-all-controls/software/dual-use")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }
@@ -187,7 +184,11 @@ public class CatchallControlsServiceConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new CatchallControlsServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new CatchallControlsServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
