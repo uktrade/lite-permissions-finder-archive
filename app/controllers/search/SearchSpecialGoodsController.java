@@ -41,14 +41,13 @@ public class SearchSpecialGoodsController {
 
   public CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     SearchSpecialGoodsForm templateForm = new SearchSpecialGoodsForm();
-
     if(permissionsFinderDao.getGoodsSpecialisation().isPresent()) {
-      templateForm.isSpecialItemOrComponent = permissionsFinderDao.getGoodsSpecialisation().get().getPrompt();
+      templateForm.isSpecialItemOrComponent = permissionsFinderDao.getGoodsSpecialisation().get().name();
     }
-    Boolean isItem = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isItem;
+    Boolean isCompleteItem = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isItem;
 
     return completedFuture(ok(searchSpeciallyModified.render(formFactory.form(SearchSpecialGoodsForm.class).fill(templateForm),
-        new SearchSpecialGoodsDisplay(isItem), GoodsSpecialisation.getSelectOptions())));
+        new SearchSpecialGoodsDisplay(isCompleteItem), GoodsSpecialisation.getSelectOptions())));
   }
 
   public CompletionStage<Result> handleSubmit() {
@@ -58,9 +57,9 @@ public class SearchSpecialGoodsController {
 
   public CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<SearchSpecialGoodsForm> form = formFactory.form(SearchSpecialGoodsForm.class).bindFromRequest();
-    Boolean isComponent = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isItem;
+    Boolean isCompleteItem = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isItem;
     if (form.hasErrors()) {
-      return completedFuture(ok(searchSpeciallyModified.render(form, new SearchSpecialGoodsDisplay(isComponent), GoodsSpecialisation.getSelectOptions())));
+      return completedFuture(ok(searchSpeciallyModified.render(form, new SearchSpecialGoodsDisplay(isCompleteItem), GoodsSpecialisation.getSelectOptions())));
     }
     permissionsFinderDao.saveGoodsSpecialisation(GoodsSpecialisation.valueOf(form.get().isSpecialItemOrComponent));
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
