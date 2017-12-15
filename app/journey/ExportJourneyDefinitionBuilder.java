@@ -225,7 +225,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage("hasTechNotes", technicalNotesDecider);
 
     atStage(search)
-        .onEvent(Events.SEARCH_PHYSICAL_GOODS_SPECIAL)
+        .onEvent(StandardEvents.NEXT)
         .then(moveTo(searchSpecialGoodsType));
 
     atStage(searchSpecialGoodsType)

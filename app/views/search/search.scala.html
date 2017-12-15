@@ -26,13 +26,13 @@
       @display.partNumberLabel
     }
 
-    @formRadioBooleanWithContent(form("isComponent"), HtmlFormat.empty, display.isComponentLabel, display.isCompleteLabel, false, None){
+    @formRadioBooleanWithContent(form("isItem"), HtmlFormat.empty, display.isCompleteLabel, display.isComponentLabel, false, None)(HtmlFormat.empty){
       <div id="componentWrapper">
       @formTextarea(form("component"), Some(Html("")), cssClass = "form-control-wide", rows = "4"){
         @display.componentLabel
       }
       </div>
-    }(HtmlFormat.empty)
+    }
 
     <div class="form-group">
       <button type="submit" class="button">Save and continue</button>

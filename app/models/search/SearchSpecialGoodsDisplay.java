@@ -3,19 +3,15 @@ package models.search;
 public class SearchSpecialGoodsDisplay {
 
   public final String pageTitle;
-  public final String componentQuestion;
-  public final String completeItemQuestion;
   public final String questionLabel;
 
-  public SearchSpecialGoodsDisplay(Boolean isComponent) {
+  public SearchSpecialGoodsDisplay(Boolean isItem) {
     this.pageTitle = "Describe the item you're exporting";
-    this.completeItemQuestion = "Was the item specifically designed or modifed for military use";
-    this.componentQuestion = "Was this equipment, platform or system specifically designed or modifed for military use";
 
-    if(isComponent) {
-      this.questionLabel = componentQuestion;
+    if(isItem) {
+      this.questionLabel = "Was the item specifically designed or modifed for military use";
     } else {
-      this.questionLabel = completeItemQuestion;
+      this.questionLabel = "Was this equipment, platform or system specifically designed or modifed for military use";
     }
   }
 

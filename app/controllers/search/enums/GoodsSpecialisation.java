@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public enum SpecialGoods {
+public enum GoodsSpecialisation {
 
   DESIGNED("Yes - specially designed"),
   MODIFIED("Yes - specially modified"),
@@ -14,7 +14,7 @@ public enum SpecialGoods {
 
   private String prompt;
 
-  SpecialGoods(String prompt) {
+  GoodsSpecialisation(String prompt) {
     this.prompt = prompt;
   }
 
@@ -23,8 +23,7 @@ public enum SpecialGoods {
   }
 
   public static List<SelectOption> getSelectOptions() {
-    List<SpecialGoods> enums = Arrays.asList(SpecialGoods.values());
-    return enums.stream()
+    return Arrays.stream(GoodsSpecialisation.values())
         .map(e -> new SelectOption(e.name(), e.getPrompt())).collect(Collectors.toList());
   }
 

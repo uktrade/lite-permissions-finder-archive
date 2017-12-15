@@ -6,7 +6,7 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
-import controllers.search.enums.SpecialGoods;
+import controllers.search.enums.GoodsSpecialisation;
 import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.ControlCodeSubJourney;
@@ -24,7 +24,6 @@ public class SearchSpecialGoodsController {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
-  private Boolean isComponent;
 
   @Inject
   public SearchSpecialGoodsController(JourneyManager journeyManager,
@@ -36,20 +35,34 @@ public class SearchSpecialGoodsController {
   }
 
   public CompletionStage<Result> renderForm() {
-    SearchSpecialGoodsForm templateForm = new SearchSpecialGoodsForm();
     ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveContextToSubJourney();
-    isComponent = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isComponent;
+    return renderFormInternal(controlCodeSubJourney);
+  }
+
+  public CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
+    SearchSpecialGoodsForm templateForm = new SearchSpecialGoodsForm();
+
+    if(permissionsFinderDao.getGoodsSpecialisation().isPresent()) {
+      templateForm.isSpecialItemOrComponent = permissionsFinderDao.getGoodsSpecialisation().get().getPrompt();
+    }
+    Boolean isItem = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isItem;
 
     return completedFuture(ok(searchSpeciallyModified.render(formFactory.form(SearchSpecialGoodsForm.class).fill(templateForm),
-        new SearchSpecialGoodsDisplay(isComponent), SpecialGoods.getSelectOptions())));
+        new SearchSpecialGoodsDisplay(isItem), GoodsSpecialisation.getSelectOptions())));
   }
 
   public CompletionStage<Result> handleSubmit() {
+    ControlCodeSubJourney controlCodeSubJourney = ControlCodeSubJourneyHelper.resolveContextToSubJourney();
+    return handleSubmitInternal(controlCodeSubJourney);
+  }
+
+  public CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<SearchSpecialGoodsForm> form = formFactory.form(SearchSpecialGoodsForm.class).bindFromRequest();
+    Boolean isComponent = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isItem;
     if (form.hasErrors()) {
-      return completedFuture(ok(searchSpeciallyModified.render(form, new SearchSpecialGoodsDisplay(isComponent), SpecialGoods.getSelectOptions())));
+      return completedFuture(ok(searchSpeciallyModified.render(form, new SearchSpecialGoodsDisplay(isComponent), GoodsSpecialisation.getSelectOptions())));
     }
-    permissionsFinderDao.saveIsItemModifiedOrDesigned(SpecialGoods.valueOf(form.get().isSpecialItemOrComponent));
+    permissionsFinderDao.saveGoodsSpecialisation(GoodsSpecialisation.valueOf(form.get().isSpecialItemOrComponent));
     return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
   }
 
