@@ -8,6 +8,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
 import org.junit.After;
@@ -27,6 +28,10 @@ import java.util.concurrent.ExecutionException;
 
 public class CategoryControlsServiceConsumerPact {
 
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   private CategoryControlsServiceClient client;
   private WSClient ws;
 
@@ -39,7 +44,11 @@ public class CategoryControlsServiceConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new CategoryControlsServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new CategoryControlsServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -54,34 +63,30 @@ public class CategoryControlsServiceConsumerPact {
         .stringType("title", TITLE)
         .closeObject()
         .asArray();
-
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software exists as a goods type and there are military controls")
         .uponReceiving("a request for software military controls")
+          .headers(AUTH_HEADERS)
           .path("/specific-controls/software/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(existing)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareMilitaryEmpty(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
     return builder
         .given("software exists as a goods type and no military controls exist")
         .uponReceiving("a request for software military controls")
+          .headers(AUTH_HEADERS)
           .path("/specific-controls/software/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }
@@ -94,33 +99,30 @@ public class CategoryControlsServiceConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software exists as a goods type and telecoms exists as dual use category with controls")
         .uponReceiving("a request for software dual use telecoms controls")
+          .headers(AUTH_HEADERS)
           .path("/specific-controls/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(existing)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareDualUseEmpty(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
     return builder
         .given("software exists as a goods type and telecoms exists as dual use category without controls")
         .uponReceiving("a request for software dual use telecoms controls")
+          .headers(AUTH_HEADERS)
           .path("/specific-controls/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }

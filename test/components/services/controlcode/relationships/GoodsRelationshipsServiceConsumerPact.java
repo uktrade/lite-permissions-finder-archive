@@ -9,6 +9,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
 import org.junit.After;
@@ -27,6 +28,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class GoodsRelationshipsServiceConsumerPact {
+
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   private GoodsRelationshipsServiceClient client;
   private WSClient ws;
 
@@ -42,7 +48,11 @@ public class GoodsRelationshipsServiceConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new GoodsRelationshipsServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new GoodsRelationshipsServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -64,34 +74,30 @@ public class GoodsRelationshipsServiceConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software control code related to military software exists")
         .uponReceiving("a request for software control codes related to military software")
+          .headers(AUTH_HEADERS)
           .path("/goods-relationships/software/for/software/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(software)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareRelatedToMilitarySoftwareDoNotExist(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software control code related to military software do not exist")
         .uponReceiving("a request for software control codes related to military software")
+          .headers(AUTH_HEADERS)
           .path("/goods-relationships/software/for/software/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }
@@ -110,34 +116,30 @@ public class GoodsRelationshipsServiceConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software control code related to military technology exists")
         .uponReceiving("a request for software control codes related to military technology")
+          .headers(AUTH_HEADERS)
           .path("/goods-relationships/software/for/technology/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(software)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareRelatedToMilitaryTechnologyDoNotExist(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software control code related to military technology do not exist")
         .uponReceiving("a request for software control codes related to military technology")
+          .headers(AUTH_HEADERS)
           .path("/goods-relationships/software/for/technology/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }
@@ -156,34 +158,30 @@ public class GoodsRelationshipsServiceConsumerPact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software control code related to dual use telecoms software exists")
         .uponReceiving("a request for software control codes related to dual use telecoms software")
+          .headers(AUTH_HEADERS)
           .path("/goods-relationships/software/for/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(software)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareRelatedToDualUseTelecomsSoftwareDoNotExist(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("software control code related to dual use telecoms software do not exist")
         .uponReceiving("a request for software control codes related to dual use telecoms software")
+        .headers(AUTH_HEADERS)
         .path("/goods-relationships/software/for/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }

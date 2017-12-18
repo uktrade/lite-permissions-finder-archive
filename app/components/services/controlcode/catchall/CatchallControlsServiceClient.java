@@ -18,16 +18,19 @@ public class CatchallControlsServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final String credentials;
 
   @Inject
   public CatchallControlsServiceClient(HttpExecutionContext httpExecutionContext,
                                        WSClient wsClient,
                                        @Named("controlCodeServiceAddress") String webServiceAddress,
-                                       @Named("controlCodeServiceTimeout") int webServiceTimeout) {
+                                       @Named("controlCodeServiceTimeout") int webServiceTimeout,
+                                       @Named("controlCodeServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/catch-all-controls";
+    this.credentials = credentials;
   }
 
   public CompletionStage<CatchallControlsServiceResult> get(GoodsType goodsType, SoftTechCategory softTechCategory) {
@@ -36,12 +39,12 @@ public class CatchallControlsServiceClient {
     }
     String url;
     if (softTechCategory.isDualUseSoftTechCategory()) {
-      url = webServiceUrl + "/" + goodsType.urlString() +  "/dual-use";
-    }
-    else {
-      url = webServiceUrl + "/" + goodsType.urlString() +  "/military";
+      url = webServiceUrl + "/" + goodsType.urlString() + "/dual-use";
+    } else {
+      url = webServiceUrl + "/" + goodsType.urlString() + "/military";
     }
     return wsClient.url(url)
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
@@ -49,13 +52,11 @@ public class CatchallControlsServiceClient {
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("Control Code service request failed", error);
-          }
-          else if (response.getStatus() != 200) {
+          } else if (response.getStatus() != 200) {
             String errorMessage = response.asJson() != null ? response.asJson().get("message").asText() : "";
             throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /specific" +
                 "-controls: %s %s", response.getStatus(), errorMessage));
-          }
-          else {
+          } else {
             return new CatchallControlsServiceResult(response.asJson());
           }
         }, httpExecutionContext.current());

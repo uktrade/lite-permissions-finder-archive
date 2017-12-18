@@ -8,6 +8,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
 import org.junit.After;
@@ -25,6 +26,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class NonExemptControlServicePact {
+
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   private NonExemptControlServiceClient client;
   private WSClient ws;
 
@@ -38,7 +44,11 @@ public class NonExemptControlServicePact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new NonExemptControlServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new NonExemptControlServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -55,33 +65,29 @@ public class NonExemptControlServicePact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("military software non exempt controls exist")
         .uponReceiving("a request for military non exempt controls")
+          .headers(AUTH_HEADERS)
           .path("/non-exempt/software/military")
           .method("GET")
           .willRespondWith()
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareMilitaryControlsDoNotExist(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("military software non exempt controls do not exist")
         .uponReceiving("a request for military non exempt controls")
+          .headers(AUTH_HEADERS)
           .path("/non-exempt/software/military")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }
@@ -95,34 +101,30 @@ public class NonExemptControlServicePact {
         .closeObject()
         .asArray();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("military software non exempt controls exist")
         .uponReceiving("a request for dual use telecoms software non exempt controls")
+          .headers(AUTH_HEADERS)
           .path("/non-exempt/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
         .toFragment();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
   public PactFragment softwareDualUseTelecomsControlsDoNotExist(PactDslWithProvider builder) {
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("dual use software non exempt controls do not exist")
         .uponReceiving("a request for dual use telecoms software non exempt controls")
+          .headers(AUTH_HEADERS)
           .path("/non-exempt/software/dual-use/telecoms")
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
         .toFragment();
   }

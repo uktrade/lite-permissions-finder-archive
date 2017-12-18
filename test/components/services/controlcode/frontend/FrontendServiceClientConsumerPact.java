@@ -8,6 +8,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import exceptions.ServiceException;
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +30,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class FrontendServiceClientConsumerPact {
+
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   private FrontendServiceClient client;
   private WSClient ws;
 
@@ -52,7 +58,11 @@ public class FrontendServiceClientConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new FrontendServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new FrontendServiceClient(new HttpExecutionContext(Runnable::run),
+        ws,
+        mockProvider.getConfig().url(),
+        10000,
+        "service:password");
   }
 
   @After
@@ -91,17 +101,15 @@ public class FrontendServiceClientConsumerPact {
         .closeArray()
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("provided control code exists")
         .uponReceiving("a request for code control code " + CONTROL_CODE)
+          .headers(AUTH_HEADERS)
           .path("/frontend-control-codes/" + CONTROL_CODE)
           .method("GET")
           .willRespondWith()
             .status(200)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(existing)
         .toFragment();
   }
@@ -113,17 +121,15 @@ public class FrontendServiceClientConsumerPact {
         .stringType("message")
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("provided control code does not exist")
         .uponReceiving("a request for code control code " + CONTROL_CODE)
+        .headers(AUTH_HEADERS)
         .path("/frontend-control-codes/" + CONTROL_CODE)
         .method("GET")
         .willRespondWith()
             .status(404)
-            .headers(headers)
+            .headers(CONTENT_TYPE_HEADERS)
             .body(missing)
         .toFragment();
   }

@@ -17,20 +17,24 @@ public class FrontendServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final String credentials;
 
   @Inject
   public FrontendServiceClient(HttpExecutionContext httpExecutionContext,
                                WSClient wsClient,
                                @Named("controlCodeServiceAddress") String webServiceAddress,
-                               @Named("controlCodeServiceTimeout") int webServiceTimeout) {
+                               @Named("controlCodeServiceTimeout") int webServiceTimeout,
+                               @Named("controlCodeServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/frontend-control-codes";
+    this.credentials = credentials;
   }
 
   public CompletionStage<FrontendServiceResult> get(String controlCode) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode))
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
@@ -38,12 +42,10 @@ public class FrontendServiceClient {
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("Control Code service request failed", error);
-          }
-          else if (response.getStatus() != 200) {
+          } else if (response.getStatus() != 200) {
             String errorMessage = response.asJson() != null ? response.asJson().get("message").asText() : "";
             throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /frontend-control-codes: %s %s", response.getStatus(), errorMessage));
-          }
-          else {
+          } else {
             return new FrontendServiceResult(response.asJson());
           }
         }, httpExecutionContext.current());

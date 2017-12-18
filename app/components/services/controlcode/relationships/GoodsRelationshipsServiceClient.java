@@ -18,16 +18,19 @@ public class GoodsRelationshipsServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final String credentials;
 
   @Inject
   public GoodsRelationshipsServiceClient(HttpExecutionContext httpExecutionContext,
                                          WSClient wsClient,
                                          @Named("controlCodeServiceAddress") String webServiceAddress,
-                                         @Named("controlCodeServiceTimeout") int webServiceTimeout){
+                                         @Named("controlCodeServiceTimeout") int webServiceTimeout,
+                                         @Named("controlCodeServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/goods-relationships";
+    this.credentials = credentials;
   }
 
   public CompletionStage<GoodsRelationshipsServiceResult> get(GoodsType goodsType, GoodsType relatedToGoodsType, SoftTechCategory softTechCategory) {
@@ -48,12 +51,12 @@ public class GoodsRelationshipsServiceClient {
       if (StringUtils.isNotEmpty(categoryUrl)) {
         url.append("/" + categoryUrl);
       }
-    }
-    else {
+    } else {
       url.append("/military");
     }
 
     return wsClient.url(url.toString())
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
@@ -61,12 +64,10 @@ public class GoodsRelationshipsServiceClient {
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("Control Code service request failed", error);
-          }
-          else if (response.getStatus() != 200 ) {
+          } else if (response.getStatus() != 200) {
             String errorMessage = response.asJson() != null ? response.asJson().get("message").asText() : "";
             throw new ServiceException(String.format("Unexpected HTTP status code from Control Code service /goods-relationships: %s %s", response.getStatus(), errorMessage));
-          }
-          else {
+          } else {
             return new GoodsRelationshipsServiceResult(response.asJson());
           }
         }, httpExecutionContext.current());
