@@ -48,6 +48,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage search = defineStage("search",
       controllers.search.routes.SearchController.renderForm(GoodsType.PHYSICAL.urlString()));
   private final DecisionStage<Boolean> hasSearchRelatedCodes;
+  private final JourneyStage searchSpecialGoodsType = defineStage("searchSpecialGoodsType",
+      controllers.search.routes.SearchSpecialGoodsController.renderForm());
 
   /** Software **/
 //  private final DecisionStage<ExportCategory> isDualUseOrMilitarySoftware;
@@ -223,6 +225,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     DecisionStage<Boolean> technicalNotesDecision = defineDecisionStage("hasTechNotes", technicalNotesDecider);
 
     atStage(search)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(searchSpecialGoodsType));
+
+    atStage(searchSpecialGoodsType)
         .onEvent(Events.SEARCH_PHYSICAL_GOODS)
         .then(moveTo(searchResults));
 

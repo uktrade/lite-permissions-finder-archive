@@ -5,8 +5,8 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
+import components.common.journey.StandardEvents;
 import components.persistence.PermissionsFinderDao;
-import journey.Events;
 import journey.helpers.ControlCodeSubJourneyHelper;
 import models.controlcode.ControlCodeSubJourney;
 import models.controlcode.ControlCodeVariant;
@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
+import play.data.validation.Constraints.MaxLength;
 import play.mvc.Result;
 import views.html.search.search;
 
@@ -66,7 +67,7 @@ public class SearchController {
     permissionsFinderDao.saveSearchResultsPaginationDisplayCount(controlCodeSubJourney,
         SearchResultsController.PAGINATION_SIZE);
     permissionsFinderDao.clearSearchResultsLastChosenControlCode(controlCodeSubJourney);
-    return journeyManager.performTransition(Events.SEARCH_PHYSICAL_GOODS);
+    return journeyManager.performTransition(StandardEvents.NEXT);
   }
 
   private Form<SearchForm> bindSearchForm() {
@@ -84,22 +85,31 @@ public class SearchController {
   }
 
   public static String getSearchTerms(SearchForm form) {
-    if (form.isComponent != null && form.isComponent && StringUtils.isNotBlank(form.component)) {
-     return form.description + ", " + form.component;
+    String formSearchTerm = form.itemName + ", " + form.description ;
+    if (StringUtils.isNotBlank(form.component) && !form.isItem) {
+     formSearchTerm = formSearchTerm + ", " + form.component;
     }
-    else {
-      return form.description;
+    if (StringUtils.isNotBlank(form.partNumber)) {
+      formSearchTerm = formSearchTerm + ", " + form.partNumber;
     }
+    return formSearchTerm;
   }
 
   public static class SearchForm {
 
     @Required(message = "Select whether this is a component or part of something else")
-    public Boolean isComponent;
+    public Boolean isItem;
 
     @Required(message = "Enter a description of the item")
     public String description;
 
+    @Required(message = "Enter the item name")
+    public String itemName;
+
+    @MaxLength(value = 500, message = "Part number cannot exceed 500 characters")
+    public String partNumber;
+
+    @MaxLength(value = 4000, message = "Component description cannot exceed 4000 characters")
     public String component;
 
   }

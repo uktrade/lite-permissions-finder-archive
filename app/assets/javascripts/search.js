@@ -5,14 +5,12 @@ LITEPermissionsFinder.Search = {
     LITEPermissionsFinder.Search._bindAnalyticsTriggers();
     $("#isComponent-T").change(function() {
       if ($(this).is(":checked")) {
-        LITECommon.showContent($("#componentWrapper"));
         $("#component").data("validation").required = {"message" : "Enter a description of the equipment or system"};
       }
     }).trigger("change");
 
     $("#isComponent-F").change(function() {
       if ($(this).is(":checked")) {
-        LITECommon.hideContent($("#componentWrapper"));
         $("#component" ).data("validation", {});
       }
     }).trigger("change");
