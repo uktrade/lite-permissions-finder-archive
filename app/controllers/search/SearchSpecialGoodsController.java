@@ -44,7 +44,7 @@ public class SearchSpecialGoodsController {
     if(permissionsFinderDao.getGoodsSpecialisation().isPresent()) {
       templateForm.isSpecialItemOrComponent = permissionsFinderDao.getGoodsSpecialisation().get().name();
     }
-    Boolean isCompleteItem = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isItem;
+    Boolean isCompleteItem = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).map(e -> e.isItem).orElse(true);
 
     return completedFuture(ok(searchSpeciallyModified.render(formFactory.form(SearchSpecialGoodsForm.class).fill(templateForm),
         new SearchSpecialGoodsDisplay(isCompleteItem), GoodsSpecialisation.getSelectOptions())));
@@ -57,7 +57,7 @@ public class SearchSpecialGoodsController {
 
   public CompletionStage<Result> handleSubmitInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Form<SearchSpecialGoodsForm> form = formFactory.form(SearchSpecialGoodsForm.class).bindFromRequest();
-    Boolean isCompleteItem = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).get().isItem;
+    Boolean isCompleteItem = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney).map(e -> e.isItem).orElse(true);
     if (form.hasErrors()) {
       return completedFuture(ok(searchSpeciallyModified.render(form, new SearchSpecialGoodsDisplay(isCompleteItem), GoodsSpecialisation.getSelectOptions())));
     }
