@@ -17,20 +17,24 @@ public class RelatedCodesServiceClient {
   private final WSClient wsClient;
   private final int webServiceTimeout;
   private final String webServiceUrl;
+  private final String credentials;
 
   @Inject
   public RelatedCodesServiceClient(HttpExecutionContext httpExecutionContext,
                                    WSClient wsClient,
                                    @Named("searchServiceAddress") String webServiceAddress,
-                                   @Named("searchServiceTimeout") int webServiceTimeout) {
+                                   @Named("searchServiceTimeout") int webServiceTimeout,
+                                   @Named("searchServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
     this.webServiceUrl = webServiceAddress + "/related-codes";
+    this.credentials = credentials;
   }
 
   public CompletionStage<RelatedCodesServiceResult> get(String controlCode){
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode))
+        .setAuth(credentials)
         .withRequestFilter(CorrelationId.requestFilter)
         .withRequestFilter(ServiceClientLogger.requestFilter("Search", "GET", httpExecutionContext))
         .setRequestTimeout(webServiceTimeout)
