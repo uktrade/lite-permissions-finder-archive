@@ -75,6 +75,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
         .to(configuration.getString("countryService.address"));
     bindConstant().annotatedWith(Names.named("countryServiceTimeout"))
         .to(configuration.getString("countryService.timeout"));
+    bindConstant().annotatedWith(Names.named("countryServiceCredentials"))
+        .to(configuration.getString("countryService.credentials"));
 
     // ogelService
     bindConstant().annotatedWith(Names.named("ogelServiceAddress"))
@@ -138,8 +140,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   CountryProvider provideCountryServiceExportClient(HttpExecutionContext httpContext, WSClient wsClient,
                                                     @Named("countryServiceAddress") String address,
                                                     @Named("countryServiceTimeout") int timeout,
+                                                    @Named("countryServiceCredentials") String credentials,
                                                     ObjectMapper mapper) {
-    CountryServiceClient client = CountryServiceClient.buildCountryServiceSetClient(httpContext, wsClient, timeout, address, "export-control", mapper);
+    CountryServiceClient client = CountryServiceClient.buildCountryServiceSetClient(httpContext, wsClient, timeout, address, credentials, "export-control", mapper);
     return new CountryProvider(client);
   }
 
@@ -149,8 +152,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   CountryProvider provideCountryServiceEuClient(HttpExecutionContext httpContext, WSClient wsClient,
                                                 @Named("countryServiceAddress") String address,
                                                 @Named("countryServiceTimeout") int timeout,
+                                                @Named("countryServiceCredentials") String credentials,
                                                 ObjectMapper mapper) {
-    CountryServiceClient client = CountryServiceClient.buildCountryServiceGroupClient(httpContext, wsClient, timeout, address, "eu", mapper);
+    CountryServiceClient client = CountryServiceClient.buildCountryServiceGroupClient(httpContext, wsClient, timeout, address, credentials, "eu", mapper);
     return new CountryProvider(client);
   }
 
