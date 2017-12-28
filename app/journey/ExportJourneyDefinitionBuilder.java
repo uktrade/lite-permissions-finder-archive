@@ -100,6 +100,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.prototype.routes.PrototypeController6.renderForm());
   private final JourneyStage prototypeStage7 = defineStage("prototypeStage7",
       controllers.prototype.routes.PrototypeController7.renderForm());
+  private final JourneyStage prototypeStage8 = defineStage("prototypeStage8",
+      controllers.prototype.routes.PrototypeController8.renderForm());
 
   private final JourneyStage prototypeControlCodeStage = defineStage("prototypeControlCodeStage",
       controllers.prototype.routes.PrototypeControlCodeController.renderForm("ML1"));
@@ -226,6 +228,10 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(prototypeStage6)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(prototypeStage7));
+
+    atStage(prototypeStage7)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(prototypeStage8));
   }
 
   private void physicalGoodsStages() {

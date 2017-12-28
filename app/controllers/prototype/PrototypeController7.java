@@ -40,8 +40,6 @@ public class PrototypeController7 {
 
     Form<PrototypeController7Form> form = formFactory.form(PrototypeController7Form.class).bindFromRequest();
 
-    Boolean isExportedBefore = form.get().equipmentType;
-
     //todo: save to permissionDao
 
     return journeyManager.performTransition(StandardEvents.NEXT);
