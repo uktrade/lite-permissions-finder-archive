@@ -1,0 +1,23 @@
+@import controllers.prototype.PrototypeDisplay
+@import util._
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+@import controllers.prototype.routes.PrototypeController6
+@import utils.common.SelectOption
+
+@(form: Form[_], display: PrototypeDisplay, options: List[SelectOption])
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
+}{
+
+  <form action="@PrototypeController6.handleSubmit()" method="POST">
+    @contextFormParams()
+
+    @formRadioGroup(form("exportItem"), options) {
+      What are you exporting?
+    }
+
+    <button type="submit" class="button">Save and continue</button>
+
+  </form>
+}

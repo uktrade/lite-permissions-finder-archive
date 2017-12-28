@@ -1,0 +1,20 @@
+@import controllers.prototype.PrototypeDisplay
+@import util._
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+@import controllers.prototype.routes.PrototypeController5
+
+@(form: Form[_], display: PrototypeDisplay)
+@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
+}{
+
+  <form action="@PrototypeController5.handleSubmit()" method="POST">
+    @contextFormParams()
+
+    @formRadioBoolean(form("specialMilitary"), Html(display.option4))
+
+    <button type="submit" class="button">Save and continue</button>
+
+  </form>
+}
