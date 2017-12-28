@@ -85,6 +85,19 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR",
       controllers.routes.StaticContentController.renderTechnologyExemptionsNLR());
 
+  /** Prototype **/
+  private final JourneyStage prototypeStage1 = defineStage("prototypeStage1",
+      controllers.prototype.routes.PrototypeController1.renderForm());
+  private final JourneyStage prototypeStage2 = defineStage("prototypeStage2",
+      controllers.prototype.routes.PrototypeController2.renderForm());
+  private final JourneyStage prototypeStage3 = defineStage("prototypeStage3",
+      controllers.prototype.routes.PrototypeController3.renderForm());
+  private final JourneyStage prototypeStage4 = defineStage("prototypeStage4",
+      controllers.prototype.routes.PrototypeController4.renderForm());
+
+  private final JourneyStage prototypeControlCodeStage = defineStage("prototypeControlCodeStage",
+      controllers.prototype.routes.PrototypeControlCodeController.renderForm("ML1"));
+
   /** Deciders **/
   private final AdditionalSpecificationsDecider additionalSpecificationsDecider;
   private final DecontrolsDecider decontrolsDecider;
@@ -168,9 +181,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     technologyStages();
 
-    // *** Journeys ***
+    prototypeStages();
 
-    defineJourney(JourneyDefinitionNames.EXPORT, goodsType);
+    // *** Journeys ***
+//    defineJourney(JourneyDefinitionNames.EXPORT, goodsType);
+    defineJourney(JourneyDefinitionNames.EXPORT, prototypeStage1);
 
     defineJourney(JourneyDefinitionNames.CHANGE_CONTROL_CODE, search,
         BackLink.to(routes.SummaryController.renderForm(), "Back"));
@@ -178,6 +193,25 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         BackLink.to(routes.SummaryController.renderForm(), "Back"));
     defineJourney(JourneyDefinitionNames.CHANGE_OGEL_TYPE, ogelQuestions,
         BackLink.to(routes.SummaryController.renderForm(), "Back"));
+  }
+
+  private void prototypeStages() {
+
+    atStage(prototypeStage1)
+        .onEvent(StandardEvents.NO)
+        .then(moveTo(prototypeStage4));
+
+    atStage(prototypeStage2)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(prototypeStage3));
+
+    atStage(prototypeStage3)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(prototypeControlCodeStage));
+
+    atStage(prototypeStage4)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(prototypeControlCodeStage));
   }
 
   private void physicalGoodsStages() {

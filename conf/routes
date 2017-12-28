@@ -215,3 +215,21 @@ GET     /admin/transactions/:id               controllers.admin.AdminController.
 GET     /admin/application-codes              controllers.admin.AdminController.applicationCodes
 
 GET     /admin/application-codes/:applicationCode   controllers.admin.AdminController.applicationCodeByCode(applicationCode)
+
+# Prototype routes
+
+GET     /prototype1                            controllers.prototype.PrototypeController1.renderForm
+
+POST    /prototype1                           controllers.prototype.PrototypeController1.handleSubmit
+
+GET     /prototype2                           controllers.prototype.PrototypeController2.renderForm
+
+POST    /prototype2                           controllers.prototype.PrototypeController2.handleSubmit
+
+GET     /prototype3                           controllers.prototype.PrototypeController3.renderForm
+
+POST    /prototype3                           controllers.prototype.PrototypeController3.handleSubmit
+
+GET     /prototype4                           controllers.prototype.PrototypeController4.renderForm
+
+POST    /prototype4                           controllers.prototype.PrototypeController4.handleSubmit
