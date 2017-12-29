@@ -11,33 +11,33 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import utils.common.SelectOption;
-import views.html.prototype.prototype7;
+import views.html.prototype.prototype7_1;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public class PrototypeController7 {
+public class PrototypeController7_1 {
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
 
   @Inject
-  public PrototypeController7(JourneyManager journeyManager, FormFactory formFactory) {
+  public PrototypeController7_1(JourneyManager journeyManager, FormFactory formFactory) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
   }
 
   public CompletionStage<Result> renderForm() {
-    PrototypeController7Form templateForm = new PrototypeController7Form();
+    PrototypeController7_1Form templateForm = new PrototypeController7_1Form();
 
-    return completedFuture(ok(prototype7.render(formFactory.form(PrototypeController7Form.class).fill(templateForm),
+    return completedFuture(ok(prototype7_1.render(formFactory.form(PrototypeController7_1Form.class).fill(templateForm),
         new PrototypeDisplay(), getSelectOptions())));
   }
 
   public CompletionStage<Result> handleSubmit() {
 
-    Form<PrototypeController7Form> form = formFactory.form(PrototypeController7Form.class).bindFromRequest();
+    Form<PrototypeController7_1Form> form = formFactory.form(PrototypeController7_1Form.class).bindFromRequest();
     String equipmentType = form.get().equipmentType;
 
     return journeyManager.performTransition(StandardEvents.NEXT);
@@ -45,18 +45,18 @@ public class PrototypeController7 {
 
   public static List<SelectOption> getSelectOptions() {
 
-    SelectOption s_option1 = new SelectOption("option1", "physical equipment");
-    SelectOption s_option2 = new SelectOption("option2", "production equipment");
-    SelectOption s_option3 = new SelectOption("option3", "training equipment");
+    SelectOption option1 = new SelectOption("physical equipment", "physical equipment");
+    SelectOption option2 = new SelectOption("production equipment", "production equipment");
+    SelectOption option3 = new SelectOption("training equipment", "training equipment");
 
     List<SelectOption> list = new ArrayList<>();
-    list.add(s_option1);
-    list.add(s_option2);
-    list.add(s_option3);
+    list.add(option1);
+    list.add(option2);
+    list.add(option3);
     return list;
   }
 
-  public static class PrototypeController7Form {
+  public static class PrototypeController7_1Form {
 
     @Required(message = "Select one option")
     public String equipmentType;

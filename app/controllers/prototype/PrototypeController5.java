@@ -36,7 +36,11 @@ public class PrototypeController5 {
     Form<PrototypeController5Form> form = formFactory.form(PrototypeController5Form.class).bindFromRequest();
     Boolean isSpecialMilitary = form.get().specialMilitary;
 
-    return journeyManager.performTransition(StandardEvents.YES);
+    if(isSpecialMilitary) {
+      return journeyManager.performTransition(StandardEvents.YES);
+    } else {
+      return journeyManager.performTransition(StandardEvents.NO);
+    }
   }
 
   public static class PrototypeController5Form {

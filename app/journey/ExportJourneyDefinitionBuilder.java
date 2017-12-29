@@ -7,7 +7,10 @@ import components.common.journey.DecisionStage;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
+import controllers.prototype.PrototypeController8_1;
+import controllers.prototype.enums.PrototypeChemicalType;
 import controllers.prototype.enums.PrototypeEquipment;
+import controllers.prototype.enums.PrototypeMilitaryItems;
 import controllers.routes;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
@@ -85,6 +88,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.softtech.routes.TechnologyExemptionsController.renderForm());
   private final JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR",
       controllers.routes.StaticContentController.renderTechnologyExemptionsNLR());
+
   /**
    * Prototype
    **/
@@ -100,12 +104,18 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.prototype.routes.PrototypeController5.renderForm());
   private final JourneyStage prototypeStage6 = defineStage("prototypeStage6",
       controllers.prototype.routes.PrototypeController6.renderForm());
-  private final JourneyStage prototypeStage7 = defineStage("prototypeStage7",
-      controllers.prototype.routes.PrototypeController7.renderForm());
-  private final JourneyStage prototypeStage8 = defineStage("prototypeStage8",
-      controllers.prototype.routes.PrototypeController8.renderForm());
-  private final JourneyStage prototypeControlCodeStageML2 = defineStage("prototypeControlCodeStage",
+  private final JourneyStage prototypeStage7_1 = defineStage("prototypeStage7_1",
+      controllers.prototype.routes.PrototypeController7_1.renderForm());
+  private final JourneyStage prototypeStage7_2 = defineStage("prototypeStage7_2",
+      controllers.prototype.routes.PrototypeController7_2.renderForm());
+  private final JourneyStage prototypeStage8_1 = defineStage("prototypeStage8_1",
+      controllers.prototype.routes.PrototypeController8_1.renderForm());
+  private final JourneyStage prototypeStage8_2 = defineStage("prototypeStage8_2",
+      controllers.prototype.routes.PrototypeController8_2.renderForm());
+  private final JourneyStage prototypeControlCodeStageML2 = defineStage("prototypeControlCodeStageML2",
       controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeEquipment.ML2.name()));
+  private final JourneyStage prototypeControlCodeStageML7i = defineStage("prototypeControlCodeStageML7i",
+      controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeChemicalType.ML7i.name()));
   /**
    * Deciders
    **/
@@ -213,14 +223,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(StandardEvents.NO)
         .then(moveTo(prototypeStage4));
 
-    atStage(prototypeStage2)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeStage3));
-
-    atStage(prototypeStage3)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeControlCodeStageML2));
-
     atStage(prototypeStage4)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(prototypeStage5));
@@ -230,17 +232,35 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .then(moveTo(prototypeStage6));
 
     atStage(prototypeStage6)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeStage7));
-
-    atStage(prototypeStage7)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeStage8));
-
-    atStage(prototypeStage8)
-        .onEvent(Events.PROTOTYPE_EQUIPMENT_SELECTED)
+        .onEvent(Events.PROTOTYPE_MILTARY_SELECTED)
         .branch()
-        .when(PrototypeEquipment.ML2, moveTo(prototypeControlCodeStageML2));
+        .when(PrototypeMilitaryItems.EQUIPMENT, moveTo(prototypeStage7_1))
+        .when(PrototypeMilitaryItems.MATERIALS, moveTo(prototypeStage7_2));
+
+    atStage(prototypeStage7_1)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(prototypeStage8_1));
+
+    atStage(prototypeStage7_2)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(prototypeStage8_2));
+
+    atStage(prototypeStage8_1)
+        .onEvent(Events.PROTOTYPE_EQUIPMENT_SELECTED)
+        .then(moveTo(prototypeControlCodeStageML2));
+
+    atStage(prototypeStage8_2)
+        .onEvent(Events.PROTOTYPE_CHEMICAL_SELECTED)
+        .then(moveTo(prototypeControlCodeStageML7i));
+
+    atStage(prototypeStage2)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(prototypeStage3));
+
+    atStage(prototypeStage3)
+        .onEvent(StandardEvents.NEXT)
+        .then(moveTo(prototypeControlCodeStageML2));
+
   }
 
   private void physicalGoodsStages() {

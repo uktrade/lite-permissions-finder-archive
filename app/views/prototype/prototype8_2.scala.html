@@ -3,18 +3,17 @@
 @import views.html.common.form._
 @import views.html.common.page._
 @import views.html.common.state._
-@import controllers.prototype.routes.PrototypeController7
+@import controllers.prototype.routes.PrototypeController8_2
 @import utils.common.SelectOption
 
 @(form: Form[_], display: PrototypeDisplay, options: List[SelectOption])
   @standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   }{
 
-    <form action="@PrototypeController7.handleSubmit()" method="POST">
+    <form action="@PrototypeController8_2.handleSubmit()" method="POST">
       @contextFormParams()
 
-      @formRadioGroup(form("equipmentType"), options) {
-        What type of equipment ?
+      @formRadioGroup(form("chemicalType"), options) {
       }
 
       <button type="submit" class="button">Save and continue</button>

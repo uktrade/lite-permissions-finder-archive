@@ -242,13 +242,21 @@ GET     /prototype6                           controllers.prototype.PrototypeCon
 
 POST    /prototype6                           controllers.prototype.PrototypeController6.handleSubmit
 
-GET     /prototype7                           controllers.prototype.PrototypeController7.renderForm
+GET     /prototype7_1                           controllers.prototype.PrototypeController7_1.renderForm
 
-POST    /prototype7                           controllers.prototype.PrototypeController7.handleSubmit
+POST    /prototype7_1                           controllers.prototype.PrototypeController7_1.handleSubmit
 
-GET     /prototype8                           controllers.prototype.PrototypeController8.renderForm
+GET     /prototype7_2                           controllers.prototype.PrototypeController7_2.renderForm
 
-POST    /prototype8                           controllers.prototype.PrototypeController8.handleSubmit
+POST    /prototype7_2                           controllers.prototype.PrototypeController7_2.handleSubmit
+
+GET     /prototype8_1                           controllers.prototype.PrototypeController8_1.renderForm
+
+POST    /prototype8_1                           controllers.prototype.PrototypeController8_1.handleSubmit
+
+GET     /prototype8_2                           controllers.prototype.PrototypeController8_2.renderForm
+
+POST    /prototype8_2                          controllers.prototype.PrototypeController8_2.handleSubmit
 
 GET     /prototype/:controlCodeParam          controllers.prototype.PrototypeControlCodeController.renderForm(controlCodeParam)
 

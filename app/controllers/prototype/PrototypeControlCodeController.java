@@ -58,7 +58,6 @@ public class PrototypeControlCodeController {
   }
 
   public Result renderForm(String controlCodeParam) throws ExecutionException, InterruptedException {
-    PrototypeEquipment equipment = PrototypeEquipment.valueOf(controlCodeParam);
     PrototypeControlCodeForm templateForm = new PrototypeControlCodeForm();
     return renderWithForm(controlCodeParam, formFactory.form(PrototypeControlCodeForm.class).fill(templateForm));
   }

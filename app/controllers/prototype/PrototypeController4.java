@@ -45,16 +45,16 @@ public class PrototypeController4 {
 
   public static List<SelectOption> getSelectOptions() {
 
-    SelectOption s_option1 = new SelectOption("option1", "Find out more about export control and licensing for restricted goods https://www.gov.uk/government/organisations/export-control-organisation");
-    SelectOption s_option2 = new SelectOption("option2", "Find out if I need a licence to export goods and services https://www.gov.uk/guidance/beginners-guide-to-export-controls");
-    SelectOption s_option3 = new SelectOption("option3", "Get a control rating for some goods and services and apply for a licence");
-    SelectOption s_option4 = new SelectOption("option4", "Check a control rating");
+    SelectOption option1 = new SelectOption("option1", "Find out more about export control and licensing for restricted goods https://www.gov.uk/government/organisations/export-control-organisation");
+    SelectOption option2 = new SelectOption("option2", "Find out if I need a licence to export goods and services https://www.gov.uk/guidance/beginners-guide-to-export-controls");
+    SelectOption option3 = new SelectOption("option3", "Get a control rating for some goods and services and apply for a licence");
+    SelectOption option4 = new SelectOption("option4", "Check a control rating");
 
     List<SelectOption> list = new ArrayList<>();
-    list.add(s_option1);
-    list.add(s_option2);
-    list.add(s_option3);
-    list.add(s_option4);
+    list.add(option1);
+    list.add(option2);
+    list.add(option3);
+    list.add(option4);
     return list;
   }
 

@@ -19,7 +19,6 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
-import components.persistence.PermissionsFinderDao;
 import controllers.prototype.enums.PrototypeEquipment;
 import journey.Events;
 import play.data.Form;
@@ -27,39 +26,39 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import utils.common.SelectOption;
-import views.html.prototype.prototype8;
+import views.html.prototype.prototype8_1;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public class PrototypeController8 {
+public class PrototypeController8_1 {
 
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
 
   @Inject
-  public PrototypeController8(JourneyManager journeyManager, FormFactory formFactory) {
+  public PrototypeController8_1(JourneyManager journeyManager, FormFactory formFactory) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
   }
 
   public static List<SelectOption> getSelectOptions() {
 
-    SelectOption option1 = new SelectOption("option1", ML10.value());
-    SelectOption option2 = new SelectOption("option2", ML3.value());
-    SelectOption option3 = new SelectOption("option3", ML13.value());
-    SelectOption option4 = new SelectOption("option4", ML4.value());
-    SelectOption option5 = new SelectOption("option5", ML20.value());
-    SelectOption option6 = new SelectOption("option6", ML19.value());
-    SelectOption option7 = new SelectOption("option7", ML5.value());
-    SelectOption option8 = new SelectOption("option8", ML6.value());
-    SelectOption option9 = new SelectOption("option9", ML12.value());
-    SelectOption option10 = new SelectOption("option10", ML15.value());
-    SelectOption option11 = new SelectOption("option11", ML9.value());
-    SelectOption option12 = new SelectOption("option12", PL5001.value());
-    SelectOption option13 = new SelectOption("option13", ML1.value());
-    SelectOption option14 = new SelectOption("option14", ML2.value());
+    SelectOption option1 = new SelectOption(ML10.value(), ML10.value());
+    SelectOption option2 = new SelectOption(ML3.value(), ML3.value());
+    SelectOption option3 = new SelectOption(ML13.value(), ML13.value());
+    SelectOption option4 = new SelectOption(ML4.value(), ML4.value());
+    SelectOption option5 = new SelectOption(ML20.value(), ML20.value());
+    SelectOption option6 = new SelectOption(ML19.value(), ML19.value());
+    SelectOption option7 = new SelectOption(ML5.value(), ML5.value());
+    SelectOption option8 = new SelectOption(ML6.value(), ML6.value());
+    SelectOption option9 = new SelectOption(ML12.value(), ML12.value());
+    SelectOption option10 = new SelectOption(ML15.value(), ML15.value());
+    SelectOption option11 = new SelectOption( ML9.value(), ML9.value());
+    SelectOption option12 = new SelectOption(PL5001.value(), PL5001.value());
+    SelectOption option13 = new SelectOption(ML1.value(), ML1.value());
+    SelectOption option14 = new SelectOption(ML2.value(), ML2.value());
 
     List<SelectOption> list = new ArrayList<>();
     list.add(option1);
@@ -82,7 +81,7 @@ public class PrototypeController8 {
   public CompletionStage<Result> renderForm() {
     PrototypeController8Form templateForm = new PrototypeController8Form();
 
-    return completedFuture(ok(prototype8.render(formFactory.form(PrototypeController8Form.class).fill(templateForm),
+    return completedFuture(ok(prototype8_1.render(formFactory.form(PrototypeController8Form.class).fill(templateForm),
         new PrototypeDisplay(), getSelectOptions())));
   }
 
