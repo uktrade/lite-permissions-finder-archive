@@ -1,0 +1,24 @@
+@import controllers.prototype.PrototypeDisplay
+@import util._
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+@import controllers.prototype.routes.PrototypeControlCodeController
+@import scala.collection.JavaConversions._
+
+@import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView
+@import PrototypeTreeNode
+
+@import controllers.prototype.PrototypeTreeNode
+@(form: Form[_], treeNode: PrototypeTreeNode[ControlCodeFullView])
+
+  <form action="@PrototypeControlCodeController.handleSubmit()" method="POST">
+
+    <div>
+      @for(node <- treeNode.asScala) {
+        <div>
+            <p>@Html(node.createIndent(node.getLevel) + node.getData.getControlCode)</p>
+        </div>
+      }
+    </div>
+  </form>
