@@ -38,31 +38,29 @@ public class PrototypeController6 {
   public CompletionStage<Result> handleSubmit() {
 
     Form<PrototypeController6Form> form = formFactory.form(PrototypeController6Form.class).bindFromRequest();
-
-    //todo: save to permissionDao
+    String exportItem = form.get().exportItem;
 
     return journeyManager.performTransition(StandardEvents.NEXT);
   }
 
   public static List<SelectOption> getSelectOptions() {
-
-    SelectOption s_option1 = new SelectOption("option1", "equipment");
-    SelectOption s_option2 = new SelectOption("option2", "materials and substances");
-    SelectOption s_option3 = new SelectOption("option3", "software");
-    SelectOption s_option4 = new SelectOption("option4", "technology");
+    SelectOption option1 = new SelectOption("option1", "equipment");
+    SelectOption option2 = new SelectOption("option2", "materials and substances");
+    SelectOption option3 = new SelectOption("option3", "software");
+    SelectOption option4 = new SelectOption("option4", "technology");
 
     List<SelectOption> list = new ArrayList<>();
-    list.add(s_option1);
-    list.add(s_option2);
-    list.add(s_option3);
-    list.add(s_option4);
+    list.add(option1);
+    list.add(option2);
+    list.add(option3);
+    list.add(option4);
     return list;
   }
 
   public static class PrototypeController6Form {
 
     @Required(message = "Select one option")
-    public Boolean exportItem;
+    public String exportItem;
 
   }
 

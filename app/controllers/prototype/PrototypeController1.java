@@ -33,14 +33,14 @@ public class PrototypeController1 {
   }
 
   public CompletionStage<Result> handleSubmit() {
-
     Form<PrototypeController1Form> form = formFactory.form(PrototypeController1Form.class).bindFromRequest();
-
     Boolean isExportedBefore = form.get().exportedBefore;
 
-    //todo: save to permissionDao
-
-    return journeyManager.performTransition(StandardEvents.NO);
+    if(isExportedBefore) {
+      return journeyManager.performTransition(StandardEvents.YES);
+    } else {
+      return journeyManager.performTransition(StandardEvents.NO);
+    }
   }
 
   public static class PrototypeController1Form {

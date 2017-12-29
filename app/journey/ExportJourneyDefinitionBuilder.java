@@ -7,6 +7,7 @@ import components.common.journey.DecisionStage;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
+import controllers.prototype.enums.PrototypeEquipment;
 import controllers.routes;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
@@ -44,14 +45,18 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final JourneyStage tradeType = defineStage("tradeType",
       routes.TradeTypeController.renderForm());
 
-  /** Physical **/
+  /**
+   * Physical
+   **/
   private final JourneyStage search = defineStage("search",
       controllers.search.routes.SearchController.renderForm(GoodsType.PHYSICAL.urlString()));
   private final DecisionStage<Boolean> hasSearchRelatedCodes;
   private final JourneyStage searchSpecialGoodsType = defineStage("searchSpecialGoodsType",
       controllers.search.routes.SearchSpecialGoodsController.renderForm());
 
-  /** Software **/
+  /**
+   * Software
+   **/
 //  private final DecisionStage<ExportCategory> isDualUseOrMilitarySoftware;
   private final DecisionStage<ApplicableSoftTechControls> hasSoftwareApplicableControls;
   private final DecisionStage<ApplicableSoftTechControls> hasSoftwareApplicableRelatedControls;
@@ -62,11 +67,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final DecisionStage<Boolean> hasSoftwareCategoryRelatedControls;
   private final DecisionStage<Boolean> hasSoftwareCatchallRelatedControls;
   private final DecisionStage<Boolean> hasSoftwareRelatedControlsRelatedControls;
-
-  private JourneyStage softwareJourneyEndNLR = defineStage("softwareJourneyEndNLR",
-      routes.StaticContentController.renderSoftwareJourneyEndNLR());
-
-  /** Technology **/
+  /**
+   * Technology
+   **/
 //  private final DecisionStage<ExportCategory> isDualUseOrMilitaryTechnology;
 //  private final DecisionStage<ExportCategory> isDualUseOrMilitaryNonExemptTechnology;
   private final DecisionStage<ApplicableSoftTechControls> hasTechnologyApplicableControls;
@@ -78,14 +81,13 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final DecisionStage<Boolean> hasTechnologyCategoryRelatedControls;
   private final DecisionStage<Boolean> hasTechnologyCatchallRelatedControls;
   private final DecisionStage<Boolean> hasTechnologyRelatedControlsRelatedControls;
-
   private final JourneyStage technologyExemptions = defineStage("technologyExemptions",
       controllers.softtech.routes.TechnologyExemptionsController.renderForm());
-
   private final JourneyStage technologyExemptionsNLR = defineStage("technologyExemptionsNLR",
       controllers.routes.StaticContentController.renderTechnologyExemptionsNLR());
-
-  /** Prototype **/
+  /**
+   * Prototype
+   **/
   private final JourneyStage prototypeStage1 = defineStage("prototypeStage1",
       controllers.prototype.routes.PrototypeController1.renderForm());
   private final JourneyStage prototypeStage2 = defineStage("prototypeStage2",
@@ -102,11 +104,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
       controllers.prototype.routes.PrototypeController7.renderForm());
   private final JourneyStage prototypeStage8 = defineStage("prototypeStage8",
       controllers.prototype.routes.PrototypeController8.renderForm());
-
-  private final JourneyStage prototypeControlCodeStage = defineStage("prototypeControlCodeStage",
-      controllers.prototype.routes.PrototypeControlCodeController.renderForm("ML1"));
-
-  /** Deciders **/
+  private final JourneyStage prototypeControlCodeStageML2 = defineStage("prototypeControlCodeStage",
+      controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeEquipment.ML2.name()));
+  /**
+   * Deciders
+   **/
   private final AdditionalSpecificationsDecider additionalSpecificationsDecider;
   private final DecontrolsDecider decontrolsDecider;
   private final TechnicalNotesDecider technicalNotesDecider;
@@ -120,6 +122,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   private final CategoryRelatedControlsDecider categoryRelatedControlsDecider;
   private final RelatedRelatedControlsDecider relatedRelatedControlsDecider;
   private final NonExemptRelatedControlsDecider nonExemptRelatedControlsDecider;
+  private JourneyStage softwareJourneyEndNLR = defineStage("softwareJourneyEndNLR",
+      routes.StaticContentController.renderSoftwareJourneyEndNLR());
 
   @Inject
   public ExportJourneyDefinitionBuilder(AdditionalSpecificationsDecider additionalSpecificationsDecider,
@@ -215,7 +219,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(prototypeStage3)
         .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeControlCodeStage));
+        .then(moveTo(prototypeControlCodeStageML2));
 
     atStage(prototypeStage4)
         .onEvent(StandardEvents.NEXT)
@@ -232,6 +236,11 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(prototypeStage7)
         .onEvent(StandardEvents.NEXT)
         .then(moveTo(prototypeStage8));
+
+    atStage(prototypeStage8)
+        .onEvent(Events.PROTOTYPE_EQUIPMENT_SELECTED)
+        .branch()
+        .when(PrototypeEquipment.ML2, moveTo(prototypeControlCodeStageML2));
   }
 
   private void physicalGoodsStages() {
@@ -413,16 +422,16 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.softtech.controls.routes.SoftTechRelatedControlsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage catchallControlsList = defineStage("softwareCatchallControlsList",
-        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(),GoodsType.SOFTWARE.urlString()));
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage catchallRelatedControlsList = defineStage("softwareCatchallRelatedControlsList",
-        controllers.softtech.controls.routes.SoftTechRelatedControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(),GoodsType.SOFTWARE.urlString()));
+        controllers.softtech.controls.routes.SoftTechRelatedControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage relatedToPhysicalGoodsControlsList = defineStage("softwareControlsRelatedToPhysicalGoodsControlsList",
-        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.SOFTWARE.urlString()));
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage relatedToPhysicalGoodsControlsRelatedControlsList = defineStage("softwareRelatedToPhysicalGoodsControlsRelatedControlsList",
-        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.SOFTWARE.urlString()));
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.SOFTWARE.urlString()));
 
     JourneyStage categoryControlCodeSummary = defineStage("softwareCategoryControlCodeSummary",
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.SOFTWARE.urlString()));
@@ -611,16 +620,16 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controllers.softtech.controls.routes.SoftTechRelatedControlsController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     JourneyStage catchallControlsList = defineStage("technologyCatchallControlsList",
-        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(),GoodsType.TECHNOLOGY.urlString()));
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     JourneyStage catchallRelatedControlsList = defineStage("technologyCatchallRelatedControlsList",
-        controllers.softtech.controls.routes.SoftTechRelatedControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(),GoodsType.TECHNOLOGY.urlString()));
+        controllers.softtech.controls.routes.SoftTechRelatedControlsController.renderForm(ControlCodeVariant.CATCHALL_CONTROLS.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     JourneyStage relatedToPhysicalGoodsControlsList = defineStage("technologyControlsRelatedToPhysicalGoodsControlsList",
-        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.TECHNOLOGY.urlString()));
+        controllers.softtech.controls.routes.SoftTechControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     JourneyStage relatedToPhysicalGoodsControlsRelatedControlsList = defineStage("technologyControlsRelatedToPhysicalGoodsRelatedControlsList",
-        controllers.softtech.controls.routes.SoftTechRelatedControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(),GoodsType.TECHNOLOGY.urlString()));
+        controllers.softtech.controls.routes.SoftTechRelatedControlsController.renderForm(ControlCodeVariant.CONTROLS_RELATED_TO_A_PHYSICAL_GOOD.urlString(), GoodsType.TECHNOLOGY.urlString()));
 
     JourneyStage categoryControlCodeSummary = defineStage("technologyCategoryControlCodeSummary",
         controllers.controlcode.routes.ControlCodeSummaryController.renderForm(ControlCodeVariant.CONTROLS.urlString(), GoodsType.TECHNOLOGY.urlString()));
@@ -813,7 +822,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         controlCodeNotApplicable,
         controlsList,
         technologyExemptionsNLR
-      );
+    );
 
     atStage(decontrolsApply)
         .onEvent(Events.BACK)

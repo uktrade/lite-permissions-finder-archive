@@ -2,6 +2,7 @@ package journey;
 
 import components.common.journey.JourneyEvent;
 import components.common.journey.ParameterisedJourneyEvent;
+import controllers.prototype.enums.PrototypeEquipment;
 import models.GoodsType;
 import models.VirtualEUOgelStage;
 import models.controlcode.BackType;
@@ -39,5 +40,9 @@ public class Events {
   public static final ParameterisedJourneyEvent<BackType> BACK = new ParameterisedJourneyEvent<>("BACK", BackType.class);
 
   public static final JourneyEvent EXPORT_TRADE_TYPE = new JourneyEvent("EXPORT_TRADE_TYPE");
+
+  //Prototype
+  public static final ParameterisedJourneyEvent<PrototypeEquipment> PROTOTYPE_EQUIPMENT_SELECTED =
+      new ParameterisedJourneyEvent<>("PROTOTYPE_EQUIPMENT_SELECTED", PrototypeEquipment.class);
 
 }

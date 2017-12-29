@@ -11,7 +11,6 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Result;
 import utils.common.SelectOption;
-import views.html.prototype.prototype1;
 import views.html.prototype.prototype7;
 
 import java.util.ArrayList;
@@ -39,8 +38,7 @@ public class PrototypeController7 {
   public CompletionStage<Result> handleSubmit() {
 
     Form<PrototypeController7Form> form = formFactory.form(PrototypeController7Form.class).bindFromRequest();
-
-    //todo: save to permissionDao
+    String equipmentType = form.get().equipmentType;
 
     return journeyManager.performTransition(StandardEvents.NEXT);
   }
@@ -61,7 +59,7 @@ public class PrototypeController7 {
   public static class PrototypeController7Form {
 
     @Required(message = "Select one option")
-    public Boolean equipmentType;
+    public String equipmentType;
 
   }
 

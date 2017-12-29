@@ -38,16 +38,17 @@ public class PrototypeController4 {
   public CompletionStage<Result> handleSubmit() {
 
     Form<PrototypeController4Form> form = formFactory.form(PrototypeController4Form.class).bindFromRequest();
+    String exportOption = form.get().exportOptions;
 
     return journeyManager.performTransition(StandardEvents.NEXT);
   }
 
   public static List<SelectOption> getSelectOptions() {
 
-    SelectOption s_option1 = new SelectOption("option1", "Find out more about export control and licensing for restricted goods [Link to https://www.gov.uk/government/organisations/export-control-organisation]");
-    SelectOption s_option2 = new SelectOption("option2", "Find out if I need a licence to export goods and services [Link to https://www.gov.uk/guidance/beginners-guide-to-export-controls]");
-    SelectOption s_option3 = new SelectOption("option3", "Get a control rating for some goods and services and apply for a licence [Link to ‘Beginner’s triage’ - see below]");
-    SelectOption s_option4 = new SelectOption("option4", "Check a control rating [Link to new ‘Rating search’ function]");
+    SelectOption s_option1 = new SelectOption("option1", "Find out more about export control and licensing for restricted goods https://www.gov.uk/government/organisations/export-control-organisation");
+    SelectOption s_option2 = new SelectOption("option2", "Find out if I need a licence to export goods and services https://www.gov.uk/guidance/beginners-guide-to-export-controls");
+    SelectOption s_option3 = new SelectOption("option3", "Get a control rating for some goods and services and apply for a licence");
+    SelectOption s_option4 = new SelectOption("option4", "Check a control rating");
 
     List<SelectOption> list = new ArrayList<>();
     list.add(s_option1);
@@ -60,7 +61,7 @@ public class PrototypeController4 {
   public static class PrototypeController4Form {
 
     @Required(message = "Select one option")
-    public Boolean exportOptions;
+    public String exportOptions;
 
   }
 

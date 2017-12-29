@@ -33,12 +33,8 @@ public class PrototypeController5 {
   }
 
   public CompletionStage<Result> handleSubmit() {
-
     Form<PrototypeController5Form> form = formFactory.form(PrototypeController5Form.class).bindFromRequest();
-
     Boolean isSpecialMilitary = form.get().specialMilitary;
-
-    //todo: save to permissionDao
 
     return journeyManager.performTransition(StandardEvents.YES);
   }

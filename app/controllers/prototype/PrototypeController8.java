@@ -1,11 +1,27 @@
 package controllers.prototype;
 
+import static controllers.prototype.enums.PrototypeEquipment.ML1;
+import static controllers.prototype.enums.PrototypeEquipment.ML10;
+import static controllers.prototype.enums.PrototypeEquipment.ML12;
+import static controllers.prototype.enums.PrototypeEquipment.ML13;
+import static controllers.prototype.enums.PrototypeEquipment.ML15;
+import static controllers.prototype.enums.PrototypeEquipment.ML19;
+import static controllers.prototype.enums.PrototypeEquipment.ML2;
+import static controllers.prototype.enums.PrototypeEquipment.ML20;
+import static controllers.prototype.enums.PrototypeEquipment.ML3;
+import static controllers.prototype.enums.PrototypeEquipment.ML4;
+import static controllers.prototype.enums.PrototypeEquipment.ML5;
+import static controllers.prototype.enums.PrototypeEquipment.ML6;
+import static controllers.prototype.enums.PrototypeEquipment.ML9;
+import static controllers.prototype.enums.PrototypeEquipment.PL5001;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
-import components.common.journey.StandardEvents;
+import components.persistence.PermissionsFinderDao;
+import controllers.prototype.enums.PrototypeEquipment;
+import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -28,6 +44,41 @@ public class PrototypeController8 {
     this.formFactory = formFactory;
   }
 
+  public static List<SelectOption> getSelectOptions() {
+
+    SelectOption option1 = new SelectOption("option1", ML10.value());
+    SelectOption option2 = new SelectOption("option2", ML3.value());
+    SelectOption option3 = new SelectOption("option3", ML13.value());
+    SelectOption option4 = new SelectOption("option4", ML4.value());
+    SelectOption option5 = new SelectOption("option5", ML20.value());
+    SelectOption option6 = new SelectOption("option6", ML19.value());
+    SelectOption option7 = new SelectOption("option7", ML5.value());
+    SelectOption option8 = new SelectOption("option8", ML6.value());
+    SelectOption option9 = new SelectOption("option9", ML12.value());
+    SelectOption option10 = new SelectOption("option10", ML15.value());
+    SelectOption option11 = new SelectOption("option11", ML9.value());
+    SelectOption option12 = new SelectOption("option12", PL5001.value());
+    SelectOption option13 = new SelectOption("option13", ML1.value());
+    SelectOption option14 = new SelectOption("option14", ML2.value());
+
+    List<SelectOption> list = new ArrayList<>();
+    list.add(option1);
+    list.add(option2);
+    list.add(option3);
+    list.add(option4);
+    list.add(option5);
+    list.add(option6);
+    list.add(option7);
+    list.add(option8);
+    list.add(option9);
+    list.add(option10);
+    list.add(option11);
+    list.add(option12);
+    list.add(option13);
+    list.add(option14);
+    return list;
+  }
+
   public CompletionStage<Result> renderForm() {
     PrototypeController8Form templateForm = new PrototypeController8Form();
 
@@ -36,53 +87,16 @@ public class PrototypeController8 {
   }
 
   public CompletionStage<Result> handleSubmit() {
-
     Form<PrototypeController8Form> form = formFactory.form(PrototypeController8Form.class).bindFromRequest();
+    String physicalEquipment = form.get().physicalEquipment;
 
-    //todo: save to permissionDao
-
-    return journeyManager.performTransition(StandardEvents.NEXT);
-  }
-
-  public static List<SelectOption> getSelectOptions() {
-
-    SelectOption s_option1 = new SelectOption("option1", "aircraft, lighter-than-air vehicles and unmanned aerial vehicles [UAVs]. Aero-engines and aircraft components, equipment and related goods specially designed or modified for military use");
-    SelectOption s_option2 = new SelectOption("option2", "ammunition, fuse setting devices and specially designed components ");
-    SelectOption s_option3 = new SelectOption("option3", "armoured or protective goods and constructions");
-    SelectOption s_option4 = new SelectOption("option4", "bombs, missiles, torpedoes, rockets, other explosive devices and charges and related accessories, equipment and specially designed components");
-    SelectOption s_option5 = new SelectOption("option5", "cryogenic and superconductive equipment and specially designed components");
-    SelectOption s_option6 = new SelectOption("option6", "directed energy weapon [DEW] systems, specially designed components, countermeasures, equipment and test models");
-    SelectOption s_option7 = new SelectOption("option7", "fire control equipment, related alerting and warning equipment, related systems, test and alignment and countermeasure equipment specially designed for military use and specially designed components and accessories");
-    SelectOption s_option8 = new SelectOption("option8", "ground vehicles and components");
-    SelectOption s_option9 = new SelectOption("option9", "high velocity kinetic energy weapon systems, components and equipment");
-    SelectOption s_option10 = new SelectOption("option10", "imaging or countermeasure equipment, accessories and components");
-    SelectOption s_option11 = new SelectOption("option11", "naval vessels, special accessories, components and equipment");
-    SelectOption s_option12 = new SelectOption("option12", "security and para-military police goods ");
-    SelectOption s_option13 = new SelectOption("option13", "smooth-bore weapons [calibre less than 20mm] / Other weapons [calibre 12.7mm or less] - accessories and specially designed components");
-    SelectOption s_option14 = new SelectOption("option14", "smooth-bore weapons [calibre 20mm or more] / Other armament or weapons [calibre greater than 12.7mm] - accessories, projectors and specially designed components");
-
-    List<SelectOption> list = new ArrayList<>();
-    list.add(s_option1);
-    list.add(s_option2);
-    list.add(s_option3);
-    list.add(s_option4);
-    list.add(s_option5);
-    list.add(s_option6);
-    list.add(s_option7);
-    list.add(s_option8);
-    list.add(s_option9);
-    list.add(s_option10);
-    list.add(s_option11);
-    list.add(s_option12);
-    list.add(s_option13);
-    list.add(s_option14);
-    return list;
+    return journeyManager.performTransition(Events.PROTOTYPE_EQUIPMENT_SELECTED, PrototypeEquipment.get(physicalEquipment));
   }
 
   public static class PrototypeController8Form {
 
     @Required(message = "Select one option")
-    public Boolean physicalEquipment;
+    public String physicalEquipment;
 
   }
 
