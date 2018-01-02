@@ -218,48 +218,8 @@ GET     /admin/application-codes/:applicationCode   controllers.admin.AdminContr
 
 # Prototype routes
 
-GET     /prototype1                            controllers.prototype.PrototypeController1.renderForm
-
-POST    /prototype1                           controllers.prototype.PrototypeController1.handleSubmit
-
-GET     /prototype2                           controllers.prototype.PrototypeController2.renderForm
-
-POST    /prototype2                           controllers.prototype.PrototypeController2.handleSubmit
-
-GET     /prototype3                           controllers.prototype.PrototypeController3.renderForm
-
-POST    /prototype3                           controllers.prototype.PrototypeController3.handleSubmit
-
-GET     /prototype4                           controllers.prototype.PrototypeController4.renderForm
-
-POST    /prototype4                           controllers.prototype.PrototypeController4.handleSubmit
-
-GET     /prototype5                           controllers.prototype.PrototypeController5.renderForm
-
-POST    /prototype5                           controllers.prototype.PrototypeController5.handleSubmit
-
-GET     /prototype6                           controllers.prototype.PrototypeController6.renderForm
-
-POST    /prototype6                           controllers.prototype.PrototypeController6.handleSubmit
-
-GET     /prototype7_1                           controllers.prototype.PrototypeController7_1.renderForm
-
-POST    /prototype7_1                           controllers.prototype.PrototypeController7_1.handleSubmit
-
-GET     /prototype7_2                           controllers.prototype.PrototypeController7_2.renderForm
-
-POST    /prototype7_2                           controllers.prototype.PrototypeController7_2.handleSubmit
-
-GET     /prototype8_1                           controllers.prototype.PrototypeController8_1.renderForm
-
-POST    /prototype8_1                           controllers.prototype.PrototypeController8_1.handleSubmit
-
-GET     /prototype8_2                           controllers.prototype.PrototypeController8_2.renderForm
-
-POST    /prototype8_2                          controllers.prototype.PrototypeController8_2.handleSubmit
-
 GET     /triage                            controllers.prototype.TriageController.renderForm(page: String)
 
 POST    /triage                           controllers.prototype.TriageController.handleSubmit
 
-GET     /prototype/:controlCodeParam          controllers.prototype.PrototypeControlCodeController.renderForm(controlCodeParam)
+GET     /code-hierarchy/:controlCodeParam          controllers.prototype.PrototypeControlCodeController.renderForm(controlCodeParam)

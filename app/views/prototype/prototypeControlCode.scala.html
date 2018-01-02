@@ -1,15 +1,7 @@
-@import controllers.prototype.PrototypeDisplay
 @import util._
-@import views.html.common.form._
-@import views.html.common.page._
-@import views.html.common.state._
-@import controllers.prototype.routes.PrototypeControlCodeController
-@import scala.collection.JavaConversions._
-
 @import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView
 @import controllers.prototype.PrototypeTreeNode
 
-@import controllers.prototype.PrototypeTreeNode
 @(treeNode: PrototypeTreeNode[ControlCodeFullView], showDetail: Boolean)
 
 @standardPage("View control list", Some(heading("View control list"))) {

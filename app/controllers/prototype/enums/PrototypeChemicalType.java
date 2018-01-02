@@ -1,8 +1,5 @@
 package controllers.prototype.enums;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum PrototypeChemicalType {
 
   ML7a("biological agents or radioactive materials adapted for use in war to produce casualties in animals or humans, damage crops or the environment or degrade equipment"),
@@ -16,14 +13,6 @@ public enum PrototypeChemicalType {
   ML7i("biocatalysts for the decontamination or degradation of CW agents and biological systems");
 
   private String value;
-  // Reverse-lookup map
-  private static final Map<String, PrototypeChemicalType> lookup = new HashMap<>();
-
-  static {
-    for (PrototypeChemicalType d : PrototypeChemicalType.values()) {
-      lookup.put(d.value(), d);
-    }
-  }
 
   PrototypeChemicalType(String value) {
     this.value = value;
@@ -31,10 +20,6 @@ public enum PrototypeChemicalType {
 
   public String value() {
     return this.value;
-  }
-
-  public static PrototypeChemicalType get(String value) {
-    return lookup.get(value);
   }
 
 }

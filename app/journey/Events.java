@@ -2,9 +2,6 @@ package journey;
 
 import components.common.journey.JourneyEvent;
 import components.common.journey.ParameterisedJourneyEvent;
-import controllers.prototype.enums.PrototypeChemicalType;
-import controllers.prototype.enums.PrototypeEquipment;
-import controllers.prototype.enums.PrototypeMilitaryItems;
 import models.GoodsType;
 import models.VirtualEUOgelStage;
 import models.controlcode.BackType;
@@ -44,17 +41,5 @@ public class Events {
   public static final JourneyEvent EXPORT_TRADE_TYPE = new JourneyEvent("EXPORT_TRADE_TYPE");
 
   //Prototype
-  public static final ParameterisedJourneyEvent<String> TRIAGE_NEXT =
-      new ParameterisedJourneyEvent<>("TRIAGE_NEXT", String.class);
-
-  //Prototype
-  public static final ParameterisedJourneyEvent<PrototypeEquipment> PROTOTYPE_EQUIPMENT_SELECTED =
-      new ParameterisedJourneyEvent<>("PROTOTYPE_EQUIPMENT_SELECTED", PrototypeEquipment.class);
-
-  public static final ParameterisedJourneyEvent<PrototypeMilitaryItems> PROTOTYPE_MILTARY_SELECTED =
-      new ParameterisedJourneyEvent<>("PROTOTYPE_MILTARY_SELECTED", PrototypeMilitaryItems.class);
-
-  public static final ParameterisedJourneyEvent<PrototypeChemicalType> PROTOTYPE_CHEMICAL_SELECTED =
-      new ParameterisedJourneyEvent<>("PROTOTYPE_CHEMICAL_SELECTED", PrototypeChemicalType.class);
-
+  public static final ParameterisedJourneyEvent<String> TRIAGE_NEXT = new ParameterisedJourneyEvent<>("TRIAGE_NEXT", String.class);
 }

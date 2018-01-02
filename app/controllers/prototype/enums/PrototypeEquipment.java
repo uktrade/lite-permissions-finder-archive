@@ -1,8 +1,5 @@
 package controllers.prototype.enums;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum PrototypeEquipment {
 
   ML10("aircraft, lighter-than-air vehicles and unmanned aerial vehicles [UAVs]. Aero-engines and aircraft components, equipment and related goods specially designed or modified for military use"),
@@ -21,14 +18,6 @@ public enum PrototypeEquipment {
   ML2("smooth-bore weapons [calibre 20mm or more] / Other armament or weapons [calibre greater than 12.7mm] - accessories, projectors and specially designed components");
 
   private String value;
-  // Reverse-lookup map
-  private static final Map<String, PrototypeEquipment> lookup = new HashMap<>();
-
-  static {
-    for (PrototypeEquipment d : PrototypeEquipment.values()) {
-      lookup.put(d.value(), d);
-    }
-  }
 
   PrototypeEquipment(String value) {
     this.value = value;
@@ -36,10 +25,6 @@ public enum PrototypeEquipment {
 
   public String value() {
     return this.value;
-  }
-
-  public static PrototypeEquipment get(String value) {
-    return lookup.get(value);
   }
 
 }

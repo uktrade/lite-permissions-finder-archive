@@ -212,24 +212,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage milTriagePhysicalEquipment = defineStage("milTriagePhysicalEquipment",
         controllers.prototype.routes.TriageController.renderForm("MIL_EQUIP"));
 
-    JourneyStage milTriageChemcials = defineStage("milTriageChemicals",
+    JourneyStage milTriageChemicals = defineStage("milTriageChemicals",
         controllers.prototype.routes.TriageController.renderForm("MIL_CHEM"));
-
-
-//    JourneyStage prototypeStage6 = defineStage("prototypeStage6",
-//        controllers.prototype.routes.PrototypeController6.renderForm());
-//    JourneyStage prototypeStage7_1 = defineStage("prototypeStage7_1",
-//        controllers.prototype.routes.PrototypeController7_1.renderForm());
-//    JourneyStage prototypeStage7_2 = defineStage("prototypeStage7_2",
-//        controllers.prototype.routes.PrototypeController7_2.renderForm());
-//    JourneyStage prototypeStage8_1 = defineStage("prototypeStage8_1",
-//        controllers.prototype.routes.PrototypeController8_1.renderForm());
-//    JourneyStage prototypeStage8_2 = defineStage("prototypeStage8_2",
-//        controllers.prototype.routes.PrototypeController8_2.renderForm());
-//    JourneyStage prototypeControlCodeStageML2 = defineStage("prototypeControlCodeStageML2",
-//        controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeEquipment.ML2.name()));
-//    JourneyStage prototypeControlCodeStageML7i = defineStage("prototypeControlCodeStageML7i",
-//        controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeChemicalType.ML7i.name()));
 
     JourneyStage unimplemented = defineStage("unimplemented",
         controllers.prototype.routes.TriageController.renderForm("unimplemented"));
@@ -280,51 +264,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     atStage(milTriage4)
         .onEvent(Events.TRIAGE_NEXT)
         .branch()
-        .when("chemicals", moveTo(milTriageChemcials))
+        .when("chemicals", moveTo(milTriageChemicals))
         .otherwise(moveTo(unimplemented));
-
-//    atStage(milTriagePhysicalEquipment)
-//        .onEvent(Events.TRIAGE_NEXT)
-//        .then(moveTo());
-
-//    atStage(initTriage4)
-//        .onEvent(StandardEvents.NEXT)
-//        .then(moveTo(milTriage1));
-//
-//    atStage(milTriage1)
-//        .onEvent(StandardEvents.YES)
-//        .then(moveTo(prototypeStage6));
-//
-//    atStage(prototypeStage6)
-//        .onEvent(Events.PROTOTYPE_MILTARY_SELECTED)
-//        .branch()
-//        .when(PrototypeMilitaryItems.EQUIPMENT, moveTo(prototypeStage7_1))
-//        .when(PrototypeMilitaryItems.MATERIALS, moveTo(prototypeStage7_2));
-//
-//    atStage(prototypeStage7_1)
-//        .onEvent(StandardEvents.NEXT)
-//        .then(moveTo(prototypeStage8_1));
-//
-//    atStage(prototypeStage7_2)
-//        .onEvent(StandardEvents.NEXT)
-//        .then(moveTo(prototypeStage8_2));
-//
-//    atStage(prototypeStage8_1)
-//        .onEvent(Events.PROTOTYPE_EQUIPMENT_SELECTED)
-//        .then(moveTo(prototypeControlCodeStageML2));
-//
-//    atStage(prototypeStage8_2)
-//        .onEvent(Events.PROTOTYPE_CHEMICAL_SELECTED)
-//        .then(moveTo(prototypeControlCodeStageML7i));
-//
-//    atStage(initTriage2)
-//        .onEvent(StandardEvents.NEXT)
-//        .then(moveTo(initTriage3));
-//
-//    atStage(initTriage3)
-//        .onEvent(StandardEvents.NEXT)
-//        .then(moveTo(prototypeControlCodeStageML2));
-
   }
 
   private void physicalGoodsStages() {
