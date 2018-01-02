@@ -56,12 +56,4 @@ public class PrototypeTreeNode<T> implements Iterable<PrototypeTreeNode<T>>{
     else
       return parent.getLevel() + 1;
   }
-
-  public String createIndent(int depth) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < depth; i++) {
-      sb.append("&nbsp;");
-    }
-    return sb.toString();
-  }
 }

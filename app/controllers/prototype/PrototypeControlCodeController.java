@@ -3,16 +3,17 @@ package controllers.prototype;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import controllers.prototype.enums.PrototypeEquipment;
-import play.data.Form;
+import org.apache.commons.lang3.StringUtils;
 import play.data.FormFactory;
 import play.mvc.Result;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import views.html.prototype.prototypeControlCode;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletionStage;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,9 @@ public class PrototypeControlCodeController {
   }
 
 
-  private Result renderWithForm(String controlCodeParam, Form<PrototypeControlCodeForm> form) throws ExecutionException, InterruptedException {
+  public Result renderForm(String controlCodeParam) throws ExecutionException, InterruptedException {
+
+    boolean showDetail = StringUtils.isBlank(formFactory.form().bindFromRequest().get("hideDetail"));
 
     Map<String, ControlCodeFullView> result;
     if (cache.getCache().isEmpty()) {
@@ -40,36 +43,41 @@ public class PrototypeControlCodeController {
     }
 
     ControlCodeFullView givenControlCode = result.get(controlCodeParam);
-    PrototypeTreeNode<ControlCodeFullView> root = new PrototypeTreeNode<>(givenControlCode);
-    root = recursiveFunc(result, root);
+    PrototypeTreeNode<ControlCodeFullView> targetNode = new PrototypeTreeNode<>(givenControlCode);
+    targetNode = findChildrenRecursive(result, targetNode);
 
-    return ok(prototypeControlCode.render(form, root));
+    PrototypeTreeNode<ControlCodeFullView> rootNode = findParentsRecursive(result, targetNode);
+
+    return ok(prototypeControlCode.render(rootNode, showDetail));
   }
 
-  private PrototypeTreeNode<ControlCodeFullView> recursiveFunc(Map<String, ControlCodeFullView> result, PrototypeTreeNode<ControlCodeFullView> node) {
-    List<ControlCodeFullView> children = result.values().stream().filter(d -> d.getParentId().equals(node.data.getId())).collect(Collectors.toList());
+  private PrototypeTreeNode<ControlCodeFullView> findChildrenRecursive(Map<String, ControlCodeFullView> result, PrototypeTreeNode<ControlCodeFullView> node) {
+    List<ControlCodeFullView> children = result.values().stream()
+        .filter(d -> d.getParentId().equals(node.data.getId()))
+        .sorted(Comparator.comparing(ControlCodeFullView::getDisplayOrder))
+        .collect(Collectors.toList());
+
     if (children.size() > 0) {
       for (ControlCodeFullView child : children) {
         PrototypeTreeNode<ControlCodeFullView> childNode = node.addChild(child);
-        recursiveFunc(result, childNode);
+        findChildrenRecursive(result, childNode);
       }
     }
     return node;
   }
 
-  public Result renderForm(String controlCodeParam) throws ExecutionException, InterruptedException {
-    PrototypeControlCodeForm templateForm = new PrototypeControlCodeForm();
-    return renderWithForm(controlCodeParam, formFactory.form(PrototypeControlCodeForm.class).fill(templateForm));
-  }
+  private PrototypeTreeNode<ControlCodeFullView> findParentsRecursive(Map<String, ControlCodeFullView> result, PrototypeTreeNode<ControlCodeFullView> node) {
+    Optional<ControlCodeFullView> parent = result.values().stream()
+        .filter(d -> d.getId().equals(node.data.getParentId()))
+        .findFirst();
 
-  public CompletionStage<Result> handleSubmit() {
-    Form<PrototypeControlCodeForm> form = formFactory.form(PrototypeControlCodeForm.class).bindFromRequest();
-    return null;
-  }
+    if (parent.isPresent()) {
+      PrototypeTreeNode<ControlCodeFullView> newRoot = new PrototypeTreeNode<>(parent.get());
+      node.parent = newRoot;
+      newRoot.children = Collections.singletonList(node);
 
-  public static class PrototypeControlCodeForm {
-//    @Required(message = "Select an option")
-//    public String option;
+      return findParentsRecursive(result, newRoot);
+    }
+    return node;
   }
-
 }

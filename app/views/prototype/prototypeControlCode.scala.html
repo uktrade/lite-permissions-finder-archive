@@ -10,15 +10,30 @@
 @import controllers.prototype.PrototypeTreeNode
 
 @import controllers.prototype.PrototypeTreeNode
-@(form: Form[_], treeNode: PrototypeTreeNode[ControlCodeFullView])
+@(treeNode: PrototypeTreeNode[ControlCodeFullView], showDetail: Boolean)
 
-  <form action="@PrototypeControlCodeController.handleSubmit()" method="POST">
+@standardPage("View control list", Some(heading("View control list"))) {
+} {
 
-    <div>
-      @for(node <- treeNode.asScala) {
-        <div>
-            <p>@Html(node.createIndent(node.getLevel) + node.getData.getControlCode)</p>
-        </div>
-      }
+
+  <style>
+b {
+font-weight: bold;
+}
+
+ol {
+list-style-type: decimal;
+padding: inherit;
+}
+  </style>
+
+  <div>
+  @for(node <- treeNode.asScala) {
+    <div style="padding-left: @(node.getLevel*2)em">
+      @if(showDetail) { @Html(node.getData.getBeforeLegalDefinitionText) }
+      @Html(node.getData.getLegalDescription)
+      @if(showDetail) { @Html(node.getData.getAfterLegalDefinitionText) }
     </div>
-  </form>
+  }
+  </div>
+}

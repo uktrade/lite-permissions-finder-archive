@@ -259,5 +259,3 @@ GET     /prototype8_2                           controllers.prototype.PrototypeC
 POST    /prototype8_2                          controllers.prototype.PrototypeController8_2.handleSubmit
 
 GET     /prototype/:controlCodeParam          controllers.prototype.PrototypeControlCodeController.renderForm(controlCodeParam)
-
-POST    /prototype                           controllers.prototype.PrototypeControlCodeController.handleSubmit
