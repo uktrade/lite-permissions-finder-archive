@@ -7,10 +7,6 @@ import components.common.journey.DecisionStage;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
 import components.common.journey.StandardEvents;
-import controllers.prototype.PrototypeController8_1;
-import controllers.prototype.enums.PrototypeChemicalType;
-import controllers.prototype.enums.PrototypeEquipment;
-import controllers.prototype.enums.PrototypeMilitaryItems;
 import controllers.routes;
 import journey.deciders.CatchallControlsDecider;
 import journey.deciders.CategoryControlsDecider;
@@ -92,30 +88,8 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
   /**
    * Prototype
    **/
-  private final JourneyStage prototypeStage1 = defineStage("prototypeStage1",
-      controllers.prototype.routes.PrototypeController1.renderForm());
-  private final JourneyStage prototypeStage2 = defineStage("prototypeStage2",
-      controllers.prototype.routes.PrototypeController2.renderForm());
-  private final JourneyStage prototypeStage3 = defineStage("prototypeStage3",
-      controllers.prototype.routes.PrototypeController3.renderForm());
-  private final JourneyStage prototypeStage4 = defineStage("prototypeStage4",
-      controllers.prototype.routes.PrototypeController4.renderForm());
-  private final JourneyStage prototypeStage5 = defineStage("prototypeStage5",
-      controllers.prototype.routes.PrototypeController5.renderForm());
-  private final JourneyStage prototypeStage6 = defineStage("prototypeStage6",
-      controllers.prototype.routes.PrototypeController6.renderForm());
-  private final JourneyStage prototypeStage7_1 = defineStage("prototypeStage7_1",
-      controllers.prototype.routes.PrototypeController7_1.renderForm());
-  private final JourneyStage prototypeStage7_2 = defineStage("prototypeStage7_2",
-      controllers.prototype.routes.PrototypeController7_2.renderForm());
-  private final JourneyStage prototypeStage8_1 = defineStage("prototypeStage8_1",
-      controllers.prototype.routes.PrototypeController8_1.renderForm());
-  private final JourneyStage prototypeStage8_2 = defineStage("prototypeStage8_2",
-      controllers.prototype.routes.PrototypeController8_2.renderForm());
-  private final JourneyStage prototypeControlCodeStageML2 = defineStage("prototypeControlCodeStageML2",
-      controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeEquipment.ML2.name()));
-  private final JourneyStage prototypeControlCodeStageML7i = defineStage("prototypeControlCodeStageML7i",
-      controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeChemicalType.ML7i.name()));
+  private final JourneyStage initTriage1 = defineStage("initTriage1",
+      controllers.prototype.routes.TriageController.renderForm("INIT_1"));
   /**
    * Deciders
    **/
@@ -207,7 +181,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     // *** Journeys ***
 //    defineJourney(JourneyDefinitionNames.EXPORT, goodsType);
-    defineJourney(JourneyDefinitionNames.EXPORT, prototypeStage1);
+    defineJourney(JourneyDefinitionNames.EXPORT, initTriage1);
 
     defineJourney(JourneyDefinitionNames.CHANGE_CONTROL_CODE, search,
         BackLink.to(routes.SummaryController.renderForm(), "Back"));
@@ -219,47 +193,137 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
   private void prototypeStages() {
 
-    atStage(prototypeStage1)
-        .onEvent(StandardEvents.NO)
-        .then(moveTo(prototypeStage4));
+    JourneyStage initTriage2 = defineStage("initTriage2",
+        controllers.prototype.routes.TriageController.renderForm("INIT_2"));
+    JourneyStage initTriage3 = defineStage("initTriage3",
+        controllers.prototype.routes.TriageController.renderForm("INIT_3"));
+    JourneyStage initTriage4 = defineStage("initTriage4",
+        controllers.prototype.routes.TriageController.renderForm("INIT_4"));
 
-    atStage(prototypeStage4)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeStage5));
+    JourneyStage milTriage1 = defineStage("milTriage1",
+        controllers.prototype.routes.TriageController.renderForm("MIL_1"));
+    JourneyStage milTriage2 = defineStage("milTriage2",
+        controllers.prototype.routes.TriageController.renderForm("MIL_2"));
+    JourneyStage milTriage3 = defineStage("milTriage3",
+        controllers.prototype.routes.TriageController.renderForm("MIL_3"));
+    JourneyStage milTriage4 = defineStage("milTriage4",
+        controllers.prototype.routes.TriageController.renderForm("MIL_4"));
 
-    atStage(prototypeStage5)
-        .onEvent(StandardEvents.YES)
-        .then(moveTo(prototypeStage6));
+    JourneyStage milTriagePhysicalEquipment = defineStage("milTriagePhysicalEquipment",
+        controllers.prototype.routes.TriageController.renderForm("MIL_EQUIP"));
 
-    atStage(prototypeStage6)
-        .onEvent(Events.PROTOTYPE_MILTARY_SELECTED)
+    JourneyStage milTriageChemcials = defineStage("milTriageChemicals",
+        controllers.prototype.routes.TriageController.renderForm("MIL_CHEM"));
+
+
+//    JourneyStage prototypeStage6 = defineStage("prototypeStage6",
+//        controllers.prototype.routes.PrototypeController6.renderForm());
+//    JourneyStage prototypeStage7_1 = defineStage("prototypeStage7_1",
+//        controllers.prototype.routes.PrototypeController7_1.renderForm());
+//    JourneyStage prototypeStage7_2 = defineStage("prototypeStage7_2",
+//        controllers.prototype.routes.PrototypeController7_2.renderForm());
+//    JourneyStage prototypeStage8_1 = defineStage("prototypeStage8_1",
+//        controllers.prototype.routes.PrototypeController8_1.renderForm());
+//    JourneyStage prototypeStage8_2 = defineStage("prototypeStage8_2",
+//        controllers.prototype.routes.PrototypeController8_2.renderForm());
+//    JourneyStage prototypeControlCodeStageML2 = defineStage("prototypeControlCodeStageML2",
+//        controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeEquipment.ML2.name()));
+//    JourneyStage prototypeControlCodeStageML7i = defineStage("prototypeControlCodeStageML7i",
+//        controllers.prototype.routes.PrototypeControlCodeController.renderForm(PrototypeChemicalType.ML7i.name()));
+
+    JourneyStage unimplemented = defineStage("unimplemented",
+        controllers.prototype.routes.TriageController.renderForm("unimplemented"));
+
+    atStage(initTriage1)
+        .onEvent(Events.TRIAGE_NEXT)
         .branch()
-        .when(PrototypeMilitaryItems.EQUIPMENT, moveTo(prototypeStage7_1))
-        .when(PrototypeMilitaryItems.MATERIALS, moveTo(prototypeStage7_2));
+        .when("true", moveTo(initTriage2))
+        .when("false", moveTo(initTriage4));
 
-    atStage(prototypeStage7_1)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeStage8_1));
+    atStage(initTriage2)
+        .onEvent(Events.TRIAGE_NEXT)
+        .branch()
+        .when("true", moveTo(initTriage3))
+        .when("false", moveTo(initTriage4));
 
-    atStage(prototypeStage7_2)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeStage8_2));
+    atStage(initTriage3)
+        .onEvent(Events.TRIAGE_NEXT)
+        .branch()
+        .when("true", moveTo(unimplemented))
+        .when("false", moveTo(initTriage4));
 
-    atStage(prototypeStage8_1)
-        .onEvent(Events.PROTOTYPE_EQUIPMENT_SELECTED)
-        .then(moveTo(prototypeControlCodeStageML2));
+    atStage(initTriage4)
+        .onEvent(Events.TRIAGE_NEXT)
+        .branch()
+        .when("get_rating", moveTo(milTriage1))
+        .otherwise(moveTo(unimplemented));
 
-    atStage(prototypeStage8_2)
-        .onEvent(Events.PROTOTYPE_CHEMICAL_SELECTED)
-        .then(moveTo(prototypeControlCodeStageML7i));
+    atStage(milTriage1)
+        .onEvent(Events.TRIAGE_NEXT)
+        .branch()
+        .when("true", moveTo(milTriage2))
+        .when("false", moveTo(unimplemented));
 
-    atStage(prototypeStage2)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeStage3));
+    atStage(milTriage2)
+        .onEvent(Events.TRIAGE_NEXT)
+        .branch()
+        .when("equipment", moveTo(milTriage3))
+        .when("materials", moveTo(milTriage4))
+        .otherwise(moveTo(unimplemented));
 
-    atStage(prototypeStage3)
-        .onEvent(StandardEvents.NEXT)
-        .then(moveTo(prototypeControlCodeStageML2));
+    atStage(milTriage3)
+        .onEvent(Events.TRIAGE_NEXT)
+        .branch()
+        .when("physical", moveTo(milTriagePhysicalEquipment))
+        .otherwise(moveTo(unimplemented));
+
+    atStage(milTriage4)
+        .onEvent(Events.TRIAGE_NEXT)
+        .branch()
+        .when("chemicals", moveTo(milTriageChemcials))
+        .otherwise(moveTo(unimplemented));
+
+//    atStage(milTriagePhysicalEquipment)
+//        .onEvent(Events.TRIAGE_NEXT)
+//        .then(moveTo());
+
+//    atStage(initTriage4)
+//        .onEvent(StandardEvents.NEXT)
+//        .then(moveTo(milTriage1));
+//
+//    atStage(milTriage1)
+//        .onEvent(StandardEvents.YES)
+//        .then(moveTo(prototypeStage6));
+//
+//    atStage(prototypeStage6)
+//        .onEvent(Events.PROTOTYPE_MILTARY_SELECTED)
+//        .branch()
+//        .when(PrototypeMilitaryItems.EQUIPMENT, moveTo(prototypeStage7_1))
+//        .when(PrototypeMilitaryItems.MATERIALS, moveTo(prototypeStage7_2));
+//
+//    atStage(prototypeStage7_1)
+//        .onEvent(StandardEvents.NEXT)
+//        .then(moveTo(prototypeStage8_1));
+//
+//    atStage(prototypeStage7_2)
+//        .onEvent(StandardEvents.NEXT)
+//        .then(moveTo(prototypeStage8_2));
+//
+//    atStage(prototypeStage8_1)
+//        .onEvent(Events.PROTOTYPE_EQUIPMENT_SELECTED)
+//        .then(moveTo(prototypeControlCodeStageML2));
+//
+//    atStage(prototypeStage8_2)
+//        .onEvent(Events.PROTOTYPE_CHEMICAL_SELECTED)
+//        .then(moveTo(prototypeControlCodeStageML7i));
+//
+//    atStage(initTriage2)
+//        .onEvent(StandardEvents.NEXT)
+//        .then(moveTo(initTriage3));
+//
+//    atStage(initTriage3)
+//        .onEvent(StandardEvents.NEXT)
+//        .then(moveTo(prototypeControlCodeStageML2));
 
   }
 

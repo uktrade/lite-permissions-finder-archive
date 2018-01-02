@@ -258,4 +258,8 @@ GET     /prototype8_2                           controllers.prototype.PrototypeC
 
 POST    /prototype8_2                          controllers.prototype.PrototypeController8_2.handleSubmit
 
+GET     /triage                            controllers.prototype.TriageController.renderForm(page: String)
+
+POST    /triage                           controllers.prototype.TriageController.handleSubmit
+
 GET     /prototype/:controlCodeParam          controllers.prototype.PrototypeControlCodeController.renderForm(controlCodeParam)
