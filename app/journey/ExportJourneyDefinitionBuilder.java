@@ -209,11 +209,16 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage milTriage4 = defineStage("milTriage4",
         controllers.prototype.routes.TriageController.renderForm("MIL_4"));
 
+    JourneyStage dualTriage1 = defineStage("dualTriage1",
+        controllers.prototype.routes.TriageController.renderForm("DUAL_1"));
+
     JourneyStage milTriagePhysicalEquipment = defineStage("milTriagePhysicalEquipment",
         controllers.prototype.routes.TriageController.renderForm("MIL_EQUIP"));
-
     JourneyStage milTriageChemicals = defineStage("milTriageChemicals",
         controllers.prototype.routes.TriageController.renderForm("MIL_CHEM"));
+
+    JourneyStage dualTriageComponents = defineStage("dualTriageComponents",
+        controllers.prototype.routes.TriageController.renderForm("DUAL_COMP"));
 
     JourneyStage unimplemented = defineStage("unimplemented",
         controllers.prototype.routes.TriageController.renderForm("unimplemented"));
@@ -246,7 +251,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.TRIAGE_NEXT)
         .branch()
         .when("true", moveTo(milTriage2))
-        .when("false", moveTo(unimplemented));
+        .when("false", moveTo(dualTriage1));
 
     atStage(milTriage2)
         .onEvent(Events.TRIAGE_NEXT)
@@ -265,6 +270,12 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
         .onEvent(Events.TRIAGE_NEXT)
         .branch()
         .when("chemicals", moveTo(milTriageChemicals))
+        .otherwise(moveTo(unimplemented));
+
+    atStage(dualTriage1)
+        .onEvent(Events.TRIAGE_NEXT)
+        .branch()
+        .when("components", moveTo(dualTriageComponents))
         .otherwise(moveTo(unimplemented));
   }
 

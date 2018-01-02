@@ -54,7 +54,7 @@ public class PrototypeControlCodeController {
   private PrototypeTreeNode<ControlCodeFullView> findChildrenRecursive(Map<String, ControlCodeFullView> result, PrototypeTreeNode<ControlCodeFullView> node) {
     List<ControlCodeFullView> children = result.values().stream()
         .filter(d -> d.getParentId().equals(node.data.getId()))
-        .sorted(Comparator.comparing(ControlCodeFullView::getDisplayOrder))
+        .sorted(Comparator.comparingInt(e -> Integer.parseInt(e.getDisplayOrder())))
         .collect(Collectors.toList());
 
     if (children.size() > 0) {

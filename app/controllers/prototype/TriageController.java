@@ -6,8 +6,9 @@ import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
 import components.common.journey.JourneyManager;
-import controllers.prototype.enums.PrototypeChemicalType;
-import controllers.prototype.enums.PrototypeEquipment;
+import controllers.prototype.enums.TriageMilChemicalType;
+import controllers.prototype.enums.TriageMilEquipment;
+import controllers.prototype.enums.TriageDualUse;
 import journey.Events;
 import play.data.Form;
 import play.data.FormFactory;
@@ -75,12 +76,22 @@ public class TriageController {
         new SelectOption("energy", "Energetic materials and related substances")
     )));
 
+    displayMap.put("DUAL_1", new TriageDisplay("What are you exporting?", Arrays.asList(
+        new SelectOption("components", "Components, equipment and systems"),
+        new SelectOption("equipment", "Inspection, production and test equipment"),
+        new SelectOption("materials", "Materials"),
+        new SelectOption("software", "Software"),
+        new SelectOption("technology", "Technology")
+    )));
 
     displayMap.put("MIL_EQUIP", new TriageDisplay("What type of physical equipment?",
-        Arrays.stream(PrototypeEquipment.values()).map(e -> new SelectOption(e.toString(), e.value())).collect(Collectors.toList())));
+        Arrays.stream(TriageMilEquipment.values()).map(e -> new SelectOption(e.toString(), e.value())).collect(Collectors.toList())));
 
     displayMap.put("MIL_CHEM", new TriageDisplay("What type of chemicals?",
-        Arrays.stream(PrototypeChemicalType.values()).map(e -> new SelectOption(e.toString(), e.value())).collect(Collectors.toList())));
+        Arrays.stream(TriageMilChemicalType.values()).map(e -> new SelectOption(e.toString(), e.value())).collect(Collectors.toList())));
+
+    displayMap.put("DUAL_COMP", new TriageDisplay("What type of equipment?",
+        Arrays.stream(TriageDualUse.values()).map(e -> new SelectOption(e.toString(), e.value())).collect(Collectors.toList())));
   }
 
   public CompletionStage<Result> renderForm(String page) {
@@ -99,6 +110,9 @@ public class TriageController {
     String curStage = journeyManager.getCurrentInternalStageName();
     if (curStage.equals("milTriagePhysicalEquipment") || curStage.equals("milTriageChemicals")) {
       return completedFuture(redirect(routes.PrototypeControlCodeController.renderForm(answer)));
+    } else if (curStage.equals("dualTriageComponents")) {
+      String displayCode = "ANNEX." + answer.replace("CATEGORY_", "CATEGORY.");
+      return completedFuture(redirect(routes.PrototypeControlCodeController.renderForm(displayCode)));
     }
 
     return journeyManager.performTransition(Events.TRIAGE_NEXT, answer);

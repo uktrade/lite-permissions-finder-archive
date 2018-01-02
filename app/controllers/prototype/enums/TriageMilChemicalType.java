@@ -1,6 +1,6 @@
 package controllers.prototype.enums;
 
-public enum PrototypeChemicalType {
+public enum TriageMilChemicalType {
 
   ML7a("biological agents or radioactive materials adapted for use in war to produce casualties in animals or humans, damage crops or the environment or degrade equipment"),
   ML7b("chemical warfare [CW] agents"),
@@ -14,7 +14,7 @@ public enum PrototypeChemicalType {
 
   private String value;
 
-  PrototypeChemicalType(String value) {
+  TriageMilChemicalType(String value) {
     this.value = value;
   }
 

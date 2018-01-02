@@ -1,6 +1,6 @@
 package controllers.prototype.enums;
 
-public enum PrototypeEquipment {
+public enum TriageMilEquipment {
 
   ML10("aircraft, lighter-than-air vehicles and unmanned aerial vehicles [UAVs]. Aero-engines and aircraft components, equipment and related goods specially designed or modified for military use"),
   ML3("ammunition, fuse setting devices and specially designed components"),
@@ -19,7 +19,7 @@ public enum PrototypeEquipment {
 
   private String value;
 
-  PrototypeEquipment(String value) {
+  TriageMilEquipment(String value) {
     this.value = value;
   }
 
