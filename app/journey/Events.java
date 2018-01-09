@@ -40,4 +40,6 @@ public class Events {
 
   public static final JourneyEvent EXPORT_TRADE_TYPE = new JourneyEvent("EXPORT_TRADE_TYPE");
 
+  //Prototype
+  public static final ParameterisedJourneyEvent<String> TRIAGE_NEXT = new ParameterisedJourneyEvent<>("TRIAGE_NEXT", String.class);
 }

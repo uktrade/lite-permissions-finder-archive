@@ -1,0 +1,23 @@
+@import play.data.Form
+@import util._
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+@import controllers.prototype.routes.TriageController
+@import controllers.prototype.TriageDisplay
+
+@(form: Form[_], display: TriageDisplay)
+@standardPage("Triage", None){
+}{
+
+  <form action="@TriageController.handleSubmit()" method="POST">
+    @contextFormParams()
+
+    @formRadioGroup(form("answer"), display.answers) {
+      @display.question
+    }
+
+    <button type="submit" class="button">Save and continue</button>
+
+  </form>
+}

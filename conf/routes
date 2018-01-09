@@ -215,3 +215,11 @@ GET     /admin/transactions/:id               controllers.admin.AdminController.
 GET     /admin/application-codes              controllers.admin.AdminController.applicationCodes
 
 GET     /admin/application-codes/:applicationCode   controllers.admin.AdminController.applicationCodeByCode(applicationCode)
+
+# Prototype routes
+
+GET     /triage                            controllers.prototype.TriageController.renderForm(page: String)
+
+POST    /triage                           controllers.prototype.TriageController.handleSubmit
+
+GET     /code-hierarchy/:controlCodeParam          controllers.prototype.PrototypeControlCodeController.renderForm(controlCodeParam)

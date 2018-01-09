@@ -1,0 +1,31 @@
+@import util._
+@import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView
+@import controllers.prototype.PrototypeTreeNode
+
+@(treeNode: PrototypeTreeNode[ControlCodeFullView], showDetail: Boolean)
+
+@standardPage("View control list", Some(heading("View control list"))) {
+} {
+
+
+  <style>
+b {
+font-weight: bold;
+}
+
+ol {
+list-style-type: decimal;
+padding: inherit;
+}
+  </style>
+
+  <div>
+  @for(node <- treeNode.asScala) {
+    <div style="padding-left: @(node.getLevel*2)em">
+      @if(showDetail) { @Html(node.getData.getBeforeLegalDefinitionText) }
+      @Html(node.getData.getLegalDescription)
+      @if(showDetail) { @Html(node.getData.getAfterLegalDefinitionText) }
+    </div>
+  }
+  </div>
+}
