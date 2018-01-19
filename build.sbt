@@ -40,9 +40,9 @@ libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"
 
-libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api-paas" % "1.1"
-libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api-paas" % "1.1"
-libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api-paas" % "1.2"
+libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.2"
+libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
+libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.1"
 
 libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.3.10" % "test"
 libraryDependencies += "com.itv" %% "scalapact-scalatest" % "2.1.2" % "test"
