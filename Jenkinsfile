@@ -1,57 +1,70 @@
-@Library('lite-jenkins-pipeline') _
-def slackChannels = [started: ['#lite-jenkins'], successful: ['#lite-jenkins'], failed: ['#lite-builds', '#lite-jenkins']]
-
-node('jdk8') {
-  currentBuild.displayName = "#${env.BUILD_NUMBER} - ${params.BUILD_VERSION}"
-  slackBuildNotifier.notifyBuild("STARTED", slackChannels)
-  try {
-    def serviceName = 'permissions-finder'
-    def gitURL = "github.com/uktrade/lite-${serviceName}"
-
-    stage('Clean workspace'){
-      deleteDir()
-    }
-    stage('Checkout files'){
-      checkout scm
-    }
-    stage('SBT test') {
-      try {
-        sh 'sbt test'
-      }
-      finally {
-        step([$class: 'JUnitResultArchiver', testResults: 'target/test-reports/**/*.xml'])
-      }
-    }
-    stage('SBT publish'){
-      sh 'sbt publish'
-    }
-    stage('Tag build'){
-      withCredentials([usernamePassword(credentialsId: 'LITE-bot-github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-        sh("git -c 'user.name=Jenkins' -c 'user.email=jenkins@digital' tag  -a ${params.BUILD_VERSION} -m 'Jenkins'")
-        sh("git push https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@${gitURL} --tags")
-      }
-    }
-    stage('Docker build'){
-      build job: 'docker-build', parameters: [
-          [$class: 'StringParameterValue', name: 'SERVICE_NAME', value: serviceName],
-          [$class: 'StringParameterValue', name: 'BUILD_VERSION', value: params.BUILD_VERSION],
-          [$class: 'StringParameterValue', name: 'DOCKERFILE_PATH', value: '.']
-      ]
-    }
-    stage('Dev deploy'){
-      build job: 'image-release', parameters: [
-          [$class: 'StringParameterValue', name: 'IMAGE_NAME', value: 'app/permissions-finder'],
-          [$class: 'StringParameterValue', name: 'BUILD_VERSION', value: params.BUILD_VERSION],
-          [$class: 'StringParameterValue', name: 'TARGET_ENVIRONMENT', value: 'dev'],
-          [$class: 'BooleanParameterValue', name: 'COMMENT_REFERENCED_JIRAS', value: true]
-      ]
+def projectName = 'lite-permissions-finder'
+pipeline {
+  agent {
+    node {
+      label 'docker.ci.uktrade.io'
     }
   }
-  catch (e) {
-    currentBuild.result = "FAILED"
-    throw e
+
+  stages {
+    stage('prep') {
+      steps {
+        script {
+          deleteDir()
+          checkout scm
+          deployer = docker.image("ukti/lite-image-builder")
+          deployer.pull()
+        }
+      }
+    }
+
+    stage('test') {
+      steps {
+        script {
+          deployer.inside {
+            try {
+              sh 'sbt test'
+            }
+            finally {
+              step([$class: 'JUnitResultArchiver', testResults: 'target/test-reports/**/*.xml'])
+            }
+          }
+        }
+      }
+    }
+
+    stage('build') {
+      steps {
+        script {
+          echo 'build'
+          def buildPaasAppResult = build job: 'build-paas-app', parameters: [
+              string(name: 'BRANCH', value: env.BRANCH_NAME),
+              string(name: 'PROJECT_NAME', value: projectName),
+              string(name: 'BUILD_TYPE', value: 'zip')
+          ]
+          env.BUILD_VERSION = buildPaasAppResult.getBuildVariables().BUILD_VERSION
+        }
+      }
+    }
+
+    stage('deploy') {
+      steps {
+        sh 'echo $buildVersion'
+        build job: 'deploy', parameters: [
+            string(name: 'PROJECT_NAME', value: projectName),
+            string(name: 'BUILD_VERSION', value: env.BUILD_VERSION),
+            string(name: 'ENVIRONMENT', value: 'dev')
+        ]
+      }
+    }
   }
-  finally {
-    slackBuildNotifier.notifyBuild(currentBuild.result, slackChannels)
+
+  post {
+    always {
+      script {
+        currentBuild.displayName = "#${currentBuild.number} - ${env.BUILD_VERSION}"
+        deleteDir()
+      }
+    }
   }
 }
