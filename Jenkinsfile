@@ -23,7 +23,7 @@ pipeline {
         script {
           deployer.inside {
             try {
-              sh 'sbt test'
+              sh 'sbt -no-colors test'
             }
             finally {
               step([$class: 'JUnitResultArchiver', testResults: 'target/test-reports/**/*.xml'])
