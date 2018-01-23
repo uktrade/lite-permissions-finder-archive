@@ -5,7 +5,7 @@ import net.ground5hark.sbt.concat.Import.Concat
 
 name := """lite-permissions-finder"""
 
-version := scala.util.Properties.envOrElse("BUILD_VERSION", "unknown")
+version := scala.util.Properties.envOrElse("BUILD_VERSION", "1.0-SNAPSHOT")
 
 def formatDateAsVersion () : String = {
   val sdf = new java.text.SimpleDateFormat("YYYYMMdd.HHmmss")
@@ -36,8 +36,6 @@ libraryDependencies += "org.pac4j" % "pac4j" % "1.9.0"
 libraryDependencies += "org.pac4j" % "pac4j-saml" % "1.9.0"
 libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
-//libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.5.0"
-
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"
 
 libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.2"
@@ -47,7 +45,6 @@ libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.
 libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.3.10" % "test"
 libraryDependencies += "com.itv" %% "scalapact-scalatest" % "2.1.2" % "test"
 
-//resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
 resolvers += "Lite Lib Releases " at "https://nexus.ci.uktrade.io/repository/maven-releases/"
 resolvers += Resolver.sonatypeRepo("releases")
 
@@ -70,8 +67,8 @@ buildInfoOptions += BuildInfoOption.BuildTime
 buildInfoOptions += BuildInfoOption.ToJson
 
 // Pact
-//pactBrokerAddress := "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test"
-//pactContractVersion := "1.0.0"
+pactBrokerAddress := "https://pact-broker.ci.uktrade.io"
+pactContractVersion := "1.0.0"
 
 // Concatenate the /assets/javascript directory into a single lite-permissions-finder.js
 Concat.groups := Seq("lite-permissions-finder.js" -> group((sourceDirectory in Assets).value / "javascripts" ** "*.js"))

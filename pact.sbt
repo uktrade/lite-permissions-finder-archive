@@ -1,1 +1,1 @@
-//skipTests := true
+skipTests := true
