@@ -7,12 +7,6 @@ name := """lite-permissions-finder"""
 
 version := scala.util.Properties.envOrElse("BUILD_VERSION", "1.0-SNAPSHOT")
 
-def formatDateAsVersion () : String = {
-  val sdf = new java.text.SimpleDateFormat("YYYYMMdd.HHmmss")
-  sdf.setTimeZone(new java.util.SimpleTimeZone(java.util.SimpleTimeZone.UTC_TIME, "UTC"))
-  sdf.format(new java.util.Date())
-}
-
 lazy val root = (project in file("."))
   .enablePlugins(PlayJava)
   .dependsOn(`zzz-common` % "test->test;compile->compile")
