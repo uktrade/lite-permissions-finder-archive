@@ -22,11 +22,10 @@ import uk.gov.bis.lite.ogel.api.view.VirtualEuView;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class VirtualEUComputerPact {
+public class VirtualEUPact {
   private VirtualEUOgelClient client;
   private WSClient ws;
 

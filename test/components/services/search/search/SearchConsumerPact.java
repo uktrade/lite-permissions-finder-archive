@@ -8,6 +8,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;
+import com.google.common.collect.ImmutableMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,13 +31,17 @@ public class SearchConsumerPact {
   private static final String DISPLAY_TEXT = "Rifles and combination guns, handguns, machine, sub-machine and volley guns";
   private static final String RELATED_CODE = "ML3a";
 
+  // service:password
+  private static final Map<String, String> AUTH_HEADERS = ImmutableMap.of("Authorization", "Basic c2VydmljZTpwYXNzd29yZA==");
+  private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
+
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PactConfig.SEARCH_MANAGEMENT_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
     ws = WS.newClient(mockProvider.getConfig().getPort());
-    client = new SearchServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000);
+    client = new SearchServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000, "service:password");
   }
 
   @After
@@ -51,18 +56,16 @@ public class SearchConsumerPact {
           .closeArray()
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("no results exist for the search terms")
         .uponReceiving("a search request for the given terms")
+          .headers(AUTH_HEADERS)
           .path("/search")
           .query("term=NOT_FOUND&goodsType=physical")
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -80,18 +83,16 @@ public class SearchConsumerPact {
         .closeArray()
         .asBody();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
-
     return builder
         .given("a result with related codes exists for the search terms")
         .uponReceiving("a search request for the given terms")
+          .headers(AUTH_HEADERS)
           .path("/search")
           .query("term=FOUND&goodsType=physical")
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
@@ -113,12 +114,13 @@ public class SearchConsumerPact {
     return builder
         .given("multiple results exists for the search terms")
         .uponReceiving("a search request for the given terms")
+          .headers(AUTH_HEADERS)
           .path("/search")
           .query("term=FOUND&goodsType=physical")
           .method("GET")
         .willRespondWith()
           .status(200)
-          .headers(headers)
+          .headers(CONTENT_TYPE_HEADERS)
           .body(body)
         .toFragment();
   }
