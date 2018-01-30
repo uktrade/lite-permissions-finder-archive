@@ -61,7 +61,7 @@ buildInfoOptions += BuildInfoOption.BuildTime
 buildInfoOptions += BuildInfoOption.ToJson
 
 // Pact
-pactBrokerAddress := "https://pact-broker.ci.uktrade.io"
+pactBrokerAddress := "http://pact-broker.ci.uktrade.io"
 pactContractVersion := "1.0.0"
 
 // Concatenate the /assets/javascript directory into a single lite-permissions-finder.js
