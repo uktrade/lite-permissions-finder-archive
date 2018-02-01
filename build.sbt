@@ -5,13 +5,7 @@ import net.ground5hark.sbt.concat.Import.Concat
 
 name := """lite-permissions-finder"""
 
-version := scala.util.Properties.envOrElse("BUILD_VERSION", formatDateAsVersion() + "-SNAPSHOT")
-
-def formatDateAsVersion () : String = {
-  val sdf = new java.text.SimpleDateFormat("YYYYMMdd.HHmmss")
-  sdf.setTimeZone(new java.util.SimpleTimeZone(java.util.SimpleTimeZone.UTC_TIME, "UTC"))
-  sdf.format(new java.util.Date())
-}
+version := scala.util.Properties.envOrElse("BUILD_VERSION", "1.0-SNAPSHOT")
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayJava)
@@ -29,25 +23,23 @@ libraryDependencies ++= Seq(
   cache,
   javaWs,
   filters,
-  "redis.clients" % "jedis" % "2.8.1"
+  "redis.clients" % "jedis" % "2.9.0"
 )
 
 libraryDependencies += "org.pac4j" % "pac4j" % "1.9.0"
 libraryDependencies += "org.pac4j" % "pac4j-saml" % "1.9.0"
 libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
-libraryDependencies += "com.typesafe.play.modules" %% "play-modules-redis" % "2.5.0"
-
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"
 
-libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.0"
+libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.2"
 libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
-libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.1"
+libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.3"
 
 libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.3.10" % "test"
 libraryDependencies += "com.itv" %% "scalapact-scalatest" % "2.1.2" % "test"
 
-resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+resolvers += "Lite Lib Releases " at "https://nexus.ci.uktrade.io/repository/maven-releases/"
 resolvers += Resolver.sonatypeRepo("releases")
 
 // Contains all files and libraries shared across other projects
@@ -69,7 +61,7 @@ buildInfoOptions += BuildInfoOption.BuildTime
 buildInfoOptions += BuildInfoOption.ToJson
 
 // Pact
-pactBrokerAddress := "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test"
+pactBrokerAddress := "http://pact-broker.ci.uktrade.io"
 pactContractVersion := "1.0.0"
 
 // Concatenate the /assets/javascript directory into a single lite-permissions-finder.js

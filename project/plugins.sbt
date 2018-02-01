@@ -19,7 +19,7 @@ addSbtPlugin("uk.gov.bis.lite" % "scalapact-plugin" % "1.0.0")
 // https://github.com/jboss-javassist/javassist/pull/10
 libraryDependencies += "org.javassist" % "javassist" % "3.20.0-GA"
 
-resolvers += "Lite Lib Releases " at "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+resolvers += "Lite Lib Releases " at "https://nexus.ci.uktrade.io/repository/maven-releases/"
 
 // Play Ebean support, to enable, uncomment this line, and enable in your build.sbt using
 // enablePlugins(PlayEbean).
