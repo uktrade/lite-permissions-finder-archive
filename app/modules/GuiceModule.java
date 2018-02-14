@@ -10,6 +10,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import components.common.CommonGuiceModule;
+import components.common.RedisGuiceModule;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
 import components.common.client.CountryServiceClient;
@@ -55,6 +56,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   protected void configure() {
 
     install(new CommonGuiceModule(configuration));
+    install(new RedisGuiceModule(environment, configuration));
 
     // searchService
     bindConstant().annotatedWith(Names.named("searchServiceAddress"))
