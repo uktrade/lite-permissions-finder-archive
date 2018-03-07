@@ -18,8 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import pact.PactConfig;
 import play.libs.concurrent.HttpExecutionContext;
-import play.libs.ws.WS;
 import play.libs.ws.WSClient;
+import play.test.WSTestClient;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
 import java.util.Arrays;
@@ -48,7 +48,7 @@ public class ApplicableOgelConsumerPact {
 
   @Before
   public void setUp() throws Exception {
-    ws = WS.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
     client = new ApplicableOgelServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
         mockProvider.getConfig().url(),

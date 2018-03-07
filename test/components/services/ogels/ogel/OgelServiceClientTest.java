@@ -9,11 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
-import play.libs.ws.WS;
 import play.libs.ws.WSClient;
-import play.routing.Router;
 import play.routing.RoutingDsl;
 import play.server.Server;
+import play.test.WSTestClient;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
 import java.io.InputStream;
@@ -29,10 +28,12 @@ public class OgelServiceClientTest {
     InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("services/ogels/ogel.json");
     JsonNode ogel = Json.parse(inputStream);
 
-    Router router = new RoutingDsl().GET("/ogels/OGL61").routeTo(() -> ok(ogel)).build();
-    server = Server.forRouter(router);
+    server = Server.forRouter(builtInComponents -> RoutingDsl.fromComponents(builtInComponents)
+        .GET("/ogels/OGL61")
+        .routeTo(() -> ok(ogel))
+        .build());
     int port = server.httpPort();
-    ws = WS.newClient(port);
+    ws = WSTestClient.newClient(port);
     client = new OgelServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
         "http://localhost:" + port,

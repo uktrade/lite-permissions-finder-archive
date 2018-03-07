@@ -18,11 +18,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import pact.PactConfig;
 import play.libs.concurrent.HttpExecutionContext;
-import play.libs.ws.WS;
 import play.libs.ws.WSClient;
+import play.test.WSTestClient;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -183,7 +182,7 @@ public class CatchallControlsServiceConsumerPact {
 
   @Before
   public void setUp() throws Exception {
-    ws = WS.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
     client = new CatchallControlsServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
         mockProvider.getConfig().url(),

@@ -11,6 +11,7 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -42,11 +43,11 @@ public class ApplicableOgelServiceClient {
 
     WSRequest req = wsClient.url(webServiceUrl)
         .setAuth(credentials)
-        .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
-        .setRequestTimeout(webServiceTimeout)
-        .setQueryParameter("controlCode", controlCode)
-        .setQueryParameter("sourceCountry", sourceCountry);
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(webServiceTimeout))
+        .addQueryParameter("controlCode", controlCode)
+        .addQueryParameter("sourceCountry", sourceCountry);
 
     destinationCountries.forEach(country -> req.setQueryParameter("destinationCountry", country));
 

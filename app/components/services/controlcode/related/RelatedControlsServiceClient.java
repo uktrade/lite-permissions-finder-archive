@@ -10,6 +10,7 @@ import models.GoodsType;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
+import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
 public class RelatedControlsServiceClient {
@@ -40,9 +41,9 @@ public class RelatedControlsServiceClient {
     String url = webServiceUrl + "/" + goodsType.urlString() + "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode);
     return wsClient.url(url)
         .setAuth(credentials)
-        .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
-        .setRequestTimeout(webServiceTimeout)
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(webServiceTimeout))
         .get()
         .handleAsync((response, error) -> {
           if (error != null) {

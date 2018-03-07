@@ -15,8 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import pact.PactConfig;
 import play.libs.concurrent.HttpExecutionContext;
-import play.libs.ws.WS;
 import play.libs.ws.WSClient;
+import play.test.WSTestClient;
 import uk.gov.bis.lite.searchmanagement.api.view.SearchResultView;
 
 import java.util.HashMap;
@@ -40,7 +40,7 @@ public class SearchConsumerPact {
 
   @Before
   public void setUp() throws Exception {
-    ws = WS.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
     client = new SearchServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000, "service:password");
   }
 
