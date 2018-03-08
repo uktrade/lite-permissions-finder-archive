@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
+import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
 public class GoodsRelationshipsServiceClient {
@@ -57,9 +58,9 @@ public class GoodsRelationshipsServiceClient {
 
     return wsClient.url(url.toString())
         .setAuth(credentials)
-        .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
-        .setRequestTimeout(webServiceTimeout)
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(webServiceTimeout))
         .get()
         .handleAsync((response, error) -> {
           if (error != null) {

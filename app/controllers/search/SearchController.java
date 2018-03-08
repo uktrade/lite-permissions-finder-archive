@@ -46,7 +46,7 @@ public class SearchController {
 
   private CompletionStage<Result> renderFormInternal(ControlCodeSubJourney controlCodeSubJourney) {
     Optional<SearchForm> templateFormOptional = permissionsFinderDao.getPhysicalGoodsSearchForm(controlCodeSubJourney);
-    SearchForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new SearchForm();
+    SearchForm templateForm = templateFormOptional.orElseGet(SearchForm::new);
     return completedFuture(ok(search.render(formFactory.form(SearchForm.class).fill(templateForm),
         new SearchDisplay(controlCodeSubJourney)
     )));

@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
+import com.typesafe.config.Config;
 import components.common.CommonGuiceModule;
 import components.common.RedisGuiceModule;
 import components.common.cache.CountryProvider;
@@ -26,8 +27,10 @@ import journey.PermissionsFinderJourneySerialiser;
 import journey.SubJourneyContextParamProvider;
 import models.summary.SummaryService;
 import models.summary.SummaryServiceImpl;
-import play.Configuration;
+import org.pac4j.play.store.PlayCacheSessionStore;
+import org.pac4j.play.store.PlaySessionStore;
 import play.Environment;
+import play.cache.SyncCacheApi;
 import play.libs.akka.AkkaGuiceSupport;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -45,66 +48,66 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   private Environment environment;
 
-  private Configuration configuration;
+  private Config config;
 
-  public GuiceModule(Environment environment, Configuration configuration) {
+  public GuiceModule(Environment environment, Config config) {
     this.environment = environment;
-    this.configuration = configuration;
+    this.config = config;
   }
 
   @Override
   protected void configure() {
 
-    install(new CommonGuiceModule(configuration));
-    install(new RedisGuiceModule(environment, configuration));
+    install(new CommonGuiceModule(config));
+    install(new RedisGuiceModule(config));
 
     // searchService
     bindConstant().annotatedWith(Names.named("searchServiceAddress"))
-        .to(configuration.getString("searchService.address"));
+        .to(config.getString("searchService.address"));
     bindConstant().annotatedWith(Names.named("searchServiceTimeout"))
-        .to(configuration.getString("searchService.timeout"));
+        .to(config.getString("searchService.timeout"));
     bindConstant().annotatedWith(Names.named("searchServiceCredentials"))
-        .to(configuration.getString("searchService.credentials"));
+        .to(config.getString("searchService.credentials"));
 
     // controlCodeService
     bindConstant().annotatedWith(Names.named("controlCodeServiceAddress"))
-        .to(configuration.getString("controlCodeService.address"));
+        .to(config.getString("controlCodeService.address"));
     bindConstant().annotatedWith(Names.named("controlCodeServiceTimeout"))
-        .to(configuration.getString("controlCodeService.timeout"));
+        .to(config.getString("controlCodeService.timeout"));
     bindConstant().annotatedWith(Names.named("controlCodeServiceCredentials"))
-        .to(configuration.getString("controlCodeService.credentials"));
+        .to(config.getString("controlCodeService.credentials"));
 
     // countryService
     bindConstant().annotatedWith(Names.named("countryServiceAddress"))
-        .to(configuration.getString("countryService.address"));
+        .to(config.getString("countryService.address"));
     bindConstant().annotatedWith(Names.named("countryServiceTimeout"))
-        .to(configuration.getString("countryService.timeout"));
+        .to(config.getString("countryService.timeout"));
     bindConstant().annotatedWith(Names.named("countryServiceCredentials"))
-        .to(configuration.getString("countryService.credentials"));
+        .to(config.getString("countryService.credentials"));
 
     // ogelService
     bindConstant().annotatedWith(Names.named("ogelServiceAddress"))
-        .to(configuration.getString("ogelService.address"));
+        .to(config.getString("ogelService.address"));
     bindConstant().annotatedWith(Names.named("ogelServiceTimeout"))
-        .to(configuration.getString("ogelService.timeout"));
+        .to(config.getString("ogelService.timeout"));
     bindConstant().annotatedWith(Names.named("ogelServiceCredentials"))
-        .to(configuration.getString("ogelService.credentials"));
+        .to(config.getString("ogelService.credentials"));
 
     // notificationService
     bindConstant().annotatedWith(Names.named("notificationServiceAddress"))
-        .to(configuration.getString("notificationService.address"));
+        .to(config.getString("notificationService.address"));
     bindConstant().annotatedWith(Names.named("notificationServiceTimeout"))
-        .to(configuration.getString("notificationService.timeout"));
+        .to(config.getString("notificationService.timeout"));
     bindConstant().annotatedWith(Names.named("notificationServiceCredentials"))
-        .to(configuration.getString("notificationService.credentials"));
+        .to(config.getString("notificationService.credentials"));
 
     // ogelRegistration
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceAddress"))
-        .to(configuration.getString("ogelRegistrationService.address"));
+        .to(config.getString("ogelRegistrationService.address"));
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceTimeout"))
-        .to(configuration.getString("ogelRegistrationService.timeout"));
+        .to(config.getString("ogelRegistrationService.timeout"));
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
-        .to(configuration.getString("ogelRegistrationService.sharedSecret"));
+        .to(config.getString("ogelRegistrationService.sharedSecret"));
 
     bind(RedisKeyConfig.class)
         .annotatedWith(Names.named("applicationCodeDaoHash"))
@@ -113,13 +116,13 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(JourneySerialiser.class).to(PermissionsFinderJourneySerialiser.class);
 
     bindConstant().annotatedWith(Names.named("basicAuthUser"))
-        .to(configuration.getString("basicAuth.user"));
+        .to(config.getString("basicAuth.user"));
 
     bindConstant().annotatedWith(Names.named("basicAuthPassword"))
-        .to(configuration.getString("basicAuth.password"));
+        .to(config.getString("basicAuth.password"));
 
     bindConstant().annotatedWith(Names.named("basicAuthRealm"))
-        .to(configuration.getString("basicAuth.realm"));
+        .to(config.getString("basicAuth.realm"));
 
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
@@ -127,7 +130,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   }
 
   private RedisKeyConfig createApplicationCodeKeyConfig() {
-    Configuration daoConfig = configuration.getConfig("redis.applicationCodeDaoHash");
+    Config daoConfig = config.getConfig("redis.applicationCodeDaoHash");
     return new RedisKeyConfig(daoConfig.getString("keyPrefix"), daoConfig.getString("hashName"),
         daoConfig.getInt("ttlSeconds"));
   }
@@ -189,4 +192,13 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   public ContextParamManager provideContextParamManager() {
     return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new SubJourneyContextParamProvider(), new ApplicationCodeContextParamProvider());
   }
+
+  @Singleton
+  @Provides
+  public PlaySessionStore providePlaySessionStore(SyncCacheApi syncCacheApi) {
+    PlayCacheSessionStore playCacheSessionStore = new PlayCacheSessionStore(syncCacheApi);
+    playCacheSessionStore.setTimeout((int) TimeUnit.MINUTES.toSeconds(15));
+    return playCacheSessionStore;
+  }
+
 }

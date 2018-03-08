@@ -9,34 +9,32 @@ import org.junit.Before;
 import org.junit.Test;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
-import play.libs.ws.WS;
 import play.libs.ws.WSClient;
-import play.routing.Router;
 import play.routing.RoutingDsl;
 import play.server.Server;
+import play.test.WSTestClient;
 
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class OgelConditionsServiceClientTest {
+
   private OgelConditionsServiceClient client;
   private WSClient ws;
   private Server server;
-
 
   @Before
   public void setUp() throws Exception {
     InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("services/ogels/ogel-conditions.json");
     JsonNode ogelConditions = Json.parse(inputStream);
 
-    Router router = new RoutingDsl().GET("/control-code-conditions/OGL61/0C002")
+    server = Server.forRouter(builtInComponents -> RoutingDsl.fromComponents(builtInComponents)
+        .GET("/control-code-conditions/OGL61/0C002")
         .routeTo(() -> ok(ogelConditions))
-        .build();
-
-    server = Server.forRouter(router);
+        .build());
     int port = server.httpPort();
-    ws = WS.newClient(port);
+    ws = WSTestClient.newClient(port);
     client = new OgelConditionsServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
         "http://localhost:" + port,

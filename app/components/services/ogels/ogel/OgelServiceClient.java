@@ -11,6 +11,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
+import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
 public class OgelServiceClient {
@@ -37,9 +38,9 @@ public class OgelServiceClient {
   public CompletionStage<OgelFullView> get(String ogelId) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId))
         .setAuth(credentials)
-        .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
-        .setRequestTimeout(webServiceTimeout)
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(webServiceTimeout))
         .get()
         .handleAsync((response, error) -> {
           if (error != null) {

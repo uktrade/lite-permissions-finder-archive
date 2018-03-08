@@ -9,6 +9,7 @@ import exceptions.ServiceException;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
+import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
 public class FrontendServiceClient {
@@ -35,9 +36,9 @@ public class FrontendServiceClient {
   public CompletionStage<FrontendServiceResult> get(String controlCode) {
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .setAuth(credentials)
-        .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
-        .setRequestTimeout(webServiceTimeout)
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("Control Code", "GET", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(webServiceTimeout))
         .get()
         .handleAsync((response, error) -> {
           if (error != null) {

@@ -13,8 +13,8 @@ import org.junit.Test;
 import pact.PactConfig;
 import pact.consumer.components.common.client.CountryServiceGroupConsumerPact;
 import pact.consumer.components.common.client.CountryServiceSetConsumerPact;
-import play.libs.ws.WS;
 import play.libs.ws.WSClient;
+import play.test.WSTestClient;
 
 public class CountryServiceConsumerPact {
   private WSClient ws;
@@ -24,7 +24,7 @@ public class CountryServiceConsumerPact {
 
   @Before
   public void setUp() throws Exception {
-    ws = WS.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
   }
 
   @After

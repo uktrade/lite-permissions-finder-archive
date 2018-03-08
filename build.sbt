@@ -20,15 +20,11 @@ scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   javaJdbc,
-  cache,
+  ehcache,
   javaWs,
   filters,
   "redis.clients" % "jedis" % "2.9.0"
 )
-
-libraryDependencies += "org.pac4j" % "pac4j" % "1.9.0"
-libraryDependencies += "org.pac4j" % "pac4j-saml" % "1.9.0"
-libraryDependencies += "org.pac4j" % "play-pac4j" % "2.4.0"
 
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"
 
@@ -36,7 +32,7 @@ libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.2"
 libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
 libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.3"
 
-libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.3.10" % "test"
+libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.5.8" % "test"
 libraryDependencies += "com.itv" %% "scalapact-scalatest" % "2.1.2" % "test"
 
 resolvers += "Lite Lib Releases " at "https://nexus.ci.uktrade.io/repository/maven-releases/"

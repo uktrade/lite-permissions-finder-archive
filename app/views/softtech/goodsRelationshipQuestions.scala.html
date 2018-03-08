@@ -11,7 +11,7 @@
 
   <form action="@display.formAction" method="POST">
 
-    <input type="hidden" name="currentQuestionIndex" value="@form.field("currentQuestionIndex").value()">
+    <input type="hidden" name="currentQuestionIndex" value="@form.field("currentQuestionIndex").getValue.orElse(null)">
 
     @contextFormParams()
 

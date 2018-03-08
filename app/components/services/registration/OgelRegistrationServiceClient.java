@@ -18,6 +18,7 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import play.mvc.Result;
 
+import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -52,10 +53,10 @@ public class OgelRegistrationServiceClient {
 
   public CompletionStage<Result> updateTransactionAndRedirect(String transactionId) {
     WSRequest wsRequest = wsClient.url(webServiceUrl)
-        .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL Registration", "POST", httpExecutionContext))
-        .setRequestTimeout(webServiceTimeout)
-        .setQueryParameter("securityToken", webServiceSharedSecret);
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("OGEL Registration", "POST", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(webServiceTimeout))
+        .addQueryParameter("securityToken", webServiceSharedSecret);
 
     CompletionStage<Summary> summaryStage = summaryService.composeSummary();
 
@@ -68,23 +69,19 @@ public class OgelRegistrationServiceClient {
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("OGEL Registration service request failed", error);
-          }
-          else if (response.getStatus() != 200) {
+          } else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from OGEL Registration service /update-transaction: %s",
                 response.getStatus()));
-          }
-          else {
+          } else {
             Logger.debug(response.asJson().toString());
             OgelRegistrationServiceResult result = OgelRegistrationServiceResult.buildFromJson(response.asJson());
             if (!StringUtils.isNotBlank(result.redirectUrl)) {
               throw new ServiceException("Unexpected redirect URL supplied from OGEL Registration service /update-transaction:");
-            }
-            else if (!StringUtils.equals(result.status, STATUS_CODE_OK)) {
+            } else if (!StringUtils.equals(result.status, STATUS_CODE_OK)) {
               // This is not the HTTP status code
               throw new ServiceException(String.format("Bad status code returned from OGEL Registration service /update-transaction: %s",
                   result.status));
-            }
-            else {
+            } else {
               permissionsFinderDao.saveOgelRegistrationServiceTransactionExists(true);
               return redirect(result.redirectUrl);
             }

@@ -26,9 +26,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import pact.PactConfig;
 import play.libs.concurrent.HttpExecutionContext;
-import play.libs.ws.WS;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
+import play.test.WSTestClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class OgelRegistrationConsumerPact {
 
   @Before
   public void setUp() throws Exception {
-    ws = WS.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
     client = new OgelRegistrationServiceClient(ws, mockProvider.getConfig().url(), 10000, SHARED_SECRET, permissionsFinderDao, new HttpExecutionContext(Runnable::run), summaryService);
   }
 

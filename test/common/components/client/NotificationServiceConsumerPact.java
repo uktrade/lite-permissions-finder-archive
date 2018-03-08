@@ -11,8 +11,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import pact.consumer.components.common.client.NotificationClientConsumerPact;
-import play.libs.ws.WS;
 import play.libs.ws.WSClient;
+import play.test.WSTestClient;
 
 public class NotificationServiceConsumerPact {
   private static final String CONSUMER = "lite-permissions-finder";
@@ -25,7 +25,7 @@ public class NotificationServiceConsumerPact {
 
   @Before
   public void setUp() throws Exception {
-    ws = WS.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
   }
 
   @After

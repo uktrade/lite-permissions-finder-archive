@@ -1,6 +1,6 @@
 import sbt.Keys.publishTo
 
-publish <<= publish dependsOn dist
+publish := (publish dependsOn dist).value
 
 val nexusUsername = Option(System.getProperty("nexusUsername")).getOrElse("")
 

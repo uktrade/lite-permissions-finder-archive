@@ -8,6 +8,7 @@ import exceptions.ServiceException;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
+import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
 public class SearchServiceClient {
@@ -31,23 +32,21 @@ public class SearchServiceClient {
     this.credentials = credentials;
   }
 
-  public CompletionStage<SearchServiceResult> get(String searchTerm){
+  public CompletionStage<SearchServiceResult> get(String searchTerm) {
     return wsClient.url(webServiceUrl)
         .setAuth(credentials)
-        .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(ServiceClientLogger.requestFilter("Search", "GET", httpExecutionContext))
-        .setRequestTimeout(webServiceTimeout)
-        .setQueryParameter("term", searchTerm)
-        .setQueryParameter("goodsType", "physical") // Hard coded to physical search for now
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("Search", "GET", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(webServiceTimeout))
+        .addQueryParameter("term", searchTerm)
+        .addQueryParameter("goodsType", "physical") // Hard coded to physical search for now
         .get()
         .handleAsync((response, error) -> {
           if (error != null) {
             throw new ServiceException("Search service request failed", error);
-          }
-          else if (response.getStatus() != 200) {
+          } else if (response.getStatus() != 200) {
             throw new ServiceException(String.format("Unexpected HTTP status code from Search service /search: %s", response.getStatus()));
-          }
-          else {
+          } else {
             return new SearchServiceResult(response.asJson());
           }
         }, httpExecutionContext.current());

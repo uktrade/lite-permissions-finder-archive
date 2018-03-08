@@ -4,6 +4,7 @@
 @import views.html.common.page._
 @import views.html.common.state._
 @import controllers.controlcode.routes._
+@import play.twirl.api.HtmlFormat
 
 @(form: Form[_], display: ControlCodeSummaryDisplay)
 @standardPage(display.title, Some(heading(display.title)), twoThirdsColumn = false){

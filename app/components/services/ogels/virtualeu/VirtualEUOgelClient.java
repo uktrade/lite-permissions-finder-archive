@@ -11,6 +11,7 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import uk.gov.bis.lite.ogel.api.view.VirtualEuView;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
@@ -38,11 +39,11 @@ public class VirtualEUOgelClient {
   public CompletionStage<VirtualEuView> sendServiceRequest(String controlCode, String sourceCountry, List<String> destinationCountries) {
     WSRequest request = wsClient.url(webServiceUrl)
         .setAuth(credentials)
-        .withRequestFilter(CorrelationId.requestFilter)
-        .withRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
-        .setRequestTimeout(webServiceTimeout)
-        .setQueryParameter("controlCode", controlCode)
-        .setQueryParameter("sourceCountry", sourceCountry);
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(webServiceTimeout))
+        .addQueryParameter("controlCode", controlCode)
+        .addQueryParameter("sourceCountry", sourceCountry);
 
     destinationCountries.forEach(country -> request.setQueryParameter("destinationCountry", country));
 
