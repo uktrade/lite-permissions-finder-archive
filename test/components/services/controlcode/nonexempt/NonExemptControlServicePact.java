@@ -3,11 +3,11 @@ package components.services.controlcode.nonexempt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
@@ -38,14 +38,14 @@ public class NonExemptControlServicePact {
   private final static String FRIENDLY_DESCRIPTION = "Rifles and combination guns, handguns, machine, sub-machine and volley guns";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
     client = new NonExemptControlServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
-        mockProvider.getConfig().url(),
+        mockProvider.getUrl(),
         10000,
         "service:password");
   }
@@ -56,7 +56,7 @@ public class NonExemptControlServicePact {
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareMilitaryControlsExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareMilitaryControlsExist(PactDslWithProvider builder) {
     PactDslJsonArray codes = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlCode", CONTROL_CODE)
         .stringType("title", TITLE)
@@ -73,11 +73,11 @@ public class NonExemptControlServicePact {
           .willRespondWith()
             .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareMilitaryControlsDoNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareMilitaryControlsDoNotExist(PactDslWithProvider builder) {
     return builder
         .given("military software non exempt controls do not exist")
         .uponReceiving("a request for military non exempt controls")
@@ -88,11 +88,11 @@ public class NonExemptControlServicePact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareDualUseTelecomsControlsExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareDualUseTelecomsControlsExist(PactDslWithProvider builder) {
     PactDslJsonArray codes = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlCode", CONTROL_CODE)
         .stringType("title", TITLE)
@@ -110,11 +110,11 @@ public class NonExemptControlServicePact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareDualUseTelecomsControlsDoNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareDualUseTelecomsControlsDoNotExist(PactDslWithProvider builder) {
     return builder
         .given("dual use software non exempt controls do not exist")
         .uponReceiving("a request for dual use telecoms software non exempt controls")
@@ -125,7 +125,7 @@ public class NonExemptControlServicePact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Test

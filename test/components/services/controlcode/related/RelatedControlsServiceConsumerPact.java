@@ -3,11 +3,11 @@ package components.services.controlcode.related;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import org.junit.After;
@@ -36,14 +36,14 @@ public class RelatedControlsServiceConsumerPact {
   private final static String TITLE = "Smooth-bore military weapons, components and accessories";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
     client = new RelatedControlsServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
-        mockProvider.getConfig().url(),
+        mockProvider.getUrl(),
         10000,
         "service:password");
   }
@@ -54,7 +54,7 @@ public class RelatedControlsServiceConsumerPact {
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareControlsRelatedToML1aExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareControlsRelatedToML1aExist(PactDslWithProvider builder) {
     PactDslJsonArray codes = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlCode", CONTROL_CODE)
         .stringType("title", TITLE)
@@ -71,11 +71,11 @@ public class RelatedControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareControlsRelatedToML1aDoNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareControlsRelatedToML1aDoNotExist(PactDslWithProvider builder) {
     return builder
         .given("software controls related to ML1a do not exist")
         .uponReceiving("a request for software controls related to ML1a")
@@ -85,7 +85,7 @@ public class RelatedControlsServiceConsumerPact {
           .willRespondWith()
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Test

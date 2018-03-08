@@ -3,11 +3,11 @@ package components.services.search.related;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import components.services.search.relatedcodes.RelatedCodesServiceClient;
 import components.services.search.relatedcodes.RelatedCodesServiceResult;
@@ -39,12 +39,12 @@ public class RelatedCodesConsumerPact {
   private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.SEARCH_MANAGEMENT_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.SEARCH_MANAGEMENT_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
-    client = new RelatedCodesServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000, "service:password");
+    ws = WSTestClient.newClient(mockProvider.getPort());
+    client = new RelatedCodesServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getUrl(), 10000, "service:password");
   }
 
   @After
@@ -53,7 +53,7 @@ public class RelatedCodesConsumerPact {
   }
 
   @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment controlCodeExistsWithResults(PactDslWithProvider builder) {
+  public RequestResponsePact controlCodeExistsWithResults(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("groupTitle", GROUP_TITLE)
         .eachLike("results", 3)
@@ -73,11 +73,11 @@ public class RelatedCodesConsumerPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment controlCodeExistsNoRelatedControls(PactDslWithProvider builder) {
+  public RequestResponsePact controlCodeExistsNoRelatedControls(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("groupTitle", GROUP_TITLE)
         .eachLike("results", 1)
@@ -97,11 +97,11 @@ public class RelatedCodesConsumerPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment controlCodeDoesNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact controlCodeDoesNotExist(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .integerType("code", 404)
         .stringType("message", "Control code not known: " + CONTROL_CODE)
@@ -117,7 +117,7 @@ public class RelatedCodesConsumerPact {
         .status(404)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Test

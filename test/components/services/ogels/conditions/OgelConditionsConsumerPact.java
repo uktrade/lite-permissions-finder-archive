@@ -3,11 +3,11 @@ package components.services.ogels.conditions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import org.junit.After;
 import org.junit.Before;
@@ -36,14 +36,14 @@ public class OgelConditionsConsumerPact {
   private static final String CONDITION_DESCRIPTION = "<p>Fully automatic weapons</p>";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.OGEL_SERVICE_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
     client = new OgelConditionsServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
-        mockProvider.getConfig().url(),
+        mockProvider.getUrl(),
         10000,
         "service:password");
   }
@@ -54,7 +54,7 @@ public class OgelConditionsConsumerPact {
   }
 
   @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment ogelConditionsExist(PactDslWithProvider builder) {
+  public RequestResponsePact ogelConditionsExist(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("ogelId", OGEL_ID)
         .stringType("controlCode", CONTROL_CODE)
@@ -73,11 +73,11 @@ public class OgelConditionsConsumerPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment ogelConditionsDoNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact ogelConditionsDoNotExist(PactDslWithProvider builder) {
     return builder
         .given("no conditions exist for given ogel and control code")
         .uponReceiving("a request for ogel conditions")
@@ -86,11 +86,11 @@ public class OgelConditionsConsumerPact {
           .method("GET")
         .willRespondWith()
           .status(204)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment ogelConditionsExistWithControlCodes(PactDslWithProvider builder) {
+  public RequestResponsePact ogelConditionsExistWithControlCodes(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("ogelId", OGEL_ID)
         .stringType("controlCode", CONTROL_CODE)
@@ -120,11 +120,11 @@ public class OgelConditionsConsumerPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment ogelConditionsExistWithMissingControlCodes(PactDslWithProvider builder) {
+  public RequestResponsePact ogelConditionsExistWithMissingControlCodes(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("ogelId", OGEL_ID)
         .stringType("controlCode", CONTROL_CODE)
@@ -150,7 +150,7 @@ public class OgelConditionsConsumerPact {
           .status(206)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Test

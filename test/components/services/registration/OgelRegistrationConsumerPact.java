@@ -6,11 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import components.persistence.PermissionsFinderDao;
 import exceptions.ServiceException;
 import models.summary.Summary;
@@ -56,12 +56,12 @@ public class OgelRegistrationConsumerPact {
   public MockitoRule rule = MockitoJUnit.rule();
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.OGEL_REGISTRATION_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_REGISTRATION_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
-    client = new OgelRegistrationServiceClient(ws, mockProvider.getConfig().url(), 10000, SHARED_SECRET, permissionsFinderDao, new HttpExecutionContext(Runnable::run), summaryService);
+    ws = WSTestClient.newClient(mockProvider.getPort());
+    client = new OgelRegistrationServiceClient(ws, mockProvider.getUrl(), 10000, SHARED_SECRET, permissionsFinderDao, new HttpExecutionContext(Runnable::run), summaryService);
   }
 
   @After
@@ -99,7 +99,7 @@ public class OgelRegistrationConsumerPact {
   }
 
   @Pact(provider = PactConfig.OGEL_REGISTRATION_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment validTransactionData(PactDslWithProvider builder) {
+  public RequestResponsePact validTransactionData(PactDslWithProvider builder) {
     PactDslJsonBody requestBody = buildRequestBody();
 
     PactDslJsonBody responseBody = new PactDslJsonBody()
@@ -122,12 +122,12 @@ public class OgelRegistrationConsumerPact {
           .status(200)
           .headers(headers)
           .body(responseBody)
-        .toFragment();
+        .toPact();
   }
 
 
   @Pact(provider = PactConfig.OGEL_REGISTRATION_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment invalidTransactionData(PactDslWithProvider builder) {
+  public RequestResponsePact invalidTransactionData(PactDslWithProvider builder) {
     PactDslJsonBody requestBody = buildRequestBody();
 
     PactDslJsonBody body = new PactDslJsonBody()
@@ -150,7 +150,7 @@ public class OgelRegistrationConsumerPact {
           .status(400)
           .headers(headers)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Test

@@ -32,8 +32,7 @@ libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.2"
 libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
 libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.3"
 
-libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.5.8" % "test"
-libraryDependencies += "com.itv" %% "scalapact-scalatest" % "2.1.2" % "test"
+libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.5.13" % "test"
 
 resolvers += "Lite Lib Releases " at "https://nexus.ci.uktrade.io/repository/maven-releases/"
 resolvers += Resolver.sonatypeRepo("releases")
@@ -55,10 +54,6 @@ buildInfoKeys ++= Seq[BuildInfoKey](
 
 buildInfoOptions += BuildInfoOption.BuildTime
 buildInfoOptions += BuildInfoOption.ToJson
-
-// Pact
-pactBrokerAddress := "http://pact-broker.ci.uktrade.io"
-pactContractVersion := "1.0.0"
 
 // Concatenate the /assets/javascript directory into a single lite-permissions-finder.js
 Concat.groups := Seq("lite-permissions-finder.js" -> group((sourceDirectory in Assets).value / "javascripts" ** "*.js"))
