@@ -3,11 +3,11 @@ package components.services.controlcode.frontend;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import exceptions.ServiceException;
 import org.junit.After;
@@ -52,14 +52,14 @@ public class FrontendServiceClientConsumerPact {
   private static final String LINEAGE_FRIENDLY_DESCRIPTION = "Smooth-bore weapons with a calibre of less than 20mm, other firearms and automatic weapons with a calibre of 12.7mm or less, and accessories and specially designed components";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
     client = new FrontendServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
-        mockProvider.getConfig().url(),
+        mockProvider.getUrl(),
         10000,
         "service:password");
   }
@@ -70,7 +70,7 @@ public class FrontendServiceClientConsumerPact {
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment existingControlCode(PactDslWithProvider builder) {
+  public RequestResponsePact existingControlCode(PactDslWithProvider builder) {
     PactDslJsonBody existing = new PactDslJsonBody()
         .object("controlCodeData")
           .stringType("controlCode", CONTROL_CODE)
@@ -110,11 +110,11 @@ public class FrontendServiceClientConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(existing)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment missingControlCode(PactDslWithProvider builder) {
+  public RequestResponsePact missingControlCode(PactDslWithProvider builder) {
     PactDslJsonBody missing = new PactDslJsonBody()
         .integerType("code", 404)
         .stringType("message")
@@ -130,7 +130,7 @@ public class FrontendServiceClientConsumerPact {
             .status(404)
             .headers(CONTENT_TYPE_HEADERS)
             .body(missing)
-        .toFragment();
+        .toPact();
   }
 
   @Test

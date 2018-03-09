@@ -1,10 +1,10 @@
 package common.components.client;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import components.common.client.NotificationServiceClient;
 import org.junit.After;
 import org.junit.Before;
@@ -21,11 +21,11 @@ public class NotificationServiceConsumerPact {
   public WSClient ws;
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
   }
 
   @After
@@ -34,7 +34,7 @@ public class NotificationServiceConsumerPact {
   }
 
   @Pact(provider = PROVIDER, consumer = CONSUMER)
-  public PactFragment successfulNotification(PactDslWithProvider builder) {
+  public RequestResponsePact successfulNotification(PactDslWithProvider builder) {
     return NotificationClientConsumerPact.successfulNotification(builder);
   }
 
@@ -46,7 +46,7 @@ public class NotificationServiceConsumerPact {
   }
 
   @Pact(provider = PROVIDER, consumer = CONSUMER)
-  public PactFragment unsuccessfulNotification(PactDslWithProvider builder) {
+  public RequestResponsePact unsuccessfulNotification(PactDslWithProvider builder) {
     return NotificationClientConsumerPact.unsuccessfulNotification(builder);
   }
 

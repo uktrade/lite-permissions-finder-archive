@@ -4,11 +4,11 @@ package components.services.controlcode.catchall;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
@@ -38,10 +38,10 @@ public class CatchallControlsServiceConsumerPact {
   private final static String TITLE = "Smooth-bore military weapons, components and accessories";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareMilitaryExists(PactDslWithProvider builder) {
+  public RequestResponsePact softwareMilitaryExists(PactDslWithProvider builder) {
     PactDslJsonArray codes = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlCode", CONTROL_CODE)
         .stringType("title", TITLE)
@@ -58,11 +58,11 @@ public class CatchallControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareMilitaryDoesNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareMilitaryDoesNotExist(PactDslWithProvider builder) {
     return builder
         .given("military catchall controls do not exist for software")
         .uponReceiving("a request for military software catchall controls")
@@ -73,11 +73,11 @@ public class CatchallControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareDualUseExists(PactDslWithProvider builder) {
+  public RequestResponsePact softwareDualUseExists(PactDslWithProvider builder) {
     PactDslJsonArray codes = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlCode", CONTROL_CODE)
         .stringType("title", TITLE)
@@ -94,11 +94,11 @@ public class CatchallControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(codes)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareDualUseDoesNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareDualUseDoesNotExist(PactDslWithProvider builder) {
     return builder
         .given("dual use catchall controls do not exist for software")
         .uponReceiving("a request for dual use software catchall controls")
@@ -109,7 +109,7 @@ public class CatchallControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Test
@@ -182,10 +182,10 @@ public class CatchallControlsServiceConsumerPact {
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
     client = new CatchallControlsServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
-        mockProvider.getConfig().url(),
+        mockProvider.getUrl(),
         10000,
         "service:password");
   }

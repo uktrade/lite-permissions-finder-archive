@@ -4,11 +4,11 @@ package components.services.controlcode.relationships;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
@@ -42,14 +42,14 @@ public class GoodsRelationshipsServiceConsumerPact {
 
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
     client = new GoodsRelationshipsServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
-        mockProvider.getConfig().url(),
+        mockProvider.getUrl(),
         10000,
         "service:password");
   }
@@ -60,7 +60,7 @@ public class GoodsRelationshipsServiceConsumerPact {
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareRelatedToMilitarySoftwareExists(PactDslWithProvider builder) {
+  public RequestResponsePact softwareRelatedToMilitarySoftwareExists(PactDslWithProvider builder) {
     PactDslJsonArray software = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlType", ControlCodeType.SOFTWARE.toString())
         .stringType("relatedToControlType", ControlCodeType.SOFTWARE.toString())
@@ -83,11 +83,11 @@ public class GoodsRelationshipsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(software)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareRelatedToMilitarySoftwareDoNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareRelatedToMilitarySoftwareDoNotExist(PactDslWithProvider builder) {
     return builder
         .given("software control code related to military software do not exist")
         .uponReceiving("a request for software control codes related to military software")
@@ -98,11 +98,11 @@ public class GoodsRelationshipsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareRelatedToMilitaryTechnologyExists(PactDslWithProvider builder) {
+  public RequestResponsePact softwareRelatedToMilitaryTechnologyExists(PactDslWithProvider builder) {
     PactDslJsonArray software = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlType", ControlCodeType.SOFTWARE.toString())
         .stringType("relatedToControlType", ControlCodeType.TECHNOLOGY.toString())
@@ -125,11 +125,11 @@ public class GoodsRelationshipsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(software)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareRelatedToMilitaryTechnologyDoNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareRelatedToMilitaryTechnologyDoNotExist(PactDslWithProvider builder) {
     return builder
         .given("software control code related to military technology do not exist")
         .uponReceiving("a request for software control codes related to military technology")
@@ -140,11 +140,11 @@ public class GoodsRelationshipsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareRelatedToDualUseTelecomsSoftwareExists(PactDslWithProvider builder) {
+  public RequestResponsePact softwareRelatedToDualUseTelecomsSoftwareExists(PactDslWithProvider builder) {
     PactDslJsonArray software = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlType", ControlCodeType.SOFTWARE.toString())
         .stringType("relatedToControlType", ControlCodeType.SOFTWARE.toString())
@@ -167,11 +167,11 @@ public class GoodsRelationshipsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(software)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareRelatedToDualUseTelecomsSoftwareDoNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact softwareRelatedToDualUseTelecomsSoftwareDoNotExist(PactDslWithProvider builder) {
     return builder
         .given("software control code related to dual use telecoms software do not exist")
         .uponReceiving("a request for software control codes related to dual use telecoms software")
@@ -182,7 +182,7 @@ public class GoodsRelationshipsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Test

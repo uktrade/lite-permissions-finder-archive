@@ -3,11 +3,11 @@ package components.services.ogels.virtualeu;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import exceptions.ServiceException;
 import org.junit.After;
@@ -40,14 +40,14 @@ public class VirtualEUPact {
   private static final String ADDITIONAL_DESTINATION_COUNTRY = "CRTY2";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.OGEL_SERVICE_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
     client = new VirtualEUOgelClient(new HttpExecutionContext(Runnable::run),
         ws,
-        mockProvider.getConfig().url(),
+        mockProvider.getUrl(),
         10000,
         "service:password");
   }
@@ -58,7 +58,7 @@ public class VirtualEUPact {
   }
 
   @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment virtualEUOgelExists(PactDslWithProvider builder) {
+  public RequestResponsePact virtualEUOgelExists(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .booleanType("virtualEu", true)
         .stringType("ogelId", OGEL_ID)
@@ -75,11 +75,11 @@ public class VirtualEUPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment virtualEUOgelDoesNotExist(PactDslWithProvider builder) {
+  public RequestResponsePact virtualEUOgelDoesNotExist(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .booleanType("virtualEu", false)
         .asBody();
@@ -95,11 +95,11 @@ public class VirtualEUPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment virtualEUOgelExistsForMultipleDestinations(PactDslWithProvider builder) {
+  public RequestResponsePact virtualEUOgelExistsForMultipleDestinations(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .booleanType("virtualEu", true)
         .stringType("ogelId", OGEL_ID)
@@ -116,11 +116,11 @@ public class VirtualEUPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment destinationCountryParametersMissing(PactDslWithProvider builder) {
+  public RequestResponsePact destinationCountryParametersMissing(PactDslWithProvider builder) {
     return builder
         .given("parameters match virtual EU ogel")
         .uponReceiving("a request with a missing parameter")
@@ -130,7 +130,7 @@ public class VirtualEUPact {
           .method("GET")
         .willRespondWith()
           .status(400)
-        .toFragment();
+        .toPact();
   }
 
 

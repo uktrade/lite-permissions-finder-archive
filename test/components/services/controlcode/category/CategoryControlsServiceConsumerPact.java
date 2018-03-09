@@ -3,11 +3,11 @@ package components.services.controlcode.category;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import models.GoodsType;
 import models.softtech.SoftTechCategory;
@@ -38,14 +38,14 @@ public class CategoryControlsServiceConsumerPact {
   private final static String TITLE = "Smooth-bore military weapons, components and accessories";
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.CONTROL_CODE_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
+    ws = WSTestClient.newClient(mockProvider.getPort());
     client = new CategoryControlsServiceClient(new HttpExecutionContext(Runnable::run),
         ws,
-        mockProvider.getConfig().url(),
+        mockProvider.getUrl(),
         10000,
         "service:password");
   }
@@ -56,7 +56,7 @@ public class CategoryControlsServiceConsumerPact {
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareMilitary(PactDslWithProvider builder) {
+  public RequestResponsePact softwareMilitary(PactDslWithProvider builder) {
     PactDslJsonArray existing = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlCode", CONTROL_CODE)
         .stringType("title", TITLE)
@@ -72,11 +72,11 @@ public class CategoryControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(existing)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareMilitaryEmpty(PactDslWithProvider builder) {
+  public RequestResponsePact softwareMilitaryEmpty(PactDslWithProvider builder) {
     return builder
         .given("software exists as a goods type and no military controls exist")
         .uponReceiving("a request for software military controls")
@@ -87,11 +87,11 @@ public class CategoryControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareDualUse(PactDslWithProvider builder) {
+  public RequestResponsePact softwareDualUse(PactDslWithProvider builder) {
     PactDslJsonArray existing = PactDslJsonArray.arrayMinLike(1,3)
         .stringType("controlCode", CONTROL_CODE)
         .stringType("title", TITLE)
@@ -108,11 +108,11 @@ public class CategoryControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(existing)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.CONTROL_CODE_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment softwareDualUseEmpty(PactDslWithProvider builder) {
+  public RequestResponsePact softwareDualUseEmpty(PactDslWithProvider builder) {
     return builder
         .given("software exists as a goods type and telecoms exists as dual use category without controls")
         .uponReceiving("a request for software dual use telecoms controls")
@@ -123,7 +123,7 @@ public class CategoryControlsServiceConsumerPact {
             .status(200)
             .headers(CONTENT_TYPE_HEADERS)
             .body(new PactDslJsonArray())
-        .toFragment();
+        .toPact();
   }
 
   @Test

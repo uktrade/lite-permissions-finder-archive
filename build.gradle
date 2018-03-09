@@ -1,0 +1,17 @@
+plugins {
+  id 'application'
+  id 'java'
+  id 'au.com.dius.pact' version '3.5.13'
+}
+
+repositories {
+  mavenCentral()
+}
+
+pact {
+  publish {
+    pactDirectory = 'target/pacts'
+    pactBrokerUrl = 'http://pact-broker.ci.uktrade.io/'
+    version = '1.0.0'
+  }
+}

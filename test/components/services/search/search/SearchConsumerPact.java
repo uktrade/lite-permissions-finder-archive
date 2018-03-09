@@ -3,11 +3,11 @@ package components.services.search.search;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
 import org.junit.After;
 import org.junit.Before;
@@ -36,12 +36,12 @@ public class SearchConsumerPact {
   private static final Map<String, String> CONTENT_TYPE_HEADERS = ImmutableMap.of("Content-Type", "application/json");
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PactConfig.SEARCH_MANAGEMENT_PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.SEARCH_MANAGEMENT_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getConfig().getPort());
-    client = new SearchServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getConfig().url(), 10000, "service:password");
+    ws = WSTestClient.newClient(mockProvider.getPort());
+    client = new SearchServiceClient(new HttpExecutionContext(Runnable::run), ws, mockProvider.getUrl(), 10000, "service:password");
   }
 
   @After
@@ -50,7 +50,7 @@ public class SearchConsumerPact {
   }
 
   @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment noResultsFound(PactDslWithProvider builder) {
+  public RequestResponsePact noResultsFound(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
           .array("results")
           .closeArray()
@@ -67,11 +67,11 @@ public class SearchConsumerPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment aResultIsFoundWithRelatedCodes(PactDslWithProvider builder) {
+  public RequestResponsePact aResultIsFoundWithRelatedCodes(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .eachLike("results", 1)
           .stringType("controlCode", CONTROL_CODE)
@@ -94,11 +94,11 @@ public class SearchConsumerPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PactConfig.SEARCH_MANAGEMENT_PROVIDER, consumer = PactConfig.CONSUMER)
-  public PactFragment multipleResultsAreFound(PactDslWithProvider builder) {
+  public RequestResponsePact multipleResultsAreFound(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .eachLike("results", 3)
           .stringType("controlCode", CONTROL_CODE)
@@ -122,7 +122,7 @@ public class SearchConsumerPact {
           .status(200)
           .headers(CONTENT_TYPE_HEADERS)
           .body(body)
-        .toFragment();
+        .toPact();
   }
 
   @Test
