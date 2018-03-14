@@ -1,8 +1,8 @@
 package models.summary;
 
 import components.services.controlcode.frontend.FrontendServiceResult;
-import models.common.Country;
 import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
 import java.util.List;
@@ -59,22 +59,24 @@ public class SummaryField {
 
   /**
    * Creates a SummaryField from a frontend service result and an edit link URL
+   *
    * @param frontendServiceResult The frontend control code service result
-   * @param editLinkUrl The edit link URL for the OGEL ID
+   * @param editLinkUrl           The edit link URL for the OGEL ID
    * @return a SummaryField for the control code
    */
   public static SummaryField fromFrontendServiceResult(FrontendServiceResult frontendServiceResult, String editLinkUrl) {
     FrontEndControlCodeData controlCodeData = frontendServiceResult.getControlCodeData();
-    String content =  "<strong class=\"bold-small\">" + controlCodeData.getControlCode()
+    String content = "<strong class=\"bold-small\">" + controlCodeData.getControlCode()
         + "</strong> - " + controlCodeData.getTitle();
     return new SummaryField(SummaryFieldType.CONTROL_CODE, "Classification", content, null, editLinkUrl, true, true);
   }
 
   /**
    * Creates SummaryField from an OGEL service result and an edit link URL
+   *
    * @param ogelServiceResult The OGEL service result
-   * @param editLinkUrl The edit link URL for the OGEL ID
-   * @param isValid Is the OGEL ID associated with this field valid?
+   * @param editLinkUrl       The edit link URL for the OGEL ID
+   * @param isValid           Is the OGEL ID associated with this field valid?
    * @return a Summary field for the OGEL type
    */
   public static SummaryField fromOgelServiceResult(OgelFullView ogelServiceResult,
@@ -85,14 +87,15 @@ public class SummaryField {
 
   /**
    * Create a SummmaryField from a list of destination countries and an edit link URL
+   *
    * @param destinationCountries The destination countries list
-   * @param editLinkUrl The edit URL for the destination countries
+   * @param editLinkUrl          The edit URL for the destination countries
    * @return a SummaryField for the destination countries
    */
-  public static SummaryField fromDestinationCountryList(List<Country> destinationCountries, String editLinkUrl) {
+  public static SummaryField fromDestinationCountryList(List<CountryView> destinationCountries, String editLinkUrl) {
     // Create a <ul> with an <li> for each country
     String content = destinationCountries.stream()
-        .map(country -> "<li>" + country.getCountryName() + "</li>")
+        .map(countryView -> "<li>" + countryView.getCountryName() + "</li>")
         .collect(Collectors.joining("", "<ul>", "</ul>"));
     return new SummaryField(SummaryFieldType.DESTINATION_COUNTRIES, "Destination(s)", content, null,
         editLinkUrl, true, true);

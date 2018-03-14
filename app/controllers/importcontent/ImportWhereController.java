@@ -10,12 +10,12 @@ import exceptions.FormStateException;
 import importcontent.ImportEvents;
 import importcontent.models.ImportMilitaryCountry;
 import importcontent.models.ImportWhere;
-import models.common.Country;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints;
 import play.mvc.Controller;
 import play.mvc.Result;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
 import views.html.importcontent.importCountry;
 
@@ -47,21 +47,21 @@ public class ImportWhereController extends Controller {
   }
 
   public Result renderForm() {
-    List<Country> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
+    List<CountryView> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
     return ok(importCountry.render(formFactory.form(), countries));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<ImportCountryForm> form = formFactory.form(ImportCountryForm.class).bindFromRequest();
 
-    List<Country> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
+    List<CountryView> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
 
     if (form.hasErrors()) {
       return completedFuture(ok(importCountry.render(form, countries)));
     }
 
     String importCountry = form.get().importCountry;
-    Optional<Country> optCountry = countries.stream().filter(country -> importCountry.equals(country.getCountryRef())).findFirst();
+    Optional<CountryView> optCountry = countries.stream().filter(country -> importCountry.equals(country.getCountryRef())).findFirst();
 
     if (optCountry.isPresent()) {
       importJourneyDao.saveImportCountrySelected(importCountry);

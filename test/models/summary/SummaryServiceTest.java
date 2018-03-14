@@ -16,7 +16,6 @@ import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import controllers.ogel.OgelQuestionsController;
-import models.common.Country;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,9 +24,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Call;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -69,12 +70,7 @@ public class SummaryServiceTest {
     JsonNode ogelsJson = Json.parse(this.getClass().getClassLoader().getResourceAsStream("models/summary/ogels.json"));
     OgelFullView ogelFullView = Json.fromJson(ogelsJson, OgelFullView.class);
 
-    Country country = new Country() {
-      @Override
-      public String getCountryRef() {
-        return DESTINATION_COUNTRY;
-      }
-    };
+    CountryView countryView = new CountryView(DESTINATION_COUNTRY, "countryName", new ArrayList<>());
 
     OgelQuestionsController.OgelQuestionsForm ogelQuestionsForm = new OgelQuestionsController.OgelQuestionsForm();
     ogelQuestionsForm.forExhibitionDemonstration = "true";
@@ -96,7 +92,7 @@ public class SummaryServiceTest {
     when(applicableOgelServiceClient.get(anyString(), anyString(), anyList(), anyList()))
         .thenReturn(CompletableFuture.completedFuture(applicableOgelViews));
 
-    when(countryProvider.getCountries()).thenReturn(Collections.singletonList(country));
+    when(countryProvider.getCountries()).thenReturn(Collections.singletonList(countryView));
 
     summaryService = new SummaryServiceImpl(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider);
   }

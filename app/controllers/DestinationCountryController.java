@@ -8,11 +8,11 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
-import models.common.Country;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
 import views.html.destinationCountry;
 
@@ -63,7 +63,7 @@ public class DestinationCountryController extends Controller {
     templateForm.finalDestinationCountry = permissionsFinderDao.getFinalDestinationCountry();
     templateForm.throughDestinationCountries = throughDestinationCountries;
 
-    List<Country> countries = getCountries();
+    List<CountryView> countries = getCountries();
 
     Optional<Boolean> itemThroughMultipleCountries = permissionsFinderDao.getItemThroughMultipleCountries();
     templateForm.itemThroughMultipleCountries = itemThroughMultipleCountries.isPresent()
@@ -74,10 +74,10 @@ public class DestinationCountryController extends Controller {
 
   public CompletionStage<Result> handleSubmit() {
 
-    Form <DestinationCountryForm> form = formFactory.form(DestinationCountryForm.class).bindFromRequest();
+    Form<DestinationCountryForm> form = formFactory.form(DestinationCountryForm.class).bindFromRequest();
 
     DestinationCountryForm boundForm = form.get();
-    List<Country> countries = getCountries();
+    List<CountryView> countries = getCountries();
 
     if (boundForm.addAnotherThroughDestination != null) {
       if ("true".equals(boundForm.addAnotherThroughDestination)) {
@@ -92,8 +92,7 @@ public class DestinationCountryController extends Controller {
       }
       throw new FormStateException("Unhandled value of " + ADD_ANOTHER_THROUGH_DESTINATION + ": \"" +
           boundForm.addAnotherThroughDestination + "\"");
-    }
-    else if (boundForm.removeThroughDestination != null) {
+    } else if (boundForm.removeThroughDestination != null) {
       int removeIndex = Integer.parseInt(boundForm.removeThroughDestination);
       if (boundForm.throughDestinationCountries.size() <= MIN_NUMBER_OF_THROUGH_COUNTRIES) {
         throw new FormStateException("Unhandled form state, number of " + THROUGH_DESTINATION_COUNTRIES_FIELD_NAME +
@@ -120,16 +119,13 @@ public class DestinationCountryController extends Controller {
       }
       permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
       permissionsFinderDao.saveItemThroughMultipleCountries(true);
-    }
-    else if ("false".equals(boundForm.itemThroughMultipleCountries)) {
+    } else if ("false".equals(boundForm.itemThroughMultipleCountries)) {
       permissionsFinderDao.saveItemThroughMultipleCountries(false);
       boundForm.throughDestinationCountries = Collections.singletonList("");
       permissionsFinderDao.saveThroughDestinationCountries(boundForm.throughDestinationCountries);
-    }
-    else if (boundForm.itemThroughMultipleCountries == null || boundForm.itemThroughMultipleCountries.isEmpty()) {
+    } else if (boundForm.itemThroughMultipleCountries == null || boundForm.itemThroughMultipleCountries.isEmpty()) {
       form.reject(ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME, "Answer this question");
-    }
-    else {
+    } else {
       throw new FormStateException("Unknown value for " + ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME + " \""
           + boundForm.itemThroughMultipleCountries + "\"");
     }
@@ -146,8 +142,8 @@ public class DestinationCountryController extends Controller {
 
     if (Boolean.parseBoolean(boundForm.itemThroughMultipleCountries)
         && boundForm.throughDestinationCountries.stream()
-        .anyMatch(throughCountry ->  countries.stream()
-            .noneMatch(country -> country.getCountryRef().equals(throughCountry)))){
+        .anyMatch(throughCountry -> countries.stream()
+            .noneMatch(country -> country.getCountryRef().equals(throughCountry)))) {
       throw new FormStateException("Invalid value for a " + THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + " item");
     }
 
@@ -175,8 +171,8 @@ public class DestinationCountryController extends Controller {
     return THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + "[" + index + "]";
   }
 
-  private List<Country> getCountries() {
-    List<Country> sortedCountries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
+  private List<CountryView> getCountries() {
+    List<CountryView> sortedCountries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
     List<String> countryRefs = Collections.singletonList(UNITED_KINGDOM_COUNTRY_REF);
     return CountryUtils.getFilteredCountries(sortedCountries, countryRefs, true);
   }

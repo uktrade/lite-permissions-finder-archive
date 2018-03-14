@@ -11,9 +11,9 @@ import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
 import controllers.ogel.OgelQuestionsController;
 import controllers.routes;
-import models.common.Country;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.concurrent.HttpExecutionContext;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import utils.CountryUtils;
@@ -62,7 +62,7 @@ public class SummaryServiceImpl implements SummaryService {
     // TODO Drive fields to shown by the journey history, not the dao
     CompletionStage<Summary> summaryCompletionStage = CompletableFuture.completedFuture(newSummary);
 
-    if(StringUtils.isNoneBlank(controlCode)) {
+    if (StringUtils.isNoneBlank(controlCode)) {
       CompletionStage<FrontendServiceResult> frontendStage = frontendServiceClient.get(controlCode);
 
       summaryCompletionStage = summaryCompletionStage.thenCombineAsync(frontendStage, (summary, result)
@@ -72,8 +72,8 @@ public class SummaryServiceImpl implements SummaryService {
     }
 
     if (!destinationCountries.isEmpty()) {
-      List<Country> sortedCountries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
-      List<Country> filteredCountries = CountryUtils.getFilteredCountries(sortedCountries, destinationCountries);
+      List<CountryView> sortedCountries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
+      List<CountryView> filteredCountries = CountryUtils.getFilteredCountries(sortedCountries, destinationCountries);
       newSummary.addSummaryField(SummaryField.fromDestinationCountryList(filteredCountries, contextParamManager.addParamsToCall(routes.ChangeController.changeDestinationCountries())));
     }
 
@@ -93,8 +93,8 @@ public class SummaryServiceImpl implements SummaryService {
 
       CompletionStage<Summary.ValidatedOgel> validatedStage = ogelStage.thenCombineAsync(applicableOgelStage,
           (ogelResult, applicableOgelView) -> new Summary.ValidatedOgel(ogelResult, applicableOgelView.stream()
-                    .filter(ogelView -> StringUtils.equals(ogelView.getId(), ogelId))
-                    .findFirst().isPresent()),
+              .filter(ogelView -> StringUtils.equals(ogelView.getId(), ogelId))
+              .findFirst().isPresent()),
           httpExecutionContext.current());
 
       summaryCompletionStage = summaryCompletionStage
