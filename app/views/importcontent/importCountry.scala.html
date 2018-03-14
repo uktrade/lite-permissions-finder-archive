@@ -2,10 +2,10 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import views.html.common.state._
-@import models.common.Country
+@import uk.gov.bis.lite.countryservice.api.CountryView
 @import controllers.importcontent.ImportWhereController
 
-@(form: Form[_], countries: List[Country])
+@(form: Form[_], countries: List[CountryView])
 @standardPage("Finding the right licence", Some(heading("Where are you importing from?"))){
   @errorSummary(form)
 } {

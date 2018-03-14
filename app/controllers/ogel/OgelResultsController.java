@@ -14,7 +14,6 @@ import components.services.ogels.conditions.OgelConditionsServiceClient;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import exceptions.FormStateException;
 import journey.Events;
-import models.common.Country;
 import models.ogel.OgelResultsDisplay;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
@@ -22,6 +21,7 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
 import views.html.ogel.ogelResults;
 
@@ -85,10 +85,10 @@ public class OgelResultsController {
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(), null);
             return ok(ogelResults.render(form, display));
           } else {
-            List<Country> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
+            List<CountryView> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
 
             List<String> countryNames = CountryUtils.getFilteredCountries(countries, destinationCountries).stream()
-                .map(Country::getCountryName)
+                .map(CountryView::getCountryName)
                 .collect(Collectors.toList());
 
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(), countryNames);
