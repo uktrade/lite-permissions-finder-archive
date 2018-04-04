@@ -25,3 +25,5 @@ resolvers += "Lite Lib Releases " at "https://nexus.ci.uktrade.io/repository/mav
 
 //For version info in the build
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.7.0")
+
+addSbtPlugin("com.github.sbt" % "sbt-jacoco" % "3.0.3")
