@@ -5,10 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.RedisKeyConfig;
 import components.common.transaction.TransactionManager;
+import org.redisson.api.RedissonClient;
 import play.Logger;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Transaction;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,74 +14,71 @@ public class ApplicationCodeDao {
 
   private static final String FIELD_NAME = "transactionId";
 
+  private final RedissonClient redissonClient;
   private final RedisKeyConfig redisKeyConfig;
-  private final JedisPool jedisPool;
   private final TransactionManager transactionManager;
 
   @Inject
-  public ApplicationCodeDao(@Named("applicationCodeDaoHash") RedisKeyConfig redisKeyConfig, JedisPool jedisPool, TransactionManager transactionManager) {
+  public ApplicationCodeDao(@Named("applicationCodeDaoHash") RedisKeyConfig redisKeyConfig,
+                            RedissonClient redissonClient, TransactionManager transactionManager) {
+    this.redissonClient = redissonClient;
     this.redisKeyConfig = redisKeyConfig;
-    this.jedisPool = jedisPool;
     this.transactionManager = transactionManager;
   }
 
   /**
    * Writes the (Key, Value) pair (Application Code, Transaction Id)
+   *
    * @param applicationCode the key
    */
   public void writeTransactionId(String applicationCode) {
     String existingTransactionId = readTransactionId(applicationCode);
     String currentTransactionId = transactionManager.getTransactionId();
     Stopwatch stopwatch = Stopwatch.createStarted();
-    try (Jedis jedis = jedisPool.getResource()) {
+    try {
       if (existingTransactionId != null && !currentTransactionId.equals(existingTransactionId)) {
         throw new RuntimeException(String.format("Application code already in use for transaction '%s'", existingTransactionId));
       }
-      Transaction multi = jedis.multi();
-      multi.hset(hashKey(applicationCode), FIELD_NAME, transactionManager.getTransactionId());
-      multi.expire(hashKey(applicationCode), redisKeyConfig.getHashTtlSeconds());
-      multi.exec();
-    }
-    finally {
+      redissonClient.getMap(hashKey(applicationCode)).expire(redisKeyConfig.getHashTtlSeconds(), TimeUnit.SECONDS);
+      redissonClient.getMap(hashKey(applicationCode)).put(FIELD_NAME, transactionManager.getTransactionId());
+    } finally {
       Logger.debug(String.format("Write of '%s' string completed in %d ms", FIELD_NAME, stopwatch.elapsed(TimeUnit.MILLISECONDS)));
     }
   }
 
   /**
    * Read the Transaction Id (value) from the (Key, Value) pair (Application Code, Transaction Id)
+   *
    * @param applicationCode the key
    * @return the corresponding Transaction Id (value)
    */
   public final String readTransactionId(String applicationCode) {
     Stopwatch stopwatch = Stopwatch.createStarted();
-    String transactionId;
-    try (Jedis jedis = jedisPool.getResource()) {
-      transactionId = jedis.hget(hashKey(applicationCode), FIELD_NAME);
-    }
-    finally {
+    try {
+      return (String) redissonClient.getMap(hashKey(applicationCode)).get(FIELD_NAME);
+    } finally {
       Logger.debug(String.format("Read of '%s' string completed in %d ms", FIELD_NAME, stopwatch.elapsed(TimeUnit.MILLISECONDS)));
     }
-    return transactionId;
   }
 
   /**
    * Refreshes the TTL of the key associated with <code>applicationCode</code>
+   *
    * @param applicationCode the key
    */
   public void refreshTTL(String applicationCode) {
     Stopwatch stopwatch = Stopwatch.createStarted();
-    try (Jedis jedis = jedisPool.getResource()) {
-      int reply = jedis.expire(hashKey(applicationCode), redisKeyConfig.getHashTtlSeconds()).intValue();
-      if (reply == 0) {
+    try {
+      boolean reply = redissonClient.getMap(hashKey(applicationCode)).expire(redisKeyConfig.getHashTtlSeconds(), TimeUnit.SECONDS);
+      if (!reply) {
         Logger.error(String.format("Could not refresh TTL of '%s', key does not exist", FIELD_NAME));
       }
-    }
-    finally {
+    } finally {
       Logger.debug(String.format("TTL of '%s' refresh completed in %d ms", FIELD_NAME, stopwatch.elapsed(TimeUnit.MILLISECONDS)));
     }
   }
 
-  public String hashKey(String applicationCode) {
+  private String hashKey(String applicationCode) {
     return redisKeyConfig.getKeyPrefix() + ":" + redisKeyConfig.getHashName() + ":" + applicationCode;
   }
 

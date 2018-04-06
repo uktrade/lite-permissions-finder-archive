@@ -1,4 +1,3 @@
-import java.util.SimpleTimeZone
 import com.typesafe.sbt.web.PathMapping
 import com.typesafe.sbt.web.pipeline.Pipeline
 import net.ground5hark.sbt.concat.Import.Concat
@@ -22,8 +21,7 @@ libraryDependencies ++= Seq(
   javaJdbc,
   ehcache,
   javaWs,
-  filters,
-  "redis.clients" % "jedis" % "2.9.0"
+  filters
 )
 
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"

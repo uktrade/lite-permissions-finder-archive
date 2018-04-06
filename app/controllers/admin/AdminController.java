@@ -36,8 +36,7 @@ public class AdminController extends Controller {
     TransactionInfo info = adminDao.getPermissionsFinderTransactionById(id);
     if (info != null) {
       return ok(Json.toJson(info));
-    }
-    else {
+    } else {
       return notFound(Json.newObject());
     }
   }
@@ -52,8 +51,7 @@ public class AdminController extends Controller {
     ApplicationCodeInfo info = adminDao.getApplicationCodeByCode(code);
     if (info != null) {
       return ok(Json.toJson(info));
-    }
-    else {
+    } else {
       return notFound(Json.newObject());
     }
   }
