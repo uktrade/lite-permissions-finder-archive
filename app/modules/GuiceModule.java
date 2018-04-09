@@ -17,9 +17,12 @@ import components.common.client.CountryServiceClient;
 import components.common.journey.JourneyContextParamProvider;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneySerialiser;
+import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
+import components.common.persistence.StatelessRedisDao;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionContextParamProvider;
+import components.common.transaction.TransactionManager;
 import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
@@ -29,6 +32,7 @@ import models.summary.SummaryServiceImpl;
 import modules.common.RedissonGuiceModule;
 import org.pac4j.play.store.PlayCacheSessionStore;
 import org.pac4j.play.store.PlaySessionStore;
+import org.redisson.api.RedissonClient;
 import play.Environment;
 import play.cache.SyncCacheApi;
 import play.libs.akka.AkkaGuiceSupport;
@@ -109,10 +113,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
         .to(config.getString("ogelRegistrationService.sharedSecret"));
 
-    bind(RedisKeyConfig.class)
-        .annotatedWith(Names.named("applicationCodeDaoHash"))
-        .toInstance(createApplicationCodeKeyConfig());
-
     bind(JourneySerialiser.class).to(PermissionsFinderJourneySerialiser.class);
 
     bindConstant().annotatedWith(Names.named("basicAuthUser"))
@@ -129,10 +129,12 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     requestInjection(this);
   }
 
-  private RedisKeyConfig createApplicationCodeKeyConfig() {
-    Config daoConfig = config.getConfig("redis.applicationCodeDaoHash");
-    return new RedisKeyConfig(daoConfig.getString("keyPrefix"), daoConfig.getString("hashName"),
-        daoConfig.getInt("ttlSeconds"));
+  @Provides
+  @Named("permissionsFinderDaoHashCommon")
+  public CommonRedisDao providePermissionsFinderDaoHashCommon(
+      @Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, RedissonClient redissonClient,
+      TransactionManager transactionManager) {
+    return new CommonRedisDao(new StatelessRedisDao(keyConfig, redissonClient), transactionManager);
   }
 
   @Provides

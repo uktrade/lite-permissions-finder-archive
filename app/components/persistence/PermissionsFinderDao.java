@@ -3,8 +3,6 @@ package components.persistence;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
-import components.common.persistence.RedisKeyConfig;
-import components.common.transaction.TransactionManager;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import controllers.search.SearchController.SearchForm;
 import controllers.search.enums.GoodsSpecialisation;
@@ -14,7 +12,6 @@ import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
 import models.softtech.SoftwareExemptionQuestion;
 import org.apache.commons.lang3.StringUtils;
-import org.redisson.api.RedissonClient;
 import play.libs.Json;
 
 import java.util.Arrays;
@@ -63,9 +60,8 @@ public class PermissionsFinderDao {
   private final CommonRedisDao commonRedisDao;
 
   @Inject
-  public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig,
-                              RedissonClient redissonClient, TransactionManager transactionManager) {
-    this.commonRedisDao = new CommonRedisDao(keyConfig, redissonClient, transactionManager);
+  public PermissionsFinderDao(@Named("permissionsFinderDaoHashCommon") CommonRedisDao commonRedisDao) {
+    this.commonRedisDao = commonRedisDao;
   }
 
   public void saveSelectedControlCode(ControlCodeSubJourney controlCodeSubJourney, String selectedControlCode) {
