@@ -25,6 +25,7 @@ pipeline {
           deployer.inside {
             try {
               sh 'sbt -no-colors test'
+              sh 'for report in target/test-reports/*.xml; do mv $report $(dirname $report)/TEST-$(basename $report); done;'
             }
             finally {
               step([$class: 'JUnitResultArchiver', testResults: 'target/test-reports/**/*.xml'])
