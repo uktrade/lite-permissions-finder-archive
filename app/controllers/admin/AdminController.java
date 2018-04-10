@@ -21,6 +21,7 @@ public class AdminController extends Controller {
     this.adminDao = adminDao;
   }
 
+  @With(BasicAuthAction.class)
   public Result buildInfo() {
     //Use the auto-generated BuildInfo object to produce some JSON describing the build (configured in build.sbt)
     return ok(buildinfo.BuildInfo$.MODULE$.toJson()).as("application/json");
