@@ -3,8 +3,6 @@ package components.persistence;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
-import components.common.persistence.RedisKeyConfig;
-import components.common.transaction.TransactionManager;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import controllers.search.SearchController.SearchForm;
 import controllers.search.enums.GoodsSpecialisation;
@@ -15,7 +13,6 @@ import models.softtech.SoftTechCategory;
 import models.softtech.SoftwareExemptionQuestion;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
-import redis.clients.jedis.JedisPool;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class PermissionsFinderDao extends CommonRedisDao {
+public class PermissionsFinderDao {
 
   public static final String JOURNEY = "journey";
   public static final String SOURCE_COUNTRY = "sourceCountry";
@@ -60,76 +57,81 @@ public class PermissionsFinderDao extends CommonRedisDao {
   public static final String SHOW_TECH_NOTES = "showTechNotes";
   public static final String SOFT_TECH_CONTROLS_RESULTS_LAST_CHOSEN_CONTROL_CODE = "softTechControlsResultsLastChosenControlCode";
 
+  private final CommonRedisDao commonRedisDao;
+
   @Inject
-  public PermissionsFinderDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, JedisPool pool, TransactionManager transactionManager) {
-    super(keyConfig, pool, transactionManager);
+  public PermissionsFinderDao(@Named("permissionsFinderDaoHashCommon") CommonRedisDao commonRedisDao) {
+    this.commonRedisDao = commonRedisDao;
   }
 
   public void saveSelectedControlCode(ControlCodeSubJourney controlCodeSubJourney, String selectedControlCode) {
     saveLastStartedControlCodeSubJourney(controlCodeSubJourney);
-    writeString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE), selectedControlCode);
+    commonRedisDao.writeString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE), selectedControlCode);
   }
 
   public String getSelectedControlCode(ControlCodeSubJourney controlCodeSubJourney) {
-    return readString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE));
+    return commonRedisDao.readString(prependFieldName(controlCodeSubJourney, SELECTED_CONTROL_CODE));
   }
 
   private void saveLastStartedControlCodeSubJourney(ControlCodeSubJourney lastStartedControlCodeSubJourney) {
-    writeString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY, lastStartedControlCodeSubJourney.value());
+    commonRedisDao.writeString(LAST_STARTED_CONTROL_CODE_SUB_JOURNEY, lastStartedControlCodeSubJourney.value());
   }
 
   public void saveControlCodeForRegistration(String controlCode) {
-    writeString(CONTROL_CODE_FOR_REGISTRATION, controlCode);
+    commonRedisDao.writeString(CONTROL_CODE_FOR_REGISTRATION, controlCode);
   }
 
   public String getControlCodeForRegistration() {
-    return readString(CONTROL_CODE_FOR_REGISTRATION);
+    return commonRedisDao.readString(CONTROL_CODE_FOR_REGISTRATION);
   }
 
 
   public void saveSourceCountry(String sourceCountry) {
-    writeString(SOURCE_COUNTRY, sourceCountry);
+    commonRedisDao.writeString(SOURCE_COUNTRY, sourceCountry);
   }
 
   public String getSourceCountry() {
-    return readString(SOURCE_COUNTRY);
+    return commonRedisDao.readString(SOURCE_COUNTRY);
   }
 
   public void saveOgelId(String ogelId) {
-    writeString(OGEL_ID, ogelId);
+    commonRedisDao.writeString(OGEL_ID, ogelId);
   }
 
   public String getOgelId() {
-    return readString(OGEL_ID);
+    return commonRedisDao.readString(OGEL_ID);
   }
 
   public void saveApplicationCode(String applicationCode) {
-    writeString(APPLICATION_CODE, applicationCode);
+    commonRedisDao.writeString(APPLICATION_CODE, applicationCode);
   }
 
   public String getApplicationCode() {
-    return readString(APPLICATION_CODE);
+    return commonRedisDao.readString(APPLICATION_CODE);
   }
 
   public void saveEmailAddress(String emailAddress) {
-    writeString(EMAIL_ADDRESS, emailAddress);
+    commonRedisDao.writeString(EMAIL_ADDRESS, emailAddress);
   }
 
   public String getEmailAddress() {
-    return readString(EMAIL_ADDRESS);
+    return commonRedisDao.readString(EMAIL_ADDRESS);
   }
 
 
-  public void saveSearchResultsPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney, int searchPaginationDisplayCount) {
+  public void saveSearchResultsPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney,
+                                                      int searchPaginationDisplayCount) {
     saveSearchPaginationDisplayCount("results", controlCodeSubJourney, searchPaginationDisplayCount);
   }
 
-  public void saveSearchRelatedCodesPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney, int searchPaginationDisplayCount) {
+  public void saveSearchRelatedCodesPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney,
+                                                           int searchPaginationDisplayCount) {
     saveSearchPaginationDisplayCount("relatedCodes", controlCodeSubJourney, searchPaginationDisplayCount);
   }
 
-  private void saveSearchPaginationDisplayCount(String searchType, ControlCodeSubJourney controlCodeSubJourney, int searchPaginationDisplayCount) {
-    writeString(prependFieldName(controlCodeSubJourney, SEARCH_PAGINATION_DISPLAY_COUNT + ":" + searchType), Integer.toString(searchPaginationDisplayCount));
+  private void saveSearchPaginationDisplayCount(String searchType, ControlCodeSubJourney controlCodeSubJourney,
+                                                int searchPaginationDisplayCount) {
+    commonRedisDao.writeString(prependFieldName(controlCodeSubJourney, SEARCH_PAGINATION_DISPLAY_COUNT + ":" + searchType), Integer.toString(searchPaginationDisplayCount));
   }
 
   public Optional<Integer> getSearchResultsPaginationDisplayCount(ControlCodeSubJourney controlCodeSubJourney) {
@@ -140,8 +142,9 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return getSearchPaginationDisplayCount("relatedCodes", controlCodeSubJourney);
   }
 
-  private Optional<Integer> getSearchPaginationDisplayCount(String searchType, ControlCodeSubJourney controlCodeSubJourney) {
-    String count = readString(prependFieldName(controlCodeSubJourney, SEARCH_PAGINATION_DISPLAY_COUNT + ":" + searchType));
+  private Optional<Integer> getSearchPaginationDisplayCount(String searchType,
+                                                            ControlCodeSubJourney controlCodeSubJourney) {
+    String count = commonRedisDao.readString(prependFieldName(controlCodeSubJourney, SEARCH_PAGINATION_DISPLAY_COUNT + ":" + searchType));
     if (count != null) {
       return Optional.of(Integer.parseInt(count));
     } else {
@@ -153,12 +156,14 @@ public class PermissionsFinderDao extends CommonRedisDao {
     saveSearchLastChosenControlCode("results", controlCodeSubJourney, controlCode);
   }
 
-  public void saveSearchRelatedCodesLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
+  public void saveSearchRelatedCodesLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney,
+                                                          String controlCode) {
     saveSearchLastChosenControlCode("relatedCodes", controlCodeSubJourney, controlCode);
   }
 
-  private void saveSearchLastChosenControlCode(String searchType, ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
-    writeString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType), controlCode);
+  private void saveSearchLastChosenControlCode(String searchType, ControlCodeSubJourney controlCodeSubJourney,
+                                               String controlCode) {
+    commonRedisDao.writeString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType), controlCode);
   }
 
   public String getSearchResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
@@ -170,7 +175,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   private String getSearchLastChosenControlCode(String searchType, ControlCodeSubJourney controlCodeSubJourney) {
-    return readString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType));
+    return commonRedisDao.readString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType));
   }
 
   public void clearSearchResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
@@ -182,24 +187,24 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   private void clearSearchLastChosenControlCode(String searchType, ControlCodeSubJourney controlCodeSubJourney) {
-    deleteString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType));
+    commonRedisDao.deleteString(prependFieldName(controlCodeSubJourney, SEARCH_LAST_CHOSEN_CONTROL_CODE + ":" + searchType));
   }
 
   public void saveTradeType(TradeType tradeType) {
-    writeString(TRADE_TYPE, tradeType.toString());
+    commonRedisDao.writeString(TRADE_TYPE, tradeType.toString());
   }
 
   public Optional<TradeType> getTradeType() {
-    String tradeType = readString(TRADE_TYPE);
+    String tradeType = commonRedisDao.readString(TRADE_TYPE);
     return StringUtils.isBlank(tradeType) ? Optional.empty() : Optional.of(TradeType.valueOf(tradeType));
   }
 
   public void writeBoolean(String fieldName, boolean value) {
-    writeString(fieldName, Boolean.toString(value));
+    commonRedisDao.writeString(fieldName, Boolean.toString(value));
   }
 
   public Optional<Boolean> readBoolean(String fieldName) {
-    String value = readString(fieldName);
+    String value = commonRedisDao.readString(fieldName);
     if (value == null || value.isEmpty()) {
       return Optional.empty();
     }
@@ -207,39 +212,39 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   public void saveGoodsType(GoodsType goodsType) {
-    writeString(GOODS_TYPE, goodsType.value());
+    commonRedisDao.writeString(GOODS_TYPE, goodsType.value());
   }
 
   public Optional<GoodsType> getGoodsType() {
-    return GoodsType.getMatchedByValue(readString(GOODS_TYPE));
+    return GoodsType.getMatchedByValue(commonRedisDao.readString(GOODS_TYPE));
   }
 
   public void clearGoodsType() {
-    deleteString(GOODS_TYPE);
+    commonRedisDao.deleteString(GOODS_TYPE);
   }
 
   public void savePhysicalGoodSearchForm(ControlCodeSubJourney controlCodeSubJourney, SearchForm searchForm) {
-    writeObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), searchForm);
+    commonRedisDao.writeObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), searchForm);
   }
 
   public Optional<SearchForm> getPhysicalGoodsSearchForm(ControlCodeSubJourney controlCodeSubJourney) {
-    return readObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), SearchForm.class);
+    return commonRedisDao.readObject(prependFieldName(controlCodeSubJourney, PHYSICAL_GOOD_SEARCH), SearchForm.class);
   }
 
   public void saveGoodsSpecialisation(GoodsSpecialisation isSpecial) {
-    writeObject(ITEM_DESIGNED_OR_MODIFIED, isSpecial);
+    commonRedisDao.writeObject(ITEM_DESIGNED_OR_MODIFIED, isSpecial);
   }
 
   public Optional<GoodsSpecialisation> getGoodsSpecialisation() {
-    return readObject(ITEM_DESIGNED_OR_MODIFIED, GoodsSpecialisation.class);
+    return commonRedisDao.readObject(ITEM_DESIGNED_OR_MODIFIED, GoodsSpecialisation.class);
   }
 
   public void saveOgelQuestionsForm(OgelQuestionsForm ogelQuestionsForm) {
-    writeObject(OGEL_QUESTIONS, ogelQuestionsForm);
+    commonRedisDao.writeObject(OGEL_QUESTIONS, ogelQuestionsForm);
   }
 
   public Optional<OgelQuestionsForm> getOgelQuestionsForm() {
-    return readObject(OGEL_QUESTIONS, OgelQuestionsForm.class);
+    return commonRedisDao.readObject(OGEL_QUESTIONS, OgelQuestionsForm.class);
   }
 
   public void saveOgelConditionsApply(boolean ogelConditionsApply) {
@@ -259,33 +264,32 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   public void saveFinalDestinationCountry(String finalDestinationCountry) {
-    writeString(FINAL_DESTINATION_COUNTRY, finalDestinationCountry);
+    commonRedisDao.writeString(FINAL_DESTINATION_COUNTRY, finalDestinationCountry);
   }
 
   public String getFinalDestinationCountry() {
-    return readString(FINAL_DESTINATION_COUNTRY);
+    return commonRedisDao.readString(FINAL_DESTINATION_COUNTRY);
   }
 
   public void saveThroughDestinationCountries(List<String> throughDestinationCountries) {
-    writeObject(THROUGH_DESTINATION_COUNTRY_LIST, throughDestinationCountries);
+    commonRedisDao.writeObject(THROUGH_DESTINATION_COUNTRY_LIST, throughDestinationCountries);
   }
 
   public List<String> getThroughDestinationCountries() {
-    String countriesJson = readString(THROUGH_DESTINATION_COUNTRY_LIST);
+    String countriesJson = commonRedisDao.readString(THROUGH_DESTINATION_COUNTRY_LIST);
     if (countriesJson == null || countriesJson.isEmpty()) {
       return Collections.emptyList();
-    }
-    else {
+    } else {
       return new LinkedList<>(Arrays.asList(Json.fromJson(Json.parse(countriesJson), String[].class)));
     }
   }
 
   public String readJourneyString() {
-    return readString(JOURNEY);
+    return commonRedisDao.readString(JOURNEY);
   }
 
   public void writeJourneyString(String journeyString) {
-    writeString(JOURNEY, journeyString);
+    commonRedisDao.writeString(JOURNEY, journeyString);
   }
 
   public void saveOgelRegistrationServiceTransactionExists(boolean transactionCreated) {
@@ -305,7 +309,7 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   public void clearControlCodeApplies(ControlCodeSubJourney controlCodeSubJourney) {
-    deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_APPLIES));
+    commonRedisDao.deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_APPLIES));
   }
 
   public void saveControlCodeDecontrolsApply(ControlCodeSubJourney controlCodeSubJourney, boolean decontrolsApply) {
@@ -317,10 +321,11 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   public void clearControlCodeDecontrolsApply(ControlCodeSubJourney controlCodeSubJourney) {
-    deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_DECONTROLS_APPLY));
+    commonRedisDao.deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_DECONTROLS_APPLY));
   }
 
-  public void saveControlCodeAdditionalSpecificationsApply(ControlCodeSubJourney controlCodeSubJourney, boolean additionalSpecificationsApply) {
+  public void saveControlCodeAdditionalSpecificationsApply(ControlCodeSubJourney controlCodeSubJourney,
+                                                           boolean additionalSpecificationsApply) {
     writeBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY), additionalSpecificationsApply);
   }
 
@@ -329,10 +334,11 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   public void clearControlCodeAdditionalSpecificationsApply(ControlCodeSubJourney controlCodeSubJourney) {
-    deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY));
+    commonRedisDao.deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_ADDITIONAL_SPECIFICATIONS_APPLY));
   }
 
-  public void saveControlCodeTechnicalNotesApply(ControlCodeSubJourney controlCodeSubJourney, boolean technicalNotesApply) {
+  public void saveControlCodeTechnicalNotesApply(ControlCodeSubJourney controlCodeSubJourney,
+                                                 boolean technicalNotesApply) {
     writeBoolean(prependFieldName(controlCodeSubJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY), technicalNotesApply);
   }
 
@@ -341,30 +347,28 @@ public class PermissionsFinderDao extends CommonRedisDao {
   }
 
   public void clearControlCodeTechnicalNotesApply(ControlCodeSubJourney controlCodeSubJourney) {
-    deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
+    commonRedisDao.deleteString(prependFieldName(controlCodeSubJourney, CONTROL_CODE_TECHNICAL_NOTES_APPLY));
   }
 
   public void saveSoftTechCategory(GoodsType goodsType, SoftTechCategory softTechCategory) {
-    writeString(prependFieldName(goodsType, SOFT_TECH_CATEGORY), softTechCategory.toString());
+    commonRedisDao.writeString(prependFieldName(goodsType, SOFT_TECH_CATEGORY), softTechCategory.toString());
   }
 
   public Optional<SoftTechCategory> getSoftTechCategory(GoodsType goodsType) {
-    String softwareCategory = readString(prependFieldName(goodsType, SOFT_TECH_CATEGORY));
+    String softwareCategory = commonRedisDao.readString(prependFieldName(goodsType, SOFT_TECH_CATEGORY));
     if (StringUtils.isEmpty(softwareCategory)) {
       return Optional.empty();
-    }
-    else {
+    } else {
       try {
         return Optional.of(SoftTechCategory.valueOf(softwareCategory));
-      }
-      catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException e) {
         return Optional.empty();
       }
     }
   }
 
   public void saveRelatedToEquipmentOrMaterials(GoodsType goodsType, Boolean relatedToEquipmentOrMaterials) {
-    writeString(prependFieldName(goodsType.urlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS), relatedToEquipmentOrMaterials.toString());
+    commonRedisDao.writeString(prependFieldName(goodsType.urlString(), RELATED_TO_EQUIPMENT_OR_MATERIALS), relatedToEquipmentOrMaterials.toString());
   }
 
   public Optional<Boolean> getRelatedToEquipmentOrMaterials(GoodsType goodsType) {
@@ -390,11 +394,12 @@ public class PermissionsFinderDao extends CommonRedisDao {
     clearControlCodeTechnicalNotesApply(controlCodeSubJourney);
   }
 
-  public void clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(ControlCodeSubJourney controlCodeSubJourney, String newSelectedControlCode) {
+  public void clearAndUpdateControlCodeSubJourneyDaoFieldsIfChanged(ControlCodeSubJourney controlCodeSubJourney,
+                                                                    String newSelectedControlCode) {
     String oldSelectedControlCode = getSelectedControlCode(controlCodeSubJourney);
     if (!StringUtils.equals(newSelectedControlCode, oldSelectedControlCode)) {
       clearControlCodeSubJourneyDaoFields(controlCodeSubJourney);
-      saveSelectedControlCode(controlCodeSubJourney,newSelectedControlCode);
+      saveSelectedControlCode(controlCodeSubJourney, newSelectedControlCode);
     }
   }
 
@@ -402,11 +407,12 @@ public class PermissionsFinderDao extends CommonRedisDao {
     writeBoolean(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, IS_RELATED_TO_GOODS_TYPE)), answer);
   }
 
-  public Optional<Boolean> getIsRelatedToGoodsType (GoodsType goodsType, GoodsType relatedToGoodsType) {
+  public Optional<Boolean> getIsRelatedToGoodsType(GoodsType goodsType, GoodsType relatedToGoodsType) {
     return readBoolean(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, IS_RELATED_TO_GOODS_TYPE)));
   }
 
-  public void saveSoftwareExemptionQuestion(SoftwareExemptionQuestion softwareExemptionQuestion, boolean doExemptionsApply) {
+  public void saveSoftwareExemptionQuestion(SoftwareExemptionQuestion softwareExemptionQuestion,
+                                            boolean doExemptionsApply) {
     writeBoolean(SOFTWARE_EXEMPTION_QUESTION + ":" + softwareExemptionQuestion.toString(), doExemptionsApply);
   }
 
@@ -422,24 +428,26 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readBoolean(TECHNOLOGY_EXEMPTIONS_APPLY);
   }
 
-  public void saveGoodsRelationshipQuestionAnswer(GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex, boolean answer) {
-    writeBoolean(goodsRelationshipFieldNamePrefix(goodsType, relatedToGoodsType) + ":" +  GOODS_RELATIONSHIP_QUESTION_ANSWER + ":" + Integer.toString(questionIndex), answer);
+  public void saveGoodsRelationshipQuestionAnswer(GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex,
+                                                  boolean answer) {
+    writeBoolean(goodsRelationshipFieldNamePrefix(goodsType, relatedToGoodsType) + ":" + GOODS_RELATIONSHIP_QUESTION_ANSWER + ":" + Integer.toString(questionIndex), answer);
   }
 
-  public Optional<Boolean> getGoodsRelationshipQuestionAnswer (GoodsType goodsType, GoodsType relatedToGoodsType, int questionIndex) {
-    return readBoolean(goodsRelationshipFieldNamePrefix(goodsType, relatedToGoodsType) + ":" +  GOODS_RELATIONSHIP_QUESTION_ANSWER + ":" + Integer.toString(questionIndex));
+  public Optional<Boolean> getGoodsRelationshipQuestionAnswer(GoodsType goodsType, GoodsType relatedToGoodsType,
+                                                              int questionIndex) {
+    return readBoolean(goodsRelationshipFieldNamePrefix(goodsType, relatedToGoodsType) + ":" + GOODS_RELATIONSHIP_QUESTION_ANSWER + ":" + Integer.toString(questionIndex));
   }
 
-  public void saveGoodsRelationshipQuestionCurrentIndex(GoodsType goodsType, GoodsType relatedToGoodsType, int currentQuestionIndex) {
-    writeString(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX)), Integer.toString(currentQuestionIndex));
+  public void saveGoodsRelationshipQuestionCurrentIndex(GoodsType goodsType, GoodsType relatedToGoodsType,
+                                                        int currentQuestionIndex) {
+    commonRedisDao.writeString(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX)), Integer.toString(currentQuestionIndex));
   }
 
-  public Optional<Integer> getGoodsRelationshipQuestionCurrentIndex (GoodsType goodsType, GoodsType relatedToGoodsType) {
-    String currentQuestionIndexString = readString(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX)));
+  public Optional<Integer> getGoodsRelationshipQuestionCurrentIndex(GoodsType goodsType, GoodsType relatedToGoodsType) {
+    String currentQuestionIndexString = commonRedisDao.readString(prependFieldName(goodsType, prependFieldName(relatedToGoodsType, GOODS_RELATIONSHIP_QUESTION_CURRENT_INDEX)));
     if (StringUtils.isNotEmpty(currentQuestionIndexString)) {
       return Optional.of(Integer.parseInt(currentQuestionIndexString));
-    }
-    else {
+    } else {
       return Optional.empty();
     }
   }
@@ -456,7 +464,8 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readBoolean(TECHNOLOGY_IS_NON_EXEMPT);
   }
 
-  public void saveShowTechNotes(ControlCodeSubJourney controlCodeSubJourney, String controlCode, boolean showTechNotes) {
+  public void saveShowTechNotes(ControlCodeSubJourney controlCodeSubJourney, String controlCode,
+                                boolean showTechNotes) {
     writeBoolean(SHOW_TECH_NOTES + ":" + controlCodeSubJourney.value() + ":" + controlCode, showTechNotes);
   }
 
@@ -464,12 +473,17 @@ public class PermissionsFinderDao extends CommonRedisDao {
     return readBoolean(SHOW_TECH_NOTES + ":" + controlCodeSubJourney.value() + ":" + controlCode);
   }
 
-  public void saveSoftTechControlsResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney, String controlCode) {
-    writeString(prependFieldName(controlCodeSubJourney, SOFT_TECH_CONTROLS_RESULTS_LAST_CHOSEN_CONTROL_CODE), controlCode);
+  public void saveSoftTechControlsResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney,
+                                                               String controlCode) {
+    commonRedisDao.writeString(prependFieldName(controlCodeSubJourney, SOFT_TECH_CONTROLS_RESULTS_LAST_CHOSEN_CONTROL_CODE), controlCode);
   }
 
   public String getSoftTechControlsResultsLastChosenControlCode(ControlCodeSubJourney controlCodeSubJourney) {
-    return readString(prependFieldName(controlCodeSubJourney, SOFT_TECH_CONTROLS_RESULTS_LAST_CHOSEN_CONTROL_CODE));
+    return commonRedisDao.readString(prependFieldName(controlCodeSubJourney, SOFT_TECH_CONTROLS_RESULTS_LAST_CHOSEN_CONTROL_CODE));
+  }
+
+  public void refreshTTL() {
+    commonRedisDao.refreshTTL();
   }
 
 }

@@ -9,9 +9,7 @@ import components.common.transaction.TransactionManager;
 import components.persistence.ApplicationCodeDao;
 import components.persistence.PermissionsFinderDao;
 import components.services.registration.OgelRegistrationServiceClient;
-import controllers.search.SearchController;
 import exceptions.FormStateException;
-import models.controlcode.ControlCodeSubJourney;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
@@ -70,12 +68,10 @@ public class ContinueApplicationController {
         Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
         if (ogelRegistrationExists.isPresent() && ogelRegistrationExists.get()) {
           return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
-        }
-        else {
+        } else {
           return contextParamManager.addParamsAndRedirect(routes.SummaryController.renderFormContinue());
         }
-      }
-      else {
+      } else {
         form.reject("applicationCode", "You have entered an invalid application code");
         return completedFuture(ok(continueApplication.render(form)));
       }

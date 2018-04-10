@@ -11,24 +11,28 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import components.common.CommonGuiceModule;
-import components.common.RedisGuiceModule;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
 import components.common.client.CountryServiceClient;
 import components.common.journey.JourneyContextParamProvider;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneySerialiser;
+import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
+import components.common.persistence.StatelessRedisDao;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionContextParamProvider;
+import components.common.transaction.TransactionManager;
 import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
 import journey.SubJourneyContextParamProvider;
 import models.summary.SummaryService;
 import models.summary.SummaryServiceImpl;
+import modules.common.RedissonGuiceModule;
 import org.pac4j.play.store.PlayCacheSessionStore;
 import org.pac4j.play.store.PlaySessionStore;
+import org.redisson.api.RedissonClient;
 import play.Environment;
 import play.cache.SyncCacheApi;
 import play.libs.akka.AkkaGuiceSupport;
@@ -59,7 +63,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   protected void configure() {
 
     install(new CommonGuiceModule(config));
-    install(new RedisGuiceModule(config));
+    install(new RedissonGuiceModule(config));
 
     // searchService
     bindConstant().annotatedWith(Names.named("searchServiceAddress"))
@@ -109,10 +113,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
         .to(config.getString("ogelRegistrationService.sharedSecret"));
 
-    bind(RedisKeyConfig.class)
-        .annotatedWith(Names.named("applicationCodeDaoHash"))
-        .toInstance(createApplicationCodeKeyConfig());
-
     bind(JourneySerialiser.class).to(PermissionsFinderJourneySerialiser.class);
 
     bindConstant().annotatedWith(Names.named("basicAuthUser"))
@@ -129,15 +129,18 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     requestInjection(this);
   }
 
-  private RedisKeyConfig createApplicationCodeKeyConfig() {
-    Config daoConfig = config.getConfig("redis.applicationCodeDaoHash");
-    return new RedisKeyConfig(daoConfig.getString("keyPrefix"), daoConfig.getString("hashName"),
-        daoConfig.getInt("ttlSeconds"));
+  @Provides
+  @Named("permissionsFinderDaoHashCommon")
+  public CommonRedisDao providePermissionsFinderDaoHashCommon(
+      @Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, RedissonClient redissonClient,
+      TransactionManager transactionManager) {
+    return new CommonRedisDao(new StatelessRedisDao(keyConfig, redissonClient), transactionManager);
   }
 
   @Provides
-  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(ExportJourneyDefinitionBuilder exportBuilder,
-                                                                               ImportJourneyDefinitionBuilder importBuilder) {
+  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(
+      ExportJourneyDefinitionBuilder exportBuilder,
+      ImportJourneyDefinitionBuilder importBuilder) {
     return Arrays.asList(exportBuilder, importBuilder);
   }
 
@@ -168,19 +171,22 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Provides
   @Singleton
   @Named("countryCacheActorRefEu")
-  ActorRef provideCountryCacheActorRefEu(final ActorSystem system, @Named("countryProviderEu") CountryProvider countryProvider) {
+  ActorRef provideCountryCacheActorRefEu(final ActorSystem system,
+                                         @Named("countryProviderEu") CountryProvider countryProvider) {
     return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider)));
   }
 
   @Provides
   @Singleton
   @Named("countryCacheActorRefExport")
-  ActorRef provideCountryCacheActorRefExport(final ActorSystem system, @Named("countryProviderExport") CountryProvider countryProvider) {
+  ActorRef provideCountryCacheActorRefExport(final ActorSystem system,
+                                             @Named("countryProviderExport") CountryProvider countryProvider) {
     return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider)));
   }
 
   @Inject
-  public void initActorScheduler(final ActorSystem actorSystem, @Named("countryCacheActorRefEu") ActorRef countryCacheActorRefEu,
+  public void initActorScheduler(final ActorSystem actorSystem,
+                                 @Named("countryCacheActorRefEu") ActorRef countryCacheActorRefEu,
                                  @Named("countryCacheActorRefExport") ActorRef countryCacheActorRefExport) {
     FiniteDuration delay = Duration.create(0, TimeUnit.MILLISECONDS);
     FiniteDuration frequency = Duration.create(1, TimeUnit.DAYS);

@@ -6,121 +6,82 @@ import components.common.persistence.RedisKeyConfig;
 import controllers.admin.routes;
 import models.admin.ApplicationCodeInfo;
 import models.admin.TransactionInfo;
+import org.redisson.api.RedissonClient;
 import play.mvc.Http;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AdminDao {
-  private final JedisPool jedisPool;
+  private final RedissonClient redissonClient;
   private final RedisKeyConfig appCodeKeyConfig;
   private final RedisKeyConfig pfKeyConfig;
 
-  private final static int SCAN_COUNT = 100;
-
   @Inject
-  public AdminDao(JedisPool jedisPool, @Named("applicationCodeDaoHash") RedisKeyConfig appCodeKeyConfig, @Named("permissionsFinderDaoHash") RedisKeyConfig pfKeyConfig) {
-    this.jedisPool = jedisPool;
+  public AdminDao(RedissonClient redissonClient, @Named("applicationCodeDaoHash") RedisKeyConfig appCodeKeyConfig,
+                  @Named("permissionsFinderDaoHash") RedisKeyConfig pfKeyConfig) {
+    this.redissonClient = redissonClient;
     this.appCodeKeyConfig = appCodeKeyConfig;
     this.pfKeyConfig = pfKeyConfig;
   }
 
-  public List<String> scanHashKeys(Jedis jedis, String pattern) {
-    List<String> keys = new ArrayList<>();
-    ScanParams scanParams = new ScanParams().count(SCAN_COUNT).match(pattern);
-    boolean moreKeys = true;
-    String cursor = ScanParams.SCAN_POINTER_START;
-
-    while (moreKeys) {
-      ScanResult<String> scanResult = jedis.scan(cursor, scanParams);
-      keys.addAll(scanResult.getResult());
-      cursor = scanResult.getStringCursor();
-      if (cursor.equals(ScanParams.SCAN_POINTER_START)) {
-        moreKeys = false;
-      }
-    }
-
-    return keys;
-  }
-
   public List<TransactionInfo> getPermissionsFinderTransactions() {
-    try (Jedis jedis = jedisPool.getResource()) {
-      String pattern = pfKeyConfig.getKeyPrefix() + ":*:" + pfKeyConfig.getHashName();
-      boolean showFields = false;
-      return scanHashKeys(jedis, pattern).stream()
-          .map(key -> buildTransactionInfo(key, jedis, showFields))
-          .sorted(Comparator.comparingLong(TransactionInfo::getTtl).reversed())
-          .collect(Collectors.toList());
-    }
+    String pattern = pfKeyConfig.getKeyPrefix() + ":*:" + pfKeyConfig.getHashName();
+    return redissonClient.getKeys()
+        .findKeysByPattern(pattern)
+        .stream()
+        .map(key -> buildTransactionInfo(key, false))
+        .sorted(Comparator.comparingLong(TransactionInfo::getTtl).reversed())
+        .collect(Collectors.toList());
   }
 
   public TransactionInfo getPermissionsFinderTransactionById(String id) {
-    try (Jedis jedis = jedisPool.getResource()) {
-      String key = pfKeyConfig.getKeyPrefix() + ":" + id + ":" + pfKeyConfig.getHashName();
-      boolean showFields = true;
-      if (jedis.exists(key)) {
-        return buildTransactionInfo(key, jedis, showFields);
-      }
-      else {
-        return null;
-      }
+    String key = pfKeyConfig.getKeyPrefix() + ":" + id + ":" + pfKeyConfig.getHashName();
+    if (redissonClient.getMap(key).isExists()) {
+      return buildTransactionInfo(key, true);
+    } else {
+      return null;
     }
   }
-  
+
   public List<ApplicationCodeInfo> getApplicationCodes() {
-    try (Jedis jedis = jedisPool.getResource()) {
-      String pattern = appCodeKeyConfig.getKeyPrefix() + ":" + appCodeKeyConfig.getHashName() + ":*";
-      boolean showFields = false;
-      return scanHashKeys(jedis, pattern).stream()
-          .map(key -> buildApplicationCodeInfo(key, jedis, showFields))
-          .sorted(Comparator.comparingLong(ApplicationCodeInfo::getTtl).reversed())
-          .collect(Collectors.toList());
-    }
+    String pattern = appCodeKeyConfig.getKeyPrefix() + ":" + appCodeKeyConfig.getHashName() + ":*";
+    return redissonClient.getKeys()
+        .findKeysByPattern(pattern)
+        .stream()
+        .map(key -> buildApplicationCodeInfo(key, false))
+        .sorted(Comparator.comparingLong(ApplicationCodeInfo::getTtl).reversed())
+        .collect(Collectors.toList());
   }
 
   public ApplicationCodeInfo getApplicationCodeByCode(String applicationCode) {
-    try (Jedis jedis = jedisPool.getResource()) {
-      String key = appCodeKeyConfig.getKeyPrefix() + ":" + appCodeKeyConfig.getHashName() + ":" + applicationCode;
-      boolean showFields = true;
-      if (jedis.exists(key)) {
-        return buildApplicationCodeInfo(key, jedis, showFields);
-      }
-      else {
-       return null;
-      }
+    String key = appCodeKeyConfig.getKeyPrefix() + ":" + appCodeKeyConfig.getHashName() + ":" + applicationCode;
+    if (redissonClient.getMap(key).isExists()) {
+      return buildApplicationCodeInfo(key, true);
+    } else {
+      return null;
     }
   }
 
-  private TransactionInfo buildTransactionInfo(String key, Jedis jedis, boolean showFields) {
+  private TransactionInfo buildTransactionInfo(String key, boolean showFields) {
     String transactionId = key.split(":")[1];
-    Long ttl = jedis.ttl(key);
-    Long idleSeconds = jedis.objectIdletime(key);
+    Long ttl = redissonClient.getMap(key).remainTimeToLive();
     String link = getPermissionsFinderTransactionByIdUrl(transactionId);
-    Date lastAccessed = new Date(System.currentTimeMillis() - (idleSeconds * 1000));
     if (showFields) {
-      Map<String, String> fields = jedis.hgetAll(key);
-      return new TransactionInfo(transactionId, ttl, link, lastAccessed, fields);
-    }
-    else {
-      return new TransactionInfo(transactionId, ttl, link, lastAccessed);
+      Map<String, String> fields = redissonClient.getMap(key);
+      return new TransactionInfo(transactionId, ttl, link, fields);
+    } else {
+      return new TransactionInfo(transactionId, ttl, link);
     }
   }
 
-  private ApplicationCodeInfo buildApplicationCodeInfo(String key, Jedis jedis, boolean showFields) {
+  private ApplicationCodeInfo buildApplicationCodeInfo(String key, boolean showFields) {
     String applicationCode = key.split(":")[2];
-    Long ttl = jedis.ttl(key);
-    Long idleSeconds = jedis.objectIdletime(key);
-    Date lastAccessed = new Date(System.currentTimeMillis() - (idleSeconds * 1000));
-    Map<String, String> fields = jedis.hgetAll(key);
+    Long ttl = redissonClient.getMap(key).remainTimeToLive();
+    Map<String, String> fields = redissonClient.getMap(key);
 
     Optional<Map.Entry<String, String>> transactionIdOptional = fields.entrySet().stream()
         .filter(e -> "transactionId".equals(e.getKey()))
@@ -131,16 +92,15 @@ public class AdminDao {
     String linkToApplicationCode = getApplicationCodeByCodeUrl(applicationCode);
 
     if (showFields) {
-      return new ApplicationCodeInfo(applicationCode, ttl, linkToTransaction, linkToApplicationCode, lastAccessed, fields);
-    }
-    else {
-      return new ApplicationCodeInfo(applicationCode, ttl, linkToTransaction, linkToApplicationCode, lastAccessed);
+      return new ApplicationCodeInfo(applicationCode, ttl, linkToTransaction, linkToApplicationCode, fields);
+    } else {
+      return new ApplicationCodeInfo(applicationCode, ttl, linkToTransaction, linkToApplicationCode);
     }
   }
 
   private String getPermissionsFinderTransactionByIdUrl(String transactionId) {
-     Http.Context ctx = Http.Context.current();
-     return routes.AdminController.permissionsFinderTransactionById(transactionId).absoluteURL(ctx._requestHeader());
+    Http.Context ctx = Http.Context.current();
+    return routes.AdminController.permissionsFinderTransactionById(transactionId).absoluteURL(ctx._requestHeader());
   }
 
   private String getApplicationCodeByCodeUrl(String applicationCode) {
