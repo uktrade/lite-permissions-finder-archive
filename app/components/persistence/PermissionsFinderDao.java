@@ -1,5 +1,6 @@
 package components.persistence;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
@@ -12,11 +13,8 @@ import models.controlcode.ControlCodeSubJourney;
 import models.softtech.SoftTechCategory;
 import models.softtech.SoftwareExemptionQuestion;
 import org.apache.commons.lang3.StringUtils;
-import play.libs.Json;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -276,12 +274,8 @@ public class PermissionsFinderDao {
   }
 
   public List<String> getThroughDestinationCountries() {
-    String countriesJson = commonRedisDao.readString(THROUGH_DESTINATION_COUNTRY_LIST);
-    if (countriesJson == null || countriesJson.isEmpty()) {
-      return Collections.emptyList();
-    } else {
-      return new LinkedList<>(Arrays.asList(Json.fromJson(Json.parse(countriesJson), String[].class)));
-    }
+    return commonRedisDao.readObject(THROUGH_DESTINATION_COUNTRY_LIST, new TypeReference<List<String>>() {})
+        .orElse(new ArrayList<>());
   }
 
   public String readJourneyString() {
