@@ -7,4 +7,5 @@ target
 /.settings
 /RUNNING_PID
 /conf/application.conf
+/conf/logback.xml
 /.scannerwork

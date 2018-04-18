@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   filters
 )
 
-libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "3.4"
+libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.0"
 
 libraryDependencies += "uk.gov.bis.lite" % "lite-ogel-service-api" % "1.2"
 libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
