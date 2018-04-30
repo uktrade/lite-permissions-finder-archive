@@ -3,6 +3,12 @@ package modules;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
@@ -30,6 +36,7 @@ import journey.SubJourneyContextParamProvider;
 import models.summary.SummaryService;
 import models.summary.SummaryServiceImpl;
 import modules.common.RedissonGuiceModule;
+import org.apache.commons.lang3.StringUtils;
 import org.pac4j.play.store.PlayCacheSessionStore;
 import org.pac4j.play.store.PlaySessionStore;
 import org.redisson.api.RedissonClient;
@@ -97,14 +104,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("ogelServiceCredentials"))
         .to(config.getString("ogelService.credentials"));
 
-    // notificationService
-    bindConstant().annotatedWith(Names.named("notificationServiceAddress"))
-        .to(config.getString("notificationService.address"));
-    bindConstant().annotatedWith(Names.named("notificationServiceTimeout"))
-        .to(config.getString("notificationService.timeout"));
-    bindConstant().annotatedWith(Names.named("notificationServiceCredentials"))
-        .to(config.getString("notificationService.credentials"));
-
     // ogelRegistration
     bindConstant().annotatedWith(Names.named("ogelRegistrationServiceAddress"))
         .to(config.getString("ogelRegistrationService.address"));
@@ -127,6 +126,35 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
     requestInjection(this);
+  }
+
+  @Provides
+  @Named("notificationServiceAwsSqsQueueUrl")
+  public String provideNotificationServiceAwsSqsQueueUrl() {
+    return config.getString("notificationService.aws.sqsQueueUrl");
+  }
+
+  @Provides
+  AmazonSQS provideAmazonSqs() {
+    String region = config.getString("aws.region");
+    AWSCredentialsProvider awsCredentialsProvider = getAwsCredentials();
+    return AmazonSQSClientBuilder.standard()
+        .withRegion(region)
+        .withCredentials(awsCredentialsProvider)
+        .build();
+  }
+
+  private AWSCredentialsProvider getAwsCredentials() {
+    String profileName = config.getString("aws.credentials.profileName");
+    String accessKey = config.getString("aws.credentials.accessKey");
+    String secretKey = config.getString("aws.credentials.secretKey");
+    if (StringUtils.isNoneBlank(profileName)) {
+      return new ProfileCredentialsProvider(profileName);
+    } else if (StringUtils.isBlank(accessKey) || StringUtils.isBlank(secretKey)) {
+      throw new RuntimeException("accessKey and secretKey must both be specified if no profile name is specified");
+    } else {
+      return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+    }
   }
 
   @Provides
