@@ -1,0 +1,14 @@
+@import views.html.util._
+@import components.common.auth.SpireAuthManager
+
+@this(spireAuthManager: SpireAuthManager)
+@()
+
+@standardPage("Test", Some(heading("Test"))){ }{
+
+  @if(spireAuthManager.getAuthInfoFromContext.isAuthenticated) {
+    <p>Successfully logged in as @spireAuthManager.getAuthInfoFromContext.getFullName</p>
+    <a href="@org.pac4j.play.routes.LogoutController.logout">Sign out</a>
+  }
+
+}

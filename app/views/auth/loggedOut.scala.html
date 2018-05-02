@@ -1,0 +1,13 @@
+@import views.html.util._
+
+@this()
+@()
+
+@standardPage("Logged Out", Some(heading("Logged Out"))) {
+
+} {
+
+  <p>You have been successfully logged out.</p>
+  <a href="@routes.EntryPointController.index()">Index</a>
+
+}
