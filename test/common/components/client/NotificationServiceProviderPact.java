@@ -1,8 +1,6 @@
 package common.components.client;
 
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import au.com.dius.pact.provider.PactVerifyProvider;
 import au.com.dius.pact.provider.junit.PactRunner;
@@ -12,10 +10,8 @@ import au.com.dius.pact.provider.junit.target.AmqpTarget;
 import au.com.dius.pact.provider.junit.target.Target;
 import au.com.dius.pact.provider.junit.target.TestTarget;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.google.common.collect.ImmutableMap;
-import components.common.client.NotificationServiceClient;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
+import pact.provider.components.common.client.NotificationServiceClientProviderPact;
 
 import java.util.Collections;
 
@@ -24,21 +20,14 @@ import java.util.Collections;
 @PactBroker(host = "pact-broker.ci.uktrade.io", port = "80")
 public class NotificationServiceProviderPact {
 
-  private static final AmazonSQS amazonSQS = mock(AmazonSQS.class);
+  private final AmazonSQS amazonSQS = mock(AmazonSQS.class);
 
   @TestTarget
   public final Target target = new AmqpTarget(Collections.singletonList("common.components.client.*"));
 
   @PactVerifyProvider("a valid email notification")
   public String validEmailNotification() {
-    NotificationServiceClient notificationServiceClient = new NotificationServiceClient("url", amazonSQS);
-    notificationServiceClient.sendEmail("validTemplate", "user@test.com",
-        ImmutableMap.of("validParamOne", "valueOne", "validParamTwo", "valueTwo"));
-
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(amazonSQS).sendMessage(eq("url"), captor.capture());
-
-    return captor.getValue();
+    return NotificationServiceClientProviderPact.validEmailNotification(amazonSQS);
   }
 
 }
