@@ -27,7 +27,7 @@
       @display.partNumberLabel
     }
 
-    @formRadioBooleanWithContent(form("isItem"), HtmlFormat.empty, display.isCompleteLabel, display.isComponentLabel, false, None)(HtmlFormat.empty){
+    @formRadioBooleanWithContent(form("isItem"), HtmlFormat.empty, display.isCompleteLabel, display.isComponentLabel)(HtmlFormat.empty){
       <div id="componentWrapper">
       @formTextarea(form("component"), Some(Html("")), cssClass = "form-control-wide", rows = "4"){
         @display.componentLabel
