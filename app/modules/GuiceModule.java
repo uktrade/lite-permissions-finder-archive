@@ -16,6 +16,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
+import components.auth.SamlModule;
 import components.common.CommonGuiceModule;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
@@ -37,11 +38,8 @@ import models.summary.SummaryService;
 import models.summary.SummaryServiceImpl;
 import modules.common.RedissonGuiceModule;
 import org.apache.commons.lang3.StringUtils;
-import org.pac4j.play.store.PlayCacheSessionStore;
-import org.pac4j.play.store.PlaySessionStore;
 import org.redisson.api.RedissonClient;
 import play.Environment;
-import play.cache.SyncCacheApi;
 import play.libs.akka.AkkaGuiceSupport;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -69,6 +67,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Override
   protected void configure() {
 
+    install(new SamlModule(config));
     install(new CommonGuiceModule(config));
     install(new RedissonGuiceModule(config));
 
@@ -225,14 +224,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Provides
   public ContextParamManager provideContextParamManager() {
     return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new SubJourneyContextParamProvider(), new ApplicationCodeContextParamProvider());
-  }
-
-  @Singleton
-  @Provides
-  public PlaySessionStore providePlaySessionStore(SyncCacheApi syncCacheApi) {
-    PlayCacheSessionStore playCacheSessionStore = new PlayCacheSessionStore(syncCacheApi);
-    playCacheSessionStore.setTimeout((int) TimeUnit.MINUTES.toSeconds(15));
-    return playCacheSessionStore;
   }
 
 }

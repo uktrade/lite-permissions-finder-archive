@@ -215,3 +215,11 @@ GET     /admin/transactions/:id               controllers.admin.AdminController.
 GET     /admin/application-codes              controllers.admin.AdminController.applicationCodes
 
 GET     /admin/application-codes/:applicationCode   controllers.admin.AdminController.applicationCodeByCode(applicationCode)
+
++ nocsrf
+POST    /samlResponse    org.pac4j.play.CallbackController.callback()
+GET     /logout          org.pac4j.play.LogoutController.logout()
+GET     /logged-out      controllers.AuthorisationController.loggedOut()
+GET     /unauthorised    controllers.AuthorisationController.unauthorised()
+
+GET     /test            controllers.DummyController.test()
