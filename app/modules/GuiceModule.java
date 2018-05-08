@@ -36,7 +36,7 @@ import journey.PermissionsFinderJourneySerialiser;
 import journey.SubJourneyContextParamProvider;
 import models.summary.SummaryService;
 import models.summary.SummaryServiceImpl;
-import modules.common.RedissonGuiceModule;
+import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
 import play.Environment;
@@ -69,7 +69,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));
-    install(new RedissonGuiceModule(config));
+    install(new RedisSessionStoreModule(environment, config));
 
     // searchService
     bindConstant().annotatedWith(Names.named("searchServiceAddress"))
