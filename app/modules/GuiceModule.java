@@ -30,10 +30,8 @@ import components.common.persistence.StatelessRedisDao;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionContextParamProvider;
 import components.common.transaction.TransactionManager;
-import importcontent.ImportJourneyDefinitionBuilder;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
-import journey.SubJourneyContextParamProvider;
 import models.summary.SummaryService;
 import models.summary.SummaryServiceImpl;
 import modules.common.RedisSessionStoreModule;
@@ -166,9 +164,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(
-      ExportJourneyDefinitionBuilder exportBuilder,
-      ImportJourneyDefinitionBuilder importBuilder) {
-    return Arrays.asList(exportBuilder, importBuilder);
+      ExportJourneyDefinitionBuilder exportBuilder) {
+    return Arrays.asList(exportBuilder);
   }
 
   @Provides
@@ -223,7 +220,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   public ContextParamManager provideContextParamManager() {
-    return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new SubJourneyContextParamProvider(), new ApplicationCodeContextParamProvider());
+    return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new ApplicationCodeContextParamProvider());
   }
 
 }

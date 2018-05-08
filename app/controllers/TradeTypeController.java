@@ -53,13 +53,12 @@ public class TradeTypeController extends Controller {
     TradeType tradeType = TradeType.valueOf(tradeTypeParam);
 
     permissionsFinderDao.saveTradeType(tradeType);
+    // TODO this is a placeholder
+    permissionsFinderDao.saveControlCodeForRegistration("ML12b");
     switch (tradeType) {
       case EXPORT:
         permissionsFinderDao.saveSourceCountry(UNITED_KINGDOM);
         return journeyManager.performTransition(Events.EXPORT_TRADE_TYPE);
-      case IMPORT:
-        //todo: not in use
-        return journeyManager.startJourney(JourneyDefinitionNames.IMPORT);
       case TRANSSHIPMENT:
         return completedFuture(redirect(routes.StaticContentController.renderTranshipment()));
       case BROKERING:
