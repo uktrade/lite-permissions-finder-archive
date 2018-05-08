@@ -4,18 +4,11 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.cache.CountryProvider;
 import components.common.journey.JourneyManager;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
-import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.frontend.FrontendServiceClient;
-import components.services.ogels.applicable.ApplicableOgelServiceClient;
-import components.services.ogels.ogel.OgelServiceClient;
 import components.services.registration.OgelRegistrationServiceClient;
 import exceptions.FormStateException;
-import journey.JourneyDefinitionNames;
-import models.summary.Summary;
 import models.summary.SummaryService;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
@@ -25,8 +18,6 @@ import play.mvc.Result;
 import views.html.summary;
 
 import java.util.concurrent.CompletionStage;
-
-import javax.inject.Named;
 
 public class SummaryController {
 

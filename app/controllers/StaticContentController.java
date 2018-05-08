@@ -22,11 +22,6 @@ public class StaticContentController extends Controller {
     TRANSHIPMENT("tradetypes/transhipment.html","Transhipment"),
     NOT_APPLICABLE("notApplicable.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
-    SOFTWARE_EXEMPTIONS_NLR1("software/exemptionsNLR1.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
-    SOFTWARE_EXEMPTIONS_NLR2("software/exemptionsNLR2.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
-    SOFTWARE_JOURNEY_END_NLR("software/journeyEndNLR.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
-    TECHNOLOGY_EXEMPTIONS_NLR("technology/exemptionsNLR.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
-    TECHNOLOGY_JOURNEY_END_NLR("technology/journeyEndNLR.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
 
     StaticHtml(String filename, String title, Html pageHeading) {
@@ -70,32 +65,8 @@ public class StaticContentController extends Controller {
     return renderStaticHtml(StaticHtml.TRANSHIPMENT);
   }
 
-  public Result renderNotApplicable() {
-    return renderStaticHtml(StaticHtml.NOT_APPLICABLE);
-  }
-
   public Result renderNotImplemented() {
     return renderStaticHtml(StaticHtml.NOT_IMPLEMENTED);
-  }
-
-  public Result renderSoftwareExemptionsNLR1() {
-    return renderStaticHtml(StaticHtml.SOFTWARE_EXEMPTIONS_NLR1);
-  }
-
-  public Result renderSoftwareExemptionsNLR2() {
-    return renderStaticHtml(StaticHtml.SOFTWARE_EXEMPTIONS_NLR2);
-  }
-
-  public Result renderSoftwareJourneyEndNLR() {
-    return renderStaticHtml(StaticHtml.SOFTWARE_JOURNEY_END_NLR);
-  }
-
-  public Result renderTechnologyExemptionsNLR() {
-    return renderStaticHtml(StaticHtml.TECHNOLOGY_EXEMPTIONS_NLR);
-  }
-
-  public Result renderTechnologyJourneyEndNLR() {
-    return renderStaticHtml(StaticHtml.TECHNOLOGY_JOURNEY_END_NLR);
   }
 
   public Result renderVirtualEU() {

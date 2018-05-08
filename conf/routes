@@ -1,12 +1,3 @@
-# Routes - import
-
-GET         /import/:stageKey                   controllers.importcontent.ImportController.renderForm(stageKey: String)
-POST        /import-content                     controllers.importcontent.ImportController.handleSubmit
-GET         /import-static                      controllers.importcontent.StaticController.render(importHtmlName: String)
-
-GET         /import-where                     controllers.importcontent.ImportWhereController.renderForm
-POST        /import-where                     controllers.importcontent.ImportWhereController.handleSubmit
-
 # Route Ogel Conditions
 GET         /ogel-conditions/:ogelId            controllers.ViewOgelController.viewOgel(ogelId: String)
 
@@ -35,78 +26,9 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-GET     /export/:controlCodeVariant/:goodsType/control-code/summary                         controllers.controlcode.ControlCodeSummaryController.renderForm(controlCodeVariant, goodsType)
-
-POST    /export/control-code/summary                                                        controllers.controlcode.ControlCodeSummaryController.handleSubmit
-
-GET     /export/:controlCodeVariant/:goodsType/control-code/additional-specifications       controllers.controlcode.AdditionalSpecificationsController.renderForm(controlCodeVariant, goodsType)
-
-POST    /export/control-code/additional-specifications                                      controllers.controlcode.AdditionalSpecificationsController.handleSubmit
-
-GET     /export/:controlCodeVariant/:goodsType/control-code/decontrols                      controllers.controlcode.DecontrolsController.renderForm(controlCodeVariant, goodsType)
-
-POST    /export/control-code/decontrols                                                     controllers.controlcode.DecontrolsController.handleSubmit
-
-GET     /export/:controlCodeVariant/:goodsType/control-code/decontrols-apply-to-your-good   controllers.controlcode.DecontrolsApplyController.renderForm(controlCodeVariant, goodsType)
-
-POST    /export/control-code/decontrols-apply-to-your-good                                  controllers.controlcode.DecontrolsApplyController.handleSubmit
-
-GET     /export/:controlCodeVariant/:goodsType/control-code/not-applicable                  controllers.controlcode.NotApplicableController.renderForm(controlCodeVariant, goodsType)
-
-POST    /control-code/not-applicable                                                        controllers.controlcode.NotApplicableController.handleSubmit
-
-GET     /export/:controlCodeVariant/:goodsType/control-code/technical-notes                 controllers.controlcode.TechnicalNotesController.renderForm(controlCodeVariant, goodsType)
-
-POST    /control-code/technical-notes                                                       controllers.controlcode.TechnicalNotesController.handleSubmit
-
-GET     /export/:controlCodeVariant/:goodsType/software-and-technology-lists/   controllers.softtech.controls.SoftTechControlsController.renderForm(controlCodeVariant, goodsType)
-
-POST    /export/software-and-technology-lists/                                  controllers.softtech.controls.SoftTechControlsController.handleSubmit
-
-GET     /export/:controlCodeVariant/:goodsType/software-and-technology-lists/related   controllers.softtech.controls.SoftTechRelatedControlsController.renderForm(controlCodeVariant, goodsType)
-
-POST    /export/software-and-technology-lists/related                                  controllers.softtech.controls.SoftTechRelatedControlsController.handleSubmit
-
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
-
-GET     /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.renderForm(goodsType)
-
-POST    /dual-use-categories/:goodsType       controllers.softtech.DualUseSoftTechCategoriesController.handleSubmit(goodsType)
-
-GET     /exemptions-may-apply/software/question-one        controllers.softtech.SoftwareExemptionsController.renderFormQ1
-
-POST    /exemptions-may-apply/software/question-one        controllers.softtech.SoftwareExemptionsController.handleSubmitQ1
-
-GET     /exemptions-may-apply/software/question-two        controllers.softtech.SoftwareExemptionsController.renderFormQ2
-
-POST    /exemptions-may-apply/software/question-two        controllers.softtech.SoftwareExemptionsController.handleSubmitQ2
-
-GET     /exemptions-may-apply/software/question-three      controllers.softtech.SoftwareExemptionsController.renderFormQ3
-
-POST    /exemptions-may-apply/software/question-three      controllers.softtech.SoftwareExemptionsController.handleSubmitQ3
-
-
-GET     /exemptions-may-apply/technology      controllers.softtech.TechnologyExemptionsController.renderForm
-
-POST    /exemptions-may-apply/technolgoy      controllers.softtech.TechnologyExemptionsController.handleSubmit
-
-GET     /exemptions-do-not-apply/technology      controllers.softtech.TechnologyNonExemptController.renderForm
-
-POST    /exemptions-do-not-apply/technology      controllers.softtech.TechnologyNonExemptController.handleSubmit
-
-
-GET     /exemptions-apply/software/licence-not-available/type-1    controllers.StaticContentController.renderSoftwareExemptionsNLR1
-
-GET     /exemptions-apply/software/licence-not-available/type-2    controllers.StaticContentController.renderSoftwareExemptionsNLR2
-
-GET     /exemptions-apply/technology/licence-not-available          controllers.StaticContentController.renderTechnologyExemptionsNLR
-
-GET     /exemptions-apply/technology/public-domain/licence-not-available          controllers.softtech.TechnologyPublicDomainExemptionNLRController.renderForm
-
-POST     /exemptions-apply/technology/public-domain/licence-not-available         controllers.softtech.TechnologyPublicDomainExemptionNLRController.handleSubmit
-
 
 GET     /export-licence-additional-conditions   controllers.ogel.OgelConditionsController.renderForm
 
@@ -124,35 +46,9 @@ GET     /export-questions                     controllers.ogel.OgelQuestionsCont
 
 POST    /export-questions                     controllers.ogel.OgelQuestionsController.handleSubmit
 
-GET     /export-search-physical-goods/:goodsType          controllers.search.SearchController.renderForm(goodsType)
-
-POST    /export-search-physical-goods                     controllers.search.SearchController.handleSubmit
-
-GET     /export-search-physical-goods/speciallyModified/  controllers.search.SearchSpecialGoodsController.renderForm()
-
-POST    /export-search-physical-goods/speciallyModified/optionSelected   controllers.search.SearchSpecialGoodsController.handleSubmit()
-
-GET     /export-search-physical-goods/results/:goodsType  controllers.search.SearchResultsController.renderForm(goodsType)
-
-POST    /export-search-physical-goods/results/            controllers.search.SearchResultsController.handleSubmit
-
-GET     /export-search-physical-goods/results/related-codes/:goodsType  controllers.search.SearchRelatedCodesController.renderForm(goodsType)
-
-POST    /export-search-physical-goods/results/related-codes/            controllers.search.SearchRelatedCodesController.handleSubmit
-
-GET     /export-search-physical-goods/show-more-results/  controllers.search.AjaxSearchResultsController.getResults(controlCodeSubJourney: String, fromIndex: Int, toIndex: Int, transactionId: String)
-
-GET     /export-search-physical-goods/show-more-related-codes/  controllers.search.AjaxSearchRelatedCodesController.getRelatedCodes(controlCodeSubJourney: String, fromIndex: Int, toIndex: Int, transactionId: String)
-
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 
 POST    /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
-
-GET     /licence-not-available-through-this-service   controllers.StaticContentController.renderNotApplicable
-
-GET     /licence-not-available-through-this-service/software/      controllers.StaticContentController.renderSoftwareJourneyEndNLR
-
-GET     /licence-not-available-through-this-service/technology/      controllers.StaticContentController.renderTechnologyJourneyEndNLR
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
 
@@ -160,31 +56,13 @@ GET     /register-for-open-general-export-licence     controllers.ogel.OgelSumma
 
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
 
-GET     /related-to-equipment-or-materials/:goodsType      controllers.softtech.RelatedEquipmentController.renderForm(goodsType)
+GET     /trade-type                    controllers.TradeTypeController.renderForm
 
-POST    /related-to-equipment-or-materials/:goodsType      controllers.softtech.RelatedEquipmentController.handleSubmit(goodsType)
+POST    /trade-type                    controllers.TradeTypeController.handleSubmit
 
-GET     /related-goods/:goodsType/with/:relatedToGoodsType   controllers.softtech.GoodsRelationshipController.renderForm(goodsType, relatedToGoodsType)
+GET     /trade-type/brokering          controllers.StaticContentController.renderBrokering
 
-POST    /related-goods/:goodsType/with/:relatedToGoodsType   controllers.softtech.GoodsRelationshipController.handleSubmit(goodsType, relatedToGoodsType)
-
-GET     /related-goods-questions/:goodsType/with/:relatedToGoodsType        controllers.softtech.GoodsRelationshipQuestionsController.renderForm(goodsType, relatedToGoodsType)
-
-POST    /related-goods-questions/:goodsType/with/:relatedToGoodsType        controllers.softtech.GoodsRelationshipQuestionsController.handleSubmit(goodsType, relatedToGoodsType)
-
-GET     /related-goods-questions/:goodsType/with/:relatedToGoodsType/back   controllers.softtech.GoodsRelationshipQuestionsController.handleBack(goodsType, relatedToGoodsType, currentQuestionIndex)
-
-GET     /select-goods-type                    controllers.GoodsTypeController.renderForm
-
-POST    /select-goods-type                    controllers.GoodsTypeController.handleSubmit
-
-GET     /select-trade-type                    controllers.TradeTypeController.renderForm
-
-POST    /select-trade-type                    controllers.TradeTypeController.handleSubmit
-
-GET     /select-trade-type/brokering          controllers.StaticContentController.renderBrokering
-
-GET     /select-trade-type/transhipment       controllers.StaticContentController.renderTranshipment
+GET     /trade-type/transhipment       controllers.StaticContentController.renderTranshipment
 
 GET     /start-application                    controllers.StartApplicationController.renderForm
 
@@ -199,7 +77,8 @@ GET     /summary-continue                     controllers.SummaryController.rend
 POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
 
 # JavaScript routes
-GET     /js-routes                            controllers.JavaScriptRoutesController.jsRoutes
+# TODO RE-ENABLE JS ROUTES HERE
+#GET     /js-routes                            controllers.JavaScriptRoutesController.jsRoutes
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)
