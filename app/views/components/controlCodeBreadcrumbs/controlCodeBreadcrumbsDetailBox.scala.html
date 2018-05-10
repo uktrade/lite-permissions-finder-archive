@@ -1,0 +1,10 @@
+@(isPathStep: Boolean = false)(content: Html)(secondaryContent: Html)
+
+<@if(isPathStep){li}else{div} class="detail-box">
+  @if(content.body.nonEmpty) {
+    <div class="detail-box-content">@content</div>
+  }
+  @if(secondaryContent.body.nonEmpty) {
+    <div class="detail-box-secondary-content">@secondaryContent</div>
+  }
+</@if(isPathStep){li}else{div}>

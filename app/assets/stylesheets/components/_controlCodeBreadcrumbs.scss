@@ -1,0 +1,130 @@
+.control-code-breadcrumbs {
+  @include core-16;
+  width: 100%;
+  margin-bottom: $gutter;
+
+  &>li {
+    position: relative;
+    padding-top: 4px;
+    padding-right: 4.5em;
+    padding-bottom: $gutter-two-thirds;
+    padding-left: $gutter-two-thirds;
+    border-left: 2px solid $border-colour;
+    margin-left: 11px;
+
+    &:last-child:not(.detail-box) {
+      border-left: none;
+    }
+
+    &::before {
+      position: absolute;
+      top: 0;
+      left: -13px;
+      width: 24px;
+      height: 24px;
+      content: '';
+      border: 2px solid $border-colour;
+      background: $white;
+      display: block;
+      border-radius: 50%;
+      box-sizing: border-box;
+    }
+
+    @include media(mobile) {
+      padding-top: 6px;
+    }
+
+    a.breadcrumb-change-link {
+      position: absolute;
+      top: 4px;
+      right: 0;
+
+      @include media(mobile) {
+        top: 6px;
+      }
+    }
+
+    &.detail-box::before {
+      content: none;
+    }
+
+    .detail-box {
+      margin-top: $gutter-one-third;
+      width: calc(100% + 4.5em);
+    }
+  }
+
+  .detail-box {
+    border: 2px solid $border-colour;
+    margin-left: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    .detail-box-content {
+      padding: $gutter-one-third;
+    }
+
+    .detail-box-secondary-content {
+      background: $grey-4;
+      padding: $gutter-one-third;
+      border-top: 1px solid $border-colour;
+
+      &:only-child {
+        border-top: none;
+      }
+
+      .heading-small {
+        margin-top: 0;
+      }
+
+      .breadcrumb-notes {
+        margin: 0 (-$gutter-one-third) (-$gutter-one-third) (-$gutter-one-third);
+
+        li {
+          border-bottom: 1px solid $border-colour;
+          padding: $gutter-half $gutter-one-third;
+
+          &:first-child {
+            padding-top: 0;
+          }
+
+          &:last-child {
+            border-bottom: none;
+            padding-bottom: $gutter-one-third;
+          }
+        }
+      }
+    }
+  }
+}
+
+@include media(desktop) {
+  .wide-breadcrumbs {
+    @include core-19;
+
+    & > li {
+      margin-left: 17px;
+      padding-top: 8px;
+      padding-bottom: $gutter;
+      padding-left: $gutter;
+
+      &::before {
+        width: 36px;
+        height: 36px;
+        left: -19px;
+      }
+
+      @include media(mobile) {
+        padding-top: 10px;
+      }
+
+      a.breadcrumb-change-link {
+        top: 8px;
+
+        @include media(mobile) {
+          top: 8px;
+        }
+      }
+    }
+  }
+}
