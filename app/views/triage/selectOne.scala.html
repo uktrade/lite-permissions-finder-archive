@@ -1,0 +1,29 @@
+@import views.html.util._
+@import components.common.auth.SpireAuthManager
+@import models.view.AnswerView
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+@import utils.common.ViewUtil
+
+@this()
+@(form: Form[_], stageId: String, sessionId: String, title: String, answerViews: List[AnswerView])
+
+@standardPage(title, Some(heading(title))){
+}{
+
+  @errorSummary(form)
+
+  <form action="@routes.StageController.handleSubmit(stageId,sessionId)" method="POST">
+    @contextFormParams()
+    @formRadioGroupContainer(form("answer"))(null) {
+      @for(answerView <- answerViews) {
+        @formRadio(form("answer"), answerView.getPrompt, answerView.getValue, true)
+      }
+    }
+
+  <button type="submit" class="button" name="action" value="continue">Save and continue</button>
+  <button type="submit" class="button secondary" name="action" value="none" data-skip-validation>None of the above</button>
+
+  </form>
+}

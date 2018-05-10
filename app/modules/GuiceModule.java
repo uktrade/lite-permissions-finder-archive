@@ -43,6 +43,12 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
+import triage.config.JourneyConfigService;
+import triage.config.JourneyConfigServiceSampleImpl;
+import triage.session.SessionService;
+import triage.session.SessionServiceMockImpl;
+import triage.text.HtmlRenderService;
+import triage.text.HtmlRenderServiceImpl;
 import utils.appcode.ApplicationCodeContextParamProvider;
 
 import java.util.Arrays;
@@ -64,6 +70,10 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
+
+    bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceSampleImpl.class);
+    bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));

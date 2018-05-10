@@ -4,7 +4,7 @@
 @import views.html.common.page._
 @import views.html.common.state._
 
-@(form: Form[_], applicationCode: String)
+@(form: Form[_], sessionId: String, resumeCode: String)
 @standardPage("Before you begin", Some(heading("Before you begin"))) {
   @errorSummary(form)
 } {
@@ -15,14 +15,14 @@
   </p>
 
   <div class="panel panel-border-wide">
-    <span class="bold-xlarge">@applicationCode</span>
+    <span class="bold-xlarge">@resumeCode</span>
   </div>
 
   <p>
     This code will remain at the top of the screen as you use the service.
   </p>
 
-  <form action="@StartApplicationController.handleSubmit" method="POST">
+  <form action="@StartApplicationController.handleSubmit(sessionId)" method="POST">
 
     @contextFormParams()
 

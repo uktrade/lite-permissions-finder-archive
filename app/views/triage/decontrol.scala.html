@@ -1,0 +1,38 @@
+@import views.html.util._
+@import components.common.auth.SpireAuthManager
+@import models.view.CheckboxView
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+@import utils.common.ViewUtil
+
+@this()
+@(form: Form[_], stageId: String, sessionId: String, controlCode: String, checkboxViews: List[CheckboxView])
+
+@standardPage("Checking against decontrols", None){
+}{
+
+  @errorSummary(form)
+  <p></p>
+  @controlCode. Checking against Decontrols
+  <p>
+    Does your item have any of these characteristics?
+  </p>
+  <p>
+    Please select all that apply.
+  </p>
+
+  <form action="@routes.StageController.handleSubmit(stageId, sessionId)" method="POST">
+    @contextFormParams()
+    @for((checkboxView, index) <- checkboxViews.iterator.zipWithIndex) {
+      <p>
+        <input id="answers@index" type="checkbox" name="answers[@index]" value="@checkboxView.getAnswerView.getValue" @if(checkboxView.isChecked) { checked="checked" }>
+        @checkboxView.getAnswerView.getPrompt
+      </p>
+    }
+
+  <button type="submit" class="button" name="action" value="continue">Save and continue</button>
+  <button type="submit" class="button secondary" name="action" value="none" data-skip-validation>None of the above</button>
+
+  </form>
+}

@@ -1,117 +1,60 @@
 package controllers;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
+import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
-import components.common.journey.JourneyManager;
-import components.common.state.ContextParamManager;
-import components.common.transaction.TransactionManager;
-import components.persistence.ApplicationCodeDao;
-import components.persistence.PermissionsFinderDao;
+import components.common.client.NotificationServiceClient;
 import components.services.notification.PermissionsFinderNotificationClient;
-import journey.JourneyDefinitionNames;
+import models.view.form.StartApplicationForm;
 import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
-import play.data.validation.Constraints.Email;
 import play.mvc.Result;
-import utils.appcode.ApplicationCodeContextParamProvider;
+import triage.session.TriageSession;
+import triage.session.SessionService;
 import views.html.startApplication;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
 
 public class StartApplicationController {
 
-  private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'));
-
-  private final TransactionManager transactionManager;
-  private final ContextParamManager contextParamManager;
   private final FormFactory formFactory;
-  private final ApplicationCodeDao applicationCodeDao;
-  private final PermissionsFinderDao permissionsFinderDao;
-  private final PermissionsFinderNotificationClient notificationClient;
-  private final ApplicationCodeContextParamProvider applicationCodeContextParamProvider;
-  private final JourneyManager journeyManager;
+  private final SessionService sessionService;
+  private final PermissionsFinderNotificationClient permissionsFinderNotificationClient;
 
   @Inject
-  public StartApplicationController(TransactionManager transactionManager,
-                                    ContextParamManager contextParamManager,
-                                    FormFactory formFactory,
-                                    PermissionsFinderDao permissionsFinderDao,
-                                    ApplicationCodeDao applicationCodeDao,
-                                    PermissionsFinderNotificationClient notificationClient,
-                                    ApplicationCodeContextParamProvider applicationCodeContextParamProvider,
-                                    JourneyManager journeyManager) {
-    this.transactionManager = transactionManager;
-    this.contextParamManager = contextParamManager;
+  public StartApplicationController(FormFactory formFactory, SessionService sessionService,
+                                    NotificationServiceClient notificationServiceClient,
+                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient) {
     this.formFactory = formFactory;
-    this.permissionsFinderDao = permissionsFinderDao;
-    this.applicationCodeDao = applicationCodeDao;
-    this.notificationClient = notificationClient;
-    this.applicationCodeContextParamProvider = applicationCodeContextParamProvider;
-    this.journeyManager = journeyManager;
+    this.sessionService = sessionService;
+    this.permissionsFinderNotificationClient = permissionsFinderNotificationClient;
   }
 
   public Result renderForm() {
-    // Only set transaction ID if not already set
-    if (transactionManager.isTransactionIdAvailable()){
-      transactionManager.getTransactionId();
-    }
-    else {
-      transactionManager.createTransaction();
-    }
-
-    String applicationCode = permissionsFinderDao.getApplicationCode();
-    if (applicationCode == null || applicationCode.isEmpty()) {
-      applicationCode = generateApplicationCode();
-      applicationCodeDao.writeTransactionId(applicationCode);
-      permissionsFinderDao.saveApplicationCode(applicationCode);
-    }
-
-    applicationCodeContextParamProvider.updateParamValueOnContext(applicationCode);
-
-    return ok(startApplication.render(formFactory.form(StartApplicationForm.class), applicationCode));
+    TriageSession triageSession = sessionService.createNewSession();
+    return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getSessionId(),
+        triageSession.getResumeCode()));
   }
 
-  public CompletionStage<Result> handleSubmit() {
-    Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
-    String applicationCode = permissionsFinderDao.getApplicationCode();
-    if (form.hasErrors()) {
-      return completedFuture(ok(startApplication.render(form, applicationCode)));
+  public Result handleSubmit(String sessionId) {
+    TriageSession triageSession = sessionService.getSessionById(sessionId);
+    if (triageSession == null) {
+      Logger.error("Unknown sessionId " + sessionId);
+      return redirect(routes.StartApplicationController.renderForm());
+    } else {
+      Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
+      if (form.hasErrors()) {
+        return ok(startApplication.render(form, triageSession.getSessionId(), triageSession.getResumeCode()));
+      } else {
+        String emailAddress = form.get().emailAddress;
+        if (StringUtils.isNoneBlank(emailAddress)) {
+          String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+          permissionsFinderNotificationClient.sendApplicationReferenceEmail(emailAddress.trim(), resumeCode);
+        }
+        return redirect(routes.StageController.index(sessionId));
+      }
     }
-
-    String emailAddress = form.get().emailAddress;
-
-    if (StringUtils.isNoneBlank(emailAddress)) {
-      permissionsFinderDao.saveEmailAddress(emailAddress.trim());
-      notificationClient.sendApplicationReferenceEmail(emailAddress.trim(), applicationCode);
-    }
-
-    applicationCodeContextParamProvider.updateParamValueOnContext(applicationCode);
-    return journeyManager.startJourney(JourneyDefinitionNames.EXPORT);
   }
 
-  /**
-   * Builds a random application code satisfying the regular expression \[0-9A-Z]{4}[\-][0-9A-Z]{4}\ and Crockford encoding compliant
-   * e.g. XME1-BM7S
-   * @return The application code
-   */
-  public String generateApplicationCode() {
-    StringBuilder sb = new StringBuilder();
-    IntStream.range(0,8).forEach(i -> sb.append(CODE_DIGITS.get(ThreadLocalRandom.current().nextInt(0, CODE_DIGITS.size()))));
-    return sb.insert(4,"-").toString();
-  }
-
-  public static class StartApplicationForm {
-
-    @Email()
-    public String emailAddress;
-
-  }
 }
