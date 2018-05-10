@@ -102,3 +102,5 @@ GET     /logged-out      controllers.AuthorisationController.loggedOut()
 GET     /unauthorised    controllers.AuthorisationController.unauthorised()
 
 GET     /test            controllers.DummyController.test()
+
+GET     /test/frontend-components/:component controllers.FrontendComponentTestController.test(component)
