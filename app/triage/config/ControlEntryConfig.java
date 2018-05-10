@@ -41,7 +41,8 @@ public class ControlEntryConfig {
     return Optional.ofNullable(parentControlEntry);
   }
 
-  public boolean isNestedChildren() {
+  //True if this control entry has nested children (not if it is itself nested)
+  public boolean hasNestedChildren() {
     return nestedChildren;
   }
 
