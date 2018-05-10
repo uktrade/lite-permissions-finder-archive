@@ -1,0 +1,13 @@
+@import views.html.util._
+
+@this()
+@(sessionId: String)
+
+@standardPage("Decontrol outcome", Some(heading("Decontrol outcome"))) {
+
+} {
+
+  <p>You're item is decontrolled.</p>
+  <a href="@routes.StageController.index(sessionId)">Restart</a>
+
+}

@@ -1,89 +1,58 @@
 package controllers;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
+import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
-import components.common.state.ContextParamManager;
-import components.common.transaction.TransactionManager;
-import components.persistence.ApplicationCodeDao;
-import components.persistence.PermissionsFinderDao;
-import components.services.registration.OgelRegistrationServiceClient;
-import exceptions.FormStateException;
+import models.view.form.ContinueApplicationForm;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.data.FormFactory;
-import play.data.validation.Constraints.Required;
 import play.mvc.Result;
+import triage.session.SessionService;
+import triage.session.TriageSession;
 import views.html.continueApplication;
-
-import java.util.Optional;
-import java.util.concurrent.CompletionStage;
 
 public class ContinueApplicationController {
 
-  private final TransactionManager transactionManager;
   private final FormFactory formFactory;
-  private final ApplicationCodeDao applicationCodeDao;
-  private final PermissionsFinderDao permissionsFinderDao;
-  private final ContextParamManager contextParamManager;
-  private final OgelRegistrationServiceClient ogelRegistrationServiceClient;
+  private final SessionService sessionService;
 
   @Inject
-  public ContinueApplicationController(TransactionManager transactionManager,
-                                       FormFactory formFactory,
-                                       ApplicationCodeDao applicationCodeDao,
-                                       PermissionsFinderDao permissionsFinderDao,
-                                       ContextParamManager contextParamManager,
-                                       OgelRegistrationServiceClient ogelRegistrationServiceClient) {
-    this.transactionManager = transactionManager;
+  public ContinueApplicationController(FormFactory formFactory, SessionService sessionService) {
     this.formFactory = formFactory;
-    this.permissionsFinderDao = permissionsFinderDao;
-    this.applicationCodeDao = applicationCodeDao;
-    this.contextParamManager = contextParamManager;
-    this.ogelRegistrationServiceClient = ogelRegistrationServiceClient;
+    this.sessionService = sessionService;
   }
 
   public Result renderForm() {
     return ok(continueApplication.render(formFactory.form(ContinueApplicationForm.class)));
   }
 
-  public CompletionStage<Result> handleSubmit() {
+  public Result handleSubmit() {
     Form<ContinueApplicationForm> form = formFactory.form(ContinueApplicationForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(continueApplication.render(form)));
-    }
-
-    String applicationCode = form.get().applicationCode;
-
-    if (StringUtils.isNoneBlank(applicationCode)) {
-      String transactionId = applicationCodeDao.readTransactionId(applicationCode.trim());
-      if (transactionId != null && !transactionId.isEmpty()) {
-        transactionManager.setTransaction(transactionId);
-
-        // Refresh hash key TTLs of the both DAOs
-        applicationCodeDao.refreshTTL(applicationCode.trim());
-        permissionsFinderDao.refreshTTL();
-
-        Optional<Boolean> ogelRegistrationExists = permissionsFinderDao.getOgelRegistrationServiceTransactionExists();
-        if (ogelRegistrationExists.isPresent() && ogelRegistrationExists.get()) {
-          return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
+      return ok(continueApplication.render(form));
+    } else {
+      String resumeCode = form.get().resumeCode;
+      if (StringUtils.isNoneBlank(resumeCode)) {
+        TriageSession triageSession = sessionService.getSessionByResumeCode(resumeCode);
+        if (triageSession != null) {
+          String sessionId = triageSession.getSessionId();
+          String stageId = sessionService.getStageId(sessionId);
+          if (stageId != null) {
+            return redirect(routes.StageController.render(stageId, sessionId));
+          } else {
+            return redirect(routes.StageController.index(sessionId));
+          }
         } else {
-          return contextParamManager.addParamsAndRedirect(routes.SummaryController.renderFormContinue());
+          Form formWithError = form.withError("resumeCode", "You have entered an invalid resume code");
+          return ok(continueApplication.render(formWithError));
         }
       } else {
-        form.reject("applicationCode", "You have entered an invalid application code");
-        return completedFuture(ok(continueApplication.render(form)));
+        Form formWithError = form.withError("resumeCode", "You have entered an invalid resume code");
+        return ok(continueApplication.render(formWithError));
       }
     }
-    throw new FormStateException("Unhandled form state");
-  }
-
-  public static class ContinueApplicationForm {
-
-    @Required(message = "You must enter your application code")
-    public String applicationCode;
-
   }
 
 }

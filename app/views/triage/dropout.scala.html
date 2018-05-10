@@ -1,0 +1,13 @@
+@import views.html.util._
+
+@this()
+@(sessionId: String)
+
+@standardPage("Dropout", Some(heading("Dropout"))) {
+
+} {
+
+  <p>You have selected none of the above.</p>
+  <a href="@routes.StageController.index(sessionId)">Restart</a>
+
+}

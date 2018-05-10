@@ -15,6 +15,7 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   public static final String STAGE_2_ID = "2";
   public static final String STAGE_3_ID = "3";
   public static final String STAGE_4_ID = "4";
+  public static final String STAGE_5_ID = "5";
   private final Map<String, StageConfig> configMap = new HashMap<>();
 
   @Inject
@@ -44,8 +45,8 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
 
     configMap.put(STAGE_1_ID, stage1);
 
-    StageConfig stage2 = new StageConfig(STAGE_2_ID, null, null, StageConfig.QuestionType.STANDARD,
-        StageConfig.AnswerType.SELECT_ONE, null, ml1a, Collections.emptyList());
+    StageConfig stage2 = new StageConfig(STAGE_2_ID, null, null, StageConfig.QuestionType.DECONTROL,
+        StageConfig.AnswerType.SELECT_MANY, STAGE_3_ID, ml1a, stage1Answers);
 
     configMap.put(STAGE_2_ID, stage2);
 
@@ -55,7 +56,7 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
     configMap.put(STAGE_3_ID, stage3);
 
     StageConfig stage4 = new StageConfig(STAGE_4_ID, null, null, StageConfig.QuestionType.STANDARD,
-        StageConfig.AnswerType.SELECT_ONE, null, ml1c, Collections.emptyList());
+        StageConfig.AnswerType.SELECT_MANY, null, ml1c, stage1Answers);
 
     configMap.put(STAGE_4_ID, stage4);
   }
