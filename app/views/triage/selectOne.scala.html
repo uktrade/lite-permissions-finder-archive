@@ -1,28 +1,16 @@
-@import views.html.util._
 @import models.view.AnswerView
+@import models.view.BreadcrumbView
 @import views.html.common.form._
-@import views.html.common.page._
-@import views.html.common.state._
-@import utils.common.ViewUtil
+@import play.twirl.api.HtmlFormat
 
-@this()
-@(form: Form[_], stageId: String, sessionId: String, title: String, answerViews: List[AnswerView])
+@this(subAnswers: subAnswers)
+@(form: Form[_], stageId: String, sessionId: String, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
 
-@standardPage(title, Some(heading(title))){
-}{
-
-  @errorSummary(form)
-
-  <form action="@routes.StageController.handleSubmit(stageId,sessionId)" method="POST">
-    @contextFormParams()
-    @formRadioGroupContainer(form("answer"))(null) {
-      @for(answerView <- answerViews) {
-        @formRadio(form("answer"), answerView.getPrompt, answerView.getValue, true)
-      }
+@triagePage(form, stageId, sessionId, title, breadcrumbView)(HtmlFormat.empty){
+  @formRadioGroupContainer(form("answer"))(null) {
+    @for(answerView <- answerViews) {
+      @formRadio(form("answer"), answerView.getPrompt, answerView.getValue, true)
+      @subAnswers(answerView.getSubAnswerViews)
     }
-
-  <button type="submit" class="button" name="action" value="continue">Save and continue</button>
-  <button type="submit" class="button secondary" name="action" value="none" data-skip-validation>None of the above</button>
-
-  </form>
+  }
 }

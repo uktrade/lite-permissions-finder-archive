@@ -1,29 +1,13 @@
-@import views.html.util._
-@import models.view.CheckboxView
-@import views.html.common.form._
-@import views.html.common.page._
-@import views.html.common.state._
-@import utils.common.ViewUtil
+@import play.twirl.api.HtmlFormat
+@import utils.common.SelectOption
+@import models.view.BreadcrumbView
+@import views.html.common.form.formCheckboxes
 
-@this()
-@(form: Form[_], stageId: String, sessionId: String, title: String, checkboxViews: List[CheckboxView])
+@this(subAnswers: subAnswers)
+@(form: Form[_], stageId: String, sessionId: String, title: String, explanatoryText: String, options: Map[SelectOption, Boolean], breadcrumbView: BreadcrumbView)
 
-@standardPage(title, Some(heading(title))){
-}{
-
-  @errorSummary(form)
-
-  <form action="@routes.StageController.handleSubmit(stageId, sessionId)" method="POST">
-    @contextFormParams()
-    @for((checkboxView, index) <- checkboxViews.iterator.zipWithIndex) {
-      <p>
-        <input id="answers@index" type="checkbox" name="answers[@index]" value="@checkboxView.getAnswerView.getValue" @if(checkboxView.isChecked) { checked="checked" }>
-        @checkboxView.getAnswerView.getPrompt
-      </p>
-    }
-
-  <button type="submit" class="button" name="action" value="continue">Save and continue</button>
-  <button type="submit" class="button secondary" name="action" value="none" data-skip-validation>None of the above</button>
-
-  </form>
+@triagePage(form, stageId, sessionId, title, breadcrumbView)(HtmlFormat.empty){
+  <div class="form-group">
+    @formCheckboxes(form("answers"), options)
+  </div>
 }

@@ -1,10 +1,14 @@
 package controllers;
 
 import com.google.inject.Inject;
+import components.services.AnswerConfigService;
+import components.services.AnswerViewService;
+import components.services.BreadcrumbViewService;
 import exceptions.BusinessRuleException;
 import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
+import models.view.BreadcrumbView;
 import models.view.CheckboxView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
@@ -23,6 +27,7 @@ import triage.session.SessionService;
 import triage.text.HtmlRenderService;
 import triage.text.RichText;
 import utils.EnumUtil;
+import utils.common.SelectOption;
 import views.html.triage.decontrol;
 import views.html.triage.decontrolOutcome;
 import views.html.triage.dropout;
@@ -31,8 +36,9 @@ import views.html.triage.selectOne;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +46,9 @@ import java.util.stream.Collectors;
 @With(SessionGuardAction.class)
 public class StageController extends Controller {
 
+  private final BreadcrumbViewService breadcrumbViewService;
+  private final AnswerConfigService answerConfigService;
+  private final AnswerViewService answerViewService;
   private final SessionService sessionService;
   private final FormFactory formFactory;
   private final JourneyConfigService journeyConfigService;
@@ -51,10 +60,16 @@ public class StageController extends Controller {
   private final decontrolOutcome decontrolOutcome;
 
   @Inject
-  public StageController(SessionService sessionService, FormFactory formFactory,
+  public StageController(BreadcrumbViewService breadcrumbViewService,
+                         AnswerConfigService answerConfigService,
+                         AnswerViewService answerViewService, SessionService sessionService,
+                         FormFactory formFactory,
                          JourneyConfigService journeyConfigService, HtmlRenderService htmlRenderService,
                          selectOne selectOne, selectMany selectMany, dropout dropout, decontrol decontrol,
                          decontrolOutcome decontrolOutcome) {
+    this.breadcrumbViewService = breadcrumbViewService;
+    this.answerConfigService = answerConfigService;
+    this.answerViewService = answerViewService;
     this.sessionService = sessionService;
     this.formFactory = formFactory;
     this.journeyConfigService = journeyConfigService;
@@ -112,29 +127,55 @@ public class StageController extends Controller {
   private Result renderSelectOne(Form<AnswerForm> answerFormForm, String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select one");
-    return ok(selectOne.render(answerFormForm, stageId, sessionId, title, createAnswerViews(stageConfig)));
+    String explanatoryText = getExplanatoryText(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    return ok(selectOne.render(answerFormForm, stageId, sessionId, title, explanatoryText, answerViews, breadcrumbView));
+  }
+
+  private String getExplanatoryText(StageConfig stageConfig) {
+    Optional<RichText> explanatoryNoteOptional = stageConfig.getExplanatoryNote();
+    if (explanatoryNoteOptional.isPresent()) {
+      RichText explanatoryNote = explanatoryNoteOptional.get();
+      return htmlRenderService.convertRichTextToPlainText(explanatoryNote);
+    } else {
+      return null;
+    }
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
-    List<AnswerView> answerViews = createAnswerViews(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     List<CheckboxView> checkboxViews = answerViews.stream()
-        .map(answerView -> new CheckboxView(answerView, !multiAnswerForm.hasErrors() && multiAnswerForm.get().answers.contains(answerView.getValue())))
+        .map(answerView -> new CheckboxView(answerView,
+            !multiAnswerForm.hasErrors() && multiAnswerForm.get().answers.contains(answerView.getValue())))
         .collect(Collectors.toList());
-    String controlCode = stageConfig.getRelatedControlEntry()
-        .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId))
-        .getControlCode();
-    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, controlCode, checkboxViews));
+    Map<SelectOption, Boolean> options = new HashMap<>();
+    for (CheckboxView checkboxView : checkboxViews) {
+      options.put(new SelectOption(checkboxView.getAnswerView().getValue(), checkboxView.getAnswerView().getPrompt()), checkboxView.isChecked());
+    }
+    ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
+        .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
+    String controlCode = controlEntryConfig.getControlCode();
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, controlCode, options, breadcrumbView));
   }
 
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
-    List<AnswerView> answerViews = createAnswerViews(stageConfig);
+    String explanatoryText = getExplanatoryText(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     List<CheckboxView> checkboxViews = answerViews.stream()
-        .map(answerView -> new CheckboxView(answerView, false))
+        .map(answerView -> new CheckboxView(answerView,
+            !multiAnswerFormForm.hasErrors() && multiAnswerFormForm.get().answers.contains(answerView.getValue())))
         .collect(Collectors.toList());
-    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, title, checkboxViews));
+    Map<SelectOption, Boolean> options = new HashMap<>();
+    for (CheckboxView checkboxView : checkboxViews) {
+      options.put(new SelectOption(checkboxView.getAnswerView().getValue(), checkboxView.getAnswerView().getPrompt()), checkboxView.isChecked());
+    }
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, title, explanatoryText, options, breadcrumbView));
   }
 
   public Result handleSubmit(String stageId, String sessionId) {
@@ -169,7 +210,7 @@ public class StageController extends Controller {
     } else {
       if (action == Action.CONTINUE) {
         List<String> actualAnswers = ListUtils.emptyIfNull(multiAnswerFormForm.get().answers);
-        List<AnswerConfig> matchingAnswers = getMatchingAnswers(actualAnswers, stageConfig);
+        List<AnswerConfig> matchingAnswers = answerConfigService.getMatchingAnswerConfigs(actualAnswers, stageConfig);
         if (matchingAnswers.isEmpty()) {
           return renderDecontrol(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
               stageId, sessionId);
@@ -203,12 +244,12 @@ public class StageController extends Controller {
     } else {
       if (action == Action.CONTINUE) {
         List<String> actualAnswers = ListUtils.emptyIfNull(multiAnswerFormForm.get().answers);
-        List<AnswerConfig> matchingAnswers = getMatchingAnswers(actualAnswers, stageConfig);
+        List<AnswerConfig> matchingAnswers = answerConfigService.getMatchingAnswerConfigs(actualAnswers, stageConfig);
         if (matchingAnswers.isEmpty()) {
           return renderSelectMany(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
               stageId, sessionId);
         } else {
-          AnswerConfig answerConfig = getAnswerConfigWithLowestPrecedence(matchingAnswers);
+          AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
           Optional<String> nextStageId = answerConfig.getNextStageId();
           if (nextStageId.isPresent()) {
             Set<String> answerIds = matchingAnswers.stream().map(AnswerConfig::getAnswerId).collect(Collectors.toSet());
@@ -226,20 +267,6 @@ public class StageController extends Controller {
         return redirectToStage(stageId, sessionId);
       }
     }
-  }
-
-  private List<AnswerConfig> getMatchingAnswers(List<String> actualAnswers, StageConfig stageConfig) {
-    return stageConfig.getAnswerConfigs()
-        .stream()
-        .filter(answerConfig -> actualAnswers.contains(answerConfig.getAnswerId()))
-        .collect(Collectors.toList());
-  }
-
-  private AnswerConfig getAnswerConfigWithLowestPrecedence(List<AnswerConfig> answerConfigs) {
-    return answerConfigs.stream()
-        .sorted(Comparator.comparing(AnswerConfig::getAnswerPrecedence))
-        .findFirst()
-        .orElse(null);
   }
 
   private Result handleSelectOneSubmit(String stageId, String sessionId, StageConfig stageConfig) {
@@ -280,28 +307,6 @@ public class StageController extends Controller {
 
   private Result redirectToStage(String stageId, String sessionId) {
     return redirect(routes.StageController.render(stageId, sessionId));
-  }
-
-  private List<AnswerView> createAnswerViews(StageConfig stageConfig) {
-    return stageConfig.getAnswerConfigs().stream()
-        .sorted(Comparator.comparing(AnswerConfig::getAnswerPrecedence))
-        .map(this::createAnswerView)
-        .collect(Collectors.toList());
-  }
-
-  private AnswerView createAnswerView(AnswerConfig answerConfig) {
-    Optional<ControlEntryConfig> associatedControlEntryConfig = answerConfig.getAssociatedControlEntryConfig();
-    if (associatedControlEntryConfig.isPresent()) {
-      ControlEntryConfig controlEntryConfig = associatedControlEntryConfig.get();
-      return new AnswerView(htmlRenderService.convertRichTextToPlainText(controlEntryConfig.getFullDescription()), answerConfig.getAnswerId());
-    } else {
-      Optional<RichText> labelText = answerConfig.getLabelText();
-      if (labelText.isPresent()) {
-        return new AnswerView(htmlRenderService.convertRichTextToPlainText(labelText.get()), answerConfig.getAnswerId());
-      } else {
-        throw new BusinessRuleException("Both answerConfig.getAssociatedControlEntryConfig and answerConfig.getLabelText are absent.");
-      }
-    }
   }
 
   private PageType getPageType(StageConfig stageConfig) {
