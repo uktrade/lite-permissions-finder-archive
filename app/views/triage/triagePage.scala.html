@@ -1,0 +1,55 @@
+@import views.html.util._
+@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import views.html.common.page._
+@import views.html.common.state._
+
+@(form: Form[_], stageId: String, sessionId: String, title: String)(secondaryHeading: Html)(formContent: Html)
+
+@standardPage(title, None, twoThirdsColumn = false){
+}{
+  @twoThirdsColumn{
+    @errorSummary(form)
+  }
+
+  <div class="grid-row">
+    <div class="column-two-thirds">
+
+      <header class="page-header">
+        <h1 class="heading-large">
+          @if(secondaryHeading.body.nonEmpty) {
+            <span class="heading-secondary">
+            @secondaryHeading
+            </span>
+          }
+          @title
+        </h1>
+      </header>
+
+      <form action="@routes.StageController.handleSubmit(stageId,sessionId)" method="POST">
+        @contextFormParams()
+        @formContent
+
+        <button type="submit" class="button" name="action" value="continue">Save and continue</button>
+        <button type="submit" class="button secondary" name="action" value="none" data-skip-validation>None of the above</button>
+
+      </form>
+    </div>
+    <div class="column-one-third">
+      <h2 class="heading-medium">You are here</h2>
+      @controlCodeBreadcrumbs(){
+        @controlCodeBreadcrumbsStep("/asdf"){
+          This is the first step.
+        }
+        @controlCodeBreadcrumbsDetailBox(isPathStep = true){
+          This is the last step, in a detail box. It has some notes.
+        }{
+          @controlCodeBreadcrumbsNotes() {
+            <li>Note 1</li>
+            <li>Note 2</li>
+            <li>Note 3</li>
+          }
+        }
+      }
+    </div>
+  </div>
+}
