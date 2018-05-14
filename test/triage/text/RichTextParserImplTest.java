@@ -2,7 +2,6 @@ package triage.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Before;
 import org.junit.Test;
 import triage.config.ControlEntryConfig;
 import triage.config.DefinitionConfig;
@@ -23,7 +22,7 @@ public class RichTextParserImplTest {
   private static final String PL9001_ID = "2";
   private static final String _1A001_ID = "3";
 
-  private RichTextParserImpl richTextParser;
+  private RichTextParserImpl richTextParser = new RichTextParserImpl(new ParserLookupServiceMock());
 
   private static ControlEntryConfig createControlEntryConfig(String id, String code) {
     return new ControlEntryConfig(id, code, new RichText(""), new RichText(""), null, false, false);
@@ -57,16 +56,11 @@ public class RichTextParserImplTest {
     public Optional<DefinitionConfig> getLocalDefinitionForTerm(String term, String stageId) {
       if ("lasers".equals(term.toLowerCase())) {
         return Optional.of(new DefinitionConfig(LASERS_LOCAL_DEFINITION_ID, "lasers", new RichText(""), null));
+      } else {
+        return Optional.empty();
       }
-      return Optional.empty();
     }
   }
-
-  @Before
-  public void setup() {
-    richTextParser = new RichTextParserImpl(new ParserLookupServiceMock());
-  }
-
 
   @Test
   public void testParseGlobalDefinition() {
@@ -101,7 +95,7 @@ public class RichTextParserImplTest {
   }
 
   @Test
-  public void testMultipleGlobalDefinitions() {
+  public void testParseMultipleGlobalDefinitions() {
     RichText richText = richTextParser.parse("Leading text \"lasers\" and \"missiles\" trailing text", STAGE_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(5);
@@ -198,7 +192,7 @@ public class RichTextParserImplTest {
   }
 
   @Test
-  public void testMultipleDefinitionTypes() {
+  public void testParseGlobalDefinitionAndLocalDefinitionAndControlEntry() {
     RichText richText = richTextParser.parse("Leading text 'lasers' and \"missiles\" and ML1 trailing text", STAGE_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(7);

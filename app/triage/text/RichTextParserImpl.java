@@ -11,6 +11,11 @@ import java.util.regex.Pattern;
 
 public class RichTextParserImpl implements RichTextParser {
 
+  private static final Pattern GLOBAL_DEFINITION_PATTERN = Pattern.compile("\"(.*?)\"");
+  private static final Pattern LOCAL_DEFINITION_PATTERN = Pattern.compile("\'(.*?)'");
+  //only go to p to avoid picking "0Hz"
+  private static final Pattern CONTROL_ENTRY_PATTERN = Pattern.compile("(?:ML|PL|[0-9][A-Z])[0-9a-p.]+");
+
   private final ParserLookupService parserLookupService;
 
   @Inject
@@ -28,39 +33,41 @@ public class RichTextParserImpl implements RichTextParser {
   }
 
   private List<RichTextNode> parseGlobalDefinitions(List<RichTextNode> inputNodes) {
-    Pattern pattern = Pattern.compile("\"(.*?)\"");
-    return parseDefinitions(inputNodes, pattern, matcher -> {
-      String termInQuotes = matcher.group(0);
-      String term = matcher.group(1);
-
-      return parserLookupService.getGlobalDefinitionForTerm(term)
-          .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId(), true))
-          .orElse(new SimpleTextNode(termInQuotes));
-    });
+    return parseDefinitions(inputNodes, GLOBAL_DEFINITION_PATTERN, this::createGlobalDefinition);
   }
 
   private List<RichTextNode> parseLocalDefinitions(List<RichTextNode> inputNodes, String stageId) {
-    Pattern pattern = Pattern.compile("\'(.*?)'");
-    return parseDefinitions(inputNodes, pattern, matcher -> {
-      String termInQuotes = matcher.group(0);
-      String term = matcher.group(1);
-
-      return parserLookupService.getLocalDefinitionForTerm(term, stageId)
-          .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId(), false))
-          .orElse(new SimpleTextNode(termInQuotes));
-    });
+    return parseDefinitions(inputNodes, LOCAL_DEFINITION_PATTERN, matcher -> createLocalDefinition(matcher, stageId));
   }
 
   private List<RichTextNode> parseControlEntries(List<RichTextNode> inputNodes) {
-    Pattern pattern = Pattern.compile("(?:ML|PL|[0-9][A-Z])[0-9a-p.]+"); //only go to p to avoid picking "0Hz"
-    return parseDefinitions(inputNodes, pattern, matcher -> {
-      String controlCode = matcher.group(0);
+    return parseDefinitions(inputNodes, CONTROL_ENTRY_PATTERN, this::createControlEntry);
+  }
 
-      //If there's a matching code, create a ControlEntryReference - otherwise treat this as simple text
-      return parserLookupService.getControlEntryForCode(controlCode)
-          .map(controlEntry -> (RichTextNode) new ControlEntryReferenceNode(controlCode, controlEntry.getId()))
-          .orElse(new SimpleTextNode(controlCode));
-    });
+  private RichTextNode createGlobalDefinition(Matcher matcher) {
+    String termInQuotes = matcher.group(0);
+    String term = matcher.group(1);
+
+    return parserLookupService.getGlobalDefinitionForTerm(term)
+        .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId(), true))
+        .orElse(new SimpleTextNode(termInQuotes));
+  }
+
+  private RichTextNode createLocalDefinition(Matcher matcher, String stageId) {
+    String termInQuotes = matcher.group(0);
+    String term = matcher.group(1);
+
+    return parserLookupService.getLocalDefinitionForTerm(term, stageId)
+        .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId(), false))
+        .orElse(new SimpleTextNode(termInQuotes));
+  }
+
+  private RichTextNode createControlEntry(Matcher matcher) {
+    String controlCode = matcher.group(0);
+    //If there's a matching code, create a ControlEntryReference - otherwise treat this as simple text
+    return parserLookupService.getControlEntryForCode(controlCode)
+        .map(controlEntry -> (RichTextNode) new ControlEntryReferenceNode(controlCode, controlEntry.getId()))
+        .orElse(new SimpleTextNode(controlCode));
   }
 
   private List<RichTextNode> parseDefinitions(List<RichTextNode> inputNodes, Pattern pattern,
@@ -68,10 +75,7 @@ public class RichTextParserImpl implements RichTextParser {
     List<RichTextNode> resultNodes = new ArrayList<>();
 
     for (RichTextNode textNode : inputNodes) {
-      if (!(textNode instanceof SimpleTextNode)) {
-        //Only parse SimpleNodes - other types have already been parsed
-        resultNodes.add(textNode);
-      } else {
+      if (textNode instanceof SimpleTextNode) {
         String textContent = textNode.getTextContent();
         Matcher matcher = pattern.matcher(textContent);
 
@@ -94,6 +98,9 @@ public class RichTextParserImpl implements RichTextParser {
         if (trailingText.length() > 0) {
           resultNodes.add(new SimpleTextNode(trailingText));
         }
+      } else {
+        //Only parse SimpleTextNodes - other types have already been parsed
+        resultNodes.add(textNode);
       }
     }
 
@@ -105,15 +112,15 @@ public class RichTextParserImpl implements RichTextParser {
     StringBuffer simpleText = new StringBuffer();
 
     for (RichTextNode inputNode : inputNodes) {
-      if (!(inputNode instanceof SimpleTextNode)) {
+      if (inputNode instanceof SimpleTextNode) {
+        simpleText.append(inputNode.getTextContent());
+      } else {
         if (simpleText.length() > 0) {
           resultNodes.add(new SimpleTextNode(simpleText.toString()));
           simpleText = new StringBuffer();
         }
 
         resultNodes.add(inputNode);
-      } else {
-        simpleText.append(inputNode.getTextContent());
       }
     }
 
