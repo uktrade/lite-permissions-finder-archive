@@ -1,9 +1,10 @@
+@import models.view.BreadcrumbView
 @import views.html.util._
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import views.html.common.page._
 @import views.html.common.state._
 
-@(form: Form[_], stageId: String, sessionId: String, title: String)(secondaryHeading: Html)(formContent: Html)
+@(form: Form[_], stageId: String, sessionId: String, title: String, breadcrumbView: BreadcrumbView)(secondaryHeading: Html)(formContent: Html)
 
 @standardPage(title, None, twoThirdsColumn = false){
 }{
@@ -37,16 +38,18 @@
     <div class="column-one-third">
       <h2 class="heading-medium">You are here</h2>
       @controlCodeBreadcrumbs(){
-        @controlCodeBreadcrumbsStep("/asdf"){
-          This is the first step.
+        @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
+          @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl){
+            @breadcrumbItemView.getText
+          }
         }
         @controlCodeBreadcrumbsDetailBox(isPathStep = true){
           This is the last step, in a detail box. It has some notes.
         }{
           @controlCodeBreadcrumbsNotes() {
-            <li>Note 1</li>
-            <li>Note 2</li>
-            <li>Note 3</li>
+            @for(noteView <- breadcrumbView.getNoteViews) {
+              <li>@noteView.getText</li>
+            }
           }
         }
       }

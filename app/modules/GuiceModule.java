@@ -30,6 +30,12 @@ import components.common.persistence.StatelessRedisDao;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionContextParamProvider;
 import components.common.transaction.TransactionManager;
+import components.services.AnswerConfigService;
+import components.services.AnswerConfigServiceImpl;
+import components.services.AnswerViewService;
+import components.services.AnswerViewViewServiceImpl;
+import components.services.BreadcrumbViewService;
+import components.services.BreadcrumbViewServiceImpl;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
 import models.summary.SummaryService;
@@ -70,7 +76,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
-
+    bind(BreadcrumbViewService.class).to(BreadcrumbViewServiceImpl.class);
+    bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
+    bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
     bind(JourneyConfigService.class).to(JourneyConfigServiceSampleImpl.class);
     bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
