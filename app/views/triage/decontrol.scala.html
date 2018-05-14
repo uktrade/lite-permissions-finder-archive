@@ -1,20 +1,17 @@
-@import models.view.CheckboxView
+@import utils.common.SelectOption
+@import models.view.BreadcrumbView
+@import views.html.common.form.formCheckboxes
 
-@this()
-@(form: Form[_], stageId: String, sessionId: String, controlCode: String, checkboxViews: List[CheckboxView])
+@this(subAnswers: subAnswers)
+@(form: Form[_], stageId: String, sessionId: String, controlCode: String, options: Map[SelectOption, Boolean], breadcrumbView: BreadcrumbView)
 
-@triagePage(form, stageId, sessionId, "Does your item have any of these characteristics?"){
+@triagePage(form, stageId, sessionId, "Does your item have any of these characteristics?", breadcrumbView){
   @controlCode: Checking against decontrols
 }{
   <p>Select all that apply.</p>
 
   <div class="form-group">
-    @for((checkboxView, index) <- checkboxViews.iterator.zipWithIndex) {
-      <div class="multiple-choice">
-        <input id="answers@index" type="checkbox" name="answers[@index]" value="@checkboxView.getAnswerView.getValue" @if(checkboxView.isChecked) { checked="checked" }>
-        <label for="answers@index">@checkboxView.getAnswerView.getPrompt</label>
-      </div>
-    }
+    @formCheckboxes(form("answers"), options)
   </div>
 }
 
