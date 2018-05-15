@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public class ControlEntryConfig {
 
+  private final String id;
   private final String controlCode;
   private final RichText fullDescription;
   private final RichText summaryDescription;
@@ -15,14 +16,20 @@ public class ControlEntryConfig {
   private final boolean nestedChildren;
   private final boolean selectable;
 
-  public ControlEntryConfig(String controlCode, RichText fullDescription, RichText summaryDescription,
+  public ControlEntryConfig(String id, String controlCode, RichText fullDescription,
+                            RichText summaryDescription,
                             ControlEntryConfig parentControlEntry, boolean nestedChildren, boolean selectable) {
+    this.id = id;
     this.controlCode = controlCode;
     this.fullDescription = fullDescription;
     this.summaryDescription = summaryDescription;
     this.parentControlEntry = parentControlEntry;
     this.nestedChildren = nestedChildren;
     this.selectable = selectable;
+  }
+
+  public String getId() {
+    return id;
   }
 
   public String getControlCode() {

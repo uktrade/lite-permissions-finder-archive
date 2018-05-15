@@ -3,12 +3,12 @@ package triage.text;
 public class DefinitionReferenceNode implements RichTextNode {
 
   private final String originalText; //to preserve original case
-  private final String referencedDefinition;
+  private final String referencedDefinitionId;
   private final boolean isGlobal;
 
-  public DefinitionReferenceNode(String originalText, String referencedDefinition, boolean isGlobal) {
+  DefinitionReferenceNode(String originalText, String referencedDefinitionId, boolean isGlobal) {
     this.originalText = originalText;
-    this.referencedDefinition = referencedDefinition;
+    this.referencedDefinitionId = referencedDefinitionId;
     this.isGlobal = isGlobal;
   }
 
@@ -17,8 +17,8 @@ public class DefinitionReferenceNode implements RichTextNode {
     return originalText;
   }
 
-  public String getReferencedDefinition() {
-    return referencedDefinition;
+  public String getReferencedDefinitionId() {
+    return referencedDefinitionId;
   }
 
   public boolean isGlobal() {
