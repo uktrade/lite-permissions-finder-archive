@@ -1,0 +1,20 @@
+@import util._
+
+@(licenceNumber: String)
+
+
+
+@standardPage("OGEL Registration Confirmation", Some(heading("OGEL Registration Confirmation"))) {
+  @Html("")
+} {
+
+  <div class="govuk-box-highlight">
+    <h1 class="bold-large"> Registration successful</h1>
+    <p>
+      <a id="viewOgel" href="@controllers.registration.routes.ViewOgelController.viewOgel(licenceNumber)" class="link underlined ogel-link" target="_blank">View your licence<span class="visually-hidden"> (opens in a new tab)</span></a>
+    </p>
+  </div>
+
+  <p><a href="https://www.surveymonkey.co.uk/r/736PJWP" rel="external" target="_blank">What did you think of this service?<span class="visually-hidden"> (opens in a new tab)</span></a> (takes 30 seconds)</p>
+
+}

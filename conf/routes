@@ -76,6 +76,11 @@ GET     /summary-continue                     controllers.SummaryController.rend
 
 POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
 
+
+GET         /view-ogel                       controllers.registration.ViewOgelController.viewOgel(registrationRef ?= "")
+GET         /register/registration-outcome   controllers.registration.RegistrationOutcomeController.renderForm
+POST        /register/registration-outcome   controllers.registration.RegistrationOutcomeController.handleRegistrationProcessed
+
 # JavaScript routes
 # TODO RE-ENABLE JS ROUTES HERE
 #GET     /js-routes                            controllers.JavaScriptRoutesController.jsRoutes

@@ -130,6 +130,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("basicAuthRealm"))
         .to(config.getString("basicAuth.realm"));
 
+    bindConstant().annotatedWith(Names.named("sharedSecret")).to(config.getString("application.sharedSecret"));
+
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
     requestInjection(this);
