@@ -23,18 +23,18 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   @Inject
   public JourneyConfigServiceSampleImpl() {
 
-    ControlEntryConfig ml1 = new ControlEntryConfig("ML1",
+    ControlEntryConfig ml1 = new ControlEntryConfig("1", "ML1",
         new RichText("Smooth-bore weapons with a calibre of less than 20mm"), new RichText("Smooth-bore weapons"), null,
         true, false);
 
-    ControlEntryConfig ml1a = new ControlEntryConfig("ML1a",
+    ControlEntryConfig ml1a = new ControlEntryConfig("2", "ML1a",
         new RichText("Rifles and combination guns, handguns and machine guns"),
         new RichText("Rifles"), ml1, true, false);
 
-    ControlEntryConfig ml1b = new ControlEntryConfig("ML1b", new RichText("Smooth-bore weapons"), null, ml1, false,
+    ControlEntryConfig ml1b = new ControlEntryConfig("3", "ML1b", new RichText("Smooth-bore weapons"), null, ml1, false,
         false);
 
-    ControlEntryConfig ml1c = new ControlEntryConfig("ML1c", new RichText("Weapons using caseless ammunition"), null,
+    ControlEntryConfig ml1c = new ControlEntryConfig("4", "ML1c", new RichText("Weapons using caseless ammunition"), null,
         ml1, false, false);
 
     List<AnswerConfig> stage1Answers = new ArrayList<>();
@@ -99,7 +99,7 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   private ControlEntryConfig createControlEntryConfig(String controlCode) {
-    return new ControlEntryConfig(controlCode,
+    return new ControlEntryConfig(controlCode + "_ID", controlCode,
         new RichText(controlCode + "FullDescription"),
         new RichText(controlCode + "SummaryDescription"),
         null,
