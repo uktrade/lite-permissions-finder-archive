@@ -2,6 +2,8 @@
   @include core-16;
   width: 100%;
   margin-bottom: $gutter;
+  list-style-type: none;
+  padding: 0;
 
   &>li {
     position: relative;
@@ -9,8 +11,12 @@
     padding-right: 4.5em;
     padding-bottom: $gutter-two-thirds;
     padding-left: $gutter-two-thirds;
-    border-left: 2px solid $border-colour;
     margin-left: 11px;
+    border-left: 2px solid $border-colour;
+
+    @media print {
+      border-left-color: $black;
+    }
 
     &:last-child:not(.detail-box) {
       border-left: none;
@@ -28,6 +34,10 @@
       display: block;
       border-radius: 50%;
       box-sizing: border-box;
+
+      @media print {
+        border-color: $black;
+      }
     }
 
     @include media(mobile) {
@@ -41,6 +51,10 @@
 
       @include media(mobile) {
         top: 6px;
+      }
+
+      @media print {
+        display: none;
       }
     }
 
@@ -60,6 +74,10 @@
     padding: 0;
     box-sizing: border-box;
 
+    @media print {
+      border-color: $black;
+    }
+
     .detail-box-content {
       padding: $gutter-one-third;
     }
@@ -68,6 +86,11 @@
       background: $grey-4;
       padding: $gutter-one-third;
       border-top: 1px solid $border-colour;
+
+      @media print {
+        border-top-color: $black;
+        background: $white;
+      }
 
       &:only-child {
         border-top: none;
@@ -79,10 +102,16 @@
 
       .breadcrumb-notes {
         margin: 0 (-$gutter-one-third) (-$gutter-one-third) (-$gutter-one-third);
+        list-style-type: none;
+        padding: 0;
 
         li {
           border-bottom: 1px solid $border-colour;
           padding: $gutter-half $gutter-one-third;
+
+          @media print {
+            border-bottom-color: $black;
+          }
 
           &:first-child {
             padding-top: 0;

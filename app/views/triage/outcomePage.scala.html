@@ -1,0 +1,28 @@
+@import views.html.util._
+@import views.html.common.page.twoThirdsColumn
+
+@(title: String, sessionId: String)(content: Html)
+
+@standardPage(title.toString, None, twoThirdsColumn = false) {
+
+} {
+  <div class="grid-row outcome-page-header">
+    <div class="column-two-thirds">
+      <header class="page-header">
+        <h1 class="heading-xlarge">
+          @title
+        </h1>
+      </header>
+    </div>
+    <div class="column-one-third">
+      <h2 class="visually-hidden">Sharing options</h2>
+      <ul class="outcome-sharing-options">
+        <li><a href="javascript:alert('This will show the email this page form')">Email this page</a></li>
+        <li><a href="javascript:window.print()" class="js-only">Print this page</a></li>
+      </ul>
+    </div>
+  </div>
+  @twoThirdsColumn {
+    @content
+  }
+}
