@@ -26,6 +26,8 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
+GET     /licence-finder-test/:controlCode     controllers.licencefinder.TestEntryController.testEntry(controlCode)
+
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
