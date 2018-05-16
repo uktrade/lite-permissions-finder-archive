@@ -19,10 +19,6 @@ public class AnswerView {
     return prompt;
   }
 
-  public String getPromptWithSubAnswers() {
-    return prompt + views.html.triage.subAnswers.render(subAnswerViews);
-  }
-
   public String getValue() {
     return value;
   }

@@ -1,6 +1,7 @@
 @import models.view.AnswerView
 @import models.view.BreadcrumbView
 @import views.html.common.form._
+@import views.html.triage.subAnswers
 @import views.html.frontendComponents.formRadioWithDetailPanel
 @import play.twirl.api.HtmlFormat
 
@@ -10,7 +11,7 @@
 @triagePage(form, stageId, sessionId, title, breadcrumbView)(HtmlFormat.empty){
   @formRadioGroupContainer(form("answer"))(null) {
     @for(answerView <- answerViews) {
-      @formRadioWithDetailPanel(form("answer"), answerView.getPromptWithSubAnswers, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
+      @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews), answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
         This is some more information for @answerView.getPrompt
       }
     }
