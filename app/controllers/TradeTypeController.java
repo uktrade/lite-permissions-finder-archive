@@ -7,7 +7,6 @@ import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.JourneyDefinitionNames;
 import models.TradeType;
 import play.data.Form;
 import play.data.FormFactory;
@@ -38,15 +37,16 @@ public class TradeTypeController extends Controller {
   public CompletionStage<Result> renderForm() {
     TradeTypeForm formTemplate = new TradeTypeForm();
     Optional<TradeType> tradeTypeOptional = permissionsFinderDao.getTradeType();
+
     tradeTypeOptional.ifPresent((e) -> formTemplate.tradeType = e.toString());
-    return completedFuture(ok(tradeType.render(formFactory.form(TradeTypeForm.class).fill(formTemplate))));
+    return completedFuture(ok(tradeType.render(formFactory.form(TradeTypeForm.class).fill(formTemplate), permissionsFinderDao.getControlCodeForRegistration())));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<TradeTypeForm> form = formFactory.form(TradeTypeForm.class).bindFromRequest();
-
+    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
     if (form.hasErrors()) {
-      return completedFuture(ok(tradeType.render(form)));
+      return completedFuture(ok(tradeType.render(form, controlCode)));
     }
 
     String tradeTypeParam = form.get().tradeType;
@@ -54,7 +54,7 @@ public class TradeTypeController extends Controller {
 
     permissionsFinderDao.saveTradeType(tradeType);
     // TODO this is a placeholder
-    permissionsFinderDao.saveControlCodeForRegistration("ML12b");
+    //permissionsFinderDao.saveControlCodeForRegistration("ML12b");
     switch (tradeType) {
       case EXPORT:
         permissionsFinderDao.saveSourceCountry(UNITED_KINGDOM);

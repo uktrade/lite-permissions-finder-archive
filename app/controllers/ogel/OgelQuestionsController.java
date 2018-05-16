@@ -106,6 +106,9 @@ public class OgelQuestionsController {
     @Required(message = "Select whether you are exporting goods for or after exhibition or demonstration")
     public String forExhibitionDemonstration;
 
+    @Required(message = "Select whether your goods were manufactured before 1897, or are worth less than £30,000")
+    public String beforeOrLess;
+
     public static List<String> formToActivityTypes(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
       // TODO account for TECH
       Map<OgelActivityType, String> activityMap = new HashMap<>();
@@ -114,6 +117,7 @@ public class OgelQuestionsController {
       activityMap.put(OgelActivityType.MIL_ANY, OgelActivityType.MIL_ANY.value());
       activityMap.put(OgelActivityType.MIL_GOV, OgelActivityType.MIL_GOV.value());
       activityMap.put(OgelActivityType.REPAIR, OgelActivityType.REPAIR.value());
+      ///activityMap.put(OgelActivityType.BEFORE_OR_LESS, OgelActivityType.BEFORE_OR_LESS.value());
 
       if (ogelQuestionsFormOptional.isPresent()) {
         OgelQuestionsForm ogelQuestionsForm = ogelQuestionsFormOptional.get();
@@ -123,6 +127,10 @@ public class OgelQuestionsController {
         if ("false".equals(ogelQuestionsForm.forExhibitionDemonstration)) {
           activityMap.remove(OgelActivityType.EXHIBITION);
         }
+        /*
+        if ("false".equals(ogelQuestionsForm.beforeOrLess)) {
+          activityMap.remove(OgelActivityType.BEFORE_OR_LESS);
+        }*/
       }
 
       // Returns a list of values

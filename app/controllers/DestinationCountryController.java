@@ -109,7 +109,7 @@ public class DestinationCountryController extends Controller {
      * itemThroughMultipleCountries == false -> Reset the country list
      * itemThroughMultipleCountries == null/empty -> Raise a form error
      * Otherwise raise an exception
-     */
+
     if ("true".equals(boundForm.itemThroughMultipleCountries)) {
       for (int i = 0; i < boundForm.throughDestinationCountries.size(); i++) {
         String country = boundForm.throughDestinationCountries.get(i);
@@ -128,7 +128,7 @@ public class DestinationCountryController extends Controller {
     } else {
       throw new FormStateException("Unknown value for " + ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME + " \""
           + boundForm.itemThroughMultipleCountries + "\"");
-    }
+    }*/
 
     if (boundForm.finalDestinationCountry == null || boundForm.finalDestinationCountry.isEmpty()) {
       form.reject(FINAL_DESTINATION_COUNTRY_FIELD_NAME, "Enter a country or territory");
@@ -144,7 +144,7 @@ public class DestinationCountryController extends Controller {
         && boundForm.throughDestinationCountries.stream()
         .anyMatch(throughCountry -> countries.stream()
             .noneMatch(country -> country.getCountryRef().equals(throughCountry)))) {
-      throw new FormStateException("Invalid value for a " + THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + " item");
+      //throw new FormStateException("Invalid value for a " + THROUGH_DESTINATION_COUNTRIES_FIELD_NAME + " item");
     }
 
     if (countries.stream().noneMatch(country -> country.getCountryRef().equals(boundForm.finalDestinationCountry))) {

@@ -17,8 +17,7 @@ public class TestEntryController extends Controller {
   private final PermissionsFinderDao permissionsFinderDao;
 
   @Inject
-  public TestEntryController(TransactionManager transactionManager,
-                             JourneyManager journeyManager,
+  public TestEntryController(TransactionManager transactionManager, JourneyManager journeyManager,
                              PermissionsFinderDao permissionsFinderDao) {
     this.transactionManager = transactionManager;
     this.journeyManager = journeyManager;

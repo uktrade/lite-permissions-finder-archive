@@ -9,6 +9,7 @@ public enum OgelActivityType {
   MIL_ANY("MIL_ANY"),
   MIL_GOV("MIL_GOV"),
   REPAIR("REPAIR"),
+  BEFORE_OR_LESS("BEFORE_OR_LESS"),
   TECH("TECH");
 
   private String value;
