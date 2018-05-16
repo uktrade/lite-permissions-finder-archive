@@ -16,4 +16,6 @@ public interface JourneyConfigService {
   //List of an entry's immediate children
   List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig);
 
+  List<String> getStageIdsForControlCode(ControlEntryConfig controlEntryConfig);
+
 }

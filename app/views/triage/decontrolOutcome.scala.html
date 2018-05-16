@@ -1,32 +1,54 @@
+@import models.view.BreadcrumbView
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import views.html.triage.outcomePage
+@import views.html.common.state.contextFormParams
+@import views.html.common.form.formCheckbox
+@import com.google.common.collect.Iterables
+@import views.html.common.page._
 
 @this()
-@(sessionId: String)
+@(form: Form[_], stageId: String, sessionId: String, breadcrumbView: BreadcrumbView, controlCodes: List[String])
 
 @outcomePage("Item not listed", sessionId) {
+
+  @twoThirdsColumn{
+    @errorSummary(form)
+  }
 
   <p class="lede">
     Based on the answers you've provided, your item is not included on the UK Strategic Export Control Lists.
   </p>
 
   @controlCodeBreadcrumbs(isWide = true) {
-    @controlCodeBreadcrumbsStep("/asdf") {
-      This is the first step.
-    }
-    @controlCodeBreadcrumbsStep("/jkl") {
-      This is the second step with some notes
-      @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
-        @controlCodeBreadcrumbsNotes() {
-          <li>Note 1</li>
-          <li>Note 2</li>
-          <li>Note 3</li>
+    @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
+      @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
+        @breadcrumbItemView.getText
+        @if(breadcrumbItemView.getDescription!=null) {
+          @breadcrumbItemView.getDescription
+        }
+        @if(!breadcrumbItemView.getNoteViews.isEmpty) {
+          @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
+            @controlCodeBreadcrumbsNotes() {
+              @for(noteView <- breadcrumbItemView.getNoteViews) {
+                <li>@noteView.getText</li>
+              }
+            }
+          }
         }
       }
     }
     @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
-      <span class="font-medium">This is the decontrol they selected</span>
+      <span class="font-medium">Item is decontrolled</span>
+        <p></p>
+        @Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText
+        @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription!=null) {
+          @Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription
+        }
+        <p></p>
+        @for(controlCode <- controlCodes) {
+         - @controlCode.<br>
+        }
     }(HtmlFormat.empty)
   }
 
@@ -58,4 +80,15 @@
     <span class="visually-hidden">Warning:</span>
     If you export your item without a licence, you will be responsible for any penalties should a licence be required.
   </div>
+
+  <form action="@routes.StageController.handleOutcomeDecontrolSubmit(stageId, sessionId)" method="POST">
+    @contextFormParams()
+
+    <div class="form-group">
+      @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")
+    </div>
+
+    <button type="submit" class="button" name="action" value="continue">Request an NLR document</button>
+  </form>
+
 }

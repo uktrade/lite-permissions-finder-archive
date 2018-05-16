@@ -12,6 +12,7 @@ import models.view.BreadcrumbView;
 import models.view.CheckboxView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
+import models.view.form.RequestNlrForm;
 import org.apache.commons.collections4.ListUtils;
 import play.Logger;
 import play.data.Form;
@@ -81,8 +82,40 @@ public class StageController extends Controller {
     this.decontrolOutcome = decontrolOutcome;
   }
 
-  public Result outcomeDecontrol(String sessionId) {
-    return ok(decontrolOutcome.render(sessionId));
+  public Result outcomeDecontrol(String stageId, String sessionId) {
+    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    if (stageConfig == null || getPageType(stageConfig) != PageType.DECONTROL) {
+      return redirectToIndex(sessionId);
+    } else {
+      Set<String> answers = sessionService.getAnswersForStageId(sessionId, stageId);
+      if (answers.isEmpty()) {
+        Logger.error("Answers cannot be empty on outcome decontrol page.");
+        return redirectToIndex(sessionId);
+      } else {
+        Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class);
+        return renderOutcomeDecontrol(form, stageId, sessionId, answers);
+      }
+    }
+  }
+
+  public Result handleOutcomeDecontrolSubmit(String stageId, String sessionId) {
+    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    if (stageConfig == null || getPageType(stageConfig) != PageType.DECONTROL) {
+      return redirectToIndex(sessionId);
+    } else {
+      Set<String> answers = sessionService.getAnswersForStageId(sessionId, stageId);
+      if (answers.isEmpty()) {
+        Logger.error("Answers cannot be empty on outcome decontrol page.");
+        return redirectToIndex(sessionId);
+      } else {
+        Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();
+        if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
+          return renderOutcomeDecontrol(form, stageId, sessionId, answers);
+        } else {
+          return ok("TODO: Login, show form");
+        }
+      }
+    }
   }
 
   public Result outcomeDropout(String sessionId) {
@@ -96,8 +129,7 @@ public class StageController extends Controller {
   public Result render(String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
     if (stageConfig == null) {
-      String initialStageId = journeyConfigService.getInitialStageId();
-      return redirect(routes.StageController.render(initialStageId, sessionId));
+      return redirectToIndex(sessionId);
     } else {
       PageType pageType = getPageType(stageConfig);
       switch (pageType) {
@@ -122,6 +154,39 @@ public class StageController extends Controller {
           return redirectToIndex(sessionId);
       }
     }
+  }
+
+  public Result handleSubmit(String stageId, String sessionId) {
+    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    if (stageConfig == null) {
+      Logger.error("Unknown stageId " + stageId);
+      return redirectToIndex(sessionId);
+    } else {
+      PageType pageType = getPageType(stageConfig);
+      switch (pageType) {
+        case SELECT_ONE:
+          return handleSelectOneSubmit(stageId, sessionId, stageConfig);
+        case SELECT_MANY:
+          return handleSelectManySubmit(stageId, sessionId, stageConfig);
+        case DECONTROL:
+          return handleDecontrolSubmit(stageId, sessionId, stageConfig);
+        case UNKNOWN:
+        default:
+          Logger.error("Unknown stageId " + stageId);
+          return redirectToIndex(sessionId);
+      }
+    }
+  }
+
+  private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrFormForm, String stageId, String sessionId,
+                                        Set<String> answers) {
+    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    List<String> controlCodes = answerViewService.createAnswerViews(stageConfig).stream()
+        .filter(answer -> answers.contains(answer.getValue()))
+        .map(AnswerView::getPrompt)
+        .collect(Collectors.toList());
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    return ok(decontrolOutcome.render(requestNlrFormForm, stageId, sessionId, breadcrumbView, controlCodes));
   }
 
   private Result renderSelectOne(Form<AnswerForm> answerFormForm, String stageId, String sessionId) {
@@ -178,28 +243,6 @@ public class StageController extends Controller {
     return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, title, explanatoryText, options, breadcrumbView));
   }
 
-  public Result handleSubmit(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
-    if (stageConfig == null) {
-      Logger.error("Unknown stageId " + stageId);
-      return redirectToIndex(sessionId);
-    } else {
-      PageType pageType = getPageType(stageConfig);
-      switch (pageType) {
-        case SELECT_ONE:
-          return handleSelectOneSubmit(stageId, sessionId, stageConfig);
-        case SELECT_MANY:
-          return handleSelectManySubmit(stageId, sessionId, stageConfig);
-        case DECONTROL:
-          return handleDecontrolSubmit(stageId, sessionId, stageConfig);
-        case UNKNOWN:
-        default:
-          Logger.error("Unknown stageId " + stageId);
-          return redirectToIndex(sessionId);
-      }
-    }
-  }
-
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig) {
     Form<MultiAnswerForm> multiAnswerFormForm = formFactory.form(MultiAnswerForm.class).bindFromRequest();
     String actionParam = multiAnswerFormForm.rawData().get("action");
@@ -217,7 +260,7 @@ public class StageController extends Controller {
         } else {
           Set<String> answerIds = matchingAnswers.stream().map(AnswerConfig::getAnswerId).collect(Collectors.toSet());
           sessionService.saveAnswersForStageId(sessionId, stageId, answerIds);
-          return redirect(routes.StageController.outcomeDecontrol(sessionId));
+          return redirect(routes.StageController.outcomeDecontrol(stageId, sessionId));
         }
       } else if (action == Action.NONE) {
         Optional<String> nextStageId = stageConfig.getNextStageId();
