@@ -1,16 +1,18 @@
 @import models.view.SubAnswerView
-@import com.google.inject.Provider
 
-@this(subAnswers: Provider[subAnswers])
 @(subAnswerViews: List[SubAnswerView])
 
-@if(!subAnswerViews.isEmpty) {
-  <ul class="list list-bullet text">
+@answerList(subAnswerViews: List[SubAnswerView]) = {
+  @if(!subAnswerViews.isEmpty) {
+    <ul class="list list-bullet text">
     @for(subAnswerView <- subAnswerViews) {
       <li>
         @subAnswerView.getText
-        @subAnswers.get()(subAnswerView.getSubAnswerViews)
+        @answerList(subAnswerView.getSubAnswerViews)
       </li>
     }
-  </ul>
+    </ul>
+  }
 }
+
+@answerList(subAnswerViews)
