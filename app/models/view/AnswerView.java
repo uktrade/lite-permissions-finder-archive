@@ -1,6 +1,7 @@
 package models.view;
 
 import java.util.List;
+import views.html.triage.subAnswers;
 
 public class AnswerView {
 
@@ -16,6 +17,10 @@ public class AnswerView {
 
   public String getPrompt() {
     return prompt;
+  }
+
+  public String getPromptWithSubAnswers() {
+    return prompt + views.html.triage.subAnswers.render(subAnswerViews);
   }
 
   public String getValue() {
