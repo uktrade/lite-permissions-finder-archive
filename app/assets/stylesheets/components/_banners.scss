@@ -1,0 +1,31 @@
+.banner {
+  @include bold-19;
+  background: $govuk-blue;
+  color: white;
+  padding: $gutter-two-thirds $gutter;
+  margin-bottom: $gutter;
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.danger-banner {
+  background: $red;
+  padding-left: $gutter + 40px;
+
+  &:before {
+    content: "!";
+    background: white;
+    width: 30px;
+    height: 30px;
+    line-height: 35px;
+    position: absolute;
+    top: 17px;
+    left: 25px;
+    color: $red;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 27px;
+  }
+}

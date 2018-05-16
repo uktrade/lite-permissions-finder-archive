@@ -1,0 +1,17 @@
+@import utils.common.SelectOption
+@import models.view.BreadcrumbView
+@import views.html.common.form.formCheckboxes
+
+@this(subAnswers: subAnswers)
+@(form: Form[_], stageId: String, sessionId: String, controlCode: String, options: Map[SelectOption, Boolean], breadcrumbView: BreadcrumbView)
+
+@triagePage(form, stageId, sessionId, "Does your item have any of these characteristics?", breadcrumbView){
+  @controlCode: Checking against decontrols
+}{
+  <p>Select all that apply.</p>
+
+  <div class="form-group">
+    @formCheckboxes(form("answers"), options)
+  </div>
+}
+

@@ -4,10 +4,12 @@ import com.google.inject.Inject;
 import triage.text.RichText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
 
@@ -15,23 +17,24 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   public static final String STAGE_2_ID = "2";
   public static final String STAGE_3_ID = "3";
   public static final String STAGE_4_ID = "4";
+  public static final String STAGE_5_ID = "5";
   private final Map<String, StageConfig> configMap = new HashMap<>();
 
   @Inject
   public JourneyConfigServiceSampleImpl() {
 
-    ControlEntryConfig ml1 = new ControlEntryConfig("ML1",
+    ControlEntryConfig ml1 = new ControlEntryConfig("1", "ML1",
         new RichText("Smooth-bore weapons with a calibre of less than 20mm"), new RichText("Smooth-bore weapons"), null,
-        false, false);
+        true, false);
 
-    ControlEntryConfig ml1a = new ControlEntryConfig("ML1a",
-        new RichText("Rifles and combination guns, handguns and machine, sub-machine and volley guns"),
-        new RichText("Rifles"), ml1, false, false);
+    ControlEntryConfig ml1a = new ControlEntryConfig("2", "ML1a",
+        new RichText("Rifles and combination guns, handguns and machine guns"),
+        new RichText("Rifles"), ml1, true, false);
 
-    ControlEntryConfig ml1b = new ControlEntryConfig("ML1b", new RichText("Smooth-bore weapons"), null, ml1, false,
+    ControlEntryConfig ml1b = new ControlEntryConfig("3", "ML1b", new RichText("Smooth-bore weapons"), null, ml1, false,
         false);
 
-    ControlEntryConfig ml1c = new ControlEntryConfig("ML1c", new RichText("Weapons using caseless ammunition"), null,
+    ControlEntryConfig ml1c = new ControlEntryConfig("4", "ML1c", new RichText("Weapons using caseless ammunition"), null,
         ml1, false, false);
 
     List<AnswerConfig> stage1Answers = new ArrayList<>();
@@ -39,13 +42,13 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
     stage1Answers.add(new AnswerConfig("A2", "3", null, ml1b, 2, false));
     stage1Answers.add(new AnswerConfig("A3", "4", null, ml1c, 3, false));
 
-    StageConfig stage1 = new StageConfig(STAGE_1_ID, "Question for the first stage", null,
+    StageConfig stage1 = new StageConfig(STAGE_1_ID, "Question for the first stage", new RichText("This is an explanatory note."),
         StageConfig.QuestionType.STANDARD, StageConfig.AnswerType.SELECT_ONE, null, ml1, stage1Answers);
 
     configMap.put(STAGE_1_ID, stage1);
 
-    StageConfig stage2 = new StageConfig(STAGE_2_ID, null, null, StageConfig.QuestionType.STANDARD,
-        StageConfig.AnswerType.SELECT_ONE, null, ml1a, Collections.emptyList());
+    StageConfig stage2 = new StageConfig(STAGE_2_ID, null, null, StageConfig.QuestionType.DECONTROL,
+        StageConfig.AnswerType.SELECT_MANY, STAGE_3_ID, ml1a, stage1Answers);
 
     configMap.put(STAGE_2_ID, stage2);
 
@@ -54,8 +57,8 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
 
     configMap.put(STAGE_3_ID, stage3);
 
-    StageConfig stage4 = new StageConfig(STAGE_4_ID, null, null, StageConfig.QuestionType.STANDARD,
-        StageConfig.AnswerType.SELECT_ONE, null, ml1c, Collections.emptyList());
+    StageConfig stage4 = new StageConfig(STAGE_4_ID, null, new RichText("This is another explanatory note."), StageConfig.QuestionType.STANDARD,
+        StageConfig.AnswerType.SELECT_MANY, null, ml1c, stage1Answers);
 
     configMap.put(STAGE_4_ID, stage4);
   }
@@ -72,7 +75,11 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
 
   @Override
   public List<NoteConfig> getNotesForStageId(String stageId) {
-    return Collections.emptyList();
+    NoteConfig noteConfigOne = new NoteConfig(
+        UUID.randomUUID().toString(), stageId, new RichText("This is an example note"), NoteConfig.NoteType.NOTE);
+    NoteConfig noteConfigTwo = new NoteConfig(
+        UUID.randomUUID().toString(), stageId, new RichText("This is another example note"), NoteConfig.NoteType.NOTE);
+    return Arrays.asList(noteConfigOne, noteConfigTwo);
   }
 
   @Override
@@ -82,6 +89,22 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
 
   @Override
   public List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig) {
-    return Collections.emptyList();
+    if (!controlEntryConfig.hasNestedChildren() || controlEntryConfig.getControlCode().length() > 20) {
+      return new ArrayList<>();
+    } else {
+      String controlCode = controlEntryConfig.getControlCode();
+      return Arrays.asList(createControlEntryConfig(controlCode + "Child1"),
+          createControlEntryConfig(controlCode + "Child2"));
+    }
   }
+
+  private ControlEntryConfig createControlEntryConfig(String controlCode) {
+    return new ControlEntryConfig(controlCode + "_ID", controlCode,
+        new RichText(controlCode + "FullDescription"),
+        new RichText(controlCode + "SummaryDescription"),
+        null,
+        true,
+        false);
+  }
+
 }

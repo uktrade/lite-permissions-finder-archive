@@ -44,6 +44,12 @@ import components.common.persistence.StatelessRedisDao;
 import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionContextParamProvider;
 import components.common.transaction.TransactionManager;
+import components.services.AnswerConfigService;
+import components.services.AnswerConfigServiceImpl;
+import components.services.AnswerViewService;
+import components.services.AnswerViewViewServiceImpl;
+import components.services.BreadcrumbViewService;
+import components.services.BreadcrumbViewServiceImpl;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
 import models.summary.SummaryService;
@@ -59,6 +65,12 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
+import triage.config.JourneyConfigService;
+import triage.config.JourneyConfigServiceSampleImpl;
+import triage.session.SessionService;
+import triage.session.SessionServiceMockImpl;
+import triage.text.HtmlRenderService;
+import triage.text.HtmlRenderServiceImpl;
 import utils.appcode.ApplicationCodeContextParamProvider;
 
 import java.util.Arrays;
@@ -80,6 +92,12 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
+    bind(BreadcrumbViewService.class).to(BreadcrumbViewServiceImpl.class);
+    bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
+    bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
+    bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceSampleImpl.class);
+    bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));

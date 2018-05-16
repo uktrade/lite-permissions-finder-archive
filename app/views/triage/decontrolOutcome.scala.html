@@ -1,0 +1,61 @@
+@import play.twirl.api.HtmlFormat
+@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import views.html.triage.outcomePage
+
+@this()
+@(sessionId: String)
+
+@outcomePage("Item not listed", sessionId) {
+
+  <p class="lede">
+    Based on the answers you've provided, your item is not included on the UK Strategic Export Control Lists.
+  </p>
+
+  @controlCodeBreadcrumbs(isWide = true) {
+    @controlCodeBreadcrumbsStep("/asdf") {
+      This is the first step.
+    }
+    @controlCodeBreadcrumbsStep("/jkl") {
+      This is the second step with some notes
+      @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
+        @controlCodeBreadcrumbsNotes() {
+          <li>Note 1</li>
+          <li>Note 2</li>
+          <li>Note 3</li>
+        }
+      }
+    }
+    @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
+      <span class="font-medium">This is the decontrol they selected</span>
+    }(HtmlFormat.empty)
+  }
+
+  <h2 class="heading-large">What you should do next</h2>
+
+  <ol class="circle-step-list">
+    <li>
+      If you have not consulted the relevant item design margins and/or a technical officer with the appropriate
+      knowledge, we advise you do so before requesting a No Licence Required (NLR) document or proceeding past this page.
+    </li>
+    <li>
+      Even if if your item is not controlled it may still be affected by end use controls and any
+      <a href="https://www.gov.uk/guidance/sanctions-embargoes-and-restrictions" rel="external" target="_blank">
+        sanctions and embargoes<span class="visually-hidden"> (opens in a new tab)</span>
+      </a>.
+      Refer to the
+      <a href="#" rel="external" target="_blank">
+        end user advisory service (LINK TO BE UPDATED)<span class="visually-hidden"> (opens in a new tab)</span>
+      </a>
+      to understand whether your item may need a licence.
+    </li>
+    <li>
+      You may request an NLR document if, following the points above, you believe that your item is still not subject
+      to controls.
+    </li>
+  </ol>
+
+  <div class="banner danger-banner">
+    <span class="visually-hidden">Warning:</span>
+    If you export your item without a licence, you will be responsible for any penalties should a licence be required.
+  </div>
+}

@@ -13,7 +13,7 @@ public interface JourneyConfigService {
   //Hierarchy of parents
   List<ControlEntryConfig> getParentRatings(ControlEntryConfig controlEntryConfig);
 
-  //Hierarchy of children
+  //List of an entry's immediate children
   List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig);
 
 }

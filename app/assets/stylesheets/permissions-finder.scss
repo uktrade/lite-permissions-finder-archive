@@ -5,11 +5,18 @@
 @import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/measurements";                           // Widths and gutter variables
 
 // Mixins
+@import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/css3";                                   // Vendor-prefixed CSS3 feature mixins
 @import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/conditionals";                           // Media query mixin
 @import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/typography";                             // Core bold and heading mixins, also external links
 
 // GOV.UK elements
 @import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/elements/helpers";                       // Helper functions and classes
+
+// Components
+@import "components/banners";
+@import "components/circleStepList";
+@import "components/controlCodeBreadcrumbs";
+@import "components/typography";
 
 // Sections
 @import "sections/categories";

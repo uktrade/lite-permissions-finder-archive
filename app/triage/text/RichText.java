@@ -13,6 +13,10 @@ public class RichText {
     richTextNodes = Collections.singletonList(new SimpleTextNode(text));
   }
 
+  RichText(List<RichTextNode> richTextNodes) {
+    this.richTextNodes = richTextNodes;
+  }
+
   public List<RichTextNode> getRichTextNodes() {
     return richTextNodes;
   }
@@ -38,7 +42,7 @@ public class RichText {
         .filter(e -> e instanceof DefinitionReferenceNode)
         .map(e -> (DefinitionReferenceNode) e)
         .filter(e -> (global && e.isGlobal()) || (!global && !e.isGlobal()))
-        .map(DefinitionReferenceNode::getReferencedDefinition)
+        .map(DefinitionReferenceNode::getReferencedDefinitionId)
         .collect(Collectors.toSet());
   }
 }

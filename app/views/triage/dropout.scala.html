@@ -1,0 +1,46 @@
+@import views.html.util._
+@import views.html.triage.outcomePage
+
+@this()
+@(sessionId: String)
+
+@outcomePage("Item not found", sessionId) {
+  <p class="lede">
+    You have not found your item in the military list. This does not mean that your item is not controlled.
+  </p>
+
+  <div class="banner danger-banner">
+    <span class="visually-hidden">Warning:</span>
+    Always double-check if your items are controlled. You face up to 10 years in prison, fines and your items may be
+    seized if you export controlled items without the correct licence.
+  </div>
+
+  <h2 class="heading-large">What you should do next</h2>
+
+  <ol class="circle-step-list">
+    <li>
+      Conduct your search with a technical officer and any relevant item design margins.
+    </li>
+    <li>
+      <a href="#">Go back to clarify the type of item (LINK TO BE UPDATED)</a> and which category it falls under within
+      the Military List
+    </li>
+    <li>
+      Consider whether your item is <a href="#">specially designed for military use or not (LINK TO BE UPDATED)</a>. If your item is not military than you should consider the <a href="#">dual use list (LINK TO BE UPDATED)</a>.
+    </li>
+  </ol>
+
+  <h2 class="heading-large">Export control licenses</h2>
+
+  <p>You cannot export items without a licence if:</p>
+
+  <ul class="list list-bullet">
+    <li>you know or suspect they'll be used in a weapons of mass destruction programme or delivery system (also known as 'end-use controls')</li>
+    <li>you're exporting dual-use items that do not usually need an export licence but you know or suspect they might be incorporated into military equipment for use in embargoed countries</li>
+    <li>there are embargoes, sanctions or other restrictions which cover your export destination</li>
+  </ul>
+
+  <p><a href="https://www.gov.uk/guidance/sanctions-embargoes-and-restrictions">Find out more about end-use sanctions and embargoes</a></p>
+
+  <p>If you're still not sure whether your item is controlled please refer to the <a href="#">Control List Classification Advice Service (CLCAS) (LINK TO BE UPDATED)</a>.</p>
+}

@@ -1,0 +1,10 @@
+@import org.apache.commons.lang3.StringUtils
+
+@(changeUrl: String = "")(content: Html)
+
+<li>
+  @content
+  @if(!StringUtils.isBlank(changeUrl)) {
+    <a href="@changeUrl" class="breadcrumb-change-link">Change</a>
+  }
+</li>

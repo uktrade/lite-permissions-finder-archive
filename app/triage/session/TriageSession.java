@@ -20,7 +20,16 @@ public class TriageSession {
     this.ogelRegistrationId = null;
   }
 
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  public String getResumeCode() {
+    return resumeCode;
+  }
+
   public boolean isLocked() {
     return nlrOutcome != null && ogelRegistrationId != null;
   }
+
 }

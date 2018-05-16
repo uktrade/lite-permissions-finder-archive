@@ -1,0 +1,29 @@
+.heading-large .heading-secondary {
+  @include core-19;
+  padding-top: 0;
+}
+
+.outcome-page-header {
+  h1.heading-xlarge {
+    margin: 0;
+  }
+
+  margin-top: 45px;
+  margin-bottom: 30px;
+}
+
+.outcome-sharing-options {
+  li {
+    display: inline-block;
+    margin-right: 0.5em;
+
+    &:last-child {
+      margin-right: 0
+    }
+  }
+
+  @include media(tablet) {
+    float: right;
+    margin-top: 25px;
+  }
+}

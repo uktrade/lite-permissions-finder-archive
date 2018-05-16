@@ -26,6 +26,8 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
+GET     /licence-finder-test/:controlCode     controllers.licencefinder.TestEntryController.testEntry(controlCode)
+
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
@@ -66,7 +68,7 @@ GET     /trade-type/transhipment       controllers.StaticContentController.rende
 
 GET     /start-application                    controllers.StartApplicationController.renderForm
 
-POST    /start-application                    controllers.StartApplicationController.handleSubmit
+POST    /start-application                    controllers.StartApplicationController.handleSubmit(sessionId)
 
 GET     /summary                              controllers.SummaryController.renderForm
 
@@ -102,6 +104,13 @@ GET     /logged-out      controllers.AuthorisationController.loggedOut()
 GET     /unauthorised    controllers.AuthorisationController.unauthorised()
 
 GET     /test            controllers.DummyController.test()
+GET     /test/frontend-components/:component controllers.FrontendComponentTestController.test(component)
+
+GET     /outcome/decontrol controllers.StageController.outcomeDecontrol(sessionId)
+GET     /outcome/dropout   controllers.StageController.outcomeDropout(sessionId)
+GET     /stage             controllers.StageController.index(sessionId)
+GET     /stage/:stageId    controllers.StageController.render(stageId, sessionId)
+POST    /stage/:stageId    controllers.StageController.handleSubmit(stageId, sessionId)
 
 + nocsrf
 PUT     /cms/spreadsheet                      controllers.cms.UploadController.spreadsheetUpload
