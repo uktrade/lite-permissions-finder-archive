@@ -36,6 +36,7 @@ import components.services.AnswerViewService;
 import components.services.AnswerViewViewServiceImpl;
 import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
+import filters.common.JwtRequestFilterConfig;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
 import models.summary.SummaryService;
@@ -85,6 +86,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));
+    install(new RedisDaoGuiceModule());
     install(new RedisSessionStoreModule(environment, config));
 
     // searchService
@@ -138,7 +140,20 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("basicAuthRealm"))
         .to(config.getString("basicAuth.realm"));
 
+    bindConstant().annotatedWith(Names.named("permissionRegistrationAddress")).to(config.getString("permissionRegistrationService.address"));
+    bindConstant().annotatedWith(Names.named("permissionRegistrationTimeout")).to(config.getInt("permissionRegistrationService.timeout"));
+
+    bindConstant().annotatedWith(Names.named("customerServiceAddress")).to(config.getString("customerService.address"));
+    bindConstant().annotatedWith(Names.named("customerServiceTimeout")).to(config.getInt("customerService.timeout"));
+
+    bindConstant().annotatedWith(Names.named("userServiceAddress")).to(config.getString("userService.address"));
+    bindConstant().annotatedWith(Names.named("userServiceTimeout")).to(config.getString("userService.timeout"));
+    bindConstant().annotatedWith(Names.named("userServiceCredentials")).to(config.getString("userService.credentials"));
+
     bindConstant().annotatedWith(Names.named("sharedSecret")).to(config.getString("application.sharedSecret"));
+    bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
+
+
 
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
@@ -241,6 +256,11 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Provides
   public ContextParamManager provideContextParamManager() {
     return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new ApplicationCodeContextParamProvider());
+  }
+
+  @Provides
+  public JwtRequestFilterConfig provideJwtRequestFilterConfig(@com.google.inject.name.Named("jwtSharedSecret") String jwtSharedSecret) {
+    return new JwtRequestFilterConfig(jwtSharedSecret, "lite-permissions-finder");
   }
 
 }

@@ -15,10 +15,6 @@ import play.mvc.With;
 import uk.gov.bis.lite.permissions.api.view.CallbackView;
 
 import java.util.concurrent.CompletionStage;
-import views.html.registration.registrationConfirmation;
-import views.html.registration.registrationInterval;
-import views.html.registration.registrationRejection;
-import views.html.registration.permissionDenied;
 
 @With(CommonContextAction.class)
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
@@ -27,17 +23,17 @@ public class RegistrationOutcomeController extends Controller {
   private final RegistrationSubmissionService submissionService;
   private final ContextParamManager contextParamManager;
   private final TransactionManager transactionManager;
-  private final registrationConfirmation registrationConfirmation;
-  private final registrationInterval registrationInterval;
-  private final registrationRejection registrationRejection;
-  private final permissionDenied permissionDenied;
+  private final views.html.registration.registrationConfirmation registrationConfirmation;
+  private final views.html.registration.registrationInterval registrationInterval;
+  private final views.html.registration.registrationRejection registrationRejection;
+  private final views.html.registration.permissionDenied permissionDenied;
 
   @Inject
   public RegistrationOutcomeController(RegistrationSubmissionService submissionService,
                                        ContextParamManager contextParamManager, TransactionManager transactionManager,
-                                       registrationConfirmation registrationConfirmation,
-                                       registrationInterval registrationInterval,
-                                       registrationRejection registrationRejection, permissionDenied permissionDenied) {
+                                       views.html.registration.registrationConfirmation registrationConfirmation,
+                                       views.html.registration.registrationInterval registrationInterval,
+                                       views.html.registration.registrationRejection registrationRejection, views.html.registration.permissionDenied permissionDenied) {
     this.submissionService = submissionService;
     this.contextParamManager = contextParamManager;
     this.transactionManager = transactionManager;
@@ -55,7 +51,7 @@ public class RegistrationOutcomeController extends Controller {
     switch (status) {
       case SUBMITTED:
         boolean showLongRunningPrompt = submissionService.getSecondsSinceRegistrationSubmission(transactionId) >= 15;
-        return ok(views.html.registration.registrationInterval.render(showLongRunningPrompt));
+        return ok(registrationInterval.render(showLongRunningPrompt));
       case COMPLETED:
         return handleSubmissionCompleted(transactionId);
       case FAILED:

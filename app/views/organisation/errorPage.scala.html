@@ -1,13 +1,14 @@
 @import util._
 
-@standardPage("Error page", Some(heading("Error page"))) {
-@Html("")
-} {
+@this(standardPage: standardPage1)
+@(errorMessage: String)
 
-  <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
-    <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
-    @heading
-    </h1>
-    <p>Error</p>
-  </div>
+@standardPage("Your request could not be processed", Some(heading("Your request could not be processed"))) {
+
+}{
+
+  <p>
+  @errorMessage
+  </p>
+
 }

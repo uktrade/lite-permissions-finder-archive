@@ -1,8 +1,10 @@
 @import util._
+@import views.html.util._
 @import uk.gov.bis.lite.permissions.api.view.CallbackView
 @import uk.gov.bis.lite.permissions.api.view.CallbackView.Result.BLACKLISTED
 @import uk.gov.bis.lite.permissions.api.view.CallbackView.Result.SITE_ALREADY_REGISTERED
 
+@this(standardPage: standardPage1)
 @(callbackResult : CallbackView.Result)
 
 
@@ -47,3 +49,5 @@
 
   </div>
 }
+
+

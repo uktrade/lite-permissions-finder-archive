@@ -4,10 +4,13 @@
 @import views.html.common.form._
 @import views.html.common.state._
 @import play.twirl.api.HtmlFormat
+@import views.html.util._
 
 @import models.summary.LicenceInfo
 
+@this(standardPage: standardPage1)
 @(licenceInfo: LicenceInfo, viewOgelConditionsUrl: String)
+
 
 @standardPage("OGEL Licence", Some(heading("OGEL Licence"))) {
   @Html("")

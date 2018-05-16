@@ -6,7 +6,6 @@ import static uk.gov.bis.lite.permissions.api.view.OgelRegistrationView.Status.D
 import static uk.gov.bis.lite.permissions.api.view.OgelRegistrationView.Status.SURRENDERED;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import components.auth.SamlAuthorizer;
 import components.client.CustomerServiceClient;
 import components.client.OgelRegistrationServiceClient;
@@ -25,8 +24,6 @@ import uk.gov.bis.lite.customer.api.view.SiteView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView.Status;
-import views.html.organisation.errorPage;
-import views.html.registration.viewOgel;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -42,16 +39,14 @@ public class ViewOgelController {
   private final CustomerServiceClient customerServiceClient;
   private final HttpExecutionContext httpExecutionContext;
   private final SpireAuthManager authManager;
-  private final errorPage errorPage;
-  private final viewOgel viewOgel;
-  private final String permissionsFinderUrl;
+  private final views.html.organisation.errorPage errorPage;
+  private final views.html.registration.viewOgel viewOgel;
 
   @Inject
   public ViewOgelController(OgelRegistrationServiceClient ogelRegistrationServiceClient,
                             OgelServiceClient ogelServiceClient, CustomerServiceClient customerServiceClient,
                             HttpExecutionContext httpExecutionContext, SpireAuthManager authManager,
-                            errorPage errorPage, viewOgel viewOgel,
-                            @Named("permissionsFinderUrl") String permissionsFinderUrl) {
+                            views.html.organisation.errorPage errorPage, views.html.registration.viewOgel viewOgel) {
     this.ogelRegistrationServiceClient = ogelRegistrationServiceClient;
     this.ogelServiceClient = ogelServiceClient;
     this.customerServiceClient = customerServiceClient;
@@ -59,7 +54,6 @@ public class ViewOgelController {
     this.authManager = authManager;
     this.errorPage = errorPage;
     this.viewOgel = viewOgel;
-    this.permissionsFinderUrl = permissionsFinderUrl;
   }
 
   public CompletionStage<Result> viewOgel(String registrationReference) {
@@ -196,7 +190,7 @@ public class ViewOgelController {
   private Result renderViewOgel(LicenceInfo licenceInfo) {
 
     if (licenceInfo.hasError()) {
-      return badRequest(errorPage.render());
+      return badRequest(errorPage.render("errorMessage"));
     } else {
       String viewOgelConditionsUrl = getViewSummaryUrl(licenceInfo.getOgelType());
       return ok(viewOgel.render(licenceInfo, viewOgelConditionsUrl));
@@ -204,7 +198,7 @@ public class ViewOgelController {
   }
 
   public String getViewSummaryUrl(String ogelType) {
-    return permissionsFinderUrl + "/ogel-conditions/" + ogelType;
+    return "/ogel-conditions/" + ogelType;
   }
 
 }

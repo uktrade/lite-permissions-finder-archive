@@ -1,7 +1,11 @@
 @import util._
 @import views.html.common.journey._
+@import views.html.util._
 
+@this(standardPage: standardPage1)
 @(showLongRunningPrompt : Boolean)
+
+
 
   @standardPage("Register for an OGEL", Some(heading("Register for an OGEL"))) {
 
@@ -30,3 +34,4 @@
     });
     </script>
 }
+
