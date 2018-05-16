@@ -83,8 +83,8 @@ POST    /summary-continue                     controllers.SummaryController.hand
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)
 
-#Build info
 
+#Build info
 GET     /admin/build                          controllers.admin.AdminController.buildInfo
 
 GET     /admin/transactions                   controllers.admin.AdminController.permissionsFinderTransactions
@@ -102,3 +102,8 @@ GET     /logged-out      controllers.AuthorisationController.loggedOut()
 GET     /unauthorised    controllers.AuthorisationController.unauthorised()
 
 GET     /test            controllers.DummyController.test()
+
++ nocsrf
+PUT     /cms/spreadsheet                      controllers.cms.UploadController.spreadsheetUpload
+
+GET     /cms/dummy/test-all                   controllers.cms.DummyController.testAll
