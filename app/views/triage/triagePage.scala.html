@@ -1,3 +1,4 @@
+@import com.google.common.collect.Iterables
 @import models.view.BreadcrumbView
 @import views.html.util._
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
@@ -41,14 +42,19 @@
         @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
           @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl){
             @breadcrumbItemView.getText
+            @if(breadcrumbItemView.getDescription!=null) {
+              @breadcrumbItemView.getDescription
+            }
           }
         }
-        @controlCodeBreadcrumbsDetailBox(isPathStep = true){
-          This is the last step, in a detail box. It has some notes.
-        }{
-          @controlCodeBreadcrumbsNotes() {
-            @for(noteView <- breadcrumbView.getNoteViews) {
-              <li>@noteView.getText</li>
+        @if(!breadcrumbView.getBreadcrumbItemViews.isEmpty) {
+          @controlCodeBreadcrumbsDetailBox(isPathStep = true){
+            This is the last step, in a detail box. It has some notes.
+          }{
+            @controlCodeBreadcrumbsNotes() {
+              @for(noteView <- Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getNoteViews) {
+                <li>@noteView.getText</li>
+              }
             }
           }
         }
