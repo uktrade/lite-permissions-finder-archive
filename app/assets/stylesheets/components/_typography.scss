@@ -27,3 +27,17 @@
     margin-top: 25px;
   }
 }
+
+label {
+  .list {
+    margin-bottom: 5px;
+  }
+
+  &>ul.list>li>ul.list {
+    list-style-type: circle;
+  }
+
+  &>ul.list>li>ul.list>li>ul.list {
+    list-style-type: square;
+  }
+}

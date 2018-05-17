@@ -9,7 +9,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
 
@@ -96,6 +98,22 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
       return Arrays.asList(createControlEntryConfig(controlCode + "Child1"),
           createControlEntryConfig(controlCode + "Child2"));
     }
+  }
+
+  @Override
+  public List<String> getStageIdsForControlCode(ControlEntryConfig controlEntryConfig) {
+    String controlCode = controlEntryConfig.getControlCode();
+    return configMap.entrySet().stream()
+        .filter(entry -> {
+          Optional<ControlEntryConfig> controlEntryConfigOptional = entry.getValue().getRelatedControlEntry();
+          if (controlEntryConfigOptional.isPresent()) {
+            return controlCode.equals(controlEntryConfigOptional.get().getControlCode());
+          } else {
+            return false;
+          }
+        })
+        .map(Map.Entry::getKey)
+        .collect(Collectors.toList());
   }
 
   private ControlEntryConfig createControlEntryConfig(String controlCode) {
