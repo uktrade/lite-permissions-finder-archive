@@ -211,19 +211,11 @@ public class StageController extends Controller {
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
-    List<CheckboxView> checkboxViews = answerViews.stream()
-        .map(answerView -> new CheckboxView(answerView,
-            !multiAnswerForm.hasErrors() && multiAnswerForm.get().answers.contains(answerView.getValue())))
-        .collect(Collectors.toList());
-    Map<SelectOption, Boolean> options = new HashMap<>();
-    for (CheckboxView checkboxView : checkboxViews) {
-      options.put(new SelectOption(checkboxView.getAnswerView().getValue(), checkboxView.getAnswerView().getPrompt()), checkboxView.isChecked());
-    }
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, controlCode, options, breadcrumbView));
+    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, controlCode, answerViews, breadcrumbView));
   }
 
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId) {
@@ -231,16 +223,8 @@ public class StageController extends Controller {
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
     String explanatoryText = getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
-    List<CheckboxView> checkboxViews = answerViews.stream()
-        .map(answerView -> new CheckboxView(answerView,
-            !multiAnswerFormForm.hasErrors() && multiAnswerFormForm.get().answers.contains(answerView.getValue())))
-        .collect(Collectors.toList());
-    Map<SelectOption, Boolean> options = new HashMap<>();
-    for (CheckboxView checkboxView : checkboxViews) {
-      options.put(new SelectOption(checkboxView.getAnswerView().getValue(), checkboxView.getAnswerView().getPrompt()), checkboxView.isChecked());
-    }
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, title, explanatoryText, options, breadcrumbView));
+    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig) {
