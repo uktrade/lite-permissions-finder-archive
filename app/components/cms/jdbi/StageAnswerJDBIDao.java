@@ -8,11 +8,17 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
+import java.util.List;
+
 public interface StageAnswerJDBIDao {
 
   @Mapper(StageAnswerRSMapper.class)
   @SqlQuery("SELECT * FROM stage_answer WHERE id = :id")
   StageAnswer get(@Bind("id") long id);
+
+  @Mapper(StageAnswerRSMapper.class)
+  @SqlQuery("SELECT * FROM stage_answer WHERE parent_stage_id = :stageId")
+  List<StageAnswer> getForParentStageId(@Bind("stageId") long stageId);
 
   @SqlQuery(
       "INSERT INTO stage_answer (parent_stage_id, go_to_stage_id, go_to_outcome_type, control_entry_id, answer_text, display_order, answer_precedence, divider_above, nested_content, more_info_content) "

@@ -116,3 +116,4 @@ POST    /stage/:stageId    controllers.StageController.handleSubmit(stageId, ses
 PUT     /cms/spreadsheet                      controllers.cms.UploadController.spreadsheetUpload
 
 GET     /cms/dummy/test-all                   controllers.cms.DummyController.testAll
+GET     /cms/dummy/test-journey               controllers.cms.DummyController.createTestJourney

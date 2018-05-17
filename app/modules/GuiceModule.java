@@ -66,11 +66,15 @@ import play.libs.ws.WSClient;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
 import triage.config.JourneyConfigService;
-import triage.config.JourneyConfigServiceSampleImpl;
+import triage.config.JourneyConfigServiceDaoImpl;
 import triage.session.SessionService;
 import triage.session.SessionServiceMockImpl;
 import triage.text.HtmlRenderService;
 import triage.text.HtmlRenderServiceImpl;
+import triage.text.ParserLookupService;
+import triage.text.ParserLookupServiceSampleImpl;
+import triage.text.RichTextParser;
+import triage.text.RichTextParserImpl;
 import utils.appcode.ApplicationCodeContextParamProvider;
 
 import java.util.Arrays;
@@ -96,7 +100,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
     bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
-    bind(JourneyConfigService.class).to(JourneyConfigServiceSampleImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceDaoImpl.class);
+    bind(RichTextParser.class).to(RichTextParserImpl.class);
+    bind(ParserLookupService.class).to(ParserLookupServiceSampleImpl.class);
     bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
 
     install(new SamlModule(config));

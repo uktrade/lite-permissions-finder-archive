@@ -6,6 +6,8 @@ import components.cms.jdbi.ControlEntryJDBIDao;
 import models.cms.ControlEntry;
 import org.skife.jdbi.v2.DBI;
 
+import java.util.List;
+
 public class ControlEntryDaoImpl implements ControlEntryDao {
 
   private final ControlEntryJDBIDao controlEntryJDBIDao;
@@ -18,6 +20,11 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
   @Override
   public ControlEntry getControlEntry(long id) {
     return controlEntryJDBIDao.get(id);
+  }
+
+  @Override
+  public List<ControlEntry> getChildControlEntries(long parentId) {
+    return controlEntryJDBIDao.getChildren(parentId);
   }
 
   @Override

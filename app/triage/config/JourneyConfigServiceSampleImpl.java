@@ -83,11 +83,6 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<ControlEntryConfig> getParentRatings(ControlEntryConfig controlEntryConfig) {
-    return Collections.emptyList();
-  }
-
-  @Override
   public List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig) {
     if (!controlEntryConfig.hasNestedChildren() || controlEntryConfig.getControlCode().length() > 20) {
       return new ArrayList<>();

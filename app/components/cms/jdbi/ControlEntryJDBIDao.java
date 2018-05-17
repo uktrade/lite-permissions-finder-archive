@@ -7,11 +7,17 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
+import java.util.List;
+
 public interface ControlEntryJDBIDao {
 
   @Mapper(ControlEntryRSMapper.class)
   @SqlQuery("SELECT * FROM control_entry WHERE id = :id")
   ControlEntry get(@Bind("id") long id);
+
+  @Mapper(ControlEntryRSMapper.class)
+  @SqlQuery("SELECT * FROM control_entry WHERE parent_control_entry_id = :parentId")
+  List<ControlEntry> getChildren(@Bind("parentId") long parentId);
 
   @SqlQuery(
       "INSERT INTO control_entry (parent_control_entry_id, control_code, full_description, summary_description, nested, selectable, regime) "
