@@ -1,0 +1,80 @@
+@import models.view.BreadcrumbView
+@import play.twirl.api.HtmlFormat
+@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import views.html.triage.outcomePage
+@import views.html.common.state.contextFormParams
+@import views.html.common.form.formCheckbox
+@import com.google.common.collect.Iterables
+@import views.html.common.page._
+
+@this()
+@(form: Form[_], stageId: String, sessionId: String, breadcrumbView: BreadcrumbView, controlCode: String, description: String)
+
+@outcomePage("Item is listed", sessionId) {
+
+  @twoThirdsColumn{
+    @errorSummary(form)
+  }
+
+  <p class="lede">
+    Based on the answers you've provided, the control list classification for your item is @controlCode.
+  </p>
+
+  @controlCodeBreadcrumbs(isWide = true) {
+    @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
+      @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
+        @breadcrumbItemView.getText
+        @if(breadcrumbItemView.getDescription!=null) {
+          @breadcrumbItemView.getDescription
+        }
+        @if(!breadcrumbItemView.getNoteViews.isEmpty) {
+          @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
+            @controlCodeBreadcrumbsNotes() {
+              @for(noteView <- breadcrumbItemView.getNoteViews) {
+                <li>@noteView.getText</li>
+              }
+            }
+          }
+        }
+      }
+    }
+    @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
+      <span class="font-medium">@controlCode</span>
+        <p></p>
+        @description
+        <p></p>
+    }(HtmlFormat.empty)
+  }
+
+  <h2 class="heading-large">What you should do next</h2>
+
+  <ol class="circle-step-list">
+    <li>
+      If you have not consulted the relevant item design margins and or a technical officer with the appropriate knowledge, we advise you do so before proceeding past this stage.
+    </li>
+    <li>
+      If you have consulted and used the correct information, and you believe this is the correct classification code, then you should proceed to register for an Open General Export Licence (OGEL).
+    </li>
+    <li>
+      If you think that the classification is wrong we recommend going back through the process with the appropriate item design margins. You will be required to login in order to access the OGEL document, and will no longer be able to make changes to this page.
+    </li>
+  </ol>
+
+  <div class="banner danger-banner">
+    <span class="visually-hidden">Warning:</span>
+    Controlled items will require a licence to move between countries.
+  </div>
+
+  <form action="@routes.OutcomeController.handleOutcomeListedSubmit(stageId, sessionId)" method="POST">
+    @contextFormParams()
+
+    <div class="form-group">
+      @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")
+    </div>
+
+    <button type="submit" class="button" name="action" value="continue">Check for an OGEL</button>
+  </form>
+  <p></p>
+  If necessary please contact the Control List Classification Advice Service (CLCAS) [TODO Link] for any further advice.
+
+}
