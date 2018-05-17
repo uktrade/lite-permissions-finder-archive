@@ -42,6 +42,8 @@ public class OgelResultsController {
   private final FrontendServiceClient frontendServiceClient;
   private final CountryProvider countryProviderExport;
 
+  public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
+
   @Inject
   public OgelResultsController(JourneyManager journeyManager,
                                FormFactory formFactory,
@@ -69,8 +71,11 @@ public class OgelResultsController {
     String controlCode = permissionsFinderDao.getControlCodeForRegistration();
 
     String sourceCountry = permissionsFinderDao.getSourceCountry();
+    String destinationCountry = permissionsFinderDao.getFinalDestinationCountry();
 
-    List<String> destinationCountries = CountryUtils.getDestinationCountries(permissionsFinderDao.getFinalDestinationCountry(),
+    String destinationCountryName = countryProviderExport.getCountry(destinationCountry).getCountryName();
+
+    List<String> destinationCountries = CountryUtils.getDestinationCountries(destinationCountry,
         permissionsFinderDao.getThroughDestinationCountries());
 
     Optional<OgelQuestionsForm> ogelQuestionsFormOptional = permissionsFinderDao.getOgelQuestionsForm();
@@ -82,7 +87,8 @@ public class OgelResultsController {
     return applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenCombineAsync(frontendServiceStage, (applicableOgelView, frontendServiceResult) -> {
           if (!applicableOgelView.isEmpty()) {
-            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(), null);
+            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
+                null, controlCode, destinationCountryName);
             return ok(ogelResults.render(form, display));
           } else {
             List<CountryView> countries = CountryUtils.getSortedCountries(countryProviderExport.getCountries());
@@ -90,8 +96,8 @@ public class OgelResultsController {
             List<String> countryNames = CountryUtils.getFilteredCountries(countries, destinationCountries).stream()
                 .map(CountryView::getCountryName)
                 .collect(Collectors.toList());
-
-            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(), countryNames);
+            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
+                countryNames, controlCode, destinationCountryName);
 
             return ok(ogelResults.render(form, display));
           }
@@ -104,14 +110,31 @@ public class OgelResultsController {
       return renderWithForm(form);
     }
     String chosenOgel = form.get().chosenOgel;
+
     permissionsFinderDao.saveOgelId(chosenOgel);
 
     String controlCode = permissionsFinderDao.getControlCodeForRegistration();
     String sourceCountry = permissionsFinderDao.getSourceCountry();
+    String destinationCountry = permissionsFinderDao.getFinalDestinationCountry();
+
     List<String> destinationCountries = CountryUtils.getDestinationCountries(
         permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
     Optional<OgelQuestionsForm> ogelQuestionsFormOptional = permissionsFinderDao.getOgelQuestionsForm();
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
+
+    String destinationCountryName = countryProviderExport.getCountry(destinationCountry).getCountryName();
+
+    if(chosenOgel.equals(NONE_ABOVE_KEY)) {
+      // TODO return no result page
+      /*
+      CompletionStage<FrontendServiceResult> frontendServiceStage = frontendServiceClient.get(controlCode);
+
+
+      OgelResultsDisplay display = new OgelResultsDisplay(Collections.emptyList(), frontendServiceResult.getFrontendControlCode(),
+          null, controlCode, destinationCountryName);
+      return ok(ogelResults.render(form, display));
+      */
+    }
 
     CompletionStage<Void> checkOgelStage = applicableOgelServiceClient
         .get(controlCode, sourceCountry, destinationCountries, ogelActivities)

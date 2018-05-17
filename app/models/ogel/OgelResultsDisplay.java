@@ -12,13 +12,15 @@ public class OgelResultsDisplay {
   public final String controlCodeTitle;
   public final String destinationCountryNamesHtml;
 
-  public OgelResultsDisplay(List<ApplicableOgelView> ogels, FrontEndControlCodeView frontEndControlCodeView, List<String> countryNames) {
+  public OgelResultsDisplay(List<ApplicableOgelView> ogels, FrontEndControlCodeView frontEndControlCodeView, List<String> countryNames, String controlCode, String destinationCountry) {
     this.ogels = ogels;
     if (!ogels.isEmpty()) {
-      this.pageTitle = "Your possible licences";
+      this.pageTitle = "Open licenses available for exporting goods described in Control list entry " + controlCode + " to " + destinationCountry;
     } else {
-      this.pageTitle = "You need a standard individual export licence";
+      this.pageTitle = "No open licences available";
     }
+
+
     this.controlCodeTitle = frontEndControlCodeView.getControlCodeData().getTitle();
     // Creates a string in the form "A, B and C"
     if (countryNames != null && !countryNames.isEmpty()) {

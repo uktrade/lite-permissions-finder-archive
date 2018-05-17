@@ -1,9 +1,19 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.state._
+@import views.html.common.form._
+@import controllers.ogel.OgelResultsController
 @import models.ogel.OgelResultsDisplay
 
+
 @(form: Form[_], display: OgelResultsDisplay)
+
+  @title = @{
+    Html("")
+  }
+
+  @chosenOgelFormField = @{"chosenOgel"}
+
 @standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)
 }{
@@ -14,52 +24,50 @@
 
     @if(display.ogels.size > 0) {
       <p>
-        These are <a href="https://www.gov.uk/government/collections/open-general-export-licences-ogels" class="external" rel="external" target="_blank">open licences<span class="visually-hidden"> (opens in a new tab)</span></a>. You can register for these and use them multiple times, without waiting for approval, but you have to comply with each licence's conditions of use.
+        Open licences allow you to export certain goods without making a new application each time you export them.
       </p>
 
-      <div class="form-group">
-        <ol class="ogel-results search-results">
-          @for(ogel <- display.ogels) {
-            <li>
-              <button type="submit" class="link" role="link" name="chosenOgel" value="@ogel.getId">@ogel.getName</button>
-              <div class="font-xsmall">
-              @for(entry <- ogel.getUsageSummary) {
-                @entry<br/>
+      @**
+      <p>
+        If you want to see the OGELs that you are already registered for, please log in.
+      </p>
+      **@
+
+      <p>
+        Select the option which best matches your requirements.
+      </p>
+
+
+      <fieldset>
+
+          @formRadioGroupContainer(form(chosenOgelFormField))(title, "h4", "heading-small") {
+            @for(ogel <- display.ogels) {
+
+              <div class="form-group">
+
+              @formRadio(form("chosenOgel"), "<span class=\"heading-small\">OGEL (" + ogel.getName + ")</span>", ogel.getId, true, "label-trade-type")
+              @detailPanel("detailPanel"){Read more information} {
+                <p>
+                  @ogel.getUsageSummary().iterator().next()
+                </p>
               }
               </div>
-            </li>
-          }
-        </ol>
-      </div>
-
-      <div class="form-group">
-        @detailPanel("none-suitable")(Html("None of these are suitable for my export")){
-          <p>
-            If you cannot use one of the open licences above, you should apply for a <a href="https://www.gov.uk/guidance/standard-individual-export-licences" class="external" rel="external" target="_blank">standard individual export licence<span class="visually-hidden"> (opens in a new tab)</span></a> (SIEL).
-          </p>
-
-          <p>
-            SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
-          </p>
-
-          <a class="button font-medium" href="https://www.spire.trade.gov.uk/spire/fox/espire/LOGIN/login">Apply for a SIEL using SPIRE</a>
+            }
+<hr>
+            @formRadio(form("chosenOgel"), "<span class=\"heading-small\">None of the above applies fully to my situation</span>", OgelResultsController.NONE_ABOVE_KEY, true, "label-trade-type")
         }
-      </div>
+
+      </fieldset>
+
+      <button type="submit" class="button">Continue</button>
 
     } else {
-
       <p>
-        At the moment there are no open general export licences (OGELs) you can use to send or take <strong class="bold-small">@display.controlCodeTitle</strong> to <strong class="bold-small">@Html(display.destinationCountryNamesHtml)</strong>.
+        Your goods cannot be exported via an open licence. We will need to know more about the goods you want to export.
       </p>
-
       <p>
-        You should use a <a href="https://www.gov.uk/guidance/standard-individual-export-licences" class="external" rel="external" target="_blank">standard individual export licence<span class="visually-hidden"> (opens in a new tab)</span></a> (SIEL). SIELs will be introduced to this service soon, but for now you can apply for a SIEL through the SPIRE licensing service.
+        Please <a href="http://www.spire.trade.gov.uk/" rel="external" target="_blank">log in to Spire<span class="visually-hidden"> (opens in a new tab)</span></a>  to continue..
       </p>
-
-      <p>
-        <a class="button font-medium" href="https://www.spire.trade.gov.uk/spire/fox/espire/LOGIN/login">Apply for a SIEL using SPIRE</a>
-      </p>
-
     }
 
   </form>
