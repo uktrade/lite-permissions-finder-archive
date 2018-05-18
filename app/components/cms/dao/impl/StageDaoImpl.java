@@ -6,6 +6,8 @@ import components.cms.jdbi.StageJDBIDao;
 import models.cms.Stage;
 import org.skife.jdbi.v2.DBI;
 
+import java.util.List;
+
 public class StageDaoImpl implements StageDao {
 
   private final StageJDBIDao stageJDBIDao;
@@ -18,6 +20,11 @@ public class StageDaoImpl implements StageDao {
   @Override
   public Stage getStage(long id) {
     return stageJDBIDao.get(id);
+  }
+
+  @Override
+  public List<Stage> getStagesForControlEntryId(long controlEntryId) {
+    return stageJDBIDao.getForControlEntryId(controlEntryId);
   }
 
   @Override

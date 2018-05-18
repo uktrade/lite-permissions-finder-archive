@@ -5,7 +5,6 @@ import triage.text.RichText;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +100,7 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<String> getStageIdsForControlCode(ControlEntryConfig controlEntryConfig) {
+  public List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig) {
     String controlCode = controlEntryConfig.getControlCode();
     return configMap.entrySet().stream()
         .filter(entry -> {

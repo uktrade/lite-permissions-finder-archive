@@ -9,11 +9,17 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
+import java.util.List;
+
 public interface StageJDBIDao {
 
   @Mapper(StageRSMapper.class)
   @SqlQuery("SELECT * FROM stage WHERE id = :id")
   Stage get(@Bind("id") long id);
+
+  @Mapper(StageRSMapper.class)
+  @SqlQuery("SELECT * FROM stage WHERE control_entry_id = :controlEntryId")
+  List<Stage> getForControlEntryId(@Bind("controlEntryId") long controlEntryId);
 
   @SqlQuery(
       "INSERT INTO stage (journey_id, control_entry_id, title, explanatory_notes, question_type, answer_type, next_stage_id) "
