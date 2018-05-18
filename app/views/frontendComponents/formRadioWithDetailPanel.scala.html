@@ -1,0 +1,12 @@
+@import views.html.common.form.formRadio
+@import views.html.common.page.detailPanel
+
+@(field: Form.Field, prompt: String, optionValue: String, isPromptHtml: Boolean = false, promptNewlineToBr: Boolean = false, detailPanelId: String, detailPanelPrompt: String)(detailPanelContent: Html)
+
+@detailPanelForRadio = {
+  @if(detailPanelContent.body.nonEmpty) {
+    @detailPanel(detailPanelId, field.getName.get + optionValue + "-label")(Html(detailPanelPrompt))(detailPanelContent)
+  }
+}
+
+@formRadio(field, prompt, optionValue, isPromptHtml, promptNewlineToBr = promptNewlineToBr, contentAfterLabel = Some(detailPanelForRadio))

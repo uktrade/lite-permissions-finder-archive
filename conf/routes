@@ -106,11 +106,14 @@ GET     /unauthorised    controllers.AuthorisationController.unauthorised()
 GET     /test            controllers.DummyController.test()
 GET     /test/frontend-components/:component controllers.FrontendComponentTestController.test(component)
 
-GET     /outcome/decontrol controllers.StageController.outcomeDecontrol(sessionId)
-GET     /outcome/dropout   controllers.StageController.outcomeDropout(sessionId)
-GET     /stage             controllers.StageController.index(sessionId)
-GET     /stage/:stageId    controllers.StageController.render(stageId, sessionId)
-POST    /stage/:stageId    controllers.StageController.handleSubmit(stageId, sessionId)
+GET     /outcome/listed/:stageId    controllers.OutcomeController.outcomeListed(stageId, sessionId)
+POST    /outcome/listed/:stageId    controllers.OutcomeController.handleOutcomeListedSubmit(stageId, sessionId)
+GET     /outcome/decontrol/:stageId controllers.OutcomeController.outcomeDecontrol(stageId, sessionId)
+POST    /outcome/decontrol/:stageId controllers.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)
+GET     /outcome/dropout            controllers.OutcomeController.outcomeDropout(sessionId)
+GET     /stage                      controllers.StageController.index(sessionId)
+GET     /stage/:stageId             controllers.StageController.render(stageId, sessionId)
+POST    /stage/:stageId             controllers.StageController.handleSubmit(stageId, sessionId)
 
 + nocsrf
 PUT     /cms/spreadsheet                      controllers.cms.UploadController.spreadsheetUpload

@@ -1,9 +1,10 @@
-@import utils.common.SelectOption
+@import models.view.AnswerView
 @import models.view.BreadcrumbView
-@import views.html.common.form.formCheckboxes
+@import views.html.triage.subAnswers
+@import views.html.frontendComponents.formCheckboxWithDetailPanel
 
-@this(subAnswers: subAnswers)
-@(form: Form[_], stageId: String, sessionId: String, controlCode: String, options: Map[SelectOption, Boolean], breadcrumbView: BreadcrumbView)
+@this()
+@(form: Form[_], stageId: String, sessionId: String, controlCode: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
 
 @triagePage(form, stageId, sessionId, "Does your item have any of these characteristics?", breadcrumbView){
   @controlCode: Checking against decontrols
@@ -11,7 +12,11 @@
   <p>Select all that apply.</p>
 
   <div class="form-group">
-    @formCheckboxes(form("answers"), options)
+    @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
+      @formCheckboxWithDetailPanel(form("answers"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews), isPromptHtml = true, inputId = "answers" + index, inputName = "answers[" + index + "]", inputValue = answerView.getValue, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information") {
+        This is some more information for @answerView.getPrompt
+      }
+    }
   </div>
 }
 
