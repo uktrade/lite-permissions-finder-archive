@@ -3,11 +3,14 @@ package controllers;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
+import components.auth.SamlAuthorizer;
+import components.common.auth.SpireSAML2Client;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
 import models.TradeType;
+import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -18,6 +21,7 @@ import views.html.tradeType;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
+@Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class TradeTypeController extends Controller {
 
   private final JourneyManager journeyManager;

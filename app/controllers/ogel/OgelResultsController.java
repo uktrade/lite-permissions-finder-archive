@@ -1,9 +1,12 @@
 package controllers.ogel;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.auth.SamlAuthorizer;
+import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
@@ -16,6 +19,7 @@ import exceptions.FormStateException;
 import journey.Events;
 import models.ogel.OgelResultsDisplay;
 import org.apache.commons.lang3.StringUtils;
+import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -25,12 +29,15 @@ import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
 import views.html.ogel.ogelResults;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class OgelResultsController {
 
   private final JourneyManager journeyManager;
@@ -124,16 +131,16 @@ public class OgelResultsController {
 
     String destinationCountryName = countryProviderExport.getCountry(destinationCountry).getCountryName();
 
+    // Return No licences available when 'None of the above' chosen
     if(chosenOgel.equals(NONE_ABOVE_KEY)) {
-      // TODO return no result page
-      /*
-      CompletionStage<FrontendServiceResult> frontendServiceStage = frontendServiceClient.get(controlCode);
-
-
-      OgelResultsDisplay display = new OgelResultsDisplay(Collections.emptyList(), frontendServiceResult.getFrontendControlCode(),
-          null, controlCode, destinationCountryName);
-      return ok(ogelResults.render(form, display));
-      */
+      try {
+        FrontendServiceResult frontendServiceResult = frontendServiceClient.get(controlCode).toCompletableFuture().get();
+        OgelResultsDisplay display = new OgelResultsDisplay(Collections.emptyList(), frontendServiceResult.getFrontendControlCode(),
+            null, controlCode, destinationCountryName);
+        return completedFuture(ok(ogelResults.render(form, display)));
+      } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
+      }
     }
 
     CompletionStage<Void> checkOgelStage = applicableOgelServiceClient

@@ -58,6 +58,10 @@ GET     /register-for-open-general-export-licence     controllers.ogel.OgelSumma
 
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
 
+GET     /register-to-use-ogel     controllers.ogel.OgelRegisterToUseController.renderForm
+
+POST    /register-to-use-ogel     controllers.ogel.OgelRegisterToUseController.handleSubmit
+
 GET     /trade-type                    controllers.TradeTypeController.renderForm
 
 POST    /trade-type                    controllers.TradeTypeController.handleSubmit

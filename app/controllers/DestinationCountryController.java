@@ -3,11 +3,14 @@ package controllers;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
+import components.auth.SamlAuthorizer;
+import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
+import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -24,6 +27,7 @@ import java.util.concurrent.CompletionStage;
 
 import javax.inject.Named;
 
+@Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class DestinationCountryController extends Controller {
 
   private final JourneyManager journeyManager;

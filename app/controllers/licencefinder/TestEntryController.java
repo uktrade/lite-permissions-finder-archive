@@ -1,14 +1,18 @@
 package controllers.licencefinder;
 
 import com.google.inject.Inject;
+import components.auth.SamlAuthorizer;
+import components.common.auth.SpireSAML2Client;
 import components.common.journey.JourneyManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.PermissionsFinderDao;
+import org.pac4j.play.java.Secure;
 import play.mvc.Controller;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;
 
+@Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class TestEntryController extends Controller {
 
   public static final String JOURNEY_NAME = "TEST_CONTROL_ENTRY";

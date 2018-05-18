@@ -59,6 +59,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage ogelSummary = defineStage("ogelSummary",
         controllers.ogel.routes.OgelSummaryController.renderForm());
 
+    JourneyStage ogelRegisterToUse = defineStage("ogelRegisterToUse",
+        controllers.ogel.routes.OgelRegisterToUseController.renderForm());
+
     atStage(destinationCountries)
         .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
         .then(moveTo(ogelQuestions));
@@ -72,7 +75,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(ogelResults)
         .onEvent(Events.OGEL_SELECTED)
-        .then(moveTo(ogelSummary));
+        .then(moveTo(ogelRegisterToUse));
 
     atStage(ogelResults)
         .onEvent(Events.OGEL_CONDITIONS_APPLY)
