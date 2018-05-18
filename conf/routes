@@ -114,3 +114,6 @@ GET     /outcome/dropout            controllers.OutcomeController.outcomeDropout
 GET     /stage                      controllers.StageController.index(sessionId)
 GET     /stage/:stageId             controllers.StageController.render(stageId, sessionId)
 POST    /stage/:stageId             controllers.StageController.handleSubmit(stageId, sessionId)
+
+GET     /onboarding             controllers.OnboardingController.renderForm(sessionId)
+POST    /onboarding             controllers.OnboardingController.handleSubmit(sessionId)
