@@ -8,7 +8,7 @@
 @import views.html.common.page._
 
 @this()
-@(form: Form[_], stageId: String, sessionId: String, breadcrumbView: BreadcrumbView, controlCode: String, description: String)
+@(form: Form[_], controlEntryId: String, sessionId: String, breadcrumbView: BreadcrumbView, controlCode: String, description: String)
 
 @outcomePage("Item is listed", sessionId) {
 
@@ -65,7 +65,7 @@
     Controlled items will require a licence to move between countries.
   </div>
 
-  <form action="@routes.OutcomeController.handleOutcomeListedSubmit(stageId, sessionId)" method="POST">
+  <form action="@routes.OutcomeController.handleOutcomeListedSubmit(controlEntryId, sessionId)" method="POST">
     @contextFormParams()
 
     <div class="form-group">

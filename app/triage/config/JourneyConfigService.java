@@ -10,6 +10,8 @@ public interface JourneyConfigService {
 
   List<NoteConfig> getNotesForStageId(String stageId);
 
+  ControlEntryConfig getControlEntryConfigForId(String controlEntryId);
+
   //List of an entry's immediate children
   List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig);
 

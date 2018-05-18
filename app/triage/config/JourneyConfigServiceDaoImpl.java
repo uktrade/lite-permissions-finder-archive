@@ -162,6 +162,11 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public ControlEntryConfig getControlEntryConfigForId(String controlEntryId) {
+    return createControlEntryConfig(controlEntryDao.getControlEntry(Long.parseLong(controlEntryId)));
+  }
+
   private NoteConfig createNoteConfig(Note note) {
     String stageId = note.getStageId().toString();
     RichText noteText = richTextParser.parse(note.getNoteText(), stageId);

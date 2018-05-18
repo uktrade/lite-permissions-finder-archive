@@ -10,7 +10,6 @@ import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbView;
-import models.view.CheckboxView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
 import org.apache.commons.collections4.ListUtils;
@@ -27,16 +26,10 @@ import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.EnumUtil;
 import utils.PageTypeUtil;
-import utils.common.SelectOption;
-import views.html.triage.decontrol;
-import views.html.triage.selectMany;
-import views.html.triage.selectOne;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,15 +44,16 @@ public class StageController extends Controller {
   private final FormFactory formFactory;
   private final JourneyConfigService journeyConfigService;
   private final RenderService renderService;
-  private final decontrol decontrol;
-  private final selectOne selectOne;
-  private final selectMany selectMany;
+  private final views.html.triage.decontrol decontrol;
+  private final views.html.triage.selectOne selectOne;
+  private final views.html.triage.selectMany selectMany;
 
   @Inject
   public StageController(BreadcrumbViewService breadcrumbViewService, AnswerConfigService answerConfigService,
                          AnswerViewService answerViewService, SessionService sessionService, FormFactory formFactory,
-                         JourneyConfigService journeyConfigService, RenderService renderService, selectOne selectOne,
-                         selectMany selectMany, decontrol decontrol) {
+                         JourneyConfigService journeyConfigService, RenderService renderService,
+                         views.html.triage.selectOne selectOne, views.html.triage.selectMany selectMany,
+                         views.html.triage.decontrol decontrol) {
     this.breadcrumbViewService = breadcrumbViewService;
     this.answerConfigService = answerConfigService;
     this.answerViewService = answerViewService;
@@ -205,11 +199,14 @@ public class StageController extends Controller {
               stageId, sessionId);
         } else {
           List<AnswerConfig> controlEntryFoundOutcomeAnswerConfigs = answerConfigService.getControlEntryFoundOutcomeAnswerConfigs(matchingAnswers);
+          AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(controlEntryFoundOutcomeAnswerConfigs);
           if (!controlEntryFoundOutcomeAnswerConfigs.isEmpty()) {
             sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
-            return redirect(routes.OutcomeController.outcomeListed(stageId, sessionId));
+            String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
+                .map(ControlEntryConfig::getId)
+                .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " + answerConfig.getAnswerId()));
+            return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
           } else {
-            AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
             Optional<String> nextStageId = answerConfig.getNextStageId();
             if (nextStageId.isPresent()) {
               sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
@@ -248,7 +245,10 @@ public class StageController extends Controller {
         AnswerConfig answerConfig = answerConfigOptional.get();
         if (answerConfigService.isControlEntryFoundOutcomeAnswerConfig(answerConfig)) {
           sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
-          return redirect(routes.OutcomeController.outcomeListed(stageId, sessionId));
+          String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
+              .map(ControlEntryConfig::getId)
+              .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " + answerConfig.getAnswerId()));
+          return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
         } else {
           Optional<String> nextStageId = answerConfig.getNextStageId();
           if (nextStageId.isPresent()) {
