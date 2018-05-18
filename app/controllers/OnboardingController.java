@@ -42,7 +42,7 @@ public class OnboardingController {
       case "NO":
         return completedFuture(ok("Link to EU Dual-Use List holding page - link TBC"));
       default:
-        return completedFuture(ok("Link to ‘I don’t know’ page - link TBC"));
+        return completedFuture(ok("Link to ‘don’t know’ page - link TBC"));
     }
 
   }
