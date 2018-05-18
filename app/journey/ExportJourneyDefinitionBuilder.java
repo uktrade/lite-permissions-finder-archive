@@ -34,7 +34,6 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     ogelStages();
 
     defineJourney(JourneyDefinitionNames.EXPORT, tradeType);
-    //defineJourney(TestEntryController.JOURNEY_NAME, destinationCountries);
     defineJourney(TestEntryController.JOURNEY_NAME, tradeType);
 
     // TODO control code hard coded, link back to tradeType for now

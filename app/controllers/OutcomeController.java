@@ -22,9 +22,6 @@ import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.PageTypeUtil;
-import views.html.triage.decontrolOutcome;
-import views.html.triage.dropout;
-import views.html.triage.listedOutcome;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -43,16 +40,17 @@ public class OutcomeController extends Controller {
   private final AnswerConfigService answerConfigService;
   private final BreadcrumbViewService breadcrumbViewService;
   private final RenderService renderService;
-  private final dropout dropout;
-  private final decontrolOutcome decontrolOutcome;
-  private final listedOutcome listedOutcome;
+  private final views.html.triage.dropout dropout;
+  private final views.html.triage.decontrolOutcome decontrolOutcome;
+  private final views.html.triage.listedOutcome listedOutcome;
 
   @Inject
   public OutcomeController(JourneyConfigService journeyConfigService, SessionService sessionService,
                            FormFactory formFactory, AnswerViewService answerViewService,
                            AnswerConfigService answerConfigService,
                            BreadcrumbViewService breadcrumbViewService, RenderService renderService,
-                           dropout dropout, decontrolOutcome decontrolOutcome, listedOutcome listedOutcome) {
+                           views.html.triage.dropout dropout, views.html.triage.decontrolOutcome decontrolOutcome,
+                           views.html.triage.listedOutcome listedOutcome) {
     this.journeyConfigService = journeyConfigService;
     this.sessionService = sessionService;
     this.formFactory = formFactory;
@@ -101,7 +99,9 @@ public class OutcomeController extends Controller {
         if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
           return renderOutcomeListed(form, stageId, sessionId, answerConfig);
         } else {
-          return ok("TODO: Login, ogel next step");
+          String controlCode = answerConfig.getAssociatedControlEntryConfig()
+              .map(ControlEntryConfig::getControlCode).orElse("unknown");
+          return redirect(controllers.licencefinder.routes.TestEntryController.testEntry(controlCode));
         }
       }
     }

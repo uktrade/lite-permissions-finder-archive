@@ -17,6 +17,20 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import components.auth.SamlModule;
+import components.cms.dao.ControlEntryDao;
+import components.cms.dao.GlobalDefinitionDao;
+import components.cms.dao.JourneyDao;
+import components.cms.dao.LocalDefinitionDao;
+import components.cms.dao.NoteDao;
+import components.cms.dao.StageAnswerDao;
+import components.cms.dao.StageDao;
+import components.cms.dao.impl.ControlEntryDaoImpl;
+import components.cms.dao.impl.GlobalDefinitionDaoImpl;
+import components.cms.dao.impl.JourneyDaoImpl;
+import components.cms.dao.impl.LocalDefinitionDaoImpl;
+import components.cms.dao.impl.NoteDaoImpl;
+import components.cms.dao.impl.StageAnswerDaoImpl;
+import components.cms.dao.impl.StageDaoImpl;
 import components.common.CommonGuiceModule;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
@@ -46,18 +60,24 @@ import models.summary.SummaryServiceImpl;
 import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
+import org.skife.jdbi.v2.DBI;
 import play.Environment;
+import play.db.Database;
 import play.libs.akka.AkkaGuiceSupport;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
 import triage.config.JourneyConfigService;
-import triage.config.JourneyConfigServiceSampleImpl;
+import triage.config.JourneyConfigServiceDaoImpl;
 import triage.session.SessionService;
 import triage.session.SessionServiceMockImpl;
 import triage.text.HtmlRenderService;
 import triage.text.HtmlRenderServiceImpl;
+import triage.text.ParserLookupService;
+import triage.text.ParserLookupServiceSampleImpl;
+import triage.text.RichTextParser;
+import triage.text.RichTextParserImpl;
 import utils.appcode.ApplicationCodeContextParamProvider;
 
 import java.util.Arrays;
@@ -84,7 +104,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
     bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
-    bind(JourneyConfigService.class).to(JourneyConfigServiceSampleImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceDaoImpl.class);
+    bind(RichTextParser.class).to(RichTextParserImpl.class);
+    bind(ParserLookupService.class).to(ParserLookupServiceSampleImpl.class);
     bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
 
     install(new SamlModule(config));
@@ -159,6 +181,15 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("dashboardUrl")).to(config.getString("dashboard.url"));
 
     bind(SummaryService.class).to(SummaryServiceImpl.class);
+
+    // CMS dao's
+    bind(ControlEntryDao.class).to(ControlEntryDaoImpl.class);
+    bind(GlobalDefinitionDao.class).to(GlobalDefinitionDaoImpl.class);
+    bind(JourneyDao.class).to(JourneyDaoImpl.class);
+    bind(LocalDefinitionDao.class).to(LocalDefinitionDaoImpl.class);
+    bind(NoteDao.class).to(NoteDaoImpl.class);
+    bind(StageAnswerDao.class).to(StageAnswerDaoImpl.class);
+    bind(StageDao.class).to(StageDaoImpl.class);
 
     requestInjection(this);
   }
@@ -266,4 +297,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     return new JwtRequestFilterConfig(jwtSharedSecret, "lite-permissions-finder");
   }
 
+  @Provides
+  @Singleton
+  public DBI provideDataSourceDbi(Config config, Database database) {
+    return new DBI(database.getUrl());
+  }
 }

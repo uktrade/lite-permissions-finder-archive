@@ -49,7 +49,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   private List<BreadcrumbItemView> createBreadcrumbItemViews(ControlEntryConfig controlEntryConfig) {
     String controlCode = controlEntryConfig.getControlCode();
-    List<String> stageIds = journeyConfigService.getStageIdsForControlCode(controlEntryConfig);
+    List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     List<NoteView> noteViews = createNoteViews(stageIds);
     String description = renderService.getSummaryDescription(controlEntryConfig);
     BreadcrumbItemView breadcrumbItemView = new BreadcrumbItemView(controlCode, description, controlCode, noteViews);

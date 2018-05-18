@@ -10,12 +10,9 @@ public interface JourneyConfigService {
 
   List<NoteConfig> getNotesForStageId(String stageId);
 
-  //Hierarchy of parents
-  List<ControlEntryConfig> getParentRatings(ControlEntryConfig controlEntryConfig);
-
   //List of an entry's immediate children
   List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig);
 
-  List<String> getStageIdsForControlCode(ControlEntryConfig controlEntryConfig);
+  List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig);
 
 }
