@@ -186,6 +186,17 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
+  public List<String> getStageIdsForControlCode(ControlEntryConfig controlEntryConfig) {
+    //TODO do this properly
+    try (Handle handle = dbi.open()) {
+      List<Map<String, Object>> select = handle.select("SELECT s.id\n" +
+          "FROM stage s\n" +
+          "WHERE s.control_entry_id = '" + controlEntryConfig.getId() + "'");
+      return select.stream().map(e -> e.get("id").toString()).collect(Collectors.toList());
+    }
+  }
+
+  @Override
   public List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig) {
     return controlEntryDao
         .getChildControlEntries(Long.parseLong(controlEntryConfig.getId()))
