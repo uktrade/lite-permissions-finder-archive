@@ -44,6 +44,11 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
     stage1Answers.add(new AnswerConfig("A2", "3", null, ml1b, 2, false));
     stage1Answers.add(new AnswerConfig("A3", "4", null, ml1c, 3, false));
 
+    List<AnswerConfig> outcomeAnswers = new ArrayList<>();
+    outcomeAnswers.add(new AnswerConfig("B1", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1a, 1, false));
+    outcomeAnswers.add(new AnswerConfig("B2", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1b, 2, false));
+    outcomeAnswers.add(new AnswerConfig("B3", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1c, 3, false));
+
     StageConfig stage1 = new StageConfig(STAGE_1_ID, "Question for the first stage", new RichText("This is an explanatory note."),
         StageConfig.QuestionType.STANDARD, StageConfig.AnswerType.SELECT_ONE, null, ml1, stage1Answers);
 
@@ -55,12 +60,12 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
     configMap.put(STAGE_2_ID, stage2);
 
     StageConfig stage3 = new StageConfig(STAGE_3_ID, null, null, StageConfig.QuestionType.STANDARD,
-        StageConfig.AnswerType.SELECT_ONE, null, ml1b, Collections.emptyList());
+        StageConfig.AnswerType.SELECT_ONE, null, ml1b, outcomeAnswers);
 
     configMap.put(STAGE_3_ID, stage3);
 
     StageConfig stage4 = new StageConfig(STAGE_4_ID, null, new RichText("This is another explanatory note."), StageConfig.QuestionType.STANDARD,
-        StageConfig.AnswerType.SELECT_MANY, null, ml1c, stage1Answers);
+        StageConfig.AnswerType.SELECT_MANY, null, ml1c, outcomeAnswers);
 
     configMap.put(STAGE_4_ID, stage4);
   }

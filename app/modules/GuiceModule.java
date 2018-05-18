@@ -37,6 +37,8 @@ import components.services.AnswerViewViewServiceImpl;
 import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
 import filters.common.JwtRequestFilterConfig;
+import components.services.RenderService;
+import components.services.RenderServiceImpl;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
 import models.summary.SummaryService;
@@ -77,6 +79,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
+    bind(RenderService.class).to(RenderServiceImpl.class);
     bind(BreadcrumbViewService.class).to(BreadcrumbViewServiceImpl.class);
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
     bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);

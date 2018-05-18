@@ -1,0 +1,13 @@
+@import views.html.common.form.formCheckbox
+@import views.html.common.page.detailPanel
+@import org.apache.commons.lang3.StringUtils
+
+@(field: Form.Field, prompt: String, isPromptHtml: Boolean = false, promptNewlineToBr: Boolean = false, contentAfterLabel: Option[Html] = None, inputId: String = "", inputName: String = "", inputValue: String = "true", detailPanelId: String, detailPanelPrompt: String)(detailPanelContent: Html)
+
+@detailPanelForCheckbox = {
+  @if(detailPanelContent.body.nonEmpty) {
+    @detailPanel(detailPanelId, if (StringUtils.isBlank(inputId)) field.getName.get + "-label" else inputId + "-label")(Html(detailPanelPrompt))(detailPanelContent)
+  }
+}
+
+@formCheckbox(field, prompt, isPromptHtml, promptNewlineToBr = promptNewlineToBr, inputId = inputId, inputName = inputName, inputValue = inputValue, contentAfterLabel = Some(detailPanelForCheckbox))
