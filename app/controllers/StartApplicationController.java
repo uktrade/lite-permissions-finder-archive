@@ -52,7 +52,7 @@ public class StartApplicationController {
           String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
           permissionsFinderNotificationClient.sendApplicationReferenceEmail(emailAddress.trim(), resumeCode);
         }
-        return redirect(routes.StageController.index(sessionId));
+        return redirect(routes.OnboardingController.renderForm(sessionId));
       }
     }
   }

@@ -115,6 +115,9 @@ GET     /stage                      controllers.StageController.index(sessionId)
 GET     /stage/:stageId             controllers.StageController.render(stageId, sessionId)
 POST    /stage/:stageId             controllers.StageController.handleSubmit(stageId, sessionId)
 
+GET     /onboarding             controllers.OnboardingController.renderForm(sessionId)
+POST    /onboarding             controllers.OnboardingController.handleSubmit(sessionId)
+
 + nocsrf
 PUT     /cms/spreadsheet                      controllers.cms.UploadController.spreadsheetUpload
 

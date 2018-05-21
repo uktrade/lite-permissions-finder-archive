@@ -1,0 +1,24 @@
+@import controllers.routes.OnboardingController
+@import util._
+@import utils.common.SelectOption
+@import views.html.common.form._
+@import views.html.common.page._
+@import views.html.common.state._
+
+@(form: Form[_], options: List[SelectOption], sessionId: String)
+@standardPage("Has your item been specially designed or modified for military use?", Some(heading("Has your item been specially designed or modified for military use?"))) {
+  @errorSummary(form)
+} {
+
+  <div class="panel panel-border-narrow">
+    This includes software and technical information as well as physical goods, services and components. This refers to your item's original design intent (ie was it originally and specifically designed for military purposes) and not whether it's going to be exported to a military end user
+  </div>
+
+  <form action="@routes.OnboardingController.handleSubmit(sessionId)" method="POST">
+
+    @contextFormParams()
+    @formRadioGroup(form("speciallyDesigned"), options)(null)
+
+    <button type="submit" class="button">Continue</button>
+  </form>
+}
