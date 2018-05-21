@@ -44,7 +44,7 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   @Override
   public String getInitialStageId() {
     //TODO fix the data model so a journey knows its initial stage ID - this can then just use the journey DAO
-    try(Handle handle = dbi.open()) {
+    try (Handle handle = dbi.open()) {
       List<Map<String, Object>> select = handle.select("SELECT s.id\n" +
           "FROM stage s\n" +
           "LEFT JOIN stage_answer sa ON s.id = sa.go_to_stage_id\n" +
@@ -56,9 +56,25 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
 
   @Override
   public StageConfig getStageConfigById(String stageId) {
-
     Stage stage = stageDao.getStage(Long.parseLong(stageId));
+    if(stage == null) {
+      return null;
+    } else {
+      return createStageConfig(stage);
+    }
+  }
 
+  @Override
+  public StageConfig getStageConfigByNextStageId(String nextStageId) {
+    Stage stage = stageDao.getByNextStageId(Long.parseLong(nextStageId));
+    if(stage == null) {
+      return null;
+    } else {
+      return createStageConfig(stage);
+    }
+  }
+
+  private StageConfig createStageConfig(Stage stage) {
     StageConfig.QuestionType questionType = null;
     switch (stage.getQuestionType()) {
       case STANDARD:
@@ -88,7 +104,7 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
       }
     }
 
-    RichText explanatoryNote = richTextParser.parse(StringUtils.defaultString(stage.getExplanatoryNotes()), stageId);
+    RichText explanatoryNote = richTextParser.parse(StringUtils.defaultString(stage.getExplanatoryNotes()), Long.toString(stage.getId()));
     String nextStageId = Optional.ofNullable(stage.getNextStageId()).map(Object::toString).orElse(null);
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stage.getControlEntryId())
         .map(controlEntryDao::getControlEntry)

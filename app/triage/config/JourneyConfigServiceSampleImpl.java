@@ -120,6 +120,15 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public StageConfig getStageConfigByNextStageId(String nextStageId) {
+    return configMap.values().stream()
+        .filter(stageConfig ->
+            stageConfig.getNextStageId().map(nextStageIdIterate -> nextStageIdIterate.equals(nextStageId)).orElse(false))
+        .findFirst()
+        .orElse(null);
+  }
+
   private ControlEntryConfig createControlEntryConfig(String controlCode) {
     return new ControlEntryConfig(controlCode + "_ID", controlCode,
         new RichText(controlCode + "FullDescription"),

@@ -33,21 +33,36 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   @Override
   public BreadcrumbView createBreadcrumbView(String stageId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    Optional<ControlEntryConfig> relatedControlEntry = stageConfig.getRelatedControlEntry();
-    return createBreadcrumbView(relatedControlEntry.orElse(null));
+    ControlEntryConfig controlEntryConfig = getControlEntryConfig(stageConfig);
+    List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(controlEntryConfig);
+    return new BreadcrumbView(breadcrumbItemViews, stageConfig.getQuestionType() == StageConfig.QuestionType.DECONTROL);
+  }
+
+  private ControlEntryConfig getControlEntryConfig(StageConfig stageConfig) {
+    Optional<ControlEntryConfig> controlEntryConfigOptional = stageConfig.getRelatedControlEntry();
+    if (controlEntryConfigOptional.isPresent()) {
+      return controlEntryConfigOptional.get();
+    } else {
+      StageConfig parentStageConfig = journeyConfigService.getStageConfigByNextStageId(stageConfig.getStageId());
+      if (parentStageConfig != null) {
+        return getControlEntryConfig(parentStageConfig);
+      } else {
+        return null;
+      }
+    }
   }
 
   @Override
-  public BreadcrumbView createBreadcrumbView(ControlEntryConfig controlEntryConfig) {
+  public List<BreadcrumbItemView> createBreadcrumbItemViews(ControlEntryConfig controlEntryConfig) {
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
-      breadcrumbItemViews.addAll(createBreadcrumbItemViews(controlEntryConfig));
+      breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(controlEntryConfig));
     }
     breadcrumbItemViews.add(new BreadcrumbItemView("UK Military List", null, null, new ArrayList<>()));
-    return new BreadcrumbView(Lists.reverse(breadcrumbItemViews));
+    return Lists.reverse(breadcrumbItemViews);
   }
 
-  private List<BreadcrumbItemView> createBreadcrumbItemViews(ControlEntryConfig controlEntryConfig) {
+  private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(ControlEntryConfig controlEntryConfig) {
     String controlCode = controlEntryConfig.getControlCode();
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     List<NoteView> noteViews = createNoteViews(stageIds);
@@ -56,7 +71,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     breadcrumbItemViews.add(breadcrumbItemView);
     Optional<ControlEntryConfig> parentControlEntry = controlEntryConfig.getParentControlEntry();
-    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createBreadcrumbItemViews(parent)));
+    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(parent)));
     return breadcrumbItemViews;
   }
 

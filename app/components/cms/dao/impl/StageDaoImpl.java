@@ -23,6 +23,11 @@ public class StageDaoImpl implements StageDao {
   }
 
   @Override
+  public Stage getByNextStageId(long nextStageId) {
+    return stageJDBIDao.getByNextStageId(nextStageId);
+  }
+
+  @Override
   public List<Stage> getStagesForControlEntryId(long controlEntryId) {
     return stageJDBIDao.getForControlEntryId(controlEntryId);
   }
