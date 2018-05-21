@@ -6,8 +6,11 @@
 @import views.html.common.page._
 @import views.html.common.state._
 @import views.html.ogel._
+@import java.util.Map
+@import models.view.AnswerView
+@import utils.common.ViewUtil
 
-@(form: Form[OgelRegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean)
+@(form: Form[OgelRegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean, answerViews: List[AnswerView])
 
 @pageHeading = @{
   "Register to use Open general export licence (" + ogel.getName + ")"
@@ -26,6 +29,21 @@
       <a class="external" href="@ogel.getLink" rel="external" target="_blank">View the full text for this Open Licence<span class="visually-hidden"> (opens in a new tab)</span></a>
     </p>
   }
+
+  <div class="form-group">
+    <dl class="answer-summary">
+      <table class="answer-summary-sub-table">
+        <tbody>
+          @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
+            <tr>
+              <td>@answerView.getPrompt</td>
+              <td>@answerView.getValue</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </dl>
+  </div>
 
   <form action="@controllers.ogel.routes.OgelRegisterToUseController.handleSubmit()" method="POST">
 
