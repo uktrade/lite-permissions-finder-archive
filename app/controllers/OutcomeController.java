@@ -60,6 +60,7 @@ public class OutcomeController extends Controller {
 
   public Result handleOutcomeListedSubmit(String controlEntryId, String sessionId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigForId(controlEntryId);
+    //TODO graceful handling if control entry not found
     Form<RequestOgelForm> form = formFactory.form(RequestOgelForm.class).bindFromRequest();
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderOutcomeListed(form, controlEntryConfig, sessionId);
