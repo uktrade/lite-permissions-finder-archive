@@ -48,7 +48,8 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
       List<Map<String, Object>> select = handle.select("SELECT s.id\n" +
           "FROM stage s\n" +
           "LEFT JOIN stage_answer sa ON s.id = sa.go_to_stage_id\n" +
-          "WHERE sa.id IS NULL");
+          "WHERE sa.id IS NULL\n" +
+          "AND s.control_entry_id IS NULL");
       return select.get(0).get("id").toString();
     }
   }
@@ -99,8 +100,8 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
 
     String nextStageId = Optional.ofNullable(stageAnswer.getGoToStageId()).map(Object::toString).orElse(null);
     AnswerConfig.OutcomeType outcomeType = null;
-    if (stageAnswer.getGoToOutcomeType() != null) {
-      switch (stageAnswer.getGoToOutcomeType()) {
+    if (stageAnswer.getGoToStageAnswerOutcomeType() != null) {
+      switch (stageAnswer.getGoToStageAnswerOutcomeType()) {
         case CONTROL_ENTRY_FOUND:
           outcomeType = AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND;
           break;

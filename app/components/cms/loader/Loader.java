@@ -13,17 +13,22 @@ import components.cms.parser.model.NavigationLevel;
 import components.cms.parser.model.column.Breadcrumbs;
 import components.cms.parser.model.column.Buttons;
 import components.cms.parser.model.column.ControlListEntries;
+import components.cms.parser.model.column.Decontrols;
 import components.cms.parser.model.column.NavigationExtras;
 import models.cms.ControlEntry;
 import models.cms.Journey;
 import models.cms.Stage;
 import models.cms.StageAnswer;
 import models.cms.enums.AnswerType;
-import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
+import models.cms.enums.StageAnswerOutcomeType;
+import models.cms.enums.StageOutcomeType;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Loader {
   private final ControlEntryDao controlEntryDao;
@@ -58,13 +63,12 @@ public class Loader {
     rootNavigationLevel.addAllSubNavigationlevels(navigationLevels);
     Journey journey = new Journey().setJourneyName("MILITARY");
     Long journeyId = journeyDao.insertJourney(journey);
-    cascadeCreateControlEntries(null, rootNavigationLevel);
-    cascadeCreateStages(journeyId, rootNavigationLevel);
-    cascadeCreateStageAnswers(1, rootNavigationLevel);
-    rootNavigationLevel.getSubNavigationLevels();
+    createControlEntries(null, rootNavigationLevel);
+    createStages(journeyId, rootNavigationLevel);
+    createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
   }
 
-  private void cascadeCreateControlEntries(Long parentControlEntryId, NavigationLevel navigationLevel) {
+  private void createControlEntries(Long parentControlEntryId, NavigationLevel navigationLevel) {
     Long controlEntryId = null;
 
     ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
@@ -89,17 +93,17 @@ public class Loader {
       }
       controlEntryId = controlEntryDao.insertControlEntry(controlEntry);
 
-      Logger.info("Inserted control entry id {}", controlEntryId);
+      Logger.debug("Inserted control entry id {}", controlEntryId);
     }
 
     navigationLevel.getLoadingMetadata().setControlEntryId(controlEntryId);
 
     for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
-      cascadeCreateControlEntries(controlEntryId, subNavigationLevel);
+      createControlEntries(controlEntryId, subNavigationLevel);
     }
   }
 
-  private void cascadeCreateStages(long journeyId, NavigationLevel navigationLevel) {
+  private void createStages(long journeyId, NavigationLevel navigationLevel) {
     // Make the stage for all sub navigation levels of this navigation level
     if (navigationLevel.getSubNavigationLevels().isEmpty()) {
       return;
@@ -115,25 +119,33 @@ public class Loader {
 
     Long stageId = stageDao.insertStage(stage);
 
-    Logger.info("Inserted stage id {}", stageId);
+    Logger.debug("Inserted stage id {}", stageId);
 
     for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
       subNavigationLevel.getLoadingMetadata().setStageId(stageId);
-      cascadeCreateStages(journeyId, subNavigationLevel);
+      createStages(journeyId, subNavigationLevel);
     }
   }
 
-  private void cascadeCreateStageAnswers(int displayOrder, NavigationLevel navigationLevel) {
-    Buttons buttons = navigationLevel.getButtons();
-    LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
-    if (buttons != null) {
+  private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId, int displayOrder, NavigationLevel navigationLevel) {
+    if (!isRoot) {
+      LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
       StageAnswer stageAnswer = new StageAnswer();
       stageAnswer.setParentStageId(loadingMetadata.getStageId());
-      if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
-        stageAnswer.setGoToStageId(navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId());
+
+      Decontrols decontrols = navigationLevel.getDecontrols();
+      if (decontrols != null && decontrols.getContent() != null) {
+        long decontrolStageId = createDecontrolStage(journeyId, navigationLevel);
+        stageAnswer.setGoToStageId(decontrolStageId);
       } else {
-        stageAnswer.setGoToOutcomeType(OutcomeType.CONTROL_ENTRY_FOUND);
+        if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
+          NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
+          stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
+        } else {
+          stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+        }
       }
+
       ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
       if (controlListEntries != null) {
         if (controlListEntries.getRating() != null) {
@@ -157,14 +169,54 @@ public class Loader {
 
       Long stageAnswerId = stageAnswerDao.insertStageAnswer(stageAnswer);
 
-      Logger.info("Inserted stage answer id {}", stageAnswerId);
+      Logger.debug("Inserted stage answer id {}", stageAnswerId);
 
       loadingMetadata.setStageAnswerId(stageAnswerId);
     }
+
     for (int i = 0; i < navigationLevel.getSubNavigationLevels().size(); i++) {
       NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(i);
-      cascadeCreateStageAnswers(i + 1, subNavigationLevel);
+      createStageAnswersAndDecontrolStages(false, journeyId, i + 1, subNavigationLevel);
     }
+  }
+
+  private long createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
+    Decontrols decontrols = navigationLevel.getDecontrols();
+    LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
+
+    Stage decontrolStage = new Stage();
+    decontrolStage.setJourneyId(journeyId);
+    decontrolStage.setAnswerType(AnswerType.SELECT_MANY);
+    decontrolStage.setQuestionType(QuestionType.DECONTROL);
+    decontrolStage.setControlEntryId(loadingMetadata.getControlEntryId());
+
+    if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
+      decontrolStage.setNextStageId(navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId());
+    } else {
+      decontrolStage.setStageOutcomeType(StageOutcomeType.DECONTROL);
+    }
+
+    Long decontrolStageId = stageDao.insertStage(decontrolStage);
+
+    Logger.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
+
+    List<String> decontrolEntries = Arrays.stream(decontrols.getContent().split("\\r?\\n"))
+        .filter(StringUtils::isNotBlank)
+        .collect(Collectors.toList());
+    for (int i = 0; i < decontrolEntries.size(); i++) {
+      StageAnswer decontrolStageAnswer = new StageAnswer();
+      decontrolStageAnswer.setParentStageId(decontrolStageId);
+      decontrolStageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.DECONTROL);
+      decontrolStageAnswer.setAnswerText(decontrolEntries.get(i));
+      decontrolStageAnswer.setDisplayOrder(i + 1);
+      decontrolStageAnswer.setDividerAbove(false);
+
+      Long decontrolStageAnswerId = stageAnswerDao.insertStageAnswer(decontrolStageAnswer);
+
+      Logger.debug("Inserted stage answer id {} DECONTROL", decontrolStageAnswerId);
+    }
+
+    return decontrolStageId;
   }
 
   private void clearDown() {
