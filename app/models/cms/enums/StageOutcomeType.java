@@ -1,5 +1,5 @@
 package models.cms.enums;
 
 public enum StageOutcomeType {
-  DECONTROL
+  CONTROL_ENTRY_FOUND
 }

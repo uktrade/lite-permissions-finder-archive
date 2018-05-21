@@ -79,6 +79,15 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
         break;
     }
 
+    AnswerConfig.OutcomeType stageOutcomeType = null;
+    if (stage.getStageOutcomeType() != null) {
+      switch (stage.getStageOutcomeType()) {
+        case CONTROL_ENTRY_FOUND:
+          stageOutcomeType = AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND;
+          break;
+      }
+    }
+
     RichText explanatoryNote = richTextParser.parse(StringUtils.defaultString(stage.getExplanatoryNotes()), stageId);
     String nextStageId = Optional.ofNullable(stage.getNextStageId()).map(Object::toString).orElse(null);
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stage.getControlEntryId())
@@ -93,7 +102,7 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
         .collect(Collectors.toList());
 
     return new StageConfig(Long.toString(stage.getId()), stage.getTitle(), explanatoryNote, questionType, answerType,
-        nextStageId, controlEntryConfig, answerConfigs);
+        nextStageId, stageOutcomeType, controlEntryConfig, answerConfigs);
   }
 
   private AnswerConfig createAnswerConfig(StageAnswer stageAnswer) {

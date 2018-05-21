@@ -193,7 +193,7 @@ public class Loader {
     if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
       decontrolStage.setNextStageId(navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId());
     } else {
-      decontrolStage.setStageOutcomeType(StageOutcomeType.DECONTROL);
+      decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
     }
 
     Long decontrolStageId = stageDao.insertStage(decontrolStage);
