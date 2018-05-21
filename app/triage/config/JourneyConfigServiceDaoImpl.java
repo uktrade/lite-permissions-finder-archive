@@ -54,7 +54,7 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigForStageId(String stageId) {
+  public StageConfig getStageConfigById(String stageId) {
 
     Stage stage = stageDao.getStage(Long.parseLong(stageId));
 
@@ -155,7 +155,7 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<NoteConfig> getNotesForStageId(String stageId) {
+  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
     return noteDao.getNotesForStageId(Long.parseLong(stageId))
         .stream()
         .map(this::createNoteConfig)
@@ -163,7 +163,7 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public ControlEntryConfig getControlEntryConfigForId(String controlEntryId) {
+  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
     return createControlEntryConfig(controlEntryDao.getControlEntry(Long.parseLong(controlEntryId)));
   }
 

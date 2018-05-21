@@ -71,7 +71,7 @@ public class StageController extends Controller {
   }
 
   public Result render(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     if (stageConfig == null) {
       return redirectToIndex(sessionId);
     } else {
@@ -101,7 +101,7 @@ public class StageController extends Controller {
   }
 
   public Result handleSubmit(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     if (stageConfig == null) {
       Logger.error("Unknown stageId " + stageId);
       return redirectToIndex(sessionId);
@@ -123,7 +123,7 @@ public class StageController extends Controller {
   }
 
   private Result renderSelectOne(Form<AnswerForm> answerFormForm, String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
@@ -132,7 +132,7 @@ public class StageController extends Controller {
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
@@ -142,7 +142,7 @@ public class StageController extends Controller {
   }
 
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);

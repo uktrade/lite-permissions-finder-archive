@@ -55,11 +55,11 @@ public class OutcomeController extends Controller {
 
   public Result outcomeListed(String controlEntryId, String sessionId) {
     Form<RequestOgelForm> form = formFactory.form(RequestOgelForm.class);
-    return renderOutcomeListed(form, journeyConfigService.getControlEntryConfigForId(controlEntryId), sessionId);
+    return renderOutcomeListed(form, journeyConfigService.getControlEntryConfigById(controlEntryId), sessionId);
   }
 
   public Result handleOutcomeListedSubmit(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigForId(controlEntryId);
+    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     //TODO graceful handling if control entry not found
     Form<RequestOgelForm> form = formFactory.form(RequestOgelForm.class).bindFromRequest();
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
@@ -70,7 +70,7 @@ public class OutcomeController extends Controller {
   }
 
   public Result outcomeDecontrol(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
@@ -86,7 +86,7 @@ public class OutcomeController extends Controller {
   }
 
   public Result handleOutcomeDecontrolSubmit(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
@@ -118,7 +118,7 @@ public class OutcomeController extends Controller {
 
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,
                                         Set<String> answers) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<String> controlCodes = answerViewService.createAnswerViews(stageConfig).stream()
         .filter(answer -> answers.contains(answer.getValue()))
         .map(AnswerView::getPrompt)

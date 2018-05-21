@@ -75,12 +75,12 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigForStageId(String stageId) {
+  public StageConfig getStageConfigById(String stageId) {
     return configMap.get(stageId);
   }
 
   @Override
-  public List<NoteConfig> getNotesForStageId(String stageId) {
+  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
     NoteConfig noteConfigOne = new NoteConfig(
         UUID.randomUUID().toString(), stageId, new RichText("This is an example note"), NoteConfig.NoteType.NOTE);
     NoteConfig noteConfigTwo = new NoteConfig(
@@ -89,7 +89,7 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public ControlEntryConfig getControlEntryConfigForId(String controlEntryId) {
+  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
     return null;
   }
 
