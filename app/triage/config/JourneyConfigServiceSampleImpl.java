@@ -5,7 +5,6 @@ import triage.text.RichText;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,17 +75,22 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigForStageId(String stageId) {
+  public StageConfig getStageConfigById(String stageId) {
     return configMap.get(stageId);
   }
 
   @Override
-  public List<NoteConfig> getNotesForStageId(String stageId) {
+  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
     NoteConfig noteConfigOne = new NoteConfig(
         UUID.randomUUID().toString(), stageId, new RichText("This is an example note"), NoteConfig.NoteType.NOTE);
     NoteConfig noteConfigTwo = new NoteConfig(
         UUID.randomUUID().toString(), stageId, new RichText("This is another example note"), NoteConfig.NoteType.NOTE);
     return Arrays.asList(noteConfigOne, noteConfigTwo);
+  }
+
+  @Override
+  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
+    return null;
   }
 
   @Override
@@ -101,7 +105,7 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<String> getStageIdsForControlCode(ControlEntryConfig controlEntryConfig) {
+  public List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig) {
     String controlCode = controlEntryConfig.getControlCode();
     return configMap.entrySet().stream()
         .filter(entry -> {

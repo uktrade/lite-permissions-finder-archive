@@ -55,7 +55,7 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigForStageId(String stageId) {
+  public StageConfig getStageConfigById(String stageId) {
 
     Stage stage = stageDao.getStage(Long.parseLong(stageId));
 
@@ -156,11 +156,16 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<NoteConfig> getNotesForStageId(String stageId) {
+  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
     return noteDao.getNotesForStageId(Long.parseLong(stageId))
         .stream()
         .map(this::createNoteConfig)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
+    return createControlEntryConfig(controlEntryDao.getControlEntry(Long.parseLong(controlEntryId)));
   }
 
   private NoteConfig createNoteConfig(Note note) {
@@ -187,14 +192,11 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<String> getStageIdsForControlCode(ControlEntryConfig controlEntryConfig) {
-    //TODO do this properly
-    try (Handle handle = dbi.open()) {
-      List<Map<String, Object>> select = handle.select("SELECT s.id\n" +
-          "FROM stage s\n" +
-          "WHERE s.control_entry_id = '" + controlEntryConfig.getId() + "'");
-      return select.stream().map(e -> e.get("id").toString()).collect(Collectors.toList());
-    }
+  public List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig) {
+    return stageDao.getStagesForControlEntryId(Long.parseLong(controlEntryConfig.getId()))
+        .stream()
+        .map(e -> e.getId().toString())
+        .collect(Collectors.toList());
   }
 
   @Override

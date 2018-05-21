@@ -6,13 +6,15 @@ public interface JourneyConfigService {
 
   String getInitialStageId();
 
-  StageConfig getStageConfigForStageId(String stageId);
+  StageConfig getStageConfigById(String stageId);
 
-  List<NoteConfig> getNotesForStageId(String stageId);
+  List<NoteConfig> getNoteConfigsByStageId(String stageId);
+
+  ControlEntryConfig getControlEntryConfigById(String controlEntryId);
 
   //List of an entry's immediate children
   List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig);
 
-  List<String> getStageIdsForControlCode(ControlEntryConfig controlEntryConfig);
+  List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig);
 
 }
