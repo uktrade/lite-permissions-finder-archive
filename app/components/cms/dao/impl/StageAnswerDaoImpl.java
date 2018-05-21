@@ -32,7 +32,7 @@ public class StageAnswerDaoImpl implements StageAnswerDao {
     return stageAnswerJDBIDao.insert(
         stageAnswer.getParentStageId(),
         stageAnswer.getGoToStageId(),
-        stageAnswer.getGoToOutcomeType(),
+        stageAnswer.getGoToStageAnswerOutcomeType(),
         stageAnswer.getControlEntryId(),
         stageAnswer.getAnswerText(),
         stageAnswer.getDisplayOrder(),

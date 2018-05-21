@@ -48,13 +48,14 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
       List<Map<String, Object>> select = handle.select("SELECT s.id\n" +
           "FROM stage s\n" +
           "LEFT JOIN stage_answer sa ON s.id = sa.go_to_stage_id\n" +
-          "WHERE sa.id IS NULL");
+          "WHERE sa.id IS NULL\n" +
+          "AND s.control_entry_id IS NULL");
       return select.get(0).get("id").toString();
     }
   }
 
   @Override
-  public StageConfig getStageConfigForStageId(String stageId) {
+  public StageConfig getStageConfigById(String stageId) {
 
     Stage stage = stageDao.getStage(Long.parseLong(stageId));
 
@@ -78,6 +79,15 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
         break;
     }
 
+    OutcomeType stageOutcomeType = null;
+    if (stage.getStageOutcomeType() != null) {
+      switch (stage.getStageOutcomeType()) {
+        case CONTROL_ENTRY_FOUND:
+          stageOutcomeType = OutcomeType.CONTROL_ENTRY_FOUND;
+          break;
+      }
+    }
+
     RichText explanatoryNote = richTextParser.parse(StringUtils.defaultString(stage.getExplanatoryNotes()), stageId);
     String nextStageId = Optional.ofNullable(stage.getNextStageId()).map(Object::toString).orElse(null);
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stage.getControlEntryId())
@@ -92,23 +102,23 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
         .collect(Collectors.toList());
 
     return new StageConfig(Long.toString(stage.getId()), stage.getTitle(), explanatoryNote, questionType, answerType,
-        nextStageId, controlEntryConfig, answerConfigs);
+        nextStageId, stageOutcomeType, controlEntryConfig, answerConfigs);
   }
 
   private AnswerConfig createAnswerConfig(StageAnswer stageAnswer) {
 
     String nextStageId = Optional.ofNullable(stageAnswer.getGoToStageId()).map(Object::toString).orElse(null);
-    AnswerConfig.OutcomeType outcomeType = null;
-    if (stageAnswer.getGoToOutcomeType() != null) {
-      switch (stageAnswer.getGoToOutcomeType()) {
+    OutcomeType outcomeType = null;
+    if (stageAnswer.getGoToStageAnswerOutcomeType() != null) {
+      switch (stageAnswer.getGoToStageAnswerOutcomeType()) {
         case CONTROL_ENTRY_FOUND:
-          outcomeType = AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND;
+          outcomeType = OutcomeType.CONTROL_ENTRY_FOUND;
           break;
         case DECONTROL:
-          outcomeType = AnswerConfig.OutcomeType.DECONTROL;
+          outcomeType = OutcomeType.DECONTROL;
           break;
         case TOO_COMPLEX:
-          outcomeType = AnswerConfig.OutcomeType.TOO_COMPLEX;
+          outcomeType = OutcomeType.TOO_COMPLEX;
           break;
       }
     }
@@ -155,11 +165,16 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<NoteConfig> getNotesForStageId(String stageId) {
+  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
     return noteDao.getNotesForStageId(Long.parseLong(stageId))
         .stream()
         .map(this::createNoteConfig)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
+    return createControlEntryConfig(controlEntryDao.getControlEntry(Long.parseLong(controlEntryId)));
   }
 
   private NoteConfig createNoteConfig(Note note) {

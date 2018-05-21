@@ -44,27 +44,27 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
     stage1Answers.add(new AnswerConfig("A3", "4", null, ml1c, 3, false));
 
     List<AnswerConfig> outcomeAnswers = new ArrayList<>();
-    outcomeAnswers.add(new AnswerConfig("B1", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1a, 1, false));
-    outcomeAnswers.add(new AnswerConfig("B2", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1b, 2, false));
-    outcomeAnswers.add(new AnswerConfig("B3", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1c, 3, false));
+    outcomeAnswers.add(new AnswerConfig("B1", null, OutcomeType.CONTROL_ENTRY_FOUND, ml1a, 1, false));
+    outcomeAnswers.add(new AnswerConfig("B2", null, OutcomeType.CONTROL_ENTRY_FOUND, ml1b, 2, false));
+    outcomeAnswers.add(new AnswerConfig("B3", null, OutcomeType.CONTROL_ENTRY_FOUND, ml1c, 3, false));
 
     StageConfig stage1 = new StageConfig(STAGE_1_ID, "Question for the first stage", new RichText("This is an explanatory note."),
-        StageConfig.QuestionType.STANDARD, StageConfig.AnswerType.SELECT_ONE, null, ml1, stage1Answers);
+        StageConfig.QuestionType.STANDARD, StageConfig.AnswerType.SELECT_ONE, null, null, ml1, stage1Answers);
 
     configMap.put(STAGE_1_ID, stage1);
 
     StageConfig stage2 = new StageConfig(STAGE_2_ID, null, null, StageConfig.QuestionType.DECONTROL,
-        StageConfig.AnswerType.SELECT_MANY, STAGE_3_ID, ml1a, stage1Answers);
+        StageConfig.AnswerType.SELECT_MANY, STAGE_3_ID, null, ml1a, stage1Answers);
 
     configMap.put(STAGE_2_ID, stage2);
 
     StageConfig stage3 = new StageConfig(STAGE_3_ID, null, null, StageConfig.QuestionType.STANDARD,
-        StageConfig.AnswerType.SELECT_ONE, null, ml1b, outcomeAnswers);
+        StageConfig.AnswerType.SELECT_ONE, null, null, ml1b, outcomeAnswers);
 
     configMap.put(STAGE_3_ID, stage3);
 
     StageConfig stage4 = new StageConfig(STAGE_4_ID, null, new RichText("This is another explanatory note."), StageConfig.QuestionType.STANDARD,
-        StageConfig.AnswerType.SELECT_MANY, null, ml1c, outcomeAnswers);
+        StageConfig.AnswerType.SELECT_MANY, null, null, ml1c, outcomeAnswers);
 
     configMap.put(STAGE_4_ID, stage4);
   }
@@ -75,17 +75,22 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigForStageId(String stageId) {
+  public StageConfig getStageConfigById(String stageId) {
     return configMap.get(stageId);
   }
 
   @Override
-  public List<NoteConfig> getNotesForStageId(String stageId) {
+  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
     NoteConfig noteConfigOne = new NoteConfig(
         UUID.randomUUID().toString(), stageId, new RichText("This is an example note"), NoteConfig.NoteType.NOTE);
     NoteConfig noteConfigTwo = new NoteConfig(
         UUID.randomUUID().toString(), stageId, new RichText("This is another example note"), NoteConfig.NoteType.NOTE);
     return Arrays.asList(noteConfigOne, noteConfigTwo);
+  }
+
+  @Override
+  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
+    return null;
   }
 
   @Override

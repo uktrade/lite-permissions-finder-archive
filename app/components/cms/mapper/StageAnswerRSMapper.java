@@ -2,7 +2,7 @@ package components.cms.mapper;
 
 import components.cms.mapper.util.ResultSetWrapper;
 import models.cms.StageAnswer;
-import models.cms.enums.OutcomeType;
+import models.cms.enums.StageAnswerOutcomeType;
 import org.apache.commons.lang3.EnumUtils;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
@@ -17,7 +17,8 @@ public class StageAnswerRSMapper implements ResultSetMapper<StageAnswer> {
     Long id = rsw.getLong("id");
     Long parentStageId = rsw.getLong("parent_stage_id");
     Long goToStageId = rsw.getLong("go_to_stage_id");
-    OutcomeType goToOutcomeType = EnumUtils.getEnum(OutcomeType.class, rsw.getString("go_to_outcome_type"));
+    String goToStageAnswerOutcomeTypeStr = rsw.getString("go_to_stage_answer_outcome_type");
+    StageAnswerOutcomeType goToStageAnswerOutcomeType = EnumUtils.getEnum(StageAnswerOutcomeType.class, goToStageAnswerOutcomeTypeStr);
     Long controlEntryId = rsw.getLong("control_entry_id");
     String answerText = rsw.getString("answer_text");
     Integer displayOrder = rsw.getInt("display_order");
@@ -29,7 +30,7 @@ public class StageAnswerRSMapper implements ResultSetMapper<StageAnswer> {
         .setId(id)
         .setParentStageId(parentStageId)
         .setGoToStageId(goToStageId)
-        .setGoToOutcomeType(goToOutcomeType)
+        .setGoToStageAnswerOutcomeType(goToStageAnswerOutcomeType)
         .setControlEntryId(controlEntryId)
         .setAnswerText(answerText)
         .setDisplayOrder(displayOrder)

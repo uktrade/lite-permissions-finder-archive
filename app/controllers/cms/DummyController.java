@@ -19,8 +19,8 @@ import models.cms.Stage;
 import models.cms.StageAnswer;
 import models.cms.enums.AnswerType;
 import models.cms.enums.NoteType;
-import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
+import models.cms.enums.StageAnswerOutcomeType;
 import play.mvc.Result;
 
 public class DummyController {
@@ -71,7 +71,7 @@ public class DummyController {
 
     StageAnswer stageAnswer = new StageAnswer()
         .setParentStageId(stageId)
-        .setGoToOutcomeType(OutcomeType.TOO_COMPLEX)
+        .setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX)
         .setDisplayOrder(1)
         .setDividerAbove(false)
         .setAnswerText("Some answer test");
@@ -179,13 +179,13 @@ public class DummyController {
   }
 
   private StageAnswer createStageAnswer(long parentStageId, Long controlEntryId, String answerText, Long nextStageId,
-                                        OutcomeType outcomeType, int displayOrder, boolean dividerAbove) {
+                                        StageAnswerOutcomeType stageAnswerOutcomeType, int displayOrder, boolean dividerAbove) {
     StageAnswer stageAnswer = new StageAnswer()
         .setParentStageId(parentStageId)
         .setControlEntryId(controlEntryId)
         .setAnswerText(answerText)
         .setGoToStageId(nextStageId)
-        .setGoToOutcomeType(outcomeType)
+        .setGoToStageAnswerOutcomeType(stageAnswerOutcomeType)
         .setDisplayOrder(displayOrder)
         .setDividerAbove(dividerAbove);
     Long id = stageAnswerDao.insertStageAnswer(stageAnswer);

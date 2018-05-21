@@ -36,7 +36,8 @@ public class StageDaoImpl implements StageDao {
         stage.getExplanatoryNotes(),
         stage.getQuestionType(),
         stage.getAnswerType(),
-        stage.getNextStageId());
+        stage.getNextStageId(),
+        stage.getStageOutcomeType());
   }
 
   @Override

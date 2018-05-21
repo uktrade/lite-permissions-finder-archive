@@ -4,6 +4,7 @@ import components.cms.mapper.util.ResultSetWrapper;
 import models.cms.Stage;
 import models.cms.enums.AnswerType;
 import models.cms.enums.QuestionType;
+import models.cms.enums.StageOutcomeType;
 import org.apache.commons.lang3.EnumUtils;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
@@ -23,6 +24,8 @@ public class StageRSMapper implements ResultSetMapper<Stage> {
     QuestionType questionType = EnumUtils.getEnum(QuestionType.class, rsw.getString("question_type"));
     AnswerType answerType = EnumUtils.getEnum(AnswerType.class, rsw.getString("answer_type"));
     Long nextStageId = rsw.getLong("next_stage_id");
+    String stageOutcomeTypeStr = rsw.getString("go_to_stage_outcome_type");
+    StageOutcomeType stageOutcomeType = EnumUtils.getEnum(StageOutcomeType.class, stageOutcomeTypeStr);
     return new Stage()
         .setId(id)
         .setJourneyId(journeyId)
@@ -31,6 +34,7 @@ public class StageRSMapper implements ResultSetMapper<Stage> {
         .setExplanatoryNotes(explanatoryNotes)
         .setQuestionType(questionType)
         .setAnswerType(answerType)
-        .setNextStageId(nextStageId);
+        .setNextStageId(nextStageId)
+        .setStageOutcomeType(stageOutcomeType);
   }
 }
