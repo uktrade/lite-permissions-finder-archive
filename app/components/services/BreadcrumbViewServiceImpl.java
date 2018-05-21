@@ -32,7 +32,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   @Override
   public BreadcrumbView createBreadcrumbView(String stageId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigForStageId(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     Optional<ControlEntryConfig> relatedControlEntry = stageConfig.getRelatedControlEntry();
     return createBreadcrumbView(relatedControlEntry.orElse(null));
   }
@@ -68,7 +68,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   }
 
   private List<NoteView> createNoteViews(String stageId) {
-    return journeyConfigService.getNotesForStageId(stageId).stream()
+    return journeyConfigService.getNoteConfigsByStageId(stageId).stream()
         .map(noteConfig -> new NoteView(htmlRenderService.convertRichTextToPlainText(noteConfig.getNoteText())))
         .collect(Collectors.toList());
   }

@@ -75,17 +75,22 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigForStageId(String stageId) {
+  public StageConfig getStageConfigById(String stageId) {
     return configMap.get(stageId);
   }
 
   @Override
-  public List<NoteConfig> getNotesForStageId(String stageId) {
+  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
     NoteConfig noteConfigOne = new NoteConfig(
         UUID.randomUUID().toString(), stageId, new RichText("This is an example note"), NoteConfig.NoteType.NOTE);
     NoteConfig noteConfigTwo = new NoteConfig(
         UUID.randomUUID().toString(), stageId, new RichText("This is another example note"), NoteConfig.NoteType.NOTE);
     return Arrays.asList(noteConfigOne, noteConfigTwo);
+  }
+
+  @Override
+  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
+    return null;
   }
 
   @Override
