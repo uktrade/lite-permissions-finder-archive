@@ -79,11 +79,11 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
         break;
     }
 
-    AnswerConfig.OutcomeType stageOutcomeType = null;
+    OutcomeType stageOutcomeType = null;
     if (stage.getStageOutcomeType() != null) {
       switch (stage.getStageOutcomeType()) {
         case CONTROL_ENTRY_FOUND:
-          stageOutcomeType = AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND;
+          stageOutcomeType = OutcomeType.CONTROL_ENTRY_FOUND;
           break;
       }
     }
@@ -108,17 +108,17 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   private AnswerConfig createAnswerConfig(StageAnswer stageAnswer) {
 
     String nextStageId = Optional.ofNullable(stageAnswer.getGoToStageId()).map(Object::toString).orElse(null);
-    AnswerConfig.OutcomeType outcomeType = null;
+    OutcomeType outcomeType = null;
     if (stageAnswer.getGoToStageAnswerOutcomeType() != null) {
       switch (stageAnswer.getGoToStageAnswerOutcomeType()) {
         case CONTROL_ENTRY_FOUND:
-          outcomeType = AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND;
+          outcomeType = OutcomeType.CONTROL_ENTRY_FOUND;
           break;
         case DECONTROL:
-          outcomeType = AnswerConfig.OutcomeType.DECONTROL;
+          outcomeType = OutcomeType.DECONTROL;
           break;
         case TOO_COMPLEX:
-          outcomeType = AnswerConfig.OutcomeType.TOO_COMPLEX;
+          outcomeType = OutcomeType.TOO_COMPLEX;
           break;
       }
     }

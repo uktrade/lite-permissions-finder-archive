@@ -22,6 +22,7 @@ import play.mvc.With;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
+import triage.config.OutcomeType;
 import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.EnumUtil;
@@ -172,7 +173,7 @@ public class StageController extends Controller {
         Optional<String> nextStageId = stageConfig.getNextStageId();
         if (nextStageId.isPresent()) {
           return redirectToStage(nextStageId.get(), sessionId);
-        } else if (stageConfig.getOutcomeType().map(e -> e == AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND).orElse(false)) {
+        } else if (stageConfig.getOutcomeType().map(e -> e == OutcomeType.CONTROL_ENTRY_FOUND).orElse(false)) {
           String controlEntryId = stageConfig.getRelatedControlEntry()
               .map(ControlEntryConfig::getId)
               .orElseThrow(() -> new BusinessRuleException(String.format(

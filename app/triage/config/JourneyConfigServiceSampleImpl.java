@@ -44,9 +44,9 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
     stage1Answers.add(new AnswerConfig("A3", "4", null, ml1c, 3, false));
 
     List<AnswerConfig> outcomeAnswers = new ArrayList<>();
-    outcomeAnswers.add(new AnswerConfig("B1", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1a, 1, false));
-    outcomeAnswers.add(new AnswerConfig("B2", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1b, 2, false));
-    outcomeAnswers.add(new AnswerConfig("B3", null, AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND, ml1c, 3, false));
+    outcomeAnswers.add(new AnswerConfig("B1", null, OutcomeType.CONTROL_ENTRY_FOUND, ml1a, 1, false));
+    outcomeAnswers.add(new AnswerConfig("B2", null, OutcomeType.CONTROL_ENTRY_FOUND, ml1b, 2, false));
+    outcomeAnswers.add(new AnswerConfig("B3", null, OutcomeType.CONTROL_ENTRY_FOUND, ml1c, 3, false));
 
     StageConfig stage1 = new StageConfig(STAGE_1_ID, "Question for the first stage", new RichText("This is an explanatory note."),
         StageConfig.QuestionType.STANDARD, StageConfig.AnswerType.SELECT_ONE, null, null, ml1, stage1Answers);

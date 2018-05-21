@@ -6,10 +6,6 @@ import java.util.Optional;
 
 public class AnswerConfig {
 
-  public enum OutcomeType {
-    DECONTROL, TOO_COMPLEX, CONTROL_ENTRY_FOUND //,...
-  }
-
   private final String answerId;
 
   private final String nextStageId;

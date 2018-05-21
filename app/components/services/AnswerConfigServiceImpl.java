@@ -1,6 +1,7 @@
 package components.services;
 
 import triage.config.AnswerConfig;
+import triage.config.OutcomeType;
 import triage.config.StageConfig;
 
 import java.util.Comparator;
@@ -35,7 +36,7 @@ public class AnswerConfigServiceImpl implements AnswerConfigService {
   @Override
   public boolean isControlEntryFoundOutcomeAnswerConfig(AnswerConfig answerConfig) {
     return answerConfig.getOutcomeType().isPresent() &&
-        answerConfig.getOutcomeType().get() == AnswerConfig.OutcomeType.CONTROL_ENTRY_FOUND;
+        answerConfig.getOutcomeType().get() == OutcomeType.CONTROL_ENTRY_FOUND;
   }
 
 }

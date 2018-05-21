@@ -23,7 +23,7 @@ public class StageConfig {
   private final AnswerType answerType;
 
   private final String nextStageId;
-  private final AnswerConfig.OutcomeType outcomeType;
+  private final OutcomeType outcomeType;
 
   private final ControlEntryConfig relatedControlEntry;
 
@@ -31,7 +31,7 @@ public class StageConfig {
 
   public StageConfig(String stageId, String questionTitle, RichText explanatoryNote,
                      QuestionType questionType, AnswerType answerType, String nextStageId,
-                     AnswerConfig.OutcomeType outcomeType, ControlEntryConfig relatedControlEntry,
+                     OutcomeType outcomeType, ControlEntryConfig relatedControlEntry,
                      List<AnswerConfig> answerConfigs) {
     this.stageId = stageId;
     this.questionTitle = questionTitle;
@@ -69,7 +69,7 @@ public class StageConfig {
     return Optional.ofNullable(nextStageId);
   }
 
-  public Optional<AnswerConfig.OutcomeType> getOutcomeType() {
+  public Optional<OutcomeType> getOutcomeType() {
     return Optional.ofNullable(outcomeType);
   }
 
