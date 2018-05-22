@@ -34,9 +34,7 @@ import play.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Loader {
   private final ControlEntryDao controlEntryDao;
@@ -299,42 +297,38 @@ public class Loader {
 
   private void createNotes(NavigationLevel navigationLevel) {
     Notes notes = navigationLevel.getNotes();
-
     if (notes != null) {
-      long nonNullCount = Stream.of(notes.getNb(), notes.getNote(), notes.getSeeAlso(), notes.getTechNote())
-          .filter(Objects::nonNull)
-          .map(String::trim)
-          .filter(StringUtils::isNotBlank)
-          .count();
-
-      if (nonNullCount == 1) {
-        Note note = new Note();
-        note.setStageId(navigationLevel.getLoadingMetadata().getStageId());
-        if (notes.getNb() != null) {
-          note.setNoteText(notes.getNb());
-          note.setNoteType(NoteType.NB);
-        } else if (notes.getNote() != null) {
-          note.setNoteText(notes.getNote());
-          note.setNoteType(NoteType.NOTE);
-        } else if (notes.getSeeAlso() != null) {
-          note.setNoteText(notes.getSeeAlso());
-          note.setNoteType(NoteType.SEE_ALSO);
-        } else {
-          note.setNoteText(notes.getTechNote());
-          note.setNoteType(NoteType.TECH_NOTE);
-        }
-
-        Long noteId = noteDao.insertNote(note);
-
-        Logger.debug("Inserted note with id {}", noteId);
-
-      } else if (nonNullCount > 1){
-        Logger.error("Error deriving note from note columns, multiple columns populated, navigation cell address {}", navigationLevel.getCellAddress());
+      long stageId = navigationLevel.getLoadingMetadata().getStageId();
+      if (notes.getNb() != null) {
+        splitAndInsertNote(notes.getNb(), NoteType.NB, stageId);
+      } else if (notes.getNote() != null) {
+        splitAndInsertNote(notes.getNote(), NoteType.NOTE, stageId);
+      } else if (notes.getSeeAlso() != null) {
+        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, stageId);
+      } else if (notes.getTechNote() != null) {
+        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, stageId);
       }
     }
 
     for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
       createNotes(subNavigationLevel);
+    }
+  }
+
+  private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
+    List<String> noteTexts = Arrays.stream(noteText.split("\\r?\\n"))
+        .map(String::trim)
+        .filter(StringUtils::isNotBlank)
+        .collect(Collectors.toList());
+    for (String nt : noteTexts) {
+      Note note = new Note()
+          .setStageId(stageId)
+          .setNoteType(noteType)
+          .setNoteText(nt);
+
+      Long noteId = noteDao.insertNote(note);
+
+      Logger.debug("Inserted note with id {}", noteId);
     }
   }
 
