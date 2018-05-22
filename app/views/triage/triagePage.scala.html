@@ -53,9 +53,9 @@
                 </p>
               }
             }{
-              @if(!breadcrumbItemView.getNoteViews.isEmpty) {
+              @if(!breadcrumbView.getNoteViews.isEmpty) {
                 @controlCodeBreadcrumbsNotes() {
-                  @for(noteView <- breadcrumbItemView.getNoteViews) {
+                  @for(noteView <- breadcrumbView.getNoteViews) {
                     <li>@noteView.getText</li>
                   }
                 }
