@@ -9,6 +9,4 @@ public interface AnswerConfigService {
   List<AnswerConfig> getMatchingAnswerConfigs(List<String> actualAnswers, StageConfig stageConfig);
 
   AnswerConfig getAnswerConfigWithLowestPrecedence(List<AnswerConfig> answerConfigs);
-
-  boolean isControlEntryFoundOutcomeAnswerConfig(AnswerConfig answerConfig);
 }

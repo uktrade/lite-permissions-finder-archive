@@ -209,32 +209,8 @@ public class StageController extends Controller {
               stageId, sessionId);
         } else {
           AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
-          if (answerConfig.getOutcomeType().isPresent()) {
-            OutcomeType outcomeType = answerConfig.getOutcomeType().get();
-            if (outcomeType == OutcomeType.CONTROL_ENTRY_FOUND) {
-              sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
-              String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
-                  .map(ControlEntryConfig::getId)
-                  .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +
-                      answerConfig.getAnswerId()));
-              return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
-            } else if (outcomeType == OutcomeType.TOO_COMPLEX) {
-              //TODO too complex for code finder outcome
-              return ok("Too complex content TODO");
-            } else {
-              Logger.error("Unexpected outcome type %s on answer %s", outcomeType, answerConfig.getAnswerId());
-              return redirectToStage(stageId, sessionId);
-            }
-          } else {
-            Optional<String> nextStageId = answerConfig.getNextStageId();
-            if (nextStageId.isPresent()) {
-              sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
-              return redirectToStage(nextStageId.get(), sessionId);
-            } else {
-              Logger.error("AnswerConfig doesn't have next stageId.");
-              return redirectToStage(stageId, sessionId);
-            }
-          }
+          sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+          return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
         }
       } else if (action == Action.NONE) {
         return redirect(routes.OutcomeController.outcomeDropout(sessionId));
@@ -262,22 +238,8 @@ public class StageController extends Controller {
           .findAny();
       if (answerConfigOptional.isPresent()) {
         AnswerConfig answerConfig = answerConfigOptional.get();
-        if (answerConfigService.isControlEntryFoundOutcomeAnswerConfig(answerConfig)) {
-          sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
-          String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
-              .map(ControlEntryConfig::getId)
-              .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " + answerConfig.getAnswerId()));
-          return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
-        } else {
-          Optional<String> nextStageId = answerConfig.getNextStageId();
-          if (nextStageId.isPresent()) {
-            sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
-            return redirectToStage(nextStageId.get(), sessionId);
-          } else {
-            Logger.error("answerConfig.get.getNextStageId is absent.");
-            return redirectToStage(stageId, sessionId);
-          }
-        }
+        sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
+        return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
       } else {
         Logger.error("Unknown answer " + answer);
         return renderSelectOne(answerForm, stageId, sessionId);
@@ -287,6 +249,33 @@ public class StageController extends Controller {
     } else {
       Logger.error("Unknown action " + actionParam);
       return redirectToStage(stageId, sessionId);
+    }
+  }
+
+  private Result resultForStandardStageAnswer(String stageId, String sessionId, AnswerConfig answerConfig) {
+    if (answerConfig.getOutcomeType().isPresent()) {
+      OutcomeType outcomeType = answerConfig.getOutcomeType().get();
+      if (outcomeType == OutcomeType.CONTROL_ENTRY_FOUND) {
+        String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
+            .map(ControlEntryConfig::getId)
+            .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +
+                answerConfig.getAnswerId()));
+        return redirect(controllers.routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
+      } else if (outcomeType == OutcomeType.TOO_COMPLEX) {
+        //TODO too complex for code finder outcome
+        return ok("Too complex content TODO");
+      } else {
+        Logger.error("Unexpected outcome type %s on answer %s", outcomeType, answerConfig.getAnswerId());
+        return redirectToStage(stageId, sessionId);
+      }
+    } else {
+      Optional<String> nextStageId = answerConfig.getNextStageId();
+      if (nextStageId.isPresent()) {
+        return redirectToStage(nextStageId.get(), sessionId);
+      } else {
+        Logger.error("AnswerConfig doesn't have next stageId.");
+        return redirectToStage(stageId, sessionId);
+      }
     }
   }
 
