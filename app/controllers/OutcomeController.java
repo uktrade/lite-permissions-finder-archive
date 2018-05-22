@@ -7,6 +7,7 @@ import components.services.RenderService;
 import controllers.licencefinder.LicenceFinderController;
 import models.enums.PageType;
 import models.view.AnswerView;
+import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.form.RequestNlrForm;
 import models.view.form.RequestOgelForm;
@@ -110,11 +111,12 @@ public class OutcomeController extends Controller {
     return ok(dropout.render(sessionId));
   }
 
-  private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig, String sessionId) {
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(controlEntryConfig);
+  private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig,
+                                     String sessionId) {
+    List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
-    return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, breadcrumbView, controlCode, description));
+    return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, breadcrumbViews, controlCode, description));
   }
 
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,

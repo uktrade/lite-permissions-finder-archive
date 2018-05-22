@@ -4,13 +4,13 @@
 @import views.html.frontendComponents.formCheckboxWithDetailPanel
 
 @this()
-@(form: Form[_], stageId: String, sessionId: String, controlCode: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
+@(form: Form[_], stageId: String, sessionId: String, controlCode: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
 
 @triagePage(form, stageId, sessionId, "Does your item have any of these characteristics?", breadcrumbView){
   @controlCode: Checking against decontrols
 }{
   <p>Select all that apply.</p>
-
+  <p>@explanatoryText</p>
   <div class="form-group">
     @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
       @formCheckboxWithDetailPanel(form("answers"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews), isPromptHtml = true, inputId = "answers" + index, inputName = "answers[" + index + "]", inputValue = answerView.getValue, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information") {

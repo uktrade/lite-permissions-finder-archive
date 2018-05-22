@@ -14,12 +14,17 @@ import components.cms.parser.model.column.Breadcrumbs;
 import components.cms.parser.model.column.Buttons;
 import components.cms.parser.model.column.ControlListEntries;
 import components.cms.parser.model.column.Decontrols;
+import components.cms.parser.model.column.Definitions;
 import components.cms.parser.model.column.NavigationExtras;
+import components.cms.parser.model.column.Notes;
 import models.cms.ControlEntry;
 import models.cms.Journey;
+import models.cms.LocalDefinition;
+import models.cms.Note;
 import models.cms.Stage;
 import models.cms.StageAnswer;
 import models.cms.enums.AnswerType;
+import models.cms.enums.NoteType;
 import models.cms.enums.QuestionType;
 import models.cms.enums.StageAnswerOutcomeType;
 import models.cms.enums.StageOutcomeType;
@@ -28,7 +33,9 @@ import play.Logger;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Loader {
   private final ControlEntryDao controlEntryDao;
@@ -66,6 +73,8 @@ public class Loader {
     createControlEntries(null, rootNavigationLevel);
     createStages(journeyId, rootNavigationLevel);
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
+    createLocalDefinitions(rootNavigationLevel);
+    createNotes(rootNavigationLevel);
   }
 
   private void createControlEntries(Long parentControlEntryId, NavigationLevel navigationLevel) {
@@ -217,6 +226,80 @@ public class Loader {
     }
 
     return decontrolStageId;
+  }
+
+  private void createLocalDefinitions(NavigationLevel navigationLevel) {
+    Definitions definitions = navigationLevel.getDefinitions();
+
+    if (definitions != null && definitions.getLocal() != null) {
+      List<String> localDefinitionStrs = Arrays.stream(definitions.getLocal().split("\\r?\\n"))
+          .filter(StringUtils::isNotBlank)
+          .map(String::trim)
+          .collect(Collectors.toList());
+
+      for (String localDefinitionStr : localDefinitionStrs) {
+        int firstIdx = localDefinitionStr.indexOf('\'');
+        int secondIdx = localDefinitionStr.indexOf('\'', firstIdx + 1);
+        String term = localDefinitionStr.substring(firstIdx + 1, secondIdx).toLowerCase();
+        if (StringUtils.isBlank(term)) {
+          Logger.error("Error deriving term from local definition {}, navigation cell address {}", localDefinitionStr, navigationLevel.getCellAddress());
+        } else {
+          LocalDefinition localDefinition = new LocalDefinition();
+          localDefinition.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
+          localDefinition.setTerm(term);
+          localDefinition.setDefinitionText(localDefinitionStr);
+
+          Long localDefinitionId = localDefinitionDao.insertLocalDefinition(localDefinition);
+
+          Logger.debug("Inserted local definition id {}", localDefinitionId);
+        }
+      }
+    }
+
+    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
+      createLocalDefinitions(subNavigationLevel);
+    }
+  }
+
+  private void createNotes(NavigationLevel navigationLevel) {
+    Notes notes = navigationLevel.getNotes();
+
+    if (notes != null) {
+      long nonNullCount = Stream.of(notes.getNb(), notes.getNote(), notes.getSeeAlso(), notes.getTechNote())
+          .filter(Objects::nonNull)
+          .map(String::trim)
+          .filter(StringUtils::isNotBlank)
+          .count();
+
+      if (nonNullCount == 1) {
+        Note note = new Note();
+        note.setStageId(navigationLevel.getLoadingMetadata().getStageId());
+        if (notes.getNb() != null) {
+          note.setNoteText(notes.getNb());
+          note.setNoteType(NoteType.NB);
+        } else if (notes.getNote() != null) {
+          note.setNoteText(notes.getNote());
+          note.setNoteType(NoteType.NOTE);
+        } else if (notes.getSeeAlso() != null) {
+          note.setNoteText(notes.getSeeAlso());
+          note.setNoteType(NoteType.SEE_ALSO);
+        } else {
+          note.setNoteText(notes.getTechNote());
+          note.setNoteType(NoteType.TECH_NOTE);
+        }
+
+        Long noteId = noteDao.insertNote(note);
+
+        Logger.debug("Inserted note with id {}", noteId);
+
+      } else if (nonNullCount > 1){
+        Logger.error("Error deriving note from note columns, multiple columns populated, navigation cell address {}", navigationLevel.getCellAddress());
+      }
+    }
+
+    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
+      createNotes(subNavigationLevel);
+    }
   }
 
   private void clearDown() {

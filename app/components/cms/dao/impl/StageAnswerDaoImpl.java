@@ -23,6 +23,11 @@ public class StageAnswerDaoImpl implements StageAnswerDao {
   }
 
   @Override
+  public StageAnswer getStageAnswerByGoToStageId(long goToStageId) {
+    return stageAnswerJDBIDao.getStageAnswerByGoToStageId(goToStageId);
+  }
+
+  @Override
   public List<StageAnswer> getStageAnswersForStageId(long stageId) {
     return stageAnswerJDBIDao.getForParentStageId(stageId);
   }

@@ -134,12 +134,13 @@ public class StageController extends Controller {
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
+    String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, controlCode, answerViews, breadcrumbView));
+    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, controlCode, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId) {

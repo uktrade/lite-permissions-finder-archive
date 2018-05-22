@@ -4,6 +4,7 @@
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import views.html.common.page._
 @import views.html.common.state._
+@import play.twirl.api.HtmlFormat
 
 @(form: Form[_], stageId: String, sessionId: String, title: String, breadcrumbView: BreadcrumbView)(secondaryHeading: Html)(formContent: Html)
 
@@ -39,21 +40,34 @@
     <div class="column-one-third">
       <h2 class="heading-medium">You are here</h2>
       @controlCodeBreadcrumbs(){
-        @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
-          @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl){
-            @breadcrumbItemView.getText
-            @if(breadcrumbItemView.getDescription!=null) {
-              @breadcrumbItemView.getDescription
+        @for((breadcrumbItemView, index) <- breadcrumbView.getBreadcrumbItemViews.zipWithIndex) {
+          @if(index == breadcrumbView.getBreadcrumbItemViews.size - 1) {
+            @controlCodeBreadcrumbsDetailBox(isPathStep = true){
+              @breadcrumbItemView.getText
+              @if(breadcrumbItemView.getDescription!=null) {
+                @breadcrumbItemView.getDescription
+              }
+              @if(breadcrumbView.isDecontrol) {
+                <p>
+                  Checking against decontrols
+                </p>
+              }
+            }{
+              @if(!breadcrumbItemView.getNoteViews.isEmpty) {
+                @controlCodeBreadcrumbsNotes() {
+                  @for(noteView <- breadcrumbItemView.getNoteViews) {
+                    <li>@noteView.getText</li>
+                  }
+                }
+              } else {
+                @HtmlFormat.empty
+              }
             }
-          }
-        }
-        @if(!breadcrumbView.getBreadcrumbItemViews.isEmpty) {
-          @controlCodeBreadcrumbsDetailBox(isPathStep = true){
-            This is the last step, in a detail box. It has some notes.
-          }{
-            @controlCodeBreadcrumbsNotes() {
-              @for(noteView <- Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getNoteViews) {
-                <li>@noteView.getText</li>
+          } else {
+            @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl){
+              @breadcrumbItemView.getText
+              @if(breadcrumbItemView.getDescription!=null) {
+                @breadcrumbItemView.getDescription
               }
             }
           }
