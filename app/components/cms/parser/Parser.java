@@ -30,7 +30,7 @@ import java.util.List;
 
 public class Parser {
   private static class SheetIndices {
-    static final int UK_MILITARY_LIST = 0; // Sheet 1
+    static final int UK_MILITARY_LIST = 6; // Sheet 7
   }
   private static class RowIndices {
     static final int NAVIGATION_START = 3; // 4
@@ -101,6 +101,7 @@ public class Parser {
 
       List<NavigationLevel> navigationLevels = new ArrayList<>();
 
+      // Expected to parse multiple sheets
       for (int sheetIdx: Arrays.asList(SheetIndices.UK_MILITARY_LIST)) {
         Deque<NavigationLevel> navLevelStack = new ArrayDeque<>();
 
