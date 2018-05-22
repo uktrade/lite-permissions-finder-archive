@@ -10,7 +10,5 @@ public interface AnswerConfigService {
 
   AnswerConfig getAnswerConfigWithLowestPrecedence(List<AnswerConfig> answerConfigs);
 
-  List<AnswerConfig> getControlEntryFoundOutcomeAnswerConfigs(List<AnswerConfig> answerConfigs);
-
   boolean isControlEntryFoundOutcomeAnswerConfig(AnswerConfig answerConfig);
 }

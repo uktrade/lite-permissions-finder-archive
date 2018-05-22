@@ -208,14 +208,23 @@ public class StageController extends Controller {
           return renderSelectMany(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
               stageId, sessionId);
         } else {
-          List<AnswerConfig> controlEntryFoundOutcomeAnswerConfigs = answerConfigService.getControlEntryFoundOutcomeAnswerConfigs(matchingAnswers);
-          AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(controlEntryFoundOutcomeAnswerConfigs);
-          if (!controlEntryFoundOutcomeAnswerConfigs.isEmpty()) {
-            sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
-            String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
-                .map(ControlEntryConfig::getId)
-                .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " + answerConfig.getAnswerId()));
-            return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
+          AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
+          if (answerConfig.getOutcomeType().isPresent()) {
+            OutcomeType outcomeType = answerConfig.getOutcomeType().get();
+            if (outcomeType == OutcomeType.CONTROL_ENTRY_FOUND) {
+              sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+              String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
+                  .map(ControlEntryConfig::getId)
+                  .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +
+                      answerConfig.getAnswerId()));
+              return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
+            } else if (outcomeType == OutcomeType.TOO_COMPLEX) {
+              //TODO too complex for code finder outcome
+              return ok("Too complex content TODO");
+            } else {
+              Logger.error("Unexpected outcome type %s on answer %s", outcomeType, answerConfig.getAnswerId());
+              return redirectToStage(stageId, sessionId);
+            }
           } else {
             Optional<String> nextStageId = answerConfig.getNextStageId();
             if (nextStageId.isPresent()) {

@@ -27,13 +27,6 @@ public class AnswerConfigServiceImpl implements AnswerConfigService {
   }
 
   @Override
-  public List<AnswerConfig> getControlEntryFoundOutcomeAnswerConfigs(List<AnswerConfig> answerConfigs) {
-    return answerConfigs.stream()
-        .filter(this::isControlEntryFoundOutcomeAnswerConfig)
-        .collect(Collectors.toList());
-  }
-
-  @Override
   public boolean isControlEntryFoundOutcomeAnswerConfig(AnswerConfig answerConfig) {
     return answerConfig.getOutcomeType().isPresent() &&
         answerConfig.getOutcomeType().get() == OutcomeType.CONTROL_ENTRY_FOUND;
