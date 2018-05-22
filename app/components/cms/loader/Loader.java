@@ -113,8 +113,8 @@ public class Loader {
   }
 
   private void createStages(long journeyId, NavigationLevel navigationLevel) {
-    // Make the stage for all sub navigation levels of this navigation level
-    if (navigationLevel.getSubNavigationLevels().isEmpty()) {
+    // Make the stage for all sub navigation levels of this navigation level (skip rating-only rows without buttons)
+    if (navigationLevel.getSubNavigationLevels().isEmpty() || navigationLevel.getSubNavigationLevels().get(0).getButtons() == null) {
       return;
     }
     NavigationLevel topSubNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
@@ -149,7 +149,12 @@ public class Loader {
       } else {
         if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
           NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
-          stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
+          if (subNavigationLevel.getButtons() == null) {
+            //Child entries without buttons are not a stage, we are actually on a leaf now
+            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+          } else {
+            stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
+          }
         } else {
           stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
         }
@@ -185,7 +190,10 @@ public class Loader {
 
     for (int i = 0; i < navigationLevel.getSubNavigationLevels().size(); i++) {
       NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(i);
-      createStageAnswersAndDecontrolStages(false, journeyId, i + 1, subNavigationLevel);
+      //Don't make StageAnswers for rating-only rows without buttons
+      if (subNavigationLevel.getButtons() != null) {
+        createStageAnswersAndDecontrolStages(false, journeyId, i + 1, subNavigationLevel);
+      }
     }
   }
 
