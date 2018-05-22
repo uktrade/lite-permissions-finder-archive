@@ -6,9 +6,13 @@
 @import play.twirl.api.HtmlFormat
 
 @this()
-@(form: Form[_], stageId: String, sessionId: String, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
+@(form: Form[_], stageId: String, sessionId: String, progressCode: String, progressDescription: String, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
 
-@triagePage(form, stageId, sessionId, title, breadcrumbView)(HtmlFormat.empty){
+@triagePage(form, stageId, sessionId, title, breadcrumbView){
+  @if(progressCode != null || progressDescription != null) {
+    @progressCode @progressDescription
+  }
+}{
   <p>@explanatoryText</p>
   @formRadioGroupContainer(form("answer"))(null) {
     @for(answerView <- answerViews) {

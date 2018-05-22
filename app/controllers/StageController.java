@@ -129,7 +129,19 @@ public class StageController extends Controller {
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-    return ok(selectOne.render(answerFormForm, stageId, sessionId, title, explanatoryText, answerViews, breadcrumbView));
+
+    ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
+    String progressCode;
+    String progressDescription;
+    if (controlEntryConfig != null) {
+      progressCode = controlEntryConfig.getControlCode();
+      progressDescription = renderService.getSummaryDescription(controlEntryConfig);
+    } else {
+      progressCode = null;
+      progressDescription = null;
+    }
+
+    return ok(selectOne.render(answerFormForm, stageId, sessionId, progressCode, progressDescription, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId) {
@@ -149,7 +161,19 @@ public class StageController extends Controller {
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, title, explanatoryText, answerViews, breadcrumbView));
+
+    ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
+    String progressCode;
+    String progressDescription;
+    if (controlEntryConfig != null) {
+      progressCode = controlEntryConfig.getControlCode();
+      progressDescription = renderService.getSummaryDescription(controlEntryConfig);
+    } else {
+      progressCode = null;
+      progressDescription = null;
+    }
+
+    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, progressCode, progressDescription, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig) {
