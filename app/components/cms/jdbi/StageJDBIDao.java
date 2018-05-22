@@ -15,6 +15,10 @@ import java.util.List;
 public interface StageJDBIDao {
 
   @Mapper(StageRSMapper.class)
+  @SqlQuery("SELECT * FROM stage WHERE next_stage_id = :nextStageId")
+  Stage getByNextStageId(@Bind("nextStageId") long nextStageId);
+
+  @Mapper(StageRSMapper.class)
   @SqlQuery("SELECT * FROM stage WHERE id = :id")
   Stage get(@Bind("id") long id);
 
