@@ -17,6 +17,6 @@ public interface JourneyConfigService {
 
   List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig);
 
-  StageConfig getStageConfigByNextStageId(String nextStageId);
+  StageConfig getStageConfigForPreviousStage(String stageId);
 
 }

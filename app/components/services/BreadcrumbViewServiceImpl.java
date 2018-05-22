@@ -43,7 +43,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     if (controlEntryConfigOptional.isPresent()) {
       return controlEntryConfigOptional.get();
     } else {
-      StageConfig parentStageConfig = journeyConfigService.getStageConfigByNextStageId(stageConfig.getStageId());
+      StageConfig parentStageConfig = journeyConfigService.getStageConfigForPreviousStage(stageConfig.getStageId());
       if (parentStageConfig != null) {
         return getControlEntryConfig(parentStageConfig);
       } else {

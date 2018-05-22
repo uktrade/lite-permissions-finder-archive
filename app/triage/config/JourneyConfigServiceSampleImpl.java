@@ -121,12 +121,20 @@ public class JourneyConfigServiceSampleImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigByNextStageId(String nextStageId) {
+  public StageConfig getStageConfigForPreviousStage(String stageId) {
     return configMap.values().stream()
-        .filter(stageConfig ->
-            stageConfig.getNextStageId().map(nextStageIdIterate -> nextStageIdIterate.equals(nextStageId)).orElse(false))
+        .filter(stageConfig -> hasNextStageId(stageConfig, stageId) || hasAnswerWithNextStageId(stageConfig, stageId))
         .findFirst()
         .orElse(null);
+  }
+
+  private boolean hasNextStageId(StageConfig stageConfig, String stageId) {
+    return stageConfig.getNextStageId().map(nextStageId -> nextStageId.equals(stageId)).orElse(false);
+  }
+
+  private boolean hasAnswerWithNextStageId(StageConfig stageConfig, String stageId) {
+    return stageConfig.getAnswerConfigs().stream().anyMatch(answerConfig ->
+        answerConfig.getNextStageId().map(nextStageId -> nextStageId.equals(stageId)).orElse(false));
   }
 
   private ControlEntryConfig createControlEntryConfig(String controlCode) {

@@ -57,7 +57,7 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   @Override
   public StageConfig getStageConfigById(String stageId) {
     Stage stage = stageDao.getStage(Long.parseLong(stageId));
-    if(stage == null) {
+    if (stage == null) {
       return null;
     } else {
       return createStageConfig(stage);
@@ -65,10 +65,15 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigByNextStageId(String nextStageId) {
-    Stage stage = stageDao.getByNextStageId(Long.parseLong(nextStageId));
-    if(stage == null) {
-      return null;
+  public StageConfig getStageConfigForPreviousStage(String stageId) {
+    Stage stage = stageDao.getByNextStageId(Long.parseLong(stageId));
+    if (stage == null) {
+      StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
+      if (stageAnswer != null) {
+        return createStageConfig(stageDao.getStage(stageAnswer.getParentStageId()));
+      } else {
+        return null;
+      }
     } else {
       return createStageConfig(stage);
     }

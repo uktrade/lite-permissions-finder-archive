@@ -17,6 +17,10 @@ public interface StageAnswerJDBIDao {
   StageAnswer get(@Bind("id") long id);
 
   @Mapper(StageAnswerRSMapper.class)
+  @SqlQuery("SELECT * FROM stage_answer WHERE go_to_stage_id = :goToStageId")
+  StageAnswer getStageAnswerByGoToStageId(@Bind("goToStageId") long goToStageId);
+
+  @Mapper(StageAnswerRSMapper.class)
   @SqlQuery("SELECT * FROM stage_answer WHERE parent_stage_id = :stageId")
   List<StageAnswer> getForParentStageId(@Bind("stageId") long stageId);
 
