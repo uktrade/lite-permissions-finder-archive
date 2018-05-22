@@ -26,8 +26,6 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-GET     /licence-finder-test/:controlCode     controllers.licencefinder.TestEntryController.testEntry(controlCode)
-
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
@@ -82,12 +80,25 @@ GET     /summary-continue                     controllers.SummaryController.rend
 
 POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
 
-
 GET         /view-ogel                       controllers.registration.ViewOgelController.viewOgel(registrationRef ?= "")
 
 GET         /register/registration-outcome   controllers.registration.RegistrationOutcomeController.renderForm
 
 POST        /register/registration-outcome   controllers.registration.RegistrationOutcomeController.handleRegistrationProcessed
+
+# Licence finder
+GET     /licencefinder/test/:controlCode     controllers.licencefinder.LicenceFinderController.testEntry(controlCode)
+GET     /licencefinder/trade                 controllers.licencefinder.LicenceFinderController.renderTradeForm
+POST    /licencefinder/trade                 controllers.licencefinder.LicenceFinderController.handleTradeSubmit
+GET     /licencefinder/destination           controllers.licencefinder.LicenceFinderController.renderDestinationForm
+POST    /licencefinder/destination           controllers.licencefinder.LicenceFinderController.handleDestinationSubmit
+GET     /licencefinder/questions             controllers.licencefinder.LicenceFinderController.renderQuestionsForm
+POST    /licencefinder/questions             controllers.licencefinder.LicenceFinderController.handleQuestionsSubmit
+GET     /licencefinder/results               controllers.licencefinder.LicenceFinderController.renderResultsForm
+POST    /licencefinder/results               controllers.licencefinder.LicenceFinderController.handleResultsSubmit
+GET     /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.renderRegisterToUseForm
+POST    /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.handleRegisterToUseSubmit
+
 
 # JavaScript routes
 # TODO RE-ENABLE JS ROUTES HERE

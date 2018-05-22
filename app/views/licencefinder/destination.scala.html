@@ -1,0 +1,49 @@
+@import controllers.licencefinder.LicenceFinderController
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+@import uk.gov.bis.lite.countryservice.api.CountryView
+
+@(form: Form[_], countries: List[CountryView], destinationsCount: Int, fieldOrderList: List[String])
+
+@countryDetailPanel = {
+  @detailPanel("destination-help"){
+    I can't find my destination
+  } {
+    <h2 class="heading-medium">Need some help?</h2>
+    If you can't find your destination country or territory you can get help from the government's Export Control organisation, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@trade.gsi.gov.uk">eco.help@@trade.gsi.gov.uk</a>.
+  }
+}
+
+@standardPage("Finding the right licence", Some(heading("Where is the final destination of your items?"))){
+  @errorSummary(form, fieldOrder = fieldOrderList)
+} {
+
+  <form action="@controllers.licencefinder.routes.LicenceFinderController.handleDestinationSubmit()" method="POST">
+
+    @contextFormParams()
+
+    @countrySelect(form(LicenceFinderController.DESTINATION_COUNTRY), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(countryDetailPanel))
+
+    @formRadioBoolean(form(LicenceFinderController.MULTIPLE_COUNTRIES),
+      Html("Will your items be received by anyone in a different country or territory, such as a consignee, before reaching their final destination?"))
+
+    <p class="js-hidden">
+      <span class="bold-medium">If yes, please add the country below</span>
+    </p>
+
+    <div id="through-destination-countries-wrapper" class="js-hidden">
+      @countrySelect(form(LicenceFinderController.ROUTE_COUNTRIES + "[0]"),
+        countries, Some("Type the country or territory where the first consignee or other party will receive the items"), None, None, None)
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="button">Continue</button>
+    </div>
+  </form>
+
+  <script type="text/javascript">
+    $(document).ready(function(){LITEPermissionsFinder.DestinationCountry.setupPage()});
+  </script>
+}

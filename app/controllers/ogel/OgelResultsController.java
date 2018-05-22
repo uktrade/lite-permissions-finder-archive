@@ -1,6 +1,5 @@
 package controllers.ogel;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -29,11 +28,9 @@ import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
 import views.html.ogel.ogelResults;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
@@ -97,17 +94,6 @@ public class OgelResultsController {
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
 
     String destinationCountryName = countryProvider.getCountry(destinationCountry).getCountryName();
-
-    // Return No licences available when 'None of the above' chosen
-    if (chosenOgel.equals(NONE_ABOVE_KEY)) {
-      try {
-        FrontendServiceResult frontendServiceResult = frontendClient.get(controlCode).toCompletableFuture().get();
-        OgelResultsDisplay display = new OgelResultsDisplay(Collections.emptyList(), frontendServiceResult.getFrontendControlCode(), null, controlCode, destinationCountryName);
-        return completedFuture(ok(ogelResults.render(form, display)));
-      } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
-      }
-    }
 
     CompletionStage<Void> checkOgelStage = applicableClient.get(controlCode, sourceCountry, destinationCountries, ogelActivities)
         .thenAcceptAsync(result -> {
