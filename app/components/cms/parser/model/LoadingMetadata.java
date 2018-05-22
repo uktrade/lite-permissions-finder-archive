@@ -4,6 +4,7 @@ public class LoadingMetadata {
   private Long stageId;
   private Long stageAnswerId;
   private Long controlEntryId;
+  private String id;
 
   public LoadingMetadata() {
   }
@@ -32,6 +33,15 @@ public class LoadingMetadata {
 
   public LoadingMetadata setControlEntryId(Long controlEntryId) {
     this.controlEntryId = controlEntryId;
+    return this;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public LoadingMetadata setId(String id) {
+    this.id = id;
     return this;
   }
 }

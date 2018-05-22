@@ -31,6 +31,7 @@ import models.cms.enums.StageOutcomeType;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -70,12 +71,39 @@ public class Loader {
     rootNavigationLevel.addAllSubNavigationlevels(navigationLevels);
     Journey journey = new Journey().setJourneyName("MILITARY");
     Long journeyId = journeyDao.insertJourney(journey);
+    generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
     createControlEntries(null, rootNavigationLevel);
     createStages(journeyId, rootNavigationLevel);
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
     createNotes(rootNavigationLevel);
   }
+
+  public void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel, String parentId, int index) {
+    String id;
+    if (parentId.length() == 0) {
+      if (isRoot) {
+        id = parentId;
+      } else {
+        id = Integer.toString(index + 1);
+      }
+    } else {
+      id = parentId + "-" + (index + 1);
+    }
+
+    LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
+    loadingMetadata.setId(id);
+
+    Logger.debug("Generated id {} for cell {}", id, navigationLevel.getCellAddress());
+
+    ArrayList<NavigationLevel> subNavigationLevels = navigationLevel.getSubNavigationLevels();
+
+    for (int i = 0; i < subNavigationLevels.size(); i++) {
+      NavigationLevel subNavigationLevel = subNavigationLevels.get(i);
+      generateLoadingMetadataId(false, subNavigationLevel, id, i);
+    }
+  }
+
 
   private void createControlEntries(Long parentControlEntryId, NavigationLevel navigationLevel) {
     Long controlEntryId = null;
