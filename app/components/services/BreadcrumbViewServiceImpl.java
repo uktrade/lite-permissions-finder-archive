@@ -35,10 +35,13 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     ControlEntryConfig controlEntryConfig = getControlEntryConfig(stageConfig);
     List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(controlEntryConfig);
-    return new BreadcrumbView(breadcrumbItemViews, stageConfig.getQuestionType() == StageConfig.QuestionType.DECONTROL);
+    List<NoteView> noteViews = createNoteViews(stageId);
+    boolean decontrol = stageConfig.getQuestionType() == StageConfig.QuestionType.DECONTROL;
+    return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol);
   }
 
-  private ControlEntryConfig getControlEntryConfig(StageConfig stageConfig) {
+  @Override
+  public ControlEntryConfig getControlEntryConfig(StageConfig stageConfig) {
     Optional<ControlEntryConfig> controlEntryConfigOptional = stageConfig.getRelatedControlEntry();
     if (controlEntryConfigOptional.isPresent()) {
       return controlEntryConfigOptional.get();

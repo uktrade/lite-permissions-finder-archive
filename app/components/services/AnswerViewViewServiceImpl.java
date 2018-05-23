@@ -44,12 +44,12 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
       ControlEntryConfig controlEntryConfig = associatedControlEntryConfig.get();
       List<SubAnswerView> subAnswerViews = createSubAnswerViews(controlEntryConfig);
       return new AnswerView(htmlRenderService.convertRichTextToPlainText(controlEntryConfig.getFullDescription()),
-          answerConfig.getAnswerId(),
-          subAnswerViews);
+          answerConfig.getAnswerId(), answerConfig.isDividerAbove(), subAnswerViews);
     } else {
       Optional<RichText> labelText = answerConfig.getLabelText();
       if (labelText.isPresent()) {
-        return new AnswerView(htmlRenderService.convertRichTextToPlainText(labelText.get()), answerConfig.getAnswerId(), new ArrayList<>());
+        return new AnswerView(htmlRenderService.convertRichTextToPlainText(labelText.get()), answerConfig.getAnswerId(),
+            answerConfig.isDividerAbove(), new ArrayList<>());
       } else {
         throw new BusinessRuleException("Both answerConfig.getAssociatedControlEntryConfig and answerConfig.getLabelText are absent.");
       }
