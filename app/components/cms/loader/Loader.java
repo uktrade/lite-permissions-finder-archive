@@ -238,6 +238,8 @@ public class Loader {
     decontrolStage.setAnswerType(AnswerType.SELECT_MANY);
     decontrolStage.setQuestionType(QuestionType.DECONTROL);
     decontrolStage.setControlEntryId(loadingMetadata.getControlEntryId());
+    decontrolStage.setTitle(decontrols.getTitle());
+    decontrolStage.setExplanatoryNotes(decontrols.getExplanatoryNotes());
 
     if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
       decontrolStage.setNextStageId(navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId());
@@ -249,14 +251,31 @@ public class Loader {
 
     Logger.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
 
-    List<String> decontrolEntries = Arrays.stream(decontrols.getContent().split("\\r?\\n"))
-        .filter(StringUtils::isNotBlank)
-        .collect(Collectors.toList());
+    List<String> decontrolEntries =
+        Arrays.stream(decontrols.getContent().split("\\r?\\n(?!\\*)"))
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
+
     for (int i = 0; i < decontrolEntries.size(); i++) {
       StageAnswer decontrolStageAnswer = new StageAnswer();
+
+      List<String> tokens =
+          Arrays.stream(decontrolEntries.get(i).split("\\r?\\n"))
+              .filter(StringUtils::isNotBlank)
+              .collect(Collectors.toList());
+
+      if (!tokens.isEmpty()) {
+        decontrolStageAnswer.setAnswerText(tokens.get(0));
+        if (tokens.size() > 1) {
+          String nestedContent = tokens.subList(1, tokens.size()).stream().collect(Collectors.joining(" "));
+          decontrolStageAnswer.setNestedContent(nestedContent);
+        }
+      } else {
+        Logger.error("Unable to derive answer text for decontrol stage answer, stage id {}, cell id {}", decontrolStageId, navigationLevel.getCellAddress());
+      }
+
       decontrolStageAnswer.setParentStageId(decontrolStageId);
       decontrolStageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.DECONTROL);
-      decontrolStageAnswer.setAnswerText(decontrolEntries.get(i));
       decontrolStageAnswer.setDisplayOrder(i + 1);
       decontrolStageAnswer.setDividerAbove(false);
 
