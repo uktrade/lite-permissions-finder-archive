@@ -304,15 +304,14 @@ public class Loader {
   private void createNotes(NavigationLevel navigationLevel) {
     Notes notes = navigationLevel.getNotes();
     if (notes != null) {
-      long stageId = navigationLevel.getLoadingMetadata().getStageId();
       if (notes.getNb() != null) {
-        splitAndInsertNote(notes.getNb(), NoteType.NB, stageId);
+        splitAndInsertNote(notes.getNb(), NoteType.NB, navigationLevel);
       } else if (notes.getNote() != null) {
-        splitAndInsertNote(notes.getNote(), NoteType.NOTE, stageId);
+        splitAndInsertNote(notes.getNote(), NoteType.NOTE, navigationLevel);
       } else if (notes.getSeeAlso() != null) {
-        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, stageId);
+        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, navigationLevel);
       } else if (notes.getTechNote() != null) {
-        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, stageId);
+        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, navigationLevel);
       }
     }
 
@@ -321,11 +320,21 @@ public class Loader {
     }
   }
 
-  private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
+  private void splitAndInsertNote(String noteText, NoteType noteType, NavigationLevel navigationLevel) {
+    long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
+    StageAnswer stageAnswer = stageAnswerDao.getStageAnswer(stageAnswerId);
+    Long stageId = stageAnswer.getGoToStageId();
+
+    if (stageId == null) {
+      Logger.error("No stage id to associate note with, stage answer id {}, cell id {}", stageAnswerId, navigationLevel.getCellAddress());
+      return;
+    }
+
     List<String> noteTexts = Arrays.stream(noteText.split("\\r?\\n"))
         .map(String::trim)
         .filter(StringUtils::isNotBlank)
         .collect(Collectors.toList());
+
     for (String nt : noteTexts) {
       Note note = new Note()
           .setStageId(stageId)
