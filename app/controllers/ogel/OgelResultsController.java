@@ -1,7 +1,5 @@
 package controllers.ogel;
 
-import static play.mvc.Results.ok;
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.auth.SamlAuthorizer;
@@ -16,7 +14,6 @@ import components.services.ogels.conditions.OgelConditionsServiceClient;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import exceptions.FormStateException;
 import journey.Events;
-import models.ogel.OgelResultsDisplay;
 import org.apache.commons.lang3.StringUtils;
 import org.pac4j.play.java.Secure;
 import play.data.Form;
@@ -24,14 +21,11 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
-import views.html.ogel.ogelResults;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class OgelResultsController {
@@ -131,8 +125,8 @@ public class OgelResultsController {
     Optional<OgelQuestionsForm> ogelQuestionsFormOptional = dao.getOgelQuestionsForm();
     List<String> ogelActivities = OgelQuestionsForm.formToActivityTypes(ogelQuestionsFormOptional);
     CompletionStage<FrontendServiceResult> frontendServiceStage = frontendClient.get(controlCode);
-
-    return applicableClient.get(controlCode, dao.getSourceCountry(), destinationCountries, ogelActivities)
+    return journeyManager.performTransition(Events.OGEL_SELECTED);
+   /* return applicableClient.get(controlCode, dao.getSourceCountry(), destinationCountries, ogelActivities)
         .thenCombineAsync(frontendServiceStage, (applicableOgelView, frontendServiceResult) -> {
           if (!applicableOgelView.isEmpty()) {
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
@@ -147,7 +141,7 @@ public class OgelResultsController {
 
             return ok(ogelResults.render(form, display));
           }
-        }, httpContext.current());
+        }, httpContext.current());*/
   }
 
   public static class OgelResultsForm {

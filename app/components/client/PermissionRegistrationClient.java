@@ -35,7 +35,7 @@ public class PermissionRegistrationClient {
   public PermissionRegistrationClient(WSClient wsClient,
                                       @Named("permissionRegistrationAddress") String permissionRegistrationAddress,
                                       @Named("permissionRegistrationTimeout") int permissionRegistrationTimeout,
-                                      JwtRequestFilter jwtRequestFilter) {
+                                      @Named("JwtRequestFilter") JwtRequestFilter jwtRequestFilter) {
     this.wsClient = wsClient;
     this.permissionRegistrationAddress = permissionRegistrationAddress;
     this.permissionRegistrationTimeout = permissionRegistrationTimeout;

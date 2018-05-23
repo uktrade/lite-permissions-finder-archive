@@ -14,16 +14,17 @@ import java.util.Optional;
 
 public class LicenceFinderDao {
 
-  public static final String CONTROL_CODE = "controlCode";
-  public static final String SOURCE_COUNTRY = "sourceCountry";
-  public static final String OGEL_ID = "ogelId";
-  public static final String APPLICATION_CODE = "applicationCode";
-  public static final String TRADE_TYPE = "tradeType";
-  public static final String OGEL_QUESTIONS = "ogelQuestions";
-
-  public static final String DESTINATION_COUNTRY = "destinationCountry";
-  public static final String MULTIPLE_COUNTRIES = "multipleCountries";
-  public static final String ROUTE_COUNTRIES = "routeCountries";
+  private static final String CONTROL_CODE = "controlCode";
+  private static final String SOURCE_COUNTRY = "sourceCountry";
+  private static final String OGEL_ID = "ogelId";
+  private static final String CUSTOMER_ID = "customerId";
+  private static final String SITE_ID = "siteId";
+  private static final String APPLICATION_CODE = "applicationCode";
+  private static final String TRADE_TYPE = "tradeType";
+  private static final String OGEL_QUESTIONS = "ogelQuestions";
+  private static final String DESTINATION_COUNTRY = "destinationCountry";
+  private static final String MULTIPLE_COUNTRIES = "multipleCountries";
+  private static final String ROUTE_COUNTRIES = "routeCountries";
 
   private final CommonRedisDao dao;
 
@@ -32,36 +33,60 @@ public class LicenceFinderDao {
     this.dao = dao;
   }
 
-  public void saveControlCode(String controlCode) {
-    dao.writeString(CONTROL_CODE, controlCode);
+  public void saveCustomerId(String arg) {
+    dao.writeString(CUSTOMER_ID, arg);
+  }
+
+  public String getCustomerId() {
+    return dao.readString(CUSTOMER_ID);
+  }
+
+  public void saveSiteId(String arg) {
+    dao.writeString(SITE_ID, arg);
+  }
+
+  public String getSiteId() {
+    return dao.readString(SITE_ID);
+  }
+
+  public void saveControlCode(String arg) {
+    dao.writeString(CONTROL_CODE, arg);
   }
 
   public String getControlCode() {
     return dao.readString(CONTROL_CODE);
   }
 
-  public void saveSourceCountry(String country) {
-    dao.writeString(SOURCE_COUNTRY, country);
+  public void saveSourceCountry(String arg) {
+    dao.writeString(SOURCE_COUNTRY, arg);
   }
 
   public String getSourceCountry() {
     return dao.readString(SOURCE_COUNTRY);
   }
 
-  public void saveOgelId(String ogelId) {
-    dao.writeString(OGEL_ID, ogelId);
+  public void saveOgelId(String arg) {
+    dao.writeString(OGEL_ID, arg);
   }
 
   public String getOgelId() {
     return dao.readString(OGEL_ID);
   }
 
-  public void saveApplicationCode(String code) {
-    dao.writeString(APPLICATION_CODE, code);
+  public void saveApplicationCode(String arg) {
+    dao.writeString(APPLICATION_CODE, arg);
   }
 
   public String getApplicationCode() {
     return dao.readString(APPLICATION_CODE);
+  }
+
+  public void saveDestinationCountry(String arg) {
+    dao.writeString(DESTINATION_COUNTRY, arg);
+  }
+
+  public String getDestinationCountry() {
+    return dao.readString(DESTINATION_COUNTRY);
   }
 
   public void saveTradeType(TradeType tradeType) {
@@ -71,18 +96,6 @@ public class LicenceFinderDao {
   public Optional<TradeType> getTradeType() {
     String tradeType = dao.readString(TRADE_TYPE);
     return StringUtils.isBlank(tradeType) ? Optional.empty() : Optional.of(TradeType.valueOf(tradeType));
-  }
-
-  public void writeBoolean(String fieldName, boolean value) {
-    dao.writeString(fieldName, Boolean.toString(value));
-  }
-
-  public Optional<Boolean> readBoolean(String fieldName) {
-    String value = dao.readString(fieldName);
-    if (value == null || value.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.of(value.equalsIgnoreCase("true"));
   }
 
   public void saveQuestionsForm(LicenceFinderController.QuestionsForm form) {
@@ -101,14 +114,6 @@ public class LicenceFinderDao {
     return readBoolean(MULTIPLE_COUNTRIES);
   }
 
-  public void saveDestinationCountry(String country) {
-    dao.writeString(DESTINATION_COUNTRY, country);
-  }
-
-  public String getDestinationCountry() {
-    return dao.readString(DESTINATION_COUNTRY);
-  }
-
   public void saveRouteCountries(List<String> countries) {
     dao.writeObject(ROUTE_COUNTRIES, countries);
   }
@@ -116,5 +121,20 @@ public class LicenceFinderDao {
   public List<String> getRouteCountries() {
     return dao.readObject(ROUTE_COUNTRIES, new TypeReference<List<String>>() {
     }).orElse(new ArrayList<>());
+  }
+
+  /**
+   * Private methods
+   **/
+  private void writeBoolean(String fieldName, boolean value) {
+    dao.writeString(fieldName, Boolean.toString(value));
+  }
+
+  private Optional<Boolean> readBoolean(String fieldName) {
+    String value = dao.readString(fieldName);
+    if (value == null || value.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(value.equalsIgnoreCase("true"));
   }
 }

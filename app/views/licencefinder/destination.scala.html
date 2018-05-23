@@ -19,7 +19,6 @@
 @standardPage("Finding the right licence", Some(heading("Where is the final destination of your items?"))){
   @errorSummary(form, fieldOrder = fieldOrderList)
 } {
-
   <form action="@controllers.licencefinder.routes.LicenceFinderController.handleDestinationSubmit()" method="POST">
 
     @contextFormParams()

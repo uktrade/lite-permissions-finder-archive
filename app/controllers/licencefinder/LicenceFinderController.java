@@ -8,6 +8,7 @@ import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.common.transaction.TransactionManager;
 import components.persistence.LicenceFinderDao;
+import components.services.LicenceFinderService;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
@@ -63,6 +64,8 @@ public class LicenceFinderController extends Controller {
   private final ApplicableOgelServiceClient applicableClient;
   private final String dashboardUrl;
   private final OgelServiceClient ogelClient;
+  private final LicenceFinderService licenceFinderService;
+
 
   public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
 
@@ -90,7 +93,7 @@ public class LicenceFinderController extends Controller {
                                  OgelConditionsServiceClient conditionsClient, FrontendServiceClient frontendClient,
                                  ApplicableOgelServiceClient applicableClient,
                                  @com.google.inject.name.Named("dashboardUrl") String dashboardUrl,
-                                 OgelServiceClient ogelClient) {
+                                 OgelServiceClient ogelClient, LicenceFinderService licenceFinderService) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
     this.httpContext = httpContext;
@@ -101,6 +104,7 @@ public class LicenceFinderController extends Controller {
     this.applicableClient = applicableClient;
     this.dashboardUrl = dashboardUrl;
     this.ogelClient = ogelClient;
+    this.licenceFinderService = licenceFinderService;
   }
 
   /**
@@ -228,6 +232,10 @@ public class LicenceFinderController extends Controller {
       return completedFuture(ok(questions.render(form)));
     } else {
       dao.saveQuestionsForm(form.get());
+
+      // Take this opportunity in flow to save users CustomerId and SiteId
+      licenceFinderService.persistCustomerAndSiteData();
+
       return renderResultsForm();
     }
   }
@@ -252,7 +260,6 @@ public class LicenceFinderController extends Controller {
     String sourceCountry = dao.getSourceCountry();
     String destinationCountry = dao.getDestinationCountry();
 
-    List<String> destinationCountries = CountryUtils.getDestinationCountries(dao.getDestinationCountry(), dao.getRouteCountries());
     Optional<LicenceFinderController.QuestionsForm> ogelQuestionsFormOptional = dao.getQuestionsForm();
 
     List<String> activities = Collections.emptyList();
@@ -274,7 +281,7 @@ public class LicenceFinderController extends Controller {
       }
     }
 
-    CompletionStage<Void> checkOgelStage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activities)
+    CompletionStage<Void> checkOgelStage = applicableClient.get(controlCode, sourceCountry, getExportRouteCountries(), activities)
         .thenAcceptAsync(result -> {
           if (!result.stream().filter(ogelView -> StringUtils.equals(ogelView.getId(), chosenOgel)).findFirst().isPresent()) {
             throw new FormStateException(String.format("Chosen OGEL %s is not valid according to the applicable OGEL service response", chosenOgel));
@@ -289,7 +296,7 @@ public class LicenceFinderController extends Controller {
     String controlCode = dao.getControlCode();
     String destinationCountry = dao.getDestinationCountry();
     String destinationCountryName = countryProvider.getCountry(destinationCountry).getCountryName();
-    List<String> destinationCountries = CountryUtils.getDestinationCountries(destinationCountry, dao.getRouteCountries());
+    List<String> exportRouteCountries = getExportRouteCountries();
 
     List<String> activities = Collections.emptyList();
     Optional<QuestionsForm> optQuestionsForm = dao.getQuestionsForm();
@@ -299,14 +306,14 @@ public class LicenceFinderController extends Controller {
 
     CompletionStage<FrontendServiceResult> frontendServiceStage = frontendClient.get(controlCode);
 
-    return applicableClient.get(controlCode, dao.getSourceCountry(), destinationCountries, activities)
+    return applicableClient.get(controlCode, dao.getSourceCountry(), exportRouteCountries, activities)
         .thenCombineAsync(frontendServiceStage, (applicableOgelView, frontendServiceResult) -> {
           if (!applicableOgelView.isEmpty()) {
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
                 null, controlCode, destinationCountryName);
             return ok(results.render(form, display));
           } else {
-            List<String> countryNames = CountryUtils.getFilteredCountries(CountryUtils.getSortedCountries(countryProvider.getCountries()), destinationCountries).stream()
+            List<String> countryNames = CountryUtils.getFilteredCountries(CountryUtils.getSortedCountries(countryProvider.getCountries()), exportRouteCountries).stream()
                 .map(CountryView::getCountryName)
                 .collect(Collectors.toList());
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
@@ -355,7 +362,6 @@ public class LicenceFinderController extends Controller {
             , httpContext.current())
         .thenCompose(Function.identity());
   }
-
 
   /**
    * Private methods
@@ -407,6 +413,10 @@ public class LicenceFinderController extends Controller {
       views.add(new QuestionView(BEFORE_OR_LESS_QUESTION, form.beforeOrLess.equals("true") ? "Yes" : "No"));
     }
     return views;
+  }
+
+  private List<String> getExportRouteCountries() {
+    return CountryUtils.getDestinationCountries(dao.getDestinationCountry(), dao.getRouteCountries());
   }
 
   /**
