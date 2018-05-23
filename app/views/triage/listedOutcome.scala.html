@@ -23,7 +23,9 @@
   @controlCodeBreadcrumbs(isWide = true) {
     @for(breadcrumbItemView <- breadcrumbItemViews) {
       @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
-        @breadcrumbItemView.getText
+        @if(breadcrumbItemView.getText!=null) {
+          <span class="bold">@breadcrumbItemView.getText</span>
+        }
         @if(breadcrumbItemView.getDescription!=null) {
           @breadcrumbItemView.getDescription
         }
@@ -39,10 +41,10 @@
       }
     }
     @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
-      <span class="font-medium">@controlCode</span>
-        <p></p>
+      <p class="font-medium">@controlCode</p>
+      <div>
         @description
-        <p></p>
+      </div>
     }(HtmlFormat.empty)
   }
 

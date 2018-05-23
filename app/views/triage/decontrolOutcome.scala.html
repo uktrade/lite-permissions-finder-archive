@@ -23,7 +23,9 @@
   @controlCodeBreadcrumbs(isWide = true) {
     @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
       @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
-        @breadcrumbItemView.getText
+        @if(breadcrumbItemView.getText!=null) {
+          <span class="bold">@breadcrumbItemView.getText</span>
+        }
         @if(breadcrumbItemView.getDescription!=null) {
           @breadcrumbItemView.getDescription
         }
@@ -39,13 +41,13 @@
       }
     }
     @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
-      <span class="font-medium">Item is decontrolled</span>
-        <p></p>
-        @Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText
+      <p class="font-medium">Item is decontrolled</p>
+        @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText!=null) {
+          <span class="bold">@Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText</span>
+        }
         @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription!=null) {
           @Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription
         }
-        <p></p>
         @for(controlCode <- controlCodes) {
          - @controlCode.<br>
         }
