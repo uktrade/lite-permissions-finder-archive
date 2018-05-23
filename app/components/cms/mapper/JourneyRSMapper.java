@@ -14,8 +14,10 @@ public class JourneyRSMapper implements ResultSetMapper<Journey> {
     ResultSetWrapper rsw = new ResultSetWrapper(r);
     Long id = rsw.getLong("id");
     String journeyName = rsw.getString("journey_name");
+    Long initialStageId = rsw.getLong("initial_stage_id");
     return new Journey()
         .setId(id)
-        .setJourneyName(journeyName);
+        .setJourneyName(journeyName)
+        .setInitialStageId(initialStageId);
   }
 }

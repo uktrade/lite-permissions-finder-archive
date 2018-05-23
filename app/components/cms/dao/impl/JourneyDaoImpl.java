@@ -6,6 +6,8 @@ import components.cms.jdbi.JourneyJDBIDao;
 import models.cms.Journey;
 import org.skife.jdbi.v2.DBI;
 
+import java.util.List;
+
 public class JourneyDaoImpl implements JourneyDao {
 
   private final JourneyJDBIDao journeyJDBIDao;
@@ -21,8 +23,23 @@ public class JourneyDaoImpl implements JourneyDao {
   }
 
   @Override
+  public List<Journey> getAllJourneys() {
+    return journeyJDBIDao.getAll();
+  }
+
+  @Override
+  public List<Journey> getJourneysByJourneyName(String journeyName) {
+    return journeyJDBIDao.getByJourneyName(journeyName);
+  }
+
+  @Override
   public Long insertJourney(Journey journey) {
-    return journeyJDBIDao.insert(journey.getJourneyName());
+    return journeyJDBIDao.insert(journey.getJourneyName(), journey.getInitialStageId());
+  }
+
+  @Override
+  public void updateJourney(long id, Journey journey) {
+    journeyJDBIDao.update(id, journey.getJourneyName(), journey.getInitialStageId());
   }
 
   @Override

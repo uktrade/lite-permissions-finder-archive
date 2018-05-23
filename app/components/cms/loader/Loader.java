@@ -31,11 +31,10 @@ import models.cms.enums.StageOutcomeType;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Loader {
   private final ControlEntryDao controlEntryDao;
@@ -70,12 +69,45 @@ public class Loader {
     rootNavigationLevel.addAllSubNavigationlevels(navigationLevels);
     Journey journey = new Journey().setJourneyName("MILITARY");
     Long journeyId = journeyDao.insertJourney(journey);
+    generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
     createControlEntries(null, rootNavigationLevel);
     createStages(journeyId, rootNavigationLevel);
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
     createNotes(rootNavigationLevel);
+
+    // Resolve initial stage id from stage associated with first sub-level of navigation levels
+    Long initialStageId = rootNavigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
+    journey = journeyDao.getJourney(journeyId);
+    journey.setInitialStageId(initialStageId);
+    journeyDao.updateJourney(journeyId, journey);
   }
+
+  public void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel, String parentId, int index) {
+    String id;
+    if (parentId.length() == 0) {
+      if (isRoot) {
+        id = parentId;
+      } else {
+        id = Integer.toString(index + 1);
+      }
+    } else {
+      id = parentId + "-" + (index + 1);
+    }
+
+    LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
+    loadingMetadata.setId(id);
+
+    Logger.debug("Generated id {} for cell {}", id, navigationLevel.getCellAddress());
+
+    ArrayList<NavigationLevel> subNavigationLevels = navigationLevel.getSubNavigationLevels();
+
+    for (int i = 0; i < subNavigationLevels.size(); i++) {
+      NavigationLevel subNavigationLevel = subNavigationLevels.get(i);
+      generateLoadingMetadataId(false, subNavigationLevel, id, i);
+    }
+  }
+
 
   private void createControlEntries(Long parentControlEntryId, NavigationLevel navigationLevel) {
     Long controlEntryId = null;
@@ -113,8 +145,8 @@ public class Loader {
   }
 
   private void createStages(long journeyId, NavigationLevel navigationLevel) {
-    // Make the stage for all sub navigation levels of this navigation level
-    if (navigationLevel.getSubNavigationLevels().isEmpty()) {
+    // Make the stage for all sub navigation levels of this navigation level (skip rating-only rows without buttons)
+    if (navigationLevel.getSubNavigationLevels().isEmpty() || navigationLevel.getSubNavigationLevels().get(0).getButtons() == null) {
       return;
     }
     NavigationLevel topSubNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
@@ -149,7 +181,12 @@ public class Loader {
       } else {
         if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
           NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
-          stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
+          if (subNavigationLevel.getButtons() == null) {
+            //Child entries without buttons are not a stage, we are actually on a leaf now
+            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+          } else {
+            stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
+          }
         } else {
           stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
         }
@@ -185,7 +222,10 @@ public class Loader {
 
     for (int i = 0; i < navigationLevel.getSubNavigationLevels().size(); i++) {
       NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(i);
-      createStageAnswersAndDecontrolStages(false, journeyId, i + 1, subNavigationLevel);
+      //Don't make StageAnswers for rating-only rows without buttons
+      if (subNavigationLevel.getButtons() != null) {
+        createStageAnswersAndDecontrolStages(false, journeyId, i + 1, subNavigationLevel);
+      }
     }
   }
 
@@ -198,6 +238,8 @@ public class Loader {
     decontrolStage.setAnswerType(AnswerType.SELECT_MANY);
     decontrolStage.setQuestionType(QuestionType.DECONTROL);
     decontrolStage.setControlEntryId(loadingMetadata.getControlEntryId());
+    decontrolStage.setTitle(decontrols.getTitle());
+    decontrolStage.setExplanatoryNotes(decontrols.getExplanatoryNotes());
 
     if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
       decontrolStage.setNextStageId(navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId());
@@ -209,14 +251,31 @@ public class Loader {
 
     Logger.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
 
-    List<String> decontrolEntries = Arrays.stream(decontrols.getContent().split("\\r?\\n"))
-        .filter(StringUtils::isNotBlank)
-        .collect(Collectors.toList());
+    List<String> decontrolEntries =
+        Arrays.stream(decontrols.getContent().split("\\r?\\n(?!\\*)"))
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
+
     for (int i = 0; i < decontrolEntries.size(); i++) {
       StageAnswer decontrolStageAnswer = new StageAnswer();
+
+      List<String> tokens =
+          Arrays.stream(decontrolEntries.get(i).split("\\r?\\n"))
+              .filter(StringUtils::isNotBlank)
+              .collect(Collectors.toList());
+
+      if (!tokens.isEmpty()) {
+        decontrolStageAnswer.setAnswerText(tokens.get(0));
+        if (tokens.size() > 1) {
+          String nestedContent = tokens.subList(1, tokens.size()).stream().collect(Collectors.joining(" "));
+          decontrolStageAnswer.setNestedContent(nestedContent);
+        }
+      } else {
+        Logger.error("Unable to derive answer text for decontrol stage answer, stage id {}, cell id {}", decontrolStageId, navigationLevel.getCellAddress());
+      }
+
       decontrolStageAnswer.setParentStageId(decontrolStageId);
       decontrolStageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.DECONTROL);
-      decontrolStageAnswer.setAnswerText(decontrolEntries.get(i));
       decontrolStageAnswer.setDisplayOrder(i + 1);
       decontrolStageAnswer.setDividerAbove(false);
 
@@ -263,42 +322,47 @@ public class Loader {
 
   private void createNotes(NavigationLevel navigationLevel) {
     Notes notes = navigationLevel.getNotes();
-
     if (notes != null) {
-      long nonNullCount = Stream.of(notes.getNb(), notes.getNote(), notes.getSeeAlso(), notes.getTechNote())
-          .filter(Objects::nonNull)
-          .map(String::trim)
-          .filter(StringUtils::isNotBlank)
-          .count();
-
-      if (nonNullCount == 1) {
-        Note note = new Note();
-        note.setStageId(navigationLevel.getLoadingMetadata().getStageId());
-        if (notes.getNb() != null) {
-          note.setNoteText(notes.getNb());
-          note.setNoteType(NoteType.NB);
-        } else if (notes.getNote() != null) {
-          note.setNoteText(notes.getNote());
-          note.setNoteType(NoteType.NOTE);
-        } else if (notes.getSeeAlso() != null) {
-          note.setNoteText(notes.getSeeAlso());
-          note.setNoteType(NoteType.SEE_ALSO);
-        } else {
-          note.setNoteText(notes.getTechNote());
-          note.setNoteType(NoteType.TECH_NOTE);
-        }
-
-        Long noteId = noteDao.insertNote(note);
-
-        Logger.debug("Inserted note with id {}", noteId);
-
-      } else if (nonNullCount > 1){
-        Logger.error("Error deriving note from note columns, multiple columns populated, navigation cell address {}", navigationLevel.getCellAddress());
+      if (notes.getNb() != null) {
+        splitAndInsertNote(notes.getNb(), NoteType.NB, navigationLevel);
+      } else if (notes.getNote() != null) {
+        splitAndInsertNote(notes.getNote(), NoteType.NOTE, navigationLevel);
+      } else if (notes.getSeeAlso() != null) {
+        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, navigationLevel);
+      } else if (notes.getTechNote() != null) {
+        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, navigationLevel);
       }
     }
 
     for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
       createNotes(subNavigationLevel);
+    }
+  }
+
+  private void splitAndInsertNote(String noteText, NoteType noteType, NavigationLevel navigationLevel) {
+    long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
+    StageAnswer stageAnswer = stageAnswerDao.getStageAnswer(stageAnswerId);
+    Long stageId = stageAnswer.getGoToStageId();
+
+    if (stageId == null) {
+      Logger.error("No stage id to associate note with, stage answer id {}, cell id {}", stageAnswerId, navigationLevel.getCellAddress());
+      return;
+    }
+
+    List<String> noteTexts = Arrays.stream(noteText.split("\\r?\\n"))
+        .map(String::trim)
+        .filter(StringUtils::isNotBlank)
+        .collect(Collectors.toList());
+
+    for (String nt : noteTexts) {
+      Note note = new Note()
+          .setStageId(stageId)
+          .setNoteType(noteType)
+          .setNoteText(nt);
+
+      Long noteId = noteDao.insertNote(note);
+
+      Logger.debug("Inserted note with id {}", noteId);
     }
   }
 
