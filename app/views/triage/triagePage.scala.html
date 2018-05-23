@@ -19,7 +19,7 @@
 
       <header class="page-header">
         <h1 class="heading-large">
-          @if(secondaryHeading.body.nonEmpty) {
+          @if(secondaryHeading.body.trim.nonEmpty) {
             <span class="heading-secondary">
             @secondaryHeading
             </span>
@@ -43,7 +43,9 @@
         @for((breadcrumbItemView, index) <- breadcrumbView.getBreadcrumbItemViews.zipWithIndex) {
           @if(index == breadcrumbView.getBreadcrumbItemViews.size - 1) {
             @controlCodeBreadcrumbsDetailBox(isPathStep = true){
-              @breadcrumbItemView.getText
+              @if(breadcrumbItemView.getText!=null) {
+                <span class="bold">@breadcrumbItemView.getText</span>
+              }
               @if(breadcrumbItemView.getDescription!=null) {
                 @breadcrumbItemView.getDescription
               }
@@ -65,7 +67,9 @@
             }
           } else {
             @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl){
-              @breadcrumbItemView.getText
+              @if(breadcrumbItemView.getText!=null) {
+                <span class="bold">@breadcrumbItemView.getText</span>
+              }
               @if(breadcrumbItemView.getDescription!=null) {
                 @breadcrumbItemView.getDescription
               }

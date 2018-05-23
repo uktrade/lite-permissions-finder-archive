@@ -30,7 +30,7 @@ import java.util.List;
 
 public class Parser {
   private static class SheetIndices {
-    static final int UK_MILITARY_LIST = 0; // Sheet 1
+    static final int UK_MILITARY_LIST = 6; // Sheet 7
   }
   private static class RowIndices {
     static final int NAVIGATION_START = 3; // 4
@@ -79,17 +79,19 @@ public class Parser {
     static class Decontrols {
       static final int CONTENT = Utils.columnToIndex("Y");
       static final int NOTE = Utils.columnToIndex("Z");
+      static final int TITLE = Utils.columnToIndex("AA");
+      static final int EXPLANATORY_NOTES = Utils.columnToIndex("AB");
     }
 
     static class Definitions {
-      static final int LOCAL = Utils.columnToIndex("AA");
+      static final int LOCAL = Utils.columnToIndex("AC");
     }
 
     static class Notes {
-      static final int NB = Utils.columnToIndex("AB");
-      static final int NOTE = Utils.columnToIndex("AC");
-      static final int SEE_ALSO = Utils.columnToIndex("AD");
-      static final int TECH_NOTE = Utils.columnToIndex("AE");
+      static final int NB = Utils.columnToIndex("AD");
+      static final int NOTE = Utils.columnToIndex("AE");
+      static final int SEE_ALSO = Utils.columnToIndex("AF");
+      static final int TECH_NOTE = Utils.columnToIndex("AG");
     }
 
   }
@@ -101,6 +103,7 @@ public class Parser {
 
       List<NavigationLevel> navigationLevels = new ArrayList<>();
 
+      // Expected to parse multiple sheets
       for (int sheetIdx: Arrays.asList(SheetIndices.UK_MILITARY_LIST)) {
         Deque<NavigationLevel> navLevelStack = new ArrayDeque<>();
 
@@ -252,7 +255,9 @@ public class Parser {
   private static Decontrols getDecontrols(Row row) {
     String content = Utils.getCellStringValue(row, ColumnIndices.Decontrols.CONTENT);
     String note = Utils.getCellStringValue(row, ColumnIndices.Decontrols.NOTE);
-    return new Decontrols(content, note);
+    String title = Utils.getCellStringValue(row, ColumnIndices.Decontrols.TITLE);
+    String explanatoryNotes = Utils.getCellStringValue(row, ColumnIndices.Decontrols.EXPLANATORY_NOTES);
+    return new Decontrols(content, note, title, explanatoryNotes);
   }
 
   private static Definitions getDefinitions(Row row) {

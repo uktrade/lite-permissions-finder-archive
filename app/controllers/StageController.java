@@ -4,12 +4,14 @@ import com.google.inject.Inject;
 import components.services.AnswerConfigService;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
+import components.services.ProgressViewService;
 import components.services.RenderService;
 import exceptions.BusinessRuleException;
 import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbView;
+import models.view.ProgressView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
 import org.apache.commons.collections4.ListUtils;
@@ -45,6 +47,7 @@ public class StageController extends Controller {
   private final FormFactory formFactory;
   private final JourneyConfigService journeyConfigService;
   private final RenderService renderService;
+  private final ProgressViewService progressViewService;
   private final views.html.triage.decontrol decontrol;
   private final views.html.triage.selectOne selectOne;
   private final views.html.triage.selectMany selectMany;
@@ -53,7 +56,9 @@ public class StageController extends Controller {
   public StageController(BreadcrumbViewService breadcrumbViewService, AnswerConfigService answerConfigService,
                          AnswerViewService answerViewService, SessionService sessionService, FormFactory formFactory,
                          JourneyConfigService journeyConfigService, RenderService renderService,
-                         views.html.triage.selectOne selectOne, views.html.triage.selectMany selectMany,
+                         ProgressViewService progressViewService,
+                         views.html.triage.selectOne selectOne,
+                         views.html.triage.selectMany selectMany,
                          views.html.triage.decontrol decontrol) {
     this.breadcrumbViewService = breadcrumbViewService;
     this.answerConfigService = answerConfigService;
@@ -62,6 +67,7 @@ public class StageController extends Controller {
     this.formFactory = formFactory;
     this.journeyConfigService = journeyConfigService;
     this.renderService = renderService;
+    this.progressViewService = progressViewService;
     this.selectOne = selectOne;
     this.selectMany = selectMany;
     this.decontrol = decontrol;
@@ -129,19 +135,8 @@ public class StageController extends Controller {
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-
-    ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
-    String progressCode;
-    String progressDescription;
-    if (controlEntryConfig != null) {
-      progressCode = controlEntryConfig.getControlCode();
-      progressDescription = renderService.getSummaryDescription(controlEntryConfig);
-    } else {
-      progressCode = null;
-      progressDescription = null;
-    }
-
-    return ok(selectOne.render(answerFormForm, stageId, sessionId, progressCode, progressDescription, title, explanatoryText, answerViews, breadcrumbView));
+    ProgressView progressView = progressViewService.createProgressView(stageConfig);
+    return ok(selectOne.render(answerFormForm, stageId, sessionId, progressView, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId) {
@@ -161,19 +156,8 @@ public class StageController extends Controller {
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-
-    ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
-    String progressCode;
-    String progressDescription;
-    if (controlEntryConfig != null) {
-      progressCode = controlEntryConfig.getControlCode();
-      progressDescription = renderService.getSummaryDescription(controlEntryConfig);
-    } else {
-      progressCode = null;
-      progressDescription = null;
-    }
-
-    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, progressCode, progressDescription, title, explanatoryText, answerViews, breadcrumbView));
+    ProgressView progressView = progressViewService.createProgressView(stageConfig);
+    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, progressView, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig) {
@@ -232,24 +216,9 @@ public class StageController extends Controller {
           return renderSelectMany(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
               stageId, sessionId);
         } else {
-          List<AnswerConfig> controlEntryFoundOutcomeAnswerConfigs = answerConfigService.getControlEntryFoundOutcomeAnswerConfigs(matchingAnswers);
-          AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(controlEntryFoundOutcomeAnswerConfigs);
-          if (!controlEntryFoundOutcomeAnswerConfigs.isEmpty()) {
-            sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
-            String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
-                .map(ControlEntryConfig::getId)
-                .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " + answerConfig.getAnswerId()));
-            return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
-          } else {
-            Optional<String> nextStageId = answerConfig.getNextStageId();
-            if (nextStageId.isPresent()) {
-              sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
-              return redirectToStage(nextStageId.get(), sessionId);
-            } else {
-              Logger.error("AnswerConfig doesn't have next stageId.");
-              return redirectToStage(stageId, sessionId);
-            }
-          }
+          AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
+          sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+          return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
         }
       } else if (action == Action.NONE) {
         return redirect(routes.OutcomeController.outcomeDropout(sessionId));
@@ -277,22 +246,8 @@ public class StageController extends Controller {
           .findAny();
       if (answerConfigOptional.isPresent()) {
         AnswerConfig answerConfig = answerConfigOptional.get();
-        if (answerConfigService.isControlEntryFoundOutcomeAnswerConfig(answerConfig)) {
-          sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
-          String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
-              .map(ControlEntryConfig::getId)
-              .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " + answerConfig.getAnswerId()));
-          return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
-        } else {
-          Optional<String> nextStageId = answerConfig.getNextStageId();
-          if (nextStageId.isPresent()) {
-            sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
-            return redirectToStage(nextStageId.get(), sessionId);
-          } else {
-            Logger.error("answerConfig.get.getNextStageId is absent.");
-            return redirectToStage(stageId, sessionId);
-          }
-        }
+        sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
+        return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
       } else {
         Logger.error("Unknown answer " + answer);
         return renderSelectOne(answerForm, stageId, sessionId);
@@ -302,6 +257,33 @@ public class StageController extends Controller {
     } else {
       Logger.error("Unknown action " + actionParam);
       return redirectToStage(stageId, sessionId);
+    }
+  }
+
+  private Result resultForStandardStageAnswer(String stageId, String sessionId, AnswerConfig answerConfig) {
+    if (answerConfig.getOutcomeType().isPresent()) {
+      OutcomeType outcomeType = answerConfig.getOutcomeType().get();
+      if (outcomeType == OutcomeType.CONTROL_ENTRY_FOUND) {
+        String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
+            .map(ControlEntryConfig::getId)
+            .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +
+                answerConfig.getAnswerId()));
+        return redirect(controllers.routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
+      } else if (outcomeType == OutcomeType.TOO_COMPLEX) {
+        //TODO too complex for code finder outcome
+        return ok("Too complex content TODO");
+      } else {
+        Logger.error("Unexpected outcome type %s on answer %s", outcomeType, answerConfig.getAnswerId());
+        return redirectToStage(stageId, sessionId);
+      }
+    } else {
+      Optional<String> nextStageId = answerConfig.getNextStageId();
+      if (nextStageId.isPresent()) {
+        return redirectToStage(nextStageId.get(), sessionId);
+      } else {
+        Logger.error("AnswerConfig doesn't have next stageId.");
+        return redirectToStage(stageId, sessionId);
+      }
     }
   }
 

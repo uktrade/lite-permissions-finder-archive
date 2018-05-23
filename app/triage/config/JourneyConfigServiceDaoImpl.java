@@ -2,56 +2,51 @@ package triage.config;
 
 import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
+import components.cms.dao.JourneyDao;
 import components.cms.dao.NoteDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
 import models.cms.ControlEntry;
+import models.cms.Journey;
 import models.cms.Note;
 import models.cms.Stage;
 import models.cms.StageAnswer;
 import org.apache.commons.lang.StringUtils;
-import org.skife.jdbi.v2.DBI;
-import org.skife.jdbi.v2.Handle;
 import triage.text.RichText;
 import triage.text.RichTextParser;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
 
+  private final JourneyDao journeyDao;
   private final StageDao stageDao;
   private final StageAnswerDao stageAnswerDao;
   private final ControlEntryDao controlEntryDao;
   private final NoteDao noteDao;
   private final RichTextParser richTextParser;
-  private final DBI dbi;
 
   @Inject
-  public JourneyConfigServiceDaoImpl(StageDao stageDao, StageAnswerDao stageAnswerDao, ControlEntryDao controlEntryDao,
-                                     NoteDao noteDao, RichTextParser richTextParser, DBI dbi) {
+  public JourneyConfigServiceDaoImpl(JourneyDao journeyDao, StageDao stageDao, StageAnswerDao stageAnswerDao,
+                                     ControlEntryDao controlEntryDao, NoteDao noteDao, RichTextParser richTextParser) {
+    this.journeyDao = journeyDao;
     this.stageDao = stageDao;
     this.stageAnswerDao = stageAnswerDao;
     this.controlEntryDao = controlEntryDao;
     this.noteDao = noteDao;
     this.richTextParser = richTextParser;
-    this.dbi = dbi;
   }
 
   @Override
   public String getInitialStageId() {
-    //TODO fix the data model so a journey knows its initial stage ID - this can then just use the journey DAO
-    try (Handle handle = dbi.open()) {
-      List<Map<String, Object>> select = handle.select("SELECT s.id\n" +
-          "FROM stage s\n" +
-          "LEFT JOIN stage_answer sa ON s.id = sa.go_to_stage_id\n" +
-          "WHERE sa.id IS NULL\n" +
-          "AND s.control_entry_id IS NULL");
-      return select.get(0).get("id").toString();
-    }
+    return journeyDao.getJourneysByJourneyName("MILITARY").stream()
+        .map(Journey::getInitialStageId)
+        .map(Object::toString)
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
@@ -61,6 +56,16 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
       return null;
     } else {
       return createStageConfig(stage);
+    }
+  }
+
+  @Override
+  public AnswerConfig getStageAnswerForPreviousStage(String stageId) {
+    StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
+    if (stageAnswer != null) {
+      return createAnswerConfig(stageAnswer);
+    } else {
+      return null;
     }
   }
 

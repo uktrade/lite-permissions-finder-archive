@@ -56,6 +56,8 @@ import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
 import components.services.LicenceFinderService;
 import components.services.LicenceFinderServiceImpl;
+import components.services.ProgressViewService;
+import components.services.ProgressViewServiceImpl;
 import components.services.RenderService;
 import components.services.RenderServiceImpl;
 import filters.common.JwtRequestFilter;
@@ -107,6 +109,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
+    bind(ProgressViewService.class).to(ProgressViewServiceImpl.class);
     bind(RenderService.class).to(RenderServiceImpl.class);
     bind(BreadcrumbViewService.class).to(BreadcrumbViewServiceImpl.class);
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);

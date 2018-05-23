@@ -61,7 +61,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     if (controlEntryConfig != null) {
       breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(controlEntryConfig));
     }
-    breadcrumbItemViews.add(new BreadcrumbItemView("UK Military List", null, null, new ArrayList<>()));
+    breadcrumbItemViews.add(new BreadcrumbItemView(null, "UK Military List", null, new ArrayList<>()));
     return Lists.reverse(breadcrumbItemViews);
   }
 
