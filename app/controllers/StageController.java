@@ -4,12 +4,14 @@ import com.google.inject.Inject;
 import components.services.AnswerConfigService;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
+import components.services.ProgressViewService;
 import components.services.RenderService;
 import exceptions.BusinessRuleException;
 import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbView;
+import models.view.ProgressView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
 import org.apache.commons.collections4.ListUtils;
@@ -45,6 +47,7 @@ public class StageController extends Controller {
   private final FormFactory formFactory;
   private final JourneyConfigService journeyConfigService;
   private final RenderService renderService;
+  private final ProgressViewService progressViewService;
   private final views.html.triage.decontrol decontrol;
   private final views.html.triage.selectOne selectOne;
   private final views.html.triage.selectMany selectMany;
@@ -53,7 +56,9 @@ public class StageController extends Controller {
   public StageController(BreadcrumbViewService breadcrumbViewService, AnswerConfigService answerConfigService,
                          AnswerViewService answerViewService, SessionService sessionService, FormFactory formFactory,
                          JourneyConfigService journeyConfigService, RenderService renderService,
-                         views.html.triage.selectOne selectOne, views.html.triage.selectMany selectMany,
+                         ProgressViewService progressViewService,
+                         views.html.triage.selectOne selectOne,
+                         views.html.triage.selectMany selectMany,
                          views.html.triage.decontrol decontrol) {
     this.breadcrumbViewService = breadcrumbViewService;
     this.answerConfigService = answerConfigService;
@@ -62,6 +67,7 @@ public class StageController extends Controller {
     this.formFactory = formFactory;
     this.journeyConfigService = journeyConfigService;
     this.renderService = renderService;
+    this.progressViewService = progressViewService;
     this.selectOne = selectOne;
     this.selectMany = selectMany;
     this.decontrol = decontrol;
@@ -129,19 +135,8 @@ public class StageController extends Controller {
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-
-    ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
-    String progressCode;
-    String progressDescription;
-    if (controlEntryConfig != null) {
-      progressCode = controlEntryConfig.getControlCode();
-      progressDescription = renderService.getSummaryDescription(controlEntryConfig);
-    } else {
-      progressCode = null;
-      progressDescription = null;
-    }
-
-    return ok(selectOne.render(answerFormForm, stageId, sessionId, progressCode, progressDescription, title, explanatoryText, answerViews, breadcrumbView));
+    ProgressView progressView = progressViewService.createProgressView(stageConfig);
+    return ok(selectOne.render(answerFormForm, stageId, sessionId, progressView, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId) {
@@ -161,19 +156,8 @@ public class StageController extends Controller {
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-
-    ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
-    String progressCode;
-    String progressDescription;
-    if (controlEntryConfig != null) {
-      progressCode = controlEntryConfig.getControlCode();
-      progressDescription = renderService.getSummaryDescription(controlEntryConfig);
-    } else {
-      progressCode = null;
-      progressDescription = null;
-    }
-
-    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, progressCode, progressDescription, title, explanatoryText, answerViews, breadcrumbView));
+    ProgressView progressView = progressViewService.createProgressView(stageConfig);
+    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, progressView, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig) {
