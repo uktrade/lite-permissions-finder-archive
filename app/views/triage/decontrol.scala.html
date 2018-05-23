@@ -13,6 +13,9 @@
   <p>@explanatoryText</p>
   <div class="form-group">
     @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
+      @if(answerView.isDividerAbove) {
+        <p class="form-block">or</p>
+      }
       @formCheckboxWithDetailPanel(form("answers"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews), isPromptHtml = true, inputId = "answers" + index, inputName = "answers[" + index + "]", inputValue = answerView.getValue, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information") {
         This is some more information for @answerView.getPrompt
       }
