@@ -75,6 +75,12 @@ public class Loader {
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
     createNotes(rootNavigationLevel);
+
+    // Resolve initial stage id from stage associated with first sub-level of navigation levels
+    Long initialStageId = rootNavigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
+    journey = journeyDao.getJourney(journeyId);
+    journey.setInitialStageId(initialStageId);
+    journeyDao.updateJourney(journeyId, journey);
   }
 
   public void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel, String parentId, int index) {

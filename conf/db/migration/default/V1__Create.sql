@@ -29,8 +29,9 @@ CREATE TABLE global_definition (
 );
 
 CREATE TABLE journey (
-  id            BIGSERIAL PRIMARY KEY,
-  journey_name  TEXT      NOT NULL
+  id                BIGSERIAL PRIMARY KEY,
+  journey_name      TEXT      NOT NULL,
+  initial_stage_id  BIGINT
 );
 
 
