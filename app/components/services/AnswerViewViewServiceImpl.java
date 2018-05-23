@@ -56,7 +56,8 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
     }
   }
 
-  private List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig) {
+  @Override
+  public List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig) {
     if (controlEntryConfig.hasNestedChildren()) {
       return journeyConfigService.getChildRatings(controlEntryConfig).stream()
           .map(this::createSubAnswerView)
