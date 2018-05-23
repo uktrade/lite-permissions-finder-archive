@@ -40,7 +40,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol);
   }
 
-  private ControlEntryConfig getControlEntryConfig(StageConfig stageConfig) {
+  @Override
+  public ControlEntryConfig getControlEntryConfig(StageConfig stageConfig) {
     Optional<ControlEntryConfig> controlEntryConfigOptional = stageConfig.getRelatedControlEntry();
     if (controlEntryConfigOptional.isPresent()) {
       return controlEntryConfigOptional.get();
