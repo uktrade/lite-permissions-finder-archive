@@ -17,7 +17,7 @@ import exceptions.FormStateException;
 import models.OgelActivityType;
 import models.TradeType;
 import models.ogel.OgelResultsDisplay;
-import models.view.AnswerView;
+import models.view.QuestionView;
 import models.view.RegisterResultView;
 import org.apache.commons.lang3.StringUtils;
 import org.pac4j.play.java.Secure;
@@ -391,22 +391,22 @@ public class LicenceFinderController extends Controller {
     return map.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
   }
 
-  private List<AnswerView> getLicenceFinderAnswers() {
-    List<AnswerView> answerViews = new ArrayList<>();
+  private List<QuestionView> getLicenceFinderAnswers() {
+    List<QuestionView> views = new ArrayList<>();
 
-    answerViews.add(new AnswerView(CONTROL_CODE_QUESTION, dao.getControlCode(), null));
-    dao.getTradeType().ifPresent(tradeType -> answerViews.add(new AnswerView(GOODS_GOING_QUESTION, tradeType.getTitle(), null)));
-    answerViews.add(new AnswerView(DESTINATION_QUESTION, countryProvider.getCountry(dao.getDestinationCountry()).getCountryName(), null));
-    dao.getMultipleCountries().ifPresent(aBoolean -> answerViews.add(new AnswerView(TERRITORY_QUESTION, aBoolean ? "Yes" : "No", null)));
+    views.add(new QuestionView(CONTROL_CODE_QUESTION, dao.getControlCode()));
+    dao.getTradeType().ifPresent(tradeType -> views.add(new QuestionView(GOODS_GOING_QUESTION, tradeType.getTitle())));
+    views.add(new QuestionView(DESTINATION_QUESTION, countryProvider.getCountry(dao.getDestinationCountry()).getCountryName()));
+    dao.getMultipleCountries().ifPresent(aBoolean -> views.add(new QuestionView(TERRITORY_QUESTION, aBoolean ? "Yes" : "No")));
 
     Optional<LicenceFinderController.QuestionsForm> optForm = dao.getQuestionsForm();
     if (optForm.isPresent()) {
       LicenceFinderController.QuestionsForm form = optForm.get();
-      answerViews.add(new AnswerView(REPAIR_QUESTION, form.forRepair.equals("true") ? "Yes" : "No", null));
-      answerViews.add(new AnswerView(EXHIBITION_QUESTION, form.forExhibition.equals("true") ? "Yes" : "No", null));
-      answerViews.add(new AnswerView(BEFORE_OR_LESS_QUESTION, form.beforeOrLess.equals("true") ? "Yes" : "No", null));
+      views.add(new QuestionView(REPAIR_QUESTION, form.forRepair.equals("true") ? "Yes" : "No"));
+      views.add(new QuestionView(EXHIBITION_QUESTION, form.forExhibition.equals("true") ? "Yes" : "No"));
+      views.add(new QuestionView(BEFORE_OR_LESS_QUESTION, form.beforeOrLess.equals("true") ? "Yes" : "No"));
     }
-    return answerViews;
+    return views;
   }
 
   /**

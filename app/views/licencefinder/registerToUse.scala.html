@@ -7,10 +7,10 @@
 @import views.html.common.state._
 @import views.html.ogel._
 @import java.util.Map
-@import models.view.AnswerView
+@import models.view.QuestionView
 @import utils.common.ViewUtil
 
-@(form: Form[RegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean, answerViews: List[AnswerView])
+@(form: Form[RegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean, questionViews: List[QuestionView])
 
 @pageHeading = @{
   "Register to use Open general export licence (" + ogel.getName + ")"
@@ -34,10 +34,10 @@
     <dl class="answer-summary">
       <table class="answer-summary-sub-table">
         <tbody>
-          @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
+          @for((questionView, index) <- questionViews.iterator.zipWithIndex) {
             <tr>
-              <td>@answerView.getPrompt</td>
-              <td>@answerView.getValue</td>
+              <td>@questionView.getQuestion</td>
+              <td>@questionView.getAnswer</td>
             </tr>
           }
         </tbody>

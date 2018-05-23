@@ -16,6 +16,13 @@ public class AnswerView {
     this.subAnswerViews = subAnswerViews;
   }
 
+  public AnswerView(String prompt, String value, List<SubAnswerView> subAnswerViews) {
+    this.prompt = prompt;
+    this.value = value;
+    this.dividerAbove = false;
+    this.subAnswerViews = subAnswerViews;
+  }
+
   public String getPrompt() {
     return prompt;
   }
