@@ -32,7 +32,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
   @Override
   public List<AnswerView> createAnswerViews(StageConfig stageConfig) {
     return stageConfig.getAnswerConfigs().stream()
-        .sorted(Comparator.comparing(AnswerConfig::getAnswerPrecedence))
+        .sorted(Comparator.comparing(AnswerConfig::getDisplayOrder))
         .map(this::createAnswerView)
         .collect(Collectors.toList());
   }
