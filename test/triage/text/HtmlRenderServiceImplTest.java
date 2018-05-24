@@ -65,8 +65,17 @@ public class HtmlRenderServiceImplTest {
   }
 
   @Test
-  public void definitionTest() {
-    DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("laser", "123", true);
+  public void globalDefinitionTest() {
+    DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("\"laser\"", "123", true);
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(definitionReferenceNode)));
+
+    assertThat(html).isEqualTo(unescape(
+        "<a href='/view-definition/123' data-definition-id='123' target='_blank'>laser</a>"));
+  }
+
+  @Test
+  public void localDefinitionTest() {
+    DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("'laser'", "123", true);
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(definitionReferenceNode)));
 
     assertThat(html).isEqualTo(unescape(
@@ -85,7 +94,7 @@ public class HtmlRenderServiceImplTest {
   public void convertRichTextToHtmlTest() {
     ControlEntryReferenceNode ml1 = new ControlEntryReferenceNode("Code M1A", "ML1");
     ControlEntryReferenceNode ml2 = new ControlEntryReferenceNode("Code ML2", "ML2");
-    DefinitionReferenceNode laser = new DefinitionReferenceNode("laser", "123", true);
+    DefinitionReferenceNode laser = new DefinitionReferenceNode("\"laser\"", "123", true);
     DefinitionReferenceNode radio = new DefinitionReferenceNode("radio", "abc", true);
     SimpleTextNode text1 = new SimpleTextNode("This is text 1");
     SimpleTextNode text2 = new SimpleTextNode("This is text 2");
