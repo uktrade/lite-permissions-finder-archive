@@ -10,6 +10,8 @@ public interface ControlEntryDao {
 
   List<ControlEntry> getChildControlEntries(long parentId);
 
+  ControlEntry getControlEntryByControlCode(String controlCode);
+
   Long insertControlEntry(ControlEntry controlEntry);
 
   void deleteControlEntry(long id);

@@ -47,7 +47,7 @@
                 <span class="bold">@breadcrumbItemView.getText</span>
               }
               @if(breadcrumbItemView.getDescription!=null) {
-                @breadcrumbItemView.getDescription
+                @Html(breadcrumbItemView.getDescription)
               }
               @if(breadcrumbView.isDecontrol) {
                 <p>
@@ -58,7 +58,7 @@
               @if(!breadcrumbView.getNoteViews.isEmpty) {
                 @controlCodeBreadcrumbsNotes() {
                   @for(noteView <- breadcrumbView.getNoteViews) {
-                    <li>@noteView.getText</li>
+                    <li>@Html(noteView.getText)</li>
                   }
                 }
               } else {
@@ -71,7 +71,7 @@
                 <span class="bold">@breadcrumbItemView.getText</span>
               }
               @if(breadcrumbItemView.getDescription!=null) {
-                @breadcrumbItemView.getDescription
+                @Html(breadcrumbItemView.getDescription)
               }
             }
           }
