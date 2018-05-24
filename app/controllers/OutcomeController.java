@@ -9,6 +9,7 @@ import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
+import models.view.SubAnswerView;
 import models.view.form.RequestNlrForm;
 import models.view.form.RequestOgelForm;
 import play.Logger;
@@ -116,7 +117,8 @@ public class OutcomeController extends Controller {
     List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
-    return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, breadcrumbViews, controlCode, description));
+    List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig);
+    return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, breadcrumbViews, controlCode, description, subAnswerViews));
   }
 
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,
