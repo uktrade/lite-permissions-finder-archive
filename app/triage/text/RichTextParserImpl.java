@@ -14,7 +14,7 @@ public class RichTextParserImpl implements RichTextParser {
   private static final Pattern GLOBAL_DEFINITION_PATTERN = Pattern.compile("\"(.*?)\"");
   private static final Pattern LOCAL_DEFINITION_PATTERN = Pattern.compile("\'(.*?)'");
   //only go to p to avoid picking "0Hz"
-  private static final Pattern CONTROL_ENTRY_PATTERN = Pattern.compile("(?:ML|PL|[0-9][A-Z])[0-9a-p.]+");
+  private static final Pattern CONTROL_ENTRY_PATTERN = Pattern.compile("(?:ML|PL|[0-9][A-Z])[0-9a-p]+");
 
   private final ParserLookupService parserLookupService;
 
