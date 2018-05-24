@@ -1,4 +1,5 @@
 @import models.view.BreadcrumbItemView
+@import models.view.SubAnswerView
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import views.html.triage.outcomePage
@@ -8,7 +9,7 @@
 @import views.html.common.page._
 
 @this()
-@(form: Form[_], controlEntryId: String, sessionId: String, breadcrumbItemViews: List[BreadcrumbItemView], controlCode: String, description: String)
+@(form: Form[_], controlEntryId: String, sessionId: String, breadcrumbItemViews: List[BreadcrumbItemView], controlCode: String, description: String, subAnswerViews: List[SubAnswerView])
 
 @outcomePage("Item is listed", sessionId) {
 
@@ -45,6 +46,9 @@
       <div>
         @description
       </div>
+      @if(!subAnswerViews.isEmpty) {
+        @subAnswers(subAnswerViews)
+      }
     }(HtmlFormat.empty)
   }
 
