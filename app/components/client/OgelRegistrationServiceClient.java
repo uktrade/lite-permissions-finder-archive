@@ -38,7 +38,7 @@ public class OgelRegistrationServiceClient {
                                        @Named("permissionRegistrationAddress") String permissionRegistrationAddress,
                                        @Named("permissionRegistrationTimeout") int permissionRegistrationTimeout,
                                        ObjectMapper objectMapper,
-                                       @Named("JwtRequestFilter") JwtRequestFilter jwtRequestFilter) {
+                                       @Named("JwtRequestAuthFilter") JwtRequestFilter jwtRequestFilter) {
     this.wsClient = wsClient;
     this.permissionRegistrationAddress = permissionRegistrationAddress;
     this.permissionRegistrationTimeout = permissionRegistrationTimeout;

@@ -99,6 +99,9 @@ POST    /licencefinder/results               controllers.licencefinder.LicenceFi
 GET     /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.renderRegisterToUseForm
 POST    /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.handleRegisterToUseSubmit
 
++ nocsrf
+POST   /licencefinder/registration-callback  controllers.licencefinder.LicenceFinderController.handleRegistrationCallback(ctx_transaction, securityToken)
+
 
 # JavaScript routes
 # TODO RE-ENABLE JS ROUTES HERE

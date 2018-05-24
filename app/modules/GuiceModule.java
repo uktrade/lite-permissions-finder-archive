@@ -195,6 +195,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("sharedSecret")).to(config.getString("application.sharedSecret"));
 
     bindConstant().annotatedWith(Names.named("dashboardUrl")).to(config.getString("dashboard.url"));
+    bindConstant().annotatedWith(Names.named("permissionsFinderUrl")).to(config.getString("permissions.finder.url"));
+    bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
+
 
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
@@ -308,9 +311,24 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new ApplicationCodeContextParamProvider());
   }
 
+
   @Provides
   @Singleton
   @Named("JwtRequestFilter")
+  public JwtRequestFilter provideJwtRequestFilterConfig(
+                                                        @com.google.inject.name.Named("userServiceAddress") String userServiceAddress,
+                                                        @com.google.inject.name.Named("userServiceTimeout") int userServiceTimeout,
+                                                        @com.google.inject.name.Named("userServiceCredentials") String userServiceCredentials,
+                                                        WSClient wsClient, HttpExecutionContext httpExecutionContext,
+                                                        SpireAuthManager spireAuthManager, @com.google.inject.name.Named("jwtSharedSecret") String jwtSharedSecret) {
+    UserServiceClientBasicAuth basicAuthClient = new UserServiceClientBasicAuth(userServiceAddress, userServiceTimeout, userServiceCredentials, wsClient, httpExecutionContext);
+
+    return new JwtRequestFilter(spireAuthManager, new JwtRequestFilterConfig(jwtSharedSecret, "lite-permissions-finder"), basicAuthClient);
+  }
+
+  @Provides
+  @Singleton
+  @Named("JwtRequestAuthFilter")
   JwtRequestFilter provideJwtRequestFilter(@com.google.inject.name.Named("userPrivilegeKey") String key,
                                            @com.google.inject.name.Named("userPrivilegeIssuer") String issuer,
                                            SpireAuthManager spireAuthManager,

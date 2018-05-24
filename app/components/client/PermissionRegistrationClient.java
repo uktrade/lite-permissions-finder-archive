@@ -56,7 +56,7 @@ public class PermissionRegistrationClient {
         .setRequestTimeout(Duration.ofMillis(permissionRegistrationTimeout))
         .addQueryParameter(QUERY_PARAM_CALLBACK_URL, callbackUrl);
 
-    LOGGER.info("Sending register OGEL request");
+    LOGGER.info("Sending register OGEL request: " + permissionRegistrationAddress + REGISTER_OGEL_PATH);
 
     return request.post(Json.toJson(registerParam)).handle((result, error) -> handleResponse(result, error, callbackUrl));
   }

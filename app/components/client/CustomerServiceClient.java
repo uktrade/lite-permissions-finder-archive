@@ -44,7 +44,7 @@ public class CustomerServiceClient {
                                @Named("customerServiceAddress") String customerServiceAddress,
                                @Named("customerServiceTimeout") int customerServiceTimeout,
                                ObjectMapper objectMapper,
-                               @Named("JwtRequestFilter") JwtRequestFilter jwtRequestFilter) {
+                               @Named("JwtRequestAuthFilter") JwtRequestFilter jwtRequestFilter) {
     this.wsClient = wsClient;
     this.customerServiceAddress = customerServiceAddress;
     this.customerServiceTimeout = customerServiceTimeout;

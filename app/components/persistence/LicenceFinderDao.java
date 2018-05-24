@@ -25,12 +25,22 @@ public class LicenceFinderDao {
   private static final String DESTINATION_COUNTRY = "destinationCountry";
   private static final String MULTIPLE_COUNTRIES = "multipleCountries";
   private static final String ROUTE_COUNTRIES = "routeCountries";
+  private static final String SUBMISSION_REQUEST_ID = "submissionRequest:id";
 
   private final CommonRedisDao dao;
 
   @Inject
   public LicenceFinderDao(@Named("permissionsFinderDaoHashCommon") CommonRedisDao dao) {
     this.dao = dao;
+  }
+
+
+  public void saveSubmissionRequestId(String requestId) {
+    dao.writeString(SUBMISSION_REQUEST_ID, requestId);
+  }
+
+  public String getSubmissionRequestId() {
+    return dao.readString(SUBMISSION_REQUEST_ID);
   }
 
   public void saveCustomerId(String arg) {
