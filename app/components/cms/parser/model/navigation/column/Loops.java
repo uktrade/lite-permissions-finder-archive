@@ -1,4 +1,4 @@
-package components.cms.parser.model.column;
+package components.cms.parser.model.navigation.column;
 
 public class Loops {
   private final String relatedCodes;

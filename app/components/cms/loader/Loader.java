@@ -8,16 +8,19 @@ import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
+import components.cms.parser.ParserResult;
 import components.cms.parser.model.LoadingMetadata;
 import components.cms.parser.model.NavigationLevel;
-import components.cms.parser.model.column.Breadcrumbs;
-import components.cms.parser.model.column.Buttons;
-import components.cms.parser.model.column.ControlListEntries;
-import components.cms.parser.model.column.Decontrols;
-import components.cms.parser.model.column.Definitions;
-import components.cms.parser.model.column.NavigationExtras;
-import components.cms.parser.model.column.Notes;
+import components.cms.parser.model.definition.Definition;
+import components.cms.parser.model.navigation.column.Breadcrumbs;
+import components.cms.parser.model.navigation.column.Buttons;
+import components.cms.parser.model.navigation.column.ControlListEntries;
+import components.cms.parser.model.navigation.column.Decontrols;
+import components.cms.parser.model.navigation.column.Definitions;
+import components.cms.parser.model.navigation.column.NavigationExtras;
+import components.cms.parser.model.navigation.column.Notes;
 import models.cms.ControlEntry;
+import models.cms.GlobalDefinition;
 import models.cms.Journey;
 import models.cms.LocalDefinition;
 import models.cms.Note;
@@ -63,10 +66,10 @@ public class Loader {
     this.stageDao = stageDao;
   }
 
-  public void load(List<NavigationLevel> navigationLevels) {
+  public void load(ParserResult parserResult) {
     clearDown();
     NavigationLevel rootNavigationLevel = new NavigationLevel("ROOT", "ROOT", -1);
-    rootNavigationLevel.addAllSubNavigationlevels(navigationLevels);
+    rootNavigationLevel.addAllSubNavigationlevels(parserResult.getNavigationLevels());
     Journey journey = new Journey().setJourneyName("MILITARY");
     Long journeyId = journeyDao.insertJourney(journey);
     generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
@@ -74,6 +77,7 @@ public class Loader {
     createStages(journeyId, rootNavigationLevel);
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
+    createGlobalDefinitions(parserResult.getDefinitions(), journeyId);
     createNotes(rootNavigationLevel);
 
     // Resolve initial stage id from stage associated with first sub-level of navigation levels
@@ -363,6 +367,28 @@ public class Loader {
       Long noteId = noteDao.insertNote(note);
 
       Logger.debug("Inserted note with id {}", noteId);
+    }
+  }
+
+  private void createGlobalDefinitions(List<Definition> definitions, long journeyId) {
+    for (Definition definition : definitions) {
+      if ("UK Military List".equalsIgnoreCase(definition.getList())) {
+        String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"").toLowerCase();
+        String definitionText = definition.getNewContent();
+        if (StringUtils.isAnyEmpty(term, definitionText)) {
+          Logger.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,
+              definitionText);
+        } else {
+          GlobalDefinition globalDefinition = new GlobalDefinition()
+              .setJourneyId(journeyId)
+              .setTerm(term)
+              .setDefinitionText(definitionText);
+
+          Long globalDefinitionId = globalDefinitionDao.insertGlobalDefinition(globalDefinition);
+
+          Logger.debug("Inserted global definition with id {}", globalDefinitionId);
+        }
+      }
     }
   }
 
