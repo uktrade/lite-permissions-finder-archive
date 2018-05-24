@@ -2,9 +2,10 @@ package triage.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import models.cms.ControlEntry;
+import models.cms.GlobalDefinition;
+import models.cms.LocalDefinition;
 import org.junit.Test;
-import triage.config.ControlEntryConfig;
-import triage.config.DefinitionConfig;
 
 import java.util.Optional;
 
@@ -13,7 +14,7 @@ public class RichTextParserImplTest {
   private static final String STAGE_ID = "1";
 
   private static final String LASERS_DEFINITION_ID = "1";
-  private static final String LASERS_LOCAL_DEFINITION_ID = "LOCAL1";
+  private static final String LASERS_LOCAL_DEFINITION_ID = "11";
   private static final String GUNS_DEFINITION_ID = "2";
   private static final String MISSILES_DEFINITION_ID = "3";
   private static final String RADIO_CONTROLLER_DEFINITION_ID = "4";
@@ -24,38 +25,44 @@ public class RichTextParserImplTest {
 
   private RichTextParserImpl richTextParser = new RichTextParserImpl(new ParserLookupServiceMock());
 
-  private static ControlEntryConfig createControlEntryConfig(String id, String code) {
-    return new ControlEntryConfig(id, code, new RichText(""), new RichText(""), null, false, false);
+  private static ControlEntry createControlEntry(String id, String code) {
+    return new ControlEntry().setId(Long.parseLong(id)).setControlCode(code);
+  }
+
+  private static Optional<GlobalDefinition> createGlobalDefinition(String id, String term) {
+    return Optional.of(new GlobalDefinition().setId(Long.parseLong(id)).setTerm(term));
+  }
+
+  private static Optional<LocalDefinition> createLocalDefinition(String id, String term) {
+    return  Optional.of(new LocalDefinition().setId(Long.parseLong(id)).setTerm(term));
   }
 
   private static class ParserLookupServiceMock implements ParserLookupService {
     @Override
-    public Optional<ControlEntryConfig> getControlEntryForCode(String code) {
+    public Optional<ControlEntry> getControlEntryForCode(String code) {
       switch (code.toUpperCase()) {
-        case "ML1": return Optional.of(createControlEntryConfig(ML1_ID, code));
-        case "PL9001": return Optional.of(createControlEntryConfig(PL9001_ID, code));
-        case "1A001": return Optional.of(createControlEntryConfig(_1A001_ID, code));
+        case "ML1": return Optional.of(createControlEntry(ML1_ID, code));
+        case "PL9001": return Optional.of(createControlEntry(PL9001_ID, code));
+        case "1A001": return Optional.of(createControlEntry(_1A001_ID, code));
         default: return Optional.empty();
       }
     }
 
     @Override
-    public Optional<DefinitionConfig> getGlobalDefinitionForTerm(String term) {
+    public Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term) {
       switch (term.toLowerCase()) {
-        case "lasers": return Optional.of(new DefinitionConfig(LASERS_DEFINITION_ID, "lasers", new RichText(""), null));
-        case "guns'": return Optional.of(new DefinitionConfig(GUNS_DEFINITION_ID, "guns", new RichText(""), null));
-        case "missiles": return Optional.of(new DefinitionConfig(MISSILES_DEFINITION_ID, "missiles", new RichText(""),
-            null));
-        case "radio controllers": return Optional.of(new DefinitionConfig(RADIO_CONTROLLER_DEFINITION_ID,
-            "radio controllers", new RichText(""), null));
+        case "lasers": return createGlobalDefinition(LASERS_DEFINITION_ID, "lasers");
+        case "guns'": return createGlobalDefinition(GUNS_DEFINITION_ID, "guns");
+        case "missiles": return createGlobalDefinition(MISSILES_DEFINITION_ID, "missiles");
+        case "radio controllers": return createGlobalDefinition(RADIO_CONTROLLER_DEFINITION_ID, "radio controllers");
         default: return Optional.empty();
       }
     }
 
     @Override
-    public Optional<DefinitionConfig> getLocalDefinitionForTerm(String term, String stageId) {
+    public Optional<LocalDefinition> getLocalDefinitionForTerm(String term, String stageId) {
       if ("lasers".equals(term.toLowerCase())) {
-        return Optional.of(new DefinitionConfig(LASERS_LOCAL_DEFINITION_ID, "lasers", new RichText(""), null));
+        return createLocalDefinition(LASERS_LOCAL_DEFINITION_ID, "lasers");
       } else {
         return Optional.empty();
       }

@@ -19,6 +19,10 @@ public interface ControlEntryJDBIDao {
   @SqlQuery("SELECT * FROM control_entry WHERE parent_control_entry_id = :parentId")
   List<ControlEntry> getChildren(@Bind("parentId") long parentId);
 
+  @Mapper(ControlEntryRSMapper.class)
+  @SqlQuery("SELECT * FROM control_entry WHERE control_code = :controlCode")
+  ControlEntry getByControlCode(@Bind("controlCode") String controlCode);
+
   @SqlQuery(
       "INSERT INTO control_entry (parent_control_entry_id, control_code, full_description, summary_description, nested, selectable, regime) "
           + "VALUES (:parentControlEntryId, :controlCode, :fullDescription, :summaryDescription, :nested, :selectable, :regime) "

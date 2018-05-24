@@ -49,7 +49,7 @@ public class RichTextParserImpl implements RichTextParser {
     String term = matcher.group(1);
 
     return parserLookupService.getGlobalDefinitionForTerm(term)
-        .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId(), true))
+        .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId().toString(), true))
         .orElse(new SimpleTextNode(termInQuotes));
   }
 
@@ -58,7 +58,7 @@ public class RichTextParserImpl implements RichTextParser {
     String term = matcher.group(1);
 
     return parserLookupService.getLocalDefinitionForTerm(term, stageId)
-        .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId(), false))
+        .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId().toString(), false))
         .orElse(new SimpleTextNode(termInQuotes));
   }
 
@@ -66,7 +66,7 @@ public class RichTextParserImpl implements RichTextParser {
     String controlCode = matcher.group(0);
     //If there's a matching code, create a ControlEntryReference - otherwise treat this as simple text
     return parserLookupService.getControlEntryForCode(controlCode)
-        .map(controlEntry -> (RichTextNode) new ControlEntryReferenceNode(controlCode, controlEntry.getId()))
+        .map(controlEntry -> (RichTextNode) new ControlEntryReferenceNode(controlCode, controlEntry.getId().toString()))
         .orElse(new SimpleTextNode(controlCode));
   }
 

@@ -1,16 +1,17 @@
 package triage.text;
 
-import triage.config.ControlEntryConfig;
-import triage.config.DefinitionConfig;
+import models.cms.ControlEntry;
+import models.cms.GlobalDefinition;
+import models.cms.LocalDefinition;
 
 import java.util.Optional;
 
 public interface ParserLookupService {
 
-  Optional<ControlEntryConfig> getControlEntryForCode(String code);
+  Optional<ControlEntry> getControlEntryForCode(String code);
 
-  Optional<DefinitionConfig> getGlobalDefinitionForTerm(String term);
+  Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term);
 
-  Optional<DefinitionConfig> getLocalDefinitionForTerm(String term, String stageId);
+  Optional<LocalDefinition> getLocalDefinitionForTerm(String term, String stageId);
 
 }
