@@ -37,13 +37,14 @@ public class OutcomeController extends Controller {
   private final views.html.triage.dropout dropout;
   private final views.html.triage.decontrolOutcome decontrolOutcome;
   private final views.html.triage.listedOutcome listedOutcome;
+  private final views.html.triage.itemNotFound itemNotFound;
 
   @Inject
   public OutcomeController(JourneyConfigService journeyConfigService, SessionService sessionService,
                            FormFactory formFactory, AnswerViewService answerViewService,
                            BreadcrumbViewService breadcrumbViewService, RenderService renderService,
                            views.html.triage.dropout dropout, views.html.triage.decontrolOutcome decontrolOutcome,
-                           views.html.triage.listedOutcome listedOutcome) {
+                           views.html.triage.listedOutcome listedOutcome, views.html.triage.itemNotFound itemNotFound) {
     this.journeyConfigService = journeyConfigService;
     this.sessionService = sessionService;
     this.formFactory = formFactory;
@@ -53,6 +54,31 @@ public class OutcomeController extends Controller {
     this.dropout = dropout;
     this.decontrolOutcome = decontrolOutcome;
     this.listedOutcome = listedOutcome;
+    this.itemNotFound = itemNotFound;
+  }
+
+  public Result outcomeItemNotFound(String controlEntryId, String sessionId) {
+    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    //TODO graceful handling if control entry not found
+    Form<RequestNlrForm> requestNlrFormForm = formFactory.form(RequestNlrForm.class);
+    return renderItemNotFound(requestNlrFormForm, controlEntryConfig, sessionId);
+  }
+
+  public Result handleOutcomeItemNotFoundSubmit(String controlEntryId, String sessionId) {
+    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    //TODO graceful handling if control entry not found
+    Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();
+    if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
+      return renderItemNotFound(form, controlEntryConfig, sessionId);
+    } else {
+      return ok("TODO: Login, show form");
+    }
+  }
+
+  private Result renderItemNotFound(Form<RequestNlrForm> requestNlrFormForm, ControlEntryConfig controlEntryConfig,
+                                    String sessionId) {
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
+    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, breadcrumbItemViews));
   }
 
   public Result outcomeListed(String controlEntryId, String sessionId) {

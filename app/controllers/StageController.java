@@ -222,7 +222,7 @@ public class StageController extends Controller {
           return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
         }
       } else if (action == Action.NONE) {
-        return redirect(routes.OutcomeController.outcomeDropout(sessionId));
+        return resultForSelectOneOrManyActionNone(sessionId, stageConfig);
       } else {
         Logger.error("Unknown action " + actionParam);
         return redirectToStage(stageId, sessionId);
@@ -254,10 +254,19 @@ public class StageController extends Controller {
         return renderSelectOne(answerForm, stageId, sessionId);
       }
     } else if (action == Action.NONE) {
-      return redirect(routes.OutcomeController.outcomeDropout(sessionId));
+      return resultForSelectOneOrManyActionNone(sessionId, stageConfig);
     } else {
       Logger.error("Unknown action " + actionParam);
       return redirectToStage(stageId, sessionId);
+    }
+  }
+
+  private Result resultForSelectOneOrManyActionNone(String sessionId, StageConfig stageConfig) {
+    ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
+    if (controlEntryConfig != null) {
+      return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryConfig.getId(), sessionId));
+    } else {
+      return redirect(routes.OutcomeController.outcomeDropout(sessionId));
     }
   }
 
