@@ -40,7 +40,7 @@
         }
       }
     }
-    @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
+    @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getUrl) {
       <p class="font-medium">Item is decontrolled</p>
         @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText!=null) {
           <span class="bold">@Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText</span>

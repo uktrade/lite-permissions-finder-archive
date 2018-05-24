@@ -48,7 +48,7 @@
     a.breadcrumb-change-link {
       position: absolute;
       top: 4px;
-      right: 0;
+      right: $gutter-one-third;
 
       @include media(mobile) {
         top: 6px;
@@ -81,6 +81,14 @@
 
     .detail-box-content {
       padding: $gutter-one-third;
+
+      &.has-change-link {
+        padding-right: 4.5em;
+      }
+
+      a.breadcrumb-change-link {
+        top: $gutter-one-third;
+      }
     }
 
     .detail-box-secondary-content {
