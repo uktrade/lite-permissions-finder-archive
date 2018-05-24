@@ -1,6 +1,7 @@
 package triage.text;
 
 import models.enums.HtmlType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +45,8 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       if (richTextNode instanceof DefinitionReferenceNode) {
         DefinitionReferenceNode definitionReferenceNode = (DefinitionReferenceNode) richTextNode;
         String definitionId = definitionReferenceNode.getReferencedDefinitionId();
-        String textContent = definitionReferenceNode.getTextContent();
+        //Strip leading/trailing quote characters from the original string when generating a link as per screen designs
+        String textContent = StringUtils.strip(definitionReferenceNode.getTextContent(), "\"'");
         String html = String.format(DEFINITION_TEXT, definitionId, definitionId, textContent);
         stringBuilder.append(html);
       } else if (richTextNode instanceof ControlEntryReferenceNode) {

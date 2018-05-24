@@ -4,14 +4,13 @@ import actions.BasicAuthAction;
 import com.google.inject.Inject;
 import components.cms.loader.Loader;
 import components.cms.parser.Parser;
-import components.cms.parser.model.NavigationLevel;
+import components.cms.parser.ParserResult;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class UploadController extends Controller {
   private final Parser parser;
@@ -26,8 +25,8 @@ public class UploadController extends Controller {
   @With(BasicAuthAction.class)
   public Result spreadsheetUpload() throws IOException {
     File file = request().body().asRaw().asFile();
-    List<NavigationLevel> navigationLevels = parser.parse(file);
-    loader.load(navigationLevels);
+    ParserResult parserResult = parser.parse(file);
+    loader.load(parserResult);
     return ok("File uploaded");
   }
 }

@@ -28,13 +28,13 @@
           <span class="bold">@breadcrumbItemView.getText</span>
         }
         @if(breadcrumbItemView.getDescription!=null) {
-          @breadcrumbItemView.getDescription
+          @Html(breadcrumbItemView.getDescription)
         }
         @if(!breadcrumbItemView.getNoteViews.isEmpty) {
           @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
             @controlCodeBreadcrumbsNotes() {
               @for(noteView <- breadcrumbItemView.getNoteViews) {
-                <li>@noteView.getText</li>
+                <li>@Html(noteView.getText)</li>
               }
             }
           }
@@ -44,7 +44,7 @@
     @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
       <p class="font-medium">@controlCode</p>
       <div>
-        @description
+        @Html(description)
       </div>
       @if(!subAnswerViews.isEmpty) {
         @subAnswers(subAnswerViews)

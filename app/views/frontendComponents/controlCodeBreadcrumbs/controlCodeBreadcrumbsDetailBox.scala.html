@@ -1,8 +1,15 @@
-@(isPathStep: Boolean = false)(content: Html)(secondaryContent: Html)
+@import org.apache.commons.lang3.StringUtils
+
+@(isPathStep: Boolean = false, changeUrl: String = "")(content: Html)(secondaryContent: Html)
 
 <@if(isPathStep){li}else{div} class="detail-box">
   @if(content.body.trim.nonEmpty) {
-    <div class="detail-box-content">@content</div>
+    <div class="detail-box-content @if(!StringUtils.isBlank(changeUrl)){ has-change-link }">
+      @content
+      @if(!StringUtils.isBlank(changeUrl)) {
+        <a href="@changeUrl" class="breadcrumb-change-link">Change</a>
+      }
+    </div>
   }
   @if(secondaryContent.body.trim.nonEmpty) {
     <div class="detail-box-secondary-content">@secondaryContent</div>

@@ -13,6 +13,10 @@ public interface GlobalDefinitionJDBIDao {
   @SqlQuery("SELECT * FROM global_definition WHERE id = :id")
   GlobalDefinition get(@Bind("id") long id);
 
+  @Mapper(GlobalDefinitionRSMapper.class)
+  @SqlQuery("SELECT * FROM global_definition WHERE term = :term")
+  GlobalDefinition getByTerm(@Bind("term") String term);
+
   @SqlQuery(
       "INSERT INTO global_definition (journey_id, term, definition_text) " +
           "VALUES (:journeyId, :term, :definitionText) " +

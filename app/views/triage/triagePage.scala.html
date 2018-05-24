@@ -42,12 +42,12 @@
       @controlCodeBreadcrumbs(){
         @for((breadcrumbItemView, index) <- breadcrumbView.getBreadcrumbItemViews.zipWithIndex) {
           @if(index == breadcrumbView.getBreadcrumbItemViews.size - 1) {
-            @controlCodeBreadcrumbsDetailBox(isPathStep = true){
+            @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = breadcrumbItemView.getUrl){
               @if(breadcrumbItemView.getText!=null) {
                 <span class="bold">@breadcrumbItemView.getText</span>
               }
               @if(breadcrumbItemView.getDescription!=null) {
-                @breadcrumbItemView.getDescription
+                @Html(breadcrumbItemView.getDescription)
               }
               @if(breadcrumbView.isDecontrol) {
                 <p>
@@ -58,7 +58,7 @@
               @if(!breadcrumbView.getNoteViews.isEmpty) {
                 @controlCodeBreadcrumbsNotes() {
                   @for(noteView <- breadcrumbView.getNoteViews) {
-                    <li>@noteView.getText</li>
+                    <li>@Html(noteView.getText)</li>
                   }
                 }
               } else {
@@ -71,7 +71,7 @@
                 <span class="bold">@breadcrumbItemView.getText</span>
               }
               @if(breadcrumbItemView.getDescription!=null) {
-                @breadcrumbItemView.getDescription
+                @Html(breadcrumbItemView.getDescription)
               }
             }
           }

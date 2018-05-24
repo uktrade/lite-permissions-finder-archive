@@ -6,6 +6,8 @@ public interface GlobalDefinitionDao {
 
   GlobalDefinition getGlobalDefinition(long id);
 
+  GlobalDefinition getGlobalDefinitionByTerm(String term);
+
   Long insertGlobalDefinition(GlobalDefinition globalDefinition);
 
   void deleteGlobalDefinition(long id);

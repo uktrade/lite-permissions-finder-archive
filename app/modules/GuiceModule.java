@@ -85,7 +85,7 @@ import triage.session.SessionServiceMockImpl;
 import triage.text.HtmlRenderService;
 import triage.text.HtmlRenderServiceImpl;
 import triage.text.ParserLookupService;
-import triage.text.ParserLookupServiceSampleImpl;
+import triage.text.ParserLookupServiceDaoImpl;
 import triage.text.RichTextParser;
 import triage.text.RichTextParserImpl;
 import utils.appcode.ApplicationCodeContextParamProvider;
@@ -117,7 +117,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
     bind(JourneyConfigService.class).to(JourneyConfigServiceDaoImpl.class);
     bind(RichTextParser.class).to(RichTextParserImpl.class);
-    bind(ParserLookupService.class).to(ParserLookupServiceSampleImpl.class);
+    bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
     bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
     bind(LicenceFinderService.class).to(LicenceFinderServiceImpl.class);
     bind(CustomerService.class).to(CustomerServiceImpl.class);
