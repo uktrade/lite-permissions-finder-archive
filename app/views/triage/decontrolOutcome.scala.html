@@ -27,13 +27,13 @@
           <span class="bold">@breadcrumbItemView.getText</span>
         }
         @if(breadcrumbItemView.getDescription!=null) {
-          @breadcrumbItemView.getDescription
+          @Html(breadcrumbItemView.getDescription)
         }
         @if(!breadcrumbItemView.getNoteViews.isEmpty) {
           @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
             @controlCodeBreadcrumbsNotes() {
               @for(noteView <- breadcrumbItemView.getNoteViews) {
-                <li>@noteView.getText</li>
+                <li>@Html(noteView.getText)</li>
               }
             }
           }
@@ -46,7 +46,7 @@
           <span class="bold">@Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText</span>
         }
         @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription!=null) {
-          @Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription
+          @Html(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription)
         }
         @for(controlCode <- controlCodes) {
          - @controlCode.<br>

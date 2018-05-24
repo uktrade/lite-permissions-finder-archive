@@ -1,15 +1,15 @@
 package components.cms.parser.model;
 
-import components.cms.parser.model.column.Breadcrumbs;
-import components.cms.parser.model.column.Buttons;
-import components.cms.parser.model.column.ControlListEntries;
-import components.cms.parser.model.column.Decontrols;
-import components.cms.parser.model.column.Definitions;
-import components.cms.parser.model.column.Loops;
-import components.cms.parser.model.column.NavigationExtras;
-import components.cms.parser.model.column.Nesting;
-import components.cms.parser.model.column.Notes;
-import components.cms.parser.model.column.OnPageContent;
+import components.cms.parser.model.navigation.column.Breadcrumbs;
+import components.cms.parser.model.navigation.column.Buttons;
+import components.cms.parser.model.navigation.column.ControlListEntries;
+import components.cms.parser.model.navigation.column.Decontrols;
+import components.cms.parser.model.navigation.column.Definitions;
+import components.cms.parser.model.navigation.column.Loops;
+import components.cms.parser.model.navigation.column.NavigationExtras;
+import components.cms.parser.model.navigation.column.Nesting;
+import components.cms.parser.model.navigation.column.Notes;
+import components.cms.parser.model.navigation.column.OnPageContent;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -38,7 +38,7 @@ public class RenderServiceImpl implements RenderService {
     Optional<RichText> summaryDescription = controlEntryConfig.getSummaryDescription();
     if (summaryDescription.isPresent()) {
       RichText richText = summaryDescription.get();
-      return htmlRenderService.convertRichTextToPlainText(richText);
+      return htmlRenderService.convertRichTextToHtml(richText);
     } else {
       return null;
     }
