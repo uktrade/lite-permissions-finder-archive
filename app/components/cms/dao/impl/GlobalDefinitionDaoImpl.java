@@ -21,6 +21,11 @@ public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
   }
 
   @Override
+  public GlobalDefinition getGlobalDefinitionByTerm(String term) {
+    return this.globalDefinitionJDBIDao.getByTerm(term);
+  }
+
+  @Override
   public Long insertGlobalDefinition(GlobalDefinition globalDefinition) {
     return this.globalDefinitionJDBIDao.insert(
         globalDefinition.getJourneyId(),

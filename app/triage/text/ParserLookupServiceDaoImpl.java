@@ -2,6 +2,7 @@ package triage.text;
 
 import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
+import components.cms.dao.GlobalDefinitionDao;
 import models.cms.ControlEntry;
 import models.cms.GlobalDefinition;
 import models.cms.LocalDefinition;
@@ -14,10 +15,12 @@ public class ParserLookupServiceDaoImpl implements ParserLookupService {
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ParserLookupServiceDaoImpl.class);
 
   private final ControlEntryDao controlEntryDao;
+  private final GlobalDefinitionDao globalDefinitionDao;
 
   @Inject
-  public ParserLookupServiceDaoImpl(ControlEntryDao controlEntryDao) {
+  public ParserLookupServiceDaoImpl(ControlEntryDao controlEntryDao, GlobalDefinitionDao globalDefinitionDao) {
     this.controlEntryDao = controlEntryDao;
+    this.globalDefinitionDao = globalDefinitionDao;
   }
 
   @Override
@@ -32,7 +35,12 @@ public class ParserLookupServiceDaoImpl implements ParserLookupService {
 
   @Override
   public Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term) {
-    return Optional.empty();
+    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinitionByTerm(term.toLowerCase());
+    if (globalDefinition == null) {
+      LOGGER.warn("Global definition term '{}' not matched", term);
+    }
+
+    return Optional.ofNullable(globalDefinition);
   }
 
   @Override
