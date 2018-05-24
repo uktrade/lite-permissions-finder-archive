@@ -271,7 +271,7 @@ public class Loader {
       if (!tokens.isEmpty()) {
         decontrolStageAnswer.setAnswerText(tokens.get(0));
         if (tokens.size() > 1) {
-          String nestedContent = tokens.subList(1, tokens.size()).stream().collect(Collectors.joining(" "));
+          String nestedContent = tokens.subList(1, tokens.size()).stream().collect(Collectors.joining("\n"));
           decontrolStageAnswer.setNestedContent(nestedContent);
         }
       } else {
