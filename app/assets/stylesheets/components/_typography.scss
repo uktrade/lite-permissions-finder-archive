@@ -29,15 +29,24 @@
 }
 
 label {
-  .list {
+
+  ul {
+    padding: 0;
+    margin-top: 5px;
     margin-bottom: 5px;
+    list-style-type: disc;
+    padding-left: 20px;
+
+    li {
+      margin-bottom: 5px;
+    }
   }
 
-  &>ul.list>li>ul.list {
+  &>ul>li>ul {
     list-style-type: circle;
   }
 
-  &>ul.list>li>ul.list>li>ul.list {
+  &>ul>li>ul>li>ul {
     list-style-type: square;
   }
 }
