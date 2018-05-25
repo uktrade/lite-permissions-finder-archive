@@ -31,6 +31,11 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   }
 
   @Override
+  public String convertRichTextToHtmlWithoutLinks(RichText richText) {
+    return renderLists(convertRichTextToPlainText(richText));
+  }
+
+  @Override
   public String convertRichTextToPlainText(RichText richText) {
     return richText.getRichTextNodes().stream().map(RichTextNode::getTextContent).collect(Collectors.joining());
   }

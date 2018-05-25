@@ -4,7 +4,7 @@
 
 @answerList(subAnswerViews: List[SubAnswerView]) = {
   @if(!subAnswerViews.isEmpty) {
-    <ul class="list list-bullet text">
+    <ul>
     @for(subAnswerView <- subAnswerViews) {
       <li>
         @subAnswerView.getText

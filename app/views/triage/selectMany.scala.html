@@ -22,7 +22,7 @@
       @if(answerView.isDividerAbove) {
         <p class="form-block">or</p>
       }
-      @formCheckboxWithDetailPanel(form("answers"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews), isPromptHtml = true, inputId = "answers" + index, inputName = "answers[" + index + "]", inputValue = answerView.getValue, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information") {
+      @formCheckboxWithDetailPanel(form("answers"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, isPromptHtml = true, inputId = "answers" + index, inputName = "answers[" + index + "]", inputValue = answerView.getValue, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information") {
         This is some more information for @answerView.getPrompt
       }
     }
