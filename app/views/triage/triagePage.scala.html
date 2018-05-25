@@ -6,9 +6,9 @@
 @import views.html.common.state._
 @import play.twirl.api.HtmlFormat
 
-@(form: Form[_], stageId: String, sessionId: String, title: String, breadcrumbView: BreadcrumbView)(secondaryHeading: Html)(formContent: Html)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, title: String, breadcrumbView: BreadcrumbView)(secondaryHeading: Html)(formContent: Html)
 
-@standardPage(title, None, twoThirdsColumn = false){
+@standardPage(title, None, twoThirdsColumn = false, resumeCode = resumeCode){
 }{
   @twoThirdsColumn{
     @errorSummary(form)

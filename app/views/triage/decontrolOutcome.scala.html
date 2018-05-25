@@ -8,9 +8,9 @@
 @import views.html.common.page._
 
 @this()
-@(form: Form[_], stageId: String, sessionId: String, breadcrumbView: BreadcrumbView, controlCodes: List[String])
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, breadcrumbView: BreadcrumbView, controlCodes: List[String])
 
-@outcomePage("Item not listed", sessionId) {
+@outcomePage("Item not listed", sessionId, resumeCode) {
 
   @twoThirdsColumn{
     @errorSummary(form)

@@ -78,7 +78,8 @@ public class OutcomeController extends Controller {
   private Result renderItemNotFound(Form<RequestNlrForm> requestNlrFormForm, ControlEntryConfig controlEntryConfig,
                                     String sessionId) {
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
-    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, breadcrumbItemViews));
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbItemViews));
   }
 
   public Result outcomeListed(String controlEntryId, String sessionId) {
@@ -115,6 +116,7 @@ public class OutcomeController extends Controller {
 
   public Result handleOutcomeDecontrolSubmit(String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
@@ -134,7 +136,8 @@ public class OutcomeController extends Controller {
   }
 
   public Result outcomeDropout(String sessionId) {
-    return ok(dropout.render(sessionId));
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(dropout.render(sessionId, resumeCode));
   }
 
   private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig,
@@ -143,7 +146,8 @@ public class OutcomeController extends Controller {
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
     List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig);
-    return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, breadcrumbViews, controlCode, description, subAnswerViews));
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbViews, controlCode, description, subAnswerViews));
   }
 
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,
@@ -154,7 +158,8 @@ public class OutcomeController extends Controller {
         .map(AnswerView::getPrompt)
         .collect(Collectors.toList());
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-    return ok(decontrolOutcome.render(requestNlrForm, stageId, sessionId, breadcrumbView, controlCodes));
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(decontrolOutcome.render(requestNlrForm, stageId, sessionId, resumeCode, breadcrumbView, controlCodes));
   }
 
   private Result redirectToIndex(String sessionId) {
