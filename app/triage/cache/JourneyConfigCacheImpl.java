@@ -24,7 +24,6 @@ import triage.text.RichTextParser;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class JourneyConfigCacheImpl implements JourneyConfigCache {
@@ -54,29 +53,17 @@ public class JourneyConfigCacheImpl implements JourneyConfigCache {
 
   @Override
   public StageConfig getStageConfigById(String stageId) {
-    try {
-      return stageConfigCache.get(stageId);
-    } catch (ExecutionException e) {
-      throw new RuntimeException(e);
-    }
+    return stageConfigCache.getUnchecked(stageId);
   }
 
   @Override
   public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
-    try {
-      return noteCache.get(stageId);
-    } catch (ExecutionException e) {
-      throw new RuntimeException(e);
-    }
+    return noteCache.getUnchecked(stageId);
   }
 
   @Override
   public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
-    try {
-      return controlEntryCache.get(controlEntryId);
-    } catch (ExecutionException e) {
-      throw new RuntimeException(e);
-    }
+    return controlEntryCache.getUnchecked(controlEntryId);
   }
 
   @Override
