@@ -50,3 +50,26 @@ label {
     list-style-type: square;
   }
 }
+
+a[data-definition-id],
+a[data-control-entry-id] {
+  &:link,
+  &:visited {
+    color: $link-colour;
+    text-decoration: none;
+    display: inline-block;
+    line-height: 0.7em;
+    border-bottom: 1.2px dotted $link-colour;
+    cursor: help;
+  }
+
+  &:hover {
+    color: $link-hover-colour;
+    border-bottom-color: $link-hover-colour;
+  }
+
+  &:active {
+    color: $link-active-colour;
+    border-bottom-color: $link-active-colour;
+  }
+}
