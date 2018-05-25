@@ -75,7 +75,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
   private String createdNestedContent(AnswerConfig answerConfig) {
     Optional<RichText> nestedContent = answerConfig.getNestedContent();
     if (nestedContent.isPresent()) {
-      return htmlRenderService.convertRichTextToHtml(nestedContent.get());
+      return htmlRenderService.convertRichTextToHtmlWithoutLinks(nestedContent.get());
     } else {
       return "";
     }
