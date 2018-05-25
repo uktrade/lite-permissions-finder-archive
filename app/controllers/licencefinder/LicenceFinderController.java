@@ -1,14 +1,12 @@
 package controllers.licencefinder;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static models.callback.RegistrationCallbackResponse.errorResponse;
-import static models.callback.RegistrationCallbackResponse.okResponse;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
+import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
@@ -25,18 +23,14 @@ import models.view.QuestionView;
 import models.view.RegisterResultView;
 import org.apache.commons.lang3.StringUtils;
 import org.pac4j.play.java.Secure;
-import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
-import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
-import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 import uk.gov.bis.lite.countryservice.api.CountryView;
-import uk.gov.bis.lite.permissions.api.view.CallbackView;
 import utils.CountryUtils;
 import views.html.licencefinder.destination;
 import views.html.licencefinder.questions;
@@ -72,8 +66,7 @@ public class LicenceFinderController extends Controller {
   private final String dashboardUrl;
   private final OgelServiceClient ogelClient;
   private final LicenceFinderService licenceFinderService;
-
-
+  private final ContextParamManager contextParamManager;
 
   public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
 
@@ -101,7 +94,7 @@ public class LicenceFinderController extends Controller {
                                  OgelConditionsServiceClient conditionsClient, FrontendServiceClient frontendClient,
                                  ApplicableOgelServiceClient applicableClient,
                                  @com.google.inject.name.Named("dashboardUrl") String dashboardUrl,
-                                 OgelServiceClient ogelClient, LicenceFinderService licenceFinderService) {
+                                 OgelServiceClient ogelClient, LicenceFinderService licenceFinderService, ContextParamManager contextParamManager) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
     this.httpContext = httpContext;
@@ -113,6 +106,7 @@ public class LicenceFinderController extends Controller {
     this.dashboardUrl = dashboardUrl;
     this.ogelClient = ogelClient;
     this.licenceFinderService = licenceFinderService;
+    this.contextParamManager = contextParamManager;
   }
 
   /**
@@ -125,41 +119,45 @@ public class LicenceFinderController extends Controller {
     return renderTradeForm();
   }
 
+  /*
 
-  /**
-   * Endpoint for PermissionsService register callback
-   */
-  @BodyParser.Of(BodyParser.Json.class)
-  public Result handleRegistrationCallback(String transactionId, String securityToken) {
-    Logger.info("handleRegistrationCallback");
-    /*
-    if (!appConfigUtil.matchesSharedSecret(securityToken)) {
-      String errorMessage = String.format("Registration callback error - Security token verification failed for transactionId %s", transactionId);
-      LOGGER.error(errorMessage);
-      return badRequest(Json.toJson(errorResponse(errorMessage)));
-    }*/
+  public Result renderForm() {
+    String transactionId = transactionManager.getTransactionId();
 
-    CallbackView callbackView;
-    try {
-      JsonNode json = request().body().asJson();
-      callbackView = Json.fromJson(json, CallbackView.class);
-      Logger.info("Registration callback received {transactionId={}, callbackView={}}", transactionId, json.toString());
-    } catch (RuntimeException e) {
-      String errorMessage = String.format("Registration callback error - Invalid callback registration request for transactionId %s, callbackBody=\"%s\"", transactionId, request().body().asText());
-      Logger.error(errorMessage, e);
-      return badRequest(Json.toJson(errorResponse(errorMessage)));
-    }
+    SubmissionStatus status = licenceFinderService.getSubmissionStatus(transactionId);
 
-    try {
-      licenceFinderService.handleCallback(transactionId, callbackView);
-      return ok(Json.toJson(okResponse()));
-    } catch (Exception e) {
-      String errorMessage = String.format("Registration callback handling error for transactionId %s", transactionId);
-      Logger.error(errorMessage, e);
-      return badRequest(Json.toJson(errorResponse(errorMessage + " - " + e.getMessage())));
+    switch (status) {
+      case SUBMITTED:
+        boolean showLongRunningPrompt = licenceFinderService.getSecondsSinceRegistrationSubmission(transactionId) >= 15;
+        return ok(views.html.registration.registrationInterval.render(showLongRunningPrompt));
+      case COMPLETED:
+        return handleSubmissionCompleted(transactionId);
+      case FAILED:
+      default:
+        return ok(views.html.registration.registrationRejection.render(licenceFinderService.getCallbackResult(transactionId).orElse(null)));
     }
   }
 
+  private Result handleSubmissionCompleted(String transactionId) {
+    CallbackView.Result result = licenceFinderService.getCallbackResult(transactionId).orElse(CallbackView.Result.FAILED);
+    switch (result) {
+      case SUCCESS:
+        return ok(views.html.registration.registrationConfirmation.render(licenceFinderService.getRegistrationRef(transactionId)));
+      case PERMISSION_DENIED:
+        return ok(views.html.registration.permissionDenied.render());
+      default:
+        return ok(views.html.registration.registrationRejection.render(result));
+    }
+  }
+
+  */
+
+  /**
+   * Handles the RegistrationInterval form submission
+
+  public CompletionStage<Result> handleRegistrationProcessed() {
+    return contextParamManager.addParamsAndRedirect(controllers.registration.routes.RegistrationOutcomeController.renderForm());
+  }*/
 
   /************************************************************************************************
    * 'Trade' page
@@ -381,11 +379,25 @@ public class LicenceFinderController extends Controller {
       return renderWithRegisterToUseForm(form);
     }
 
+    String transactionId = transactionManager.getTransactionId();
     String ogelId = dao.getOgelId();
     String controlCode = dao.getControlCode();
 
-    licenceFinderService.registerOgel();
+    return licenceFinderService.registerOgel(transactionId).thenApplyAsync(conditionsResult ->
+            ogelClient.get(dao.getOgelId())
+                .thenApplyAsync(ogelFullView -> {
+                  RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ")" );
+                  Optional<String> regRef = licenceFinderService.getRegistrationReference(transactionId);
+                  if(regRef.isPresent()) {
+                    view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") "  + regRef);
+                  }
 
+                  return ok(registerResult.render(view, ogelFullView, dashboardUrl));
+                }, httpContext.current())
+        , httpContext.current())
+        .thenCompose(Function.identity());
+
+    /*
     return conditionsClient.get(ogelId, controlCode)
         .thenApplyAsync(conditionsResult ->
                 ogelClient.get(dao.getOgelId())
@@ -395,6 +407,7 @@ public class LicenceFinderController extends Controller {
                     }, httpContext.current())
             , httpContext.current())
         .thenCompose(Function.identity());
+        */
   }
 
   private CompletionStage<Result> renderWithRegisterToUseForm(Form<RegisterToUseForm> form) {

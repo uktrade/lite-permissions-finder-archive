@@ -100,7 +100,7 @@ GET     /licencefinder/register-to-use       controllers.licencefinder.LicenceFi
 POST    /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.handleRegisterToUseSubmit
 
 + nocsrf
-POST   /licencefinder/registration-callback  controllers.licencefinder.LicenceFinderController.handleRegistrationCallback(ctx_transaction, securityToken)
+POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(transactionId)
 
 
 # JavaScript routes

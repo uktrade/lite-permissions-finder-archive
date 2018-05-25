@@ -1,54 +1,55 @@
 package controllers.licencefinder;
 
+import static models.callback.RegistrationCallbackResponse.errorResponse;
+import static models.callback.RegistrationCallbackResponse.okResponse;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import components.auth.SamlAuthorizer;
-import components.common.auth.SpireSAML2Client;
-import components.common.cache.CountryProvider;
-import components.common.transaction.TransactionManager;
-import components.persistence.LicenceFinderDao;
-import components.services.controlcode.frontend.FrontendServiceClient;
-import components.services.ogels.applicable.ApplicableOgelServiceClient;
-import components.services.ogels.conditions.OgelConditionsServiceClient;
-import components.services.ogels.ogel.OgelServiceClient;
-import org.pac4j.play.java.Secure;
-import play.data.FormFactory;
-import play.libs.concurrent.HttpExecutionContext;
+import components.services.LicenceFinderService;
+import play.Logger;
+import play.libs.Json;
+import play.mvc.BodyParser;
 import play.mvc.Controller;
+import play.mvc.Result;
+import uk.gov.bis.lite.permissions.api.view.CallbackView;
 
-import javax.inject.Named;
-
-@Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class RegistrationController extends Controller {
 
-  private final FormFactory formFactory;
-  private final LicenceFinderDao dao;
-  private final TransactionManager transactionManager;
-  private final CountryProvider countryProvider;
-  private final OgelConditionsServiceClient conditionsClient;
-  private final HttpExecutionContext httpContext;
-  private final FrontendServiceClient frontendClient;
-  private final ApplicableOgelServiceClient applicableClient;
-  private final String dashboardUrl;
-  private final OgelServiceClient ogelClient;
-
+  private final LicenceFinderService licenceFinderService;
 
   @Inject
-  public RegistrationController(TransactionManager transactionManager, FormFactory formFactory,
-                                 HttpExecutionContext httpContext,
-                                 LicenceFinderDao dao, @Named("countryProviderExport") CountryProvider countryProvider,
-                                 OgelConditionsServiceClient conditionsClient, FrontendServiceClient frontendClient,
-                                 ApplicableOgelServiceClient applicableClient,
-                                 @com.google.inject.name.Named("dashboardUrl") String dashboardUrl,
-                                 OgelServiceClient ogelClient) {
-    this.transactionManager = transactionManager;
-    this.formFactory = formFactory;
-    this.httpContext = httpContext;
-    this.dao = dao;
-    this.countryProvider = countryProvider;
-    this.conditionsClient = conditionsClient;
-    this.frontendClient = frontendClient;
-    this.applicableClient = applicableClient;
-    this.dashboardUrl = dashboardUrl;
-    this.ogelClient = ogelClient;
+  public RegistrationController(LicenceFinderService licenceFinderService) {
+    this.licenceFinderService = licenceFinderService;
   }
+
+  /**
+   * Endpoint for PermissionsService register callback
+   */
+  @BodyParser.Of(BodyParser.Json.class)
+  public Result handleRegistrationCallback(String transactionId) {
+    Logger.info("handleRegistrationCallback: " + transactionId);
+
+    CallbackView callbackView;
+    try {
+      JsonNode json = request().body().asJson();
+      callbackView = Json.fromJson(json, CallbackView.class);
+      Logger.info("Registration callback received {transactionId={}, callbackView={}}", transactionId, json.toString());
+    } catch (RuntimeException e) {
+      String errorMessage = String.format("Registration callback error - Invalid callback registration request for transactionId %s, callbackBody=\"%s\"", transactionId, request().body().asText());
+      Logger.error(errorMessage, e);
+      return badRequest(Json.toJson(errorResponse(errorMessage)));
+    }
+
+    try {
+      licenceFinderService.handleCallback(transactionId, callbackView);
+      return ok(Json.toJson(okResponse()));
+    } catch (Exception e) {
+      String errorMessage = String.format("Registration callback handling error for transactionId %s", transactionId);
+      Logger.error(errorMessage, e);
+      return badRequest(Json.toJson(errorResponse(errorMessage + " - " + e.getMessage())));
+    }
+  }
+
+
+
 }

@@ -4,7 +4,12 @@ import com.google.inject.Inject;
 import components.client.CustomerService;
 import components.client.PermissionRegistrationClient;
 import components.common.auth.SpireAuthManager;
+import components.common.persistence.StatelessRedisDao;
 import components.persistence.LicenceFinderDao;
+import components.persistence.enums.SubmissionStatus;
+import jodd.util.ThreadUtil;
+import models.persistence.RegisterLicence;
+import org.apache.commons.lang.StringUtils;
 import play.Logger;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;
@@ -12,10 +17,12 @@ import uk.gov.bis.lite.permissions.api.view.CallbackView;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 
 public class LicenceFinderServiceImpl implements LicenceFinderService {
 
   private final LicenceFinderDao licenceFinderDao;
+  private final StatelessRedisDao statelessRedisDao;
   private final CustomerService customerService;
   private final SpireAuthManager authManager;
   private final PermissionRegistrationClient permissionsService;
@@ -24,37 +31,124 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   @Inject
   public LicenceFinderServiceImpl(LicenceFinderDao licenceFinderDao, CustomerService customerService,
                                   PermissionRegistrationClient permissionsService, SpireAuthManager authManager,
-                                  @com.google.inject.name.Named("permissionsFinderUrl") String permissionsFinderUrl) {
+                                  @com.google.inject.name.Named("permissionsFinderUrl") String permissionsFinderUrl, StatelessRedisDao statelessRedisDao) {
     this.licenceFinderDao = licenceFinderDao;
     this.permissionsService = permissionsService;
     this.customerService = customerService;
     this.authManager = authManager;
     this.permissionsFinderUrl = permissionsFinderUrl;
+    this.statelessRedisDao = statelessRedisDao;
   }
 
-  private void registrationResponseReceived(String transactionId, PermissionRegistrationClient.RegistrationResponse response) {
-    Logger.info("Response: " + response.isSuccess());
-    Logger.info("RequestId: " + response.getRequestId());
+
+  public Optional<String> getRegistrationReference(String transactionId) {
+    int count = 0;
+    while(count < 3) {
+      Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
+      if (optRegisterLicence.isPresent()) {
+        RegisterLicence registerLicence = optRegisterLicence.get();
+        String ref = registerLicence.getRegistrationReference();
+        if (!StringUtils.isBlank(ref)) {
+          Logger.info("Have ref");
+          return Optional.of(ref);
+        }
+        Logger.info("No ref");
+        ThreadUtil.sleep(2000);
+        count++;
+      }
+    }
+    return Optional.empty();
   }
 
-  public void registerOgel() {
-    String transactionId = "transactionId";
+  public SubmissionStatus getSubmissionStatus(String transactionId) {
+
+
+    return SubmissionStatus.COMPLETED;
+    /*
+    Optional<Boolean> isSuccess = submissionDao.getSubmissionRequestSuccess(transactionId);
+    if (isSuccess.isPresent()) {
+      if (isSuccess.get()) {
+        Optional<CallbackView.Result> result = submissionDao.getCallbackResult(transactionId);
+        if (result.isPresent()) {
+          return SubmissionStatus.COMPLETED;
+        } else {
+          return SubmissionStatus.SUBMITTED;
+        }
+      } else {
+        return SubmissionStatus.FAILED;
+      }
+    } else {
+      return SubmissionStatus.PENDING;
+    }
+    */
+  }
+
+  public long getSecondsSinceRegistrationSubmission(String transactionId) {
+    return 0L;
+    /*
+    Optional<Instant> submissionDateTime = submissionDao.getSubmissionRequestDateTime(transactionId);
+    if (submissionDateTime.isPresent()) {
+      return Duration.between(submissionDateTime.get(), Instant.now()).getSeconds();
+    } else {
+      return 0L;
+    }
+    */
+  }
+
+  public Optional<CallbackView.Result> getCallbackResult(String transactionId) {
+    return Optional.empty();
+    //return submissionDao.getCallbackResult(transactionId);
+  }
+
+  public String getRegistrationRef(String transactionId) {
+    return "";
+    //return submissionDao.getRegistrationRef(transactionId);
+  }
+
+  /**
+   * registerOgel
+   */
+  public CompletionStage<Void> registerOgel(String transactionId) {
     String userId = getUserId();
     String customerId = licenceFinderDao.getCustomerId();
     String siteId = licenceFinderDao.getSiteId();
     String ogelId = licenceFinderDao.getOgelId();
-    String callbackUrl = permissionsFinderUrl + "/licencefinder/registration-callback";
+    String callbackUrl = permissionsFinderUrl + "/licencefinder/registration-callback?transactionId=" + transactionId;
 
-    permissionsService.registerOgel(userId, customerId, siteId, ogelId, callbackUrl)
-        .thenAcceptAsync(response -> registrationResponseReceived(transactionId, response));
+    RegisterLicence registerLicence = new RegisterLicence();
+    registerLicence.setTransactionId(transactionId);
+    registerLicence.setUserId(userId);
+    registerLicence.setOgelId(ogelId);
+    registerLicence.setCustomerId(customerId);
+
+    return permissionsService.registerOgel(userId, customerId, siteId, ogelId, callbackUrl)
+        .thenAcceptAsync(response -> registrationResponseReceived(transactionId, response, registerLicence));
 
   }
 
+  /**
+   * handleCallback
+   */
   public void handleCallback(String transactionId, CallbackView callbackView) {
-    String storedRequestId = licenceFinderDao.getSubmissionRequestId();
-    Logger.info("handleCallback: " + storedRequestId);
+
+    String registrationReference = callbackView.getRegistrationReference();
+
+    Logger.info("handleCallback: " + transactionId);
+    Logger.info("CallbackView: " + callbackView.getRequestId());
+    Logger.info("RegistrationReference: " + registrationReference);
+
+    Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
+    if(optRegisterLicence.isPresent()) {
+      RegisterLicence registerLicence = optRegisterLicence.get();
+      registerLicence.setRegistrationReference(registrationReference);
+      saveRegisterLicence(registerLicence);
+      Logger.info("RegisterLicence updated with registrationReference: " + registrationReference);
+    }
   }
 
+  /**
+   * persistCustomerAndSiteData
+   */
   public void persistCustomerAndSiteData() {
     String userId = getUserId();
     Optional<String> optCustomerId = getCustomerId(userId);
@@ -73,6 +167,26 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     } else {
       Logger.warn("Not a single Customer associated with user: " + userId);
     }
+  }
+
+  /**
+   * Private methods
+   */
+
+  private void registrationResponseReceived(String transactionId, PermissionRegistrationClient.RegistrationResponse response, RegisterLicence registerLicence) {
+    Logger.info("Response: " + response.isSuccess());
+    Logger.info("RequestId: " + response.getRequestId());
+    registerLicence.setRequestId(response.getRequestId());
+    saveRegisterLicence(registerLicence);
+    statelessRedisDao.writeObject(transactionId, "REGISTER_LICENCE", registerLicence);
+  }
+
+  private void saveRegisterLicence(RegisterLicence registerLicence) {
+    statelessRedisDao.writeObject(registerLicence.getTransactionId(), "REGISTER_LICENCE", registerLicence);
+  }
+
+  private Optional<RegisterLicence> getRegisterLicence(String transactionId) {
+    return statelessRedisDao.readObject(transactionId, "REGISTER_LICENCE", RegisterLicence.class);
   }
 
   /**

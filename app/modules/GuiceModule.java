@@ -244,10 +244,13 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   @Named("permissionsFinderDaoHashCommon")
-  public CommonRedisDao providePermissionsFinderDaoHashCommon(
-      @Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, RedissonClient redissonClient,
-      TransactionManager transactionManager) {
-    return new CommonRedisDao(new StatelessRedisDao(keyConfig, redissonClient), transactionManager);
+  public CommonRedisDao providePermissionsFinderDaoHashCommon(StatelessRedisDao statelessRedisDao, TransactionManager transactionManager) {
+    return new CommonRedisDao(statelessRedisDao, transactionManager);
+  }
+
+  @Provides
+  public StatelessRedisDao provideStatelessRedisDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, RedissonClient redissonClient) {
+    return new StatelessRedisDao(keyConfig, redissonClient);
   }
 
   @Provides
