@@ -2,9 +2,9 @@
 @import views.html.triage.outcomePage
 
 @this()
-@(sessionId: String)
+@(sessionId: String, resumeCode: String)
 
-@outcomePage("Item not found", sessionId, false) {
+@outcomePage("Item not found", sessionId, resumeCode, false) {
   <p class="lede">
     You have not found your item in the military list. This does not mean that your item is not controlled.
   </p>

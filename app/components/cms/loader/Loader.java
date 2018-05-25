@@ -172,7 +172,8 @@ public class Loader {
     }
   }
 
-  private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId, int displayOrder, NavigationLevel navigationLevel) {
+  private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId, int displayOrder,
+                                                    NavigationLevel navigationLevel) {
     if (!isRoot) {
       LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
       StageAnswer stageAnswer = new StageAnswer();
@@ -271,7 +272,7 @@ public class Loader {
       if (!tokens.isEmpty()) {
         decontrolStageAnswer.setAnswerText(tokens.get(0));
         if (tokens.size() > 1) {
-          String nestedContent = tokens.subList(1, tokens.size()).stream().collect(Collectors.joining("\n"));
+          String nestedContent = tokens.subList(1, tokens.size()).stream().collect(Collectors.joining("\n", "", "\n"));
           decontrolStageAnswer.setNestedContent(nestedContent);
         }
       } else {

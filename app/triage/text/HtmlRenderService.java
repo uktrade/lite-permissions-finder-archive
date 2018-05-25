@@ -7,6 +7,8 @@ public interface HtmlRenderService {
   //3) convert line breaks to <br>s
   String convertRichTextToHtml(RichText richText);
 
+  String convertRichTextToHtmlWithoutLinks(RichText richText);
+
   String convertRichTextToPlainText(RichText richText);
 
 }

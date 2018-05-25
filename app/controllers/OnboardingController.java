@@ -20,22 +20,26 @@ import java.util.concurrent.CompletionStage;
 public class OnboardingController {
 
   private final FormFactory formFactory;
+  private final SessionService sessionService;
 
   @Inject
-  public OnboardingController(FormFactory formFactory) {
+  public OnboardingController(FormFactory formFactory, SessionService sessionService) {
     this.formFactory = formFactory;
+    this.sessionService = sessionService;
   }
 
   public CompletionStage<Result> renderForm(String sessionId) {
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     return completedFuture(ok(onboardingContent.render(formFactory.form(OnboardingForm.class), getSelectOptions(),
-        sessionId)));
+        sessionId, resumeCode)));
   }
 
   public CompletionStage<Result> handleSubmit(String sessionId) {
     Form<OnboardingForm> form = formFactory.form(OnboardingForm.class).bindFromRequest();
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
 
     if (form.hasErrors()) {
-      return completedFuture(ok(onboardingContent.render(form, getSelectOptions(), sessionId)));
+      return completedFuture(ok(onboardingContent.render(form, getSelectOptions(), sessionId, resumeCode)));
     }
 
     SpeciallyDesigned isSpecialParam = form.get().speciallyDesigned;

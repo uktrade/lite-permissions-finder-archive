@@ -1,4 +1,4 @@
-@import models.view.BreadcrumbView
+@import models.view.BreadcrumbItemView
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import views.html.triage.outcomePage
@@ -8,20 +8,20 @@
 @import views.html.common.page._
 
 @this()
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, breadcrumbView: BreadcrumbView, controlCodes: List[String])
+@(form: Form[_], controlEntryId: String, sessionId: String, resumeCode: String, breadcrumbItemsViews: List[BreadcrumbItemView])
 
-@outcomePage("Item not listed", sessionId, resumeCode) {
+@outcomePage("Item Not Found", sessionId, resumeCode) {
 
   @twoThirdsColumn{
     @errorSummary(form)
   }
 
   <p class="lede">
-    Based on the answers you've provided, your item is not included on the UK Strategic Export Control Lists.
+    Based on the choices you've made, your item cannot be found on the UK Military list.
   </p>
 
   @controlCodeBreadcrumbs(isWide = true) {
-    @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
+    @for(breadcrumbItemView <- breadcrumbItemsViews) {
       @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
         @if(breadcrumbItemView.getText!=null) {
           <span class="bold">@breadcrumbItemView.getText</span>
@@ -40,17 +40,8 @@
         }
       }
     }
-    @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getUrl) {
-      <p class="font-medium">Item is decontrolled</p>
-        @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText!=null) {
-          <span class="bold">@Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText</span>
-        }
-        @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription!=null) {
-          @Html(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription)
-        }
-        @for(controlCode <- controlCodes) {
-         - @controlCode.<br>
-        }
+    @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbItemsViews).getUrl) {
+      <p class="font-medium">Item has none of the controlled characteristics</p>
     }(HtmlFormat.empty)
   }
 
@@ -58,8 +49,7 @@
 
   <ol class="circle-step-list">
     <li>
-      If you have not consulted the relevant item design margins and/or a technical officer with the appropriate
-      knowledge, we advise you do so before requesting a No Licence Required (NLR) document or proceeding past this page.
+      If you have not consulted the relevant item design margins and or a technical officer with the appropriate knowledge, we advise you do so before requesting an NLR document or proceeding past this page.
     </li>
     <li>
       Even if if your item is not controlled it may still be affected by end use controls and any
@@ -80,10 +70,10 @@
 
   <div class="banner danger-banner">
     <span class="visually-hidden">Warning:</span>
-    If you export your item without a licence, you will be responsible for any penalties should a licence be required.
+    Your item may be seized and you could face fines and up to 10 years in prison if you export controlled items without the correct export licence.
   </div>
 
-  <form action="@routes.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)" method="POST">
+  <form action="@routes.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)" method="POST">
     @contextFormParams()
 
     <div class="form-group">
