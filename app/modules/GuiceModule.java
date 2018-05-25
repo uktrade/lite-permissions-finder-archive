@@ -69,6 +69,13 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
+import triage.cache.CachePopulationService;
+import triage.cache.CachePopulationServiceImpl;
+import triage.cache.CacheValidator;
+import triage.cache.CacheValidatorImpl;
+import triage.cache.JourneyConfigCache;
+import triage.cache.JourneyConfigCacheImpl;
+import triage.cache.StartupCachePopulationActor;
 import triage.config.JourneyConfigService;
 import triage.config.JourneyConfigServiceDaoImpl;
 import triage.session.SessionService;
@@ -110,6 +117,10 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(RichTextParser.class).to(RichTextParserImpl.class);
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
     bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
+    bind(CacheValidator.class).to(CacheValidatorImpl.class).asEagerSingleton();
+    bind(JourneyConfigCache.class).to(JourneyConfigCacheImpl.class).asEagerSingleton();
+    bind(CachePopulationService.class).to(CachePopulationServiceImpl.class);
+    bind(StartupCachePopulationActor.class).asEagerSingleton();
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));
