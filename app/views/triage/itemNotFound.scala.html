@@ -1,0 +1,86 @@
+@import models.view.BreadcrumbItemView
+@import play.twirl.api.HtmlFormat
+@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import views.html.triage.outcomePage
+@import views.html.common.state.contextFormParams
+@import views.html.common.form.formCheckbox
+@import com.google.common.collect.Iterables
+@import views.html.common.page._
+
+@this()
+@(form: Form[_], controlEntryId: String, sessionId: String, breadcrumbItemsViews: List[BreadcrumbItemView])
+
+@outcomePage("Item Not Found", sessionId) {
+
+  @twoThirdsColumn{
+    @errorSummary(form)
+  }
+
+  <p class="lede">
+    Based on the choices you've made, your item cannot be found on the UK Military list.
+  </p>
+
+  @controlCodeBreadcrumbs(isWide = true) {
+    @for(breadcrumbItemView <- breadcrumbItemsViews) {
+      @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
+        @if(breadcrumbItemView.getText!=null) {
+          <span class="bold">@breadcrumbItemView.getText</span>
+        }
+        @if(breadcrumbItemView.getDescription!=null) {
+          @Html(breadcrumbItemView.getDescription)
+        }
+        @if(!breadcrumbItemView.getNoteViews.isEmpty) {
+          @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
+            @controlCodeBreadcrumbsNotes() {
+              @for(noteView <- breadcrumbItemView.getNoteViews) {
+                <li>@Html(noteView.getText)</li>
+              }
+            }
+          }
+        }
+      }
+    }
+    @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbItemsViews).getUrl) {
+      <p class="font-medium">Item has none of the controlled characteristics</p>
+    }(HtmlFormat.empty)
+  }
+
+  <h2 class="heading-large">What you should do next</h2>
+
+  <ol class="circle-step-list">
+    <li>
+      If you have not consulted the relevant item design margins and or a technical officer with the appropriate knowledge, we advise you do so before requesting an NLR document or proceeding past this page.
+    </li>
+    <li>
+      Even if if your item is not controlled it may still be affected by end use controls and any
+      <a href="https://www.gov.uk/guidance/sanctions-embargoes-and-restrictions" rel="external" target="_blank">
+        sanctions and embargoes<span class="visually-hidden"> (opens in a new tab)</span>
+      </a>.
+      Refer to the
+      <a href="#" rel="external" target="_blank">
+        end user advisory service (LINK TO BE UPDATED)<span class="visually-hidden"> (opens in a new tab)</span>
+      </a>
+      to understand whether your item may need a licence.
+    </li>
+    <li>
+      You may request an NLR document if, following the points above, you believe that your item is still not subject
+      to controls.
+    </li>
+  </ol>
+
+  <div class="banner danger-banner">
+    <span class="visually-hidden">Warning:</span>
+    Your item may be seized and you could face fines and up to 10 years in prison if you export controlled items without the correct export licence.
+  </div>
+
+  <form action="@routes.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)" method="POST">
+    @contextFormParams()
+
+    <div class="form-group">
+      @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")
+    </div>
+
+    <button type="submit" class="button" name="action" value="continue">Request an NLR document</button>
+  </form>
+
+}
