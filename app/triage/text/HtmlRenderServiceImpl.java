@@ -27,12 +27,12 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
 
   @Override
   public String convertRichTextToHtml(RichText richText) {
-    return renderLists(addLinks(richText));
+    return convertNewlinesToBrs(renderLists(addLinks(richText)));
   }
 
   @Override
   public String convertRichTextToHtmlWithoutLinks(RichText richText) {
-    return renderLists(convertRichTextToPlainText(richText));
+    return convertNewlinesToBrs(renderLists(convertRichTextToPlainText(richText)));
   }
 
   @Override
@@ -42,6 +42,10 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
 
   private static String unescape(String str) {
     return str.replace("'", "\"");
+  }
+
+  private String convertNewlinesToBrs(String input) {
+    return input.replace("\n", "<br>");
   }
 
   private String addLinks(RichText richText) {

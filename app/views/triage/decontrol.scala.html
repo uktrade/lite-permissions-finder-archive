@@ -10,7 +10,7 @@
   @controlCode: Checking against decontrols
 }{
   <p>Select all that apply.</p>
-  <p>@explanatoryText</p>
+  <p>@Html(explanatoryText)</p>
   <div class="form-group">
     @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
       @if(answerView.isDividerAbove) {

@@ -17,7 +17,7 @@
     @Html(progressView.getDescription)
   }
 }{
-  <p>@explanatoryText</p>
+  <p>@Html(explanatoryText)</p>
   @formRadioGroupContainer(form("answer"))(null) {
     @for(answerView <- answerViews) {
       @if(answerView.isDividerAbove) {

@@ -22,7 +22,7 @@ public class RenderServiceImpl implements RenderService {
     Optional<RichText> explanatoryNoteOptional = stageConfig.getExplanatoryNote();
     if (explanatoryNoteOptional.isPresent()) {
       RichText explanatoryNote = explanatoryNoteOptional.get();
-      return htmlRenderService.convertRichTextToPlainText(explanatoryNote);
+      return htmlRenderService.convertRichTextToHtml(explanatoryNote);
     } else {
       return null;
     }
