@@ -30,13 +30,15 @@ public class CachePopulationServiceImpl implements CachePopulationService {
     populateCachesForStage(journeyConfigService.getStageConfigById(journeyConfigService.getInitialStageId()));
     //TODO: definitions
 
+    LOGGER.info("Config cache successfully populated");
+
     return String.format("Caches populated\nBad control entries: %s\nBad global definition terms: %s\n",
         cacheValidator.getUnmatchedControlCodes(), cacheValidator.getUnmatchedGlobalDefinitions());
   }
 
 
   private void populateCachesForStage(StageConfig stageConfig) {
-    LOGGER.info("Populating caches for stage {}", stageConfig.getStageId());
+    LOGGER.debug("Populating caches for stage {}", stageConfig.getStageId());
 
     journeyConfigService.getNoteConfigsByStageId(stageConfig.getStageId());
 
