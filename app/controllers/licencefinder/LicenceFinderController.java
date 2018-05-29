@@ -4,9 +4,9 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
+import components.client.OgelService;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
-import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
@@ -14,7 +14,6 @@ import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
-import components.services.ogels.ogel.OgelServiceClient;
 import exceptions.FormStateException;
 import models.OgelActivityType;
 import models.TradeType;
@@ -64,9 +63,8 @@ public class LicenceFinderController extends Controller {
   private final FrontendServiceClient frontendClient;
   private final ApplicableOgelServiceClient applicableClient;
   private final String dashboardUrl;
-  private final OgelServiceClient ogelClient;
+  private final OgelService ogelService;
   private final LicenceFinderService licenceFinderService;
-  private final ContextParamManager contextParamManager;
 
   public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
 
@@ -94,7 +92,7 @@ public class LicenceFinderController extends Controller {
                                  OgelConditionsServiceClient conditionsClient, FrontendServiceClient frontendClient,
                                  ApplicableOgelServiceClient applicableClient,
                                  @com.google.inject.name.Named("dashboardUrl") String dashboardUrl,
-                                 OgelServiceClient ogelClient, LicenceFinderService licenceFinderService, ContextParamManager contextParamManager) {
+                                 OgelService ogelService, LicenceFinderService licenceFinderService) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
     this.httpContext = httpContext;
@@ -104,9 +102,8 @@ public class LicenceFinderController extends Controller {
     this.frontendClient = frontendClient;
     this.applicableClient = applicableClient;
     this.dashboardUrl = dashboardUrl;
-    this.ogelClient = ogelClient;
+    this.ogelService = ogelService;
     this.licenceFinderService = licenceFinderService;
-    this.contextParamManager = contextParamManager;
   }
 
   /**
@@ -237,7 +234,6 @@ public class LicenceFinderController extends Controller {
 
       // Take this opportunity in flow to save users CustomerId and SiteId
       licenceFinderService.persistCustomerAndSiteData();
-
       return renderResultsForm();
     }
   }
@@ -255,7 +251,6 @@ public class LicenceFinderController extends Controller {
       return renderWithForm(form);
     }
     String chosenOgel = form.get().chosenOgel;
-
     dao.saveOgelId(chosenOgel);
 
     String controlCode = dao.getControlCode();
@@ -263,7 +258,6 @@ public class LicenceFinderController extends Controller {
     String destinationCountry = dao.getDestinationCountry();
 
     Optional<LicenceFinderController.QuestionsForm> ogelQuestionsFormOptional = dao.getQuestionsForm();
-
     List<String> activities = Collections.emptyList();
     Optional<QuestionsForm> optQuestionsForm = dao.getQuestionsForm();
     if (optQuestionsForm.isPresent()) {
@@ -344,7 +338,7 @@ public class LicenceFinderController extends Controller {
     String controlCode = dao.getControlCode();
 
     return licenceFinderService.registerOgel(transactionId).thenApplyAsync(conditionsResult ->
-            ogelClient.get(dao.getOgelId())
+            ogelService.get(dao.getOgelId())
                 .thenApplyAsync(ogelFullView -> {
                   RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ")" );
                   Optional<String> regRef = licenceFinderService.getRegistrationReference(transactionId);
@@ -364,7 +358,7 @@ public class LicenceFinderController extends Controller {
 
     return conditionsClient.get(ogelId, controlCode)
         .thenApplyAsync(conditionsResult ->
-                ogelClient.get(ogelId)
+                ogelService.get(ogelId)
                     .thenApplyAsync(ogelResult -> ok(registerToUse.render(form, ogelResult, controlCode, true, getLicenceFinderAnswers())), httpContext.current())
             , httpContext.current())
         .thenCompose(Function.identity());

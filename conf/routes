@@ -80,12 +80,6 @@ GET     /summary-continue                     controllers.SummaryController.rend
 
 POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
 
-GET         /view-ogel                       controllers.registration.ViewOgelController.viewOgel(registrationRef ?= "")
-
-GET         /register/registration-outcome   controllers.registration.RegistrationOutcomeController.renderForm
-
-POST        /register/registration-outcome   controllers.registration.RegistrationOutcomeController.handleRegistrationProcessed
-
 # Licence finder
 GET     /licencefinder/test/:controlCode     controllers.licencefinder.LicenceFinderController.testEntry(controlCode)
 GET     /licencefinder/trade                 controllers.licencefinder.LicenceFinderController.renderTradeForm

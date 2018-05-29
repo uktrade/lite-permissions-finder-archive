@@ -19,6 +19,8 @@ import com.typesafe.config.Config;
 import components.auth.SamlModule;
 import components.client.CustomerService;
 import components.client.CustomerServiceImpl;
+import components.client.OgelService;
+import components.client.OgelServiceImpl;
 import components.client.PermissionsService;
 import components.client.PermissionsServiceImpl;
 import components.cms.dao.ControlEntryDao;
@@ -123,6 +125,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(LicenceFinderService.class).to(LicenceFinderServiceImpl.class);
     bind(PermissionsService.class).to(PermissionsServiceImpl.class);
     bind(CustomerService.class).to(CustomerServiceImpl.class);
+    bind(OgelService.class).to(OgelServiceImpl.class);
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));
@@ -180,8 +183,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("basicAuthRealm"))
         .to(config.getString("basicAuth.realm"));
 
-    bindConstant().annotatedWith(Names.named("permissionRegistrationAddress")).to(config.getString("permissionRegistrationService.address"));
-    bindConstant().annotatedWith(Names.named("permissionRegistrationTimeout")).to(config.getInt("permissionRegistrationService.timeout"));
+    bindConstant().annotatedWith(Names.named("permissionsServiceAddress")).to(config.getString("permissionRegistrationService.address"));
+    bindConstant().annotatedWith(Names.named("permissionsServiceTimeout")).to(config.getInt("permissionRegistrationService.timeout"));
 
     bindConstant().annotatedWith(Names.named("customerServiceAddress")).to(config.getString("customerService.address"));
     bindConstant().annotatedWith(Names.named("customerServiceTimeout")).to(config.getInt("customerService.timeout"));

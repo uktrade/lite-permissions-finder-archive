@@ -27,7 +27,6 @@ public class RegistrationController extends Controller {
    */
   @BodyParser.Of(BodyParser.Json.class)
   public Result handleRegistrationCallback(String transactionId) {
-    Logger.info("handleRegistrationCallback: " + transactionId);
 
     CallbackView callbackView;
     try {
@@ -49,7 +48,5 @@ public class RegistrationController extends Controller {
       return badRequest(Json.toJson(errorResponse(errorMessage + " - " + e.getMessage())));
     }
   }
-
-
 
 }
