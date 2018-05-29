@@ -61,7 +61,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(controlEntryReferenceNode)));
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='view-control-entry/ML1' data-control-entry-id='ML1' title='View This is control code ML1'  target='_blank'>This is control code ML1</a>"));
+        "<a href='view-control-entry/ML1' data-control-entry-id='ML1' title='View This is control code ML1' target='_blank'>This is control code ML1</a>"));
   }
 
   @Test
