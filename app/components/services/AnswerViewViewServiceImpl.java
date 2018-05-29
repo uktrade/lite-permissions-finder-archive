@@ -111,7 +111,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
         Optional<ControlEntryConfig> associatedControlEntryConfig = answerConfig.getAssociatedControlEntryConfig();
         if (associatedControlEntryConfig.isPresent()) {
           ControlEntryConfig controlEntryConfig = associatedControlEntryConfig.get();
-          stringBuilder.append(htmlRenderService.convertRichTextToPlainText(controlEntryConfig.getFullDescription()));
+          stringBuilder.append(htmlRenderService.convertRichTextToHtml(controlEntryConfig.getFullDescription()));
           String subAnswerViewsToHtml = subAnswerViewsToHtml(createSubAnswerViews(controlEntryConfig));
           stringBuilder.append(subAnswerViewsToHtml);
         } else if (answerConfig.getLabelText().isPresent()) {
