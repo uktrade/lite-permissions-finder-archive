@@ -99,6 +99,8 @@ POST    /licencefinder/results               controllers.licencefinder.LicenceFi
 GET     /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.renderRegisterToUseForm
 POST    /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.handleRegisterToUseSubmit
 
+GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
+
 + nocsrf
 POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(transactionId)
 

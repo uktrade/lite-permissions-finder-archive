@@ -119,46 +119,6 @@ public class LicenceFinderController extends Controller {
     return renderTradeForm();
   }
 
-  /*
-
-  public Result renderForm() {
-    String transactionId = transactionManager.getTransactionId();
-
-    SubmissionStatus status = licenceFinderService.getSubmissionStatus(transactionId);
-
-    switch (status) {
-      case SUBMITTED:
-        boolean showLongRunningPrompt = licenceFinderService.getSecondsSinceRegistrationSubmission(transactionId) >= 15;
-        return ok(views.html.registration.registrationInterval.render(showLongRunningPrompt));
-      case COMPLETED:
-        return handleSubmissionCompleted(transactionId);
-      case FAILED:
-      default:
-        return ok(views.html.registration.registrationRejection.render(licenceFinderService.getCallbackResult(transactionId).orElse(null)));
-    }
-  }
-
-  private Result handleSubmissionCompleted(String transactionId) {
-    CallbackView.Result result = licenceFinderService.getCallbackResult(transactionId).orElse(CallbackView.Result.FAILED);
-    switch (result) {
-      case SUCCESS:
-        return ok(views.html.registration.registrationConfirmation.render(licenceFinderService.getRegistrationRef(transactionId)));
-      case PERMISSION_DENIED:
-        return ok(views.html.registration.permissionDenied.render());
-      default:
-        return ok(views.html.registration.registrationRejection.render(result));
-    }
-  }
-
-  */
-
-  /**
-   * Handles the RegistrationInterval form submission
-
-  public CompletionStage<Result> handleRegistrationProcessed() {
-    return contextParamManager.addParamsAndRedirect(controllers.registration.routes.RegistrationOutcomeController.renderForm());
-  }*/
-
   /************************************************************************************************
    * 'Trade' page
    *******************************************************************************************/
@@ -389,25 +349,13 @@ public class LicenceFinderController extends Controller {
                   RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ")" );
                   Optional<String> regRef = licenceFinderService.getRegistrationReference(transactionId);
                   if(regRef.isPresent()) {
-                    view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") "  + regRef);
+                    view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());
                   }
 
                   return ok(registerResult.render(view, ogelFullView, dashboardUrl));
                 }, httpContext.current())
         , httpContext.current())
         .thenCompose(Function.identity());
-
-    /*
-    return conditionsClient.get(ogelId, controlCode)
-        .thenApplyAsync(conditionsResult ->
-                ogelClient.get(dao.getOgelId())
-                    .thenApplyAsync(ogelFullView -> {
-                      RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ")");
-                      return ok(registerResult.render(view, ogelFullView, dashboardUrl));
-                    }, httpContext.current())
-            , httpContext.current())
-        .thenCompose(Function.identity());
-        */
   }
 
   private CompletionStage<Result> renderWithRegisterToUseForm(Form<RegisterToUseForm> form) {

@@ -19,6 +19,8 @@ import com.typesafe.config.Config;
 import components.auth.SamlModule;
 import components.client.CustomerService;
 import components.client.CustomerServiceImpl;
+import components.client.PermissionsService;
+import components.client.PermissionsServiceImpl;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
@@ -71,7 +73,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
 import org.skife.jdbi.v2.DBI;
 import play.Environment;
-import play.Logger;
 import play.db.Database;
 import play.libs.akka.AkkaGuiceSupport;
 import play.libs.concurrent.HttpExecutionContext;
@@ -120,6 +121,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
     bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
     bind(LicenceFinderService.class).to(LicenceFinderServiceImpl.class);
+    bind(PermissionsService.class).to(PermissionsServiceImpl.class);
     bind(CustomerService.class).to(CustomerServiceImpl.class);
 
     install(new SamlModule(config));

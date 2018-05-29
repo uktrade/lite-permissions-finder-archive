@@ -2,7 +2,8 @@ package components.services;
 
 import com.google.inject.Inject;
 import components.client.CustomerService;
-import components.client.PermissionRegistrationClient;
+import components.client.PermissionsService;
+import components.client.PermissionsServiceImpl;
 import components.common.auth.SpireAuthManager;
 import components.common.persistence.StatelessRedisDao;
 import components.persistence.LicenceFinderDao;
@@ -25,12 +26,12 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   private final StatelessRedisDao statelessRedisDao;
   private final CustomerService customerService;
   private final SpireAuthManager authManager;
-  private final PermissionRegistrationClient permissionsService;
+  private final PermissionsService permissionsService;
   private final String permissionsFinderUrl;
 
   @Inject
   public LicenceFinderServiceImpl(LicenceFinderDao licenceFinderDao, CustomerService customerService,
-                                  PermissionRegistrationClient permissionsService, SpireAuthManager authManager,
+                                  PermissionsService permissionsService, SpireAuthManager authManager,
                                   @com.google.inject.name.Named("permissionsFinderUrl") String permissionsFinderUrl, StatelessRedisDao statelessRedisDao) {
     this.licenceFinderDao = licenceFinderDao;
     this.permissionsService = permissionsService;
@@ -173,7 +174,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
    * Private methods
    */
 
-  private void registrationResponseReceived(String transactionId, PermissionRegistrationClient.RegistrationResponse response, RegisterLicence registerLicence) {
+  private void registrationResponseReceived(String transactionId, PermissionsServiceImpl.RegistrationResponse response, RegisterLicence registerLicence) {
     Logger.info("Response: " + response.isSuccess());
     Logger.info("RequestId: " + response.getRequestId());
     registerLicence.setRequestId(response.getRequestId());
