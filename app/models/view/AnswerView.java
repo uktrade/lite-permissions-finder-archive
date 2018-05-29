@@ -27,6 +27,7 @@ public class AnswerView {
     this.dividerAbove = false;
     this.subAnswerViews = subAnswerViews;
     this.nestedContent = null;
+    this.moreInformation = null;
   }
 
   public String getPrompt() {
