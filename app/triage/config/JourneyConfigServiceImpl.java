@@ -13,7 +13,7 @@ import triage.cache.JourneyConfigCache;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
+public class JourneyConfigServiceImpl implements JourneyConfigService {
 
   private final JourneyDao journeyDao;
   private final StageDao stageDao;
@@ -22,8 +22,8 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   private final JourneyConfigCache journeyConfigCache;
 
   @Inject
-  public JourneyConfigServiceDaoImpl(JourneyDao journeyDao, StageDao stageDao, StageAnswerDao stageAnswerDao,
-                                     ControlEntryDao controlEntryDao, JourneyConfigCache journeyConfigCache) {
+  public JourneyConfigServiceImpl(JourneyDao journeyDao, StageDao stageDao, StageAnswerDao stageAnswerDao,
+                                  ControlEntryDao controlEntryDao, JourneyConfigCache journeyConfigCache) {
     this.journeyDao = journeyDao;
     this.stageDao = stageDao;
     this.stageAnswerDao = stageAnswerDao;

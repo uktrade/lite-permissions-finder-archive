@@ -77,7 +77,7 @@ import triage.cache.JourneyConfigCache;
 import triage.cache.JourneyConfigCacheImpl;
 import triage.cache.StartupCachePopulationActor;
 import triage.config.JourneyConfigService;
-import triage.config.JourneyConfigServiceDaoImpl;
+import triage.config.JourneyConfigServiceImpl;
 import triage.session.SessionService;
 import triage.session.SessionServiceMockImpl;
 import triage.text.HtmlRenderService;
@@ -113,7 +113,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
     bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
-    bind(JourneyConfigService.class).to(JourneyConfigServiceDaoImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class);
     bind(RichTextParser.class).to(RichTextParserImpl.class);
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
     bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
