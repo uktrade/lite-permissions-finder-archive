@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 public class HtmlRenderServiceImpl implements HtmlRenderService {
 
   private static final String DEFINITION_TEXT = unescape(
-      "<a href='/view-definition/%s' data-definition-id='%s' target='_blank'>%s</a>");
+      "<a href='/view-definition/%s' data-definition-id='%s' title='View definition of &quot;%s&quot;' target='_blank'>%s</a>");
   private static final String CONTROL_ENTRY_TEXT = unescape(
-      "<a href='view-control-entry/%s' data-control-entry-id='%s' target='_blank'>%s</a>");
+      "<a href='view-control-entry/%s' data-control-entry-id='%s' title='View %s' target='_blank'>%s</a>");
   private static final Set<HtmlType> LEVELS = EnumSet.of(HtmlType.LIST_LEVEL_1, HtmlType.LIST_LEVEL_2, HtmlType.LIST_LEVEL_3);
   private static final Pattern PATTERN_LEVEL_1 = Pattern.compile("\\*(?!\\*)(.*?)\\n");
   private static final Pattern PATTERN_LEVEL_2 = Pattern.compile("\\*\\*(.*?)\\n");
@@ -27,12 +27,12 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
 
   @Override
   public String convertRichTextToHtml(RichText richText) {
-    return renderLists(addLinks(richText));
+    return convertNewlinesToBrs(renderLists(addLinks(richText)));
   }
 
   @Override
   public String convertRichTextToHtmlWithoutLinks(RichText richText) {
-    return renderLists(convertRichTextToPlainText(richText));
+    return convertNewlinesToBrs(renderLists(convertRichTextToPlainText(richText)));
   }
 
   @Override
@@ -44,6 +44,10 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     return str.replace("'", "\"");
   }
 
+  private String convertNewlinesToBrs(String input) {
+    return input.replace("\n", "<br>");
+  }
+
   private String addLinks(RichText richText) {
     StringBuilder stringBuilder = new StringBuilder();
     for (RichTextNode richTextNode : richText.getRichTextNodes()) {
@@ -52,13 +56,13 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
         String definitionId = definitionReferenceNode.getReferencedDefinitionId();
         //Strip leading/trailing quote characters from the original string when generating a link as per screen designs
         String textContent = StringUtils.strip(definitionReferenceNode.getTextContent(), "\"'");
-        String html = String.format(DEFINITION_TEXT, definitionId, definitionId, textContent);
+        String html = String.format(DEFINITION_TEXT, definitionId, definitionId, textContent, textContent);
         stringBuilder.append(html);
       } else if (richTextNode instanceof ControlEntryReferenceNode) {
         ControlEntryReferenceNode controlEntryReferenceNode = (ControlEntryReferenceNode) richTextNode;
         String controlEntryId = controlEntryReferenceNode.getControlEntryId();
         String textContent = controlEntryReferenceNode.getTextContent();
-        String html = String.format(CONTROL_ENTRY_TEXT, controlEntryId, controlEntryId, textContent);
+        String html = String.format(CONTROL_ENTRY_TEXT, controlEntryId, controlEntryId, textContent, textContent);
         stringBuilder.append(html);
       } else if (richTextNode instanceof SimpleTextNode) {
         stringBuilder.append(richTextNode.getTextContent());

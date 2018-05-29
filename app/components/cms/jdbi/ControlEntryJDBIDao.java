@@ -20,6 +20,10 @@ public interface ControlEntryJDBIDao {
   List<ControlEntry> getChildren(@Bind("parentId") long parentId);
 
   @Mapper(ControlEntryRSMapper.class)
+  @SqlQuery("SELECT * FROM control_entry")
+  List<ControlEntry> getAll();
+
+  @Mapper(ControlEntryRSMapper.class)
   @SqlQuery("SELECT * FROM control_entry WHERE control_code = :controlCode")
   ControlEntry getByControlCode(@Bind("controlCode") String controlCode);
 

@@ -345,7 +345,13 @@ public class Loader {
   }
 
   private void splitAndInsertNote(String noteText, NoteType noteType, NavigationLevel navigationLevel) {
-    long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
+    Long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
+
+    if (stageAnswerId == null) {
+      Logger.error("No stage answer id to associate note with, cell id {}", navigationLevel.getCellAddress());
+      return;
+    }
+
     StageAnswer stageAnswer = stageAnswerDao.getStageAnswer(stageAnswerId);
     Long stageId = stageAnswer.getGoToStageId();
 

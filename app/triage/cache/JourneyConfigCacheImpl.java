@@ -1,17 +1,23 @@
-package triage.config;
+package triage.cache;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
-import components.cms.dao.JourneyDao;
 import components.cms.dao.NoteDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
 import models.cms.ControlEntry;
-import models.cms.Journey;
 import models.cms.Note;
 import models.cms.Stage;
 import models.cms.StageAnswer;
 import org.apache.commons.lang.StringUtils;
+import triage.config.AnswerConfig;
+import triage.config.ControlEntryConfig;
+import triage.config.NoteConfig;
+import triage.config.OutcomeType;
+import triage.config.StageConfig;
 import triage.text.RichText;
 import triage.text.RichTextParser;
 
@@ -20,19 +26,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
+public class JourneyConfigCacheImpl implements JourneyConfigCache {
 
-  private final JourneyDao journeyDao;
   private final StageDao stageDao;
   private final StageAnswerDao stageAnswerDao;
   private final ControlEntryDao controlEntryDao;
   private final NoteDao noteDao;
   private final RichTextParser richTextParser;
 
+  private final LoadingCache<String, StageConfig> stageConfigCache =
+      CacheBuilder.newBuilder().build(CacheLoader.from(this::createStageConfigForId));
+  private final LoadingCache<String, ControlEntryConfig> controlEntryCache =
+      CacheBuilder.newBuilder().build(CacheLoader.from(this::createControlEntryConfigForId));
+  private final LoadingCache<String, List<NoteConfig>> noteCache =
+      CacheBuilder.newBuilder().build(CacheLoader.from(this::createNoteConfigsForStageId));
+
   @Inject
-  public JourneyConfigServiceDaoImpl(JourneyDao journeyDao, StageDao stageDao, StageAnswerDao stageAnswerDao,
-                                     ControlEntryDao controlEntryDao, NoteDao noteDao, RichTextParser richTextParser) {
-    this.journeyDao = journeyDao;
+  public JourneyConfigCacheImpl(StageDao stageDao, StageAnswerDao stageAnswerDao,
+                                ControlEntryDao controlEntryDao, NoteDao noteDao, RichTextParser richTextParser) {
     this.stageDao = stageDao;
     this.stageAnswerDao = stageAnswerDao;
     this.controlEntryDao = controlEntryDao;
@@ -41,16 +52,32 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
   }
 
   @Override
-  public String getInitialStageId() {
-    return journeyDao.getJourneysByJourneyName("MILITARY").stream()
-        .map(Journey::getInitialStageId)
-        .map(Object::toString)
-        .findFirst()
-        .orElse(null);
+  public StageConfig getStageConfigById(String stageId) {
+    return stageConfigCache.getUnchecked(stageId);
   }
 
   @Override
-  public StageConfig getStageConfigById(String stageId) {
+  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
+    return noteCache.getUnchecked(stageId);
+  }
+
+  @Override
+  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
+    return controlEntryCache.getUnchecked(controlEntryId);
+  }
+
+  @Override
+  public void flushCache() {
+    stageConfigCache.invalidateAll();
+    controlEntryCache.invalidateAll();
+    noteCache.invalidateAll();
+
+    stageConfigCache.cleanUp();
+    controlEntryCache.cleanUp();
+    noteCache.cleanUp();
+  }
+
+  private StageConfig createStageConfigForId(String stageId) {
     Stage stage = stageDao.getStage(Long.parseLong(stageId));
     if (stage == null) {
       return null;
@@ -59,29 +86,15 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
     }
   }
 
-  @Override
-  public AnswerConfig getStageAnswerForPreviousStage(String stageId) {
-    StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
-    if (stageAnswer != null) {
-      return createAnswerConfig(stageAnswer);
-    } else {
-      return null;
-    }
+  private ControlEntryConfig createControlEntryConfigForId(String controlEntryId) {
+    return createControlEntryConfig(controlEntryDao.getControlEntry(Long.parseLong(controlEntryId)));
   }
 
-  @Override
-  public StageConfig getStageConfigForPreviousStage(String stageId) {
-    Stage stage = stageDao.getByNextStageId(Long.parseLong(stageId));
-    if (stage == null) {
-      StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
-      if (stageAnswer != null) {
-        return createStageConfig(stageDao.getStage(stageAnswer.getParentStageId()));
-      } else {
-        return null;
-      }
-    } else {
-      return createStageConfig(stage);
-    }
+  private List<NoteConfig> createNoteConfigsForStageId(String stageId) {
+    return noteDao.getNotesForStageId(Long.parseLong(stageId))
+        .stream()
+        .map(this::createNoteConfig)
+        .collect(Collectors.toList());
   }
 
   private StageConfig createStageConfig(Stage stage) {
@@ -190,19 +203,6 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
         summaryDescription, parentControlEntryConfig, hasNestedChildren, controlEntry.isSelectable());
   }
 
-  @Override
-  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
-    return noteDao.getNotesForStageId(Long.parseLong(stageId))
-        .stream()
-        .map(this::createNoteConfig)
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
-    return createControlEntryConfig(controlEntryDao.getControlEntry(Long.parseLong(controlEntryId)));
-  }
-
   private NoteConfig createNoteConfig(Note note) {
     String stageId = note.getStageId().toString();
     RichText noteText = richTextParser.parse(note.getNoteText(), stageId);
@@ -226,20 +226,4 @@ public class JourneyConfigServiceDaoImpl implements JourneyConfigService {
     return new NoteConfig(note.getId().toString(), stageId, noteText, noteType);
   }
 
-  @Override
-  public List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig) {
-    return stageDao.getStagesForControlEntryId(Long.parseLong(controlEntryConfig.getId()))
-        .stream()
-        .map(e -> e.getId().toString())
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig) {
-    return controlEntryDao
-        .getChildControlEntries(Long.parseLong(controlEntryConfig.getId()))
-        .stream()
-        .map(this::createControlEntryConfig)
-        .collect(Collectors.toList());
-  }
 }
