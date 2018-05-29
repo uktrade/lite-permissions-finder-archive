@@ -57,11 +57,11 @@ public class HtmlRenderServiceImplTest {
 
   @Test
   public void controlEntryTest() {
-    ControlEntryReferenceNode controlEntryReferenceNode = new ControlEntryReferenceNode("This is control code M1A", "ML1");
+    ControlEntryReferenceNode controlEntryReferenceNode = new ControlEntryReferenceNode("This is control code ML1", "ML1");
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(controlEntryReferenceNode)));
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='view-control-entry/ML1' data-control-entry-id='ML1' target='_blank'>This is control code M1A</a>"));
+        "<a href='view-control-entry/ML1' data-control-entry-id='ML1' title='View This is control code ML1'  target='_blank'>This is control code ML1</a>"));
   }
 
   @Test
@@ -70,7 +70,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(definitionReferenceNode)));
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-definition/123' data-definition-id='123' target='_blank'>laser</a>"));
+        "<a href='/view-definition/123' data-definition-id='123' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"));
   }
 
   @Test
@@ -79,7 +79,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(definitionReferenceNode)));
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-definition/123' data-definition-id='123' target='_blank'>laser</a>"));
+        "<a href='/view-definition/123' data-definition-id='123' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"));
   }
 
   @Test
@@ -92,7 +92,7 @@ public class HtmlRenderServiceImplTest {
 
   @Test
   public void convertRichTextToHtmlTest() {
-    ControlEntryReferenceNode ml1 = new ControlEntryReferenceNode("Code M1A", "ML1");
+    ControlEntryReferenceNode ml1 = new ControlEntryReferenceNode("Code ML1", "ML1");
     ControlEntryReferenceNode ml2 = new ControlEntryReferenceNode("Code ML2", "ML2");
     DefinitionReferenceNode laser = new DefinitionReferenceNode("\"laser\"", "123", true);
     DefinitionReferenceNode radio = new DefinitionReferenceNode("radio", "abc", true);
@@ -104,12 +104,12 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(richTextNodes));
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='view-control-entry/ML1' data-control-entry-id='ML1' target='_blank'>Code M1A</a>" +
-            "<a href='/view-definition/123' data-definition-id='123' target='_blank'>laser</a>" +
+        "<a href='view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1' target='_blank'>Code ML1</a>" +
+            "<a href='/view-definition/123' data-definition-id='123' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>" +
             "This is text 1" +
             "<ul><li>1</li><ul><li>A</li><li>B</li><ul><li>(i)</li><li>(ii)</li></ul></ul></ul>" +
-            "<a href='view-control-entry/ML2' data-control-entry-id='ML2' target='_blank'>Code ML2</a>" +
-            "<a href='/view-definition/abc' data-definition-id='abc' target='_blank'>radio</a>" +
+            "<a href='view-control-entry/ML2' data-control-entry-id='ML2' title='View Code ML2' target='_blank'>Code ML2</a>" +
+            "<a href='/view-definition/abc' data-definition-id='abc' title='View definition of &quot;radio&quot;' target='_blank'>radio</a>" +
             "This is text 2" +
             "<ul><li>a</li><li>b</li><li>c</li></ul>"));
   }
