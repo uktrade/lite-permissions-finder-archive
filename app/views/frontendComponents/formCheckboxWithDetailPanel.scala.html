@@ -5,7 +5,7 @@
 @(field: Form.Field, prompt: String, isPromptHtml: Boolean = false, promptNewlineToBr: Boolean = false, contentAfterLabel: Option[Html] = None, inputId: String = "", inputName: String = "", inputValue: String = "true", detailPanelId: String, detailPanelPrompt: String)(detailPanelContent: Html)
 
 @detailPanelForCheckbox = {
-  @if(detailPanelContent.body.nonEmpty) {
+  @if(detailPanelContent.body.trim.nonEmpty) {
     @detailPanel(detailPanelId, if (StringUtils.isBlank(inputId)) field.getName.get + "-label" else inputId + "-label")(Html(detailPanelPrompt))(detailPanelContent)
   }
 }

@@ -1,3 +1,17 @@
+@mixin ul-has-bullets {
+  ul {
+    padding: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    list-style-type: disc;
+    padding-left: 20px;
+
+    li {
+      margin-bottom: 5px;
+    }
+  }
+}
+
 .heading-large .heading-secondary {
   @include core-19;
   padding-top: 0;
@@ -28,19 +42,9 @@
   }
 }
 
+
 label {
-
-  ul {
-    padding: 0;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    list-style-type: disc;
-    padding-left: 20px;
-
-    li {
-      margin-bottom: 5px;
-    }
-  }
+  @include ul-has-bullets;
 
   &>ul>li>ul {
     list-style-type: circle;
@@ -49,6 +53,10 @@ label {
   &>ul>li>ul>li>ul {
     list-style-type: square;
   }
+}
+
+.panel {
+  @include ul-has-bullets;
 }
 
 a[data-definition-id],
