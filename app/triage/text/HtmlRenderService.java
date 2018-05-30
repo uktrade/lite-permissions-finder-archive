@@ -13,7 +13,7 @@ public interface HtmlRenderService {
 
   String convertRichTextToPlainText(RichText richText);
 
-  String createRelatedItems(List<RichText> richTextList);
+  String createRelatedItemsHtml(List<RichText> richTextList);
 
   String createDefinitions(List<RichText> richTextList);
 }

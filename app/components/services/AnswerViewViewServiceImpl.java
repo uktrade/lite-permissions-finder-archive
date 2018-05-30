@@ -70,7 +70,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
       richTextList.addAll(subAnswerDefinitions);
     }
     String definitions = htmlRenderService.createDefinitions(richTextList);
-    String relatedItems = htmlRenderService.createRelatedItems(richTextList);
+    String relatedItems = htmlRenderService.createRelatedItemsHtml(richTextList);
     String moreInformation;
     if (!subAnswerViews.isEmpty()) {
       moreInformation = "";
@@ -96,7 +96,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
       richTextList.add(nestedContent);
     }
     String definitions = htmlRenderService.createDefinitions(richTextList);
-    String relatedItems = htmlRenderService.createRelatedItems(richTextList);
+    String relatedItems = htmlRenderService.createRelatedItemsHtml(richTextList);
     String nestedContent = createdNestedContent(answerConfig);
     String moreInformation;
     Optional<String> nextStageId = answerConfig.getNextStageId();

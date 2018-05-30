@@ -7,7 +7,6 @@ import models.cms.GlobalDefinition;
 import models.cms.LocalDefinition;
 import models.enums.HtmlType;
 import org.apache.commons.lang3.StringUtils;
-import utils.StreamUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,15 +56,15 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   }
 
   @Override
-  public String createRelatedItems(List<RichText> richTextList) {
+  public String createRelatedItemsHtml(List<RichText> richTextList) {
     return richTextList.stream()
         .map(RichText::getRichTextNodes)
         .flatMap(Collection::stream)
         .filter(richTextNode -> richTextNode instanceof ControlEntryReferenceNode)
         .map(richTextNode -> (ControlEntryReferenceNode) richTextNode)
-        .filter(StreamUtil.distinctByKey(ControlEntryReferenceNode::getControlEntryId))
         .sorted(Comparator.comparing(ControlEntryReferenceNode::getTextContent))
         .map(this::createControlEntryHtml)
+        .distinct()
         .collect(Collectors.joining(", "));
   }
 
@@ -77,19 +76,8 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
         .filter(richTextNode -> richTextNode instanceof DefinitionReferenceNode)
         .map(richTextNode -> (DefinitionReferenceNode) richTextNode)
         .sorted(Comparator.comparing(DefinitionReferenceNode::getTextContent))
-        .filter(StreamUtil.distinctByKey(node -> node.getReferencedDefinitionId() + node.isGlobal()))
-        .map(definitionReferenceNode -> {
-          String definitionId = definitionReferenceNode.getReferencedDefinitionId();
-          String text;
-          if (definitionReferenceNode.isGlobal()) {
-            GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(definitionId));
-            text = globalDefinition.getTerm();
-          } else {
-            LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(definitionId));
-            text = localDefinition.getTerm();
-          }
-          return String.format(DEFINITION_TEXT, definitionId, definitionId, text, text);
-        })
+        .map(this::createDefinitionHtml)
+        .distinct()
         .collect(Collectors.joining(", "));
   }
 
@@ -120,6 +108,19 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       }
     }
     return stringBuilder.toString();
+  }
+
+  private String createDefinitionHtml(DefinitionReferenceNode definitionReferenceNode) {
+    String definitionId = definitionReferenceNode.getReferencedDefinitionId();
+    String text;
+    if (definitionReferenceNode.isGlobal()) {
+      GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(definitionId));
+      text = globalDefinition.getTerm();
+    } else {
+      LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(definitionId));
+      text = localDefinition.getTerm();
+    }
+    return String.format(DEFINITION_TEXT, definitionId, definitionId, text, text);
   }
 
   private String createControlEntryHtml(ControlEntryReferenceNode controlEntryReferenceNode) {
