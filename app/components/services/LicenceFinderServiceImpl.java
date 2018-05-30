@@ -201,6 +201,8 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       // Check for single customer only TODO when we have single Customer user
       if (customers.size() > 0) {
         return Optional.of(customers.get(0).getCustomerId());
+      } else {
+        Logger.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
       }
     }
     return Optional.empty();
@@ -216,6 +218,8 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       // Check for single site only TODO when we have single Site user
       if (sites.size() > 0) {
         return Optional.of(sites.get(0).getSiteId());
+      } else {
+        Logger.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
       }
     }
     return Optional.empty();

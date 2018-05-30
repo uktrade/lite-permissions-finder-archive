@@ -66,23 +66,22 @@ public class LicenceFinderController extends Controller {
   private final OgelService ogelService;
   private final LicenceFinderService licenceFinderService;
 
+  public static final String DESTINATION_QUESTION = "Where is the final destination of your items?";
+  public static final String DESTINATION_MULTIPLE_QUESTION = "Will your items be received by anyone in a different country or territory, such as a consignee, before reaching their final destination?";
+
   public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
 
   private final String CONTROL_CODE_QUESTION = "What Control list entry describes your goods?";
   private final String GOODS_GOING_QUESTION = "Where are your goods going?";
-  private final String DESTINATION_QUESTION = "What is the final destination of your goods?";
-  private final String TERRITORY_QUESTION = "Will your items be received by anyone in a different country or territory, such as a consignee, before reaching their final destination?";
+
+  private final String FIRST_COUNTRY = "First country or territory that will receive the items";
   private final String REPAIR_QUESTION = "Are you exporting goods for or after repair or replacement?";
   private final String EXHIBITION_QUESTION = "Are you exporting goods for or after exhibition or demonstration?";
   private final String BEFORE_OR_LESS_QUESTION = "Were your goods manufactured before 1897, and worth less than £30,000?";
 
-  public static final int MIN_COUNTRIES = 1;
-  public static final int MAX_COUNTRIES = 4;
   public static final String DESTINATION_COUNTRY = "destinationCountry";
-  public static final String ROUTE_COUNTRIES = "routeCountries";
+  public static final String FIRST_CONSIGNEE_COUNTRY = "firstConsigneeCountry";
   public static final String MULTIPLE_COUNTRIES = "multipleCountries";
-  public static final String ADD_ROUTE_COUNTRY = "addRouteCountry";
-  public static final String REMOVE_ROUTE_COUNTRY = "removeRouteCountry";
   private static final String UNITED_KINGDOM = "CTRY0";
 
   @Inject
@@ -152,20 +151,11 @@ public class LicenceFinderController extends Controller {
    * 'Destination' page
    *******************************************************************************************/
   public CompletionStage<Result> renderDestinationForm() {
-    List<String> routeCountries = dao.getRouteCountries();
     DestinationForm form = new DestinationForm();
-
-    if (routeCountries.isEmpty()) {
-      routeCountries = Collections.singletonList("");
-      dao.saveRouteCountries(routeCountries);
-    }
-
     form.destinationCountry = dao.getDestinationCountry();
-    form.routeCountries = routeCountries;
-
+    form.firstConsigneeCountry = dao.getFirstConsigneeCountry();
     dao.getMultipleCountries().ifPresent(aBoolean -> form.multipleCountries = aBoolean);
-    return completedFuture(ok(destination.render(formFactory.form(DestinationForm.class).fill(form), getCountries(),
-        routeCountries.size(), getFieldOrder(form))));
+    return completedFuture(ok(destination.render(formFactory.form(DestinationForm.class).fill(form), getCountries(), getFieldOrder(form))));
   }
 
   public CompletionStage<Result> handleDestinationSubmit() {
@@ -175,26 +165,6 @@ public class LicenceFinderController extends Controller {
     DestinationForm form = destinationForm.get();
     List<CountryView> countries = getCountries();
 
-    if (form.addRouteCountry != null) {
-      if ("true".equals(form.addRouteCountry)) {
-        if (form.routeCountries.size() >= MAX_COUNTRIES) {
-          throw new FormStateException("Unhandled form state, number of " + ROUTE_COUNTRIES + " already at maximum value");
-        }
-        form.routeCountries.add("");
-        dao.saveRouteCountries(form.routeCountries);
-        return completedFuture(ok(destination.render(destinationForm.fill(form), countries, form.routeCountries.size(), getFieldOrder(form))));
-      }
-      throw new FormStateException("Unhandled value of " + ADD_ROUTE_COUNTRY + ": \"" + form.addRouteCountry + "\"");
-    } else if (form.removeRouteCountry != null) {
-      int removeIndex = Integer.parseInt(form.removeRouteCountry);
-      if (form.routeCountries.size() <= MIN_COUNTRIES) {
-        throw new FormStateException("Unhandled form state, number of " + ROUTE_COUNTRIES + " already at minimum value");
-      }
-      form.routeCountries.remove(removeIndex);
-      dao.saveRouteCountries(form.routeCountries);
-      return completedFuture(ok(destination.render(destinationForm.fill(form), countries, form.routeCountries.size(), getFieldOrder(form))));
-    }
-
     if (form.destinationCountry == null || form.destinationCountry.isEmpty()) {
       destinationForm.reject(DESTINATION_COUNTRY, "Enter a country or territory");
     }
@@ -203,17 +173,28 @@ public class LicenceFinderController extends Controller {
       destinationForm.reject(MULTIPLE_COUNTRIES, "Please answer whether your items will be received by anyone in a different country or territory");
     }
 
+    if(form.multipleCountries) {
+      if (form.firstConsigneeCountry == null || form.firstConsigneeCountry.isEmpty()) {
+        destinationForm.reject(FIRST_CONSIGNEE_COUNTRY, "Enter a country or territory");
+      }
+    }
+
     if (destinationForm.hasErrors()) {
-      return completedFuture(ok(destination.render(destinationForm, countries, form.routeCountries.size(), getFieldOrder(form))));
+      return completedFuture(ok(destination.render(destinationForm, countries, getFieldOrder(form))));
     }
 
     if (countries.stream().noneMatch(country -> country.getCountryRef().equals(form.destinationCountry))) {
       throw new FormStateException("Invalid value for " + DESTINATION_COUNTRY + " \"" + form.destinationCountry + "\"");
     }
 
-    dao.saveRouteCountries(form.routeCountries);
-    dao.saveDestinationCountry(form.destinationCountry);
+    if (form.multipleCountries && countries.stream().noneMatch(country -> country.getCountryRef().equals(form.firstConsigneeCountry))) {
+      throw new FormStateException("Invalid value for " + FIRST_CONSIGNEE_COUNTRY + " \"" + form.firstConsigneeCountry + "\"");
+    }
+
+    dao.saveFirstConsigneeCountry(form.firstConsigneeCountry);
     dao.saveMultipleCountries(form.multipleCountries);
+    dao.saveDestinationCountry(form.destinationCountry);
+
     return renderQuestionsForm();
   }
 
@@ -334,8 +315,6 @@ public class LicenceFinderController extends Controller {
     }
 
     String transactionId = transactionManager.getTransactionId();
-    String ogelId = dao.getOgelId();
-    String controlCode = dao.getControlCode();
 
     return licenceFinderService.registerOgel(transactionId).thenApplyAsync(conditionsResult ->
             ogelService.get(dao.getOgelId())
@@ -371,9 +350,7 @@ public class LicenceFinderController extends Controller {
     List<String> fields = new ArrayList<>();
     fields.add(DESTINATION_COUNTRY);
     fields.add(MULTIPLE_COUNTRIES);
-    for (int i = 0; i < form.routeCountries.size(); i++) {
-      fields.add(ROUTE_COUNTRIES + "[" + internalServerError() + "]");
-    }
+    fields.add(FIRST_CONSIGNEE_COUNTRY);
     return fields;
   }
 
@@ -404,7 +381,15 @@ public class LicenceFinderController extends Controller {
     views.add(new QuestionView(CONTROL_CODE_QUESTION, dao.getControlCode()));
     dao.getTradeType().ifPresent(tradeType -> views.add(new QuestionView(GOODS_GOING_QUESTION, tradeType.getTitle())));
     views.add(new QuestionView(DESTINATION_QUESTION, countryProvider.getCountry(dao.getDestinationCountry()).getCountryName()));
-    dao.getMultipleCountries().ifPresent(aBoolean -> views.add(new QuestionView(TERRITORY_QUESTION, aBoolean ? "Yes" : "No")));
+    dao.getMultipleCountries().ifPresent(aBoolean -> views.add(new QuestionView(DESTINATION_MULTIPLE_QUESTION, aBoolean ? "Yes" : "No")));
+
+    Optional<Boolean> optMultipleCountries = dao.getMultipleCountries();
+    if(optMultipleCountries.isPresent()) {
+      boolean isMultiple = optMultipleCountries.get();
+      if(isMultiple) {
+        views.add(new QuestionView(FIRST_COUNTRY, countryProvider.getCountry(dao.getFirstConsigneeCountry()).getCountryName()));
+      }
+    }
 
     Optional<LicenceFinderController.QuestionsForm> optForm = dao.getQuestionsForm();
     if (optForm.isPresent()) {
@@ -417,7 +402,16 @@ public class LicenceFinderController extends Controller {
   }
 
   private List<String> getExportRouteCountries() {
-    return CountryUtils.getDestinationCountries(dao.getDestinationCountry(), dao.getRouteCountries());
+    List<String> countries = new ArrayList<>();
+    String destination = dao.getDestinationCountry();
+    if(!StringUtils.isBlank(destination)) {
+      countries.add(destination);
+    }
+    String first = dao.getDestinationCountry();
+    if(!StringUtils.isBlank(first)) {
+      countries.add(first);
+    }
+    return countries;
   }
 
   /**
@@ -431,10 +425,8 @@ public class LicenceFinderController extends Controller {
 
   public static class DestinationForm {
     public String destinationCountry;
+    public String firstConsigneeCountry;
     public Boolean multipleCountries;
-    public List<String> routeCountries;
-    public String addRouteCountry;
-    public String removeRouteCountry;
   }
 
   public static class QuestionsForm {

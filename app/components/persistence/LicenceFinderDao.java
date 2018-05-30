@@ -1,6 +1,5 @@
 package components.persistence;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
@@ -8,8 +7,6 @@ import controllers.licencefinder.LicenceFinderController;
 import models.TradeType;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class LicenceFinderDao {
@@ -23,8 +20,8 @@ public class LicenceFinderDao {
   private static final String TRADE_TYPE = "tradeType";
   private static final String OGEL_QUESTIONS = "ogelQuestions";
   private static final String DESTINATION_COUNTRY = "destinationCountry";
+  private static final String FIRST_CONSIGNEE_COUNTRY = "firstConsigneeCountry";
   private static final String MULTIPLE_COUNTRIES = "multipleCountries";
-  private static final String ROUTE_COUNTRIES = "routeCountries";
   private static final String SUBMISSION_REQUEST_ID = "submissionRequest:id";
 
   private final CommonRedisDao dao;
@@ -99,6 +96,14 @@ public class LicenceFinderDao {
     return dao.readString(DESTINATION_COUNTRY);
   }
 
+  public void saveFirstConsigneeCountry(String arg) {
+    dao.writeString(FIRST_CONSIGNEE_COUNTRY, arg);
+  }
+
+  public String getFirstConsigneeCountry() {
+    return dao.readString(FIRST_CONSIGNEE_COUNTRY);
+  }
+
   public void saveTradeType(TradeType tradeType) {
     dao.writeString(TRADE_TYPE, tradeType.toString());
   }
@@ -122,15 +127,6 @@ public class LicenceFinderDao {
 
   public Optional<Boolean> getMultipleCountries() {
     return readBoolean(MULTIPLE_COUNTRIES);
-  }
-
-  public void saveRouteCountries(List<String> countries) {
-    dao.writeObject(ROUTE_COUNTRIES, countries);
-  }
-
-  public List<String> getRouteCountries() {
-    return dao.readObject(ROUTE_COUNTRIES, new TypeReference<List<String>>() {
-    }).orElse(new ArrayList<>());
   }
 
   /**
