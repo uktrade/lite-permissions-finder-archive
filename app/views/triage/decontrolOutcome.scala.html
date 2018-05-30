@@ -1,4 +1,5 @@
 @import models.view.BreadcrumbView
+@import models.view.AnswerView
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import views.html.triage.outcomePage
@@ -8,7 +9,7 @@
 @import views.html.common.page._
 
 @this()
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, breadcrumbView: BreadcrumbView, controlCodes: List[String])
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, breadcrumbView: BreadcrumbView, answerViews: List[AnswerView])
 
 @outcomePage("Item not listed", sessionId, resumeCode) {
 
@@ -48,8 +49,14 @@
         @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription!=null) {
           @Html(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription)
         }
-        @for(controlCode <- controlCodes) {
-         - @controlCode.<br>
+        @if(!answerViews.isEmpty) {
+          <ul class="list list-bullet">
+            @for(answerView <- answerViews) {
+              <li>
+                @Html(answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent)
+              </li>
+            }
+          </ul>
         }
     }(HtmlFormat.empty)
   }
