@@ -1,3 +1,5 @@
+@import "mixins";
+
 .control-code-breadcrumbs {
   @include core-16;
   width: 100%;
@@ -79,15 +81,27 @@
       border-color: $black;
     }
 
+    a.breadcrumb-change-link {
+      top: $gutter-one-third;
+      right: $gutter-one-third;
+    }
+
     .detail-box-content {
+      @include ul-has-bullets;
       padding: $gutter-one-third;
 
       &.has-change-link {
         padding-right: 4.5em;
       }
 
-      a.breadcrumb-change-link {
-        top: $gutter-one-third;
+      .outcome-detail-box-heading {
+        @include core-24;
+        margin-top: 0;
+        margin-bottom: 0.5em;
+      }
+
+      ul:last-child {
+        margin-bottom: 0;
       }
     }
 
@@ -145,6 +159,7 @@
       padding-top: 8px;
       padding-bottom: $gutter;
       padding-left: $gutter;
+      padding-right: 5em;
 
       &::before {
         width: 36px;
@@ -152,15 +167,19 @@
         left: -19px;
       }
 
-      @include media(mobile) {
-        padding-top: 10px;
-      }
-
       a.breadcrumb-change-link {
         top: 8px;
+        right: $gutter-half;
+      }
 
-        @include media(mobile) {
-          top: 8px;
+      &.detail-box {
+        a.breadcrumb-change-link {
+          top: 17px;
+          right: $gutter-half;
+        }
+
+        .detail-box-content {
+          padding: $gutter-half;
         }
       }
     }

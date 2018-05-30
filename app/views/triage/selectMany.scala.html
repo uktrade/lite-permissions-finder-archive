@@ -13,7 +13,7 @@
     @progressView.getCode&nbsp;
   }
   @if(progressView.getDescription != null) {
-    @progressView.getDescription
+    @Html(progressView.getDescription)
   }
 }{
   <p>@Html(explanatoryText)</p>
@@ -24,6 +24,12 @@
       }
       @formCheckboxWithDetailPanel(form("answers"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, isPromptHtml = true, inputId = "answers" + index, inputName = "answers[" + index + "]", inputValue = answerView.getValue, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information") {
         @Html(answerView.getMoreInformation)
+        @if(!answerView.getDefinitions.isEmpty) {
+         <p>Definitions: @Html(answerView.getDefinitions)</p>
+        }
+        @if(!answerView.getRelatedItems.isEmpty) {
+          <p>Related categories and items: @Html(answerView.getRelatedItems)</p>
+        }
       }
     }
   </div>

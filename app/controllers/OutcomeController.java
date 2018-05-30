@@ -154,13 +154,12 @@ public class OutcomeController extends Controller {
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,
                                         Set<String> answers) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    List<String> controlCodes = answerViewService.createAnswerViews(stageConfig).stream()
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig).stream()
         .filter(answer -> answers.contains(answer.getValue()))
-        .map(AnswerView::getPrompt)
         .collect(Collectors.toList());
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(decontrolOutcome.render(requestNlrForm, stageId, sessionId, resumeCode, breadcrumbView, controlCodes));
+    return ok(decontrolOutcome.render(requestNlrForm, stageId, sessionId, resumeCode, breadcrumbView, answerViews));
   }
 
   private Result redirectToIndex(String sessionId) {

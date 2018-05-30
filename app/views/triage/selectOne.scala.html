@@ -25,6 +25,12 @@
       }
       @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
         @Html(answerView.getMoreInformation)
+        @if(!answerView.getDefinitions.isEmpty) {
+          <p>Definitions: @Html(answerView.getDefinitions)</p>
+        }
+        @if(!answerView.getRelatedItems.isEmpty) {
+          <p>Related categories and items: @Html(answerView.getRelatedItems)</p>
+        }
       }
     }
   }
