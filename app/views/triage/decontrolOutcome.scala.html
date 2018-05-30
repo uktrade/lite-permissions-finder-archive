@@ -42,7 +42,7 @@
       }
     }
     @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getUrl) {
-      <p class="font-medium">Item is decontrolled</p>
+      <h2 class="outcome-detail-box-heading">Item is decontrolled</h2>
         @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText!=null) {
           <span class="bold">@Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText</span>
         }
@@ -50,7 +50,7 @@
           @Html(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription)
         }
         @if(!answerViews.isEmpty) {
-          <ul class="list list-bullet">
+          <ul>
             @for(answerView <- answerViews) {
               <li>
                 @Html(answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent)

@@ -1,0 +1,21 @@
+@mixin ul-has-bullets() {
+  ul {
+    padding: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    list-style-type: disc;
+    padding-left: 20px;
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    ul {
+      list-style-type: circle;
+
+      ul {
+        list-style-type: square;
+      }
+    }
+  }
+}
