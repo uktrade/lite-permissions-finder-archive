@@ -148,7 +148,10 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
     if (stageConfig.getQuestionType() == StageConfig.QuestionType.STANDARD) {
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.append("<ul>");
-      for (AnswerConfig answerConfig : stageConfig.getAnswerConfigs()) {
+      List<AnswerConfig> answerConfigs = stageConfig.getAnswerConfigs().stream()
+          .sorted(Comparator.comparing(AnswerConfig::getDisplayOrder))
+          .collect(Collectors.toList());
+      for (AnswerConfig answerConfig : answerConfigs) {
         stringBuilder.append("<li>");
         Optional<ControlEntryConfig> associatedControlEntryConfig = answerConfig.getAssociatedControlEntryConfig();
         if (associatedControlEntryConfig.isPresent()) {
