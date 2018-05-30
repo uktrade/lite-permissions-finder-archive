@@ -2,34 +2,38 @@ package triage.session;
 
 public class TriageSession {
 
-  public enum NlrType {
-    DECONTROL, NOT_FOUND
-  }
-
-  private final String sessionId;
+  private final String id;
+  private final long journeyId;
   private final String resumeCode;
+  private final String outcomeType;
+  private final String outcomeHtml;
 
-  //Mutually exclusive
-  private final NlrType nlrOutcome;
-  private final String ogelRegistrationId;
-
-  public TriageSession(String sessionId, String resumeCode) {
-    this.sessionId = sessionId;
+  public TriageSession(String id, long journeyId, String resumeCode, String outcomeType, String outcomeHtml) {
+    this.id = id;
+    this.journeyId = journeyId;
     this.resumeCode = resumeCode;
-    this.nlrOutcome = null;
-    this.ogelRegistrationId = null;
+    this.outcomeType = outcomeType;
+    this.outcomeHtml = outcomeHtml;
   }
 
-  public String getSessionId() {
-    return sessionId;
+  public String getId() {
+    return id;
+  }
+
+  public long getJourneyId() {
+    return journeyId;
   }
 
   public String getResumeCode() {
     return resumeCode;
   }
 
-  public boolean isLocked() {
-    return nlrOutcome != null && ogelRegistrationId != null;
+  public String getOutcomeType() {
+    return outcomeType;
+  }
+
+  public String getOutcomeHtml() {
+    return outcomeHtml;
   }
 
 }

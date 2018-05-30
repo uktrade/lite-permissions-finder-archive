@@ -6,8 +6,6 @@ public interface SessionService {
 
   TriageSession createNewSession();
 
-  //TODO - do sessionId and resume code need to be separate?
-
   TriageSession getSessionById(String id);
 
   TriageSession getSessionByResumeCode(String resumeCode);
@@ -18,11 +16,5 @@ public interface SessionService {
   void saveAnswersForStageId(String sessionId, String stageId, Set<String> answerIds);
 
   String getStageId(String sessionId);
-
-  //Exact requirements TBD
-  void saveNlrOutcome(String sessionId, TriageSession.NlrType nlrType, String pageHtml);
-
-  //Exact requirements TBD
-  void saveOgelOutcome(String sessionId, String ogelRegistrationId);
 
 }
