@@ -2,6 +2,8 @@ package components.services;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import controllers.routes;
+import models.enums.PageType;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.NoteView;
@@ -9,6 +11,7 @@ import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.text.HtmlRenderService;
+import utils.PageTypeUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,13 +34,21 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   }
 
   @Override
-  public BreadcrumbView createBreadcrumbView(String stageId) {
+  public BreadcrumbView createBreadcrumbView(String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
+    boolean decontrol = PageTypeUtil.getPageType(stageConfig) == PageType.DECONTROL;
     ControlEntryConfig controlEntryConfig = getControlEntryConfig(stageConfig);
-    List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(controlEntryConfig);
+
+    String decontrolUrl;
+    if (decontrol) {
+      decontrolUrl = createDecontrolUrl(sessionId, controlEntryConfig);
+    } else {
+      decontrolUrl = null;
+    }
+
+    List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig);
     List<NoteView> noteViews = createNoteViews(stageId);
-    boolean decontrol = stageConfig.getQuestionType() == StageConfig.QuestionType.DECONTROL;
-    return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol);
+    return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol, decontrolUrl);
   }
 
   @Override
@@ -56,26 +67,71 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   }
 
   @Override
-  public List<BreadcrumbItemView> createBreadcrumbItemViews(ControlEntryConfig controlEntryConfig) {
+  public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig) {
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
-      breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(controlEntryConfig));
+      breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig));
     }
-    breadcrumbItemViews.add(new BreadcrumbItemView(null, "UK Military List", null, new ArrayList<>()));
+    String url = routes.StageController.render(journeyConfigService.getInitialStageId(), sessionId).toString();
+    breadcrumbItemViews.add(new BreadcrumbItemView(null, "UK Military List", url, new ArrayList<>()));
     return Lists.reverse(breadcrumbItemViews);
   }
 
-  private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(ControlEntryConfig controlEntryConfig) {
+  private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(String sessionId,
+                                                                        ControlEntryConfig controlEntryConfig) {
     String controlCode = controlEntryConfig.getControlCode();
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     List<NoteView> noteViews = createNoteViews(stageIds);
     String description = renderService.getSummaryDescription(controlEntryConfig);
-    BreadcrumbItemView breadcrumbItemView = new BreadcrumbItemView(controlCode, description, controlCode, noteViews);
+    String url = createChangeUrl(sessionId, stageIds);
+    BreadcrumbItemView breadcrumbItemView = new BreadcrumbItemView(controlCode, description, url, noteViews);
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     breadcrumbItemViews.add(breadcrumbItemView);
     Optional<ControlEntryConfig> parentControlEntry = controlEntryConfig.getParentControlEntry();
-    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(parent)));
+    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, parent)));
     return breadcrumbItemViews;
+  }
+
+  private String createChangeUrl(String sessionId, List<String> stageIds) {
+    Optional<StageConfig> stageConfigOptional = stageIds.stream()
+        .map(journeyConfigService::getStageConfigById)
+        .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == StageConfig.QuestionType.STANDARD)
+        .findAny()
+        .map(stageConfigIterate -> journeyConfigService.getStageConfigForPreviousStage(stageConfigIterate.getStageId()))
+        .map(this::getNonDecontrolStageConfig);
+    if (stageConfigOptional.isPresent()) {
+      StageConfig stageConfig = stageConfigOptional.get();
+      return routes.StageController.render(stageConfig.getStageId(), sessionId).toString();
+    } else {
+      return null;
+    }
+  }
+
+  private StageConfig getNonDecontrolStageConfig(StageConfig stageConfig) {
+    if (stageConfig.getQuestionType() == StageConfig.QuestionType.DECONTROL) {
+      StageConfig parentStageConfig = journeyConfigService.getStageConfigForPreviousStage(stageConfig.getStageId());
+      if (parentStageConfig != null) {
+        return getNonDecontrolStageConfig(parentStageConfig);
+      } else {
+        return null;
+      }
+    } else {
+      return stageConfig;
+    }
+  }
+
+  private String createDecontrolUrl(String sessionId, ControlEntryConfig controlEntryConfig) {
+    List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
+    StageConfig stageConfig = stageIds.stream()
+        .map(journeyConfigService::getStageConfigById)
+        .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == StageConfig.QuestionType.DECONTROL)
+        .findAny()
+        .orElse(null);
+    if (stageConfig != null) {
+      return routes.StageController.render(stageConfig.getStageId(), sessionId).toString();
+    } else {
+      return null;
+    }
   }
 
   private List<NoteView> createNoteViews(List<String> stageIds) {
