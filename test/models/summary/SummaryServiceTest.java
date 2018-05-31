@@ -73,8 +73,8 @@ public class SummaryServiceTest {
     CountryView countryView = new CountryView(DESTINATION_COUNTRY, "countryName", new ArrayList<>());
 
     OgelQuestionsController.OgelQuestionsForm ogelQuestionsForm = new OgelQuestionsController.OgelQuestionsForm();
-    ogelQuestionsForm.forExhibitionDemonstration = "true";
-    ogelQuestionsForm.forRepairReplacement = "true";
+    ogelQuestionsForm.forRepair = "true";
+    ogelQuestionsForm.forExhibition = "true";
 
     when(cpm.addParamsToCall(any(Call.class))).thenReturn("http://some-url");
     when(dao.getApplicationCode()).thenReturn(APPLICATION_CODE);
