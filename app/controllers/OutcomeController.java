@@ -71,7 +71,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderItemNotFound(form, controlEntryConfig, sessionId);
     } else {
-      return ok("TODO: Login, show form");
+      return redirect(routes.NlrController.registerNlr(sessionId));
     }
   }
 
@@ -129,7 +129,7 @@ public class OutcomeController extends Controller {
         if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
           return renderOutcomeDecontrol(form, stageId, sessionId, answers);
         } else {
-          return ok("TODO: Login, show form");
+          return redirect(routes.NlrController.registerNlr(sessionId));
         }
       }
     }
