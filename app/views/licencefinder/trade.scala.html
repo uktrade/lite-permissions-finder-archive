@@ -31,21 +31,14 @@
           Finding results for moving goods described in Control list entry @controlCode:
         </p>
 
-        <div class="form-group">
-          @formRadio(form("tradeType"), "<span class=\"heading-small\">From the UK to another country</span><br>This is known as an export",
-            TradeType.EXPORT.toString, true, "label-trade-type")
-        </div>
+        @formRadio(form("tradeType"), "<span class=\"bold\">From the UK to another country</span><br>This is known as an export",
+          TradeType.EXPORT.toString, true, "label-trade-type")
 
-        <div class="form-group">
-          @formRadio(form("tradeType"), "<span class=\"heading-small\">Between non-UK countries</span><br>This is known as trafficking or brokering",
-            TradeType.BROKERING.toString, true, "label-trade-type")
-        </div>
+        @formRadio(form("tradeType"), "<span class=\"bold\">Between non-UK countries</span><br>This is known as trafficking or brokering",
+          TradeType.BROKERING.toString, true, "label-trade-type")
 
-        <div class="form-group">
-          @formRadio(form("tradeType"), "<span class=\"heading-small\">Through the UK, from one non-UK country to another</span><br>This is known as transhipment",
-            TradeType.TRANSSHIPMENT.toString, true, "label-trade-type")
-        </div>
-
+        @formRadio(form("tradeType"), "<span class=\"bold\">Through the UK, from one non-UK country to another</span><br>This is known as transhipment",
+          TradeType.TRANSSHIPMENT.toString, true, "label-trade-type")
       }
 
     </fieldset>
