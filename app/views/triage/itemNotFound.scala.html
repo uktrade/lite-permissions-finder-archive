@@ -8,9 +8,9 @@
 @import views.html.common.page._
 
 @this()
-@(form: Form[_], controlEntryId: String, sessionId: String, breadcrumbItemsViews: List[BreadcrumbItemView])
+@(form: Form[_], controlEntryId: String, sessionId: String, resumeCode: String, breadcrumbItemsViews: List[BreadcrumbItemView])
 
-@outcomePage("Item Not Found", sessionId) {
+@outcomePage("Item Not Found", sessionId, resumeCode) {
 
   @twoThirdsColumn{
     @errorSummary(form)
@@ -41,7 +41,7 @@
       }
     }
     @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbItemsViews).getUrl) {
-      <p class="font-medium">Item has none of the controlled characteristics</p>
+      <span class="outcome-detail-box-heading">Item has none of the controlled characteristics</span>
     }(HtmlFormat.empty)
   }
 

@@ -1,6 +1,7 @@
 logs
 target
 /.idea
+/.sbtopts
 /.idea_modules
 /.classpath
 /.project

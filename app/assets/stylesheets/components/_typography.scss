@@ -1,3 +1,5 @@
+@import "mixins";
+
 .heading-large .heading-secondary {
   @include core-19;
   padding-top: 0;
@@ -28,16 +30,34 @@
   }
 }
 
+
 label {
-  .list {
-    margin-bottom: 5px;
+  @include ul-has-bullets;
+}
+
+.panel {
+  @include ul-has-bullets;
+}
+
+a[data-definition-id],
+a[data-control-entry-id] {
+  &:link,
+  &:visited {
+    color: $link-colour;
+    text-decoration: none;
+    display: inline-block;
+    line-height: 0.7em;
+    border-bottom: 1.2px dotted $link-colour;
+    cursor: help;
   }
 
-  &>ul.list>li>ul.list {
-    list-style-type: circle;
+  &:hover {
+    color: $link-hover-colour;
+    border-bottom-color: $link-hover-colour;
   }
 
-  &>ul.list>li>ul.list>li>ul.list {
-    list-style-type: square;
+  &:active {
+    color: $link-active-colour;
+    border-bottom-color: $link-active-colour;
   }
 }

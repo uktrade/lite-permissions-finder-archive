@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
+import controllers.licencefinder.LicenceFinderController;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -71,14 +72,15 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderItemNotFound(form, controlEntryConfig, sessionId);
     } else {
-      return ok("TODO: Login, show form");
+      return redirect(routes.NlrController.registerNlr(sessionId));
     }
   }
 
   private Result renderItemNotFound(Form<RequestNlrForm> requestNlrFormForm, ControlEntryConfig controlEntryConfig,
                                     String sessionId) {
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
-    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, breadcrumbItemViews));
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbItemViews));
   }
 
   public Result outcomeListed(String controlEntryId, String sessionId) {
@@ -93,7 +95,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderOutcomeListed(form, controlEntryConfig, sessionId);
     } else {
-      return redirect(controllers.licencefinder.routes.TestEntryController.testEntry(controlEntryConfig.getControlCode()));
+      return redirect(controllers.licencefinder.routes.LicenceFinderController.testEntry(controlEntryConfig.getControlCode()));
     }
   }
 
@@ -115,6 +117,7 @@ public class OutcomeController extends Controller {
 
   public Result handleOutcomeDecontrolSubmit(String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
@@ -127,14 +130,15 @@ public class OutcomeController extends Controller {
         if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
           return renderOutcomeDecontrol(form, stageId, sessionId, answers);
         } else {
-          return ok("TODO: Login, show form");
+          return redirect(routes.NlrController.registerNlr(sessionId));
         }
       }
     }
   }
 
   public Result outcomeDropout(String sessionId) {
-    return ok(dropout.render(sessionId));
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(dropout.render(sessionId, resumeCode));
   }
 
   private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig,
@@ -143,18 +147,19 @@ public class OutcomeController extends Controller {
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
     List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig);
-    return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, breadcrumbViews, controlCode, description, subAnswerViews));
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbViews, controlCode, description, subAnswerViews));
   }
 
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,
                                         Set<String> answers) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    List<String> controlCodes = answerViewService.createAnswerViews(stageConfig).stream()
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig).stream()
         .filter(answer -> answers.contains(answer.getValue()))
-        .map(AnswerView::getPrompt)
         .collect(Collectors.toList());
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
-    return ok(decontrolOutcome.render(requestNlrForm, stageId, sessionId, breadcrumbView, controlCodes));
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(decontrolOutcome.render(requestNlrForm, stageId, sessionId, resumeCode, breadcrumbView, answerViews));
   }
 
   private Result redirectToIndex(String sessionId) {

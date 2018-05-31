@@ -3,12 +3,14 @@ package controllers;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
+import components.auth.SamlAuthorizer;
+import components.common.auth.SpireSAML2Client;
 import components.common.journey.JourneyManager;
 import components.persistence.PermissionsFinderDao;
 import exceptions.FormStateException;
 import journey.Events;
-import journey.JourneyDefinitionNames;
 import models.TradeType;
+import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -19,6 +21,7 @@ import views.html.tradeType;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
+@Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class TradeTypeController extends Controller {
 
   private final JourneyManager journeyManager;
@@ -38,15 +41,16 @@ public class TradeTypeController extends Controller {
   public CompletionStage<Result> renderForm() {
     TradeTypeForm formTemplate = new TradeTypeForm();
     Optional<TradeType> tradeTypeOptional = permissionsFinderDao.getTradeType();
+
     tradeTypeOptional.ifPresent((e) -> formTemplate.tradeType = e.toString());
-    return completedFuture(ok(tradeType.render(formFactory.form(TradeTypeForm.class).fill(formTemplate))));
+    return completedFuture(ok(tradeType.render(formFactory.form(TradeTypeForm.class).fill(formTemplate), permissionsFinderDao.getControlCodeForRegistration())));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<TradeTypeForm> form = formFactory.form(TradeTypeForm.class).bindFromRequest();
-
+    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
     if (form.hasErrors()) {
-      return completedFuture(ok(tradeType.render(form)));
+      return completedFuture(ok(tradeType.render(form, controlCode)));
     }
 
     String tradeTypeParam = form.get().tradeType;
@@ -54,7 +58,7 @@ public class TradeTypeController extends Controller {
 
     permissionsFinderDao.saveTradeType(tradeType);
     // TODO this is a placeholder
-    permissionsFinderDao.saveControlCodeForRegistration("ML12b");
+    //permissionsFinderDao.saveControlCodeForRegistration("ML12b");
     switch (tradeType) {
       case EXPORT:
         permissionsFinderDao.saveSourceCountry(UNITED_KINGDOM);

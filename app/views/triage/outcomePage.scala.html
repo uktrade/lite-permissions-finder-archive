@@ -1,9 +1,9 @@
 @import views.html.util._
 @import views.html.common.page.twoThirdsColumn
 
-@(title: String, sessionId: String, showSharingOptions: Boolean = true)(content: Html)
+@(title: String, sessionId: String, resumeCode: String, showSharingOptions: Boolean = true)(content: Html)
 
-@standardPage(title.toString, None, twoThirdsColumn = false) {
+@standardPage(title.toString, None, twoThirdsColumn = false, resumeCode = resumeCode) {
 
 } {
   <div class="grid-row outcome-page-header">

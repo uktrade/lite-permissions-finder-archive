@@ -4,7 +4,7 @@
 @import views.html.common.state._
 @import models.TradeType
 
-@(form: Form[_])
+@(form: Form[_], controlCode: String)
 @question = {Where are your items going?}
 
 @standardPage(question.toString, Some(heading(question.toString))) {
@@ -26,6 +26,12 @@
       <legend class="visually-hidden">@question</legend>
 
       @fieldContainer(form("tradeType")) {
+
+
+        <p>
+          Finding results for moving goods described in Control list entry @controlCode:
+        </p>
+
 
         <div class="form-group">
           @formRadio(form("tradeType"), "<span class=\"heading-small\">From the UK to another country</span><br>This is known as an export",

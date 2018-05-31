@@ -6,10 +6,10 @@
   @if(content.body.trim.nonEmpty) {
     <div class="detail-box-content @if(!StringUtils.isBlank(changeUrl)){ has-change-link }">
       @content
-      @if(!StringUtils.isBlank(changeUrl)) {
-        <a href="@changeUrl" class="breadcrumb-change-link">Change</a>
-      }
     </div>
+    @if(!StringUtils.isBlank(changeUrl)) {
+      <a href="@changeUrl" class="breadcrumb-change-link">Change</a>
+    }
   }
   @if(secondaryContent.body.trim.nonEmpty) {
     <div class="detail-box-secondary-content">@secondaryContent</div>

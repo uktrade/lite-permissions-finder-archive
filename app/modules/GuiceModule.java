@@ -17,6 +17,12 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import components.auth.SamlModule;
+import components.client.CustomerService;
+import components.client.CustomerServiceImpl;
+import components.client.OgelService;
+import components.client.OgelServiceImpl;
+import components.client.PermissionsService;
+import components.client.PermissionsServiceImpl;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
@@ -32,9 +38,11 @@ import components.cms.dao.impl.NoteDaoImpl;
 import components.cms.dao.impl.StageAnswerDaoImpl;
 import components.cms.dao.impl.StageDaoImpl;
 import components.common.CommonGuiceModule;
+import components.common.auth.SpireAuthManager;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
 import components.common.client.CountryServiceClient;
+import components.common.client.userservice.UserServiceClientBasicAuth;
 import components.common.journey.JourneyContextParamProvider;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneySerialiser;
@@ -50,10 +58,14 @@ import components.services.AnswerViewService;
 import components.services.AnswerViewViewServiceImpl;
 import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
+import components.services.LicenceFinderService;
+import components.services.LicenceFinderServiceImpl;
 import components.services.ProgressViewService;
 import components.services.ProgressViewServiceImpl;
 import components.services.RenderService;
 import components.services.RenderServiceImpl;
+import filters.common.JwtRequestFilter;
+import filters.common.JwtRequestFilterConfig;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
 import models.summary.SummaryService;
@@ -69,8 +81,15 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
+import triage.cache.CachePopulationService;
+import triage.cache.CachePopulationServiceImpl;
+import triage.cache.CacheValidator;
+import triage.cache.CacheValidatorImpl;
+import triage.cache.JourneyConfigCache;
+import triage.cache.JourneyConfigCacheImpl;
+import triage.cache.StartupCachePopulationActor;
 import triage.config.JourneyConfigService;
-import triage.config.JourneyConfigServiceDaoImpl;
+import triage.config.JourneyConfigServiceImpl;
 import triage.session.SessionService;
 import triage.session.SessionServiceMockImpl;
 import triage.text.HtmlRenderService;
@@ -106,10 +125,18 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
     bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
-    bind(JourneyConfigService.class).to(JourneyConfigServiceDaoImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class);
     bind(RichTextParser.class).to(RichTextParserImpl.class);
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
     bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
+    bind(CacheValidator.class).to(CacheValidatorImpl.class).asEagerSingleton();
+    bind(JourneyConfigCache.class).to(JourneyConfigCacheImpl.class).asEagerSingleton();
+    bind(CachePopulationService.class).to(CachePopulationServiceImpl.class);
+    bind(StartupCachePopulationActor.class).asEagerSingleton();
+    bind(LicenceFinderService.class).to(LicenceFinderServiceImpl.class);
+    bind(PermissionsService.class).to(PermissionsServiceImpl.class);
+    bind(CustomerService.class).to(CustomerServiceImpl.class);
+    bind(OgelService.class).to(OgelServiceImpl.class);
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));
@@ -166,6 +193,25 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("basicAuthRealm"))
         .to(config.getString("basicAuth.realm"));
 
+    bindConstant().annotatedWith(Names.named("permissionsServiceAddress")).to(config.getString("permissionsService.address"));
+    bindConstant().annotatedWith(Names.named("permissionsServiceTimeout")).to(config.getInt("permissionsService.timeout"));
+
+    bindConstant().annotatedWith(Names.named("customerServiceAddress")).to(config.getString("customerService.address"));
+    bindConstant().annotatedWith(Names.named("customerServiceTimeout")).to(config.getInt("customerService.timeout"));
+
+    bindConstant().annotatedWith(Names.named("userServiceAddress")).to(config.getString("userService.address"));
+    bindConstant().annotatedWith(Names.named("userServiceTimeout")).to(config.getString("userService.timeout"));
+    bindConstant().annotatedWith(Names.named("userServiceCredentials")).to(config.getString("userService.credentials"));
+
+    bindConstant().annotatedWith(Names.named("userPrivilegeKey")).to(config.getString("userPrivilegeService.key"));
+    bindConstant().annotatedWith(Names.named("userPrivilegeIssuer")).to(config.getString("userPrivilegeService.issuer"));
+    bindConstant().annotatedWith(Names.named("cacheExpireAfterWriteMinutes")).to(config.getString("userPrivilegeService.cacheExpireAfterWriteMinutes"));
+
+    bindConstant().annotatedWith(Names.named("dashboardUrl")).to(config.getString("dashboard.url"));
+    bindConstant().annotatedWith(Names.named("permissionsFinderUrl")).to(config.getString("permissions.finder.url"));
+    bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
+
+
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
     // CMS dao's
@@ -211,10 +257,13 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   @Named("permissionsFinderDaoHashCommon")
-  public CommonRedisDao providePermissionsFinderDaoHashCommon(
-      @Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, RedissonClient redissonClient,
-      TransactionManager transactionManager) {
-    return new CommonRedisDao(new StatelessRedisDao(keyConfig, redissonClient), transactionManager);
+  public CommonRedisDao providePermissionsFinderDaoHashCommon(StatelessRedisDao statelessRedisDao, TransactionManager transactionManager) {
+    return new CommonRedisDao(statelessRedisDao, transactionManager);
+  }
+
+  @Provides
+  public StatelessRedisDao provideStatelessRedisDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, RedissonClient redissonClient) {
+    return new StatelessRedisDao(keyConfig, redissonClient);
   }
 
   @Provides
@@ -276,6 +325,35 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Provides
   public ContextParamManager provideContextParamManager() {
     return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new ApplicationCodeContextParamProvider());
+  }
+
+
+  @Provides
+  @Singleton
+  @Named("JwtRequestFilter")
+  public JwtRequestFilter provideJwtRequestFilterConfig(
+                                                        @com.google.inject.name.Named("userServiceAddress") String userServiceAddress,
+                                                        @com.google.inject.name.Named("userServiceTimeout") int userServiceTimeout,
+                                                        @com.google.inject.name.Named("userServiceCredentials") String userServiceCredentials,
+                                                        WSClient wsClient, HttpExecutionContext httpExecutionContext,
+                                                        SpireAuthManager spireAuthManager, @com.google.inject.name.Named("jwtSharedSecret") String jwtSharedSecret) {
+    UserServiceClientBasicAuth basicAuthClient = new UserServiceClientBasicAuth(userServiceAddress, userServiceTimeout, userServiceCredentials, wsClient, httpExecutionContext);
+
+    return new JwtRequestFilter(spireAuthManager, new JwtRequestFilterConfig(jwtSharedSecret, "lite-permissions-finder"), basicAuthClient);
+  }
+
+  @Provides
+  @Singleton
+  @Named("JwtRequestAuthFilter")
+  JwtRequestFilter provideJwtRequestFilter(@com.google.inject.name.Named("userPrivilegeKey") String key,
+                                           @com.google.inject.name.Named("userPrivilegeIssuer") String issuer,
+                                           SpireAuthManager spireAuthManager,
+                                           @com.google.inject.name.Named("userServiceAddress") String userServiceAddress,
+                                           @com.google.inject.name.Named("userServiceTimeout") int userServiceTimeout,
+                                           @com.google.inject.name.Named("userServiceCredentials") String userServiceCredentials,
+                                           WSClient wsClient, HttpExecutionContext httpExecutionContext) {
+    UserServiceClientBasicAuth basicAuthClient = new UserServiceClientBasicAuth(userServiceAddress, userServiceTimeout, userServiceCredentials, wsClient, httpExecutionContext);
+    return new JwtRequestFilter(spireAuthManager, new JwtRequestFilterConfig(key, issuer), basicAuthClient);
   }
 
   @Provides

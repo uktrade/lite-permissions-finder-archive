@@ -1,0 +1,32 @@
+@import models.view.RegisterResultView
+@import uk.gov.bis.lite.ogel.api.view.OgelFullView
+@import org.apache.commons.lang3.StringUtils
+@import util._
+@import views.html.ogel._
+
+@(view: RegisterResultView, ogel: OgelFullView, dashboardUrl: String)
+@standardPage(view.getTitle, Some(heading(view.getTitle))) {
+
+}{
+
+  @if(view.hasRegistrationRef) {
+    <p>
+      <a id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(view.getRegistrationRef)"
+      class="link underlined ogel-link" target="_blank">View your licence<span class="visually-hidden"> (opens in a new tab)</span></a>
+    </p>
+  } else {
+    @if(StringUtils.isNoneBlank(ogel.getLink)) {
+      <p class="bold-small">
+        <a class="external" href="@ogel.getLink" rel="external" target="_blank">
+          View your licence<span class="visually-hidden"> (opens in a new tab)</span></a>
+      </p>
+    } else {
+      <p class="bold-small">Please check your dashboard to confirm that your Ogel registration has completed successfully
+      </p>
+    }
+  }
+
+  <p>
+    <a href="@dashboardUrl" target="_blank">Go to My Dashboard</a>
+  </p>
+}

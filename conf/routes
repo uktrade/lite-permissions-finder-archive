@@ -26,8 +26,6 @@ GET     /continue-application                 controllers.ContinueApplicationCon
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
 
-GET     /licence-finder-test/:controlCode     controllers.licencefinder.TestEntryController.testEntry(controlCode)
-
 GET     /destination-country                  controllers.DestinationCountryController.renderForm
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
@@ -58,6 +56,10 @@ GET     /register-for-open-general-export-licence     controllers.ogel.OgelSumma
 
 POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
 
+GET     /register-to-use-ogel     controllers.ogel.OgelRegisterToUseController.renderForm
+
+POST    /register-to-use-ogel     controllers.ogel.OgelRegisterToUseController.handleSubmit
+
 GET     /trade-type                    controllers.TradeTypeController.renderForm
 
 POST    /trade-type                    controllers.TradeTypeController.handleSubmit
@@ -77,6 +79,25 @@ POST    /summary                              controllers.SummaryController.hand
 GET     /summary-continue                     controllers.SummaryController.renderFormContinue
 
 POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
+
+# Licence finder
+GET     /licencefinder/test/:controlCode     controllers.licencefinder.LicenceFinderController.testEntry(controlCode)
+GET     /licencefinder/trade                 controllers.licencefinder.LicenceFinderController.renderTradeForm
+POST    /licencefinder/trade                 controllers.licencefinder.LicenceFinderController.handleTradeSubmit
+GET     /licencefinder/destination           controllers.licencefinder.LicenceFinderController.renderDestinationForm
+POST    /licencefinder/destination           controllers.licencefinder.LicenceFinderController.handleDestinationSubmit
+GET     /licencefinder/questions             controllers.licencefinder.LicenceFinderController.renderQuestionsForm
+POST    /licencefinder/questions             controllers.licencefinder.LicenceFinderController.handleQuestionsSubmit
+GET     /licencefinder/results               controllers.licencefinder.LicenceFinderController.renderResultsForm
+POST    /licencefinder/results               controllers.licencefinder.LicenceFinderController.handleResultsSubmit
+GET     /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.renderRegisterToUseForm
+POST    /licencefinder/register-to-use       controllers.licencefinder.LicenceFinderController.handleRegisterToUseSubmit
+
+GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
+
++ nocsrf
+POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(transactionId)
+
 
 # JavaScript routes
 # TODO RE-ENABLE JS ROUTES HERE
@@ -122,9 +143,14 @@ POST    /onboarding             controllers.OnboardingController.handleSubmit(se
 
 + nocsrf
 PUT     /cms/spreadsheet                      controllers.cms.UploadController.spreadsheetUpload
++ nocsrf
+PUT     /cms/populate-caches                  controllers.cms.CacheController.populateCaches
 
 GET     /cms/dummy/test-all                   controllers.cms.DummyController.testAll
 GET     /cms/dummy/test-journey               controllers.cms.DummyController.createTestJourney
+
+GET     /register-nlr             controllers.NlrController.registerNlr(sessionId)
+GET     /view-nlr-letter          controllers.NlrController.viewNlrLetter(sessionId, resumeCode)
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
 GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalGlobalDefinitionController.renderGlobalDefinition(globalDefinitionId)
