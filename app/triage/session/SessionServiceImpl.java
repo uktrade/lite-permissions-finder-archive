@@ -53,17 +53,17 @@ public class SessionServiceImpl implements SessionService {
   }
 
   @Override
-  public Set<String> getAnswersForStageId(String sessionId, String stageId) {
+  public Set<String> getAnswerIdsForStageId(String sessionId, String stageId) {
     SessionStage sessionStage = sessionStageDao.getSessionStage(sessionId, Long.parseLong(stageId));
     if (sessionStage != null) {
-      return new HashSet<>(sessionStage.getAnswers());
+      return new HashSet<>(sessionStage.getAnswerIds());
     } else {
       return new HashSet<>();
     }
   }
 
   @Override
-  public void saveAnswersForStageId(String sessionId, String stageId, Set<String> answerIds) {
+  public void saveAnswerIdsForStageId(String sessionId, String stageId, Set<String> answerIds) {
     sessionStageDao.insert(new SessionStage(sessionId, Long.parseLong(stageId), new ArrayList<>(answerIds)));
   }
 

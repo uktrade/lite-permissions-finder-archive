@@ -1,10 +1,10 @@
 CREATE TABLE session (
-  id           TEXT   NOT NULL UNIQUE,
-  journey_id   BIGINT NOT NULL,
-  resume_code  TEXT   NOT NULL UNIQUE,
+  id           TEXT      NOT NULL UNIQUE,
+  timestamp    TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  journey_id   BIGINT    NOT NULL,
+  resume_code  TEXT      NOT NULL UNIQUE,
   outcome_type TEXT,
-  outcome_html TEXT,
-  FOREIGN KEY (journey_id) REFERENCES journey(id)
+  outcome_html TEXT
 );
 
 CREATE TABLE session_stage (

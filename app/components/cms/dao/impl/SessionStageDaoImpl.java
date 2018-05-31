@@ -18,9 +18,9 @@ public class SessionStageDaoImpl implements SessionStageDao {
 
   @Override
   public void insert(SessionStage sessionStage) {
-    sessionStageJDBIDao.insert(sessionStage.getSessionId(),
+    sessionStageJDBIDao.insertOrUpdate(sessionStage.getSessionId(),
         sessionStage.getStageId(),
-        JsonUtils.convertListToJson(sessionStage.getAnswers()));
+        JsonUtils.convertListToJson(sessionStage.getAnswerIds()));
   }
 
   @Override

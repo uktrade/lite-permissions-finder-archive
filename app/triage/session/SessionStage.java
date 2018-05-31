@@ -6,12 +6,12 @@ public class SessionStage {
 
   private final String sessionId;
   private final long stageId;
-  private final List<String> answers;
+  private final List<String> answerIds;
 
-  public SessionStage(String sessionId, long stageId, List<String> answers) {
+  public SessionStage(String sessionId, long stageId, List<String> answerIds) {
     this.sessionId = sessionId;
     this.stageId = stageId;
-    this.answers = answers;
+    this.answerIds = answerIds;
   }
 
   public String getSessionId() {
@@ -22,8 +22,8 @@ public class SessionStage {
     return stageId;
   }
 
-  public List<String> getAnswers() {
-    return answers;
+  public List<String> getAnswerIds() {
+    return answerIds;
   }
 
 }

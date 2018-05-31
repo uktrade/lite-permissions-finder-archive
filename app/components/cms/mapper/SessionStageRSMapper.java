@@ -15,8 +15,8 @@ public class SessionStageRSMapper implements ResultSetMapper<SessionStage> {
   public SessionStage map(int index, ResultSet r, StatementContext ctx) throws SQLException {
     String sessionId = r.getString("session_id");
     long stageId = r.getLong("stage_id");
-    List<String> answers = JsonUtils.convertJsonToList(r.getString("answer_json"));
-    return new SessionStage(sessionId, stageId, answers);
+    List<String> answerIds = JsonUtils.convertJsonToList(r.getString("answer_json"));
+    return new SessionStage(sessionId, stageId, answerIds);
   }
 
 }

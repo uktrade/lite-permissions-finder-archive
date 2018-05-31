@@ -12,9 +12,9 @@ public interface SessionStageJDBIDao {
   @SqlUpdate("INSERT INTO SESSION_STAGE (SESSION_ID,  STAGE_ID, ANSWER_JSON) VALUES " +
       "                                (:sessionId,  :stageId, :answerJson) " +
       "ON CONFLICT (SESSION_ID,  STAGE_ID) DO UPDATE SET ANSWER_JSON = :answerJson")
-  void insert(@Bind("sessionId") String sessionId,
-              @Bind("stageId") long stageId,
-              @Bind("answerJson") String answerJson);
+  void insertOrUpdate(@Bind("sessionId") String sessionId,
+                      @Bind("stageId") long stageId,
+                      @Bind("answerJson") String answerJson);
 
   @RegisterMapper(SessionStageRSMapper.class)
   @SqlQuery("SELECT * FROM SESSION_STAGE WHERE session_id = :sessionId AND stage_id = :stageId")
