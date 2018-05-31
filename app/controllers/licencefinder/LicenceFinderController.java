@@ -317,7 +317,7 @@ public class LicenceFinderController extends Controller {
     return licenceFinderService.registerOgel(transactionId).thenApplyAsync(conditionsResult ->
             ogelService.get(dao.getOgelId())
                 .thenApplyAsync(ogelFullView -> {
-                  RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ")" );
+                  RegisterResultView view = new RegisterResultView("Your registration for Open general export licence (" + ogelFullView.getName() + ") has been received. Please go to your dashboard for confirmation." );
                   Optional<String> regRef = licenceFinderService.getRegistrationReference(transactionId);
                   if(regRef.isPresent()) {
                     view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());

@@ -42,11 +42,11 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   }
 
   /**
-   * Attempts to read callback reference 3 times (with 2 second wait for each)
+   * Attempts to read callback reference set number times/period
    */
   public Optional<String> getRegistrationReference(String transactionId) {
     int count = 0;
-    while(count < 3) {
+    while(count < 5) {
       Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
       if (optRegisterLicence.isPresent()) {
         RegisterLicence registerLicence = optRegisterLicence.get();
@@ -55,7 +55,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
           return Optional.of(ref);
         }
       }
-      ThreadUtil.sleep(2000);
+      ThreadUtil.sleep(1500);
       count++;
     }
     return Optional.empty();
