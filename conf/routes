@@ -126,4 +126,5 @@ PUT     /cms/spreadsheet                      controllers.cms.UploadController.s
 GET     /cms/dummy/test-all                   controllers.cms.DummyController.testAll
 GET     /cms/dummy/test-journey               controllers.cms.DummyController.createTestJourney
 
-GET     /modal-content/control-entry/:controlEntryId      controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
+GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
+GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalGlobalDefinitionController.renderGlobalDefinition(globalDefinitionId)
