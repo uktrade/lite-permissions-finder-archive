@@ -45,7 +45,7 @@
 
               <div class="form-group">
 
-              @formRadio(form("chosenOgel"), "<span class=\"heading-small\">OGEL (" + ogel.getName + ")</span>", ogel.getId, true, "label-trade-type")
+              @formRadio(form("chosenOgel"), "<span class=\"bold\">OGEL (" + ogel.getName + ")</span>", ogel.getId, true, "label-trade-type")
               @detailPanel("detailPanel"){Read more information} {
                 <p>
                   @ogel.getUsageSummary().iterator().next()
@@ -54,7 +54,7 @@
               </div>
             }
 <hr>
-            @formRadio(form("chosenOgel"), "<span class=\"heading-small\">None of the above applies fully to my situation</span>", LicenceFinderController.NONE_ABOVE_KEY, true, "label-trade-type")
+            @formRadio(form("chosenOgel"), "<span class=\"bold\">None of the above applies fully to my situation</span>", LicenceFinderController.NONE_ABOVE_KEY, true, "label-trade-type")
         }
 
       </fieldset>
