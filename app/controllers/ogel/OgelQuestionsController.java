@@ -30,81 +30,78 @@ import java.util.stream.Collectors;
 public class OgelQuestionsController {
 
   private final FormFactory formFactory;
-  private final PermissionsFinderDao permissionsFinderDao;
+  private final PermissionsFinderDao dao;
   private final JourneyManager journeyManager;
-  private final VirtualEUOgelClient virtualEUOgelClient;
-  private final OgelConditionsServiceClient ogelConditionsServiceClient;
-  private final HttpExecutionContext httpExecutionContext;
+  private final VirtualEUOgelClient virtualEuClient;
+  private final OgelConditionsServiceClient conditionsClient;
+  private final HttpExecutionContext httpContext;
 
   @Inject
   public OgelQuestionsController(JourneyManager journeyManager,
                                  FormFactory formFactory,
-                                 PermissionsFinderDao permissionsFinderDao,
-                                 VirtualEUOgelClient virtualEUOgelClient,
-                                 OgelConditionsServiceClient ogelConditionsServiceClient,
-                                 HttpExecutionContext httpExecutionContext) {
+                                 PermissionsFinderDao dao,
+                                 VirtualEUOgelClient virtualEuClient,
+                                 OgelConditionsServiceClient conditionsClient,
+                                 HttpExecutionContext httpContext) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
-    this.permissionsFinderDao = permissionsFinderDao;
-    this.virtualEUOgelClient = virtualEUOgelClient;
-    this.ogelConditionsServiceClient = ogelConditionsServiceClient;
-    this.httpExecutionContext = httpExecutionContext;
+    this.dao = dao;
+    this.virtualEuClient = virtualEuClient;
+    this.conditionsClient = conditionsClient;
+    this.httpContext = httpContext;
   }
 
   public Result renderForm() {
-    Optional<OgelQuestionsForm> templateFormOptional = permissionsFinderDao.getOgelQuestionsForm();
-    OgelQuestionsForm templateForm = templateFormOptional.isPresent() ? templateFormOptional.get() : new OgelQuestionsForm();
-    return ok(ogelQuestions.render(formFactory.form(OgelQuestionsForm.class).fill(templateForm)));
+    Optional<OgelQuestionsForm> optForm = dao.getOgelQuestionsForm();
+    return ok(ogelQuestions.render(formFactory.form(OgelQuestionsForm.class).fill(optForm.orElseGet(OgelQuestionsForm::new))));
   }
 
   public CompletionStage<Result> handleSubmit() {
     Form<OgelQuestionsForm> form = formFactory.form(OgelQuestionsForm.class).bindFromRequest();
     if (form.hasErrors()) {
       return completedFuture(ok(ogelQuestions.render(form)));
-    }
-    else {
+    } else {
       OgelQuestionsForm ogelQuestionsForm = form.get();
-      permissionsFinderDao.saveOgelQuestionsForm(ogelQuestionsForm);
+      dao.saveOgelQuestionsForm(ogelQuestionsForm);
       return getNextStage();
     }
   }
 
   private CompletionStage<Result> getNextStage() {
-    String controlCode = permissionsFinderDao.getControlCodeForRegistration();
-    String sourceCountry = permissionsFinderDao.getSourceCountry();
-    List<String> destinationCountries = CountryUtils.getDestinationCountries(
-        permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
+    String controlCode = dao.getControlCodeForRegistration();
+    String sourceCountry = dao.getSourceCountry();
+    List<String> destinationCountries = CountryUtils.getDestinationCountries(dao.getFinalDestinationCountry(), dao.getThroughDestinationCountries());
 
-    return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry, destinationCountries)
+    return virtualEuClient.sendServiceRequest(controlCode, sourceCountry, destinationCountries)
         .thenApplyAsync((result) -> {
           if (result.isVirtualEu()) {
-            permissionsFinderDao.saveOgelId(result.getOgelId());
-            return ogelConditionsServiceClient.get(result.getOgelId(), controlCode)
+            dao.saveOgelId(result.getOgelId());
+            return conditionsClient.get(result.getOgelId(), controlCode)
                 .thenApplyAsync(conditionsResult -> {
                   if (!conditionsResult.isEmpty) {
-                    return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
-                        VirtualEUOgelStage.VIRTUAL_EU_WITH_CONDITIONS);
+                    return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE, VirtualEUOgelStage.VIRTUAL_EU_WITH_CONDITIONS);
+                  } else {
+                    return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE, VirtualEUOgelStage.VIRTUAL_EU_WITHOUT_CONDITIONS);
                   }
-                  else {
-                    return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
-                        VirtualEUOgelStage.VIRTUAL_EU_WITHOUT_CONDITIONS);
-                  }
-                }, httpExecutionContext.current()).thenCompose(Function.identity());
+                }, httpContext.current()).thenCompose(Function.identity());
           }
           else {
             return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE, VirtualEUOgelStage.NO_VIRTUAL_EU);
           }
-        }, httpExecutionContext.current())
+        }, httpContext.current())
         .thenCompose(Function.identity());
   }
 
   public static class OgelQuestionsForm {
 
     @Required(message = "Select whether you are exporting goods for or after repair or replacement")
-    public String forRepairReplacement;
+    public String forRepair;
 
     @Required(message = "Select whether you are exporting goods for or after exhibition or demonstration")
-    public String forExhibitionDemonstration;
+    public String forExhibition;
+
+    @Required(message = "Select whether your goods were manufactured before 1897, or are worth less than £30,000")
+    public String beforeOrLess;
 
     public static List<String> formToActivityTypes(Optional<OgelQuestionsForm> ogelQuestionsFormOptional) {
       // TODO account for TECH
@@ -117,10 +114,10 @@ public class OgelQuestionsController {
 
       if (ogelQuestionsFormOptional.isPresent()) {
         OgelQuestionsForm ogelQuestionsForm = ogelQuestionsFormOptional.get();
-        if ("false".equals(ogelQuestionsForm.forRepairReplacement)) {
+        if ("false".equals(ogelQuestionsForm.forRepair)) {
           activityMap.remove(OgelActivityType.REPAIR);
         }
-        if ("false".equals(ogelQuestionsForm.forExhibitionDemonstration)) {
+        if ("false".equals(ogelQuestionsForm.forExhibition)) {
           activityMap.remove(OgelActivityType.EXHIBITION);
         }
       }

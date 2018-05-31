@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.common.journey.BackLink;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneyStage;
-import controllers.licencefinder.TestEntryController;
 import controllers.routes;
 import models.VirtualEUOgelStage;
 
@@ -34,7 +33,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     ogelStages();
 
     defineJourney(JourneyDefinitionNames.EXPORT, tradeType);
-    defineJourney(TestEntryController.JOURNEY_NAME, tradeType);
+    //defineJourney(TestEntryController.JOURNEY_NAME, tradeType);
 
     // TODO control code hard coded, link back to tradeType for now
     defineJourney(JourneyDefinitionNames.CHANGE_CONTROL_CODE, tradeType,
@@ -58,6 +57,9 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
     JourneyStage ogelSummary = defineStage("ogelSummary",
         controllers.ogel.routes.OgelSummaryController.renderForm());
 
+    JourneyStage ogelRegisterToUse = defineStage("ogelRegisterToUse",
+        controllers.ogel.routes.OgelRegisterToUseController.renderForm());
+
     atStage(destinationCountries)
         .onEvent(Events.DESTINATION_COUNTRIES_SELECTED)
         .then(moveTo(ogelQuestions));
@@ -71,7 +73,7 @@ public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
     atStage(ogelResults)
         .onEvent(Events.OGEL_SELECTED)
-        .then(moveTo(ogelSummary));
+        .then(moveTo(ogelRegisterToUse));
 
     atStage(ogelResults)
         .onEvent(Events.OGEL_CONDITIONS_APPLY)

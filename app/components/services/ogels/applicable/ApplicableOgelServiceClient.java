@@ -5,6 +5,7 @@ import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
+import play.Logger;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -40,6 +41,10 @@ public class ApplicableOgelServiceClient {
 
   public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry,
                                                        List<String> destinationCountries, List<String> activityTypes) {
+
+    Logger.info("controlCode: " + controlCode);
+    Logger.info("sourceCountry: " + sourceCountry);
+
 
     WSRequest req = wsClient.url(webServiceUrl)
         .setAuth(credentials)

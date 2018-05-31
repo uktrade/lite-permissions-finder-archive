@@ -1,0 +1,63 @@
+@import uk.gov.bis.lite.ogel.api.view.OgelFullView
+@import controllers.ogel.OgelRegisterToUseController.OgelRegisterToUseForm
+@import org.apache.commons.lang3.StringUtils
+@import views.html.common.form.formCheckbox
+@import util._
+@import views.html.common.page._
+@import views.html.common.state._
+@import views.html.ogel._
+@import java.util.Map
+@import models.view.AnswerView
+@import utils.common.ViewUtil
+
+@(form: Form[OgelRegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean, answerViews: List[AnswerView])
+
+@pageHeading = @{
+  "Register to use Open general export licence (" + ogel.getName + ")"
+}
+
+@standardPage(pageHeading, Some(heading(pageHeading))){
+  @errorSummary(form)
+}{
+
+  <p>
+    Please read the conditions below in full and confirm that the OGEL is appropriate for your export.
+  </p>
+
+  @if(StringUtils.isNoneBlank(ogel.getLink)) {
+    <p class="bold-small">
+      <a class="external" href="@ogel.getLink" rel="external" target="_blank">View the full text for this Open Licence<span class="visually-hidden"> (opens in a new tab)</span></a>
+    </p>
+  }
+
+  <div class="form-group">
+    <dl class="answer-summary">
+      <table class="answer-summary-sub-table">
+        <tbody>
+          @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
+            <tr>
+              <td>@answerView.getPrompt</td>
+              <td>@answerView.getValue</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </dl>
+  </div>
+
+  <form action="@controllers.ogel.routes.OgelRegisterToUseController.handleSubmit()" method="POST">
+
+    @contextFormParams()
+
+
+    <div class="form-group">
+      @formCheckbox(form("confirmRead"), "I confirm that I have read the OGEL and its criteria in full.")
+
+      @formCheckbox(form("confirmComplies"), "I confirm that my export complies with the OGEL criteria stated.")
+    </div>
+
+    <button type="submit" class="button">Continue</button>
+
+  </form>
+
+}

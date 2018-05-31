@@ -28,7 +28,7 @@
 
     @countrySelect(form(DestinationCountryController.FINAL_DESTINATION_COUNTRY_FIELD_NAME), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(countryDetailPanel))
 
-    @formRadioBoolean(form(DestinationCountryController.ITEM_THROUGH_MULTIPLE_COUNTRIES_FIELD_NAME), Html("Will your items be received by anyone in a different country or territory, such as a consignee, before reaching their final destination?"))
+    @formRadioBoolean(form(DestinationCountryController.MULTIPLE_COUNTRIES), Html("Will your items be received by anyone in a different country or territory, such as a consignee, before reaching their final destination?"))
 
     <p class="js-hidden">
       <span class="bold-medium">If yes, please add the country below</span>

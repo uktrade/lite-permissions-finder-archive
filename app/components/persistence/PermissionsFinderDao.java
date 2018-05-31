@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
 import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
-import models.GoodsType;
 import models.TradeType;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +22,7 @@ public class PermissionsFinderDao {
   public static final String TRADE_TYPE = "tradeType";
   public static final String OGEL_QUESTIONS = "ogelQuestions";
   public static final String OGEL_CONDITIONS_APPLY = "ogelConditionsApply";
-  public static final String ITEM_THROUGH_MULTIPLE_COUNTRIES = "itemThroughMultipleCountries";
+  public static final String MULTIPLE_COUNTRIES = "multipleCountries";
   public static final String FINAL_DESTINATION_COUNTRY = "finalDestinationCountry";
   public static final String THROUGH_DESTINATION_COUNTRY_LIST = "throughDestinationCountryList";
   public static final String OGEL_REGISTRATION_SERVICE_TRANSACTION_EXISTS = "ogelRegistrationServiceTransactionExists";
@@ -111,12 +110,12 @@ public class PermissionsFinderDao {
     return readBoolean(OGEL_CONDITIONS_APPLY);
   }
 
-  public void saveItemThroughMultipleCountries(boolean itemThroughMultipleCountries) {
-    writeBoolean(ITEM_THROUGH_MULTIPLE_COUNTRIES, itemThroughMultipleCountries);
+  public void saveMultipleCountries(boolean multipleCountries) {
+    writeBoolean(MULTIPLE_COUNTRIES, multipleCountries);
   }
 
-  public Optional<Boolean> getItemThroughMultipleCountries() {
-    return readBoolean(ITEM_THROUGH_MULTIPLE_COUNTRIES);
+  public Optional<Boolean> getMultipleCountries() {
+    return readBoolean(MULTIPLE_COUNTRIES);
   }
 
   public void saveFinalDestinationCountry(String finalDestinationCountry) {
