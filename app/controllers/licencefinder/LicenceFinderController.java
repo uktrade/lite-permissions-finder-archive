@@ -171,9 +171,7 @@ public class LicenceFinderController extends Controller {
 
     if (form.multipleCountries == null) {
       destinationForm.reject(MULTIPLE_COUNTRIES, "Please answer whether your items will be received by anyone in a different country or territory");
-    }
-
-    if(form.multipleCountries) {
+    } else if(form.multipleCountries) {
       if (form.firstConsigneeCountry == null || form.firstConsigneeCountry.isEmpty()) {
         destinationForm.reject(FIRST_CONSIGNEE_COUNTRY, "Enter a country or territory");
       }

@@ -41,7 +41,9 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     this.statelessRedisDao = statelessRedisDao;
   }
 
-
+  /**
+   * Attempts to read callback reference 3 times (with 2 second wait for each)
+   */
   public Optional<String> getRegistrationReference(String transactionId) {
     int count = 0;
     while(count < 3) {
@@ -50,60 +52,29 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
         RegisterLicence registerLicence = optRegisterLicence.get();
         String ref = registerLicence.getRegistrationReference();
         if (!StringUtils.isBlank(ref)) {
-          Logger.info("Have ref");
           return Optional.of(ref);
         }
-        Logger.info("No ref");
-        ThreadUtil.sleep(2000);
-        count++;
       }
+      ThreadUtil.sleep(2000);
+      count++;
     }
     return Optional.empty();
   }
 
   public SubmissionStatus getSubmissionStatus(String transactionId) {
-
-
     return SubmissionStatus.COMPLETED;
-    /*
-    Optional<Boolean> isSuccess = submissionDao.getSubmissionRequestSuccess(transactionId);
-    if (isSuccess.isPresent()) {
-      if (isSuccess.get()) {
-        Optional<CallbackView.Result> result = submissionDao.getCallbackResult(transactionId);
-        if (result.isPresent()) {
-          return SubmissionStatus.COMPLETED;
-        } else {
-          return SubmissionStatus.SUBMITTED;
-        }
-      } else {
-        return SubmissionStatus.FAILED;
-      }
-    } else {
-      return SubmissionStatus.PENDING;
-    }
-    */
   }
 
   public long getSecondsSinceRegistrationSubmission(String transactionId) {
     return 0L;
-    /*
-    Optional<Instant> submissionDateTime = submissionDao.getSubmissionRequestDateTime(transactionId);
-    if (submissionDateTime.isPresent()) {
-      return Duration.between(submissionDateTime.get(), Instant.now()).getSeconds();
-    } else {
-      return 0L;
-    }
-    */
   }
 
   public Optional<CallbackView.Result> getCallbackResult(String transactionId) {
     return Optional.empty();
-    //return submissionDao.getCallbackResult(transactionId);
   }
 
   public String getRegistrationRef(String transactionId) {
     return "";
-    //return submissionDao.getRegistrationRef(transactionId);
   }
 
   /**

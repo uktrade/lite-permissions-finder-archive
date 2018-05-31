@@ -140,7 +140,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));
-    install(new RedisDaoGuiceModule());
     install(new RedisSessionStoreModule(environment, config));
 
     // searchService
@@ -194,8 +193,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("basicAuthRealm"))
         .to(config.getString("basicAuth.realm"));
 
-    bindConstant().annotatedWith(Names.named("permissionsServiceAddress")).to(config.getString("permissionRegistrationService.address"));
-    bindConstant().annotatedWith(Names.named("permissionsServiceTimeout")).to(config.getInt("permissionRegistrationService.timeout"));
+    bindConstant().annotatedWith(Names.named("permissionsServiceAddress")).to(config.getString("permissionsService.address"));
+    bindConstant().annotatedWith(Names.named("permissionsServiceTimeout")).to(config.getInt("permissionsService.timeout"));
 
     bindConstant().annotatedWith(Names.named("customerServiceAddress")).to(config.getString("customerService.address"));
     bindConstant().annotatedWith(Names.named("customerServiceTimeout")).to(config.getInt("customerService.timeout"));
@@ -207,8 +206,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("userPrivilegeKey")).to(config.getString("userPrivilegeService.key"));
     bindConstant().annotatedWith(Names.named("userPrivilegeIssuer")).to(config.getString("userPrivilegeService.issuer"));
     bindConstant().annotatedWith(Names.named("cacheExpireAfterWriteMinutes")).to(config.getString("userPrivilegeService.cacheExpireAfterWriteMinutes"));
-
-    bindConstant().annotatedWith(Names.named("sharedSecret")).to(config.getString("application.sharedSecret"));
 
     bindConstant().annotatedWith(Names.named("dashboardUrl")).to(config.getString("dashboard.url"));
     bindConstant().annotatedWith(Names.named("permissionsFinderUrl")).to(config.getString("permissions.finder.url"));

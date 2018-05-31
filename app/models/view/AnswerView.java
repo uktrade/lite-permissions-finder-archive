@@ -25,17 +25,6 @@ public class AnswerView {
     this.relatedItems = relatedItems;
   }
 
-  public AnswerView(String prompt, String value, List<SubAnswerView> subAnswerViews) {
-    this.prompt = prompt;
-    this.value = value;
-    this.dividerAbove = false;
-    this.subAnswerViews = subAnswerViews;
-    this.nestedContent = null;
-    this.moreInformation = null;
-    this.definitions = null;
-    this.relatedItems = null;
-  }
-
   public String getPrompt() {
     return prompt;
   }

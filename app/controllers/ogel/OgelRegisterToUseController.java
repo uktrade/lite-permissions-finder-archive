@@ -10,7 +10,6 @@ import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
-import models.TradeType;
 import models.view.AnswerView;
 import models.view.RegisterResultView;
 import play.Logger;
@@ -24,7 +23,6 @@ import views.html.ogel.ogelRegisterToUse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -126,6 +124,7 @@ public class OgelRegisterToUseController {
 
   private List<AnswerView> getLicenceFinderAnswers() {
     List<AnswerView> answerViews = new ArrayList<>();
+    /*
     answerViews.add(new AnswerView(CONTROL_CODE_QUESTION, dao.getControlCodeForRegistration(), null));
     Optional<TradeType> optTradeType =  dao.getTradeType();
 
@@ -149,6 +148,7 @@ public class OgelRegisterToUseController {
       answerViews.add(new AnswerView(EXHIBITION_QUESTION, form.forExhibition.equals("true") ? "Yes" : "No", null));
       answerViews.add(new AnswerView(BEFORE_OR_LESS_QUESTION, form.beforeOrLess.equals("true") ? "Yes" : "No", null));
     }
+    */
 
     return answerViews;
   }
