@@ -7,4 +7,6 @@ public interface SessionStageDao {
   void insert(SessionStage sessionStage);
 
   SessionStage getSessionStage(String sessionId, long stageId);
+
+  void deleteAllSessionStages();
 }

@@ -28,4 +28,9 @@ public class SessionStageDaoImpl implements SessionStageDao {
     return sessionStageJDBIDao.getSessionStage(sessionId, stageId);
   }
 
+  @Override
+  public void deleteAllSessionStages() {
+    sessionStageJDBIDao.truncate();
+  }
+
 }

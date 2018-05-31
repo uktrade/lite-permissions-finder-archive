@@ -20,4 +20,7 @@ public interface SessionStageJDBIDao {
   @SqlQuery("SELECT * FROM SESSION_STAGE WHERE session_id = :sessionId AND stage_id = :stageId")
   SessionStage getSessionStage(@Bind("sessionId") String sessionId, @Bind("stageId") long stageId);
 
+  @SqlUpdate("DELETE FROM SESSION_STAGE")
+  void truncate();
+
 }

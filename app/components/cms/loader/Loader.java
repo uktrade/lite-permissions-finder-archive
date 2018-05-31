@@ -6,6 +6,7 @@ import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
+import components.cms.dao.SessionStageDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
 import components.cms.parser.ParserResult;
@@ -47,6 +48,7 @@ public class Loader {
   private final NoteDao noteDao;
   private final StageAnswerDao stageAnswerDao;
   private final StageDao stageDao;
+  private final SessionStageDao sessionStageDao;
 
   @Inject
   public Loader(
@@ -56,7 +58,8 @@ public class Loader {
       LocalDefinitionDao localDefinitionDao,
       NoteDao noteDao,
       StageAnswerDao stageAnswerDao,
-      StageDao stageDao) {
+      StageDao stageDao,
+      SessionStageDao sessionStageDao) {
     this.controlEntryDao = controlEntryDao;
     this.globalDefinitionDao = globalDefinitionDao;
     this.journeyDao = journeyDao;
@@ -64,6 +67,7 @@ public class Loader {
     this.noteDao = noteDao;
     this.stageAnswerDao = stageAnswerDao;
     this.stageDao = stageDao;
+    this.sessionStageDao = sessionStageDao;
   }
 
   public void load(ParserResult parserResult) {
@@ -400,6 +404,7 @@ public class Loader {
   }
 
   private void clearDown() {
+    sessionStageDao.deleteAllSessionStages();
     localDefinitionDao.deleteAllLocalDefinitions();
     globalDefinitionDao.deleteAllGlobalDefinitions();
     noteDao.deleteAllNotes();
