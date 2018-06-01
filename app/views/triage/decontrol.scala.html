@@ -1,3 +1,4 @@
+@import org.apache.commons.lang3.StringUtils
 @import models.view.AnswerView
 @import models.view.BreadcrumbView
 @import views.html.triage.subAnswers
@@ -9,8 +10,16 @@
 @triagePage(form, stageId, sessionId, resumeCode, title, breadcrumbView){
   @controlCode: Checking against decontrols
 }{
-  <p>Select all that apply.</p>
-  <p>@Html(explanatoryText)</p>
+  <p class="form-hint">
+    Decontrols describe items not controlled under the UK Strategic Export Control Lists. Select all that apply.
+  </p>
+  <p>
+    @if(StringUtils.isNotBlank(explanatoryText)) {
+      @Html(explanatoryText)
+    } else {
+      This control list entry does not control:
+    }
+  </p>
   <div class="form-group">
     @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
       @if(answerView.isDividerAbove) {
