@@ -25,7 +25,7 @@ public class ModalGlobalDefinitionController {
 
   public Result renderGlobalDefinition(String globalDefinitionId) {
     GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(globalDefinitionId));
-    RichText richDefinitionText = richTextParser.parse(globalDefinition.getDefinitionText(), null);
+    RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
     String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText);
     return ok(modalGlobalDefinition.render(globalDefinition.getTerm(), definitionTextHtml));
   }
