@@ -14,7 +14,7 @@ public interface LocalDefinitionJDBIDao {
   LocalDefinition get(@Bind("id") long id);
 
   @Mapper(LocalDefinitionRSMapper.class)
-  @SqlQuery("SELECT * FROM local_definition WHERE term = :term AND control_entry_id = :controlEntryId")
+  @SqlQuery("SELECT * FROM local_definition WHERE LOWER(term) = LOWER(:term) AND control_entry_id = :controlEntryId")
   LocalDefinition getByTerm(@Bind("term") String term, @Bind("controlEntryId") long controlEntryId);
 
   @SqlQuery(

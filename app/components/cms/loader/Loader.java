@@ -308,7 +308,7 @@ public class Loader {
       for (String localDefinitionStr : localDefinitionStrs) {
         int firstIdx = localDefinitionStr.indexOf('\'');
         int secondIdx = localDefinitionStr.indexOf('\'', firstIdx + 1);
-        String term = localDefinitionStr.substring(firstIdx + 1, secondIdx).toLowerCase();
+        String term = localDefinitionStr.substring(firstIdx + 1, secondIdx);
         if (StringUtils.isBlank(term)) {
           Logger.error("Error deriving term from local definition {}, navigation cell address {}", localDefinitionStr, navigationLevel.getCellAddress());
         } else {
@@ -384,7 +384,7 @@ public class Loader {
   private void createGlobalDefinitions(List<Definition> definitions, long journeyId) {
     for (Definition definition : definitions) {
       if ("UK Military List".equalsIgnoreCase(definition.getList())) {
-        String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"").toLowerCase();
+        String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"");
         String definitionText = definition.getNewContent();
         if (StringUtils.isAnyEmpty(term, definitionText)) {
           Logger.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,

@@ -39,7 +39,7 @@ public class ParserLookupServiceDaoImpl implements ParserLookupService {
 
   @Override
   public Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term) {
-    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinitionByTerm(term.toLowerCase());
+    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinitionByTerm(term);
     if (globalDefinition == null) {
       cacheValidator.logUnmatchedGlobalDefinition(term);
     }
@@ -49,8 +49,7 @@ public class ParserLookupServiceDaoImpl implements ParserLookupService {
 
   @Override
   public Optional<LocalDefinition> getLocalDefinitionForTerm(String term, String controlEntryId) {
-    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinitionByTerm(term.toLowerCase(),
-        Long.parseLong(controlEntryId));
+    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinitionByTerm(term, Long.parseLong(controlEntryId));
     if (localDefinition == null) {
       cacheValidator.logUnmatchedLocalDefinition(term);
     }
