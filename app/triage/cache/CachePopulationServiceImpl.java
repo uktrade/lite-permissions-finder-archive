@@ -40,8 +40,10 @@ public class CachePopulationServiceImpl implements CachePopulationService {
 
     String result = String.format("Config cache successfully populated\n" +
             "Bad control entries: %s\n" +
-            "Bad global definition terms: %s\n",
-        cacheValidator.getUnmatchedControlCodes(), cacheValidator.getUnmatchedGlobalDefinitions());
+            "Bad global definition terms: %s\n" +
+            "Bad local definition terms: %s\n",
+        cacheValidator.getUnmatchedControlCodes(), cacheValidator.getUnmatchedGlobalDefinitions(),
+        cacheValidator.getUnmatchedLocalDefinitions());
 
     LOGGER.info(result);
 
