@@ -154,3 +154,4 @@ GET     /view-nlr-letter          controllers.NlrController.viewNlrLetter(sessio
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
 GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalGlobalDefinitionController.renderGlobalDefinition(globalDefinitionId)
+GET     /modal-content/local-definition/:localDefinitionId      controllers.modal.ModalGlobalDefinitionController.renderLocalDefinition(localDefinitionId)
