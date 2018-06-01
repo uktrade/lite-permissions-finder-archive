@@ -23,7 +23,9 @@ LITEPermissionsFinder.Triage = {
   _ajaxDisplayControlEntryModal: function(controlEntryId) {
     $.ajax("/modal-content/control-entry/" + controlEntryId)
       .done(function(data) {
-        LITECommon.Modal.displayModal($(data), "control entry");
+        var $data = $(data);
+        LITEPermissionsFinder.Triage._bindModals($data);
+        LITECommon.Modal.displayModal($data, "control entry");
       })
       .fail(LITEPermissionsFinder.Triage._ajaxDisplayFailureModal);
   },
