@@ -12,8 +12,8 @@ import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
-import triage.session.TriageSession;
 import triage.session.SessionService;
+import triage.session.TriageSession;
 import views.html.startApplication;
 
 public class StartApplicationController {
@@ -33,7 +33,7 @@ public class StartApplicationController {
 
   public Result renderForm() {
     TriageSession triageSession = sessionService.createNewSession();
-    return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getSessionId(),
+    return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getId(),
         triageSession.getResumeCode()));
   }
 
@@ -45,7 +45,7 @@ public class StartApplicationController {
     } else {
       Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
       if (form.hasErrors()) {
-        return ok(startApplication.render(form, triageSession.getSessionId(), triageSession.getResumeCode()));
+        return ok(startApplication.render(form, triageSession.getId(), triageSession.getResumeCode()));
       } else {
         String emailAddress = form.get().emailAddress;
         if (StringUtils.isNoneBlank(emailAddress)) {

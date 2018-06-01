@@ -87,17 +87,17 @@ public class StageController extends Controller {
       switch (pageType) {
         case SELECT_ONE:
           AnswerForm answerForm = new AnswerForm();
-          answerForm.answer = sessionService.getAnswersForStageId(sessionId, stageId).stream().findFirst().orElse(null);
+          answerForm.answer = sessionService.getAnswerIdsForStageId(sessionId, stageId).stream().findFirst().orElse(null);
           Form<AnswerForm> filledAnswerForm = formFactory.form(AnswerForm.class).fill(answerForm);
           return renderSelectOne(filledAnswerForm, stageId, sessionId, resumeCode);
         case SELECT_MANY:
           MultiAnswerForm multiAnswerForm = new MultiAnswerForm();
-          multiAnswerForm.answers = new ArrayList<>(sessionService.getAnswersForStageId(sessionId, stageId));
+          multiAnswerForm.answers = new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId));
           Form<MultiAnswerForm> filledMultiAnswerFormForm = formFactory.form(MultiAnswerForm.class).fill(multiAnswerForm);
           return renderSelectMany(filledMultiAnswerFormForm, stageId, sessionId, resumeCode);
         case DECONTROL:
           MultiAnswerForm form = new MultiAnswerForm();
-          form.answers = new ArrayList<>(sessionService.getAnswersForStageId(sessionId, stageId));
+          form.answers = new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId));
           Form<MultiAnswerForm> filledForm = formFactory.form(MultiAnswerForm.class).fill(form);
           return renderDecontrol(filledForm, stageId, sessionId, resumeCode);
         case UNKNOWN:
@@ -178,7 +178,7 @@ public class StageController extends Controller {
           return renderDecontrol(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
               stageId, sessionId, resumeCode);
         } else {
-          sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+          sessionService.saveAnswerIdsForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
           return redirect(routes.OutcomeController.outcomeDecontrol(stageId, sessionId));
         }
       } else if (action == Action.NONE) {
@@ -220,7 +220,7 @@ public class StageController extends Controller {
               stageId, sessionId, resumeCode);
         } else {
           AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
-          sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+          sessionService.saveAnswerIdsForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
           return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
         }
       } else if (action == Action.NONE) {
@@ -249,7 +249,7 @@ public class StageController extends Controller {
           .findAny();
       if (answerConfigOptional.isPresent()) {
         AnswerConfig answerConfig = answerConfigOptional.get();
-        sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
+        sessionService.saveAnswerIdsForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
         return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
       } else {
         Logger.error("Unknown answer " + answer);

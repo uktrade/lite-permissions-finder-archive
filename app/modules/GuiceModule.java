@@ -28,6 +28,8 @@ import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
+import components.cms.dao.SessionDao;
+import components.cms.dao.SessionStageDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
 import components.cms.dao.impl.ControlEntryDaoImpl;
@@ -35,6 +37,8 @@ import components.cms.dao.impl.GlobalDefinitionDaoImpl;
 import components.cms.dao.impl.JourneyDaoImpl;
 import components.cms.dao.impl.LocalDefinitionDaoImpl;
 import components.cms.dao.impl.NoteDaoImpl;
+import components.cms.dao.impl.SessionDaoImpl;
+import components.cms.dao.impl.SessionStageDaoImpl;
 import components.cms.dao.impl.StageAnswerDaoImpl;
 import components.cms.dao.impl.StageDaoImpl;
 import components.common.CommonGuiceModule;
@@ -91,7 +95,7 @@ import triage.cache.StartupCachePopulationActor;
 import triage.config.JourneyConfigService;
 import triage.config.JourneyConfigServiceImpl;
 import triage.session.SessionService;
-import triage.session.SessionServiceMockImpl;
+import triage.session.SessionServiceImpl;
 import triage.text.HtmlRenderService;
 import triage.text.HtmlRenderServiceImpl;
 import triage.text.ParserLookupService;
@@ -128,7 +132,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class);
     bind(RichTextParser.class).to(RichTextParserImpl.class);
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
-    bind(SessionService.class).to(SessionServiceMockImpl.class).asEagerSingleton();
+    bind(SessionService.class).to(SessionServiceImpl.class);
     bind(CacheValidator.class).to(CacheValidatorImpl.class).asEagerSingleton();
     bind(JourneyConfigCache.class).to(JourneyConfigCacheImpl.class).asEagerSingleton();
     bind(CachePopulationService.class).to(CachePopulationServiceImpl.class);
@@ -222,6 +226,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(NoteDao.class).to(NoteDaoImpl.class);
     bind(StageAnswerDao.class).to(StageAnswerDaoImpl.class);
     bind(StageDao.class).to(StageDaoImpl.class);
+
+    bind(SessionDao.class).to(SessionDaoImpl.class);
+    bind(SessionStageDao.class).to(SessionStageDaoImpl.class);
 
     requestInjection(this);
   }
