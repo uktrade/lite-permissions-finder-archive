@@ -153,5 +153,5 @@ GET     /register-nlr             controllers.NlrController.registerNlr(sessionI
 GET     /view-nlr-letter          controllers.NlrController.viewNlrLetter(sessionId, resumeCode)
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
-GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalGlobalDefinitionController.renderGlobalDefinition(globalDefinitionId)
-GET     /modal-content/local-definition/:localDefinitionId      controllers.modal.ModalGlobalDefinitionController.renderLocalDefinition(localDefinitionId)
+GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
+GET     /modal-content/local-definition/:localDefinitionId      controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)

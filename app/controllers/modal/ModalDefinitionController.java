@@ -11,17 +11,17 @@ import play.mvc.Result;
 import triage.text.HtmlRenderService;
 import triage.text.RichText;
 import triage.text.RichTextParser;
-import views.html.modal.modalGlobalDefinition;
+import views.html.modal.modalDefinition;
 
-public class ModalGlobalDefinitionController {
+public class ModalDefinitionController {
   private final GlobalDefinitionDao globalDefinitionDao;
   private final LocalDefinitionDao localDefinitionDao;
   private final RichTextParser richTextParser;
   private final HtmlRenderService htmlRenderService;
 
   @Inject
-  public ModalGlobalDefinitionController(GlobalDefinitionDao globalDefinitionDao, LocalDefinitionDao localDefinitionDao,
-                                         RichTextParser richTextParser, HtmlRenderService htmlRenderService) {
+  public ModalDefinitionController(GlobalDefinitionDao globalDefinitionDao, LocalDefinitionDao localDefinitionDao,
+                                   RichTextParser richTextParser, HtmlRenderService htmlRenderService) {
     this.globalDefinitionDao = globalDefinitionDao;
     this.localDefinitionDao = localDefinitionDao;
     this.richTextParser = richTextParser;
@@ -32,13 +32,13 @@ public class ModalGlobalDefinitionController {
     GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(globalDefinitionId));
     RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
     String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText);
-    return ok(modalGlobalDefinition.render(globalDefinition.getTerm(), definitionTextHtml));
+    return ok(modalDefinition.render(globalDefinition.getTerm(), definitionTextHtml));
   }
 
   public Result renderLocalDefinition(String localDefinitionId) {
     LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(localDefinitionId));
     RichText richDefinitionText = richTextParser.parseForStage(localDefinition.getDefinitionText(), null);
     String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText);
-    return ok(modalGlobalDefinition.render(localDefinition.getTerm(), definitionTextHtml));
+    return ok(modalDefinition.render(localDefinition.getTerm(), definitionTextHtml));
   }
 }
