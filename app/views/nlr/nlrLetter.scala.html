@@ -1,3 +1,52 @@
-<p>
-      TODO : NLR LETTER
-</p>
+@import uk.gov.bis.lite.user.api.view.UserDetailsView
+@import util._
+
+@(resumeCode: String, userDetailsView: UserDetailsView, date: String)
+
+@standardPage("NLR LETTER", Some(heading(""))) {
+} {
+
+  <p>
+    <a href="javascript:window.print();">Print this page</a>
+  </p>
+
+  <p>
+    Reference Code : @resumeCode
+  </p>
+  <p>
+    @userDetailsView.getTitle @userDetailsView.getFullName
+  </p>
+  <p>
+    Tel @userDetailsView.getContactPhoneNumber
+  </p>
+  <p>
+    Email @userDetailsView.getContactEmailAddress
+  </p>
+
+  <p>
+    Date @date
+  </p>
+
+  <p>
+  Dear @userDetailsView.getTitle @userDetailsView.getLastName
+  </p>
+
+  <p>
+    Based on the choices you made on the online tool, the item does not currently require an export licence.
+
+    This assessment is made taking into account the choices you made on the online tool and the legislation in force at the date of this letter.
+
+    However this could change if, before the export takes place, there are changes to the legislation (including country sanctions) or information becomes available, either to you or to the Export Control Organisation (ECO), which suggests that an end-use control may be applicable. Therefore ECO cannot fully guarantee that your export can proceed.
+
+    In addition, ECO cannot comment on any action Her Majesty's Revenue & Customs (HMRC) may wish to take at the point of export, since HMRC have a legal obligation to verify export declarations and undertake examination of either documents or goods where there are doubts about whether a prohibition or restriction may apply.
+
+    Moreover ECO cannot comment on any action that the Customs Authority in another EU Member State may wish to take at the point of export for goods located outside of the UK.
+
+    We therefore advise that if, at any time from the date of this letter you have grounds for suspecting the items in the Schedule are intended for Weapons of Mass Destruction (WMD) purposes (as further explained below) and/or if there is a considerable delay between the date of this letter and the date of export, then you should make an End-User Advice Enquiry on SPIRE for an up-to-date re-assessment of the end-users for which the export is intended.
+
+    Please note that ECO will not offer compensation for any loss of business as a result of exercising its statutory functions to make export licence decisions. We would only consider cases where it can be shown that there has been negligence or maladministration by Her Majesty's Government (HMG).
+
+    Accordingly, you are strongly encouraged to carefully consider this letter and regularly check the information on our web pages about current export control requirements, details of which are set out in the following paragraphs.
+  </p>
+
+}

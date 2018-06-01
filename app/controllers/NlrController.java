@@ -14,6 +14,8 @@ import uk.gov.bis.lite.user.api.view.UserDetailsView;
 import views.html.nlr.nlrLetter;
 import views.html.nlr.nlrRegisterSuccess;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
@@ -41,7 +43,11 @@ public class NlrController {
     String userId = authManager.getAuthInfoFromContext().getId();
     UserDetailsView userDetailsView = userService.getUserDetailsView(userId).toCompletableFuture().get();
 
-    return ok(nlrLetter.render());
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM uuuu");
+    LocalDate localDate= LocalDate.now() ;
+    String todayDate = formatter.format(localDate);
+
+    return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate));
   }
 
 }
