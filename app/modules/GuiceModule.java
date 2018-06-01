@@ -207,14 +207,10 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("userServiceTimeout")).to(config.getString("userService.timeout"));
     bindConstant().annotatedWith(Names.named("userServiceCredentials")).to(config.getString("userService.credentials"));
 
-    bindConstant().annotatedWith(Names.named("userPrivilegeKey")).to(config.getString("userPrivilegeService.key"));
-    bindConstant().annotatedWith(Names.named("userPrivilegeIssuer")).to(config.getString("userPrivilegeService.issuer"));
-    bindConstant().annotatedWith(Names.named("cacheExpireAfterWriteMinutes")).to(config.getString("userPrivilegeService.cacheExpireAfterWriteMinutes"));
-
     bindConstant().annotatedWith(Names.named("dashboardUrl")).to(config.getString("dashboard.url"));
     bindConstant().annotatedWith(Names.named("permissionsFinderUrl")).to(config.getString("permissions.finder.url"));
-    bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
 
+    bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
 
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
@@ -334,33 +330,14 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new ApplicationCodeContextParamProvider());
   }
 
-
   @Provides
   @Singleton
-  @Named("JwtRequestFilter")
-  public JwtRequestFilter provideJwtRequestFilterConfig(
-                                                        @com.google.inject.name.Named("userServiceAddress") String userServiceAddress,
-                                                        @com.google.inject.name.Named("userServiceTimeout") int userServiceTimeout,
-                                                        @com.google.inject.name.Named("userServiceCredentials") String userServiceCredentials,
-                                                        WSClient wsClient, HttpExecutionContext httpExecutionContext,
-                                                        SpireAuthManager spireAuthManager, @com.google.inject.name.Named("jwtSharedSecret") String jwtSharedSecret) {
-    UserServiceClientBasicAuth basicAuthClient = new UserServiceClientBasicAuth(userServiceAddress, userServiceTimeout, userServiceCredentials, wsClient, httpExecutionContext);
-
-    return new JwtRequestFilter(spireAuthManager, new JwtRequestFilterConfig(jwtSharedSecret, "lite-permissions-finder"), basicAuthClient);
-  }
-
-  @Provides
-  @Singleton
-  @Named("JwtRequestAuthFilter")
-  JwtRequestFilter provideJwtRequestFilter(@com.google.inject.name.Named("userPrivilegeKey") String key,
-                                           @com.google.inject.name.Named("userPrivilegeIssuer") String issuer,
-                                           SpireAuthManager spireAuthManager,
-                                           @com.google.inject.name.Named("userServiceAddress") String userServiceAddress,
-                                           @com.google.inject.name.Named("userServiceTimeout") int userServiceTimeout,
-                                           @com.google.inject.name.Named("userServiceCredentials") String userServiceCredentials,
-                                           WSClient wsClient, HttpExecutionContext httpExecutionContext) {
-    UserServiceClientBasicAuth basicAuthClient = new UserServiceClientBasicAuth(userServiceAddress, userServiceTimeout, userServiceCredentials, wsClient, httpExecutionContext);
-    return new JwtRequestFilter(spireAuthManager, new JwtRequestFilterConfig(key, issuer), basicAuthClient);
+  @Named("jwtRequestFilter")
+  public JwtRequestFilter provideJwtRequestFilterConfig(UserServiceClientBasicAuth basicAuthClient,
+                                                        SpireAuthManager spireAuthManager,
+                                                        @Named("jwtSharedSecret") String jwtSharedSecret) {
+    JwtRequestFilterConfig filterConfig = new JwtRequestFilterConfig(jwtSharedSecret, "lite-permissions-finder");
+    return new JwtRequestFilter(spireAuthManager, filterConfig, basicAuthClient);
   }
 
   @Provides
