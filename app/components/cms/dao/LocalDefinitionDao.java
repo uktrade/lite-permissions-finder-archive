@@ -6,6 +6,8 @@ public interface LocalDefinitionDao {
 
   LocalDefinition getLocalDefinition(long id);
 
+  LocalDefinition getLocalDefinitionByTerm(String term, long controlEntryId);
+
   Long insertLocalDefinition(LocalDefinition localDefinition);
 
   void deleteLocalDefinition(long id);

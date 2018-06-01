@@ -127,7 +127,8 @@ public class JourneyConfigCacheImpl implements JourneyConfigCache {
       }
     }
 
-    RichText explanatoryNote = richTextParser.parse(StringUtils.defaultString(stage.getExplanatoryNotes()), Long.toString(stage.getId()));
+    RichText explanatoryNote = richTextParser.parseForStage(StringUtils.defaultString(stage.getExplanatoryNotes()),
+        Long.toString(stage.getId()));
     String nextStageId = Optional.ofNullable(stage.getNextStageId()).map(Object::toString).orElse(null);
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stage.getControlEntryId())
         .map(controlEntryDao::getControlEntry)
@@ -163,11 +164,11 @@ public class JourneyConfigCacheImpl implements JourneyConfigCache {
     }
 
     RichText labelText = Optional.ofNullable(stageAnswer.getAnswerText())
-        .map(e -> richTextParser.parse(e, nextStageId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, nextStageId)).orElse(null);
     RichText nestedContent = Optional.ofNullable(stageAnswer.getNestedContent())
-        .map(e -> richTextParser.parse(e, nextStageId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, nextStageId)).orElse(null);
     RichText moreInfoContent = Optional.ofNullable(stageAnswer.getMoreInfoContent())
-        .map(e -> richTextParser.parse(e, nextStageId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, nextStageId)).orElse(null);
 
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stageAnswer.getControlEntryId())
         .map(controlEntryDao::getControlEntry)
@@ -183,11 +184,10 @@ public class JourneyConfigCacheImpl implements JourneyConfigCache {
   }
 
   private ControlEntryConfig createControlEntryConfig(ControlEntry controlEntry) {
-    String stageId = null; //TODO determine stage ID for code
-
-    RichText fullDescription = richTextParser.parse(controlEntry.getFullDescription(), stageId);
-    RichText summaryDescription = richTextParser.parse(StringUtils.defaultString(controlEntry.getSummaryDescription()),
-        stageId);
+    String controlEntryId = controlEntry.getId().toString();
+    RichText fullDescription = richTextParser.parseForControlEntry(controlEntry.getFullDescription(), controlEntryId);
+    String summaryDescriptionString = StringUtils.defaultString(controlEntry.getSummaryDescription());
+    RichText summaryDescription = richTextParser.parseForControlEntry(summaryDescriptionString, controlEntryId);
 
     ControlEntryConfig parentControlEntryConfig = null;
     if (controlEntry.getParentControlEntryId() != null) {
@@ -205,7 +205,7 @@ public class JourneyConfigCacheImpl implements JourneyConfigCache {
 
   private NoteConfig createNoteConfig(Note note) {
     String stageId = note.getStageId().toString();
-    RichText noteText = richTextParser.parse(note.getNoteText(), stageId);
+    RichText noteText = richTextParser.parseForStage(note.getNoteText(), stageId);
 
     NoteConfig.NoteType noteType = null;
     switch (note.getNoteType()) {

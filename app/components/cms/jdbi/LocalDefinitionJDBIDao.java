@@ -13,6 +13,10 @@ public interface LocalDefinitionJDBIDao {
   @SqlQuery("SELECT * FROM local_definition WHERE id = :id")
   LocalDefinition get(@Bind("id") long id);
 
+  @Mapper(LocalDefinitionRSMapper.class)
+  @SqlQuery("SELECT * FROM local_definition WHERE term = :term AND control_entry_id = :controlEntryId")
+  LocalDefinition getByTerm(@Bind("term") String term, @Bind("controlEntryId") long controlEntryId);
+
   @SqlQuery(
       "INSERT INTO local_definition (control_entry_id, term, definition_text) " +
           "VALUES (:controlEntryId, :term, :definitionText) " +

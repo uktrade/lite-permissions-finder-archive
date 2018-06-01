@@ -3,27 +3,27 @@ package triage.text;
 import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
+import components.cms.dao.LocalDefinitionDao;
 import models.cms.ControlEntry;
 import models.cms.GlobalDefinition;
 import models.cms.LocalDefinition;
-import org.slf4j.LoggerFactory;
 import triage.cache.CacheValidator;
 
 import java.util.Optional;
 
 public class ParserLookupServiceDaoImpl implements ParserLookupService {
 
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ParserLookupServiceDaoImpl.class);
-
   private final ControlEntryDao controlEntryDao;
   private final GlobalDefinitionDao globalDefinitionDao;
+  private final LocalDefinitionDao localDefinitionDao;
   private final CacheValidator cacheValidator;
 
   @Inject
   public ParserLookupServiceDaoImpl(ControlEntryDao controlEntryDao, GlobalDefinitionDao globalDefinitionDao,
-                                    CacheValidator cacheValidator) {
+                                    LocalDefinitionDao localDefinitionDao, CacheValidator cacheValidator) {
     this.controlEntryDao = controlEntryDao;
     this.globalDefinitionDao = globalDefinitionDao;
+    this.localDefinitionDao = localDefinitionDao;
     this.cacheValidator = cacheValidator;
   }
 
@@ -48,7 +48,13 @@ public class ParserLookupServiceDaoImpl implements ParserLookupService {
   }
 
   @Override
-  public Optional<LocalDefinition> getLocalDefinitionForTerm(String term, String stageId) {
-    return Optional.empty();
+  public Optional<LocalDefinition> getLocalDefinitionForTerm(String term, String controlEntryId) {
+    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinitionByTerm(term.toLowerCase(),
+        Long.parseLong(controlEntryId));
+    if (localDefinition == null) {
+      cacheValidator.logUnmatchedLocalDefinition(term);
+    }
+
+    return Optional.ofNullable(localDefinition);
   }
 }
