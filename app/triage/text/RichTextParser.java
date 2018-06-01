@@ -2,6 +2,8 @@ package triage.text;
 
 public interface RichTextParser {
 
-  RichText parse(String text, String stageId);
+  RichText parseForStage(String text, String stageId);
+
+  RichText parseForControlEntry(String text, String controlEntryId);
 
 }

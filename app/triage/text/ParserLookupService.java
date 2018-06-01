@@ -12,6 +12,6 @@ public interface ParserLookupService {
 
   Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term);
 
-  Optional<LocalDefinition> getLocalDefinitionForTerm(String term, String stageId);
+  Optional<LocalDefinition> getLocalDefinitionForTerm(String term, String controlEntryId);
 
 }

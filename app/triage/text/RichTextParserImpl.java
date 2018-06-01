@@ -24,9 +24,17 @@ public class RichTextParserImpl implements RichTextParser {
   }
 
   @Override
-  public RichText parse(String text, String stageId) {
+  public RichText parseForStage(String text, String stageId) {
     List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(Collections.singletonList(new SimpleTextNode(text)));
-    List<RichTextNode> withLocalDefinitions = parseLocalDefinitions(withGlobalDefinitions, stageId);
+    List<RichTextNode> withControlEntries = parseControlEntries(withGlobalDefinitions);
+    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withControlEntries);
+    return new RichText(withFlattenedSimpleTextNodes);
+  }
+
+  @Override
+  public RichText parseForControlEntry(String text, String controlEntryId) {
+    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(Collections.singletonList(new SimpleTextNode(text)));
+    List<RichTextNode> withLocalDefinitions = parseLocalDefinitions(withGlobalDefinitions, controlEntryId);
     List<RichTextNode> withControlEntries = parseControlEntries(withLocalDefinitions);
     List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withControlEntries);
     return new RichText(withFlattenedSimpleTextNodes);
@@ -36,8 +44,8 @@ public class RichTextParserImpl implements RichTextParser {
     return parseDefinitions(inputNodes, GLOBAL_DEFINITION_PATTERN, this::createGlobalDefinition);
   }
 
-  private List<RichTextNode> parseLocalDefinitions(List<RichTextNode> inputNodes, String stageId) {
-    return parseDefinitions(inputNodes, LOCAL_DEFINITION_PATTERN, matcher -> createLocalDefinition(matcher, stageId));
+  private List<RichTextNode> parseLocalDefinitions(List<RichTextNode> inputNodes, String controlEntryId) {
+    return parseDefinitions(inputNodes, LOCAL_DEFINITION_PATTERN, matcher -> createLocalDefinition(matcher, controlEntryId));
   }
 
   private List<RichTextNode> parseControlEntries(List<RichTextNode> inputNodes) {
@@ -53,11 +61,11 @@ public class RichTextParserImpl implements RichTextParser {
         .orElse(new SimpleTextNode(termInQuotes));
   }
 
-  private RichTextNode createLocalDefinition(Matcher matcher, String stageId) {
+  private RichTextNode createLocalDefinition(Matcher matcher, String controlEntryId) {
     String termInQuotes = matcher.group(0);
     String term = matcher.group(1);
 
-    return parserLookupService.getLocalDefinitionForTerm(term, stageId)
+    return parserLookupService.getLocalDefinitionForTerm(term, controlEntryId)
         .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId().toString(), false))
         .orElse(new SimpleTextNode(termInQuotes));
   }

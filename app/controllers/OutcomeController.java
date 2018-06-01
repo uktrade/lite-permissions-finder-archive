@@ -104,7 +104,7 @@ public class OutcomeController extends Controller {
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
-      Set<String> answers = sessionService.getAnswersForStageId(sessionId, stageId);
+      Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
       if (answers.isEmpty()) {
         Logger.error("Answers cannot be empty on outcome decontrol page.");
         return redirectToIndex(sessionId);
@@ -121,7 +121,7 @@ public class OutcomeController extends Controller {
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
-      Set<String> answers = sessionService.getAnswersForStageId(sessionId, stageId);
+      Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
       if (answers.isEmpty()) {
         Logger.error("Answers cannot be empty on outcome decontrol page.");
         return redirectToIndex(sessionId);

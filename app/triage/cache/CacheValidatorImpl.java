@@ -29,6 +29,7 @@ public class CacheValidatorImpl implements CacheValidator {
 
   @Override
   public void logUnmatchedLocalDefinition(String term) {
+    LOGGER.warn("Local definition term '{}' not matched", term);
     unmatchedLocalDefinitions.add(term);
   }
 
