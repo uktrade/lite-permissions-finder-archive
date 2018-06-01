@@ -151,3 +151,6 @@ GET     /cms/dummy/test-journey               controllers.cms.DummyController.cr
 
 GET     /register-nlr             controllers.NlrController.registerNlr(sessionId)
 GET     /view-nlr-letter          controllers.NlrController.viewNlrLetter(sessionId, resumeCode)
+
+GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
+GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalGlobalDefinitionController.renderGlobalDefinition(globalDefinitionId)
