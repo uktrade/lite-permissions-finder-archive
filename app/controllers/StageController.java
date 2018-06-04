@@ -143,7 +143,7 @@ public class StageController extends Controller {
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId, String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    String title = stageConfig.getQuestionTitle().orElse("Does your item have any of these characteristics?");
+    String title = stageConfig.getQuestionTitle().orElse("Check if your item is decontrolled");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
