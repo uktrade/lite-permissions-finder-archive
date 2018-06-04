@@ -1,5 +1,5 @@
 @import uk.gov.bis.lite.ogel.api.view.OgelFullView
-@import controllers.licencefinder.LicenceFinderController.RegisterToUseForm
+@import controllers.licencefinder.RegisterToUseController.RegisterToUseForm
 @import org.apache.commons.lang3.StringUtils
 @import views.html.common.form.formCheckbox
 @import util._
@@ -45,7 +45,7 @@
     </dl>
   </div>
 
-  <form action="@controllers.licencefinder.routes.LicenceFinderController.handleRegisterToUseSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.RegisterToUseController.handleRegisterToUseSubmit()" method="POST">
 
     @contextFormParams()
 

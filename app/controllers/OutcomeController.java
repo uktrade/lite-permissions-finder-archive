@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
-import controllers.licencefinder.LicenceFinderController;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -95,7 +94,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderOutcomeListed(form, controlEntryConfig, sessionId);
     } else {
-      return redirect(controllers.licencefinder.routes.LicenceFinderController.testEntry(controlEntryConfig.getControlCode()));
+      return redirect(controllers.licencefinder.routes.TradeController.testEntry(controlEntryConfig.getControlCode()));
     }
   }
 

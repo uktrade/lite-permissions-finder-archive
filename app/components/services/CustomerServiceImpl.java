@@ -1,4 +1,4 @@
-package components.client;
+package components.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
