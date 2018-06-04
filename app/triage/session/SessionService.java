@@ -15,6 +15,5 @@ public interface SessionService {
 
   void saveAnswerIdsForStageId(String sessionId, String stageId, Set<String> answerIds);
 
-  String getStageId(String sessionId);
-
+  void updateLastStageId(String sessionId, String lastStageId);
 }
