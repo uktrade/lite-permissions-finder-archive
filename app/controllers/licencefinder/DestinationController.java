@@ -130,6 +130,9 @@ public class DestinationController extends Controller {
 
       if (multipleCountries != null && multipleCountries) {
         if (firstConsigneeCountry == null || firstConsigneeCountry.isEmpty()) {
+
+          // Could not get to work, got binding error here - validation code is in controller method for now
+          // TODO work out why this was happening
           //return new ValidationError("firstConsigneeCountry", "Enter this text");
         }
       }
