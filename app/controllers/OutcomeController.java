@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
-import controllers.licencefinder.LicenceFinderController;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -154,7 +153,7 @@ public class OutcomeController extends Controller {
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,
                                         Set<String> answers) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig).stream()
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true).stream()
         .filter(answer -> answers.contains(answer.getValue()))
         .collect(Collectors.toList());
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);

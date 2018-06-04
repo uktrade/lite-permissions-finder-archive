@@ -87,7 +87,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   private List<NoteView> createNoteViews(String stageId) {
     return journeyConfigService.getNoteConfigsByStageId(stageId).stream()
-        .map(noteConfig -> new NoteView(htmlRenderService.convertRichTextToHtml(noteConfig.getNoteText())))
+        .map(noteConfig -> new NoteView(htmlRenderService.convertRichText(noteConfig.getNoteText(), true)))
         .collect(Collectors.toList());
   }
 
