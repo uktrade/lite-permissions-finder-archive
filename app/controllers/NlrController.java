@@ -5,12 +5,12 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
-import components.client.CustomerService;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.common.client.userservice.UserServiceClientJwt;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
+import components.services.CustomerService;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
@@ -76,7 +76,7 @@ public class NlrController {
     switch (outcomeType) {
       case "DECONTROL": {
         StageConfig stageConfig = journeyConfigService.getStageConfigById(stageIdOrControlEntryId);
-        List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+        List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
         BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageIdOrControlEntryId);
         return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, outcomeType, decontrolBreadcrumb.render(breadcrumbView, answerViews)));
       }
