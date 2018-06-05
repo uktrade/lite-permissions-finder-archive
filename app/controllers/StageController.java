@@ -135,17 +135,18 @@ public class StageController extends Controller {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     return ok(selectOne.render(answerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView));
   }
 
-  private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId, String resumeCode) {
+  private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,
+                                 String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Check if your item is decontrolled");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
@@ -153,11 +154,12 @@ public class StageController extends Controller {
     return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answerViews, breadcrumbView));
   }
 
-  private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId, String resumeCode) {
+  private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId,
+                                  String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView));
