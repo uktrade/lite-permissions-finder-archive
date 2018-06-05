@@ -1,4 +1,4 @@
-@import controllers.licencefinder.LicenceFinderController
+@import controllers.licencefinder.ResultsController
 @import util._
 @import views.html.common.page._
 @import views.html.common.state._
@@ -18,7 +18,7 @@
   @errorSummary(form)
 }{
 
-  <form action="@controllers.licencefinder.routes.LicenceFinderController.handleResultsSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.ResultsController.handleResultsSubmit()" method="POST">
 
     @contextFormParams()
 
@@ -54,7 +54,7 @@
               </div>
             }
 <hr>
-            @formRadio(form("chosenOgel"), "<span class=\"bold\">None of the above applies fully to my situation</span>", LicenceFinderController.NONE_ABOVE_KEY, true, "label-trade-type")
+            @formRadio(form("chosenOgel"), "<span class=\"bold\">None of the above applies fully to my situation</span>", ResultsController.NONE_ABOVE_KEY, true, "label-trade-type")
         }
 
       </fieldset>

@@ -1,9 +1,6 @@
 package components.services;
 
 import com.google.inject.Inject;
-import components.client.CustomerService;
-import components.client.PermissionsService;
-import components.client.PermissionsServiceImpl;
 import components.common.auth.SpireAuthManager;
 import components.common.persistence.StatelessRedisDao;
 import components.persistence.LicenceFinderDao;
