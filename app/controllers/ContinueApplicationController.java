@@ -45,11 +45,11 @@ public class ContinueApplicationController {
             return redirect(routes.StageController.index(sessionId));
           }
         } else {
-          Form formWithError = form.withError("resumeCode", "You have entered an invalid resume code");
+          Form formWithError = form.withError("resumeCode", "You have entered an invalid reference code");
           return ok(continueApplication.render(formWithError));
         }
       } else {
-        Form formWithError = form.withError("resumeCode", "You have entered an invalid resume code");
+        Form formWithError = form.withError("resumeCode", "You have entered an invalid reference code");
         return ok(continueApplication.render(formWithError));
       }
     }
