@@ -3,7 +3,7 @@ package components.persistence;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
-import controllers.licencefinder.LicenceFinderController;
+import controllers.licencefinder.QuestionsController;
 import models.TradeType;
 import org.apache.commons.lang3.StringUtils;
 
@@ -113,12 +113,12 @@ public class LicenceFinderDao {
     return StringUtils.isBlank(tradeType) ? Optional.empty() : Optional.of(TradeType.valueOf(tradeType));
   }
 
-  public void saveQuestionsForm(LicenceFinderController.QuestionsForm form) {
+  public void saveQuestionsForm(QuestionsController.QuestionsForm form) {
     dao.writeObject(OGEL_QUESTIONS, form);
   }
 
-  public Optional<LicenceFinderController.QuestionsForm> getQuestionsForm() {
-    return dao.readObject(OGEL_QUESTIONS, LicenceFinderController.QuestionsForm.class);
+  public Optional<QuestionsController.QuestionsForm> getQuestionsForm() {
+    return dao.readObject(OGEL_QUESTIONS, QuestionsController.QuestionsForm.class);
   }
 
   public void saveMultipleCountries(boolean countries) {

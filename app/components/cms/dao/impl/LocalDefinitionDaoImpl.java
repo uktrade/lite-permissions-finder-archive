@@ -21,6 +21,11 @@ public class LocalDefinitionDaoImpl implements LocalDefinitionDao {
   }
 
   @Override
+  public LocalDefinition getLocalDefinitionByTerm(String term, long controlEntryId) {
+    return this.localDefinitionJDBIDao.getByTerm(term, controlEntryId);
+  }
+
+  @Override
   public Long insertLocalDefinition(LocalDefinition localDefinition) {
     return localDefinitionJDBIDao.insert(
         localDefinition.getControlEntryId(),

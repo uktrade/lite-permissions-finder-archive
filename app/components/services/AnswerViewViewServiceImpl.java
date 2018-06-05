@@ -32,21 +32,21 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
   }
 
   @Override
-  public List<AnswerView> createAnswerViews(StageConfig stageConfig) {
+  public List<AnswerView> createAnswerViews(StageConfig stageConfig, boolean html) {
     return stageConfig.getAnswerConfigs().stream()
         .sorted(Comparator.comparing(AnswerConfig::getDisplayOrder))
-        .map(this::createAnswerView)
+        .map(answerConfig -> createAnswerView(answerConfig, html))
         .collect(Collectors.toList());
   }
 
-  private AnswerView createAnswerView(AnswerConfig answerConfig) {
+  private AnswerView createAnswerView(AnswerConfig answerConfig, boolean html) {
     Optional<ControlEntryConfig> associatedControlEntryConfig = answerConfig.getAssociatedControlEntryConfig();
     if (associatedControlEntryConfig.isPresent()) {
-      return createAnswerViewFromControlEntryConfig(answerConfig, associatedControlEntryConfig.get());
+      return createAnswerViewFromControlEntryConfig(answerConfig, associatedControlEntryConfig.get(), html);
     } else {
       Optional<RichText> labelText = answerConfig.getLabelText();
       if (labelText.isPresent()) {
-        return createAnswerViewFromLabelText(answerConfig, labelText.get());
+        return createAnswerViewFromLabelText(answerConfig, labelText.get(), html);
       } else {
         throw new BusinessRuleException("Both answerConfig.getAssociatedControlEntryConfig and answerConfig.getLabelText are absent.");
       }
@@ -54,8 +54,8 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
   }
 
   private AnswerView createAnswerViewFromControlEntryConfig(AnswerConfig answerConfig,
-                                                            ControlEntryConfig controlEntryConfig) {
-    String prompt = htmlRenderService.convertRichTextToPlainText(controlEntryConfig.getFullDescription());
+                                                            ControlEntryConfig controlEntryConfig, boolean html) {
+    String prompt = htmlRenderService.convertRichText(controlEntryConfig.getFullDescription(), html);
     List<RichText> richTextList = new ArrayList<>();
     richTextList.add(controlEntryConfig.getFullDescription());
     List<SubAnswerView> subAnswerViews;
@@ -65,7 +65,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
       subAnswerViews = new ArrayList<>();
     } else {
       List<SubAnswer> subAnswers = createSubAnswers(controlEntryConfig);
-      subAnswerViews = createSubAnswerViews(subAnswers, false);
+      subAnswerViews = createSubAnswerViews(subAnswers, html);
       List<RichText> subAnswerDefinitions = createSubAnswerDefinitions(subAnswers);
       richTextList.addAll(subAnswerDefinitions);
     }
@@ -82,13 +82,13 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
         moreInformation = "";
       }
     }
-    String nestedContent = createdNestedContent(answerConfig);
+    String nestedContent = createdNestedContent(answerConfig, html);
     return new AnswerView(prompt, answerConfig.getAnswerId(), answerConfig.isDividerAbove(), subAnswerViews,
         nestedContent, moreInformation, definitions, relatedItems);
   }
 
-  private AnswerView createAnswerViewFromLabelText(AnswerConfig answerConfig, RichText labelText) {
-    String prompt = htmlRenderService.convertRichTextToPlainText(labelText);
+  private AnswerView createAnswerViewFromLabelText(AnswerConfig answerConfig, RichText labelText, boolean html) {
+    String prompt = htmlRenderService.convertRichText(labelText, html);
     List<RichText> richTextList = new ArrayList<>();
     richTextList.add(labelText);
     if (answerConfig.getNestedContent().isPresent()) {
@@ -97,7 +97,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
     }
     String definitions = htmlRenderService.createDefinitions(richTextList);
     String relatedItems = htmlRenderService.createRelatedItemsHtml(richTextList);
-    String nestedContent = createdNestedContent(answerConfig);
+    String nestedContent = createdNestedContent(answerConfig, html);
     String moreInformation;
     Optional<String> nextStageId = answerConfig.getNextStageId();
     if (nextStageId.isPresent()) {
@@ -156,11 +156,11 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
         Optional<ControlEntryConfig> associatedControlEntryConfig = answerConfig.getAssociatedControlEntryConfig();
         if (associatedControlEntryConfig.isPresent()) {
           ControlEntryConfig controlEntryConfig = associatedControlEntryConfig.get();
-          stringBuilder.append(htmlRenderService.convertRichTextToHtml(controlEntryConfig.getFullDescription()));
+          stringBuilder.append(htmlRenderService.convertRichText(controlEntryConfig.getFullDescription(), true));
           String subAnswerViewsToHtml = subAnswerViewsToHtml(createSubAnswerViews(createSubAnswers(controlEntryConfig), true));
           stringBuilder.append(subAnswerViewsToHtml);
         } else if (answerConfig.getLabelText().isPresent()) {
-          stringBuilder.append(htmlRenderService.convertRichTextToHtml(answerConfig.getLabelText().get()));
+          stringBuilder.append(htmlRenderService.convertRichText(answerConfig.getLabelText().get(), true));
         } else {
           throw new BusinessRuleException("Both answerConfig.getAssociatedControlEntryConfig and answerConfig.getLabelText are absent.");
         }
@@ -193,10 +193,15 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
     return stringBuilder.toString();
   }
 
-  private String createdNestedContent(AnswerConfig answerConfig) {
-    Optional<RichText> nestedContent = answerConfig.getNestedContent();
-    if (nestedContent.isPresent()) {
-      return htmlRenderService.convertRichTextToHtmlWithoutLinks(nestedContent.get());
+  private String createdNestedContent(AnswerConfig answerConfig, boolean links) {
+    Optional<RichText> nestedContentOptional = answerConfig.getNestedContent();
+    if (nestedContentOptional.isPresent()) {
+      RichText nestedContent = nestedContentOptional.get();
+      if (links) {
+        return htmlRenderService.convertRichText(nestedContent, true);
+      } else {
+        return htmlRenderService.convertRichTextToHtmlWithoutLinks(nestedContent);
+      }
     } else {
       return "";
     }
@@ -208,12 +213,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
   }
 
   private SubAnswerView createSubAnswerView(SubAnswer subAnswer, boolean html) {
-    String summaryDescription;
-    if (html) {
-      summaryDescription = htmlRenderService.convertRichTextToHtml(subAnswer.getRichText());
-    } else {
-      summaryDescription = htmlRenderService.convertRichTextToPlainText(subAnswer.getRichText());
-    }
+    String summaryDescription = htmlRenderService.convertRichText(subAnswer.getRichText(), html);
     List<SubAnswerView> subAnswerViews = createSubAnswerViews(subAnswer.getSubAnswers(), html);
     return new SubAnswerView(summaryDescription, subAnswerViews);
   }

@@ -41,8 +41,12 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   }
 
   @Override
-  public String convertRichTextToHtml(RichText richText) {
-    return convertNewlinesToBrs(renderLists(addLinks(richText)));
+  public String convertRichText(RichText richText, boolean html) {
+    if (html) {
+      return convertNewlinesToBrs(renderLists(addLinks(richText)));
+    } else {
+      return convertRichTextToPlainText(richText);
+    }
   }
 
   @Override
@@ -50,8 +54,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     return convertNewlinesToBrs(renderLists(convertRichTextToPlainText(richText)));
   }
 
-  @Override
-  public String convertRichTextToPlainText(RichText richText) {
+  private String convertRichTextToPlainText(RichText richText) {
     return richText.getRichTextNodes().stream().map(RichTextNode::getTextContent).collect(Collectors.joining());
   }
 

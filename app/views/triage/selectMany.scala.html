@@ -23,13 +23,7 @@
         <p class="form-block">or</p>
       }
       @formCheckboxWithDetailPanel(form("answers"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, isPromptHtml = true, inputId = "answers" + index, inputName = "answers[" + index + "]", inputValue = answerView.getValue, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information") {
-        @Html(answerView.getMoreInformation)
-        @if(!answerView.getDefinitions.isEmpty) {
-         <p>Definitions: @Html(answerView.getDefinitions)</p>
-        }
-        @if(!answerView.getRelatedItems.isEmpty) {
-          <p>Related categories and items: @Html(answerView.getRelatedItems)</p>
-        }
+        @answerMoreInformation(answerView)
       }
     }
   </div>

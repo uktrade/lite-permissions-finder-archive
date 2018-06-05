@@ -6,6 +6,7 @@ import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
+import components.cms.dao.SessionStageDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
 import components.cms.parser.ParserResult;
@@ -47,6 +48,7 @@ public class Loader {
   private final NoteDao noteDao;
   private final StageAnswerDao stageAnswerDao;
   private final StageDao stageDao;
+  private final SessionStageDao sessionStageDao;
 
   @Inject
   public Loader(
@@ -56,7 +58,8 @@ public class Loader {
       LocalDefinitionDao localDefinitionDao,
       NoteDao noteDao,
       StageAnswerDao stageAnswerDao,
-      StageDao stageDao) {
+      StageDao stageDao,
+      SessionStageDao sessionStageDao) {
     this.controlEntryDao = controlEntryDao;
     this.globalDefinitionDao = globalDefinitionDao;
     this.journeyDao = journeyDao;
@@ -64,6 +67,7 @@ public class Loader {
     this.noteDao = noteDao;
     this.stageAnswerDao = stageAnswerDao;
     this.stageDao = stageDao;
+    this.sessionStageDao = sessionStageDao;
   }
 
   public void load(ParserResult parserResult) {
@@ -304,7 +308,7 @@ public class Loader {
       for (String localDefinitionStr : localDefinitionStrs) {
         int firstIdx = localDefinitionStr.indexOf('\'');
         int secondIdx = localDefinitionStr.indexOf('\'', firstIdx + 1);
-        String term = localDefinitionStr.substring(firstIdx + 1, secondIdx).toLowerCase();
+        String term = localDefinitionStr.substring(firstIdx + 1, secondIdx);
         if (StringUtils.isBlank(term)) {
           Logger.error("Error deriving term from local definition {}, navigation cell address {}", localDefinitionStr, navigationLevel.getCellAddress());
         } else {
@@ -380,7 +384,7 @@ public class Loader {
   private void createGlobalDefinitions(List<Definition> definitions, long journeyId) {
     for (Definition definition : definitions) {
       if ("UK Military List".equalsIgnoreCase(definition.getList())) {
-        String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"").toLowerCase();
+        String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"");
         String definitionText = definition.getNewContent();
         if (StringUtils.isAnyEmpty(term, definitionText)) {
           Logger.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,
@@ -400,6 +404,7 @@ public class Loader {
   }
 
   private void clearDown() {
+    sessionStageDao.deleteAllSessionStages();
     localDefinitionDao.deleteAllLocalDefinitions();
     globalDefinitionDao.deleteAllGlobalDefinitions();
     noteDao.deleteAllNotes();

@@ -95,7 +95,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderOutcomeListed(form, controlEntryConfig, sessionId);
     } else {
-      return redirect(controllers.licencefinder.routes.LicenceFinderController.testEntry(controlEntryConfig.getControlCode()));
+      return redirect(controllers.licencefinder.routes.TradeController.testEntry(controlEntryConfig.getControlCode()));
     }
   }
 
@@ -104,7 +104,7 @@ public class OutcomeController extends Controller {
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
-      Set<String> answers = sessionService.getAnswersForStageId(sessionId, stageId);
+      Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
       if (answers.isEmpty()) {
         Logger.error("Answers cannot be empty on outcome decontrol page.");
         return redirectToIndex(sessionId);
@@ -121,7 +121,7 @@ public class OutcomeController extends Controller {
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
-      Set<String> answers = sessionService.getAnswersForStageId(sessionId, stageId);
+      Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
       if (answers.isEmpty()) {
         Logger.error("Answers cannot be empty on outcome decontrol page.");
         return redirectToIndex(sessionId);
@@ -154,7 +154,7 @@ public class OutcomeController extends Controller {
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,
                                         Set<String> answers) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig).stream()
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true).stream()
         .filter(answer -> answers.contains(answer.getValue()))
         .collect(Collectors.toList());
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);

@@ -1,4 +1,4 @@
-package components.client;
+package components.services;
 
 import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 

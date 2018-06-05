@@ -87,17 +87,17 @@ public class StageController extends Controller {
       switch (pageType) {
         case SELECT_ONE:
           AnswerForm answerForm = new AnswerForm();
-          answerForm.answer = sessionService.getAnswersForStageId(sessionId, stageId).stream().findFirst().orElse(null);
+          answerForm.answer = sessionService.getAnswerIdsForStageId(sessionId, stageId).stream().findFirst().orElse(null);
           Form<AnswerForm> filledAnswerForm = formFactory.form(AnswerForm.class).fill(answerForm);
           return renderSelectOne(filledAnswerForm, stageId, sessionId, resumeCode);
         case SELECT_MANY:
           MultiAnswerForm multiAnswerForm = new MultiAnswerForm();
-          multiAnswerForm.answers = new ArrayList<>(sessionService.getAnswersForStageId(sessionId, stageId));
+          multiAnswerForm.answers = new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId));
           Form<MultiAnswerForm> filledMultiAnswerFormForm = formFactory.form(MultiAnswerForm.class).fill(multiAnswerForm);
           return renderSelectMany(filledMultiAnswerFormForm, stageId, sessionId, resumeCode);
         case DECONTROL:
           MultiAnswerForm form = new MultiAnswerForm();
-          form.answers = new ArrayList<>(sessionService.getAnswersForStageId(sessionId, stageId));
+          form.answers = new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId));
           Form<MultiAnswerForm> filledForm = formFactory.form(MultiAnswerForm.class).fill(form);
           return renderDecontrol(filledForm, stageId, sessionId, resumeCode);
         case UNKNOWN:
@@ -135,17 +135,18 @@ public class StageController extends Controller {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     return ok(selectOne.render(answerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView));
   }
 
-  private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId, String resumeCode) {
+  private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,
+                                 String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    String title = stageConfig.getQuestionTitle().orElse("Does your item have any of these characteristics?");
+    String title = stageConfig.getQuestionTitle().orElse("Check if your item is decontrolled");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
@@ -153,11 +154,12 @@ public class StageController extends Controller {
     return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answerViews, breadcrumbView));
   }
 
-  private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId, String resumeCode) {
+  private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId,
+                                  String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView));
@@ -178,7 +180,7 @@ public class StageController extends Controller {
           return renderDecontrol(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
               stageId, sessionId, resumeCode);
         } else {
-          sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+          sessionService.saveAnswerIdsForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
           return redirect(routes.OutcomeController.outcomeDecontrol(stageId, sessionId));
         }
       } else if (action == Action.NONE) {
@@ -220,7 +222,7 @@ public class StageController extends Controller {
               stageId, sessionId, resumeCode);
         } else {
           AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
-          sessionService.saveAnswersForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+          sessionService.saveAnswerIdsForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
           return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
         }
       } else if (action == Action.NONE) {
@@ -249,7 +251,7 @@ public class StageController extends Controller {
           .findAny();
       if (answerConfigOptional.isPresent()) {
         AnswerConfig answerConfig = answerConfigOptional.get();
-        sessionService.saveAnswersForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
+        sessionService.saveAnswerIdsForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
         return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
       } else {
         Logger.error("Unknown answer " + answer);

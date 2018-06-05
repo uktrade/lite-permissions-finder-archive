@@ -14,7 +14,7 @@ public interface GlobalDefinitionJDBIDao {
   GlobalDefinition get(@Bind("id") long id);
 
   @Mapper(GlobalDefinitionRSMapper.class)
-  @SqlQuery("SELECT * FROM global_definition WHERE term = :term")
+  @SqlQuery("SELECT * FROM global_definition WHERE LOWER(term) = LOWER(:term)")
   GlobalDefinition getByTerm(@Bind("term") String term);
 
   @SqlQuery(

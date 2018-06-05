@@ -9,6 +9,18 @@
   @errorSummary(form)
 } {
 
+  @if(flash.containsKey("error")) {
+    <p>
+    @flashBanner("error") {
+      @Html(flash.get("error"))
+    } {
+      @if(flash.containsKey("detail")) {
+        @Html(flash.get("detail"))
+      }
+    }
+    </p>
+  }
+
   <p>
     You don't have to complete everything in one go.
     If you want to return to this service later, you can use this code to recover your previous answers:

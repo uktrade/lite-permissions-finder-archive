@@ -1,10 +1,9 @@
-@import com.google.common.collect.Iterables
 @import models.view.BreadcrumbView
-@import views.html.util._
-@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import play.twirl.api.HtmlFormat
 @import views.html.common.page._
 @import views.html.common.state._
-@import play.twirl.api.HtmlFormat
+@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import views.html.util._
 
 @(form: Form[_], stageId: String, sessionId: String, resumeCode: String, title: String, breadcrumbView: BreadcrumbView)(secondaryHeading: Html)(formContent: Html)
 
@@ -79,4 +78,8 @@
       }
     </div>
   </div>
+
+  <script type="text/javascript">
+    $(document).ready(function(){LITEPermissionsFinder.Triage.setupPage()});
+  </script>
 }

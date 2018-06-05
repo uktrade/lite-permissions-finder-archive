@@ -1,4 +1,4 @@
-package components.client;
+package components.services;
 
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 

@@ -1,4 +1,4 @@
-package components.client;
+package components.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -41,7 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
   public CustomerServiceImpl(HttpExecutionContext httpContext, WSClient wsClient,
                              @Named("customerServiceAddress") String customerServiceAddress,
                              @Named("customerServiceTimeout") int timeout,
-                             @Named("JwtRequestAuthFilter") JwtRequestFilter jwtRequestFilter, ObjectMapper mapper) {
+                             @Named("jwtRequestFilter") JwtRequestFilter jwtRequestFilter, ObjectMapper mapper) {
     this.httpContext = httpContext;
     this.wsClient = wsClient;
     this.customerServiceAddress = customerServiceAddress;

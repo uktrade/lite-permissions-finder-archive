@@ -37,7 +37,7 @@ public class ContinueApplicationController {
       if (StringUtils.isNoneBlank(resumeCode)) {
         TriageSession triageSession = sessionService.getSessionByResumeCode(resumeCode);
         if (triageSession != null) {
-          String sessionId = triageSession.getSessionId();
+          String sessionId = triageSession.getId();
           String stageId = sessionService.getStageId(sessionId);
           if (stageId != null) {
             return redirect(routes.StageController.render(stageId, sessionId));
