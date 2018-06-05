@@ -332,7 +332,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   @Singleton
-  @Named("jwtRequestFilter")
   public JwtRequestFilter provideJwtRequestFilterConfig(UserServiceClientBasicAuth basicAuthClient,
                                                         SpireAuthManager spireAuthManager,
                                                         @Named("jwtSharedSecret") String jwtSharedSecret) {
