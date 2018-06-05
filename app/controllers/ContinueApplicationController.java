@@ -11,17 +11,19 @@ import play.data.FormFactory;
 import play.mvc.Result;
 import triage.session.SessionService;
 import triage.session.TriageSession;
-import views.html.continueApplication;
 
 public class ContinueApplicationController {
 
   private final FormFactory formFactory;
   private final SessionService sessionService;
+  private final views.html.continueApplication continueApplication;
 
   @Inject
-  public ContinueApplicationController(FormFactory formFactory, SessionService sessionService) {
+  public ContinueApplicationController(FormFactory formFactory, SessionService sessionService,
+                                       views.html.continueApplication continueApplication) {
     this.formFactory = formFactory;
     this.sessionService = sessionService;
+    this.continueApplication = continueApplication;
   }
 
   public Result renderForm() {

@@ -4,7 +4,7 @@
 @import views.html.triage.subAnswers
 @import views.html.frontendComponents.formCheckboxWithDetailPanel
 
-@this()
+@this(triagePage: triagePage)
 @(form: Form[_], stageId: String, sessionId: String, resumeCode: String, controlCode: String, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
 
 @triagePage(form, stageId, sessionId, resumeCode, title, breadcrumbView){

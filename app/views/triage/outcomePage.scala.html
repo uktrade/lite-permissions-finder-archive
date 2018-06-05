@@ -1,6 +1,7 @@
 @import views.html.util._
 @import views.html.common.page.twoThirdsColumn
 
+@this(standardPage: standardPage)
 @(title: String, sessionId: String, resumeCode: String, showSharingOptions: Boolean = true)(content: Html)
 
 @standardPage(title.toString, None, twoThirdsColumn = false, resumeCode = resumeCode) {

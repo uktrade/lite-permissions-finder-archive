@@ -13,7 +13,6 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.ogel.ogelNotApplicable;
 
 import java.util.concurrent.CompletionStage;
 
@@ -24,18 +23,21 @@ public class OgelNotApplicableController {
   private final PermissionsFinderDao permissionsFinderDao;
   private final HttpExecutionContext httpExecutionContext;
   private final OgelServiceClient ogelServiceClient;
+  private final views.html.ogel.ogelNotApplicable ogelNotApplicable;
 
   @Inject
   public OgelNotApplicableController(JourneyManager journeyManager,
-                                    FormFactory formFactory,
-                                    PermissionsFinderDao permissionsFinderDao,
-                                    HttpExecutionContext httpExecutionContext,
-                                    OgelServiceClient ogelServiceClient) {
+                                     FormFactory formFactory,
+                                     PermissionsFinderDao permissionsFinderDao,
+                                     HttpExecutionContext httpExecutionContext,
+                                     OgelServiceClient ogelServiceClient,
+                                     views.html.ogel.ogelNotApplicable ogelNotApplicable) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
     this.httpExecutionContext = httpExecutionContext;
     this.ogelServiceClient = ogelServiceClient;
+    this.ogelNotApplicable = ogelNotApplicable;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -50,11 +52,9 @@ public class OgelNotApplicableController {
     String action = form.get().action;
     if ("continueToLicence".equals(action)) {
       return journeyManager.performTransition(Events.OGEL_CONTINUE_TO_NON_APPLICABLE_LICENCE);
-    }
-    else if("chooseAnotherLicence".equals(action)) {
+    } else if ("chooseAnotherLicence".equals(action)) {
       return journeyManager.performTransition(Events.OGEL_CHOOSE_AGAIN);
-    }
-    else {
+    } else {
       throw new FormStateException("Unknown value for action: \"" + action + "\"");
     }
   }
@@ -62,7 +62,7 @@ public class OgelNotApplicableController {
   public CompletionStage<Result> renderWithForm(Form<OgelNotApplicableForm> form) {
     return ogelServiceClient.get(permissionsFinderDao.getOgelId())
         .thenApplyAsync(ogelResult -> ok(ogelNotApplicable.render(form, new OgelNotApplicableDisplay(ogelResult,
-              permissionsFinderDao.getControlCodeForRegistration()))), httpExecutionContext.current());
+            permissionsFinderDao.getControlCodeForRegistration()))), httpExecutionContext.current());
   }
 
   public static class OgelNotApplicableForm {

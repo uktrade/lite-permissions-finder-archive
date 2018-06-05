@@ -24,7 +24,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
-import views.html.licencefinder.results;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +47,7 @@ public class ResultsController extends Controller {
   private final FrontendServiceClient frontendClient;
   private final ApplicableOgelServiceClient applicableClient;
   private final ContextParamManager contextParam;
+  private final views.html.licencefinder.results results;
 
   public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
 
@@ -56,7 +56,8 @@ public class ResultsController extends Controller {
                            HttpExecutionContext httpContext,
                            LicenceFinderDao dao, @Named("countryProviderExport") CountryProvider countryProvider,
                            FrontendServiceClient frontendClient,
-                           ApplicableOgelServiceClient applicableClient, ContextParamManager contextParam) {
+                           ApplicableOgelServiceClient applicableClient, ContextParamManager contextParam,
+                           views.html.licencefinder.results results) {
     this.formFactory = formFactory;
     this.httpContext = httpContext;
     this.dao = dao;
@@ -64,6 +65,7 @@ public class ResultsController extends Controller {
     this.frontendClient = frontendClient;
     this.applicableClient = applicableClient;
     this.contextParam = contextParam;
+    this.results = results;
   }
 
 

@@ -17,7 +17,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
-import views.html.destinationCountry;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +32,7 @@ public class DestinationCountryController extends Controller {
   private final FormFactory formFactory;
   private final PermissionsFinderDao dao;
   private final CountryProvider countryProvider;
+  private final views.html.destinationCountry destinationCountry;
 
   public static final int MIN_NUMBER_OF_THROUGH_COUNTRIES = 1;
   public static final int MAX_NUMBER_OF_THROUGH_COUNTRIES = 4;
@@ -46,11 +46,13 @@ public class DestinationCountryController extends Controller {
   public DestinationCountryController(JourneyManager journeyManager,
                                       FormFactory formFactory,
                                       PermissionsFinderDao dao,
-                                      @Named("countryProviderExport") CountryProvider countryProvider) {
+                                      @Named("countryProviderExport") CountryProvider countryProvider,
+                                      views.html.destinationCountry destinationCountry) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.dao = dao;
     this.countryProvider = countryProvider;
+    this.destinationCountry = destinationCountry;
   }
 
   /**

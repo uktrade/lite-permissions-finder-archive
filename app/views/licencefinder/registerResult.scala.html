@@ -4,6 +4,7 @@
 @import util._
 @import views.html.ogel._
 
+@this(standardPage: standardPage)
 @(view: RegisterResultView, ogel: OgelFullView, dashboardUrl: String)
 @standardPage(view.getTitle, Some(heading(view.getTitle))) {
 

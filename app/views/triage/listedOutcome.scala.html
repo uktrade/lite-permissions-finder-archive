@@ -8,7 +8,7 @@
 @import com.google.common.collect.Iterables
 @import views.html.common.page._
 
-@this()
+@this(outcomePage: outcomePage)
 @(form: Form[_], controlEntryId: String, sessionId: String, resumeCode: String, breadcrumbItemViews: List[BreadcrumbItemView], controlCode: String, description: String, subAnswerViews: List[SubAnswerView])
 
 @outcomePage("Item is listed", sessionId, resumeCode) {

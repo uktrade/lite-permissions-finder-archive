@@ -3,6 +3,7 @@
 @import views.html.common.page._
 @import views.html.common.state._
 
+@this(standardPage: standardPage)
 @(form: Form[_], summary: Summary, isResumedApplication: Boolean)
 
 @standardPage("Check your answers so far", Some(heading("Check your answers so far")), twoThirdsColumn = false) {

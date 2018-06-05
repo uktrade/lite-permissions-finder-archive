@@ -4,9 +4,6 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.common.cache.CountryProvider;
-import components.common.journey.JourneyManager;
-import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
@@ -18,8 +15,6 @@ import play.data.FormFactory;
 import play.data.validation.Constraints;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.ogel.ogelRegisterResult;
-import views.html.ogel.ogelRegisterToUse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,35 +23,32 @@ import java.util.function.Function;
 
 public class OgelRegisterToUseController {
 
-  private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao dao;
   private final HttpExecutionContext httpContext;
   private final OgelServiceClient ogelServiceClient;
   private final OgelConditionsServiceClient ogelConditionsServiceClient;
-  private final ContextParamManager contextParamManager;
   private final String dashboardUrl;
-  private final CountryProvider countryProvider;
+  private final views.html.ogel.ogelRegisterResult ogelRegisterResult;
+  private final views.html.ogel.ogelRegisterToUse ogelRegisterToUse;
 
   @Inject
-  public OgelRegisterToUseController(JourneyManager journeyManager,
-                                     FormFactory formFactory,
+  public OgelRegisterToUseController(FormFactory formFactory,
                                      PermissionsFinderDao dao,
                                      HttpExecutionContext httpContext,
                                      OgelServiceClient ogelServiceClient,
                                      OgelConditionsServiceClient ogelConditionsServiceClient,
-                                     ContextParamManager contextParamManager,
                                      @Named("dashboardUrl") String dashboardUrl,
-                                     @Named("countryProviderExport") CountryProvider countryProvider) {
-    this.journeyManager = journeyManager;
+                                     views.html.ogel.ogelRegisterResult ogelRegisterResult,
+                                     views.html.ogel.ogelRegisterToUse ogelRegisterToUse) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.httpContext = httpContext;
     this.ogelServiceClient = ogelServiceClient;
     this.ogelConditionsServiceClient = ogelConditionsServiceClient;
-    this.contextParamManager = contextParamManager;
     this.dashboardUrl = dashboardUrl;
-    this.countryProvider = countryProvider;
+    this.ogelRegisterResult = ogelRegisterResult;
+    this.ogelRegisterToUse = ogelRegisterToUse;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -92,17 +84,17 @@ public class OgelRegisterToUseController {
 
     return ogelConditionsServiceClient.get(ogelId, controlCode)
         .thenApplyAsync(conditionsResult ->
-          ogelServiceClient.get(dao.getOgelId())
-              .thenApplyAsync(ogelResult -> {
-                // True when no restriction service result, otherwise check with isItemAllowed.
-                // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service or the re are missing control codes
-                //boolean allowedToProceed = conditionsResult.isEmpty || (!conditionsResult.isMissingControlCodes
-                   // && OgelConditionsServiceClient.isItemAllowed(conditionsResult, dao.getOgelConditionsApply().get()));
-                boolean allowedToProceed = true; // We do not now apply conditions TODO check
+                ogelServiceClient.get(dao.getOgelId())
+                    .thenApplyAsync(ogelResult -> {
+                      // True when no restriction service result, otherwise check with isItemAllowed.
+                      // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service or the re are missing control codes
+                      //boolean allowedToProceed = conditionsResult.isEmpty || (!conditionsResult.isMissingControlCodes
+                      // && OgelConditionsServiceClient.isItemAllowed(conditionsResult, dao.getOgelConditionsApply().get()));
+                      boolean allowedToProceed = true; // We do not now apply conditions TODO check
 
-                return ok(ogelRegisterToUse.render(form, ogelResult, controlCode, allowedToProceed, getLicenceFinderAnswers()));
-              }, httpContext.current())
-        , httpContext.current())
+                      return ok(ogelRegisterToUse.render(form, ogelResult, controlCode, allowedToProceed, getLicenceFinderAnswers()));
+                    }, httpContext.current())
+            , httpContext.current())
         .thenCompose(Function.identity());
   }
 
@@ -119,8 +111,6 @@ public class OgelRegisterToUseController {
   private final String EXHIBITION_QUESTION = "Are you exporting goods for or after exhibition or demonstration?";
 
   private final String BEFORE_OR_LESS_QUESTION = "Were your goods manufactured before 1897, and worth less than £30,000?";
-
-
 
   private List<AnswerView> getLicenceFinderAnswers() {
     List<AnswerView> answerViews = new ArrayList<>();

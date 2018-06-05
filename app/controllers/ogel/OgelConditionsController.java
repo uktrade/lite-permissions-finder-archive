@@ -18,7 +18,6 @@ import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import utils.CountryUtils;
-import views.html.ogel.ogelConditions;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +33,7 @@ public class OgelConditionsController {
   private final OgelServiceClient ogelServiceClient;
   private final OgelConditionsServiceClient ogelConditionsServiceClient;
   private final VirtualEUOgelClient virtualEUOgelClient;
+  private final views.html.ogel.ogelConditions ogelConditions;
 
   @Inject
   public OgelConditionsController(JourneyManager journeyManager,
@@ -42,7 +42,8 @@ public class OgelConditionsController {
                                   HttpExecutionContext httpExecutionContext,
                                   OgelServiceClient ogelServiceClient,
                                   OgelConditionsServiceClient ogelConditionsServiceClient,
-                                  VirtualEUOgelClient virtualEUOgelClient) {
+                                  VirtualEUOgelClient virtualEUOgelClient,
+                                  views.html.ogel.ogelConditions ogelConditions) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -50,6 +51,7 @@ public class OgelConditionsController {
     this.ogelServiceClient = ogelServiceClient;
     this.ogelConditionsServiceClient = ogelConditionsServiceClient;
     this.virtualEUOgelClient = virtualEUOgelClient;
+    this.ogelConditions = ogelConditions;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -76,11 +78,9 @@ public class OgelConditionsController {
         .thenComposeAsync(conditionsResult -> {
           if (conditionsResult.isEmpty) {
             throw new BusinessRuleException("Should not be able to progress without conditions");
-          }
-          else if (conditionsResult.isMissingControlCodes) {
+          } else if (conditionsResult.isMissingControlCodes) {
             throw new BusinessRuleException("Should not be able to progress with missing control codes");
-          }
-          else {
+          } else {
             String sourceCountry = permissionsFinderDao.getSourceCountry();
             List<String> destinationCountries = CountryUtils.getDestinationCountries(
                 permissionsFinderDao.getFinalDestinationCountry(), permissionsFinderDao.getThroughDestinationCountries());
@@ -88,22 +88,19 @@ public class OgelConditionsController {
             // branch on this ogel being a virtual eu or not
             return virtualEUOgelClient.sendServiceRequest(controlCode, sourceCountry, destinationCountries)
                 .thenComposeAsync(virtualEUResult -> {
-                  if(virtualEUResult.isVirtualEu()) {
+                  if (virtualEUResult.isVirtualEu()) {
                     // Optional.get() should be fine, doConditionApply checks the state of this optional
                     if (OgelConditionsServiceClient.isItemAllowed(conditionsResult, doConditionsApply)) {
                       return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
                           VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_APPLY);
-                    }
-                    else {
+                    } else {
                       return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE,
                           VirtualEUOgelStage.VIRTUAL_EU_CONDITIONS_DO_NOT_APPLY);
                     }
-                  }
-                  else {
+                  } else {
                     if (OgelConditionsServiceClient.isItemAllowed(conditionsResult, doConditionsApply)) {
                       return journeyManager.performTransition(Events.OGEL_CONDITIONS_DO_APPLY);
-                    }
-                    else {
+                    } else {
                       return journeyManager.performTransition(Events.OGEL_CONDITIONS_DO_NOT_APPLY);
                     }
                   }
