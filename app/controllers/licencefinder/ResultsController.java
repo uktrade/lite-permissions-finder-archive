@@ -106,14 +106,17 @@ public class ResultsController extends Controller {
     List<String> exportRouteCountries = getExportRouteCountries();
 
     List<String> activities = Collections.emptyList();
+    boolean showHistoricOgel = true; // set as default
     Optional<QuestionsController.QuestionsForm> optQuestionsForm = dao.getQuestionsForm();
     if (optQuestionsForm.isPresent()) {
-      activities = getActivityTypes(optQuestionsForm.get());
+      QuestionsController.QuestionsForm questionsForm = optQuestionsForm.get();
+      activities = getActivityTypes(questionsForm);
+      showHistoricOgel = questionsForm.beforeOrLess;
     }
 
     CompletionStage<FrontendServiceResult> frontendServiceStage = frontendClient.get(controlCode);
 
-    return applicableClient.get(controlCode, dao.getSourceCountry(), exportRouteCountries, activities)
+    return applicableClient.get(controlCode, dao.getSourceCountry(), exportRouteCountries, activities, showHistoricOgel)
         .thenCombineAsync(frontendServiceStage, (applicableOgelView, frontendServiceResult) -> {
           if (!applicableOgelView.isEmpty()) {
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),

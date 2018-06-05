@@ -15,7 +15,7 @@ public class OgelResultsDisplay {
   public OgelResultsDisplay(List<ApplicableOgelView> ogels, FrontEndControlCodeView frontEndControlCodeView, List<String> countryNames, String controlCode, String destinationCountry) {
     this.ogels = ogels;
     if (!ogels.isEmpty()) {
-      this.pageTitle = "Open licenses available for exporting goods described in Control list entry " + controlCode + " to " + destinationCountry;
+      this.pageTitle = "Open licences available for exporting goods described in Control list entry " + controlCode + " to " + destinationCountry;
     } else {
       this.pageTitle = "No open licences available";
     }

@@ -5,6 +5,7 @@ import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
@@ -39,12 +40,18 @@ public class ApplicableOgelServiceClient {
     this.credentials = credentials;
   }
 
-  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry,
-                                                       List<String> destinationCountries, List<String> activityTypes) {
+  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry, List<String> destinationCountries,
+                                                       List<String> activityTypes, boolean showHistoricOgel) {
+    return getApplicableOgelViews(controlCode, sourceCountry, destinationCountries, activityTypes, showHistoricOgel);
+  }
 
-    Logger.info("controlCode: " + controlCode);
-    Logger.info("sourceCountry: " + sourceCountry);
+  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry, List<String> destinationCountries,
+                                                       List<String> activityTypes) {
+    return getApplicableOgelViews(controlCode, sourceCountry, destinationCountries, activityTypes, true);
+  }
 
+  private CompletionStage<List<ApplicableOgelView>> getApplicableOgelViews(String controlCode, String sourceCountry,
+                                                       List<String> destinationCountries, List<String> activityTypes, boolean showHistoricOgel) {
 
     WSRequest req = wsClient.url(webServiceUrl)
         .setAuth(credentials)
@@ -65,10 +72,21 @@ public class ApplicableOgelServiceClient {
         throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /applicable-ogels: %s",
             response.getStatus()));
       } else {
-        ApplicableOgelView[] applicableOgelView = Json.fromJson(response.asJson(), ApplicableOgelView[].class);
-        return Stream.of(applicableOgelView).collect(Collectors.toList());
+        return filterHistoric(Json.fromJson(response.asJson(), ApplicableOgelView[].class), showHistoricOgel);
       }
     }, httpExecutionContext.current());
+  }
+
+  /**
+   * Removes historic ogels from results if required
+   */
+  private List<ApplicableOgelView> filterHistoric(ApplicableOgelView[] views, boolean showHistoricOgel) {
+    List<ApplicableOgelView> filteredViews = Stream.of(views)
+        .filter(view -> showHistoricOgel || !StringUtils.containsIgnoreCase(view.getName(), "historic military goods"))
+        .collect(Collectors.toList());
+
+    Logger.info("Filter Historic Ogels (" + showHistoricOgel + ") [" + views.length + "/" + filteredViews.size() + "]");
+    return filteredViews;
   }
 
 }
