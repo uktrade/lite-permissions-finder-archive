@@ -1,5 +1,6 @@
 package controllers;
 
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -8,15 +9,25 @@ import components.client.CustomerService;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.common.client.userservice.UserServiceClientJwt;
+import components.services.AnswerViewService;
+import components.services.BreadcrumbViewService;
+import models.view.AnswerView;
+import models.view.BreadcrumbItemView;
+import models.view.BreadcrumbView;
 import org.pac4j.play.java.Secure;
 import play.Logger;
 import play.mvc.Result;
+import triage.config.ControlEntryConfig;
+import triage.config.JourneyConfigService;
+import triage.config.StageConfig;
 import triage.session.SessionService;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;
 import uk.gov.bis.lite.user.api.view.UserDetailsView;
 import views.html.nlr.nlrLetter;
 import views.html.nlr.nlrRegisterSuccess;
+import views.html.triage.decontrolBreadcrumb;
+import views.html.triage.itemNotFoundBreadcrumb;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,34 +42,53 @@ public class NlrController {
   private final SpireAuthManager authManager;
   private final UserServiceClientJwt userService;
   private final CustomerService customerService;
+  private final BreadcrumbViewService breadcrumbViewService;
+  private final AnswerViewService answerViewService;
+  private final JourneyConfigService journeyConfigService;
 
   @Inject
-  public NlrController(SessionService sessionService, SpireAuthManager authManager, UserServiceClientJwt userService, CustomerService customerService) {
+  public NlrController(SessionService sessionService, SpireAuthManager authManager,
+                       UserServiceClientJwt userService, CustomerService customerService,
+                       BreadcrumbViewService breadcrumbViewService, AnswerViewService answerViewService,
+                       JourneyConfigService journeyConfigService) {
     this.sessionService = sessionService;
     this.authManager = authManager;
     this.userService = userService;
     this.customerService = customerService;
+    this.breadcrumbViewService = breadcrumbViewService;
+    this.answerViewService = answerViewService;
+    this.journeyConfigService = journeyConfigService;
   }
 
-  public Result registerNlr(String sessionId, String stageId) {
+  public Result registerNlr(String sessionId, String stageId, String outcomeType) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(nlrRegisterSuccess.render(resumeCode, sessionId));
+    return ok(nlrRegisterSuccess.render(resumeCode, outcomeType, stageId));
   }
 
-  //todo
-  public Result generateNlrLetter(String sessionId, String resumeCode) throws ExecutionException, InterruptedException {
-
+  public Result generateNlrLetter(String stageIdOrControlEntryId, String resumeCode, String outcomeType) throws ExecutionException, InterruptedException {
     String userId = getUserId();
     UserDetailsView userDetailsView = userService.getUserDetailsView(userId).toCompletableFuture().get();
     Optional<SiteView.SiteViewAddress> optSiteAddress = getSiteAddress(userId);
 
-    SiteView.SiteViewAddress address = new SiteView.SiteViewAddress();
-    if (optSiteAddress.isPresent()) {
-      address = optSiteAddress.get();
-    }
+    SiteView.SiteViewAddress address = optSiteAddress.orElse(new SiteView.SiteViewAddress());
     String todayDate = getDate();
 
-    return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address));
+    switch (outcomeType) {
+      case "DECONTROL": {
+        StageConfig stageConfig = journeyConfigService.getStageConfigById(stageIdOrControlEntryId);
+        List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig);
+        BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageIdOrControlEntryId);
+        return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, outcomeType, decontrolBreadcrumb.render(breadcrumbView, answerViews)));
+      }
+      case "ITEM_NOT_FOUND": {
+        ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(stageIdOrControlEntryId);
+        List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
+        return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, outcomeType, itemNotFoundBreadcrumb.render(breadcrumbItemViews)));
+      }
+      default: {
+        return badRequest("Failed to generate NLR letter");
+      }
+    }
   }
 
   private Optional<SiteView.SiteViewAddress> getSiteAddress(String userId) {

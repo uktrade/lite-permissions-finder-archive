@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
-import controllers.licencefinder.LicenceFinderController;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -19,6 +18,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
+import triage.config.OutcomeType;
 import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.PageTypeUtil;
@@ -72,7 +72,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderItemNotFound(form, controlEntryConfig, sessionId);
     } else {
-      return redirect(routes.NlrController.registerNlr(sessionId, controlEntryId));
+      return redirect(routes.NlrController.registerNlr(sessionId, controlEntryId, OutcomeType.ITEM_NOT_FOUND.toString()));
     }
   }
 
@@ -130,7 +130,7 @@ public class OutcomeController extends Controller {
         if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
           return renderOutcomeDecontrol(form, stageId, sessionId, answers);
         } else {
-          return redirect(routes.NlrController.registerNlr(sessionId, stageId));
+          return redirect(routes.NlrController.registerNlr(sessionId, stageId, OutcomeType.DECONTROL.toString()));
         }
       }
     }

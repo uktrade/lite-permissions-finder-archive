@@ -1,6 +1,6 @@
 @import util._
 
-@(resumeCode: String, sessionId: String)
+@(resumeCode: String, outcomeType: String, stageId: String)
 
   @nlrSuccess = {You have successfully registered a "No Licence Required" letter}
 
@@ -12,7 +12,7 @@
       </p>
 
     <p>
-      <a href='@routes.NlrController.generateNlrLetter(sessionId, resumeCode)' class="bold font-medium">
+      <a href='@routes.NlrController.generateNlrLetter(stageId, resumeCode, outcomeType)' class="bold font-medium">
       View your "No Licence Required Letter"
       </a>
     </p>

@@ -1,10 +1,7 @@
 @import models.view.BreadcrumbItemView
-@import play.twirl.api.HtmlFormat
-@import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import views.html.triage.outcomePage
 @import views.html.common.state.contextFormParams
 @import views.html.common.form.formCheckbox
-@import com.google.common.collect.Iterables
 @import views.html.common.page._
 
 @this()
@@ -20,30 +17,7 @@
     Based on the choices you've made, your item cannot be found on the UK Military list.
   </p>
 
-  @controlCodeBreadcrumbs(isWide = true) {
-    @for(breadcrumbItemView <- breadcrumbItemsViews) {
-      @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
-        @if(breadcrumbItemView.getText!=null) {
-          <span class="bold">@breadcrumbItemView.getText</span>
-        }
-        @if(breadcrumbItemView.getDescription!=null) {
-          @Html(breadcrumbItemView.getDescription)
-        }
-        @if(!breadcrumbItemView.getNoteViews.isEmpty) {
-          @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
-            @controlCodeBreadcrumbsNotes() {
-              @for(noteView <- breadcrumbItemView.getNoteViews) {
-                <li>@Html(noteView.getText)</li>
-              }
-            }
-          }
-        }
-      }
-    }
-    @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbItemsViews).getUrl) {
-      <span class="outcome-detail-box-heading">Item has none of the controlled characteristics</span>
-    }(HtmlFormat.empty)
-  }
+  @itemNotFoundBreadcrumb(breadcrumbItemsViews)
 
   <h2 class="heading-large">What you should do next</h2>
 
