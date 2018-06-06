@@ -136,7 +136,7 @@ public class StageController extends Controller {
     String title = stageConfig.getQuestionTitle().orElse("Select one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
     return ok(selectOne.render(answerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
@@ -151,7 +151,7 @@ public class StageController extends Controller {
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
     return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
   }
@@ -162,7 +162,7 @@ public class StageController extends Controller {
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
     return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
