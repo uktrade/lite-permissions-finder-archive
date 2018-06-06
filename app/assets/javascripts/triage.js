@@ -5,7 +5,7 @@ LITEPermissionsFinder.Triage = {
     LITEPermissionsFinder.Triage._bindModals($(document.body));
   },
   _bindModals: function($target) {
-    $target.find("a[data-control-entry-id], a[data-definition-id]").click(LITEPermissionsFinder.Triage._modalLinkOnClick);
+    $target.on("click", "a[data-control-entry-id], a[data-definition-id]", LITEPermissionsFinder.Triage._modalLinkOnClick);
   },
   _modalLinkOnClick: function(event) {
     event.preventDefault();
