@@ -37,7 +37,7 @@ public class SessionServiceImpl implements SessionService {
     String sessionId = UUID.randomUUID().toString();
     long journeyId = journeyDao.getJourneysByJourneyName("MILITARY").get(0).getId();
     String resumeCode = generateResumeCode();
-    TriageSession triageSession = new TriageSession(sessionId, journeyId, resumeCode, null, null);
+    TriageSession triageSession = new TriageSession(sessionId, journeyId, resumeCode, null, null, null);
     sessionDao.insert(triageSession);
     return triageSession;
   }
@@ -68,9 +68,8 @@ public class SessionServiceImpl implements SessionService {
   }
 
   @Override
-  public String getStageId(String sessionId) {
-    // TODO
-    return null;
+  public void updateLastStageId(String sessionId, String lastStageId) {
+    sessionDao.updateLastStageId(sessionId, Long.parseLong(lastStageId));
   }
 
   private String generateResumeCode() {
