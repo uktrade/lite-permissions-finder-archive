@@ -3,7 +3,6 @@ package components.services;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import controllers.routes;
-import models.cms.StageAnswer;
 import models.cms.enums.StageAnswerOutcomeType;
 import models.enums.PageType;
 import models.view.BreadcrumbItemView;
@@ -95,12 +94,12 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   private String createChangeUrl(String sessionId, String controlEntryId, List<String> stageIds) {
     if (stageIds.isEmpty()) {
-      List<StageAnswer> stageAnswers = journeyConfigService.getStageAnswersByControlEntryIdAndOutcomeType(
+      List<StageConfig> stageConfigs = journeyConfigService.getStageConfigsByControlEntryIdAndOutcomeType(
           Long.parseLong(controlEntryId), StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
-      if (stageAnswers.isEmpty()) {
+      if (stageConfigs.isEmpty()) {
         return null;
       } else {
-        return routes.StageController.render(Long.toString(stageAnswers.get(0).getParentStageId()), sessionId).toString();
+        return routes.StageController.render(stageConfigs.get(0).getStageId(), sessionId).toString();
       }
     } else {
       Optional<StageConfig> stageConfigOptional = stageIds.stream()

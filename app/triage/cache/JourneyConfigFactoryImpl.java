@@ -1,8 +1,5 @@
 package triage.cache;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.NoteDao;
@@ -26,58 +23,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class JourneyConfigCacheImpl implements JourneyConfigCache {
+public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
   private final StageDao stageDao;
-  private final StageAnswerDao stageAnswerDao;
-  private final ControlEntryDao controlEntryDao;
-  private final NoteDao noteDao;
   private final RichTextParser richTextParser;
-
-  private final LoadingCache<String, StageConfig> stageConfigCache =
-      CacheBuilder.newBuilder().build(CacheLoader.from(this::createStageConfigForId));
-  private final LoadingCache<String, ControlEntryConfig> controlEntryCache =
-      CacheBuilder.newBuilder().build(CacheLoader.from(this::createControlEntryConfigForId));
-  private final LoadingCache<String, List<NoteConfig>> noteCache =
-      CacheBuilder.newBuilder().build(CacheLoader.from(this::createNoteConfigsForStageId));
+  private final ControlEntryDao controlEntryDao;
+  private final StageAnswerDao stageAnswerDao;
+  private final NoteDao noteDao;
 
   @Inject
-  public JourneyConfigCacheImpl(StageDao stageDao, StageAnswerDao stageAnswerDao,
-                                ControlEntryDao controlEntryDao, NoteDao noteDao, RichTextParser richTextParser) {
+  public JourneyConfigFactoryImpl(StageDao stageDao, RichTextParser richTextParser,
+                                  ControlEntryDao controlEntryDao, StageAnswerDao stageAnswerDao,
+                                  NoteDao noteDao) {
     this.stageDao = stageDao;
-    this.stageAnswerDao = stageAnswerDao;
-    this.controlEntryDao = controlEntryDao;
-    this.noteDao = noteDao;
     this.richTextParser = richTextParser;
+    this.controlEntryDao = controlEntryDao;
+    this.stageAnswerDao = stageAnswerDao;
+    this.noteDao = noteDao;
   }
 
   @Override
-  public StageConfig getStageConfigById(String stageId) {
-    return stageConfigCache.getUnchecked(stageId);
-  }
-
-  @Override
-  public List<NoteConfig> getNoteConfigsByStageId(String stageId) {
-    return noteCache.getUnchecked(stageId);
-  }
-
-  @Override
-  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
-    return controlEntryCache.getUnchecked(controlEntryId);
-  }
-
-  @Override
-  public void flushCache() {
-    stageConfigCache.invalidateAll();
-    controlEntryCache.invalidateAll();
-    noteCache.invalidateAll();
-
-    stageConfigCache.cleanUp();
-    controlEntryCache.cleanUp();
-    noteCache.cleanUp();
-  }
-
-  private StageConfig createStageConfigForId(String stageId) {
+  public StageConfig createStageConfigForId(String stageId) {
     Stage stage = stageDao.getStage(Long.parseLong(stageId));
     if (stage == null) {
       return null;
@@ -86,11 +52,13 @@ public class JourneyConfigCacheImpl implements JourneyConfigCache {
     }
   }
 
-  private ControlEntryConfig createControlEntryConfigForId(String controlEntryId) {
+  @Override
+  public ControlEntryConfig createControlEntryConfigForId(String controlEntryId) {
     return createControlEntryConfig(controlEntryDao.getControlEntry(Long.parseLong(controlEntryId)));
   }
 
-  private List<NoteConfig> createNoteConfigsForStageId(String stageId) {
+  @Override
+  public List<NoteConfig> createNoteConfigsForStageId(String stageId) {
     return noteDao.getNotesForStageId(Long.parseLong(stageId))
         .stream()
         .map(this::createNoteConfig)
