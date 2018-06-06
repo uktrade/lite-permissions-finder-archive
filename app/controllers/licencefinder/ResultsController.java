@@ -140,7 +140,7 @@ public class ResultsController extends Controller {
     if (!StringUtils.isBlank(destination)) {
       countries.add(destination);
     }
-    String first = dao.getDestinationCountry();
+    String first = dao.getFirstConsigneeCountry();
     if (!StringUtils.isBlank(first)) {
       countries.add(first);
     }
@@ -154,10 +154,10 @@ public class ResultsController extends Controller {
     map.put(OgelActivityType.MIL_ANY, OgelActivityType.MIL_ANY.value());
     map.put(OgelActivityType.MIL_GOV, OgelActivityType.MIL_GOV.value());
     map.put(OgelActivityType.REPAIR, OgelActivityType.REPAIR.value());
-    if ("false".equals(questionsForm.forRepair)) {
+    if (!questionsForm.forRepair) {
       map.remove(OgelActivityType.REPAIR);
     }
-    if ("false".equals(questionsForm.forExhibition)) {
+    if (!questionsForm.forExhibition) {
       map.remove(OgelActivityType.EXHIBITION);
     }
     return map.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
