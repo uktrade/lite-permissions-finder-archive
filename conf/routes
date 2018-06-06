@@ -151,8 +151,8 @@ GET     /cms/dummy/test-journey               controllers.cms.DummyController.cr
 
 GET     /register/notFoundNlr                                       controllers.NlrController.registerNotFoundNlr(sessionId, controlEntryId, nlrType)
 GET     /register/decontrolNlr                                      controllers.NlrController.registerDecontrolNlr(sessionId, stageId, nlrType)
-GET     /generate/notFound/nlr-letter                               controllers.NlrController.generateNotFoundNlrLetter(controlEntryId, resumeCode, nlrType)
-GET     /generate/decontrol/nlr-letter                              controllers.NlrController.generateDecontrolNlrLetter(stageId, resumeCode, nlrType)
+GET     /generate/notFound/nlr-letter                               controllers.NlrController.generateNotFoundNlrLetter(sessionId, controlEntryId, resumeCode, nlrType)
+GET     /generate/decontrol/nlr-letter                              controllers.NlrController.generateDecontrolNlrLetter(sessionId, stageId, resumeCode, nlrType)
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
 GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)

@@ -2,6 +2,7 @@
 @import uk.gov.bis.lite.customer.api.view.SiteView
 @import util._
 
+@this(standardPage: standardPage)
 @(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, outcomeType: String, nlrBreadcrumb: Html)
 
 @standardPage("NLR Letter", Some(heading(""))) {

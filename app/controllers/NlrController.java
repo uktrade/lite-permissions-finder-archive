@@ -22,8 +22,6 @@ import triage.session.SessionService;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;
 import uk.gov.bis.lite.user.api.view.UserDetailsView;
-import views.html.nlr.nlrLetter;
-import views.html.nlr.nlrRegisterSuccess;
 import views.html.triage.decontrolBreadcrumb;
 import views.html.triage.itemNotFoundBreadcrumb;
 
@@ -43,12 +41,16 @@ public class NlrController {
   private final BreadcrumbViewService breadcrumbViewService;
   private final AnswerViewService answerViewService;
   private final JourneyConfigService journeyConfigService;
+  private final views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess;
+  private final views.html.nlr.nlrLetter nlrLetter;
+
 
   @Inject
   public NlrController(SessionService sessionService, SpireAuthManager authManager,
                        UserServiceClientJwt userService, CustomerService customerService,
                        BreadcrumbViewService breadcrumbViewService, AnswerViewService answerViewService,
-                       JourneyConfigService journeyConfigService) {
+                       JourneyConfigService journeyConfigService, views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess,
+                       views.html.nlr.nlrLetter nlrLetter) {
     this.sessionService = sessionService;
     this.authManager = authManager;
     this.userService = userService;
@@ -56,19 +58,21 @@ public class NlrController {
     this.breadcrumbViewService = breadcrumbViewService;
     this.answerViewService = answerViewService;
     this.journeyConfigService = journeyConfigService;
+    this.nlrRegisterSuccess = nlrRegisterSuccess;
+    this.nlrLetter = nlrLetter;
   }
 
   public Result registerNotFoundNlr(String sessionId, String controlEntryId, String nlrType) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(nlrRegisterSuccess.render(resumeCode, nlrType, controlEntryId));
+    return ok(nlrRegisterSuccess.render(sessionId, resumeCode, nlrType, controlEntryId));
   }
 
   public Result registerDecontrolNlr(String sessionId, String stageId, String nlrType) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(nlrRegisterSuccess.render(resumeCode, nlrType, stageId));
+    return ok(nlrRegisterSuccess.render(sessionId, resumeCode, nlrType, stageId));
   }
 
-  public Result generateNotFoundNlrLetter(String controlEntryId, String resumeCode, String nlrType) throws ExecutionException, InterruptedException {
+  public Result generateNotFoundNlrLetter(String sessionId, String controlEntryId, String resumeCode, String nlrType) throws ExecutionException, InterruptedException {
     String userId = getUserId();
     UserDetailsView userDetailsView = userService.getUserDetailsView(userId).toCompletableFuture().get();
     Optional<SiteView.SiteViewAddress> optSiteAddress = getSiteAddress(userId);
@@ -77,12 +81,11 @@ public class NlrController {
     String todayDate = getDate();
 
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
     return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrType, itemNotFoundBreadcrumb.render(breadcrumbItemViews)));
-
   }
 
-  public Result generateDecontrolNlrLetter(String stageId, String resumeCode, String nlrType) throws ExecutionException, InterruptedException {
+  public Result generateDecontrolNlrLetter(String sessionId, String stageId, String resumeCode, String nlrType) throws ExecutionException, InterruptedException {
     String userId = getUserId();
     UserDetailsView userDetailsView = userService.getUserDetailsView(userId).toCompletableFuture().get();
     Optional<SiteView.SiteViewAddress> optSiteAddress = getSiteAddress(userId);
@@ -92,7 +95,7 @@ public class NlrController {
 
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrType, decontrolBreadcrumb.render(breadcrumbView, answerViews)));
   }
 
