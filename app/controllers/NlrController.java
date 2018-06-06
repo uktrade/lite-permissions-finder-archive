@@ -60,9 +60,9 @@ public class NlrController {
     this.journeyConfigService = journeyConfigService;
   }
 
-  public Result registerNlr(String sessionId, String stageId, String outcomeType) {
+  public Result registerNlr(String sessionId, String stageIdOrControlEntryId, String outcomeType) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(nlrRegisterSuccess.render(resumeCode, outcomeType, stageId));
+    return ok(nlrRegisterSuccess.render(resumeCode, outcomeType, stageIdOrControlEntryId));
   }
 
   public Result generateNlrLetter(String stageIdOrControlEntryId, String resumeCode, String outcomeType) throws ExecutionException, InterruptedException {
@@ -105,9 +105,9 @@ public class NlrController {
 
   private Optional<SiteView> getSite(String customerId, String userId) {
     Optional<List<SiteView>> optSites = customerService.getSitesByCustomerIdUserId(customerId, userId);
+
     if (optSites.isPresent()) {
       List<SiteView> sites = optSites.get();
-
       if (sites.size() == 1) {
         return Optional.of(sites.get(0));
       } else {
