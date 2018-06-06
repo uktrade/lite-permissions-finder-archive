@@ -74,16 +74,16 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichText(new RichText(Collections.singletonList(definitionReferenceNode)), true);
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-definition/123' data-definition-id='123' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"));
+        "<a href='/view-definition/123' data-definition-id='123' data-definition-type='global' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"));
   }
 
   @Test
   public void localDefinitionTest() {
-    DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("'laser'", "123", true);
+    DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("'laser'", "123", false);
     String html = htmlRenderServiceImpl.convertRichText(new RichText(Collections.singletonList(definitionReferenceNode)), true);
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-definition/123' data-definition-id='123' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"));
+        "<a href='/view-definition/123' data-definition-id='123' data-definition-type='local' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"));
   }
 
   @Test
@@ -114,15 +114,17 @@ public class HtmlRenderServiceImplTest {
     List<RichTextNode> richTextNodes = Arrays.asList(ml1, laser, text1, list1, ml2, radio, text2, list2);
     String html = htmlRenderServiceImpl.convertRichText(new RichText(richTextNodes), true);
 
-    assertThat(html).isEqualTo(unescape(
-        "<a href='view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1' target='_blank'>Code ML1</a>" +
-            "<a href='/view-definition/123' data-definition-id='123' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>" +
-            "This is text 1" +
-            "<ul><li>1</li><ul><li>A</li><li>B</li><ul><li>(i)</li><li>(ii)</li></ul></ul></ul>" +
-            "<a href='view-control-entry/ML2' data-control-entry-id='ML2' title='View Code ML2' target='_blank'>Code ML2</a>" +
-            "<a href='/view-definition/abc' data-definition-id='abc' title='View definition of &quot;radio&quot;' target='_blank'>radio</a>" +
-            "This is text 2 <br>with newline" +
-            "<ul><li>a</li><li>b</li><li>c</li></ul>"));
+    assertThat(html)
+        .isEqualTo(
+            unescape(
+                "<a href='view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1' target='_blank'>Code ML1</a>"
+                    + "<a href='/view-definition/123' data-definition-id='123' data-definition-type='global' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"
+                    + "This is text 1"
+                    + "<ul><li>1</li><ul><li>A</li><li>B</li><ul><li>(i)</li><li>(ii)</li></ul></ul></ul>"
+                    + "<a href='view-control-entry/ML2' data-control-entry-id='ML2' title='View Code ML2' target='_blank'>Code ML2</a>"
+                    + "<a href='/view-definition/abc' data-definition-id='abc' data-definition-type='global' title='View definition of &quot;radio&quot;' target='_blank'>radio</a>"
+                    + "This is text 2 <br>with newline"
+                    + "<ul><li>a</li><li>b</li><li>c</li></ul>"));
   }
 
   private String unescape(String str) {
