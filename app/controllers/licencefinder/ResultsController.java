@@ -4,15 +4,18 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
+import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.common.state.ContextParamManager;
 import components.persistence.LicenceFinderDao;
+import components.services.LicenceFinderService;
 import components.services.controlcode.frontend.FrontendServiceClient;
 import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import models.OgelActivityType;
 import models.ogel.OgelResultsDisplay;
+import models.view.licencefinder.ResultsView;
 import org.apache.commons.lang3.StringUtils;
 import org.pac4j.play.java.Secure;
 import play.Logger;
@@ -22,8 +25,6 @@ import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
-import uk.gov.bis.lite.countryservice.api.CountryView;
-import utils.CountryUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +49,9 @@ public class ResultsController extends Controller {
   private final ApplicableOgelServiceClient applicableClient;
   private final ContextParamManager contextParam;
   private final views.html.licencefinder.results results;
+  private final views.html.licencefinder.results1 results1;
+  private final SpireAuthManager authManager;
+  private final LicenceFinderService licenceFinderService;
 
   public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
 
@@ -57,7 +61,8 @@ public class ResultsController extends Controller {
                            LicenceFinderDao dao, @Named("countryProviderExport") CountryProvider countryProvider,
                            FrontendServiceClient frontendClient,
                            ApplicableOgelServiceClient applicableClient, ContextParamManager contextParam,
-                           views.html.licencefinder.results results) {
+                           views.html.licencefinder.results results, views.html.licencefinder.results1 results1,
+                           SpireAuthManager authManager, LicenceFinderService licenceFinderService) {
     this.formFactory = formFactory;
     this.httpContext = httpContext;
     this.dao = dao;
@@ -66,6 +71,9 @@ public class ResultsController extends Controller {
     this.applicableClient = applicableClient;
     this.contextParam = contextParam;
     this.results = results;
+    this.authManager = authManager;
+    this.licenceFinderService = licenceFinderService;
+    this.results1 = results1;
   }
 
 
@@ -116,15 +124,25 @@ public class ResultsController extends Controller {
       showHistoricOgel = questionsForm.beforeOrLess;
     }
 
+    ResultsView resultsView = licenceFinderService.getResultsView(controlCode, dao.getSourceCountry(), exportRouteCountries, activities, showHistoricOgel);
+
+    return completedFuture(ok(results1.render(form, resultsView)));
+
+    /*
+    Set<String> userOgelIds = licenceFinderService.getExistingUserOgelIds(authManager.getAuthInfoFromContext().getId());
+
     CompletionStage<FrontendServiceResult> frontendServiceStage = frontendClient.get(controlCode);
 
     return applicableClient.get(controlCode, dao.getSourceCountry(), exportRouteCountries, activities, showHistoricOgel)
         .thenCombineAsync(frontendServiceStage, (applicableOgelView, frontendServiceResult) -> {
+
           if (!applicableOgelView.isEmpty()) {
+
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
                 null, controlCode, destinationCountryName);
             return ok(results.render(form, display));
           } else {
+
             List<String> countryNames = CountryUtils.getFilteredCountries(CountryUtils.getSortedCountries(countryProvider.getCountries()), exportRouteCountries).stream()
                 .map(CountryView::getCountryName)
                 .collect(Collectors.toList());
@@ -133,7 +151,9 @@ public class ResultsController extends Controller {
 
             return ok(results.render(form, display));
           }
+
         }, httpContext.current());
+        */
   }
 
   private List<String> getExportRouteCountries() {

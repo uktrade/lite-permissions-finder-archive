@@ -5,17 +5,26 @@ import components.common.auth.SpireAuthManager;
 import components.common.persistence.StatelessRedisDao;
 import components.persistence.LicenceFinderDao;
 import components.persistence.enums.SubmissionStatus;
+import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import jodd.util.ThreadUtil;
 import models.persistence.RegisterLicence;
+import models.view.licencefinder.OgelView;
+import models.view.licencefinder.ResultsView;
 import org.apache.commons.lang.StringUtils;
 import play.Logger;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.permissions.api.view.CallbackView;
+import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 public class LicenceFinderServiceImpl implements LicenceFinderService {
 
@@ -25,17 +34,51 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   private final SpireAuthManager authManager;
   private final PermissionsService permissionsService;
   private final String permissionsFinderUrl;
+  private final ApplicableOgelServiceClient applicableClient;
 
   @Inject
   public LicenceFinderServiceImpl(LicenceFinderDao licenceFinderDao, CustomerService customerService,
                                   PermissionsService permissionsService, SpireAuthManager authManager,
-                                  @com.google.inject.name.Named("permissionsFinderUrl") String permissionsFinderUrl, StatelessRedisDao statelessRedisDao) {
+                                  @com.google.inject.name.Named("permissionsFinderUrl") String permissionsFinderUrl,
+                                  StatelessRedisDao statelessRedisDao, ApplicableOgelServiceClient applicableClient) {
     this.licenceFinderDao = licenceFinderDao;
     this.permissionsService = permissionsService;
     this.customerService = customerService;
     this.authManager = authManager;
     this.permissionsFinderUrl = permissionsFinderUrl;
     this.statelessRedisDao = statelessRedisDao;
+    this.applicableClient = applicableClient;
+  }
+
+  public ResultsView getResultsView(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes, boolean showHistoricOgel) {
+    ResultsView view = new ResultsView();
+
+
+    CompletionStage<List<ApplicableOgelView>> stage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activityTypes, showHistoricOgel);
+
+    CompletionStage<List<OgelView>> stage1 = stage.thenApply(x -> getOgelViews(x));
+
+    return view;
+  }
+
+  private List<OgelView> getOgelViews(List<ApplicableOgelView> applicableViews) {
+    List<OgelView> ogelViews = new ArrayList<>();
+
+    return ogelViews;
+  }
+
+  public Set<String> getExistingUserOgelIds(String userId) {
+    Set<String> ogelIds = new HashSet<>();
+    try {
+      List<OgelRegistrationView> views = permissionsService.getOgelRegistrations(userId).toCompletableFuture().get();
+      for(OgelRegistrationView view : views) {
+        Logger.info("ID: " + view.getOgelType());
+        ogelIds.add(view.getOgelType());
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      Logger.error("OgelRegistration exception", e);
+    }
+    return ogelIds;
   }
 
   /**

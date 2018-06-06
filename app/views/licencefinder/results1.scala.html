@@ -1,0 +1,74 @@
+@import controllers.licencefinder.ResultsController
+@import util._
+@import views.html.common.page._
+@import views.html.common.state._
+@import views.html.common.form._
+@import models.view.licencefinder.ResultsView
+
+@this(standardPage: standardPage)
+@(form: Form[_], resultsView: ResultsView)
+
+  @title = @{
+    Html("")
+  }
+
+  @chosenOgelFormField = @{"chosenOgel"}
+
+@standardPage(resultsView.getTitle(), Some(heading(resultsView.getTitle()))){
+  @errorSummary(form)
+}{
+
+  <form action="@controllers.licencefinder.routes.ResultsController.handleResultsSubmit()" method="POST">
+
+    @contextFormParams()
+
+    @if(resultsView.hasOgels()) {
+      <p>
+        Open licences allow you to export certain goods without making a new application each time you export them.
+      </p>
+
+      @**
+      <p>
+        If you want to see the OGELs that you are already registered for, please log in.
+      </p>
+      **@
+
+      <p>
+        Select the option which best matches your requirements.
+      </p>
+
+
+      <fieldset>
+
+          @formRadioGroupContainer(form(chosenOgelFormField))(title, "h4", "heading-small") {
+            @for(ogelView <- resultsView.getOgelViews()) {
+
+              <div class="form-group">
+
+              @formRadio(form("chosenOgel"), "<span class=\"bold\">OGEL (" + ogelView.getName + ")</span>", ogelView.getId, true, "label-trade-type")
+              @detailPanel("detailPanel"){Read more information} {
+                <p>
+                  @ogelView.getUsageSummary().iterator().next()
+                </p>
+              }
+              </div>
+            }
+<hr>
+            @formRadio(form("chosenOgel"), "<span class=\"bold\">None of the above applies fully to my situation</span>", ResultsController.NONE_ABOVE_KEY, true, "label-trade-type")
+        }
+
+      </fieldset>
+
+      <button type="submit" class="button">Continue</button>
+
+    } else {
+      <p>
+        Your goods cannot be exported via an open licence. We will need to know more about the goods you want to export.
+      </p>
+      <p>
+        Please <a href="http://www.spire.trade.gov.uk/" rel="external" target="_blank">log in to Spire<span class="visually-hidden"> (opens in a new tab)</span></a>  to continue..
+      </p>
+    }
+
+  </form>
+}
