@@ -94,7 +94,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderOutcomeListed(form, controlEntryConfig, sessionId);
     } else {
-      return redirect(controllers.licencefinder.routes.TradeController.testEntry(controlEntryConfig.getControlCode()));
+      return redirect(controllers.licencefinder.routes.TradeController.entry(controlEntryConfig.getControlCode()));
     }
   }
 

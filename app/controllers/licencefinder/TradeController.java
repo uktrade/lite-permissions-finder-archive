@@ -41,9 +41,9 @@ public class TradeController extends Controller {
   }
 
   /**
-   * Test entry point
+   * Licence finder flow entry point
    */
-  public CompletionStage<Result> testEntry(String controlCode) {
+  public CompletionStage<Result> entry(String controlCode) {
     transactionManager.createTransaction();
     dao.saveControlCode(controlCode);
     dao.saveApplicationCode("ABCD-1234");

@@ -81,7 +81,7 @@ GET     /summary-continue                     controllers.SummaryController.rend
 POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
 
 # Licence finder
-GET     /licencefinder/test/:controlCode     controllers.licencefinder.TradeController.testEntry(controlCode)
+GET     /licencefinder/entry/:controlCode     controllers.licencefinder.TradeController.entry(controlCode)
 GET     /licencefinder/trade                 controllers.licencefinder.TradeController.renderTradeForm
 POST    /licencefinder/trade                 controllers.licencefinder.TradeController.handleTradeSubmit
 GET     /licencefinder/destination           controllers.licencefinder.DestinationController.renderDestinationForm
