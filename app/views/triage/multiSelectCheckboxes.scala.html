@@ -20,7 +20,7 @@
       @Html(answerView._1.getPrompt + subAnswers(answerView._1.getSubAnswerViews) + answerView._1.getNestedContent)
       </label>
 
-      @if(answerMoreInformation(answerView._1).body.trim.nonEmpty) {
+      @if(answerView._1.isDetailPanel) {
         @detailPanel(answerView._1.getValue + "detailPanel", field.getName.get + index + "-label")(Html("More information"))(answerMoreInformation(answerView._1))
       }
 

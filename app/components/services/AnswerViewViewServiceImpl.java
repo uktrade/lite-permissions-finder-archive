@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import exceptions.BusinessRuleException;
 import models.view.AnswerView;
 import models.view.SubAnswerView;
+import org.apache.commons.lang3.StringUtils;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
@@ -83,8 +84,9 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
       }
     }
     String nestedContent = createdNestedContent(answerConfig, html);
+    boolean detailPanel = hasDetailPanel(moreInformation, definitions, relatedItems);
     return new AnswerView(prompt, answerConfig.getAnswerId(), answerConfig.isDividerAbove(), subAnswerViews,
-        nestedContent, moreInformation, definitions, relatedItems);
+        nestedContent, moreInformation, definitions, relatedItems, detailPanel);
   }
 
   private AnswerView createAnswerViewFromLabelText(AnswerConfig answerConfig, RichText labelText, boolean html) {
@@ -105,8 +107,9 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
     } else {
       moreInformation = "";
     }
+    boolean detailPanel = hasDetailPanel(moreInformation, definitions, relatedItems);
     return new AnswerView(prompt, answerConfig.getAnswerId(), answerConfig.isDividerAbove(), new ArrayList<>(),
-        nestedContent, moreInformation, definitions, relatedItems);
+        nestedContent, moreInformation, definitions, relatedItems, detailPanel);
   }
 
   @Override
@@ -216,6 +219,10 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
     String summaryDescription = htmlRenderService.convertRichText(subAnswer.getRichText(), html);
     List<SubAnswerView> subAnswerViews = createSubAnswerViews(subAnswer.getSubAnswers(), html);
     return new SubAnswerView(summaryDescription, subAnswerViews);
+  }
+
+  private boolean hasDetailPanel(String moreInformation, String definitions, String relatedItems) {
+    return !StringUtils.isBlank(moreInformation) || !StringUtils.isBlank(definitions) || !StringUtils.isBlank(relatedItems);
   }
 
 }
