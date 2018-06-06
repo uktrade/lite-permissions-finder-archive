@@ -1,4 +1,4 @@
-package components.client;
+package components.services;
 
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;

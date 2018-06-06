@@ -10,6 +10,7 @@
 @import models.view.AnswerView
 @import utils.common.ViewUtil
 
+@this(standardPage: standardPage)
 @(form: Form[OgelRegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean, answerViews: List[AnswerView])
 
 @pageHeading = @{

@@ -4,8 +4,8 @@
 @import views.html.triage.subAnswers
 @import views.html.frontendComponents.formCheckboxWithDetailPanel
 
-@this()
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, controlCode: String, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
+@this(triagePage: triagePage)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, controlCode: String, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
 
 @triagePage(form, stageId, sessionId, resumeCode, title, breadcrumbView){
   @controlCode: Checking against decontrols
@@ -14,6 +14,11 @@
     Decontrols describe items not controlled under the UK Strategic Export Control Lists. Select all that apply.
   </p>
   <p>
+    @if(showNoteMessage) {
+      <p>
+        Read the Notes on the right before making your selection on this page.
+      </p>
+    }
     @if(StringUtils.isNotBlank(explanatoryText)) {
       @Html(explanatoryText)
     } else {

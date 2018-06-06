@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
-import controllers.licencefinder.LicenceFinderController;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -78,7 +77,7 @@ public class OutcomeController extends Controller {
 
   private Result renderItemNotFound(Form<RequestNlrForm> requestNlrFormForm, ControlEntryConfig controlEntryConfig,
                                     String sessionId) {
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbItemViews));
   }
@@ -95,7 +94,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderOutcomeListed(form, controlEntryConfig, sessionId);
     } else {
-      return redirect(controllers.licencefinder.routes.LicenceFinderController.testEntry(controlEntryConfig.getControlCode()));
+      return redirect(controllers.licencefinder.routes.TradeController.testEntry(controlEntryConfig.getControlCode()));
     }
   }
 
@@ -143,7 +142,7 @@ public class OutcomeController extends Controller {
 
   private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig,
                                      String sessionId) {
-    List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
+    List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
     List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig);
@@ -154,10 +153,10 @@ public class OutcomeController extends Controller {
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, String stageId, String sessionId,
                                         Set<String> answers) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig).stream()
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true).stream()
         .filter(answer -> answers.contains(answer.getValue()))
         .collect(Collectors.toList());
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     return ok(decontrolOutcome.render(requestNlrForm, stageId, sessionId, resumeCode, breadcrumbView, answerViews));
   }

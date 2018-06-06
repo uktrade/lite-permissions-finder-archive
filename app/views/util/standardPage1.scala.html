@@ -3,7 +3,7 @@
 @import views.html.common.page._
 @import play.mvc.Controller.ctx
 
-@this()
+@this(govukTemplateDefaults: govukTemplateDefaults)
 @(htmlTitle: String, pageHeading: Option[Html], twoThirdsColumn: Boolean = true)(beforeHeader: Html)(content: Html)
 
 @applicationCode = @{ctx().args.get("ctx_app_code")}
@@ -22,7 +22,7 @@
       @if(applicationCode != "") {
         <div class="application-code-container">
           <div class="application-code">
-            <span class="bold-small">Resume code: @applicationCode</span>
+            <span class="bold-small">Reference code: @applicationCode</span>
           </div>
         </div>
       }

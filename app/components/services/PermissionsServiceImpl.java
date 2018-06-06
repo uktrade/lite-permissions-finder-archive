@@ -1,7 +1,7 @@
-package components.client;
+package components.services;
 
-import static components.client.PermissionsServiceImpl.RegistrationResponse.failure;
-import static components.client.PermissionsServiceImpl.RegistrationResponse.success;
+import static components.services.PermissionsServiceImpl.RegistrationResponse.failure;
+import static components.services.PermissionsServiceImpl.RegistrationResponse.success;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

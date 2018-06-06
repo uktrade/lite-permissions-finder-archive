@@ -16,7 +16,6 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.tradeType;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -27,15 +26,17 @@ public class TradeTypeController extends Controller {
   private final JourneyManager journeyManager;
   private final FormFactory formFactory;
   private final PermissionsFinderDao permissionsFinderDao;
+  private final views.html.tradeType tradeType;
 
   private static final String UNITED_KINGDOM = "CTRY0";
 
   @Inject
   public TradeTypeController(JourneyManager journeyManager, FormFactory formFactory,
-                             PermissionsFinderDao permissionsFinderDao) {
+                             PermissionsFinderDao permissionsFinderDao, views.html.tradeType tradeType) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
+    this.tradeType = tradeType;
   }
 
   public CompletionStage<Result> renderForm() {

@@ -5,8 +5,8 @@
 @import views.html.frontendComponents.formCheckboxWithDetailPanel
 @import play.twirl.api.HtmlFormat
 
-@this()
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
+@this(triagePage: triagePage)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
 
 @triagePage(form, stageId, sessionId, resumeCode, title, breadcrumbView){
   @if(progressView.getCode != null) {
@@ -17,6 +17,11 @@
   }
 }{
   <p>@Html(explanatoryText)</p>
+  @if(showNoteMessage) {
+    <p>
+      Read the Notes on the right before making your selection on this page.
+    </p>
+  }
   <div class="form-group">
     @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
       @if(answerView.isDividerAbove) {

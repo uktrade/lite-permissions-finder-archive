@@ -15,7 +15,6 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.ogel.ogelSummary;
 
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -29,6 +28,7 @@ public class OgelSummaryController {
   private final OgelServiceClient ogelServiceClient;
   private final OgelConditionsServiceClient ogelConditionsServiceClient;
   private final ContextParamManager contextParamManager;
+  private final views.html.ogel.ogelSummary ogelSummary;
 
   @Inject
   public OgelSummaryController(JourneyManager journeyManager,
@@ -37,7 +37,7 @@ public class OgelSummaryController {
                                HttpExecutionContext httpExecutionContext,
                                OgelServiceClient ogelServiceClient,
                                OgelConditionsServiceClient ogelConditionsServiceClient,
-                               ContextParamManager contextParamManager) {
+                               ContextParamManager contextParamManager, views.html.ogel.ogelSummary ogelSummary) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.permissionsFinderDao = permissionsFinderDao;
@@ -45,6 +45,7 @@ public class OgelSummaryController {
     this.ogelServiceClient = ogelServiceClient;
     this.ogelConditionsServiceClient = ogelConditionsServiceClient;
     this.contextParamManager = contextParamManager;
+    this.ogelSummary = ogelSummary;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -64,24 +65,19 @@ public class OgelSummaryController {
             if (conditionsResult.isEmpty) {
               // No conditions apply
               return contextParamManager.addParamsAndRedirect(controllers.routes.SummaryController.renderForm());
-            }
-            else if (conditionsResult.isMissingControlCodes) {
+            } else if (conditionsResult.isMissingControlCodes) {
               throw new BusinessRuleException("Can not apply for OGEL with missing control codes");
-            }
-            else if (!conditionsResult.isEmpty && OgelConditionsServiceClient.isItemAllowed(conditionsResult,
+            } else if (!conditionsResult.isEmpty && OgelConditionsServiceClient.isItemAllowed(conditionsResult,
                 permissionsFinderDao.getOgelConditionsApply().get())) {
               // ogelConditionsApply question should have been answered if this is the case
               return contextParamManager.addParamsAndRedirect(controllers.routes.SummaryController.renderForm());
-            }
-            else {
+            } else {
               // Should not be able to register when the item is not allowed
               throw new BusinessRuleException("Can not register for OGEL with applicable conditions");
             }
-          }
-          else if ("chooseAgain".equals(action)) {
+          } else if ("chooseAgain".equals(action)) {
             return journeyManager.performTransition(Events.OGEL_CHOOSE_AGAIN);
-          }
-          else {
+          } else {
             throw new FormStateException("Unhandled form state");
           }
         }, httpExecutionContext.current())
@@ -94,16 +90,16 @@ public class OgelSummaryController {
 
     return ogelConditionsServiceClient.get(ogelId, controlCode)
         .thenApplyAsync(conditionsResult ->
-          ogelServiceClient.get(permissionsFinderDao.getOgelId())
-              .thenApplyAsync(ogelResult -> {
-                // True when no restriction service result, otherwise check with isItemAllowed.
-                // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service or the re are missing control codes
-                boolean allowedToProceed = conditionsResult.isEmpty || (!conditionsResult.isMissingControlCodes
-                    && OgelConditionsServiceClient.isItemAllowed(conditionsResult, permissionsFinderDao.getOgelConditionsApply().get()));
+                ogelServiceClient.get(permissionsFinderDao.getOgelId())
+                    .thenApplyAsync(ogelResult -> {
+                      // True when no restriction service result, otherwise check with isItemAllowed.
+                      // Assume getOgelConditionsApply is empty if there is no result from the OGEL condition service or the re are missing control codes
+                      boolean allowedToProceed = conditionsResult.isEmpty || (!conditionsResult.isMissingControlCodes
+                          && OgelConditionsServiceClient.isItemAllowed(conditionsResult, permissionsFinderDao.getOgelConditionsApply().get()));
 
-                return ok(ogelSummary.render(form, ogelResult, controlCode, allowedToProceed));
-              }, httpExecutionContext.current())
-        , httpExecutionContext.current())
+                      return ok(ogelSummary.render(form, ogelResult, controlCode, allowedToProceed));
+                    }, httpExecutionContext.current())
+            , httpExecutionContext.current())
         .thenCompose(Function.identity());
   }
 

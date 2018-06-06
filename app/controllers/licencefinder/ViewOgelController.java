@@ -7,9 +7,9 @@ import static uk.gov.bis.lite.permissions.api.view.OgelRegistrationView.Status.S
 
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
-import components.client.CustomerService;
-import components.client.OgelService;
-import components.client.PermissionsService;
+import components.services.CustomerService;
+import components.services.OgelService;
+import components.services.PermissionsService;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import models.summary.LicenceInfo;

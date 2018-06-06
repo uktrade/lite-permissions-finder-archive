@@ -1,4 +1,4 @@
-package components.client;
+package components.services;
 
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;

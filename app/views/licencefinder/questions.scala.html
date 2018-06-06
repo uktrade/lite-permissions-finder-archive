@@ -3,12 +3,13 @@
 @import views.html.common.form._
 @import views.html.common.state._
 
+@this(standardPage: standardPage)
 @(form: Form[_])
 @standardPage("Refining your licence results", Some(heading("Refining your licence results"))){
   @errorSummary(form, fieldOrder = scala.List("forRepair", "forExhibition", "beforeOrLess"))
 } {
 
-  <form action="@controllers.licencefinder.routes.LicenceFinderController.handleQuestionsSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.QuestionsController.handleQuestionsSubmit()" method="POST">
 
     @contextFormParams()
 

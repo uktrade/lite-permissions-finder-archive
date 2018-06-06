@@ -8,6 +8,7 @@ import components.cms.dao.StageDao;
 import models.cms.Journey;
 import models.cms.Stage;
 import models.cms.StageAnswer;
+import models.cms.enums.StageAnswerOutcomeType;
 import triage.cache.JourneyConfigCache;
 
 import java.util.List;
@@ -43,6 +44,12 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   @Override
   public StageConfig getStageConfigById(String stageId) {
     return journeyConfigCache.getStageConfigById(stageId);
+  }
+
+  @Override
+  public List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(long controlEntryId,
+                                                                         StageAnswerOutcomeType stageAnswerOutcomeType) {
+    return stageAnswerDao.getStageAnswersByControlEntryIdAndOutcomeType(controlEntryId, stageAnswerOutcomeType);
   }
 
   @Override

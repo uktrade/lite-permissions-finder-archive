@@ -17,7 +17,6 @@ import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import utils.CountryUtils;
-import views.html.ogel.ogelQuestions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +34,7 @@ public class OgelQuestionsController {
   private final VirtualEUOgelClient virtualEuClient;
   private final OgelConditionsServiceClient conditionsClient;
   private final HttpExecutionContext httpContext;
+  private final views.html.ogel.ogelQuestions ogelQuestions;
 
   @Inject
   public OgelQuestionsController(JourneyManager journeyManager,
@@ -42,13 +42,14 @@ public class OgelQuestionsController {
                                  PermissionsFinderDao dao,
                                  VirtualEUOgelClient virtualEuClient,
                                  OgelConditionsServiceClient conditionsClient,
-                                 HttpExecutionContext httpContext) {
+                                 HttpExecutionContext httpContext, views.html.ogel.ogelQuestions ogelQuestions) {
     this.journeyManager = journeyManager;
     this.formFactory = formFactory;
     this.dao = dao;
     this.virtualEuClient = virtualEuClient;
     this.conditionsClient = conditionsClient;
     this.httpContext = httpContext;
+    this.ogelQuestions = ogelQuestions;
   }
 
   public Result renderForm() {
@@ -84,8 +85,7 @@ public class OgelQuestionsController {
                     return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE, VirtualEUOgelStage.VIRTUAL_EU_WITHOUT_CONDITIONS);
                   }
                 }, httpContext.current()).thenCompose(Function.identity());
-          }
-          else {
+          } else {
             return journeyManager.performTransition(Events.VIRTUAL_EU_OGEL_STAGE, VirtualEUOgelStage.NO_VIRTUAL_EU);
           }
         }, httpContext.current())

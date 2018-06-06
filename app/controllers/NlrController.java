@@ -9,16 +9,17 @@ import org.pac4j.play.java.Secure;
 import play.mvc.Result;
 import triage.session.SessionService;
 import views.html.nlr.nlrLetter;
-import views.html.nlr.nlrRegisterSuccess;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class NlrController {
 
   private final SessionService sessionService;
+  private final views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess;
 
   @Inject
-  public NlrController(SessionService sessionService) {
+  public NlrController(SessionService sessionService, views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess) {
     this.sessionService = sessionService;
+    this.nlrRegisterSuccess = nlrRegisterSuccess;
   }
 
   public Result registerNlr(String sessionId) {

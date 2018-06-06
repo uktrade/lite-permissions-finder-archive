@@ -1,6 +1,7 @@
 @import util._
 @import views.html.common.page._
 
+@this(govukTemplateDefaults: govukTemplateDefaults)
 @(htmlTitle: String, displayImportingFromCrimea: Boolean, pageHeading: Option[Html], headingCssClass: String = "heading-xlarge", twoThirdsColumn: Boolean = true, javascript: Option[Html] = None)(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle) {
