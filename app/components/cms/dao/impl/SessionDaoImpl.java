@@ -21,7 +21,13 @@ public class SessionDaoImpl implements SessionDao {
         triageSession.getJourneyId(),
         triageSession.getResumeCode(),
         triageSession.getOutcomeType(),
-        triageSession.getOutcomeHtml());
+        triageSession.getOutcomeHtml(),
+        triageSession.getLastStageId());
+  }
+
+  @Override
+  public void updateLastStageId(String sessionId, Long lastStageId) {
+    sessionJDBIDao.updateLastStageId(sessionId, lastStageId);
   }
 
   @Override
