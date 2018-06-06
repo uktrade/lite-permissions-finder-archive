@@ -2,12 +2,12 @@ package controllers.licencefinder;
 
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
-import components.services.OgelService;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.common.transaction.TransactionManager;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
+import components.services.OgelService;
 import components.services.ogels.conditions.OgelConditionsServiceClient;
 import models.view.QuestionView;
 import models.view.RegisterResultView;
@@ -18,8 +18,6 @@ import play.data.validation.Constraints;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.licencefinder.registerResult;
-import views.html.licencefinder.registerToUse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +39,8 @@ public class RegisterToUseController extends Controller {
   private final String dashboardUrl;
   private final OgelService ogelService;
   private final LicenceFinderService licenceFinderService;
+  private final views.html.licencefinder.registerResult registerResult;
+  private final views.html.licencefinder.registerToUse registerToUse;
 
   private final String CONTROL_CODE_QUESTION = "What Control list entry describes your goods?";
   private final String GOODS_GOING_QUESTION = "Where are your goods going?";
@@ -55,7 +55,9 @@ public class RegisterToUseController extends Controller {
                                  LicenceFinderDao dao, @Named("countryProviderExport") CountryProvider countryProvider,
                                  OgelConditionsServiceClient conditionsClient,
                                  @com.google.inject.name.Named("dashboardUrl") String dashboardUrl,
-                                 OgelService ogelService, LicenceFinderService licenceFinderService) {
+                                 OgelService ogelService, LicenceFinderService licenceFinderService,
+                                 views.html.licencefinder.registerResult registerResult,
+                                 views.html.licencefinder.registerToUse registerToUse) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
     this.httpContext = httpContext;
@@ -65,6 +67,8 @@ public class RegisterToUseController extends Controller {
     this.dashboardUrl = dashboardUrl;
     this.ogelService = ogelService;
     this.licenceFinderService = licenceFinderService;
+    this.registerResult = registerResult;
+    this.registerToUse = registerToUse;
   }
 
 

@@ -4,7 +4,7 @@
 @import views.html.common.form.formCheckbox
 @import views.html.common.page._
 
-@this()
+@this(outcomePage: outcomePage)
 @(form: Form[_], controlEntryId: String, sessionId: String, resumeCode: String, breadcrumbItemsViews: List[BreadcrumbItemView])
 
 @outcomePage("Item Not Found", sessionId, resumeCode) {

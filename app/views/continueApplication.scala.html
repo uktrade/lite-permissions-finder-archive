@@ -4,6 +4,7 @@
 @import views.html.common.state._
 @import controllers.routes.ContinueApplicationController;
 
+@this(standardPage: standardPage)
 @(form: Form[_])
 @standardPage("Returning to this service", Some(heading("Returning to this service"))){
   @errorSummary(form)

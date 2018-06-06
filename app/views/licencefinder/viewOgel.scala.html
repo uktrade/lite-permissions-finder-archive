@@ -16,17 +16,28 @@
   @Html("")
 } {
 
-  <div class="licence-header">
-    <div class="licence-number">
-      <div class="licence-crest">
-        <img src="@controllers.routes.Assets.versioned("images/gov-crest.png")" srcset="@controllers.routes.Assets.versioned("images/gov-crest.png") 1x, @controllers.routes.Assets.versioned("images/gov-crest-2x.png") 2x" alt="">
+  <div class="grid-row outcome-page-header">
+    <div class="column-two-thirds">
+      <div class="licence-header">
+        <div class="licence-number">
+          <div class="licence-crest">
+            <img src="@controllers.routes.Assets.versioned("images/gov-crest.png")" srcset="@controllers.routes.Assets.versioned("images/gov-crest.png") 1x, @controllers.routes.Assets.versioned("images/gov-crest-2x.png") 2x" alt="">
+          </div>
+          <h1 class="heading-xlarge">
+            <span class="font-weight-normal">Licence Number</span><br>
+          @licenceInfo.getLicenceNumber
+          </h1>
+        </div>
       </div>
-      <h1 class="heading-xlarge">
-        <span class="font-weight-normal">Licence Number</span><br>
-        @licenceInfo.getLicenceNumber
-      </h1>
+    </div>
+    <div class="column-one-third js-only">
+      <h2 class="visually-hidden">Sharing options</h2>
+      <ul class="outcome-sharing-options">
+        <li><a href="javascript:window.print()">Print this page</a></li>
+      </ul>
     </div>
   </div>
+
   <div class="form-group">
     <table class="invert-font-weights">
       <body>

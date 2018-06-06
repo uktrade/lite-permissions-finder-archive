@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 public class HtmlRenderServiceImpl implements HtmlRenderService {
 
   private static final String DEFINITION_TEXT = unescape(
-      "<a href='/view-definition/%s' data-definition-id='%s' title='View definition of &quot;%s&quot;' target='_blank'>%s</a>");
+      "<a href='/view-definition/%s' data-definition-id='%s' data-definition-type='%s' " +
+          "title='View definition of &quot;%s&quot;' target='_blank'>%s</a>");
   private static final String CONTROL_ENTRY_TEXT = unescape(
       "<a href='view-control-entry/%s' data-control-entry-id='%s' title='View %s' target='_blank'>%s</a>");
   private static final Set<HtmlType> LEVELS = EnumSet.of(HtmlType.LIST_LEVEL_1, HtmlType.LIST_LEVEL_2, HtmlType.LIST_LEVEL_3);
@@ -100,7 +101,8 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
         String definitionId = definitionReferenceNode.getReferencedDefinitionId();
         //Strip leading/trailing quote characters from the original string when generating a link as per screen designs
         String textContent = StringUtils.strip(definitionReferenceNode.getTextContent(), "\"'");
-        String html = String.format(DEFINITION_TEXT, definitionId, definitionId, textContent, textContent);
+        String type = definitionReferenceNode.isGlobal() ? "global" : "local";
+        String html = String.format(DEFINITION_TEXT, definitionId, definitionId, type, textContent, textContent);
         stringBuilder.append(html);
       } else if (richTextNode instanceof ControlEntryReferenceNode) {
         ControlEntryReferenceNode controlEntryReferenceNode = (ControlEntryReferenceNode) richTextNode;
@@ -123,7 +125,8 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(definitionId));
       text = localDefinition.getTerm();
     }
-    return String.format(DEFINITION_TEXT, definitionId, definitionId, text, text);
+    String type = definitionReferenceNode.isGlobal() ? "global" : "local";
+    return String.format(DEFINITION_TEXT, definitionId, definitionId, type, text, text);
   }
 
   private String createControlEntryHtml(ControlEntryReferenceNode controlEntryReferenceNode) {

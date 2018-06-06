@@ -24,7 +24,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
-import views.html.licencefinder.results;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +47,7 @@ public class ResultsController extends Controller {
   private final FrontendServiceClient frontendClient;
   private final ApplicableOgelServiceClient applicableClient;
   private final ContextParamManager contextParam;
+  private final views.html.licencefinder.results results;
 
   public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
 
@@ -56,7 +56,8 @@ public class ResultsController extends Controller {
                            HttpExecutionContext httpContext,
                            LicenceFinderDao dao, @Named("countryProviderExport") CountryProvider countryProvider,
                            FrontendServiceClient frontendClient,
-                           ApplicableOgelServiceClient applicableClient, ContextParamManager contextParam) {
+                           ApplicableOgelServiceClient applicableClient, ContextParamManager contextParam,
+                           views.html.licencefinder.results results) {
     this.formFactory = formFactory;
     this.httpContext = httpContext;
     this.dao = dao;
@@ -64,6 +65,7 @@ public class ResultsController extends Controller {
     this.frontendClient = frontendClient;
     this.applicableClient = applicableClient;
     this.contextParam = contextParam;
+    this.results = results;
   }
 
 
@@ -106,14 +108,17 @@ public class ResultsController extends Controller {
     List<String> exportRouteCountries = getExportRouteCountries();
 
     List<String> activities = Collections.emptyList();
+    boolean showHistoricOgel = true; // set as default
     Optional<QuestionsController.QuestionsForm> optQuestionsForm = dao.getQuestionsForm();
     if (optQuestionsForm.isPresent()) {
-      activities = getActivityTypes(optQuestionsForm.get());
+      QuestionsController.QuestionsForm questionsForm = optQuestionsForm.get();
+      activities = getActivityTypes(questionsForm);
+      showHistoricOgel = questionsForm.beforeOrLess;
     }
 
     CompletionStage<FrontendServiceResult> frontendServiceStage = frontendClient.get(controlCode);
 
-    return applicableClient.get(controlCode, dao.getSourceCountry(), exportRouteCountries, activities)
+    return applicableClient.get(controlCode, dao.getSourceCountry(), exportRouteCountries, activities, showHistoricOgel)
         .thenCombineAsync(frontendServiceStage, (applicableOgelView, frontendServiceResult) -> {
           if (!applicableOgelView.isEmpty()) {
             OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
@@ -137,7 +142,7 @@ public class ResultsController extends Controller {
     if (!StringUtils.isBlank(destination)) {
       countries.add(destination);
     }
-    String first = dao.getDestinationCountry();
+    String first = dao.getFirstConsigneeCountry();
     if (!StringUtils.isBlank(first)) {
       countries.add(first);
     }
@@ -151,10 +156,10 @@ public class ResultsController extends Controller {
     map.put(OgelActivityType.MIL_ANY, OgelActivityType.MIL_ANY.value());
     map.put(OgelActivityType.MIL_GOV, OgelActivityType.MIL_GOV.value());
     map.put(OgelActivityType.REPAIR, OgelActivityType.REPAIR.value());
-    if ("false".equals(questionsForm.forRepair)) {
+    if (!questionsForm.forRepair) {
       map.remove(OgelActivityType.REPAIR);
     }
-    if ("false".equals(questionsForm.forExhibition)) {
+    if (!questionsForm.forExhibition) {
       map.remove(OgelActivityType.EXHIBITION);
     }
     return map.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());

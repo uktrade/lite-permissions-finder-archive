@@ -15,7 +15,6 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import views.html.summary;
 
 import java.util.concurrent.CompletionStage;
 
@@ -28,6 +27,7 @@ public class SummaryController {
   private final HttpExecutionContext httpExecutionContext;
   private final OgelRegistrationServiceClient ogelRegistrationServiceClient;
   private final SummaryService summaryService;
+  private final views.html.summary summary;
 
   @Inject
   public SummaryController(TransactionManager transactionManager,
@@ -36,8 +36,8 @@ public class SummaryController {
                            FormFactory formFactory,
                            HttpExecutionContext httpExecutionContext,
                            OgelRegistrationServiceClient ogelRegistrationServiceClient,
-                           SummaryService summaryService
-  ) {
+                           SummaryService summaryService,
+                           views.html.summary summary) {
     this.transactionManager = transactionManager;
     this.contextParamManager = contextParamManager;
     this.journeyManager = journeyManager;
@@ -45,6 +45,7 @@ public class SummaryController {
     this.httpExecutionContext = httpExecutionContext;
     this.ogelRegistrationServiceClient = ogelRegistrationServiceClient;
     this.summaryService = summaryService;
+    this.summary = summary;
   }
 
   public CompletionStage<Result> renderForm() {
@@ -66,7 +67,7 @@ public class SummaryController {
 
   public CompletionStage<Result> processSubmit(boolean isResumedApplication) {
     Form<SummaryForm> form = formFactory.form(SummaryForm.class).bindFromRequest();
-    if (form.hasErrors()){
+    if (form.hasErrors()) {
       return renderWithForm(form, isResumedApplication);
     }
 
@@ -76,16 +77,13 @@ public class SummaryController {
       // The journeyName to check for is not known, check and restore whatever is saved
       if (journeyManager.isJourneySerialised(null)) {
         return journeyManager.restoreCurrentStage(null);
-      }
-      else {
+      } else {
         // If there is no journey yet, start at the trade types page as in ContinueApplicationController
         return contextParamManager.addParamsAndRedirect(routes.TradeTypeController.renderForm());
       }
-    }
-    else if (!isResumedApplication && StringUtils.equals("register", action)) {
+    } else if (!isResumedApplication && StringUtils.equals("register", action)) {
       return redirectToRegistration();
-    }
-    else {
+    } else {
       throw new FormStateException("Unhandled form state");
     }
   }
@@ -102,8 +100,7 @@ public class SummaryController {
           if (summary.isValid()) {
             String transactionId = transactionManager.getTransactionId();
             return ogelRegistrationServiceClient.updateTransactionAndRedirect(transactionId);
-          }
-          else {
+          } else {
             throw new RuntimeException("Summary invalid, cannot redirect to registration");
           }
         }, httpExecutionContext.current());

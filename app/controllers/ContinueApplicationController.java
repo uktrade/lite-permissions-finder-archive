@@ -11,17 +11,19 @@ import play.data.FormFactory;
 import play.mvc.Result;
 import triage.session.SessionService;
 import triage.session.TriageSession;
-import views.html.continueApplication;
 
 public class ContinueApplicationController {
 
   private final FormFactory formFactory;
   private final SessionService sessionService;
+  private final views.html.continueApplication continueApplication;
 
   @Inject
-  public ContinueApplicationController(FormFactory formFactory, SessionService sessionService) {
+  public ContinueApplicationController(FormFactory formFactory, SessionService sessionService,
+                                       views.html.continueApplication continueApplication) {
     this.formFactory = formFactory;
     this.sessionService = sessionService;
+    this.continueApplication = continueApplication;
   }
 
   public Result renderForm() {
@@ -38,9 +40,9 @@ public class ContinueApplicationController {
         TriageSession triageSession = sessionService.getSessionByResumeCode(resumeCode);
         if (triageSession != null) {
           String sessionId = triageSession.getId();
-          String stageId = sessionService.getStageId(sessionId);
-          if (stageId != null) {
-            return redirect(routes.StageController.render(stageId, sessionId));
+          Long lastStageId = triageSession.getLastStageId();
+          if (lastStageId != null) {
+            return redirect(routes.StageController.render(Long.toString(lastStageId), sessionId));
           } else {
             return redirect(routes.StageController.index(sessionId));
           }

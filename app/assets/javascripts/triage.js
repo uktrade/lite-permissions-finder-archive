@@ -15,7 +15,7 @@ LITEPermissionsFinder.Triage = {
     if (typeof dataControlEntryId !== typeof undefined && dataControlEntryId !== false) {
       LITEPermissionsFinder.Triage._ajaxDisplayControlEntryModal(dataControlEntryId);
     } else if (typeof dataDefinitionId !== typeof undefined && dataDefinitionId !== false) {
-      LITEPermissionsFinder.Triage._ajaxDisplayDefinitionModal(dataDefinitionId);
+      LITEPermissionsFinder.Triage._ajaxDisplayDefinitionModal(dataDefinitionId, $target.attr("data-definition-type"));
     } else {
       LITEPermissionsFinder.Triage._ajaxDisplayFailureModal();
     }
@@ -23,12 +23,14 @@ LITEPermissionsFinder.Triage = {
   _ajaxDisplayControlEntryModal: function(controlEntryId) {
     $.ajax("/modal-content/control-entry/" + controlEntryId)
       .done(function(data) {
-        LITECommon.Modal.displayModal($(data), "control entry");
+        var $data = $(data);
+        LITEPermissionsFinder.Triage._bindModals($data);
+        LITECommon.Modal.displayModal($data, "control entry");
       })
       .fail(LITEPermissionsFinder.Triage._ajaxDisplayFailureModal);
   },
-  _ajaxDisplayDefinitionModal: function(definitionId) {
-    $.ajax("/modal-content/global-definition/" + definitionId)
+  _ajaxDisplayDefinitionModal: function(definitionId, type) {
+    $.ajax("/modal-content/" + type + "-definition/" + definitionId)
       .done(function(data) {
         var $data = $(data);
         LITEPermissionsFinder.Triage._bindModals($data);

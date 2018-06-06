@@ -5,6 +5,7 @@
 @import uk.gov.bis.lite.countryservice.api.CountryView
 @import controllers.DestinationCountryController
 
+@this(standardPage: standardPage)
 @(form: Form[_], countries: List[CountryView], numberOfThroughDestinationCountries: Int, fieldOrderList: List[String])
 
 @countryDetailPanel = {

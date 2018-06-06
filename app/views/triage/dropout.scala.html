@@ -1,7 +1,7 @@
 @import views.html.util._
 @import views.html.triage.outcomePage
 
-@this()
+@this(outcomePage: outcomePage)
 @(sessionId: String, resumeCode: String)
 
 @outcomePage("Item not found", sessionId, resumeCode, false) {

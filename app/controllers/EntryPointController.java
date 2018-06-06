@@ -6,16 +6,16 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.index;
-
 
 public class EntryPointController extends Controller {
 
   private final FormFactory formFactory;
+  private final views.html.index index;
 
   @Inject
-  public EntryPointController(FormFactory formFactory) {
+  public EntryPointController(FormFactory formFactory, views.html.index index) {
     this.formFactory = formFactory;
+    this.index = index;
   }
 
   public Result index() {

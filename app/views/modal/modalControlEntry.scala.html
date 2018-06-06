@@ -8,7 +8,7 @@
     @controlCodeBreadcrumbs(){
       @for((breadcrumbItemView, index) <- breadcrumbItemsViews.zipWithIndex) {
         @if(index == breadcrumbItemsViews.size - 1) {
-          @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = breadcrumbItemView.getUrl){
+          @controlCodeBreadcrumbsDetailBox(isPathStep = true){
             @if(breadcrumbItemView.getText!=null) {
               <span class="bold">@breadcrumbItemView.getText</span>
             }
@@ -19,7 +19,7 @@
             @HtmlFormat.empty
           }
         } else {
-          @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl){
+          @controlCodeBreadcrumbsStep(){
             @if(breadcrumbItemView.getText!=null) {
               <span class="bold">@breadcrumbItemView.getText</span>
             }

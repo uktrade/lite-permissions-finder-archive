@@ -3,6 +3,7 @@
 @import views.html.common.form._
 @import views.html.common.state._
 
+@this(standardPage: standardPage)
 @(form: Form[_])
 @standardPage("Refining your licence results", Some(heading("Refining your licence results"))){
   @errorSummary(form, fieldOrder = scala.List("forRepair", "forExhibition", "beforeOrLess"))

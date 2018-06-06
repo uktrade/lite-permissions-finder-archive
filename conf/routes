@@ -155,4 +155,5 @@ GET     /generate/notFound/nlr-letter                               controllers.
 GET     /generate/decontrol/nlr-letter                              controllers.NlrController.generateDecontrolNlrLetter(stageId, resumeCode, nlrType)
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
-GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalGlobalDefinitionController.renderGlobalDefinition(globalDefinitionId)
+GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
+GET     /modal-content/local-definition/:localDefinitionId      controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)

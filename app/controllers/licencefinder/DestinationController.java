@@ -19,7 +19,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
-import views.html.licencefinder.destination;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +34,7 @@ public class DestinationController extends Controller {
   private final LicenceFinderDao dao;
   private final CountryProvider countryProvider;
   private final ContextParamManager contextParam;
+  private final views.html.licencefinder.destination destination;
 
   public static final String DESTINATION_QUESTION = "Where is the final destination of your items?";
   public static final String DESTINATION_MULTIPLE_QUESTION = "Will your items be received by anyone in a different country or territory, such as a consignee, before reaching their final destination?";
@@ -47,11 +47,12 @@ public class DestinationController extends Controller {
   @Inject
   public DestinationController(FormFactory formFactory, LicenceFinderDao dao,
                                @Named("countryProviderExport") CountryProvider countryProvider,
-                               ContextParamManager contextParam) {
+                               ContextParamManager contextParam, views.html.licencefinder.destination destination) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.countryProvider = countryProvider;
     this.contextParam = contextParam;
+    this.destination = destination;
   }
 
 

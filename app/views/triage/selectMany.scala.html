@@ -5,7 +5,7 @@
 @import views.html.frontendComponents.formCheckboxWithDetailPanel
 @import play.twirl.api.HtmlFormat
 
-@this()
+@this(triagePage: triagePage)
 @(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
 
 @triagePage(form, stageId, sessionId, resumeCode, title, breadcrumbView){

@@ -136,7 +136,7 @@ public class StageController extends Controller {
     String title = stageConfig.getQuestionTitle().orElse("Select one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
     return ok(selectOne.render(answerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
@@ -151,7 +151,7 @@ public class StageController extends Controller {
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
     return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
   }
@@ -162,7 +162,7 @@ public class StageController extends Controller {
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
     return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
@@ -184,11 +184,13 @@ public class StageController extends Controller {
               stageId, sessionId, resumeCode);
         } else {
           sessionService.saveAnswerIdsForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+          sessionService.updateLastStageId(sessionId, stageId);
           return redirect(routes.OutcomeController.outcomeDecontrol(stageId, sessionId));
         }
       } else if (action == Action.NONE) {
         Optional<String> nextStageId = stageConfig.getNextStageId();
         if (nextStageId.isPresent()) {
+          sessionService.updateLastStageId(sessionId, stageId);
           return redirectToStage(nextStageId.get(), sessionId);
         } else if (stageConfig.getOutcomeType().map(e -> e == OutcomeType.CONTROL_ENTRY_FOUND).orElse(false)) {
           String controlEntryId = stageConfig.getRelatedControlEntry()
@@ -196,7 +198,7 @@ public class StageController extends Controller {
               .orElseThrow(() -> new BusinessRuleException(String.format(
                   "Decontrol stage %s must have an associated control entry if it has a CONTROL_ENTRY_FOUND outcome type",
                   stageId)));
-
+          sessionService.updateLastStageId(sessionId, stageId);
           return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
         } else {
           Logger.error("Decontrol stageConfig doesn't have nextStageId or applicable outcomeType");
@@ -226,9 +228,11 @@ public class StageController extends Controller {
         } else {
           AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
           sessionService.saveAnswerIdsForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
+          sessionService.updateLastStageId(sessionId, stageId);
           return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
         }
       } else if (action == Action.NONE) {
+        sessionService.updateLastStageId(sessionId, stageId);
         return resultForSelectOneOrManyActionNone(sessionId, stageConfig);
       } else {
         Logger.error("Unknown action " + actionParam);
@@ -255,12 +259,14 @@ public class StageController extends Controller {
       if (answerConfigOptional.isPresent()) {
         AnswerConfig answerConfig = answerConfigOptional.get();
         sessionService.saveAnswerIdsForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
+        sessionService.updateLastStageId(sessionId, stageId);
         return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
       } else {
         Logger.error("Unknown answer " + answer);
         return renderSelectOne(answerForm, stageId, sessionId, resumeCode);
       }
     } else if (action == Action.NONE) {
+      sessionService.updateLastStageId(sessionId, stageId);
       return resultForSelectOneOrManyActionNone(sessionId, stageConfig);
     } else {
       Logger.error("Unknown action " + actionParam);

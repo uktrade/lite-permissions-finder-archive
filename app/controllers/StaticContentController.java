@@ -3,11 +3,11 @@ package controllers;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import com.google.inject.Inject;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.twirl.api.Html;
 import scala.Option;
-import views.html.staticContent;
 import views.html.util.heading;
 import views.html.util.headingBanner;
 
@@ -17,9 +17,16 @@ import java.util.function.Function;
 
 public class StaticContentController extends Controller {
 
+  private final views.html.staticContent staticContent;
+
+  @Inject
+  public StaticContentController(views.html.staticContent staticContent) {
+    this.staticContent = staticContent;
+  }
+
   public enum StaticHtml {
-    BROKERING("tradetypes/brokering.html","Trade controls, trafficking and brokering"),
-    TRANSHIPMENT("tradetypes/transhipment.html","Transhipment"),
+    BROKERING("tradetypes/brokering.html", "Trade controls, trafficking and brokering"),
+    TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment"),
     NOT_APPLICABLE("notApplicable.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence");
@@ -40,6 +47,7 @@ public class StaticContentController extends Controller {
     private final Html pageHeading;
 
   }
+
   private static final Function<String, Html> headingStandardFunc = title -> heading.render(title, "heading-large", false);
   private final static Function<String, Html> headingBannerFunc = headingBanner::render;
 
