@@ -9,15 +9,16 @@
 
   &>li {
     position: relative;
-    padding-top: 4px;
-    padding-right: 4.5em;
-    padding-bottom: $gutter-two-thirds;
-    padding-left: $gutter-two-thirds;
+    padding: 4px $gutter-two-thirds $gutter-two-thirds $gutter-two-thirds;
     margin-left: 11px;
     border-left: 2px solid $border-colour;
 
     @media print {
       border-left-color: $black;
+    }
+
+    &.has-change-link {
+      padding-right: 4.5em;
     }
 
     &:last-child:not(.detail-box) {
