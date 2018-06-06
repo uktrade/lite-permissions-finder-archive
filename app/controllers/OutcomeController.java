@@ -77,7 +77,7 @@ public class OutcomeController extends Controller {
 
   private Result renderItemNotFound(Form<RequestNlrForm> requestNlrFormForm, ControlEntryConfig controlEntryConfig,
                                     String sessionId) {
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbItemViews));
   }
@@ -142,7 +142,7 @@ public class OutcomeController extends Controller {
 
   private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig,
                                      String sessionId) {
-    List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
+    List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
     List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig);
@@ -156,7 +156,7 @@ public class OutcomeController extends Controller {
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true).stream()
         .filter(answer -> answers.contains(answer.getValue()))
         .collect(Collectors.toList());
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     return ok(decontrolOutcome.render(requestNlrForm, stageId, sessionId, resumeCode, breadcrumbView, answerViews));
   }

@@ -9,13 +9,18 @@ import triage.session.TriageSession;
 
 public interface SessionJDBIDao {
 
-  @SqlUpdate("INSERT INTO SESSION (ID,  JOURNEY_ID, RESUME_CODE, OUTCOME_TYPE, OUTCOME_HTML) VALUES " +
-      "                          (:id, :journeyId, :resumeCode, :outcomeType, :outcomeHtml)")
+  @SqlUpdate("INSERT INTO SESSION (ID,  JOURNEY_ID, RESUME_CODE, OUTCOME_TYPE, OUTCOME_HTML, LAST_STAGE_ID) VALUES " +
+      "                          (:id, :journeyId, :resumeCode, :outcomeType, :outcomeHtml, :lastStageId)")
   void insert(@Bind("id") String id,
               @Bind("journeyId") long journeyId,
               @Bind("resumeCode") String resumeCode,
               @Bind("outcomeType") String outcomeType,
-              @Bind("outcomeHtml") String outcomeHtml);
+              @Bind("outcomeHtml") String outcomeHtml,
+              @Bind("lastStageId") Long lastStageId);
+
+
+  @SqlUpdate("UPDATE SESSION SET LAST_STAGE_ID = :lastStageId WHERE id = :id")
+  void updateLastStageId(@Bind("id") String sessionId, @Bind("lastStageId") Long lastStageId);
 
   @RegisterMapper(SessionRSMapper.class)
   @SqlQuery("SELECT * FROM SESSION WHERE ID = :id")

@@ -4,7 +4,7 @@ import play.data.validation.Constraints;
 
 public class ContinueApplicationForm {
 
-  @Constraints.Required(message = "You must enter your resume code")
+  @Constraints.Required(message = "You must enter your reference code")
   public String resumeCode;
 
 }
