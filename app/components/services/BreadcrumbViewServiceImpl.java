@@ -95,7 +95,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   private String createChangeUrl(String sessionId, String controlEntryId, List<String> stageIds) {
     if (stageIds.isEmpty()) {
       List<StageConfig> stageConfigs = journeyConfigService.getStageConfigsByControlEntryIdAndOutcomeType(
-          Long.parseLong(controlEntryId), StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+          controlEntryId, StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
       if (stageConfigs.isEmpty()) {
         return null;
       } else {

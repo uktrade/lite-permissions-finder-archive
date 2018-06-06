@@ -56,9 +56,9 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<StageConfig> getStageConfigsByControlEntryIdAndOutcomeType(long controlEntryId,
+  public List<StageConfig> getStageConfigsByControlEntryIdAndOutcomeType(String controlEntryId,
                                                                          StageAnswerOutcomeType stageAnswerOutcomeType) {
-    return stageAnswerDao.getStageAnswersByControlEntryIdAndOutcomeType(controlEntryId, stageAnswerOutcomeType).stream()
+    return stageAnswerDao.getStageAnswersByControlEntryIdAndOutcomeType(Long.parseLong(controlEntryId), stageAnswerOutcomeType).stream()
         .map(StageAnswer::getParentStageId)
         .distinct()
         .map(stageId -> stageConfigCache.getUnchecked(Long.toString(stageId)))

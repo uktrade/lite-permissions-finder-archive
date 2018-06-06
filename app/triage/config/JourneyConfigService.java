@@ -19,7 +19,7 @@ public interface JourneyConfigService {
 
   List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig);
 
-  List<StageConfig> getStageConfigsByControlEntryIdAndOutcomeType(long controlEntryId,
+  List<StageConfig> getStageConfigsByControlEntryIdAndOutcomeType(String controlEntryId,
                                                                   StageAnswerOutcomeType stageAnswerOutcomeType);
 
   AnswerConfig getStageAnswerForPreviousStage(String stageId);
