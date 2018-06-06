@@ -31,14 +31,14 @@ public class ModalDefinitionController {
   public Result renderGlobalDefinition(String globalDefinitionId) {
     GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(globalDefinitionId));
     RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText);
+    String definitionTextHtml = htmlRenderService.convertRichText(richDefinitionText, true);
     return ok(modalDefinition.render(globalDefinition.getTerm(), definitionTextHtml));
   }
 
   public Result renderLocalDefinition(String localDefinitionId) {
     LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(localDefinitionId));
     RichText richDefinitionText = richTextParser.parseForStage(localDefinition.getDefinitionText(), null);
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText);
+    String definitionTextHtml = htmlRenderService.convertRichText(richDefinitionText, true);
     return ok(modalDefinition.render(localDefinition.getTerm(), definitionTextHtml));
   }
 }
