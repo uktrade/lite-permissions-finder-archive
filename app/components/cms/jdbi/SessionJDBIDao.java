@@ -27,7 +27,7 @@ public interface SessionJDBIDao {
   TriageSession getSessionById(@Bind("id") String id);
 
   @RegisterMapper(SessionRSMapper.class)
-  @SqlQuery("SELECT * FROM SESSION WHERE RESUME_CODE = :resumeCode")
+  @SqlQuery("SELECT * FROM SESSION WHERE REPLACE(RESUME_CODE, '-', '') = :resumeCode")
   TriageSession getSessionByResumeCode(@Bind("resumeCode") String resumeCode);
 
 }

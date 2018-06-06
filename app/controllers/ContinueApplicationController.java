@@ -37,7 +37,8 @@ public class ContinueApplicationController {
     } else {
       String resumeCode = form.get().resumeCode;
       if (StringUtils.isNoneBlank(resumeCode)) {
-        TriageSession triageSession = sessionService.getSessionByResumeCode(resumeCode);
+        String alphanumericResumeCode = resumeCode.replaceAll("[^0-9a-zA-Z]", "").toUpperCase();
+        TriageSession triageSession = sessionService.getSessionByResumeCode(alphanumericResumeCode);
         if (triageSession != null) {
           String sessionId = triageSession.getId();
           Long lastStageId = triageSession.getLastStageId();
