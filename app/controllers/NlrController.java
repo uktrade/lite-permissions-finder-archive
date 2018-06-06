@@ -1,6 +1,5 @@
 package controllers;
 
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -15,7 +14,6 @@ import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import org.pac4j.play.java.Secure;
-import play.Logger;
 import play.mvc.Result;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
@@ -60,12 +58,17 @@ public class NlrController {
     this.journeyConfigService = journeyConfigService;
   }
 
-  public Result registerNlr(String sessionId, String stageIdOrControlEntryId, String outcomeType) {
+  public Result registerNotFoundNlr(String sessionId, String controlEntryId, String nlrType) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(nlrRegisterSuccess.render(resumeCode, outcomeType, stageIdOrControlEntryId));
+    return ok(nlrRegisterSuccess.render(resumeCode, nlrType, controlEntryId));
   }
 
-  public Result generateNlrLetter(String stageIdOrControlEntryId, String resumeCode, String outcomeType) throws ExecutionException, InterruptedException {
+  public Result registerDecontrolNlr(String sessionId, String stageId, String nlrType) {
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    return ok(nlrRegisterSuccess.render(resumeCode, nlrType, stageId));
+  }
+
+  public Result generateNotFoundNlrLetter(String controlEntryId, String resumeCode, String nlrType) throws ExecutionException, InterruptedException {
     String userId = getUserId();
     UserDetailsView userDetailsView = userService.getUserDetailsView(userId).toCompletableFuture().get();
     Optional<SiteView.SiteViewAddress> optSiteAddress = getSiteAddress(userId);
@@ -73,22 +76,24 @@ public class NlrController {
     SiteView.SiteViewAddress address = optSiteAddress.orElse(new SiteView.SiteViewAddress());
     String todayDate = getDate();
 
-    switch (outcomeType) {
-      case "DECONTROL": {
-        StageConfig stageConfig = journeyConfigService.getStageConfigById(stageIdOrControlEntryId);
-        List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
-        BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageIdOrControlEntryId);
-        return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, outcomeType, decontrolBreadcrumb.render(breadcrumbView, answerViews)));
-      }
-      case "ITEM_NOT_FOUND": {
-        ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(stageIdOrControlEntryId);
-        List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
-        return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, outcomeType, itemNotFoundBreadcrumb.render(breadcrumbItemViews)));
-      }
-      default: {
-        return badRequest("Failed to generate NLR letter");
-      }
-    }
+    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(controlEntryConfig);
+    return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrType, itemNotFoundBreadcrumb.render(breadcrumbItemViews)));
+
+  }
+
+  public Result generateDecontrolNlrLetter(String stageId, String resumeCode, String nlrType) throws ExecutionException, InterruptedException {
+    String userId = getUserId();
+    UserDetailsView userDetailsView = userService.getUserDetailsView(userId).toCompletableFuture().get();
+    Optional<SiteView.SiteViewAddress> optSiteAddress = getSiteAddress(userId);
+
+    SiteView.SiteViewAddress address = optSiteAddress.orElse(new SiteView.SiteViewAddress());
+    String todayDate = getDate();
+
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId);
+    return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrType, decontrolBreadcrumb.render(breadcrumbView, answerViews)));
   }
 
   private Optional<SiteView.SiteViewAddress> getSiteAddress(String userId) {
@@ -100,7 +105,7 @@ public class NlrController {
         return Optional.of(optSiteView.get().getAddress());
       }
     }
-    return Optional.empty();
+    throw new RuntimeException("No site address found for user: " + userId);
   }
 
   private Optional<SiteView> getSite(String customerId, String userId) {
@@ -114,8 +119,7 @@ public class NlrController {
         throw new RuntimeException("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
       }
     }
-    Logger.warn("Not a single Site associated with user/customer: " + userId + "/" + customerId);
-    return Optional.empty();
+    throw new RuntimeException("Not a single Site associated with user/customer: " + userId + "/" + customerId);
   }
 
   private Optional<String> getCustomer(String userId) {
@@ -129,8 +133,7 @@ public class NlrController {
         throw new RuntimeException("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
       }
     }
-    Logger.warn("Not a single Customer associated with user: " + userId);
-    return Optional.empty();
+    throw new RuntimeException("Not a single Customer associated with user: " + userId);
   }
 
   private String getDate() {
