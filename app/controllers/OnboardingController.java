@@ -11,7 +11,6 @@ import play.data.validation.Constraints;
 import play.mvc.Result;
 import triage.session.SessionService;
 import utils.common.SelectOption;
-import views.html.onboardingContent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +20,14 @@ public class OnboardingController {
 
   private final FormFactory formFactory;
   private final SessionService sessionService;
+  private final views.html.onboardingContent onboardingContent;
 
   @Inject
-  public OnboardingController(FormFactory formFactory, SessionService sessionService) {
+  public OnboardingController(FormFactory formFactory, SessionService sessionService,
+                              views.html.onboardingContent onboardingContent) {
     this.formFactory = formFactory;
     this.sessionService = sessionService;
+    this.onboardingContent = onboardingContent;
   }
 
   public CompletionStage<Result> renderForm(String sessionId) {

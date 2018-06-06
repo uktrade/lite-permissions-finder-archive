@@ -8,6 +8,7 @@
 @import views.html.common.form._
 @import play.twirl.api.HtmlFormat
 
+@this(standardPage: standardPage)
 @(form: Form[_], countries: List[CountryView], fieldOrderList: List[String])
 
 @multipleCountriesQuestion = @{

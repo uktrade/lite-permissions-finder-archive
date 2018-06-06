@@ -4,6 +4,7 @@
 @import views.html.common.state._
 @import models.ogel.OgelNotApplicableDisplay
 
+@this(standardPage: standardPage)
 @(form: Form[_], display: OgelNotApplicableDisplay)
 @standardPage(display.pageTitle, Some(heading(display.pageTitle))){
   @errorSummary(form)

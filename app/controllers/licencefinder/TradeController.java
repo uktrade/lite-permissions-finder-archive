@@ -16,7 +16,6 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.licencefinder.trade;
 
 import java.util.concurrent.CompletionStage;
 
@@ -27,16 +26,18 @@ public class TradeController extends Controller {
   private final LicenceFinderDao dao;
   private final TransactionManager transactionManager;
   private final ContextParamManager contextParam;
+  private final views.html.licencefinder.trade trade;
 
   private static final String UNITED_KINGDOM = "CTRY0";
 
   @Inject
   public TradeController(TransactionManager transactionManager, FormFactory formFactory,
-                         LicenceFinderDao dao, ContextParamManager contextParam) {
+                         LicenceFinderDao dao, ContextParamManager contextParam, views.html.licencefinder.trade trade) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
     this.dao = dao;
     this.contextParam = contextParam;
+    this.trade = trade;
   }
 
   /**

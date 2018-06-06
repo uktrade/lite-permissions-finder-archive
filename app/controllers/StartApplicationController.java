@@ -4,7 +4,6 @@ import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
-import components.common.client.NotificationServiceClient;
 import components.services.notification.PermissionsFinderNotificationClient;
 import models.view.form.StartApplicationForm;
 import org.apache.commons.lang3.StringUtils;
@@ -14,21 +13,22 @@ import play.data.FormFactory;
 import play.mvc.Result;
 import triage.session.SessionService;
 import triage.session.TriageSession;
-import views.html.startApplication;
 
 public class StartApplicationController {
 
   private final FormFactory formFactory;
   private final SessionService sessionService;
   private final PermissionsFinderNotificationClient permissionsFinderNotificationClient;
+  private final views.html.startApplication startApplication;
 
   @Inject
   public StartApplicationController(FormFactory formFactory, SessionService sessionService,
-                                    NotificationServiceClient notificationServiceClient,
-                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient) {
+                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient,
+                                    views.html.startApplication startApplication) {
     this.formFactory = formFactory;
     this.sessionService = sessionService;
     this.permissionsFinderNotificationClient = permissionsFinderNotificationClient;
+    this.startApplication = startApplication;
   }
 
   public Result renderForm() {

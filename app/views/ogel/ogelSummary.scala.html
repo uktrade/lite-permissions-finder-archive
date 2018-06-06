@@ -5,6 +5,7 @@
 @import views.html.common.state._
 @import views.html.ogel._
 
+@this(standardPage: standardPage)
 @(form: Form[OgelSummaryForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean)
 @standardPage(ogel.getName, Some(heading(ogel.getName))){
   @errorSummary(form)

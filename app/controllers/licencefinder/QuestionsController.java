@@ -14,7 +14,6 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.licencefinder.questions;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -26,14 +25,16 @@ public class QuestionsController extends Controller {
   private final LicenceFinderDao dao;
   private final LicenceFinderService licenceFinderService;
   private final ContextParamManager contextParam;
+  private final views.html.licencefinder.questions questions;
 
   @Inject
   public QuestionsController(FormFactory formFactory, LicenceFinderDao dao, LicenceFinderService licenceFinderService,
-                             ContextParamManager contextParam) {
+                             ContextParamManager contextParam, views.html.licencefinder.questions questions) {
     this.formFactory = formFactory;
     this.dao = dao;
     this.licenceFinderService = licenceFinderService;
     this.contextParam = contextParam;
+    this.questions = questions;
   }
 
   /************************************************************************************************

@@ -2,6 +2,7 @@
 @import util._
 @import views.html.ogel._
 
+@this(standardPage: standardPage)
 @(ogel: OgelFullView)
 @standardPage(ogel.getName, Some(heading(ogel.getName))) {
 

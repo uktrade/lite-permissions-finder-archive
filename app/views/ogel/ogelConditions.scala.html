@@ -5,6 +5,7 @@
 @import uk.gov.bis.lite.ogel.api.view.OgelFullView
 @import components.services.ogels.conditions.OgelConditionsServiceResult
 
+@this(standardPage: standardPage)
 @(form: Form[_], ogel: OgelFullView, ogelRestriction: OgelConditionsServiceResult, missingControlCodes: Boolean, isVirtualEUOgel: Boolean)
 @standardPage("Additional conditions apply", Some(heading("Additional conditions apply"))){
   @errorSummary(form)

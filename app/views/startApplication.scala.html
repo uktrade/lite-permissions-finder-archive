@@ -4,6 +4,7 @@
 @import views.html.common.page._
 @import views.html.common.state._
 
+@this(standardPage: standardPage)
 @(form: Form[_], sessionId: String, resumeCode: String)
 @standardPage("Before you begin", Some(heading("Before you begin"))) {
   @errorSummary(form)
