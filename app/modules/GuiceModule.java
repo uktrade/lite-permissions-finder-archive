@@ -17,12 +17,6 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import components.auth.SamlModule;
-import components.services.CustomerService;
-import components.services.CustomerServiceImpl;
-import components.services.OgelService;
-import components.services.OgelServiceImpl;
-import components.services.PermissionsService;
-import components.services.PermissionsServiceImpl;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
@@ -62,8 +56,14 @@ import components.services.AnswerViewService;
 import components.services.AnswerViewViewServiceImpl;
 import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
+import components.services.CustomerService;
+import components.services.CustomerServiceImpl;
 import components.services.LicenceFinderService;
 import components.services.LicenceFinderServiceImpl;
+import components.services.OgelService;
+import components.services.OgelServiceImpl;
+import components.services.PermissionsService;
+import components.services.PermissionsServiceImpl;
 import components.services.ProgressViewService;
 import components.services.ProgressViewServiceImpl;
 import components.services.RenderService;
@@ -89,8 +89,8 @@ import triage.cache.CachePopulationService;
 import triage.cache.CachePopulationServiceImpl;
 import triage.cache.CacheValidator;
 import triage.cache.CacheValidatorImpl;
-import triage.cache.JourneyConfigCache;
-import triage.cache.JourneyConfigCacheImpl;
+import triage.cache.JourneyConfigFactory;
+import triage.cache.JourneyConfigFactoryImpl;
 import triage.cache.StartupCachePopulationActor;
 import triage.config.JourneyConfigService;
 import triage.config.JourneyConfigServiceImpl;
@@ -129,12 +129,12 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
     bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
-    bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class).asEagerSingleton();
     bind(RichTextParser.class).to(RichTextParserImpl.class);
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
     bind(SessionService.class).to(SessionServiceImpl.class);
     bind(CacheValidator.class).to(CacheValidatorImpl.class).asEagerSingleton();
-    bind(JourneyConfigCache.class).to(JourneyConfigCacheImpl.class).asEagerSingleton();
+    bind(JourneyConfigFactory.class).to(JourneyConfigFactoryImpl.class);
     bind(CachePopulationService.class).to(CachePopulationServiceImpl.class);
     bind(StartupCachePopulationActor.class).asEagerSingleton();
     bind(LicenceFinderService.class).to(LicenceFinderServiceImpl.class);
@@ -260,12 +260,14 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   @Named("permissionsFinderDaoHashCommon")
-  public CommonRedisDao providePermissionsFinderDaoHashCommon(StatelessRedisDao statelessRedisDao, TransactionManager transactionManager) {
+  public CommonRedisDao providePermissionsFinderDaoHashCommon(StatelessRedisDao statelessRedisDao,
+                                                              TransactionManager transactionManager) {
     return new CommonRedisDao(statelessRedisDao, transactionManager);
   }
 
   @Provides
-  public StatelessRedisDao provideStatelessRedisDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig, RedissonClient redissonClient) {
+  public StatelessRedisDao provideStatelessRedisDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig,
+                                                    RedissonClient redissonClient) {
     return new StatelessRedisDao(keyConfig, redissonClient);
   }
 
@@ -332,7 +334,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   @Singleton
-  @Named("jwtRequestFilter")
   public JwtRequestFilter provideJwtRequestFilterConfig(UserServiceClientBasicAuth basicAuthClient,
                                                         SpireAuthManager spireAuthManager,
                                                         @Named("jwtSharedSecret") String jwtSharedSecret) {

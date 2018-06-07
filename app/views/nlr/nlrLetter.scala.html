@@ -1,3 +1,48 @@
-<p>
-      TODO : NLR LETTER
-</p>
+@import uk.gov.bis.lite.user.api.view.UserDetailsView
+@import uk.gov.bis.lite.customer.api.view.SiteView
+@import util._
+
+@this(standardPage: standardPage)
+@(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html)
+
+@standardPage("NLR Letter", Some(heading(""))) {
+  @Html("")
+} {
+
+  <p>
+    <a href="javascript:window.print();">Print this page</a>
+  </p>
+
+  <div>
+    Reference Code : @resumeCode
+  </div>
+
+  <div>
+    @userDetailsView.getTitle @userDetailsView.getFullName
+  </div>
+  <div>
+    @address.getPlainText
+  </div>
+  <div>
+    Tel @userDetailsView.getContactPhoneNumber
+  </div>
+  <div>
+    Email @userDetailsView.getContactEmailAddress
+  </div>
+
+  <div>
+    Date @date
+  </div>
+
+
+  <p>
+  Dear @userDetailsView.getTitle @userDetailsView.getLastName
+  </p>
+
+  <h2 class="heading-medium">Schedule of Goods</h2>
+  <p>
+    The following is your assessment of your item against the UK Strategic Export Control Lists.
+  </p>
+    @nlrBreadcrumb
+
+}

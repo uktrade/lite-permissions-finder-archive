@@ -1,6 +1,5 @@
 package triage.config;
 
-import models.cms.StageAnswer;
 import models.cms.enums.StageAnswerOutcomeType;
 
 import java.util.List;
@@ -20,11 +19,13 @@ public interface JourneyConfigService {
 
   List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig);
 
-  List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(long controlEntryId,
+  List<StageConfig> getStageConfigsByControlEntryIdAndOutcomeType(String controlEntryId,
                                                                   StageAnswerOutcomeType stageAnswerOutcomeType);
 
   AnswerConfig getStageAnswerForPreviousStage(String stageId);
 
   StageConfig getStageConfigForPreviousStage(String stageId);
+
+  void flushCache();
 
 }

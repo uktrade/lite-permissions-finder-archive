@@ -39,6 +39,7 @@ libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
 libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.3"
 libraryDependencies += "uk.gov.bis.lite" % "lite-permissions-service-api" % "1.4"
 libraryDependencies += "uk.gov.bis.lite" % "lite-customer-service-api" % "1.1"
+libraryDependencies += "uk.gov.bis.lite" % "lite-user-service-api" % "1.2"
 
 libraryDependencies += "au.com.dius" % "pact-jvm-provider-junit_2.11" % "3.5.13" % "test"
 libraryDependencies += "au.com.dius" % "pact-jvm-consumer-junit_2.11" % "3.5.13" % "test"

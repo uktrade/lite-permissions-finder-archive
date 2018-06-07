@@ -2,33 +2,34 @@
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 
-@(breadcrumbItemsViews: List[BreadcrumbItemView])
-<div class="grid-row">
-  <div class="column-full">
-    @controlCodeBreadcrumbs(){
-      @for((breadcrumbItemView, index) <- breadcrumbItemsViews.zipWithIndex) {
-        @if(index == breadcrumbItemsViews.size - 1) {
-          @controlCodeBreadcrumbsDetailBox(isPathStep = true){
-            @if(breadcrumbItemView.getText!=null) {
-              <span class="bold">@breadcrumbItemView.getText</span>
-            }
-            @if(breadcrumbItemView.getDescription!=null) {
-              @Html(breadcrumbItemView.getDescription)
-            }
-          }{
-            @HtmlFormat.empty
+@(controlCode: String, breadcrumbItemsViews: List[BreadcrumbItemView])
+<div>
+  <h1 class="heading-medium modal-heading">
+    @controlCode
+  </h1>
+  @controlCodeBreadcrumbs(){
+    @for((breadcrumbItemView, index) <- breadcrumbItemsViews.zipWithIndex) {
+      @if(index == breadcrumbItemsViews.size - 1) {
+        @controlCodeBreadcrumbsDetailBox(isPathStep = true){
+          @if(breadcrumbItemView.getText!=null) {
+            <span class="bold">@breadcrumbItemView.getText</span>
           }
-        } else {
-          @controlCodeBreadcrumbsStep(){
-            @if(breadcrumbItemView.getText!=null) {
-              <span class="bold">@breadcrumbItemView.getText</span>
-            }
-            @if(breadcrumbItemView.getDescription!=null) {
-              @Html(breadcrumbItemView.getDescription)
-            }
+          @if(breadcrumbItemView.getDescription!=null) {
+            @Html(breadcrumbItemView.getDescription)
+          }
+        }{
+          @HtmlFormat.empty
+        }
+      } else {
+        @controlCodeBreadcrumbsStep(){
+          @if(breadcrumbItemView.getText!=null) {
+            <span class="bold">@breadcrumbItemView.getText</span>
+          }
+          @if(breadcrumbItemView.getDescription!=null) {
+            @Html(breadcrumbItemView.getDescription)
           }
         }
       }
     }
-  </div>
+  }
 </div>

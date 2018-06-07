@@ -12,22 +12,20 @@ public class CachePopulationServiceImpl implements CachePopulationService {
   private static final Logger LOGGER = LoggerFactory.getLogger(CachePopulationServiceImpl.class);
 
   private final JourneyConfigService journeyConfigService;
-  private final JourneyConfigCache journeyConfigCache;
   private final ControlEntryDao controlEntryDao;
   private final CacheValidator cacheValidator;
 
   @Inject
-  public CachePopulationServiceImpl(JourneyConfigService journeyConfigService, JourneyConfigCache journeyConfigCache,
-                                    ControlEntryDao controlEntryDao, CacheValidator cacheValidator) {
+  public CachePopulationServiceImpl(JourneyConfigService journeyConfigService, ControlEntryDao controlEntryDao,
+                                    CacheValidator cacheValidator) {
     this.journeyConfigService = journeyConfigService;
-    this.journeyConfigCache = journeyConfigCache;
     this.controlEntryDao = controlEntryDao;
     this.cacheValidator = cacheValidator;
   }
 
   @Override
   public String populateCache() {
-    journeyConfigCache.flushCache();
+    journeyConfigService.flushCache();
     cacheValidator.reset();
 
     LOGGER.info("Start config cache population");

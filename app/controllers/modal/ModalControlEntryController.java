@@ -25,6 +25,6 @@ public class ModalControlEntryController extends Controller {
   public Result renderControlEntry(String controlEntryId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig);
-    return ok(modalControlEntry.render(breadcrumbItemViews));
+    return ok(modalControlEntry.render(controlEntryConfig.getControlCode(), breadcrumbItemViews));
   }
 }
