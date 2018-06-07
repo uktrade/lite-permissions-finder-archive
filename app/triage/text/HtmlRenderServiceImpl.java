@@ -1,12 +1,10 @@
 package triage.text;
 
 import com.google.inject.Inject;
-import components.cms.dao.GlobalDefinitionDao;
-import components.cms.dao.LocalDefinitionDao;
-import models.cms.GlobalDefinition;
-import models.cms.LocalDefinition;
 import models.enums.HtmlType;
 import org.apache.commons.lang3.StringUtils;
+import triage.config.DefinitionConfig;
+import triage.config.DefinitionConfigService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,13 +30,11 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   private static final Pattern PATTERN_LEVEL_2 = Pattern.compile("\\*\\*(.*?)\\n");
   private static final Pattern PATTERN_LEVEL_3 = Pattern.compile("\\*\\*\\*(.*?)\\n");
 
-  private final GlobalDefinitionDao globalDefinitionDao;
-  private final LocalDefinitionDao localDefinitionDao;
+  private final DefinitionConfigService definitionConfigService;
 
   @Inject
-  public HtmlRenderServiceImpl(GlobalDefinitionDao globalDefinitionDao, LocalDefinitionDao localDefinitionDao) {
-    this.globalDefinitionDao = globalDefinitionDao;
-    this.localDefinitionDao = localDefinitionDao;
+  public HtmlRenderServiceImpl(DefinitionConfigService definitionConfigService) {
+    this.definitionConfigService = definitionConfigService;
   }
 
   @Override
@@ -119,11 +115,11 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     String definitionId = definitionReferenceNode.getReferencedDefinitionId();
     String text;
     if (definitionReferenceNode.isGlobal()) {
-      GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(definitionId));
-      text = globalDefinition.getTerm();
+      DefinitionConfig definitionConfig = definitionConfigService.getGlobalDefinition(definitionId);
+      text = definitionConfig.getTerm();
     } else {
-      LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(definitionId));
-      text = localDefinition.getTerm();
+      DefinitionConfig definitionConfig = definitionConfigService.getLocalDefinition(definitionId);
+      text = definitionConfig.getTerm();
     }
     String type = definitionReferenceNode.isGlobal() ? "global" : "local";
     return String.format(DEFINITION_TEXT, definitionId, definitionId, type, text, text);

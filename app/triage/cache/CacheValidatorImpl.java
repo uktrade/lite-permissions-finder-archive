@@ -17,19 +17,19 @@ public class CacheValidatorImpl implements CacheValidator {
 
   @Override
   public void logUnmatchedControlCode(String controlCode) {
-    LOGGER.warn("Code {} not matched", controlCode);
+    LOGGER.info("Code {} not matched", controlCode);
     unmatchedControlCodes.add(controlCode);
   }
 
   @Override
   public void logUnmatchedGlobalDefinition(String term) {
-    LOGGER.warn("Global definition term '{}' not matched", term);
+    LOGGER.info("Global definition term '{}' not matched", term);
     unmatchedGlobalDefinitions.add(term);
   }
 
   @Override
   public void logUnmatchedLocalDefinition(String term) {
-    LOGGER.warn("Local definition term '{}' not matched", term);
+    LOGGER.info("Local definition term '{}' not matched", term);
     unmatchedLocalDefinitions.add(term);
   }
 
