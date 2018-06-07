@@ -13,12 +13,8 @@
   <p class="form-hint">
     Decontrols describe items not controlled under the UK Strategic Export Control Lists. Select all that apply.
   </p>
+  @noteMessage(showNoteMessage)
   <p>
-    @if(showNoteMessage) {
-      <p>
-        Read the Notes on the right before making your selection on this page.
-      </p>
-    }
     @if(StringUtils.isNotBlank(explanatoryText)) {
       @Html(explanatoryText)
     } else {
