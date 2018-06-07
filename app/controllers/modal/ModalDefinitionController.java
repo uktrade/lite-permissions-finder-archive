@@ -3,22 +3,16 @@ package controllers.modal;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.cms.dao.GlobalDefinitionDao;
-import components.cms.dao.LocalDefinitionDao;
-import models.cms.GlobalDefinition;
-import models.cms.LocalDefinition;
 import play.mvc.Result;
+import triage.config.DefinitionConfig;
+import triage.config.DefinitionConfigService;
 import triage.text.HtmlConversionOption;
 import triage.text.HtmlRenderService;
-import triage.text.RichText;
-import triage.text.RichTextParser;
 import views.html.modal.modalDefinition;
 
 public class ModalDefinitionController {
-  private final GlobalDefinitionDao globalDefinitionDao;
-  private final LocalDefinitionDao localDefinitionDao;
-  private final RichTextParser richTextParser;
   private final HtmlRenderService htmlRenderService;
+  private final DefinitionConfigService definitionConfigService;
   private final views.html.modal.modalDefinitionView modalDefinitionView;
 
   @Inject

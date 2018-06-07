@@ -41,7 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
   public CustomerServiceImpl(HttpExecutionContext httpContext, WSClient wsClient,
                              @Named("customerServiceAddress") String customerServiceAddress,
                              @Named("customerServiceTimeout") int timeout,
-                             @Named("jwtRequestFilter") JwtRequestFilter jwtRequestFilter, ObjectMapper mapper) {
+                             JwtRequestFilter jwtRequestFilter, ObjectMapper mapper) {
     this.httpContext = httpContext;
     this.wsClient = wsClient;
     this.customerServiceAddress = customerServiceAddress;

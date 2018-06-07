@@ -10,6 +10,7 @@ import exceptions.BusinessRuleException;
 import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
+import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.ProgressView;
 import models.view.form.AnswerForm;
@@ -32,6 +33,7 @@ import utils.PageTypeUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -153,7 +155,12 @@ public class StageController extends Controller {
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
-    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
+
+    LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
+        Collectors.toMap(e -> e, e -> multiAnswerForm.get().answers.contains(e.getValue()), (a, b) -> a,
+            LinkedHashMap::new));
+
+    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
   }
 
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId,
@@ -165,7 +172,12 @@ public class StageController extends Controller {
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
-    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
+
+    LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
+        Collectors.toMap(e -> e, e -> multiAnswerFormForm.get().answers.contains(e.getValue()), (a, b) -> a,
+            LinkedHashMap::new));
+
+    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
@@ -320,7 +332,8 @@ public class StageController extends Controller {
   }
 
   private boolean isShowNoteMessage(BreadcrumbView breadcrumbView) {
-    return breadcrumbView.getBreadcrumbItemViews().stream().anyMatch(biv -> !biv.getNoteViews().isEmpty());
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbView.getBreadcrumbItemViews();
+    return !breadcrumbItemViews.isEmpty() && !breadcrumbItemViews.get(breadcrumbItemViews.size() - 1).getNoteViews().isEmpty();
   }
 
 }

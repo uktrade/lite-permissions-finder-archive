@@ -6,6 +6,8 @@ import components.cms.jdbi.GlobalDefinitionJDBIDao;
 import models.cms.GlobalDefinition;
 import org.skife.jdbi.v2.DBI;
 
+import java.util.List;
+
 public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
 
   private final GlobalDefinitionJDBIDao globalDefinitionJDBIDao;
@@ -17,17 +19,22 @@ public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
 
   @Override
   public GlobalDefinition getGlobalDefinition(long id) {
-    return this.globalDefinitionJDBIDao.get(id);
+    return globalDefinitionJDBIDao.get(id);
   }
 
   @Override
   public GlobalDefinition getGlobalDefinitionByTerm(String term) {
-    return this.globalDefinitionJDBIDao.getByTerm(term);
+    return globalDefinitionJDBIDao.getByTerm(term);
+  }
+
+  @Override
+  public List<Long> getAllIds() {
+    return globalDefinitionJDBIDao.getAllIds();
   }
 
   @Override
   public Long insertGlobalDefinition(GlobalDefinition globalDefinition) {
-    return this.globalDefinitionJDBIDao.insert(
+    return globalDefinitionJDBIDao.insert(
         globalDefinition.getJourneyId(),
         globalDefinition.getTerm(),
         globalDefinition.getDefinitionText());
@@ -35,11 +42,12 @@ public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
 
   @Override
   public void deleteGlobalDefinition(long id) {
-    this.globalDefinitionJDBIDao.delete(id);
+    globalDefinitionJDBIDao.delete(id);
   }
 
   @Override
   public void deleteAllGlobalDefinitions() {
-    this.globalDefinitionJDBIDao.truncate();
+    globalDefinitionJDBIDao.truncate();
   }
+
 }

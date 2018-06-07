@@ -44,8 +44,7 @@ public class PermissionsServiceImpl implements PermissionsService {
   public PermissionsServiceImpl(WSClient wsClient,
                                 @Named("permissionsServiceAddress") String permissionsServiceAddress,
                                 @Named("permissionsServiceTimeout") int timeout,
-                                @Named("jwtRequestFilter") JwtRequestFilter jwtRequestFilter,
-                                ObjectMapper mapper) {
+                                JwtRequestFilter jwtRequestFilter, ObjectMapper mapper) {
     this.wsClient = wsClient;
     this.permissionsServiceAddress = permissionsServiceAddress;
     this.timeout = timeout;

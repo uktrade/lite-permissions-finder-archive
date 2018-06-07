@@ -1,7 +1,7 @@
 @import util._
 
 @this(standardPage: standardPage)
-@(resumeCode: String, sessionId: String)
+@(sessionId: String, resumeCode: String, nlrType: String, stageId: String)
 
   @nlrSuccess = {You have successfully registered a "No Licence Required" letter}
 
@@ -12,11 +12,18 @@
         Lorem ipsum dolor sit amet consectetur adipiscing nam.
       </p>
 
-    <p>
-      <a href='@routes.NlrController.viewNlrLetter(sessionId, resumeCode)' class="bold font-medium">
-      View your "No Licence Required Letter"
-      </a>
-    </p>
+      <p>
+        @if(nlrType.equals("DECONTROL")) {
+          <a href= '@routes.NlrController.generateDecontrolNlrLetter(sessionId, stageId, resumeCode)' class="bold font-medium">
+            View your "No Licence Required Letter"
+          </a>
+        }
+        @if(nlrType.equals("ITEM_NOT_FOUND")) {
+          <a href= '@routes.NlrController.generateNotFoundNlrLetter(sessionId, stageId, resumeCode)' class="bold font-medium">
+            View your "No Licence Required Letter"
+          </a>
+        }
+      </p>
 
   }
 

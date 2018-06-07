@@ -28,7 +28,6 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   private final LoadingCache<String, ControlEntryConfig> controlEntryCache;
   private final LoadingCache<String, List<NoteConfig>> noteCache;
 
-
   @Inject
   public JourneyConfigServiceImpl(JourneyDao journeyDao, StageDao stageDao, StageAnswerDao stageAnswerDao,
                                   ControlEntryDao controlEntryDao, JourneyConfigFactory journeyConfigFactory) {

@@ -1,0 +1,47 @@
+@import models.view.BreadcrumbView
+@import models.view.AnswerView
+@import play.twirl.api.HtmlFormat
+@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import com.google.common.collect.Iterables
+
+@(breadcrumbView: BreadcrumbView, answerViews: List[AnswerView])
+
+@controlCodeBreadcrumbs(isWide = true) {
+  @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
+    @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
+      @if(breadcrumbItemView.getText!=null) {
+        <span class="bold">@breadcrumbItemView.getText</span>
+      }
+      @if(breadcrumbItemView.getDescription!=null) {
+        @Html(breadcrumbItemView.getDescription)
+      }
+      @if(!breadcrumbItemView.getNoteViews.isEmpty) {
+        @controlCodeBreadcrumbsDetailBox()(HtmlFormat.empty) {
+          @controlCodeBreadcrumbsNotes() {
+            @for(noteView <- breadcrumbItemView.getNoteViews) {
+              <li>@Html(noteView.getText)</li>
+            }
+          }
+        }
+      }
+    }
+  }
+  @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = breadcrumbView.getDecontrolUrl) {
+    <h2 class="outcome-detail-box-heading">Item is decontrolled</h2>
+    @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText!=null) {
+      <span class="bold">@Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText</span>
+    }
+    @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription!=null) {
+      @Html(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription)
+    }
+    @if(!answerViews.isEmpty) {
+      <ul>
+      @for(answerView <- answerViews) {
+        <li>
+        @Html(answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent)
+        </li>
+      }
+      </ul>
+    }
+  }(HtmlFormat.empty)
+}

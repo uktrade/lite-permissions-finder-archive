@@ -92,6 +92,8 @@ import triage.cache.CacheValidatorImpl;
 import triage.cache.JourneyConfigFactory;
 import triage.cache.JourneyConfigFactoryImpl;
 import triage.cache.StartupCachePopulationActor;
+import triage.config.DefinitionConfigService;
+import triage.config.DefinitionConfigServiceImpl;
 import triage.config.JourneyConfigService;
 import triage.config.JourneyConfigServiceImpl;
 import triage.session.SessionService;
@@ -123,13 +125,14 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
+    bind(DefinitionConfigService.class).to(DefinitionConfigServiceImpl.class).asEagerSingleton();
     bind(ProgressViewService.class).to(ProgressViewServiceImpl.class);
     bind(RenderService.class).to(RenderServiceImpl.class);
     bind(BreadcrumbViewService.class).to(BreadcrumbViewServiceImpl.class);
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
     bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
-    bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class).asEagerSingleton();
     bind(RichTextParser.class).to(RichTextParserImpl.class);
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
     bind(SessionService.class).to(SessionServiceImpl.class);
@@ -334,7 +337,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   @Singleton
-  @Named("jwtRequestFilter")
   public JwtRequestFilter provideJwtRequestFilterConfig(UserServiceClientBasicAuth basicAuthClient,
                                                         SpireAuthManager spireAuthManager,
                                                         @Named("jwtSharedSecret") String jwtSharedSecret) {
