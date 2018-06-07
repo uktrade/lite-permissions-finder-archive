@@ -30,7 +30,7 @@ LITEPermissionsFinder.Triage = {
       .fail(LITEPermissionsFinder.Triage._ajaxDisplayFailureModal);
   },
   _ajaxDisplayDefinitionModal: function(definitionId, type) {
-    $.ajax("/modal-content/" + type + "-definition/" + definitionId)
+    $.ajax("/modal-content/definition/" + type + "/" + definitionId)
       .done(function(data) {
         var $data = $(data);
         LITEPermissionsFinder.Triage._bindModals($data);

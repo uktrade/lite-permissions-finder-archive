@@ -8,6 +8,7 @@ import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
+import triage.text.HtmlConversionOption;
 import triage.text.HtmlRenderService;
 import triage.text.RichText;
 import triage.text.SubAnswer;
@@ -55,7 +56,12 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
 
   private AnswerView createAnswerViewFromControlEntryConfig(AnswerConfig answerConfig,
                                                             ControlEntryConfig controlEntryConfig, boolean html) {
-    String prompt = htmlRenderService.convertRichText(controlEntryConfig.getFullDescription(), html);
+    String prompt;
+    if (html) {
+      prompt = htmlRenderService.convertRichTextToHtml(controlEntryConfig.getFullDescription());
+    } else {
+      prompt = htmlRenderService.convertRichTextToPlainText(controlEntryConfig.getFullDescription());
+    }
     List<RichText> richTextList = new ArrayList<>();
     richTextList.add(controlEntryConfig.getFullDescription());
     List<SubAnswerView> subAnswerViews;
@@ -88,7 +94,12 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
   }
 
   private AnswerView createAnswerViewFromLabelText(AnswerConfig answerConfig, RichText labelText, boolean html) {
-    String prompt = htmlRenderService.convertRichText(labelText, html);
+    String prompt;
+    if (html) {
+      prompt = htmlRenderService.convertRichTextToHtml(labelText);
+    } else {
+      prompt = htmlRenderService.convertRichTextToPlainText(labelText);
+    }
     List<RichText> richTextList = new ArrayList<>();
     richTextList.add(labelText);
     if (answerConfig.getNestedContent().isPresent()) {
@@ -156,11 +167,11 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
         Optional<ControlEntryConfig> associatedControlEntryConfig = answerConfig.getAssociatedControlEntryConfig();
         if (associatedControlEntryConfig.isPresent()) {
           ControlEntryConfig controlEntryConfig = associatedControlEntryConfig.get();
-          stringBuilder.append(htmlRenderService.convertRichText(controlEntryConfig.getFullDescription(), true));
+          stringBuilder.append(htmlRenderService.convertRichTextToHtml(controlEntryConfig.getFullDescription()));
           String subAnswerViewsToHtml = subAnswerViewsToHtml(createSubAnswerViews(createSubAnswers(controlEntryConfig), true));
           stringBuilder.append(subAnswerViewsToHtml);
         } else if (answerConfig.getLabelText().isPresent()) {
-          stringBuilder.append(htmlRenderService.convertRichText(answerConfig.getLabelText().get(), true));
+          stringBuilder.append(htmlRenderService.convertRichTextToHtml(answerConfig.getLabelText().get()));
         } else {
           throw new BusinessRuleException("Both answerConfig.getAssociatedControlEntryConfig and answerConfig.getLabelText are absent.");
         }
@@ -198,9 +209,9 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
     if (nestedContentOptional.isPresent()) {
       RichText nestedContent = nestedContentOptional.get();
       if (links) {
-        return htmlRenderService.convertRichText(nestedContent, true);
+        return htmlRenderService.convertRichTextToHtml(nestedContent);
       } else {
-        return htmlRenderService.convertRichTextToHtmlWithoutLinks(nestedContent);
+        return htmlRenderService.convertRichTextToHtml(nestedContent, HtmlConversionOption.OMIT_LINKS);
       }
     } else {
       return "";
@@ -213,7 +224,12 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
   }
 
   private SubAnswerView createSubAnswerView(SubAnswer subAnswer, boolean html) {
-    String summaryDescription = htmlRenderService.convertRichText(subAnswer.getRichText(), html);
+    String summaryDescription;
+    if (html) {
+      summaryDescription = htmlRenderService.convertRichTextToHtml(subAnswer.getRichText());
+    } else {
+      summaryDescription = htmlRenderService.convertRichTextToPlainText(subAnswer.getRichText());
+    }
     List<SubAnswerView> subAnswerViews = createSubAnswerViews(subAnswer.getSubAnswers(), html);
     return new SubAnswerView(summaryDescription, subAnswerViews);
   }

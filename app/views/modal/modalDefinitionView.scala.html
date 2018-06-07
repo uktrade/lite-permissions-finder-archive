@@ -1,0 +1,10 @@
+@import util._
+
+@this(standardPage: standardPage)
+
+@(term : String, definitionTextHtml: String)
+@standardPage(term, Some(heading(term))) { } {
+  <div>
+    <p>@Html(definitionTextHtml)</p>
+  </div>
+}

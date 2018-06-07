@@ -14,17 +14,26 @@ import java.util.List;
 public class ModalControlEntryController extends Controller {
   private final JourneyConfigService journeyConfigService;
   private final BreadcrumbViewService breadcrumbViewService;
+  private final views.html.modal.modalControlEntryView modalControlEntryView;
 
   @Inject
   public ModalControlEntryController(JourneyConfigService journeyConfigService,
-                                     BreadcrumbViewService breadcrumbViewService) {
+                                     BreadcrumbViewService breadcrumbViewService,
+                                     views.html.modal.modalControlEntryView modalControlEntryView) {
     this.journeyConfigService = journeyConfigService;
     this.breadcrumbViewService = breadcrumbViewService;
+    this.modalControlEntryView = modalControlEntryView;
   }
 
-  public Result renderControlEntry(String controlEntryId) {
+  public Result renderControlEntryModal(String controlEntryId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig);
     return ok(modalControlEntry.render(controlEntryConfig.getControlCode(), breadcrumbItemViews));
+  }
+
+  public Result renderControlEntryView(String controlEntryId) {
+    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig);
+    return ok(modalControlEntryView.render(controlEntryConfig.getControlCode(), breadcrumbItemViews));
   }
 }

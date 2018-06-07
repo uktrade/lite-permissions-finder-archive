@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface HtmlRenderService {
 
-  String convertRichText(RichText richText, boolean html);
+  String convertRichTextToPlainText(RichText richText);
 
-  String convertRichTextToHtmlWithoutLinks(RichText richText);
+  String convertRichTextToHtml(RichText richText, HtmlConversionOption... htmlConversionOptions);
 
   String createRelatedItemsHtml(List<RichText> richTextList);
 

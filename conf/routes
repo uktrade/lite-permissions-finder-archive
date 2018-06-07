@@ -152,6 +152,10 @@ GET     /cms/dummy/test-journey               controllers.cms.DummyController.cr
 GET     /register-nlr             controllers.NlrController.registerNlr(sessionId)
 GET     /view-nlr-letter          controllers.NlrController.viewNlrLetter(sessionId, resumeCode)
 
-GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
-GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
-GET     /modal-content/local-definition/:localDefinitionId      controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)
+GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId)
+GET     /modal-content/definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
+GET     /modal-content/definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)
+
+GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)
+GET     /view-definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinitionView(globalDefinitionId)
+GET     /view-definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinitionView(localDefinitionId)
