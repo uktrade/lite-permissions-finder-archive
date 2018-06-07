@@ -2,8 +2,11 @@ package triage.cache;
 
 import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
+import components.cms.dao.GlobalDefinitionDao;
+import components.cms.dao.LocalDefinitionDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import triage.config.DefinitionConfigService;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 
@@ -14,21 +17,35 @@ public class CachePopulationServiceImpl implements CachePopulationService {
   private final JourneyConfigService journeyConfigService;
   private final ControlEntryDao controlEntryDao;
   private final CacheValidator cacheValidator;
+  private final DefinitionConfigService definitionConfigService;
+  private final GlobalDefinitionDao globalDefinitionDao;
+  private final LocalDefinitionDao localDefinitionDao;
 
   @Inject
   public CachePopulationServiceImpl(JourneyConfigService journeyConfigService, ControlEntryDao controlEntryDao,
-                                    CacheValidator cacheValidator) {
+                                    CacheValidator cacheValidator,
+                                    DefinitionConfigService definitionConfigService,
+                                    GlobalDefinitionDao globalDefinitionDao,
+                                    LocalDefinitionDao localDefinitionDao) {
     this.journeyConfigService = journeyConfigService;
     this.controlEntryDao = controlEntryDao;
     this.cacheValidator = cacheValidator;
+    this.definitionConfigService = definitionConfigService;
+    this.globalDefinitionDao = globalDefinitionDao;
+    this.localDefinitionDao = localDefinitionDao;
   }
 
   @Override
   public String populateCache() {
+    definitionConfigService.flushCache();
     journeyConfigService.flushCache();
+
     cacheValidator.reset();
 
     LOGGER.info("Start config cache population");
+
+    localDefinitionDao.getAllIds().forEach(id -> definitionConfigService.getLocalDefinition(Long.toString(id)));
+    globalDefinitionDao.getAllIds().forEach(id -> definitionConfigService.getGlobalDefinition(Long.toString(id)));
 
     populateCachesForControlEntries();
 

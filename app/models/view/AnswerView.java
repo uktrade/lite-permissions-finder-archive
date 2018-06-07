@@ -12,9 +12,11 @@ public class AnswerView {
   private final String moreInformation;
   private final String definitions;
   private final String relatedItems;
+  private final boolean detailPanel;
 
   public AnswerView(String prompt, String value, boolean dividerAbove, List<SubAnswerView> subAnswerViews,
-                    String nestedContent, String moreInformation, String definitions, String relatedItems) {
+                    String nestedContent, String moreInformation, String definitions, String relatedItems,
+                    boolean detailPanel) {
     this.prompt = prompt;
     this.value = value;
     this.dividerAbove = dividerAbove;
@@ -23,6 +25,7 @@ public class AnswerView {
     this.moreInformation = moreInformation;
     this.definitions = definitions;
     this.relatedItems = relatedItems;
+    this.detailPanel = detailPanel;
   }
 
   public String getPrompt() {
@@ -55,6 +58,10 @@ public class AnswerView {
 
   public String getRelatedItems() {
     return relatedItems;
+  }
+
+  public boolean isDetailPanel() {
+    return detailPanel;
   }
 
 }

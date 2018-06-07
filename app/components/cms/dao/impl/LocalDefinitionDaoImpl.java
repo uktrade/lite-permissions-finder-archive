@@ -6,6 +6,8 @@ import components.cms.jdbi.LocalDefinitionJDBIDao;
 import models.cms.LocalDefinition;
 import org.skife.jdbi.v2.DBI;
 
+import java.util.List;
+
 public class LocalDefinitionDaoImpl implements LocalDefinitionDao {
 
   private final LocalDefinitionJDBIDao localDefinitionJDBIDao;
@@ -23,6 +25,11 @@ public class LocalDefinitionDaoImpl implements LocalDefinitionDao {
   @Override
   public LocalDefinition getLocalDefinitionByTerm(String term, long controlEntryId) {
     return this.localDefinitionJDBIDao.getByTerm(term, controlEntryId);
+  }
+
+  @Override
+  public List<Long> getAllIds() {
+    return localDefinitionJDBIDao.getAllIds();
   }
 
   @Override

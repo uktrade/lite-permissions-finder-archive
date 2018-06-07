@@ -5,7 +5,7 @@
 @import views.html.frontendComponents.formCheckboxWithDetailPanel
 
 @this(triagePage: triagePage)
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, controlCode: String, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, controlCode: String, title: String, explanatoryText: String, answerViews: Map[AnswerView, Boolean], breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
 
 @triagePage(form, stageId, sessionId, resumeCode, title, breadcrumbView){
   @controlCode: Checking against decontrols
@@ -13,12 +13,8 @@
   <p class="form-hint">
     Decontrols describe items not controlled under the UK Strategic Export Control Lists. Select all that apply.
   </p>
+  @noteMessage(showNoteMessage)
   <p>
-    @if(showNoteMessage) {
-      <p>
-        Read the Notes on the right before making your selection on this page.
-      </p>
-    }
     @if(StringUtils.isNotBlank(explanatoryText)) {
       @Html(explanatoryText)
     } else {
@@ -26,13 +22,6 @@
     }
   </p>
   <div class="form-group">
-    @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
-      @if(answerView.isDividerAbove) {
-        <p class="form-block">or</p>
-      }
-      @formCheckboxWithDetailPanel(form("answers"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, isPromptHtml = true, inputId = "answers" + index, inputName = "answers[" + index + "]", inputValue = answerView.getValue, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information") {
-        @answerMoreInformation(answerView)
-      }
-    }
+    @multiSelectCheckboxes(form("answers"), answerViews)
   </div>
 }
