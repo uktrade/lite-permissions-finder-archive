@@ -322,7 +322,7 @@ public class StageController extends Controller {
 
   private boolean isShowNoteMessage(BreadcrumbView breadcrumbView) {
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbView.getBreadcrumbItemViews();
-    return !breadcrumbItemViews.get(breadcrumbItemViews.size() - 1).getNoteViews().isEmpty();
+    return !breadcrumbItemViews.isEmpty() && !breadcrumbItemViews.get(breadcrumbItemViews.size() - 1).getNoteViews().isEmpty();
   }
 
 }
