@@ -1,7 +1,6 @@
 package models.view.licencefinder;
 
 import controllers.licencefinder.ResultsController;
-import play.Logger;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
 import java.util.List;
@@ -47,14 +46,11 @@ public class OgelView {
     this.usageSummary = usageSummary;
   }
 
-
   public String getIsAlreadyRegisteredKey() {
-    Logger.info("alreadyRegistered: " + alreadyRegistered);
     return id + ResultsController.IS_ALREADY_REGISTERED_KEY + alreadyRegistered;
   }
 
   public Boolean getAlreadyRegistered() {
-    Logger.info("alreadyRegistered: " + alreadyRegistered);
     return alreadyRegistered;
   }
 

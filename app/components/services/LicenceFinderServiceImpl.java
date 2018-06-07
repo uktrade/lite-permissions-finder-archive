@@ -74,15 +74,15 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   /**
    * Returns results view with Ogel list omitted
    */
-  public ResultsView getNoResultsView(String userId) {
-    return doGetResultsView(userId, false);
+  public ResultsView getNoResultsView() {
+    return doGetResultsView(false);
   }
 
   /**
    * Returns results view containing users selectable Ogels
    */
-  public ResultsView getResultsView(String userId) {
-    return doGetResultsView(userId, true);
+  public ResultsView getResultsView() {
+    return doGetResultsView(true);
   }
 
   /**
@@ -173,7 +173,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
    * Private methods
    */
 
-  private ResultsView doGetResultsView(String userId, boolean includeResults) {
+  private ResultsView doGetResultsView(boolean includeResults) {
 
     String controlCode = licenceFinderDao.getControlCode();
     String destinationCountry = licenceFinderDao.getDestinationCountry();
@@ -254,7 +254,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     for(ApplicableOgelView applicableView : applicableViews) {
       OgelView view = new OgelView(applicableView);
       String viewId = view.getId();
-      Logger.info("viewId: " + viewId);
+     // Logger.info("viewId: " + viewId);
       if(existingOgels.contains(viewId)) {
         view.setAlreadyRegistered(true);
       }

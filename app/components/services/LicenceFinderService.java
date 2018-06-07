@@ -16,9 +16,9 @@ public interface LicenceFinderService {
 
   Optional<String> getRegistrationReference(String transactionId);
 
-  ResultsView getResultsView(String userId);
+  ResultsView getResultsView();
 
-  ResultsView getNoResultsView(String userId);
+  ResultsView getNoResultsView();
 
   void updateUsersOgelIds(String userId);
 
