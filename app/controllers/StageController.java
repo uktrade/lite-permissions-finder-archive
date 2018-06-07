@@ -32,6 +32,7 @@ import utils.PageTypeUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -153,7 +154,12 @@ public class StageController extends Controller {
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
-    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
+
+    LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
+        Collectors.toMap(e -> e, e -> multiAnswerForm.get().answers.contains(e.getValue()), (a, b) -> a,
+            LinkedHashMap::new));
+
+    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
   }
 
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId,
@@ -165,7 +171,12 @@ public class StageController extends Controller {
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
-    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
+
+    LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
+        Collectors.toMap(e -> e, e -> multiAnswerFormForm.get().answers.contains(e.getValue()), (a, b) -> a,
+            LinkedHashMap::new));
+
+    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {

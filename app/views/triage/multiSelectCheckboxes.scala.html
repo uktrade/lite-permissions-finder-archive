@@ -1,0 +1,29 @@
+@import models.view.AnswerView
+@import play.data.Form
+@import views.html.common.page._
+@import play.twirl.api.HtmlFormat
+
+@(field: Form.Field, answerViews: Map[AnswerView, Boolean])
+
+
+<div id="@field.getName.get" class="form-group">
+
+  @* Iterator required to preserve ordering *@
+  @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
+    @if(answerView._1.isDividerAbove) {
+      <p class="form-block">or</p>
+    }
+
+    <div class="multiple-choice">
+      <input id="@field.getName.get@index" type="checkbox" name="@{field.getName.get}[@index]" value="@answerView._1.getValue" @if(answerView._2) { checked="checked" }>
+      <label for="@field.getName.get@index">
+      @Html(answerView._1.getPrompt + subAnswers(answerView._1.getSubAnswerViews) + answerView._1.getNestedContent)
+      </label>
+
+      @if(answerView._1.isDetailPanel) {
+        @detailPanel(answerView._1.getValue + "detailPanel", field.getName.get + index + "-label")(Html("More information"))(answerMoreInformation(answerView._1))
+      }
+
+    </div>
+  }
+</div>
