@@ -41,7 +41,8 @@
                 @if(ogelView.getAlreadyRegistered) {
                   <span class="bold" style="margin-left:40px">You have already registered for this OGEL:</span>
                 }
-
+              <span class="bold" style="margin-left:40px">@ogelView.getIsAlreadyRegisteredKey()</span>
+              <input type="hidden" name="chosenOgelIsAlreadyRegistered" value="@ogelView.getIsAlreadyRegisteredKey()">
               @formRadio(form("chosenOgel"), "<span class=\"bold\">OGEL (" + ogelView.getName + ")</span>", ogelView.getId, true, "label-trade-type")
               @detailPanel("detailPanel"){Read more information} {
                 <p>

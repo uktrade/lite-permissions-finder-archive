@@ -20,4 +20,8 @@ public interface LicenceFinderService {
 
   ResultsView getNoResultsView(String userId);
 
+  void updateUsersOgelIds(String userId);
+
+  boolean isOgelIdAlreadyRegistered(String ogelId);
+
 }

@@ -61,6 +61,16 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     this.countryProvider = countryProvider;
   }
 
+  public void updateUsersOgelIds(String userId) {
+    // Store set of already registered Ogel Ids
+    Set<String> currentAlreadyRegisteredOgelSet = getExistingUserOgelIds(userId);
+    licenceFinderDao.saveAlreadyRegisteredOgelSet(currentAlreadyRegisteredOgelSet);
+  }
+
+  public boolean isOgelIdAlreadyRegistered(String ogelId) {
+    return licenceFinderDao.getAlreadyRegisteredOgelSet().contains(ogelId);
+  }
+
   /**
    * Returns results view with Ogel list omitted
    */
@@ -184,7 +194,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     CompletionStage<List<ApplicableOgelView>> stage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activities, showHistoricOgel);
 
     try {
-      List<OgelView> ogelViews = stage.thenApply(views -> getOgelViews(views, getExistingUserOgelIds(userId))).toCompletableFuture().get();
+      List<OgelView> ogelViews = stage.thenApply(views -> getOgelViews(views, licenceFinderDao.getAlreadyRegisteredOgelSet())).toCompletableFuture().get();
       if(!ogelViews.isEmpty() && includeResults) {
         resultView.setOgelViews(ogelViews);
       }
