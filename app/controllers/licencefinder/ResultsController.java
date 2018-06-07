@@ -35,7 +35,6 @@ public class ResultsController extends Controller {
   private final ApplicableOgelServiceClient applicableClient;
   private final ContextParamManager contextParam;
   private final views.html.licencefinder.results results;
-  private final views.html.licencefinder.results1 results1;
   private final SpireAuthManager authManager;
   private final LicenceFinderService licenceFinderService;
 
@@ -47,7 +46,7 @@ public class ResultsController extends Controller {
                            LicenceFinderDao licenceFinderDao, @Named("countryProviderExport") CountryProvider countryProvider,
                            FrontendServiceClient frontendClient,
                            ApplicableOgelServiceClient applicableClient, ContextParamManager contextParam,
-                           views.html.licencefinder.results results, views.html.licencefinder.results1 results1,
+                           views.html.licencefinder.results results,
                            SpireAuthManager authManager, LicenceFinderService licenceFinderService) {
     this.formFactory = formFactory;
     this.httpContext = httpContext;
@@ -59,7 +58,6 @@ public class ResultsController extends Controller {
     this.results = results;
     this.authManager = authManager;
     this.licenceFinderService = licenceFinderService;
-    this.results1 = results1;
   }
 
   /************************************************************************************************
@@ -80,7 +78,7 @@ public class ResultsController extends Controller {
     // Return No licences available when 'None of the above' chosen
     if (chosenOgel.equals(NONE_ABOVE_KEY)) {
       String userId = authManager.getAuthInfoFromContext().getId();
-      return completedFuture(ok(results1.render(form, licenceFinderService.getNoResultsView(userId))));
+      return completedFuture(ok(results.render(form, licenceFinderService.getNoResultsView(userId))));
     }
 
     return contextParam.addParamsAndRedirect(routes.RegisterToUseController.renderRegisterToUseForm());
@@ -88,7 +86,7 @@ public class ResultsController extends Controller {
 
   private CompletionStage<Result> renderWithForm(Form<ResultsForm> form) {
     String userId = authManager.getAuthInfoFromContext().getId();
-    return completedFuture(ok(results1.render(form, licenceFinderService.getResultsView(userId))));
+    return completedFuture(ok(results.render(form, licenceFinderService.getResultsView(userId))));
   }
 
   public static class ResultsForm {
