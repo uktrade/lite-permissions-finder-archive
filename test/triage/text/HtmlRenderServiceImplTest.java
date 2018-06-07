@@ -87,6 +87,25 @@ public class HtmlRenderServiceImplTest {
   }
 
   @Test
+  public void linkTargetOmittedTest() {
+    DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("'laser'", "123", false);
+    RichText richText = new RichText(Collections.singletonList(definitionReferenceNode));
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlConversionOption.OMIT_LINK_TARGET_ATTR);
+
+    assertThat(html).isEqualTo(unescape(
+        "<a href='/view-definition/local/123' data-definition-id='123' data-definition-type='local' title='View definition of &quot;laser&quot;'>laser</a>"));
+  }
+
+  @Test
+  public void linksOmittedTest() {
+    DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("'laser'", "123", false);
+    RichText richText = new RichText(Collections.singletonList(definitionReferenceNode));
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlConversionOption.OMIT_LINKS);
+
+    assertThat(html).isEqualTo("'laser'");
+  }
+
+  @Test
   public void textTest() {
     SimpleTextNode simpleTextNode = new SimpleTextNode("This is text.");
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(simpleTextNode)));
