@@ -3,42 +3,33 @@ package controllers.modal;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.cms.dao.GlobalDefinitionDao;
-import components.cms.dao.LocalDefinitionDao;
-import models.cms.GlobalDefinition;
-import models.cms.LocalDefinition;
 import play.mvc.Result;
+import triage.config.DefinitionConfig;
+import triage.config.DefinitionConfigService;
 import triage.text.HtmlRenderService;
-import triage.text.RichText;
-import triage.text.RichTextParser;
 import views.html.modal.modalDefinition;
 
 public class ModalDefinitionController {
-  private final GlobalDefinitionDao globalDefinitionDao;
-  private final LocalDefinitionDao localDefinitionDao;
-  private final RichTextParser richTextParser;
   private final HtmlRenderService htmlRenderService;
+  private final DefinitionConfigService definitionConfigService;
 
   @Inject
-  public ModalDefinitionController(GlobalDefinitionDao globalDefinitionDao, LocalDefinitionDao localDefinitionDao,
-                                   RichTextParser richTextParser, HtmlRenderService htmlRenderService) {
-    this.globalDefinitionDao = globalDefinitionDao;
-    this.localDefinitionDao = localDefinitionDao;
-    this.richTextParser = richTextParser;
+  public ModalDefinitionController(HtmlRenderService htmlRenderService,
+                                   DefinitionConfigService definitionConfigService) {
     this.htmlRenderService = htmlRenderService;
+    this.definitionConfigService = definitionConfigService;
   }
 
+
   public Result renderGlobalDefinition(String globalDefinitionId) {
-    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(globalDefinitionId));
-    RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
-    String definitionTextHtml = htmlRenderService.convertRichText(richDefinitionText, true);
-    return ok(modalDefinition.render(globalDefinition.getTerm(), definitionTextHtml));
+    DefinitionConfig definitionConfig = definitionConfigService.getGlobalDefinition(globalDefinitionId);
+    String definitionTextHtml = htmlRenderService.convertRichText(definitionConfig.getDefinitionText(), true);
+    return ok(modalDefinition.render(definitionConfig.getTerm(), definitionTextHtml));
   }
 
   public Result renderLocalDefinition(String localDefinitionId) {
-    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(localDefinitionId));
-    RichText richDefinitionText = richTextParser.parseForStage(localDefinition.getDefinitionText(), null);
-    String definitionTextHtml = htmlRenderService.convertRichText(richDefinitionText, true);
-    return ok(modalDefinition.render(localDefinition.getTerm(), definitionTextHtml));
+    DefinitionConfig definitionConfig = definitionConfigService.getLocalDefinition(localDefinitionId);
+    String definitionTextHtml = htmlRenderService.convertRichText(definitionConfig.getDefinitionText(), true);
+    return ok(modalDefinition.render(definitionConfig.getTerm(), definitionTextHtml));
   }
 }

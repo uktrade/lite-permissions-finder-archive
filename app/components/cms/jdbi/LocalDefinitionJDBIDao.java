@@ -7,6 +7,8 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
+import java.util.List;
+
 public interface LocalDefinitionJDBIDao {
 
   @Mapper(LocalDefinitionRSMapper.class)
@@ -21,7 +23,11 @@ public interface LocalDefinitionJDBIDao {
       "INSERT INTO local_definition (control_entry_id, term, definition_text) " +
           "VALUES (:controlEntryId, :term, :definitionText) " +
           "RETURNING id")
-  Long insert(@Bind("controlEntryId") Long controlEntryId, @Bind("term") String term, @Bind("definitionText") String definitionText);
+  Long insert(@Bind("controlEntryId") Long controlEntryId, @Bind("term") String term,
+              @Bind("definitionText") String definitionText);
+
+  @SqlQuery("SELECT id FROM local_definition")
+  List<Long> getAllIds();
 
   @SqlUpdate("DELETE FROM local_definition WHERE id = :id")
   void delete(@Bind("id") long id);
