@@ -3,9 +3,8 @@ package triage.text;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import components.cms.dao.GlobalDefinitionDao;
-import components.cms.dao.LocalDefinitionDao;
 import org.junit.Test;
+import triage.config.DefinitionConfigService;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,8 +12,7 @@ import java.util.List;
 
 public class HtmlRenderServiceImplTest {
 
-  private final HtmlRenderServiceImpl htmlRenderServiceImpl = new HtmlRenderServiceImpl(mock(GlobalDefinitionDao.class),
-      mock(LocalDefinitionDao.class));
+  private final HtmlRenderServiceImpl htmlRenderServiceImpl = new HtmlRenderServiceImpl(mock(DefinitionConfigService.class));
 
   @Test
   public void renderOneLevelListTest() {
