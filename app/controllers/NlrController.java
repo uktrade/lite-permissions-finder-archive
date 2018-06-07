@@ -1,7 +1,5 @@
 package controllers;
 
-import static nlr.NlrType.DECONTROL;
-import static nlr.NlrType.ITEM_NOT_FOUND;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
@@ -12,6 +10,7 @@ import components.common.client.userservice.UserServiceClientJwt;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.CustomerService;
+import models.enums.OutcomeType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
@@ -65,15 +64,16 @@ public class NlrController {
 
   public Result registerNotFoundNlr(String sessionId, String controlEntryId) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(nlrRegisterSuccess.render(sessionId, resumeCode, ITEM_NOT_FOUND.toString(), controlEntryId));
+    return ok(nlrRegisterSuccess.render(sessionId, resumeCode, OutcomeType.NLR_NOT_FOUND, controlEntryId));
   }
 
   public Result registerDecontrolNlr(String sessionId, String stageId) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(nlrRegisterSuccess.render(sessionId, resumeCode, DECONTROL.toString(), stageId));
+    return ok(nlrRegisterSuccess.render(sessionId, resumeCode, OutcomeType.NLR_DECONTROL, stageId));
   }
 
-  public Result generateNotFoundNlrLetter(String sessionId, String controlEntryId, String resumeCode) throws ExecutionException, InterruptedException {
+  public Result generateNotFoundNlrLetter(String sessionId, String controlEntryId,
+                                          String resumeCode) throws ExecutionException, InterruptedException {
     String userId = getUserId();
     UserDetailsView userDetailsView = userService.getUserDetailsView(userId).toCompletableFuture().get();
     Optional<SiteView.SiteViewAddress> optSiteAddress = getSiteAddress(userId);
@@ -86,7 +86,8 @@ public class NlrController {
     return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, itemNotFoundBreadcrumb.render(breadcrumbItemViews)));
   }
 
-  public Result generateDecontrolNlrLetter(String sessionId, String stageId, String resumeCode) throws ExecutionException, InterruptedException {
+  public Result generateDecontrolNlrLetter(String sessionId, String stageId,
+                                           String resumeCode) throws ExecutionException, InterruptedException {
     String userId = getUserId();
     UserDetailsView userDetailsView = userService.getUserDetailsView(userId).toCompletableFuture().get();
     Optional<SiteView.SiteViewAddress> optSiteAddress = getSiteAddress(userId);

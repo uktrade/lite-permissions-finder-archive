@@ -9,13 +9,11 @@ import triage.session.TriageSession;
 
 public interface SessionJDBIDao {
 
-  @SqlUpdate("INSERT INTO SESSION (ID,  JOURNEY_ID, RESUME_CODE, OUTCOME_TYPE, OUTCOME_HTML, LAST_STAGE_ID) VALUES " +
-      "                          (:id, :journeyId, :resumeCode, :outcomeType, :outcomeHtml, :lastStageId)")
+  @SqlUpdate("INSERT INTO SESSION (ID,  JOURNEY_ID, RESUME_CODE, LAST_STAGE_ID) VALUES " +
+      "                          (:id, :journeyId, :resumeCode, :lastStageId)")
   void insert(@Bind("id") String id,
               @Bind("journeyId") long journeyId,
               @Bind("resumeCode") String resumeCode,
-              @Bind("outcomeType") String outcomeType,
-              @Bind("outcomeHtml") String outcomeHtml,
               @Bind("lastStageId") Long lastStageId);
 
 

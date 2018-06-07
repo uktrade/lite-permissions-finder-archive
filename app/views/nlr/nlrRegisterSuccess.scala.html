@@ -1,7 +1,8 @@
+@import models.enums.OutcomeType
 @import util._
 
 @this(standardPage: standardPage)
-@(sessionId: String, resumeCode: String, nlrType: String, stageId: String)
+@(sessionId: String, resumeCode: String, outcomeType: OutcomeType, stageId: String)
 
   @nlrSuccess = {You have successfully registered a "No Licence Required" letter}
 
@@ -13,12 +14,12 @@
       </p>
 
       <p>
-        @if(nlrType.equals("DECONTROL")) {
+        @if(outcomeType == OutcomeType.NLR_DECONTROL) {
           <a href= '@routes.NlrController.generateDecontrolNlrLetter(sessionId, stageId, resumeCode)' class="bold font-medium">
             View your "No Licence Required" letter
           </a>
         }
-        @if(nlrType.equals("ITEM_NOT_FOUND")) {
+        @if(outcomeType == OutcomeType.NLR_NOT_FOUND) {
           <a href= '@routes.NlrController.generateNotFoundNlrLetter(sessionId, stageId, resumeCode)' class="bold font-medium">
             View your "No Licence Required" letter
           </a>

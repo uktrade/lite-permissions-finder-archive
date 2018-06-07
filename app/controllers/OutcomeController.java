@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
-import nlr.NlrType;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -56,6 +55,10 @@ public class OutcomeController extends Controller {
     this.decontrolOutcome = decontrolOutcome;
     this.listedOutcome = listedOutcome;
     this.itemNotFound = itemNotFound;
+  }
+
+  public Result renderOutcome(String sessionId) {
+    return ok();
   }
 
   public Result outcomeItemNotFound(String controlEntryId, String sessionId) {

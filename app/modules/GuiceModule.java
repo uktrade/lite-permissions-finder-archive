@@ -23,6 +23,8 @@ import components.cms.dao.JourneyDao;
 import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
 import components.cms.dao.SessionDao;
+import components.cms.dao.SessionOutcomeDao;
+import components.cms.dao.SessionOutcomeDaoImpl;
 import components.cms.dao.SessionStageDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
@@ -228,6 +230,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bind(SessionDao.class).to(SessionDaoImpl.class);
     bind(SessionStageDao.class).to(SessionStageDaoImpl.class);
+    bind(SessionOutcomeDao.class).to(SessionOutcomeDaoImpl.class);
 
     requestInjection(this);
   }
