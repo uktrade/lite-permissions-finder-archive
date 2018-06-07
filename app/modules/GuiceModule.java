@@ -129,7 +129,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
     bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
-    bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class);
+    bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class).asEagerSingleton();
     bind(RichTextParser.class).to(RichTextParserImpl.class);
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);
     bind(SessionService.class).to(SessionServiceImpl.class);
