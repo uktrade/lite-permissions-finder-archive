@@ -149,8 +149,10 @@ PUT     /cms/populate-caches                  controllers.cms.CacheController.po
 GET     /cms/dummy/test-all                   controllers.cms.DummyController.testAll
 GET     /cms/dummy/test-journey               controllers.cms.DummyController.createTestJourney
 
-GET     /register-nlr             controllers.NlrController.registerNlr(sessionId)
-GET     /view-nlr-letter          controllers.NlrController.viewNlrLetter(sessionId, resumeCode)
+GET     /register-nlr/notFound                                      controllers.NlrController.registerNotFoundNlr(sessionId, controlEntryId)
+GET     /register-nlr/decontrol                                     controllers.NlrController.registerDecontrolNlr(sessionId, stageId)
+GET     /generate-nlr-letter/notFound                               controllers.NlrController.generateNotFoundNlrLetter(sessionId, controlEntryId, resumeCode)
+GET     /generate-nlr-letter/decontrol                              controllers.NlrController.generateDecontrolNlrLetter(sessionId, stageId, resumeCode)
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
 GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
