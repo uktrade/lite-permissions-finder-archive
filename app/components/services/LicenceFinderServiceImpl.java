@@ -2,11 +2,13 @@ package components.services;
 
 import com.google.inject.Inject;
 import components.common.auth.SpireAuthManager;
+import components.common.cache.CountryProvider;
 import components.common.persistence.StatelessRedisDao;
 import components.persistence.LicenceFinderDao;
-import components.persistence.enums.SubmissionStatus;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
+import controllers.licencefinder.QuestionsController;
 import jodd.util.ThreadUtil;
+import models.OgelActivityType;
 import models.persistence.RegisterLicence;
 import models.view.licencefinder.OgelView;
 import models.view.licencefinder.ResultsView;
@@ -19,12 +21,18 @@ import uk.gov.bis.lite.permissions.api.view.CallbackView;
 import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
+import javax.inject.Named;
 
 public class LicenceFinderServiceImpl implements LicenceFinderService {
 
@@ -35,12 +43,14 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   private final PermissionsService permissionsService;
   private final String permissionsFinderUrl;
   private final ApplicableOgelServiceClient applicableClient;
+  private final CountryProvider countryProvider;
 
   @Inject
   public LicenceFinderServiceImpl(LicenceFinderDao licenceFinderDao, CustomerService customerService,
                                   PermissionsService permissionsService, SpireAuthManager authManager,
                                   @com.google.inject.name.Named("permissionsFinderUrl") String permissionsFinderUrl,
-                                  StatelessRedisDao statelessRedisDao, ApplicableOgelServiceClient applicableClient) {
+                                  StatelessRedisDao statelessRedisDao, ApplicableOgelServiceClient applicableClient,
+                                  @Named("countryProviderExport") CountryProvider countryProvider) {
     this.licenceFinderDao = licenceFinderDao;
     this.permissionsService = permissionsService;
     this.customerService = customerService;
@@ -48,37 +58,21 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     this.permissionsFinderUrl = permissionsFinderUrl;
     this.statelessRedisDao = statelessRedisDao;
     this.applicableClient = applicableClient;
+    this.countryProvider = countryProvider;
   }
 
-  public ResultsView getResultsView(String controlCode, String sourceCountry, List<String> destinationCountries, List<String> activityTypes, boolean showHistoricOgel) {
-    ResultsView view = new ResultsView();
-
-
-    CompletionStage<List<ApplicableOgelView>> stage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activityTypes, showHistoricOgel);
-
-    CompletionStage<List<OgelView>> stage1 = stage.thenApply(x -> getOgelViews(x));
-
-    return view;
+  /**
+   * Returns results view with Ogel list omitted
+   */
+  public ResultsView getNoResultsView(String userId) {
+    return doGetResultsView(userId, false);
   }
 
-  private List<OgelView> getOgelViews(List<ApplicableOgelView> applicableViews) {
-    List<OgelView> ogelViews = new ArrayList<>();
-
-    return ogelViews;
-  }
-
-  public Set<String> getExistingUserOgelIds(String userId) {
-    Set<String> ogelIds = new HashSet<>();
-    try {
-      List<OgelRegistrationView> views = permissionsService.getOgelRegistrations(userId).toCompletableFuture().get();
-      for(OgelRegistrationView view : views) {
-        Logger.info("ID: " + view.getOgelType());
-        ogelIds.add(view.getOgelType());
-      }
-    } catch (InterruptedException | ExecutionException e) {
-      Logger.error("OgelRegistration exception", e);
-    }
-    return ogelIds;
+  /**
+   * Returns results view containing users selectable Ogels
+   */
+  public ResultsView getResultsView(String userId) {
+    return doGetResultsView(userId, true);
   }
 
   /**
@@ -99,22 +93,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       count++;
     }
     return Optional.empty();
-  }
-
-  public SubmissionStatus getSubmissionStatus(String transactionId) {
-    return SubmissionStatus.COMPLETED;
-  }
-
-  public long getSecondsSinceRegistrationSubmission(String transactionId) {
-    return 0L;
-  }
-
-  public Optional<CallbackView.Result> getCallbackResult(String transactionId) {
-    return Optional.empty();
-  }
-
-  public String getRegistrationRef(String transactionId) {
-    return "";
   }
 
   /**
@@ -184,6 +162,97 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   /**
    * Private methods
    */
+
+  private ResultsView doGetResultsView(String userId, boolean includeResults) {
+
+    String controlCode = licenceFinderDao.getControlCode();
+    String destinationCountry = licenceFinderDao.getDestinationCountry();
+    String destinationCountryName = countryProvider.getCountry(destinationCountry).getCountryName();
+    List<String> destinationCountries = getExportRouteCountries();
+    String sourceCountry = licenceFinderDao.getSourceCountry();
+
+    List<String> activities = Collections.emptyList();
+    boolean showHistoricOgel = true; // set as default
+    Optional<QuestionsController.QuestionsForm> optQuestionsForm = licenceFinderDao.getQuestionsForm();
+    if (optQuestionsForm.isPresent()) {
+      QuestionsController.QuestionsForm questionsForm = optQuestionsForm.get();
+      activities = getActivityTypes(questionsForm);
+      showHistoricOgel = questionsForm.beforeOrLess;
+    }
+
+    ResultsView resultView = new ResultsView(controlCode, destinationCountryName);
+    CompletionStage<List<ApplicableOgelView>> stage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activities, showHistoricOgel);
+
+    try {
+      List<OgelView> ogelViews = stage.thenApply(views -> getOgelViews(views, getExistingUserOgelIds(userId))).toCompletableFuture().get();
+      if(!ogelViews.isEmpty() && includeResults) {
+        resultView.setOgelViews(ogelViews);
+      }
+
+    } catch (InterruptedException | ExecutionException e) {
+      Logger.error("getResultsView exception", e);
+    }
+    return resultView;
+  }
+
+  private List<String> getActivityTypes(QuestionsController.QuestionsForm questionsForm) {
+    Map<OgelActivityType, String> map = new HashMap<>();
+    map.put(OgelActivityType.DU_ANY, OgelActivityType.DU_ANY.value());
+    map.put(OgelActivityType.EXHIBITION, OgelActivityType.EXHIBITION.value());
+    map.put(OgelActivityType.MIL_ANY, OgelActivityType.MIL_ANY.value());
+    map.put(OgelActivityType.MIL_GOV, OgelActivityType.MIL_GOV.value());
+    map.put(OgelActivityType.REPAIR, OgelActivityType.REPAIR.value());
+    if (!questionsForm.forRepair) {
+      map.remove(OgelActivityType.REPAIR);
+    }
+    if (!questionsForm.forExhibition) {
+      map.remove(OgelActivityType.EXHIBITION);
+    }
+    return map.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+  }
+
+  private List<String> getExportRouteCountries() {
+    List<String> countries = new ArrayList<>();
+    String destination = licenceFinderDao.getDestinationCountry();
+    if (!org.apache.commons.lang3.StringUtils.isBlank(destination)) {
+      countries.add(destination);
+    }
+    String first = licenceFinderDao.getFirstConsigneeCountry();
+    if (!org.apache.commons.lang3.StringUtils.isBlank(first)) {
+      countries.add(first);
+    }
+    return countries;
+  }
+
+  private Set<String> getExistingUserOgelIds(String userId) {
+    Set<String> ogelIds = new HashSet<>();
+    try {
+      List<OgelRegistrationView> views = permissionsService.getOgelRegistrations(userId).toCompletableFuture().get();
+      for(OgelRegistrationView view : views) {
+        ogelIds.add(view.getOgelType());
+      }
+      ogelIds.add("OGL12"); // to enable testing with licence_finder_applicant@test.com user TODO remove once test data is updated to show an already registered Ogel
+    } catch (InterruptedException | ExecutionException e) {
+      Logger.error("OgelRegistration exception", e);
+    }
+    return ogelIds;
+  }
+
+  private List<OgelView> getOgelViews(List<ApplicableOgelView> applicableViews, Set<String> existingOgels) {
+    List<OgelView> ogelViews = new ArrayList<>();
+    existingOgels.forEach(System.out::println);
+    for(ApplicableOgelView applicableView : applicableViews) {
+      OgelView view = new OgelView(applicableView);
+      String viewId = view.getId();
+      Logger.info("viewId: " + viewId);
+      if(existingOgels.contains(viewId)) {
+        view.setAlreadyRegistered(true);
+      }
+      ogelViews.add(view);
+    }
+
+    return ogelViews;
+  }
 
   private void registrationResponseReceived(String transactionId, PermissionsServiceImpl.RegistrationResponse response, RegisterLicence registerLicence) {
     Logger.info("Response: " + response.isSuccess());

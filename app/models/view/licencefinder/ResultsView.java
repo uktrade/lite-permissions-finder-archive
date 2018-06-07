@@ -1,5 +1,6 @@
 package models.view.licencefinder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ResultsView {
@@ -8,8 +9,18 @@ public class ResultsView {
   private String destinationCountry;
   private List<OgelView> ogelViews;
 
+  public ResultsView(String controlCode, String destinationCountry) {
+    this.controlCode = controlCode;
+    this.destinationCountry = destinationCountry;
+    ogelViews = new ArrayList<>();
+  }
+
+  public ResultsView() {
+    ogelViews = new ArrayList<>();
+  }
+
   public String getTitle() {
-    if (!ogelViews.isEmpty()) {
+    if (ogelViews != null && !ogelViews.isEmpty()) {
       return "Open licences available for exporting goods described in Control list entry " + controlCode + " to " + destinationCountry;
     } else {
       return "No open licences available";
@@ -26,5 +37,21 @@ public class ResultsView {
 
   public boolean hasOgels() {
     return ogelViews != null && ogelViews.size() > 0;
+  }
+
+  public String getControlCode() {
+    return controlCode;
+  }
+
+  public void setControlCode(String controlCode) {
+    this.controlCode = controlCode;
+  }
+
+  public String getDestinationCountry() {
+    return destinationCountry;
+  }
+
+  public void setDestinationCountry(String destinationCountry) {
+    this.destinationCountry = destinationCountry;
   }
 }

@@ -1,5 +1,7 @@
 package models.view.licencefinder;
 
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
+
 import java.util.List;
 
 public class OgelView {
@@ -8,6 +10,13 @@ public class OgelView {
   private String name;
   private Boolean alreadyRegistered;
   private List<String> usageSummary;
+
+  public OgelView(ApplicableOgelView applicableView) {
+    this.id = applicableView.getId();
+    this.name = applicableView.getName();
+    this.usageSummary = applicableView.getUsageSummary();
+    this.alreadyRegistered = false; // set already registered as false fo default
+  }
 
   public OgelView() {
   }
