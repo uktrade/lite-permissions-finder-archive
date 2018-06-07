@@ -10,6 +10,7 @@ import exceptions.BusinessRuleException;
 import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
+import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.ProgressView;
 import models.view.form.AnswerForm;
@@ -331,7 +332,8 @@ public class StageController extends Controller {
   }
 
   private boolean isShowNoteMessage(BreadcrumbView breadcrumbView) {
-    return breadcrumbView.getBreadcrumbItemViews().stream().anyMatch(biv -> !biv.getNoteViews().isEmpty());
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbView.getBreadcrumbItemViews();
+    return !breadcrumbItemViews.isEmpty() && !breadcrumbItemViews.get(breadcrumbItemViews.size() - 1).getNoteViews().isEmpty();
   }
 
 }

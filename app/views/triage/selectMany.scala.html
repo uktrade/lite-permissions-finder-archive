@@ -3,7 +3,7 @@
 @import models.view.ProgressView
 @import views.html.triage.subAnswers
 @import views.html.frontendComponents.formCheckboxWithDetailPanel
-@import play.twirl.api.HtmlFormat
+@import org.apache.commons.lang3.StringUtils
 
 @this(triagePage: triagePage)
 @(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String, explanatoryText: String, answerViews: Map[AnswerView, Boolean], breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
@@ -16,12 +16,10 @@
     @Html(progressView.getDescription)
   }
 }{
-  <p>@Html(explanatoryText)</p>
-  @if(showNoteMessage) {
-    <p>
-      Read the Notes on the right before making your selection on this page.
-    </p>
+  @if(StringUtils.isNotBlank(explanatoryText)) {
+    <p>@Html(explanatoryText)</p>
   }
+  @noteMessage(showNoteMessage)
   <div class="form-group">
     @multiSelectCheckboxes(form("answers"), answerViews)
   </div>
