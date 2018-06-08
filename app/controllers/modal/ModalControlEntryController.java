@@ -7,6 +7,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
+import triage.text.HtmlRenderOption;
 import views.html.modal.modalControlEntry;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class ModalControlEntryController extends Controller {
 
   public Result renderControlEntryView(String controlEntryId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
     return ok(modalControlEntryView.render(controlEntryConfig.getControlCode(), breadcrumbItemViews));
   }
 }

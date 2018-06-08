@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import play.mvc.Result;
 import triage.config.DefinitionConfig;
 import triage.config.DefinitionConfigService;
-import triage.text.HtmlConversionOption;
+import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
 import views.html.modal.modalDefinition;
 
@@ -16,41 +16,36 @@ public class ModalDefinitionController {
   private final views.html.modal.modalDefinitionView modalDefinitionView;
 
   @Inject
-  public ModalDefinitionController(GlobalDefinitionDao globalDefinitionDao, LocalDefinitionDao localDefinitionDao,
-                                   RichTextParser richTextParser, HtmlRenderService htmlRenderService,
+  public ModalDefinitionController(HtmlRenderService htmlRenderService, DefinitionConfigService definitionConfigService,
                                    views.html.modal.modalDefinitionView modalDefinitionView) {
-    this.globalDefinitionDao = globalDefinitionDao;
-    this.localDefinitionDao = localDefinitionDao;
-    this.richTextParser = richTextParser;
     this.htmlRenderService = htmlRenderService;
+    this.definitionConfigService = definitionConfigService;
     this.modalDefinitionView = modalDefinitionView;
   }
 
   public Result renderGlobalDefinition(String globalDefinitionId) {
-    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(globalDefinitionId));
-    RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText);
+    DefinitionConfig globalDefinition = definitionConfigService.getGlobalDefinition(globalDefinitionId);
+    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(globalDefinition.getDefinitionText());
     return ok(modalDefinition.render(globalDefinition.getTerm(), definitionTextHtml));
   }
 
   public Result renderGlobalDefinitionView(String globalDefinitionId) {
-    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(globalDefinitionId));
-    RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText, HtmlConversionOption.OMIT_LINK_TARGET_ATTR);
+    DefinitionConfig globalDefinition = definitionConfigService.getGlobalDefinition(globalDefinitionId);
+    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(globalDefinition.getDefinitionText(),
+        HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
     return ok(modalDefinitionView.render(globalDefinition.getTerm(), definitionTextHtml));
   }
 
   public Result renderLocalDefinition(String localDefinitionId) {
-    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(localDefinitionId));
-    RichText richDefinitionText = richTextParser.parseForStage(localDefinition.getDefinitionText(), null);
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText);
+    DefinitionConfig localDefinition = definitionConfigService.getLocalDefinition(localDefinitionId);
+    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(localDefinition.getDefinitionText());
     return ok(modalDefinition.render(localDefinition.getTerm(), definitionTextHtml));
   }
 
   public Result renderLocalDefinitionView(String localDefinitionId) {
-    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(localDefinitionId));
-    RichText richDefinitionText = richTextParser.parseForStage(localDefinition.getDefinitionText(), null);
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(richDefinitionText, HtmlConversionOption.OMIT_LINK_TARGET_ATTR);
+    DefinitionConfig localDefinition = definitionConfigService.getLocalDefinition(localDefinitionId);
+    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(localDefinition.getDefinitionText(),
+        HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
     return ok(modalDefinitionView.render(localDefinition.getTerm(), definitionTextHtml));
   }
 }

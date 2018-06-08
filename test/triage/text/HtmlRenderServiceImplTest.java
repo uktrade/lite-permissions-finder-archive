@@ -3,9 +3,8 @@ package triage.text;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import components.cms.dao.GlobalDefinitionDao;
-import components.cms.dao.LocalDefinitionDao;
 import org.junit.Test;
+import triage.config.DefinitionConfigService;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,8 +12,7 @@ import java.util.List;
 
 public class HtmlRenderServiceImplTest {
 
-  private final HtmlRenderServiceImpl htmlRenderServiceImpl = new HtmlRenderServiceImpl(mock(GlobalDefinitionDao.class),
-      mock(LocalDefinitionDao.class));
+  private final HtmlRenderServiceImpl htmlRenderServiceImpl = new HtmlRenderServiceImpl(mock(DefinitionConfigService.class));
 
   @Test
   public void renderOneLevelListTest() {
@@ -87,22 +85,51 @@ public class HtmlRenderServiceImplTest {
   }
 
   @Test
-  public void linkTargetOmittedTest() {
+  public void definitionLinkTargetOmittedTest() {
     DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("'laser'", "123", false);
     RichText richText = new RichText(Collections.singletonList(definitionReferenceNode));
-    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlConversionOption.OMIT_LINK_TARGET_ATTR);
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
 
     assertThat(html).isEqualTo(unescape(
         "<a href='/view-definition/local/123' data-definition-id='123' data-definition-type='local' title='View definition of &quot;laser&quot;'>laser</a>"));
   }
 
   @Test
-  public void linksOmittedTest() {
+  public void definitionLinksOmittedTest() {
     DefinitionReferenceNode definitionReferenceNode = new DefinitionReferenceNode("'laser'", "123", false);
     RichText richText = new RichText(Collections.singletonList(definitionReferenceNode));
-    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlConversionOption.OMIT_LINKS);
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlRenderOption.OMIT_LINKS);
 
     assertThat(html).isEqualTo("'laser'");
+  }
+
+  @Test
+  public void controlEntryLinkTest() {
+    ControlEntryReferenceNode controlEntryReferenceNode = new ControlEntryReferenceNode("Code ML1", "ML1");
+    RichText richText = new RichText(Collections.singletonList(controlEntryReferenceNode));
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText);
+
+    assertThat(html).isEqualTo(unescape(
+        "<a href='/view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1' target='_blank'>Code ML1</a>"));
+  }
+
+  @Test
+  public void controlEntryLinkTargetOmittedTest() {
+    ControlEntryReferenceNode controlEntryReferenceNode = new ControlEntryReferenceNode("Code ML1", "ML1");
+    RichText richText = new RichText(Collections.singletonList(controlEntryReferenceNode));
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
+
+    assertThat(html).isEqualTo(unescape(
+                "<a href='/view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1'>Code ML1</a>"));
+  }
+
+  @Test
+  public void controlEntryLinksOmittedTest() {
+    ControlEntryReferenceNode controlEntryReferenceNode = new ControlEntryReferenceNode("Code ML1", "ML1");
+    RichText richText = new RichText(Collections.singletonList(controlEntryReferenceNode));
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlRenderOption.OMIT_LINKS);
+
+    assertThat(html).isEqualTo("Code ML1");
   }
 
   @Test

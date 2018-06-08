@@ -9,7 +9,7 @@ import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
-import triage.text.HtmlConversionOption;
+import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
 import triage.text.RichText;
 import triage.text.SubAnswer;
@@ -214,7 +214,7 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
       if (links) {
         return htmlRenderService.convertRichTextToHtml(nestedContent);
       } else {
-        return htmlRenderService.convertRichTextToHtml(nestedContent, HtmlConversionOption.OMIT_LINKS);
+        return htmlRenderService.convertRichTextToHtml(nestedContent, HtmlRenderOption.OMIT_LINKS);
       }
     } else {
       return "";
