@@ -37,7 +37,7 @@ public class ProgressViewServiceImpl implements ProgressViewService {
       AnswerConfig answerConfig = journeyConfigService.getStageAnswerForPreviousStage(stageConfig.getStageId());
       if (answerConfig != null && answerConfig.getLabelText().isPresent()) {
         code = null;
-        description = htmlRenderService.convertRichText(answerConfig.getLabelText().get(), false);
+        description = htmlRenderService.convertRichTextToPlainText(answerConfig.getLabelText().get());
       } else {
         code = null;
         description = "UK Military List";

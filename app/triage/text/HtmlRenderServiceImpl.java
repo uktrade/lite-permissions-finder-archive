@@ -7,6 +7,7 @@ import triage.config.DefinitionConfig;
 import triage.config.DefinitionConfigService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,10 +22,11 @@ import java.util.stream.Collectors;
 public class HtmlRenderServiceImpl implements HtmlRenderService {
 
   private static final String DEFINITION_TEXT = unescape(
-      "<a href='/view-definition/%s' data-definition-id='%s' data-definition-type='%s' " +
-          "title='View definition of &quot;%s&quot;' target='_blank'>%s</a>");
+      "<a href='/view-definition/%s/%s' data-definition-id='%s' data-definition-type='%s' " +
+          "title='View definition of &quot;%s&quot;'%s>%s</a>");
   private static final String CONTROL_ENTRY_TEXT = unescape(
-      "<a href='view-control-entry/%s' data-control-entry-id='%s' title='View %s' target='_blank'>%s</a>");
+      "<a href='/view-control-entry/%s' data-control-entry-id='%s' title='View %s'%s>%s</a>");
+  private static final String TARGET_ATTR_BLANK = unescape(" target='_blank'");
   private static final Set<HtmlType> LEVELS = EnumSet.of(HtmlType.LIST_LEVEL_1, HtmlType.LIST_LEVEL_2, HtmlType.LIST_LEVEL_3);
   private static final Pattern PATTERN_LEVEL_1 = Pattern.compile("\\*(?!\\*)(.*?)\\n");
   private static final Pattern PATTERN_LEVEL_2 = Pattern.compile("\\*\\*(.*?)\\n");
@@ -38,32 +40,30 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   }
 
   @Override
-  public String convertRichText(RichText richText, boolean html) {
-    if (html) {
-      return convertNewlinesToBrs(renderLists(addLinks(richText)));
-    } else {
-      return convertRichTextToPlainText(richText);
-    }
-  }
-
-  @Override
-  public String convertRichTextToHtmlWithoutLinks(RichText richText) {
-    return convertNewlinesToBrs(renderLists(convertRichTextToPlainText(richText)));
-  }
-
-  private String convertRichTextToPlainText(RichText richText) {
+  public String convertRichTextToPlainText(RichText richText) {
     return richText.getRichTextNodes().stream().map(RichTextNode::getTextContent).collect(Collectors.joining());
   }
 
   @Override
-  public String createRelatedItemsHtml(List<RichText> richTextList) {
+  public String convertRichTextToHtml(RichText richText, HtmlRenderOption... htmlRenderOptions) {
+    if (getOption(HtmlRenderOption.OMIT_LINKS, htmlRenderOptions)) {
+      return convertNewlinesToBrs(renderLists(convertRichTextToPlainText(richText)));
+    } else {
+      boolean omitLinkTargetAttr = getOption(HtmlRenderOption.OMIT_LINK_TARGET_ATTR, htmlRenderOptions);
+      return convertNewlinesToBrs(renderLists(addLinks(richText, omitLinkTargetAttr)));
+    }
+  }
+
+  @Override
+  public String createRelatedItemsHtml(List<RichText> richTextList, HtmlRenderOption... htmlRenderOptions) {
+    boolean omitLinkTargetAttr = getOption(HtmlRenderOption.OMIT_LINK_TARGET_ATTR, htmlRenderOptions);
     return richTextList.stream()
         .map(RichText::getRichTextNodes)
         .flatMap(Collection::stream)
         .filter(richTextNode -> richTextNode instanceof ControlEntryReferenceNode)
         .map(richTextNode -> (ControlEntryReferenceNode) richTextNode)
         .sorted(Comparator.comparing(ControlEntryReferenceNode::getTextContent))
-        .map(this::createControlEntryHtml)
+        .map(controlEntryReferenceNode -> createControlEntryHtml(controlEntryReferenceNode, omitLinkTargetAttr))
         .distinct()
         .collect(Collectors.joining(", "));
   }
@@ -89,7 +89,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     return input.replace("\n", "<br>");
   }
 
-  private String addLinks(RichText richText) {
+  private String addLinks(RichText richText, boolean omitLinkTargetAttr) {
     StringBuilder stringBuilder = new StringBuilder();
     for (RichTextNode richTextNode : richText.getRichTextNodes()) {
       if (richTextNode instanceof DefinitionReferenceNode) {
@@ -98,11 +98,16 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
         //Strip leading/trailing quote characters from the original string when generating a link as per screen designs
         String textContent = StringUtils.strip(definitionReferenceNode.getTextContent(), "\"'");
         String type = definitionReferenceNode.isGlobal() ? "global" : "local";
-        String html = String.format(DEFINITION_TEXT, definitionId, definitionId, type, textContent, textContent);
+        String html;
+        if (omitLinkTargetAttr) {
+          html = String.format(DEFINITION_TEXT, type, definitionId, definitionId, type, textContent, "", textContent);
+        } else {
+          html = String.format(DEFINITION_TEXT, type, definitionId, definitionId, type, textContent, TARGET_ATTR_BLANK, textContent);
+        }
         stringBuilder.append(html);
       } else if (richTextNode instanceof ControlEntryReferenceNode) {
         ControlEntryReferenceNode controlEntryReferenceNode = (ControlEntryReferenceNode) richTextNode;
-        String html = createControlEntryHtml(controlEntryReferenceNode);
+        String html = createControlEntryHtml(controlEntryReferenceNode, omitLinkTargetAttr);
         stringBuilder.append(html);
       } else if (richTextNode instanceof SimpleTextNode) {
         stringBuilder.append(richTextNode.getTextContent());
@@ -122,13 +127,17 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       text = definitionConfig.getTerm();
     }
     String type = definitionReferenceNode.isGlobal() ? "global" : "local";
-    return String.format(DEFINITION_TEXT, definitionId, definitionId, type, text, text);
+    return String.format(DEFINITION_TEXT, type, definitionId, definitionId, type, text, TARGET_ATTR_BLANK, text);
   }
 
-  private String createControlEntryHtml(ControlEntryReferenceNode controlEntryReferenceNode) {
+  private String createControlEntryHtml(ControlEntryReferenceNode controlEntryReferenceNode, boolean omitLinkTargetAttr) {
     String controlEntryId = controlEntryReferenceNode.getControlEntryId();
     String textContent = controlEntryReferenceNode.getTextContent();
-    return String.format(CONTROL_ENTRY_TEXT, controlEntryId, controlEntryId, textContent, textContent);
+    if (omitLinkTargetAttr) {
+      return String.format(CONTROL_ENTRY_TEXT, controlEntryId, controlEntryId, textContent, "", textContent);
+    } else {
+      return String.format(CONTROL_ENTRY_TEXT, controlEntryId, controlEntryId, textContent, TARGET_ATTR_BLANK, textContent);
+    }
   }
 
   private String renderLists(String input) {
@@ -223,4 +232,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     return htmlParts;
   }
 
+  private boolean getOption(HtmlRenderOption option, HtmlRenderOption...options) {
+    return Arrays.stream(options).anyMatch(htmlRenderOption -> option == htmlRenderOption);
+  }
 }
