@@ -133,7 +133,7 @@ public class StageController extends Controller {
     }
   }
 
-  private Result renderSelectOne(Form<AnswerForm> answerFormForm, String stageId, String sessionId, String resumeCode) {
+  private Result renderSelectOne(Form<AnswerForm> answerForm, String stageId, String sessionId, String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
@@ -141,7 +141,7 @@ public class StageController extends Controller {
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
-    return ok(selectOne.render(answerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
+    return ok(selectOne.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,
@@ -156,14 +156,15 @@ public class StageController extends Controller {
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
 
+    List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
+
     LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
-        Collectors.toMap(e -> e, e -> multiAnswerForm.get().answers.contains(e.getValue()), (a, b) -> a,
-            LinkedHashMap::new));
+        Collectors.toMap(e -> e, e -> selectedAnswers.contains(e.getValue()), (a, b) -> a, LinkedHashMap::new));
 
     return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
   }
 
-  private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerFormForm, String stageId, String sessionId,
+  private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,
                                   String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
@@ -173,11 +174,12 @@ public class StageController extends Controller {
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
 
-    LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
-        Collectors.toMap(e -> e, e -> multiAnswerFormForm.get().answers.contains(e.getValue()), (a, b) -> a,
-            LinkedHashMap::new));
+    List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
 
-    return ok(selectMany.render(multiAnswerFormForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
+    LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
+        Collectors.toMap(e -> e, e -> selectedAnswers.contains(e.getValue()), (a, b) -> a, LinkedHashMap::new));
+
+    return ok(selectMany.render(multiAnswerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
