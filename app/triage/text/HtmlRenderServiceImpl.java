@@ -55,7 +55,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   }
 
   @Override
-  public String createRelatedItemsHtml(List<RichText> richTextList, HtmlRenderOption ...htmlRenderOptions) {
+  public String createRelatedItemsHtml(List<RichText> richTextList, HtmlRenderOption... htmlRenderOptions) {
     boolean omitLinkTargetAttr = getOption(HtmlRenderOption.OMIT_LINK_TARGET_ATTR, htmlRenderOptions);
     return richTextList.stream()
         .map(RichText::getRichTextNodes)

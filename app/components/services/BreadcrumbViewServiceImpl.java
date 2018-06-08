@@ -71,7 +71,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   @Override
   public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
-                                                            HtmlRenderOption ...htmlRenderOptions) {
+                                                            HtmlRenderOption... htmlRenderOptions) {
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
       breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig, htmlRenderOptions));
@@ -82,7 +82,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(String sessionId,
                                                                         ControlEntryConfig controlEntryConfig,
-                                                                        HtmlRenderOption ...htmlRenderOptions) {
+                                                                        HtmlRenderOption... htmlRenderOptions) {
     String controlCode = controlEntryConfig.getControlCode();
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     List<NoteView> noteViews = createNoteViews(stageIds, htmlRenderOptions);
@@ -148,14 +148,14 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     }
   }
 
-  private List<NoteView> createNoteViews(List<String> stageIds, HtmlRenderOption ...htmlRenderOptions) {
+  private List<NoteView> createNoteViews(List<String> stageIds, HtmlRenderOption... htmlRenderOptions) {
     return stageIds.stream()
         .map(stageId -> createNoteViews(stageId, htmlRenderOptions))
         .flatMap(Collection::stream)
         .collect(Collectors.toList());
   }
 
-  private List<NoteView> createNoteViews(String stageId, HtmlRenderOption ...htmlRenderOptions) {
+  private List<NoteView> createNoteViews(String stageId, HtmlRenderOption... htmlRenderOptions) {
     return journeyConfigService.getNoteConfigsByStageId(stageId).stream()
         .map(noteConfig -> new NoteView(htmlRenderService.convertRichTextToHtml(noteConfig.getNoteText(), htmlRenderOptions)))
         .collect(Collectors.toList());

@@ -19,7 +19,7 @@ public class RenderServiceImpl implements RenderService {
   }
 
   @Override
-  public String getExplanatoryText(StageConfig stageConfig, HtmlRenderOption ...htmlRenderOptions) {
+  public String getExplanatoryText(StageConfig stageConfig, HtmlRenderOption... htmlRenderOptions) {
     Optional<RichText> explanatoryNoteOptional = stageConfig.getExplanatoryNote();
     if (explanatoryNoteOptional.isPresent()) {
       RichText explanatoryNote = explanatoryNoteOptional.get();
@@ -30,12 +30,12 @@ public class RenderServiceImpl implements RenderService {
   }
 
   @Override
-  public String getFullDescription(ControlEntryConfig controlEntryConfig, HtmlRenderOption ...htmlRenderOptions) {
+  public String getFullDescription(ControlEntryConfig controlEntryConfig, HtmlRenderOption... htmlRenderOptions) {
     return htmlRenderService.convertRichTextToHtml(controlEntryConfig.getFullDescription(), htmlRenderOptions);
   }
 
   @Override
-  public String getSummaryDescription(ControlEntryConfig controlEntryConfig, HtmlRenderOption ...htmlRenderOptions) {
+  public String getSummaryDescription(ControlEntryConfig controlEntryConfig, HtmlRenderOption... htmlRenderOptions) {
     Optional<RichText> summaryDescription = controlEntryConfig.getSummaryDescription();
     if (summaryDescription.isPresent()) {
       RichText richText = summaryDescription.get();
