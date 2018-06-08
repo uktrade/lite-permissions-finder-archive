@@ -27,7 +27,7 @@ public class EntryPointController extends Controller {
     if (!form.hasErrors()) {
       String action = form.get().action;
       if ("start".equals(action)) {
-        return redirect(routes.StartApplicationController.renderForm());
+        return redirect(routes.StartApplicationController.createApplication());
       }
       if ("continue".equals(action)) {
         return redirect(routes.ContinueApplicationController.renderForm());

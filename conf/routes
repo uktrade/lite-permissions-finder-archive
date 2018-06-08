@@ -68,7 +68,9 @@ GET     /trade-type/brokering          controllers.StaticContentController.rende
 
 GET     /trade-type/transhipment       controllers.StaticContentController.renderTranshipment
 
-GET     /start-application                    controllers.StartApplicationController.renderForm
+GET     /create-application                   controllers.StartApplicationController.createApplication
+
+GET     /start-application                    controllers.StartApplicationController.renderStartApplication(sessionId)
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit(sessionId)
 

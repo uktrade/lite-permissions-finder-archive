@@ -251,7 +251,14 @@ public class Loader {
     decontrolStage.setExplanatoryNotes(decontrols.getExplanatoryNotes());
 
     if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
-      decontrolStage.setNextStageId(navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId());
+      Long nextStageId = navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
+      //This can happen if the current row has "nested content" child rows which are not actual stages
+      if (nextStageId == null) {
+        Logger.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
+        decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+      } else {
+        decontrolStage.setNextStageId(nextStageId);
+      }
     } else {
       decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
     }
