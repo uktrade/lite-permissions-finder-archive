@@ -12,9 +12,14 @@ public interface BreadcrumbViewService {
 
   BreadcrumbView createBreadcrumbView(String stageId, String sessionId, HtmlRenderOption... htmlRenderOptions);
 
+  BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean includeChangeLinks, HtmlRenderOption... htmlRenderOptions);
+
   ControlEntryConfig getControlEntryConfig(StageConfig stageConfig);
 
   List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
+                                                     HtmlRenderOption... htmlRenderOptions);
+
+  List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig, boolean includeChangeLinks,
                                                      HtmlRenderOption... htmlRenderOptions);
 
 }
