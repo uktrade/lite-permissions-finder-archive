@@ -6,6 +6,7 @@ import static play.mvc.Results.ok;
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
 import components.cms.dao.SessionOutcomeDao;
+import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
@@ -24,17 +25,20 @@ public class NlrController {
   private final SessionOutcomeService sessionOutcomeService;
   private final SessionOutcomeDao sessionOutcomeDao;
   private final UserPrivilegeService userPrivilegeService;
+  private final SpireAuthManager spireAuthManager;
   private final views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess;
 
   @Inject
   public NlrController(SessionService sessionService, SessionOutcomeService sessionOutcomeService,
                        SessionOutcomeDao sessionOutcomeDao,
                        UserPrivilegeService userPrivilegeService,
+                       SpireAuthManager spireAuthManager,
                        views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess) {
     this.sessionService = sessionService;
     this.sessionOutcomeService = sessionOutcomeService;
     this.sessionOutcomeDao = sessionOutcomeDao;
     this.userPrivilegeService = userPrivilegeService;
+    this.spireAuthManager = spireAuthManager;
     this.nlrRegisterSuccess = nlrRegisterSuccess;
   }
 
@@ -43,7 +47,8 @@ public class NlrController {
     if (sessionOutcome == null) {
       return notFound("Unknown outcomeId " + outcomeId);
     } else {
-      if (userPrivilegeService.canViewOutcome(sessionOutcome)) {
+      String userId = spireAuthManager.getAuthInfoFromContext().getId();
+      if (userPrivilegeService.canViewOutcome(userId, sessionOutcome)) {
         return ok(new Html(sessionOutcome.getOutcomeHtml()));
       } else {
         Logger.error("User with userId {} doesn't have privilege to view outcome with outcomeId {} ",
@@ -58,7 +63,8 @@ public class NlrController {
     String outcomeId;
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
     if (sessionOutcome == null) {
-      outcomeId = sessionOutcomeService.generateNotFoundNlrLetter(sessionId, controlEntryId, resumeCode);
+      String userId = spireAuthManager.getAuthInfoFromContext().getId();
+      outcomeId = sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode);
     } else {
       outcomeId = sessionOutcome.getId();
     }
@@ -70,7 +76,8 @@ public class NlrController {
     String outcomeId;
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
     if (sessionOutcome == null) {
-      outcomeId = sessionOutcomeService.generateDecontrolNlrLetter(sessionId, stageId, resumeCode);
+      String userId = spireAuthManager.getAuthInfoFromContext().getId();
+      outcomeId = sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode);
     } else {
       outcomeId = sessionOutcome.getId();
     }

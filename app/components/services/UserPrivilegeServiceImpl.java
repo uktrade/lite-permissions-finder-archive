@@ -44,8 +44,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
   }
 
   @Override
-  public boolean canViewOutcome(SessionOutcome sessionOutcome) {
-    String userId = sessionOutcome.getUserId();
+  public boolean canViewOutcome(String userId, SessionOutcome sessionOutcome) {
     UserAccountTypeView userAccountTypeView = getUserAccountTypeView(userId);
     UserPrivilegesView userPrivilegesView = getUserPrivilegesView(userId);
     return userAccountTypeView.getAccountType() == AccountType.REGULATOR ||

@@ -3,7 +3,6 @@ package components.services;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.cms.dao.SessionOutcomeDao;
-import components.common.auth.SpireAuthManager;
 import components.common.client.userservice.UserServiceClientJwt;
 import components.services.notification.PermissionsFinderNotificationClient;
 import controllers.routes;
@@ -34,7 +33,6 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d MMMM uuuu");
 
   private final String ecjuEmailAddress;
-  private final SpireAuthManager authManager;
   private final UserServiceClientJwt userService;
   private final CustomerService customerService;
   private final BreadcrumbViewService breadcrumbViewService;
@@ -45,14 +43,13 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   private final views.html.nlr.nlrLetter nlrLetter;
 
   @Inject
-  public SessionOutcomeServiceImpl(@Named("ecjuEmailAddress") String ecjuEmailAddress, SpireAuthManager authManager,
-                                   UserServiceClientJwt userService, CustomerService customerService,
-                                   BreadcrumbViewService breadcrumbViewService, AnswerViewService answerViewService,
-                                   JourneyConfigService journeyConfigService, SessionOutcomeDao sessionOutcomeDao,
+  public SessionOutcomeServiceImpl(@Named("ecjuEmailAddress") String ecjuEmailAddress, UserServiceClientJwt userService,
+                                   CustomerService customerService, BreadcrumbViewService breadcrumbViewService,
+                                   AnswerViewService answerViewService, JourneyConfigService journeyConfigService,
+                                   SessionOutcomeDao sessionOutcomeDao,
                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient,
                                    views.html.nlr.nlrLetter nlrLetter) {
     this.ecjuEmailAddress = ecjuEmailAddress;
-    this.authManager = authManager;
     this.userService = userService;
     this.customerService = customerService;
     this.breadcrumbViewService = breadcrumbViewService;
@@ -64,26 +61,26 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   @Override
-  public String generateNotFoundNlrLetter(String sessionId, String controlEntryId, String resumeCode) {
+  public String generateNotFoundNlrLetter(String userId, String sessionId, String controlEntryId, String resumeCode) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
     Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews);
 
-    return generateLetter(sessionId, resumeCode, OutcomeType.NLR_NOT_FOUND, nlrBreadcrumb);
+    return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_NOT_FOUND, nlrBreadcrumb);
   }
 
   @Override
-  public String generateDecontrolNlrLetter(String sessionId, String stageId, String resumeCode) {
+  public String generateDecontrolNlrLetter(String userId, String sessionId, String stageId, String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
     Html nlrBreadcrumb = decontrolBreadcrumb.render(breadcrumbView, answerViews);
 
-    return generateLetter(sessionId, resumeCode, OutcomeType.NLR_DECONTROL, nlrBreadcrumb);
+    return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_DECONTROL, nlrBreadcrumb);
   }
 
-  private String generateLetter(String sessionId, String resumeCode, OutcomeType outcomeType, Html nlrBreadcrumb) {
-    String userId = authManager.getAuthInfoFromContext().getId();
+  private String generateLetter(String userId, String sessionId, String resumeCode, OutcomeType outcomeType,
+                                Html nlrBreadcrumb) {
     CustomerView customerView = getCustomerId(userId);
     String customerId = customerView.getCustomerId();
     SiteView siteView = getSite(customerId, userId);
