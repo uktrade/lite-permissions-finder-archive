@@ -95,7 +95,11 @@ POST    /licencefinder/results               controllers.licencefinder.ResultsCo
 GET     /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.renderRegisterToUseForm
 POST    /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.handleRegisterToUseSubmit
 
+GET    /licencefinder/await-registration      controllers.licencefinder.RegisterToUseController.renderAwaitResult
+POST    /licencefinder/new-registration      controllers.licencefinder.RegisterToUseController.handleRegistrationProcessed
+
 GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
+GET     /licencefinder/poll-register-ogel-status                            controllers.AjaxRegisterOgelController.pollStatus(ctx_transaction)
 
 + nocsrf
 POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(transactionId)
@@ -103,10 +107,16 @@ POST   /licencefinder/registration-callback  controllers.licencefinder.Registrat
 
 # JavaScript routes
 # TODO RE-ENABLE JS ROUTES HERE
-#GET     /js-routes                            controllers.JavaScriptRoutesController.jsRoutes
+#GET     /jsRoutes                            controllers.JavaScriptRoutesController.jsRoutes
+#GET         /javascriptRoutes                                     controllers.JavaScriptRoutesController.javascriptRoutes
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)
+#GET     /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /assets/javascripts/routes          controllers.JavaScriptRoutesController.javascriptRoutes()
+
+# Map static resources from the /public folder to the /assets URL path
+#GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
 #Build info
@@ -163,3 +173,5 @@ GET     /modal-content/definition/local/:localDefinitionId        controllers.mo
 GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)
 GET     /view-definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinitionView(globalDefinitionId)
 GET     /view-definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinitionView(localDefinitionId)
+
+GET     /assets/*file                                    controllers.Assets.versioned(path="/public", file: Asset)

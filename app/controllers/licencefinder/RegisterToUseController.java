@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
+import components.common.state.ContextParamManager;
 import components.common.transaction.TransactionManager;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
@@ -12,6 +13,7 @@ import components.services.ogels.conditions.OgelConditionsServiceClient;
 import models.view.QuestionView;
 import models.view.RegisterResultView;
 import org.pac4j.play.java.Secure;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints;
@@ -36,11 +38,13 @@ public class RegisterToUseController extends Controller {
   private final CountryProvider countryProvider;
   private final OgelConditionsServiceClient conditionsClient;
   private final HttpExecutionContext httpContext;
+  private final ContextParamManager contextParamManager;
   private final String dashboardUrl;
   private final OgelService ogelService;
   private final LicenceFinderService licenceFinderService;
   private final views.html.licencefinder.registerResult registerResult;
   private final views.html.licencefinder.registerToUse registerToUse;
+  private final views.html.licencefinder.registerWait registerWait;
 
   private final String CONTROL_CODE_QUESTION = "What Control list entry describes your goods?";
   private final String GOODS_GOING_QUESTION = "Where are your goods going?";
@@ -60,7 +64,8 @@ public class RegisterToUseController extends Controller {
                                  @com.google.inject.name.Named("dashboardUrl") String dashboardUrl,
                                  OgelService ogelService, LicenceFinderService licenceFinderService,
                                  views.html.licencefinder.registerResult registerResult,
-                                 views.html.licencefinder.registerToUse registerToUse) {
+                                 views.html.licencefinder.registerToUse registerToUse,
+                                 views.html.licencefinder.registerWait registerWait, ContextParamManager contextParamManager) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
     this.httpContext = httpContext;
@@ -72,8 +77,54 @@ public class RegisterToUseController extends Controller {
     this.licenceFinderService = licenceFinderService;
     this.registerResult = registerResult;
     this.registerToUse = registerToUse;
+    this.registerWait = registerWait;
+    this.contextParamManager = contextParamManager;
   }
 
+  public Result renderAwaitResult() {
+
+    Logger.info("renderAwaitResult");
+    String transactionId = transactionManager.getTransactionId();
+
+    return ok(registerWait.render(false));
+    /*
+    SubmissionStatus status = submissionService.getSubmissionStatus(transactionId);
+
+    switch (status) {
+      case SUBMITTED:
+        boolean showLongRunningPrompt = submissionService.getSecondsSinceRegistrationSubmission(transactionId) >= 15;
+        return ok(registerWait.render(showLongRunningPrompt));
+      case COMPLETED:
+        return handleSubmissionCompleted(transactionId);
+      case FAILED:
+      default:
+        return ok(registrationRejection.render(submissionService.getCallbackResult(transactionId).orElse(null)));
+    }
+    */
+  }
+
+  private Result handleSubmissionCompleted(String transactionId) {
+    Logger.info("handleSubmissionCompleted");
+    return ok(registerWait.render(false));
+    /*
+    CallbackView.Result result = submissionService.getCallbackResult(transactionId).orElse(CallbackView.Result.FAILED);
+    switch (result) {
+      case SUCCESS:
+        return ok(registrationConfirmation.render(submissionService.getRegistrationRef(transactionId)));
+      case PERMISSION_DENIED:
+        return ok(permissionDenied.render());
+      default:
+        return ok(registrationRejection.render(result));
+    }
+    */
+  }
+
+  /**
+   * Handles the RegistrationInterval form submission
+   */
+  public CompletionStage<Result> handleRegistrationProcessed() {
+    return contextParamManager.addParamsAndRedirect(routes.RegisterToUseController.renderAwaitResult());
+  }
 
   /************************************************************************************************
    * 'RegisterToUse' page
@@ -89,7 +140,9 @@ public class RegisterToUseController extends Controller {
     }
 
     String transactionId = transactionManager.getTransactionId();
+    licenceFinderService.registerOgel(transactionId);
 
+    /*
     return licenceFinderService.registerOgel(transactionId).thenApplyAsync(conditionsResult ->
             ogelService.get(dao.getOgelId())
                 .thenApplyAsync(ogelFullView -> {
@@ -103,8 +156,23 @@ public class RegisterToUseController extends Controller {
                 }, httpContext.current())
         , httpContext.current())
         .thenCompose(Function.identity());
+        */
+
+    Optional<String> regRef = licenceFinderService.getRegistrationReference(transactionId);
+    if (regRef.isPresent()) {
+      return ogelService.get(dao.getOgelId())
+          .thenApplyAsync(ogelFullView -> {
+            RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());
+            return ok(registerResult.render(view, ogelFullView, dashboardUrl));
+          }, httpContext.current());
+    }
+
+    return contextParamManager.addParamsAndRedirect(routes.RegisterToUseController.renderAwaitResult());
   }
 
+  /**
+   * Private methods
+   */
   private CompletionStage<Result> renderWithRegisterToUseForm(Form<RegisterToUseForm> form) {
     String ogelId = dao.getOgelId();
     String controlCode = dao.getControlCode();

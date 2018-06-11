@@ -94,7 +94,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   /**
    * Attempts to read callback reference set number times/period
    */
-  public Optional<String> getRegistrationReference(String transactionId) {
+  public Optional<String> getRegistrationReference1(String transactionId) {
     int count = 0;
     while(count < 5) {
       Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
@@ -108,6 +108,21 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       ThreadUtil.sleep(1500);
       count++;
     }
+    return Optional.empty();
+  }
+
+  /**
+   * Attempts to read callback reference set number times/period
+   */
+  public Optional<String> getRegistrationReference(String transactionId) {
+    /*
+    Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
+    if (optRegisterLicence.isPresent()) {
+      String ref = optRegisterLicence.get().getRegistrationReference();
+      if (!StringUtils.isBlank(ref)) {
+        return Optional.of(ref);
+      }
+    }*/
     return Optional.empty();
   }
 

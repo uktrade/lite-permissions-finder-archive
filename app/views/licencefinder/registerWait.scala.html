@@ -1,0 +1,35 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+@import views.html.common.state._
+
+@this(standardPage: standardPage)
+@(showLongRunningPrompt : Boolean)
+@standardPage("Register for an OGEL", Some(Html("Register for an OGEL"))){
+} {
+
+  <form id="registrationInterval" action="@controllers.licencefinder.routes.RegisterToUseController.handleRegistrationProcessed()" method="POST">
+
+    <span>showLongRunningPrompt: @showLongRunningPrompt</span>
+    @contextFormParams()
+    <h2 id="pleaseWaitHeading" class="heading-medium @if(showLongRunningPrompt) {hidden}">
+      Please wait whilst we process your OGEL registration request ...
+    </h2>
+
+    <div id="longRegistrationMessage" class="heading-medium @if(!showLongRunningPrompt) {hidden}">
+      This registration is taking longer than expected. You may close your browser window and we will send you an email when the registration is complete.
+    </div>
+
+    <div class="form-group registrationIntervalNonJs">
+      <button id="continue" name="continue" type="submit" value="continue" class="button">Refresh</button>
+    </div>
+
+  </form>
+  <script type="text/javascript" src="@routes.JavaScriptRoutesController.javascriptRoutes"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      LITEOgelRegistration.RegistrationInterval.setupPage();
+    });
+  </script>
+}

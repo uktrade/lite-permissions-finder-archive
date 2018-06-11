@@ -42,7 +42,7 @@
                   <span class="bold" style="margin-left:40px">You have already registered for this OGEL:</span>
                 }
               @formRadio(form("chosenOgel"), "<span class=\"bold\">OGEL (" + ogelView.getName + ")</span>", ogelView.getId, true, "label-trade-type")
-              @detailPanel("detailPanel"){Read more information} {
+              @detailPanel("detailPanel"){More information} {
                 <p>
                   @ogelView.getUsageSummary().iterator().next()
                 </p>
