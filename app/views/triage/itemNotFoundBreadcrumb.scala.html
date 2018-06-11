@@ -3,16 +3,11 @@
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import com.google.common.collect.Iterables
 
-@(breadcrumbItemsViews: List[BreadcrumbItemView], nlrLetter: Boolean)
-
-@import java.lang.String; var controlCodeChangeUrl=""; var notFoundChangeUrl=""
+@(breadcrumbItemsViews: List[BreadcrumbItemView])
 
 @controlCodeBreadcrumbs(isWide = true) {
   @for(breadcrumbItemView <- breadcrumbItemsViews) {
-    @if(!nlrLetter) {
-      @{controlCodeChangeUrl= breadcrumbItemView.getUrl}
-    }
-    @controlCodeBreadcrumbsStep(controlCodeChangeUrl) {
+    @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
       @if(breadcrumbItemView.getText!=null) {
         <span class="bold">@breadcrumbItemView.getText</span>
       }
@@ -30,10 +25,7 @@
       }
     }
   }
-  @if(!nlrLetter) {
-    @{notFoundChangeUrl= Iterables.getLast(breadcrumbItemsViews).getUrl}
-  }
-  @controlCodeBreadcrumbsDetailBox(isPathStep = true, notFoundChangeUrl) {
+  @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbItemsViews).getUrl) {
     <span class="outcome-detail-box-heading">Item has none of the controlled characteristics</span>
   }(HtmlFormat.empty)
 }

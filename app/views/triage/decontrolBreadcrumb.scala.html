@@ -4,16 +4,11 @@
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import com.google.common.collect.Iterables
 
-@(breadcrumbView: BreadcrumbView, answerViews: List[AnswerView], nlrLetter: Boolean)
-
-@import java.lang.String; var controlCodeChangeUrl=""; var decontrolChangeUrl=""
+@(breadcrumbView: BreadcrumbView, answerViews: List[AnswerView])
 
 @controlCodeBreadcrumbs(isWide = true) {
   @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
-    @if(!nlrLetter) {
-      @{controlCodeChangeUrl= breadcrumbItemView.getUrl}
-    }
-    @controlCodeBreadcrumbsStep(controlCodeChangeUrl) {
+    @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
       @if(breadcrumbItemView.getText!=null) {
         <span class="bold">@breadcrumbItemView.getText</span>
       }
@@ -31,10 +26,7 @@
       }
     }
   }
-  @if(!nlrLetter) {
-    @{decontrolChangeUrl= breadcrumbView.getDecontrolUrl}
-  }
-  @controlCodeBreadcrumbsDetailBox(isPathStep = true, decontrolChangeUrl) {
+  @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = breadcrumbView.getDecontrolUrl) {
     <h2 class="outcome-detail-box-heading">Item is decontrolled</h2>
     @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText!=null) {
       <span class="bold">@Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText</span>
