@@ -21,6 +21,7 @@ import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.session.SessionService;
+import triage.text.HtmlRenderOption;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;
 import uk.gov.bis.lite.user.api.view.UserDetailsView;
@@ -82,8 +83,8 @@ public class NlrController {
     String todayDate = getDate();
 
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
-    return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, itemNotFoundBreadcrumb.render(breadcrumbItemViews)));
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, HtmlRenderOption.OMIT_LINKS);
+    return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, itemNotFoundBreadcrumb.render(breadcrumbItemViews, true)));
   }
 
   public Result generateDecontrolNlrLetter(String sessionId, String stageId, String resumeCode) throws ExecutionException, InterruptedException {
@@ -95,9 +96,9 @@ public class NlrController {
     String todayDate = getDate();
 
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
-    return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, decontrolBreadcrumb.render(breadcrumbView, answerViews)));
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, HtmlRenderOption.OMIT_LINKS);
+    return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, decontrolBreadcrumb.render(breadcrumbView, answerViews, true)));
   }
 
   private Optional<SiteView.SiteViewAddress> getSiteAddress(String userId) {
