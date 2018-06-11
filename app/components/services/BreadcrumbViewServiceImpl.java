@@ -37,18 +37,21 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   @Override
   public BreadcrumbView createBreadcrumbView(String stageId, String sessionId, HtmlRenderOption... htmlRenderOptions) {
+    return createBreadcrumbView(stageId, sessionId, false, htmlRenderOptions);
+  }
+
+  @Override
+  public BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean nlrLetter, HtmlRenderOption... htmlRenderOptions) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     boolean decontrol = PageTypeUtil.getPageType(stageConfig) == PageType.DECONTROL;
     ControlEntryConfig controlEntryConfig = getControlEntryConfig(stageConfig);
 
-    String decontrolUrl;
-    if (decontrol) {
+    String decontrolUrl = null;
+    if (!nlrLetter && decontrol) {
       decontrolUrl = createDecontrolUrl(sessionId, controlEntryConfig);
-    } else {
-      decontrolUrl = null;
     }
 
-    List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig,
+    List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig, nlrLetter,
         htmlRenderOptions);
     List<NoteView> noteViews = createNoteViews(stageId);
     return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol, decontrolUrl);
@@ -72,27 +75,35 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   @Override
   public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
                                                             HtmlRenderOption... htmlRenderOptions) {
+    return createBreadcrumbItemViews(sessionId, controlEntryConfig, false, htmlRenderOptions);
+  }
+
+  @Override
+  public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig, boolean nlrLetter,
+                                                            HtmlRenderOption... htmlRenderOptions) {
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
-      breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig, htmlRenderOptions));
+      breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig, nlrLetter, htmlRenderOptions));
     }
     breadcrumbItemViews.add(new BreadcrumbItemView(null, "UK Military List", null, new ArrayList<>()));
     return Lists.reverse(breadcrumbItemViews);
   }
 
-  private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(String sessionId,
-                                                                        ControlEntryConfig controlEntryConfig,
-                                                                        HtmlRenderOption... htmlRenderOptions) {
+  private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
+                                                                        boolean nlrLetter, HtmlRenderOption... htmlRenderOptions) {
     String controlCode = controlEntryConfig.getControlCode();
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     List<NoteView> noteViews = createNoteViews(stageIds, htmlRenderOptions);
     String description = renderService.getSummaryDescription(controlEntryConfig, htmlRenderOptions);
-    String url = createChangeUrl(sessionId, controlEntryConfig.getId(), stageIds);
+    String url = null;
+    if (!nlrLetter) {
+      url = createChangeUrl(sessionId, controlEntryConfig.getId(), stageIds);
+    }
     BreadcrumbItemView breadcrumbItemView = new BreadcrumbItemView(controlCode, description, url, noteViews);
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     breadcrumbItemViews.add(breadcrumbItemView);
     Optional<ControlEntryConfig> parentControlEntry = controlEntryConfig.getParentControlEntry();
-    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, parent, htmlRenderOptions)));
+    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, parent, nlrLetter, htmlRenderOptions)));
     return breadcrumbItemViews;
   }
 
