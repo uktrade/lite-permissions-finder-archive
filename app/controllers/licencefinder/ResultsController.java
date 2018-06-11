@@ -12,6 +12,7 @@ import components.services.LicenceFinderService;
 import components.services.OgelService;
 import models.view.RegisterResultView;
 import org.pac4j.play.java.Secure;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -19,6 +20,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
@@ -80,7 +82,18 @@ public class ResultsController extends Controller {
     // Check if we have a Ogel that the is already registered - return registerResult view
     if(licenceFinderService.isOgelIdAlreadyRegistered(chosenOgelId)) {
       return ogelService.get(licenceFinderDao.getOgelId()).thenApplyAsync(ogelFullView -> {
-        return ok(registerResult.render(new RegisterResultView("You are already registered to use Open general export licence (" + ogelFullView.getName() + ")"), ogelFullView, dashboardUrl));
+        Logger.info("Ogel Id: " + ogelFullView.getId());
+        Logger.info("Ogel Name: " + ogelFullView.getName());
+        Logger.info("Ogel Link: " + ogelFullView.getLink());
+
+        Optional<String> optRef = licenceFinderService.getUserOgelReference(chosenOgelId);
+        if(optRef.isPresent()) {
+          RegisterResultView resultView = new RegisterResultView("You are already registered to use Open general export licence (" + ogelFullView.getName() + ")", optRef.get());
+          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl));
+        } else {
+          RegisterResultView resultView = new RegisterResultView("You are already registered to use Open general export licence (" + ogelFullView.getName() + ")");
+          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl));
+        }
       }, httpContext.current());
     }
 
@@ -88,6 +101,7 @@ public class ResultsController extends Controller {
   }
 
   private CompletionStage<Result> renderWithForm(Form<ResultsForm> form) {
+    licenceFinderService.updateUsersOgelIdRefMap(authManager.getAuthInfoFromContext().getId()); // update users current OgelId set
     return completedFuture(ok(results.render(form, licenceFinderService.getResultsView())));
   }
 

@@ -49,6 +49,9 @@ public class RegisterToUseController extends Controller {
   private final String EXHIBITION_QUESTION = "Are you exporting goods for or after exhibition or demonstration?";
   private final String BEFORE_OR_LESS_QUESTION = "Were your goods manufactured before 1897, and worth less than £30,000?";
 
+  private final String YES = "Yes";
+  private final String NO = "No";
+
   @Inject
   public RegisterToUseController(TransactionManager transactionManager, FormFactory formFactory,
                                  HttpExecutionContext httpContext,
@@ -133,9 +136,9 @@ public class RegisterToUseController extends Controller {
     Optional<QuestionsController.QuestionsForm> optForm = dao.getQuestionsForm();
     if (optForm.isPresent()) {
       QuestionsController.QuestionsForm form = optForm.get();
-      views.add(new QuestionView(REPAIR_QUESTION, form.forRepair.equals("true") ? "Yes" : "No"));
-      views.add(new QuestionView(EXHIBITION_QUESTION, form.forExhibition.equals("true") ? "Yes" : "No"));
-      views.add(new QuestionView(BEFORE_OR_LESS_QUESTION, form.beforeOrLess.equals("true") ? "Yes" : "No"));
+      views.add(new QuestionView(REPAIR_QUESTION, form.forRepair ? YES : NO));
+      views.add(new QuestionView(EXHIBITION_QUESTION, form.forExhibition ? YES : NO));
+      views.add(new QuestionView(BEFORE_OR_LESS_QUESTION, form.beforeOrLess ? YES : NO));
     }
     return views;
   }

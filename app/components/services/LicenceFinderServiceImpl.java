@@ -23,7 +23,6 @@ import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,14 +60,21 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     this.countryProvider = countryProvider;
   }
 
-  public void updateUsersOgelIds(String userId) {
-    // Store set of already registered Ogel Ids
-    Set<String> currentAlreadyRegisteredOgelSet = getExistingUserOgelIds(userId);
-    licenceFinderDao.saveAlreadyRegisteredOgelSet(currentAlreadyRegisteredOgelSet);
+  public void updateUsersOgelIdRefMap(String userId) {
+    // Store map of already registered Ogel Id to reference map for user
+    licenceFinderDao.saveUserOgelIdRefMap(getUserOgelIdRefMap(userId));
   }
 
   public boolean isOgelIdAlreadyRegistered(String ogelId) {
-    return licenceFinderDao.getAlreadyRegisteredOgelSet().contains(ogelId);
+    return licenceFinderDao.getUserOgelIdRefMap().keySet().contains(ogelId);
+  }
+
+  public Optional<String> getUserOgelReference(String ogelId) {
+    Map<String, String> ogelIdRefMap = licenceFinderDao.getUserOgelIdRefMap();
+    if(ogelIdRefMap.keySet().contains(ogelId)) {
+      return Optional.of(ogelIdRefMap.get(ogelId));
+    }
+    return Optional.empty();
   }
 
   /**
@@ -155,12 +161,12 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     if(optCustomerId.isPresent()) {
       String customerId = optCustomerId.get();
       licenceFinderDao.saveCustomerId(customerId); // persist customerId
-      Logger.info("CustomerId persisted: " + customerId);
+      //Logger.info("CustomerId persisted: " + customerId);
       Optional<String> optSiteId = getSiteId(userId, optCustomerId.get());
       if(optSiteId.isPresent()) {
         String siteId = optSiteId.get();
         licenceFinderDao.saveSiteId(siteId); // persist siteId
-        Logger.info("SiteId persisted: " + siteId);
+        //Logger.info("SiteId persisted: " + siteId);
       } else {
         Logger.warn("Not a single Site associated with user/customer: " + userId + "/" + customerId);
       }
@@ -194,7 +200,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     CompletionStage<List<ApplicableOgelView>> stage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activities, showHistoricOgel);
 
     try {
-      List<OgelView> ogelViews = stage.thenApply(views -> getOgelViews(views, licenceFinderDao.getAlreadyRegisteredOgelSet())).toCompletableFuture().get();
+      List<OgelView> ogelViews = stage.thenApply(views -> getOgelViews(views, licenceFinderDao.getUserOgelIdRefMap().keySet())).toCompletableFuture().get();
       if(!ogelViews.isEmpty() && includeResults) {
         resultView.setOgelViews(ogelViews);
       }
@@ -234,28 +240,25 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     return countries;
   }
 
-  private Set<String> getExistingUserOgelIds(String userId) {
-    Set<String> ogelIds = new HashSet<>();
+  private Map<String, String> getUserOgelIdRefMap(String userId) {
+    Map<String, String> ogelIdRefMap = new HashMap<>();
     try {
       List<OgelRegistrationView> views = permissionsService.getOgelRegistrations(userId).toCompletableFuture().get();
       for(OgelRegistrationView view : views) {
-        ogelIds.add(view.getOgelType());
+        ogelIdRefMap.put(view.getOgelType(), view.getRegistrationReference());
       }
-      ogelIds.add("OGL12"); // to enable testing with licence_finder_applicant@test.com user TODO remove once test data is updated to show an already registered Ogel
+      ogelIdRefMap.put("OGL12", "GBOGE2017/12345"); // to enable testing with licence_finder_applicant@test.com user TODO remove once test data is updated to show an already registered Ogel
     } catch (InterruptedException | ExecutionException e) {
       Logger.error("OgelRegistration exception", e);
     }
-    return ogelIds;
+    return ogelIdRefMap;
   }
 
   private List<OgelView> getOgelViews(List<ApplicableOgelView> applicableViews, Set<String> existingOgels) {
     List<OgelView> ogelViews = new ArrayList<>();
-    existingOgels.forEach(System.out::println);
     for(ApplicableOgelView applicableView : applicableViews) {
       OgelView view = new OgelView(applicableView);
-      String viewId = view.getId();
-     // Logger.info("viewId: " + viewId);
-      if(existingOgels.contains(viewId)) {
+      if(existingOgels.contains(view.getId())) {
         view.setAlreadyRegistered(true);
       }
       ogelViews.add(view);
