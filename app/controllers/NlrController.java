@@ -83,7 +83,7 @@ public class NlrController {
     String todayDate = getDate();
 
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, true, HtmlRenderOption.OMIT_LINKS);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, itemNotFoundBreadcrumb.render(breadcrumbItemViews)));
   }
 
@@ -97,7 +97,7 @@ public class NlrController {
 
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true, HtmlRenderOption.OMIT_LINKS);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, false, HtmlRenderOption.OMIT_LINKS);
     return ok(nlrLetter.render(resumeCode, userDetailsView, todayDate, address, decontrolBreadcrumb.render(breadcrumbView, answerViews)));
   }
 
