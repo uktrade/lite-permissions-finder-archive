@@ -11,6 +11,7 @@ import models.view.NoteView;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
+import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
 import utils.PageTypeUtil;
 
@@ -35,7 +36,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   }
 
   @Override
-  public BreadcrumbView createBreadcrumbView(String stageId, String sessionId) {
+  public BreadcrumbView createBreadcrumbView(String stageId, String sessionId, HtmlRenderOption... htmlRenderOptions) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     boolean decontrol = PageTypeUtil.getPageType(stageConfig) == PageType.DECONTROL;
     ControlEntryConfig controlEntryConfig = getControlEntryConfig(stageConfig);
@@ -47,7 +48,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
       decontrolUrl = null;
     }
 
-    List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig);
+    List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig,
+        htmlRenderOptions);
     List<NoteView> noteViews = createNoteViews(stageId);
     return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol, decontrolUrl);
   }
@@ -68,27 +70,29 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   }
 
   @Override
-  public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig) {
+  public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
+                                                            HtmlRenderOption... htmlRenderOptions) {
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
-      breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig));
+      breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig, htmlRenderOptions));
     }
     breadcrumbItemViews.add(new BreadcrumbItemView(null, "UK Military List", null, new ArrayList<>()));
     return Lists.reverse(breadcrumbItemViews);
   }
 
   private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(String sessionId,
-                                                                        ControlEntryConfig controlEntryConfig) {
+                                                                        ControlEntryConfig controlEntryConfig,
+                                                                        HtmlRenderOption... htmlRenderOptions) {
     String controlCode = controlEntryConfig.getControlCode();
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
-    List<NoteView> noteViews = createNoteViews(stageIds);
-    String description = renderService.getSummaryDescription(controlEntryConfig);
+    List<NoteView> noteViews = createNoteViews(stageIds, htmlRenderOptions);
+    String description = renderService.getSummaryDescription(controlEntryConfig, htmlRenderOptions);
     String url = createChangeUrl(sessionId, controlEntryConfig.getId(), stageIds);
     BreadcrumbItemView breadcrumbItemView = new BreadcrumbItemView(controlCode, description, url, noteViews);
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     breadcrumbItemViews.add(breadcrumbItemView);
     Optional<ControlEntryConfig> parentControlEntry = controlEntryConfig.getParentControlEntry();
-    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, parent)));
+    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, parent, htmlRenderOptions)));
     return breadcrumbItemViews;
   }
 
@@ -144,16 +148,16 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     }
   }
 
-  private List<NoteView> createNoteViews(List<String> stageIds) {
+  private List<NoteView> createNoteViews(List<String> stageIds, HtmlRenderOption... htmlRenderOptions) {
     return stageIds.stream()
-        .map(this::createNoteViews)
+        .map(stageId -> createNoteViews(stageId, htmlRenderOptions))
         .flatMap(Collection::stream)
         .collect(Collectors.toList());
   }
 
-  private List<NoteView> createNoteViews(String stageId) {
+  private List<NoteView> createNoteViews(String stageId, HtmlRenderOption... htmlRenderOptions) {
     return journeyConfigService.getNoteConfigsByStageId(stageId).stream()
-        .map(noteConfig -> new NoteView(htmlRenderService.convertRichText(noteConfig.getNoteText(), true)))
+        .map(noteConfig -> new NoteView(htmlRenderService.convertRichTextToHtml(noteConfig.getNoteText(), htmlRenderOptions)))
         .collect(Collectors.toList());
   }
 

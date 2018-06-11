@@ -31,8 +31,17 @@ public class StartApplicationController {
     this.startApplication = startApplication;
   }
 
-  public Result renderForm() {
+  public Result createApplication() {
     TriageSession triageSession = sessionService.createNewSession();
+    return redirect(routes.StartApplicationController.renderStartApplication(triageSession.getId()));
+  }
+
+  public Result renderStartApplication(String sessionId) {
+    TriageSession triageSession = sessionService.getSessionById(sessionId);
+    if (triageSession == null) {
+      Logger.error("Unknown sessionId " + sessionId);
+      return redirect(routes.StartApplicationController.createApplication());
+    }
     return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getId(),
         triageSession.getResumeCode()));
   }
@@ -41,7 +50,7 @@ public class StartApplicationController {
     TriageSession triageSession = sessionService.getSessionById(sessionId);
     if (triageSession == null) {
       Logger.error("Unknown sessionId " + sessionId);
-      return redirect(routes.StartApplicationController.renderForm());
+      return redirect(routes.StartApplicationController.createApplication());
     } else {
       Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
       if (form.hasErrors()) {

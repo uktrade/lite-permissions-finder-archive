@@ -15,12 +15,12 @@
       <p>
         @if(nlrType.equals("DECONTROL")) {
           <a href= '@routes.NlrController.generateDecontrolNlrLetter(sessionId, stageId, resumeCode)' class="bold font-medium">
-            View your "No Licence Required Letter"
+            View your "No Licence Required" letter
           </a>
         }
         @if(nlrType.equals("ITEM_NOT_FOUND")) {
           <a href= '@routes.NlrController.generateNotFoundNlrLetter(sessionId, stageId, resumeCode)' class="bold font-medium">
-            View your "No Licence Required Letter"
+            View your "No Licence Required" letter
           </a>
         }
       </p>

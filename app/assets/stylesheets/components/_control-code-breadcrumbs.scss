@@ -166,6 +166,10 @@
         width: 36px;
         height: 36px;
         left: -19px;
+
+        @media print {
+          border-width: 18px;
+        }
       }
 
       a.breadcrumb-change-link {

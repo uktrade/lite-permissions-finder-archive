@@ -68,7 +68,9 @@ GET     /trade-type/brokering          controllers.StaticContentController.rende
 
 GET     /trade-type/transhipment       controllers.StaticContentController.renderTranshipment
 
-GET     /start-application                    controllers.StartApplicationController.renderForm
+GET     /create-application                   controllers.StartApplicationController.createApplication
+
+GET     /start-application                    controllers.StartApplicationController.renderStartApplication(sessionId)
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit(sessionId)
 
@@ -154,6 +156,10 @@ GET     /register-nlr/decontrol                                     controllers.
 GET     /generate-nlr-letter/notFound                               controllers.NlrController.generateNotFoundNlrLetter(sessionId, controlEntryId, resumeCode)
 GET     /generate-nlr-letter/decontrol                              controllers.NlrController.generateDecontrolNlrLetter(sessionId, stageId, resumeCode)
 
-GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntry(controlEntryId)
-GET     /modal-content/global-definition/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
-GET     /modal-content/local-definition/:localDefinitionId      controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)
+GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId)
+GET     /modal-content/definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
+GET     /modal-content/definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)
+
+GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)
+GET     /view-definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinitionView(globalDefinitionId)
+GET     /view-definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinitionView(localDefinitionId)

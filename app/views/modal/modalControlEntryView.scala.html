@@ -1,0 +1,37 @@
+@import models.view.BreadcrumbItemView
+@import play.twirl.api.HtmlFormat
+@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import util._
+
+@this(standardPage: standardPage)
+@(controlCode: String, breadcrumbItemsViews: List[BreadcrumbItemView])
+
+@standardPage(controlCode, Some(heading(controlCode))) { } {
+  <div>
+    @controlCodeBreadcrumbs(){
+      @for((breadcrumbItemView, index) <- breadcrumbItemsViews.zipWithIndex) {
+        @if(index == breadcrumbItemsViews.size - 1) {
+          @controlCodeBreadcrumbsDetailBox(isPathStep = true){
+            @if(breadcrumbItemView.getText!=null) {
+              <span class="bold">@breadcrumbItemView.getText</span>
+            }
+            @if(breadcrumbItemView.getDescription!=null) {
+              @Html(breadcrumbItemView.getDescription)
+            }
+          }{
+            @HtmlFormat.empty
+          }
+        } else {
+          @controlCodeBreadcrumbsStep(){
+            @if(breadcrumbItemView.getText!=null) {
+              <span class="bold">@breadcrumbItemView.getText</span>
+            }
+            @if(breadcrumbItemView.getDescription!=null) {
+              @Html(breadcrumbItemView.getDescription)
+            }
+          }
+        }
+      }
+    }
+  </div>
+}

@@ -1,0 +1,62 @@
+@import "permissions-finder-print";
+
+// Mixins
+@import "../../../subprojects/lite-play-common/app/assets/template/stylesheets/grid_layout";                            // Basic grid layout mixin
+
+// Components
+@import "components/logos";
+
+#global-cookie-message,
+#global-header,
+.phase-banner-alpha,
+.phase-banner-beta,
+#print-letter
+{
+  display: none;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+a[href^="/"]:after, a[href^="http://"]:after, a[href^="https://"]:after {
+  content: none;
+}
+
+hr {
+  visibility: hidden;
+  page-break-before: always;
+}
+
+h2 {
+  page-break-after: avoid;
+}
+
+// The normal grid classes only show on tablet-width and up. We want them to be used regardless
+// of the size of the page that's being printed.
+.grid-row {
+  @extend %grid-row;
+}
+
+.column-quarter,
+.column-one-quarter {
+  @include grid-column(1 / 4, 1px);
+}
+
+.column-half,
+.column-one-half {
+  @include grid-column(1 / 2, 1px);
+}
+
+.column-third,
+.column-one-third {
+  @include grid-column(1 / 3, 1px);
+}
+
+.column-two-thirds {
+  @include grid-column(2 / 3, 1px);
+}
+
+.column-full {
+  @include grid-column(1, 1px);
+}

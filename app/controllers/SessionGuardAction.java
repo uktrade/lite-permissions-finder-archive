@@ -59,7 +59,7 @@ public class SessionGuardAction extends Action.Simple {
     flash("error", "Sorry, your session is no longer valid.");
     flash("detail", "Please start again.");
     Logger.error("Unknown or blank sessionId " + sessionId);
-    return completedFuture(redirect(routes.StartApplicationController.renderForm()));
+    return completedFuture(redirect(routes.StartApplicationController.createApplication()));
   }
 
 }
