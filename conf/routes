@@ -129,7 +129,7 @@ GET     /unauthorised    controllers.AuthorisationController.unauthorised()
 GET     /test            controllers.DummyController.test()
 GET     /test/frontend-components/:component controllers.FrontendComponentTestController.test(component)
 
-GET     /outcome                          controllers.NlrController.renderOutcome(sessionId)
+GET     /view-outcome/:outcomeId          controllers.NlrController.renderOutcome(outcomeId)
 GET     /outcome/notFound/:controlEntryId controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
 POST    /outcome/notFound/:controlEntryId controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
 GET     /outcome/listed/:controlEntryId   controllers.OutcomeController.outcomeListed(controlEntryId, sessionId)

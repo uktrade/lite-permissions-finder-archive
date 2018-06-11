@@ -2,7 +2,7 @@ ALTER TABLE session DROP COLUMN outcome_type;
 ALTER TABLE session DROP COLUMN outcome_html;
 
 CREATE TABLE session_outcome (
-  id           BIGSERIAL PRIMARY KEY,
+  id           TEXT      NOT NULL,
   timestamp    TIMESTAMP NOT NULL DEFAULT current_timestamp,
   session_id   TEXT      NOT NULL UNIQUE,
   user_id      TEXT      NOT NULL,

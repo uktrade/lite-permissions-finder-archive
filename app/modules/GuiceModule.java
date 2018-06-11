@@ -72,6 +72,8 @@ import components.services.RenderService;
 import components.services.RenderServiceImpl;
 import components.services.SessionOutcomeService;
 import components.services.SessionOutcomeServiceImpl;
+import components.services.UserPrivilegeService;
+import components.services.UserPrivilegeServiceImpl;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
 import journey.ExportJourneyDefinitionBuilder;
@@ -149,6 +151,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(CustomerService.class).to(CustomerServiceImpl.class);
     bind(OgelService.class).to(OgelServiceImpl.class);
     bind(SessionOutcomeService.class).to(SessionOutcomeServiceImpl.class);
+    bind(UserPrivilegeService.class).to(UserPrivilegeServiceImpl.class);
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));

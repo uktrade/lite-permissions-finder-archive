@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class SessionOutcomeServiceImpl implements SessionOutcomeService {
@@ -63,28 +64,25 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   @Override
-  public void generateNotFoundNlrLetter(String sessionId, String controlEntryId, String resumeCode) {
-    String userId = authManager.getAuthInfoFromContext().getId();
-    CustomerView customerView = getCustomerId(userId);
-    String customerId = customerView.getCustomerId();
-    SiteView siteView = getSite(customerId, userId);
-    UserDetailsView userDetailsView = getUserDetailsView(userId);
-    SiteView.SiteViewAddress address = siteView.getAddress();
-    String todayDate = DATE_TIME_FORMATTER.format(LocalDate.now());
-
+  public String generateNotFoundNlrLetter(String sessionId, String controlEntryId, String resumeCode) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
+    Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews);
 
-    Html html = nlrLetter.render(resumeCode, userDetailsView, todayDate, address, itemNotFoundBreadcrumb.render(breadcrumbItemViews));
-    SessionOutcome sessionOutcome = new SessionOutcome(null, sessionId, userId, customerId, siteView.getSiteId(), OutcomeType.NLR_NOT_FOUND, html.toString());
-    sessionOutcomeDao.insert(sessionOutcome);
-    String url = routes.NlrController.renderOutcome(sessionId).toString();
-    permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(), userDetailsView.getFullName(), url);
-    permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress, userDetailsView.getFullName(), url, resumeCode, customerView.getCompanyName(), address.getPlainText());
+    return generateLetter(sessionId, resumeCode, OutcomeType.NLR_NOT_FOUND, nlrBreadcrumb);
   }
 
   @Override
-  public void generateDecontrolNlrLetter(String sessionId, String stageId, String resumeCode) {
+  public String generateDecontrolNlrLetter(String sessionId, String stageId, String resumeCode) {
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
+    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
+    Html nlrBreadcrumb = decontrolBreadcrumb.render(breadcrumbView, answerViews);
+
+    return generateLetter(sessionId, resumeCode, OutcomeType.NLR_DECONTROL, nlrBreadcrumb);
+  }
+
+  private String generateLetter(String sessionId, String resumeCode, OutcomeType outcomeType, Html nlrBreadcrumb) {
     String userId = authManager.getAuthInfoFromContext().getId();
     CustomerView customerView = getCustomerId(userId);
     String customerId = customerView.getCustomerId();
@@ -93,16 +91,18 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     SiteView.SiteViewAddress address = siteView.getAddress();
     String todayDate = DATE_TIME_FORMATTER.format(LocalDate.now());
 
-    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
-
-    Html html = nlrLetter.render(resumeCode, userDetailsView, todayDate, address, decontrolBreadcrumb.render(breadcrumbView, answerViews));
-    SessionOutcome sessionOutcome = new SessionOutcome(null, sessionId, userId, customerId, siteView.getSiteId(), OutcomeType.NLR_DECONTROL, html.toString());
+    Html html = nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrBreadcrumb);
+    String id = createOutcomeId();
+    SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(), outcomeType, html.toString());
     sessionOutcomeDao.insert(sessionOutcome);
-    String url = routes.NlrController.renderOutcome(sessionId).toString();
+    String url = routes.NlrController.renderOutcome(id).toString();
     permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(), userDetailsView.getFullName(), url);
     permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress, userDetailsView.getFullName(), url, resumeCode, customerView.getCompanyName(), address.getPlainText());
+    return id;
+  }
+
+  private String createOutcomeId() {
+    return "out_" + UUID.randomUUID().toString().replace("-", "");
   }
 
   private UserDetailsView getUserDetailsView(String userId) {

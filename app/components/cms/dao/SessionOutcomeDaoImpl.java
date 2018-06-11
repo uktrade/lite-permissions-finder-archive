@@ -16,7 +16,8 @@ public class SessionOutcomeDaoImpl implements SessionOutcomeDao {
 
   @Override
   public void insert(SessionOutcome sessionOutcome) {
-    sessionOutcomeJDBIDao.insert(sessionOutcome.getSessionId(),
+    sessionOutcomeJDBIDao.insert(sessionOutcome.getId(),
+        sessionOutcome.getSessionId(),
         sessionOutcome.getUserId(),
         sessionOutcome.getCustomerId(),
         sessionOutcome.getSiteId(),
@@ -27,6 +28,11 @@ public class SessionOutcomeDaoImpl implements SessionOutcomeDao {
   @Override
   public SessionOutcome getSessionOutcomeBySessionId(String sessionId) {
     return sessionOutcomeJDBIDao.getSessionOutcomeBySessionId(sessionId);
+  }
+
+  @Override
+  public SessionOutcome getSessionOutcomeById(String id) {
+    return sessionOutcomeJDBIDao.getSessionOutcomeById(id);
   }
 
 }

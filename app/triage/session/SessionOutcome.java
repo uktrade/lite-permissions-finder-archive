@@ -5,7 +5,7 @@ import models.enums.OutcomeType;
 
 public class SessionOutcome {
 
-  private final Long id;
+  private final String id;
   private final String sessionId;
   private final String userId;
   private final String customerId;
@@ -13,7 +13,7 @@ public class SessionOutcome {
   private final OutcomeType outcomeType;
   private final String outcomeHtml;
 
-  public SessionOutcome(Long id, String sessionId, String userId, String customerId, String siteId,
+  public SessionOutcome(String id, String sessionId, String userId, String customerId, String siteId,
                         OutcomeType outcomeType, String outcomeHtml) {
     this.id = id;
     this.sessionId = sessionId;
@@ -24,7 +24,7 @@ public class SessionOutcome {
     this.outcomeHtml = outcomeHtml;
   }
 
-  public Long getId() {
+  public String getId() {
     return id;
   }
 

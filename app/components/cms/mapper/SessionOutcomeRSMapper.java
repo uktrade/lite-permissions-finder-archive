@@ -12,7 +12,7 @@ public class SessionOutcomeRSMapper implements ResultSetMapper<SessionOutcome> {
 
   @Override
   public SessionOutcome map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-    long id = r.getLong("id");
+    String id = r.getString("id");
     String sessionId = r.getString("session_id");
     String userId = r.getString("user_id");
     String customerId = r.getString("customer_id");
