@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import components.cms.dao.SessionOutcomeDao;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
@@ -16,9 +17,11 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
+import triage.session.SessionOutcome;
 import triage.session.SessionService;
 import utils.PageTypeUtil;
 
@@ -55,10 +58,6 @@ public class OutcomeController extends Controller {
     this.decontrolOutcome = decontrolOutcome;
     this.listedOutcome = listedOutcome;
     this.itemNotFound = itemNotFound;
-  }
-
-  public Result renderOutcome(String sessionId) {
-    return ok();
   }
 
   public Result outcomeItemNotFound(String controlEntryId, String sessionId) {

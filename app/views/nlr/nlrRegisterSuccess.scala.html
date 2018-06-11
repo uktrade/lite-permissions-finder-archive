@@ -2,7 +2,7 @@
 @import util._
 
 @this(standardPage: standardPage)
-@(sessionId: String, resumeCode: String, outcomeType: OutcomeType, stageId: String)
+@(sessionId: String, resumeCode: String, outcomeType: OutcomeType)
 
   @nlrSuccess = {You have successfully registered a "No Licence Required" letter}
 
@@ -15,12 +15,12 @@
 
       <p>
         @if(outcomeType == OutcomeType.NLR_DECONTROL) {
-          <a href= '@routes.NlrController.generateDecontrolNlrLetter(sessionId, stageId, resumeCode)' class="bold font-medium">
+          <a href= '@routes.NlrController.renderOutcome(sessionId)' class="bold font-medium">
             View your "No Licence Required" letter
           </a>
         }
         @if(outcomeType == OutcomeType.NLR_NOT_FOUND) {
-          <a href= '@routes.NlrController.generateNotFoundNlrLetter(sessionId, stageId, resumeCode)' class="bold font-medium">
+          <a href= '@routes.NlrController.renderOutcome(sessionId)' class="bold font-medium">
             View your "No Licence Required" letter
           </a>
         }

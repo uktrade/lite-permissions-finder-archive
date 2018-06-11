@@ -70,6 +70,8 @@ import components.services.ProgressViewService;
 import components.services.ProgressViewServiceImpl;
 import components.services.RenderService;
 import components.services.RenderServiceImpl;
+import components.services.SessionOutcomeService;
+import components.services.SessionOutcomeServiceImpl;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
 import journey.ExportJourneyDefinitionBuilder;
@@ -146,6 +148,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(PermissionsService.class).to(PermissionsServiceImpl.class);
     bind(CustomerService.class).to(CustomerServiceImpl.class);
     bind(OgelService.class).to(OgelServiceImpl.class);
+    bind(SessionOutcomeService.class).to(SessionOutcomeServiceImpl.class);
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));
@@ -216,6 +219,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("permissionsFinderUrl")).to(config.getString("permissions.finder.url"));
 
     bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
+
+    bindConstant().annotatedWith(Names.named("ecjuEmailAddress")).to(config.getString("ecjuEmailAddress"));
 
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
