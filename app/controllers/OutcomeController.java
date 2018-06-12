@@ -77,9 +77,18 @@ public class OutcomeController extends Controller {
 
   private Result renderItemNotFound(Form<RequestNlrForm> requestNlrFormForm, ControlEntryConfig controlEntryConfig,
                                     String sessionId) {
+    String stageId = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig)
+        .stream()
+        .map(journeyConfigService::getStageConfigById)
+        .filter(e -> e.getQuestionType() == StageConfig.QuestionType.STANDARD)
+        .findAny()
+        .map(StageConfig::getStageId)
+        .orElse(null);
+    String changeUrl = routes.StageController.render(stageId, sessionId).toString();
+
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbItemViews));
+    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbItemViews, changeUrl));
   }
 
   public Result outcomeListed(String controlEntryId, String sessionId) {

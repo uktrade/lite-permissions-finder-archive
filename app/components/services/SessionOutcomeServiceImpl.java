@@ -89,7 +89,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   public String generateNotFoundNlrLetter(String userId, String sessionId, String controlEntryId, String resumeCode) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
-    Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews);
+    Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, null);
 
     return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_NOT_FOUND, nlrBreadcrumb);
   }
