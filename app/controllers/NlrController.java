@@ -53,7 +53,7 @@ public class NlrController {
         return ok(nlrOutcome.render(resumeCode, new Html(sessionOutcome.getOutcomeHtml())));
       } else {
         Logger.error("User with userId {} doesn't have privilege to view outcome with outcomeId {} ",
-            sessionOutcome.getUserId(), sessionOutcome.getId());
+            userId, sessionOutcome.getId());
         return notFound("Unknown outcomeId " + outcomeId);
       }
     }
