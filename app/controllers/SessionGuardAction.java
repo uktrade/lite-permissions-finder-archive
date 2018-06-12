@@ -43,7 +43,7 @@ public class SessionGuardAction extends Action.Simple {
       } else {
         SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
         if (sessionOutcome != null) {
-          return completedFuture(redirect("ok"));
+          return completedFuture(redirect(routes.NlrController.renderOutcome(sessionOutcome.getId())));
         } else {
           long sessionJourneyId = triageSession.getJourneyId();
           long currentJourneyId = journeyDao.getJourneysByJourneyName("MILITARY").get(0).getId();
