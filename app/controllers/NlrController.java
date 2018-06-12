@@ -68,7 +68,7 @@ public class NlrController {
     } else {
       outcomeId = sessionOutcome.getId();
     }
-    return ok(nlrRegisterSuccess.render(outcomeId, resumeCode, OutcomeType.NLR_NOT_FOUND));
+    return ok(nlrRegisterSuccess.render(outcomeId, resumeCode));
   }
 
   public Result registerDecontrolNlr(String sessionId, String stageId) {
@@ -81,7 +81,7 @@ public class NlrController {
     } else {
       outcomeId = sessionOutcome.getId();
     }
-    return ok(nlrRegisterSuccess.render(outcomeId, resumeCode, OutcomeType.NLR_DECONTROL));
+    return ok(nlrRegisterSuccess.render(outcomeId, resumeCode));
   }
 
 }

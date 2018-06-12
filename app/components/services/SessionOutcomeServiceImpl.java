@@ -93,8 +93,10 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(), outcomeType, html.toString());
     sessionOutcomeDao.insert(sessionOutcome);
     String url = routes.NlrController.renderOutcome(id).toString();
-    permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(), userDetailsView.getFullName(), url);
-    permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress, userDetailsView.getFullName(), url, resumeCode, customerView.getCompanyName(), address.getPlainText());
+    permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(),
+        userDetailsView.getFullName(), url);
+    permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress, userDetailsView.getFullName(), url,
+        resumeCode, customerView.getCompanyName(), address.getPlainText());
     return id;
   }
 

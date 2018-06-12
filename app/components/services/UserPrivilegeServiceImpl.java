@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 
 public class UserPrivilegeServiceImpl implements UserPrivilegeService {
 
-  private static final Set<Role> PREPARE_ROLES = EnumSet.of(Role.ADMIN, Role.SUBMITTER, Role.PREPARER);
+  private static final Set<Role> VIEW_OUTCOME_ROLES = EnumSet.of(Role.ADMIN, Role.SUBMITTER, Role.PREPARER);
 
   private final UserServiceClientJwt userServiceClient;
   private final UserServiceClientBasicAuth userServiceClientBasicAuth;
@@ -48,8 +48,8 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
     UserAccountTypeView userAccountTypeView = getUserAccountTypeView(userId);
     UserPrivilegesView userPrivilegesView = getUserPrivilegesView(userId);
     return userAccountTypeView.getAccountType() == AccountType.REGULATOR ||
-        hasSiteRole(userPrivilegesView, sessionOutcome.getSiteId(), PREPARE_ROLES) ||
-        hasCustomerRole(userPrivilegesView, sessionOutcome.getCustomerId(), PREPARE_ROLES);
+        hasSiteRole(userPrivilegesView, sessionOutcome.getSiteId(), VIEW_OUTCOME_ROLES) ||
+        hasCustomerRole(userPrivilegesView, sessionOutcome.getCustomerId(), VIEW_OUTCOME_ROLES);
   }
 
   private boolean hasSiteRole(UserPrivilegesView userPrivilegesView, String siteId, Set<Role> roles) {
