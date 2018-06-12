@@ -120,8 +120,9 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     String url = routes.ViewOutcomeController.renderOutcome(id).toString();
     permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(),
         userDetailsView.getFullName(), url);
-    permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress, userDetailsView.getFullName(), url,
-        resumeCode, customerView.getCompanyName(), address.getPlainText());
+    permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress,
+        userDetailsView.getContactEmailAddress(), userDetailsView.getFullName(), url, resumeCode,
+        customerView.getCompanyName(), address.getPlainText());
     return id;
   }
 
