@@ -129,6 +129,7 @@ GET     /unauthorised    controllers.AuthorisationController.unauthorised()
 GET     /test            controllers.DummyController.test()
 GET     /test/frontend-components/:component controllers.FrontendComponentTestController.test(component)
 
+GET     /view-outcome/:outcomeId          controllers.NlrController.renderOutcome(outcomeId)
 GET     /outcome/notFound/:controlEntryId controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
 POST    /outcome/notFound/:controlEntryId controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
 GET     /outcome/listed/:controlEntryId   controllers.OutcomeController.outcomeListed(controlEntryId, sessionId)
@@ -153,8 +154,6 @@ GET     /cms/dummy/test-journey               controllers.cms.DummyController.cr
 
 GET     /register-nlr/notFound                                      controllers.NlrController.registerNotFoundNlr(sessionId, controlEntryId)
 GET     /register-nlr/decontrol                                     controllers.NlrController.registerDecontrolNlr(sessionId, stageId)
-GET     /generate-nlr-letter/notFound                               controllers.NlrController.generateNotFoundNlrLetter(sessionId, controlEntryId, resumeCode)
-GET     /generate-nlr-letter/decontrol                              controllers.NlrController.generateDecontrolNlrLetter(sessionId, stageId, resumeCode)
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId)
 GET     /modal-content/definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)

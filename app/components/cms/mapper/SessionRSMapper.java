@@ -16,10 +16,8 @@ public class SessionRSMapper implements ResultSetMapper<TriageSession> {
     String id = rsw.getString("id");
     long journeyId = rsw.getLong("journey_id");
     String resumeCode = rsw.getString("resume_code");
-    String outcomeType = rsw.getString("outcome_type");
-    String outcomeHtml = rsw.getString("outcome_html");
     Long lastStageId = rsw.getLong("last_stage_id");
-    return new TriageSession(id, journeyId, resumeCode, outcomeType, outcomeHtml, lastStageId);
+    return new TriageSession(id, journeyId, resumeCode, lastStageId);
   }
 
 }

@@ -23,6 +23,8 @@ import components.cms.dao.JourneyDao;
 import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
 import components.cms.dao.SessionDao;
+import components.cms.dao.SessionOutcomeDao;
+import components.cms.dao.SessionOutcomeDaoImpl;
 import components.cms.dao.SessionStageDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
@@ -68,6 +70,10 @@ import components.services.ProgressViewService;
 import components.services.ProgressViewServiceImpl;
 import components.services.RenderService;
 import components.services.RenderServiceImpl;
+import components.services.SessionOutcomeService;
+import components.services.SessionOutcomeServiceImpl;
+import components.services.UserPrivilegeService;
+import components.services.UserPrivilegeServiceImpl;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
 import journey.ExportJourneyDefinitionBuilder;
@@ -144,6 +150,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(PermissionsService.class).to(PermissionsServiceImpl.class);
     bind(CustomerService.class).to(CustomerServiceImpl.class);
     bind(OgelService.class).to(OgelServiceImpl.class);
+    bind(SessionOutcomeService.class).to(SessionOutcomeServiceImpl.class);
+    bind(UserPrivilegeService.class).to(UserPrivilegeServiceImpl.class);
 
     install(new SamlModule(config));
     install(new CommonGuiceModule(config));
@@ -215,6 +223,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
 
+    bindConstant().annotatedWith(Names.named("ecjuEmailAddress")).to(config.getString("ecjuEmailAddress"));
+
     bind(SummaryService.class).to(SummaryServiceImpl.class);
 
     // CMS dao's
@@ -228,6 +238,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bind(SessionDao.class).to(SessionDaoImpl.class);
     bind(SessionStageDao.class).to(SessionStageDaoImpl.class);
+    bind(SessionOutcomeDao.class).to(SessionOutcomeDaoImpl.class);
 
     requestInjection(this);
   }

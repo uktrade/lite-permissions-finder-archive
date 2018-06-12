@@ -1,10 +1,10 @@
 package controllers;
 
 import com.google.inject.Inject;
+import components.cms.dao.SessionOutcomeDao;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
-import nlr.NlrType;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -17,9 +17,11 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
+import triage.session.SessionOutcome;
 import triage.session.SessionService;
 import utils.PageTypeUtil;
 
