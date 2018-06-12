@@ -13,6 +13,7 @@ import components.services.UserPrivilegeService;
 import org.pac4j.play.java.Secure;
 import play.Logger;
 import play.mvc.Result;
+import play.twirl.api.Html;
 import triage.session.SessionOutcome;
 import triage.session.SessionService;
 
@@ -49,7 +50,7 @@ public class NlrController {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
       if (userPrivilegeService.canViewOutcome(userId, sessionOutcome)) {
         String resumeCode = sessionService.getSessionById(sessionOutcome.getSessionId()).getResumeCode();
-        return ok(nlrOutcome.render(resumeCode, sessionOutcome.getOutcomeHtml()));
+        return ok(nlrOutcome.render(resumeCode, new Html(sessionOutcome.getOutcomeHtml())));
       } else {
         Logger.error("User with userId {} doesn't have privilege to view outcome with outcomeId {} ",
             sessionOutcome.getUserId(), sessionOutcome.getId());

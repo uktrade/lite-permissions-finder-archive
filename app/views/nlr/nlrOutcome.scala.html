@@ -3,10 +3,10 @@
 @import util._
 
 @this(standardPage: standardPage)
-@(resumeCode: String, content: String)
+@(resumeCode: String, content: Html)
 
 @standardPage("NLR Letter", Some(heading("")), twoThirdsColumn = false) {
   @Html("")
 } {
-  @Html(content)
+  @content
 }
