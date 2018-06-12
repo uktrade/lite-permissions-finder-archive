@@ -3,7 +3,7 @@
 @import util._
 
 @this()
-@(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html)
+@(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: String)
 
 <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
 
@@ -171,6 +171,17 @@
 <p>Yours sincerely,</p>
 
 <p class="bold">Export Control Organisation</p>
+
+<hr>
+
+<h2 class="heading-medium">Description of Goods</h2>
+<p>
+  The following is your description of your item.
+</p>
+
+<p>
+  <span class="bold">@description</span>
+</p>
 
 <hr>
 

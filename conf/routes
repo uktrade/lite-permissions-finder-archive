@@ -154,7 +154,9 @@ GET     /cms/dummy/test-journey               controllers.cms.DummyController.cr
 GET     /view-outcome/:outcomeId               controllers.ViewOutcomeController.renderOutcome(outcomeId)
 GET     /save-listed-outcome/:controlEntryId   controllers.ViewOutcomeController.saveListedOutcome(sessionId, controlEntryId)
 GET     /register-nlr/not-found/:controlEntryId controllers.ViewOutcomeController.registerNotFoundNlr(sessionId, controlEntryId)
+POST    /register-nlr/not-found/:controlEntryId controllers.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId)
 GET     /register-nlr/decontrol/:stageId       controllers.ViewOutcomeController.registerDecontrolNlr(sessionId, stageId)
+POST    /register-nlr/decontrol/:stageId       controllers.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId)
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId)
 GET     /modal-content/definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)

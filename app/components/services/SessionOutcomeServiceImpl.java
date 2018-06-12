@@ -86,26 +86,28 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   @Override
-  public String generateNotFoundNlrLetter(String userId, String sessionId, String controlEntryId, String resumeCode) {
+  public String generateNotFoundNlrLetter(String userId, String sessionId, String controlEntryId, String resumeCode,
+                                          String description) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews);
 
-    return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_NOT_FOUND, nlrBreadcrumb);
+    return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_NOT_FOUND, nlrBreadcrumb, description);
   }
 
   @Override
-  public String generateDecontrolNlrLetter(String userId, String sessionId, String stageId, String resumeCode) {
+  public String generateDecontrolNlrLetter(String userId, String sessionId, String stageId, String resumeCode,
+                                           String description) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = decontrolBreadcrumb.render(breadcrumbView, answerViews);
 
-    return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_DECONTROL, nlrBreadcrumb);
+    return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
   }
 
   private String generateLetter(String userId, String sessionId, String resumeCode, OutcomeType outcomeType,
-                                Html nlrBreadcrumb) {
+                                Html nlrBreadcrumb, String description) {
     CustomerView customerView = getCustomerId(userId);
     String customerId = customerView.getCustomerId();
     SiteView siteView = getSite(customerId, userId);
@@ -113,7 +115,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     SiteView.SiteViewAddress address = siteView.getAddress();
     String todayDate = DATE_TIME_FORMATTER.format(LocalDate.now());
 
-    Html html = nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrBreadcrumb);
+    Html html = nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrBreadcrumb, description);
     String id = createOutcomeId();
     SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(), outcomeType, html.toString());
     sessionOutcomeDao.insert(sessionOutcome);
