@@ -31,7 +31,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
     try {
       return userServiceClient.getUserPrivilegeView(userId).toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException("Unable to get userPrivilegesView for userId " + userId);
+      throw new RuntimeException("Unable to get userPrivilegesView for userId " + userId, e);
     }
   }
 
@@ -39,7 +39,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
     try {
       return userServiceClientBasicAuth.getUserAccountTypeView(userId).toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException("Unable to get userAccountTypeView for userId " + userId);
+      throw new RuntimeException("Unable to get userAccountTypeView for userId " + userId, e);
     }
   }
 
