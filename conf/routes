@@ -129,8 +129,8 @@ GET     /unauthorised    controllers.AuthorisationController.unauthorised()
 GET     /test            controllers.DummyController.test()
 GET     /test/frontend-components/:component controllers.FrontendComponentTestController.test(component)
 
-GET     /outcome/notFound/:controlEntryId controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
-POST    /outcome/notFound/:controlEntryId controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
+GET     /outcome/not-found/:controlEntryId controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
+POST    /outcome/not-found/:controlEntryId controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
 GET     /outcome/listed/:controlEntryId   controllers.OutcomeController.outcomeListed(controlEntryId, sessionId)
 POST    /outcome/listed/:controlEntryId   controllers.OutcomeController.handleOutcomeListedSubmit(controlEntryId, sessionId)
 GET     /outcome/decontrol/:stageId controllers.OutcomeController.outcomeDecontrol(stageId, sessionId)
@@ -153,7 +153,7 @@ GET     /cms/dummy/test-journey               controllers.cms.DummyController.cr
 
 GET     /view-outcome/:outcomeId               controllers.ViewOutcomeController.renderOutcome(outcomeId)
 GET     /save-listed-outcome/:controlEntryId   controllers.ViewOutcomeController.saveListedOutcome(sessionId, controlEntryId)
-GET     /register-nlr/notFound/:controlEntryId controllers.ViewOutcomeController.registerNotFoundNlr(sessionId, controlEntryId)
+GET     /register-nlr/not-found/:controlEntryId controllers.ViewOutcomeController.registerNotFoundNlr(sessionId, controlEntryId)
 GET     /register-nlr/decontrol/:stageId       controllers.ViewOutcomeController.registerDecontrolNlr(sessionId, stageId)
 
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId)
