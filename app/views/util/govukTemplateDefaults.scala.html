@@ -14,14 +14,7 @@
 }
 
 @bodyEnd = {
-
-  <script src="@routes.Assets.versioned("javascripts/ogel-reg.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.versioned("javascripts/spin.min.js")"></script>
   <script type="text/javascript" src="@routes.JavaScriptRoutesController.javascriptRoutes"></script>
-
-  @* // TODO RE-ENABLE JS ROUTES HERE
-    <script src="@controllers.routes.JavaScriptRoutesController.jsRoutes" type="text/javascript"></script>
-  *@
   <script src="@controllers.routes.Assets.versioned("javascripts/lite-permissions-finder.js")" type="text/javascript"></script>
 }
 
