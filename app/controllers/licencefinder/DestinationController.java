@@ -31,7 +31,7 @@ import javax.inject.Named;
 public class DestinationController extends Controller {
 
   private final FormFactory formFactory;
-  private final LicenceFinderDao dao;
+  private final LicenceFinderDao licenceFinderDao;
   private final CountryProvider countryProvider;
   private final ContextParamManager contextParam;
   private final views.html.licencefinder.destination destination;
@@ -45,35 +45,36 @@ public class DestinationController extends Controller {
   private static final String UNITED_KINGDOM = "CTRY0";
 
   @Inject
-  public DestinationController(FormFactory formFactory, LicenceFinderDao dao,
+  public DestinationController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
                                @Named("countryProviderExport") CountryProvider countryProvider,
                                ContextParamManager contextParam, views.html.licencefinder.destination destination) {
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.licenceFinderDao = licenceFinderDao;
     this.countryProvider = countryProvider;
     this.contextParam = contextParam;
     this.destination = destination;
   }
 
-
-  /************************************************************************************************
-   * 'Destination' page
-   *******************************************************************************************/
+  /**
+   * renderDestinationForm
+   */
   public CompletionStage<Result> renderDestinationForm() {
     DestinationForm form = new DestinationForm();
-    form.destinationCountry = dao.getDestinationCountry();
-    form.firstConsigneeCountry = dao.getFirstConsigneeCountry();
-    dao.getMultipleCountries().ifPresent(aBoolean -> form.multipleCountries = aBoolean);
+    form.destinationCountry = licenceFinderDao.getDestinationCountry();
+    form.firstConsigneeCountry = licenceFinderDao.getFirstConsigneeCountry();
+    licenceFinderDao.getMultipleCountries().ifPresent(aBoolean -> form.multipleCountries = aBoolean);
     return completedFuture(ok(destination.render(formFactory.form(DestinationForm.class).fill(form), getCountries(), getFieldOrder())));
   }
 
+  /**
+   * handleDestinationSubmit
+   */
   public CompletionStage<Result> handleDestinationSubmit() {
 
     Form<DestinationForm> destinationForm = formFactory.form(DestinationForm.class).bindFromRequest();
 
     DestinationForm form = destinationForm.get();
     List<CountryView> countries = getCountries();
-
 
     if (form.multipleCountries != null && form.multipleCountries) {
       if (form.firstConsigneeCountry == null || form.firstConsigneeCountry.isEmpty()) {
@@ -96,9 +97,9 @@ public class DestinationController extends Controller {
       throw new FormStateException("Invalid value for " + FIRST_CONSIGNEE_COUNTRY + " \"" + firstCountry + "\"");
     }
 
-    dao.saveFirstConsigneeCountry(firstCountry);
-    dao.saveMultipleCountries(form.multipleCountries);
-    dao.saveDestinationCountry(form.destinationCountry);
+    licenceFinderDao.saveFirstConsigneeCountry(firstCountry);
+    licenceFinderDao.saveMultipleCountries(form.multipleCountries);
+    licenceFinderDao.saveDestinationCountry(form.destinationCountry);
 
     return contextParam.addParamsAndRedirect(routes.QuestionsController.renderQuestionsForm());
   }
@@ -128,20 +129,15 @@ public class DestinationController extends Controller {
     public String firstConsigneeCountry;
 
     public ValidationError validate() {
-
       if (multipleCountries != null && multipleCountries) {
         if (firstConsigneeCountry == null || firstConsigneeCountry.isEmpty()) {
-
           // Could not get to work, got binding error here - validation code is in controller method for now
           // TODO work out why this was happening
           //return new ValidationError("firstConsigneeCountry", "Enter this text");
         }
       }
-
       return null;
     }
-
   }
-
 }
 

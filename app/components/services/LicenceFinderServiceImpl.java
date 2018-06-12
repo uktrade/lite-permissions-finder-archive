@@ -7,7 +7,7 @@ import components.common.persistence.StatelessRedisDao;
 import components.persistence.LicenceFinderDao;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import controllers.licencefinder.QuestionsController;
-import jodd.util.ThreadUtil;
+import exceptions.ServiceException;
 import models.OgelActivityType;
 import models.persistence.RegisterLicence;
 import models.view.licencefinder.OgelView;
@@ -94,35 +94,15 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   /**
    * Attempts to read callback reference set number times/period
    */
-  public Optional<String> getRegistrationReference1(String transactionId) {
-    int count = 0;
-    while(count < 5) {
-      Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
-      if (optRegisterLicence.isPresent()) {
-        RegisterLicence registerLicence = optRegisterLicence.get();
-        String ref = registerLicence.getRegistrationReference();
-        if (!StringUtils.isBlank(ref)) {
-          return Optional.of(ref);
-        }
-      }
-      ThreadUtil.sleep(1500);
-      count++;
-    }
-    return Optional.empty();
-  }
-
-  /**
-   * Attempts to read callback reference set number times/period
-   */
   public Optional<String> getRegistrationReference(String transactionId) {
-    /*
+    //ThreadUtil.sleep(1500); // pause for a moment
     Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
     if (optRegisterLicence.isPresent()) {
       String ref = optRegisterLicence.get().getRegistrationReference();
       if (!StringUtils.isBlank(ref)) {
         return Optional.of(ref);
       }
-    }*/
+    }
     return Optional.empty();
   }
 
@@ -136,6 +116,11 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     String ogelId = licenceFinderDao.getOgelId();
     String callbackUrl = permissionsFinderUrl + "/licencefinder/registration-callback?transactionId=" + transactionId;
 
+
+    if(StringUtils.isBlank(customerId) || StringUtils.isBlank(siteId)) {
+      throw new ServiceException("Customer and/or Site could not be determined - a user can only have one associated Customer and only one associated Site");
+    }
+
     RegisterLicence registerLicence = new RegisterLicence();
     registerLicence.setTransactionId(transactionId);
     registerLicence.setUserId(userId);
@@ -144,26 +129,19 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
 
     return permissionsService.registerOgel(userId, customerId, siteId, ogelId, callbackUrl)
         .thenAcceptAsync(response -> registrationResponseReceived(transactionId, response, registerLicence));
-
   }
 
   /**
    * handleCallback
    */
   public void handleCallback(String transactionId, CallbackView callbackView) {
-
-    String registrationReference = callbackView.getRegistrationReference();
-
-    Logger.info("handleCallback: " + transactionId);
-    Logger.info("CallbackView: " + callbackView.getRequestId());
-    Logger.info("RegistrationReference: " + registrationReference);
-
+    String regRef = callbackView.getRegistrationReference();
     Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
     if(optRegisterLicence.isPresent()) {
       RegisterLicence registerLicence = optRegisterLicence.get();
-      registerLicence.setRegistrationReference(registrationReference);
+      registerLicence.setRegistrationReference(regRef);
       saveRegisterLicence(registerLicence);
-      Logger.info("RegisterLicence updated with registrationReference: " + registrationReference);
+      Logger.info("RegisterLicence updated with registrationReference: " + regRef);
     }
   }
 
@@ -176,12 +154,10 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     if(optCustomerId.isPresent()) {
       String customerId = optCustomerId.get();
       licenceFinderDao.saveCustomerId(customerId); // persist customerId
-      //Logger.info("CustomerId persisted: " + customerId);
       Optional<String> optSiteId = getSiteId(userId, optCustomerId.get());
       if(optSiteId.isPresent()) {
         String siteId = optSiteId.get();
         licenceFinderDao.saveSiteId(siteId); // persist siteId
-        //Logger.info("SiteId persisted: " + siteId);
       } else {
         Logger.warn("Not a single Site associated with user/customer: " + userId + "/" + customerId);
       }
@@ -306,8 +282,8 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     if (optCustomers.isPresent()) {
       List<CustomerView> customers = optCustomers.get();
 
-      // Check for single customer only TODO when we have single Customer user
-      if (customers.size() > 0) {
+      // Check for single customer only TODO change when requirement changes
+      if (customers.size() == 1) {
         return Optional.of(customers.get(0).getCustomerId());
       } else {
         Logger.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
@@ -323,8 +299,8 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     Optional<List<SiteView>> optSites = customerService.getSitesByCustomerIdUserId(customerId, userId);
     if (optSites.isPresent()) {
       List<SiteView> sites = optSites.get();
-      // Check for single site only TODO when we have single Site user
-      if (sites.size() > 0) {
+      // Check for single site only TODO change when requirement changes
+      if (sites.size() == 1) {
         return Optional.of(sites.get(0).getSiteId());
       } else {
         Logger.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());

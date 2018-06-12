@@ -13,7 +13,7 @@
     <span>showLongRunningPrompt: @showLongRunningPrompt</span>
     @contextFormParams()
     <h2 id="pleaseWaitHeading" class="heading-medium @if(showLongRunningPrompt) {hidden}">
-      Please wait whilst we process your OGEL registration request ...
+      Please wait whilst we process your OGEL registration request. This may take a short while to complete...
     </h2>
 
     <div id="longRegistrationMessage" class="heading-medium @if(!showLongRunningPrompt) {hidden}">
@@ -25,7 +25,7 @@
     </div>
 
   </form>
-  <script type="text/javascript" src="@routes.JavaScriptRoutesController.javascriptRoutes"></script>
+
 
   <script type="text/javascript">
     $(function() {

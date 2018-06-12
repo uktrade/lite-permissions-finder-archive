@@ -9,7 +9,7 @@ public class JavaScriptRoutesController extends Controller {
   public Result javascriptRoutes() {
     return ok(
         JavaScriptReverseRouter.create("jsRoutes",
-            routes.javascript.AjaxRegisterOgelController.pollStatus()
+            controllers.routes.javascript.LicenceFinderPollController.pollStatus()
         )
     ).as("text/javascript");
   }

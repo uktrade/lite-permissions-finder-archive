@@ -22,35 +22,38 @@ import java.util.concurrent.CompletionStage;
 public class QuestionsController extends Controller {
 
   private final FormFactory formFactory;
-  private final LicenceFinderDao dao;
+  private final LicenceFinderDao licenceFinderDao;
   private final LicenceFinderService licenceFinderService;
   private final ContextParamManager contextParam;
   private final views.html.licencefinder.questions questions;
 
   @Inject
-  public QuestionsController(FormFactory formFactory, LicenceFinderDao dao, LicenceFinderService licenceFinderService,
+  public QuestionsController(FormFactory formFactory, LicenceFinderDao licenceFinderDao, LicenceFinderService licenceFinderService,
                              ContextParamManager contextParam, views.html.licencefinder.questions questions) {
     this.formFactory = formFactory;
-    this.dao = dao;
+    this.licenceFinderDao = licenceFinderDao;
     this.licenceFinderService = licenceFinderService;
     this.contextParam = contextParam;
     this.questions = questions;
   }
 
-  /************************************************************************************************
-   * 'Questions' page
-   *******************************************************************************************/
+  /**
+   * renderQuestionsForm
+   */
   public CompletionStage<Result> renderQuestionsForm() {
-    Optional<QuestionsForm> optForm = dao.getQuestionsForm();
+    Optional<QuestionsForm> optForm = licenceFinderDao.getQuestionsForm();
     return completedFuture(ok(questions.render(formFactory.form(QuestionsForm.class).fill(optForm.orElseGet(QuestionsForm::new)))));
   }
 
+  /**
+   * handleQuestionsSubmit
+   */
   public CompletionStage<Result> handleQuestionsSubmit() {
     Form<QuestionsForm> form = formFactory.form(QuestionsForm.class).bindFromRequest();
     if (form.hasErrors()) {
       return completedFuture(ok(questions.render(form)));
     } else {
-      dao.saveQuestionsForm(form.get());
+      licenceFinderDao.saveQuestionsForm(form.get());
 
       // Take this opportunity in flow to save users CustomerId and SiteId
       licenceFinderService.persistCustomerAndSiteData();
@@ -70,6 +73,5 @@ public class QuestionsController extends Controller {
     public Boolean beforeOrLess;
 
   }
-
 }
 

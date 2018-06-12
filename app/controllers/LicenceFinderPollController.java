@@ -12,15 +12,13 @@ import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.With;
 
-import java.util.Optional;
-
 @With(CommonContextAction.class)
-public class AjaxRegisterOgelController {
+public class LicenceFinderPollController {
 
   private final LicenceFinderService licenceFinderService;
 
   @Inject
-  public AjaxRegisterOgelController(LicenceFinderService licenceFinderService) {
+  public LicenceFinderPollController(LicenceFinderService licenceFinderService) {
     this.licenceFinderService = licenceFinderService;
   }
 
@@ -30,18 +28,11 @@ public class AjaxRegisterOgelController {
   public Result pollStatus(String transactionId) {
     ObjectNode json = Json.newObject();
     try {
-      Optional<String> regRef = licenceFinderService.getRegistrationReference(transactionId);
-      if (regRef.isPresent()) {
-        json.put("complete", true);
-      } else {
-        json.put("complete", false);
-      }
+      json.put("complete", licenceFinderService.getRegistrationReference(transactionId).isPresent());
     } catch (Exception e) {
       Logger.error("Error reading registration submission status for " + transactionId, e);
       json.put("complete", false);
     }
-    Logger.info("pollStatus: " + json);
     return ok(json);
   }
-
 }

@@ -6,6 +6,7 @@ import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
+import play.Logger;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 
@@ -34,6 +35,7 @@ public class OgelConditionsServiceClient {
   }
 
   public CompletionStage<OgelConditionsServiceResult> get(String ogelId, String controlCode) {
+    Logger.info("ogelId: " + ogelId);
     return wsClient.url(webServiceUrl + "/" + UrlEscapers.urlFragmentEscaper().escape(ogelId) + "/" +
         UrlEscapers.urlFragmentEscaper().escape(controlCode))
         .setAuth(credentials)

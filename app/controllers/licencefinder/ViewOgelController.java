@@ -73,7 +73,6 @@ public class ViewOgelController {
   /**
    * Private methods
    */
-
   private LicenceInfo combine(LicenceInfo info, CustomerView customer, SiteView site) {
     if (info.hasError()) {
       return info;
