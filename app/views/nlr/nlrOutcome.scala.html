@@ -1,0 +1,12 @@
+@import uk.gov.bis.lite.user.api.view.UserDetailsView
+@import uk.gov.bis.lite.customer.api.view.SiteView
+@import util._
+
+@this(standardPage: standardPage)
+@(resumeCode: String, content: String)
+
+@standardPage("NLR Letter", Some(heading("")), twoThirdsColumn = false) {
+  @Html("")
+} {
+  @Html(content)
+}
