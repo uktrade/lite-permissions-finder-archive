@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import components.services.RenderService;
-import nlr.NlrType;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -72,7 +71,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderItemNotFound(form, controlEntryConfig, sessionId);
     } else {
-      return redirect(routes.NlrController.registerNotFoundNlr(sessionId, controlEntryId));
+      return redirect(routes.ViewOutcomeController.registerNotFoundNlr(sessionId, controlEntryId));
     }
   }
 
@@ -95,7 +94,7 @@ public class OutcomeController extends Controller {
     if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
       return renderOutcomeListed(form, controlEntryConfig, sessionId);
     } else {
-      return redirect(controllers.licencefinder.routes.TradeController.entry(controlEntryConfig.getControlCode()));
+      return redirect(routes.ViewOutcomeController.saveListedOutcome(sessionId, controlEntryId));
     }
   }
 
@@ -130,7 +129,7 @@ public class OutcomeController extends Controller {
         if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
           return renderOutcomeDecontrol(form, stageId, sessionId, answers);
         } else {
-          return redirect(routes.NlrController.registerDecontrolNlr(sessionId, stageId));
+          return redirect(routes.ViewOutcomeController.registerDecontrolNlr(sessionId, stageId));
         }
       }
     }

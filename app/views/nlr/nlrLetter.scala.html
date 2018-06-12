@@ -2,187 +2,181 @@
 @import uk.gov.bis.lite.customer.api.view.SiteView
 @import util._
 
-@this(standardPage: standardPage)
+@this()
 @(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html)
 
-@standardPage("NLR Letter", Some(heading("")), twoThirdsColumn = false) {
-  @Html("")
-} {
+<link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
 
-  <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
+<p class="js-only" id="print-letter">
+  <a href="javascript:window.print();">Print this page</a>
+</p>
 
-  <p class="js-only" id="print-letter">
-    <a href="javascript:window.print();">Print this page</a>
-  </p>
-
-  <div class="grid-row">
-    <div class="column-two-thirds">
-      <p>
-        Reference Code: @resumeCode
-      </p>
-      <p>
-        @userDetailsView.getTitle @userDetailsView.getFullName<br>
-      @Html(address.getPlainText.replace("\n", "<br>"))
-      </p>
-      <p>
-        <span class="bold">Tel<span class="visually-hidden">ephone</span></span> @userDetailsView.getContactPhoneNumber<br>
-        <span class="bold">Email</span> <a href="mailto:@userDetailsView.getContactEmailAddress">@userDetailsView.getContactEmailAddress</a>
-      </p>
-      <p>
-        <span class="bold">Date</span> @date
-      </p>
-    </div>
-    <div class="column-one-third">
-      <div class="dit-logo">
-        <img src="@controllers.routes.Assets.versioned("images/dit-crest-38px.png")" srcset="@controllers.routes.Assets.versioned("images/dit-crest-38px.png") 1x, @controllers.routes.Assets.versioned("images/dit-crest-38px-2x.png") 2x" alt="">
-        <span>
-          Department for<br>
-          International Trade
-        </span>
-      </div>
-
-      <p>
-        Export Control Organisation<br>
-        2nd floor<br>
-        3 Whitehall Place<br>
-        London<br>
-        SW1A 2AW
-      </p>
-
-      <p>
-        <span class="bold">Tel<span class="visually-hidden">ephone</span></span> +44 (0)20 7215 4594<br>
-        <span class="bold">Email</span> <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>
-      </p>
-    </div>
+<div class="grid-row">
+  <div class="column-two-thirds">
+    <p>
+      Reference Code: @resumeCode
+    </p>
+    <p>
+      @userDetailsView.getTitle @userDetailsView.getFullName<br>
+    @Html(address.getPlainText.replace("\n", "<br>"))
+    </p>
+    <p>
+      <span class="bold">Tel<span class="visually-hidden">ephone</span></span> @userDetailsView.getContactPhoneNumber<br>
+      <span class="bold">Email</span> <a href="mailto:@userDetailsView.getContactEmailAddress">@userDetailsView.getContactEmailAddress</a>
+    </p>
+    <p>
+      <span class="bold">Date</span> @date
+    </p>
   </div>
+  <div class="column-one-third">
+    <div class="dit-logo">
+      <img src="@controllers.routes.Assets.versioned("images/dit-crest-38px.png")" srcset="@controllers.routes.Assets.versioned("images/dit-crest-38px.png") 1x, @controllers.routes.Assets.versioned("images/dit-crest-38px-2x.png") 2x" alt="">
+      <span>
+        Department for<br>
+        International Trade
+      </span>
+    </div>
+
+    <p>
+      Export Control Organisation<br>
+      2nd floor<br>
+      3 Whitehall Place<br>
+      London<br>
+      SW1A 2AW
+    </p>
+
+    <p>
+      <span class="bold">Tel<span class="visually-hidden">ephone</span></span> +44 (0)20 7215 4594<br>
+      <span class="bold">Email</span> <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>
+    </p>
+  </div>
+</div>
 
 
-  <p>
-    Dear @userDetailsView.getTitle @userDetailsView.getLastName
-  </p>
+<p>
+  Dear @userDetailsView.getTitle @userDetailsView.getLastName
+</p>
 
-  <p>
-    Based on the choices you made on the online tool, the item does not currently require an export licence.
-  </p>
+<p>
+  Based on the choices you made on the online tool, the item does not currently require an export licence.
+</p>
 
-  <p>
-    This assessment is made taking into account the choices you made on the online tool and the legislation in force at
-    the date of this letter.
-  </p>
+<p>
+  This assessment is made taking into account the choices you made on the online tool and the legislation in force at
+  the date of this letter.
+</p>
 
-  <p>
-    However this could change if, before the export takes place, there are changes to the legislation (including
-    country sanctions) or information becomes available, either to you or to the Export Control Organisation (ECO),
-    which suggests that an end-use control may be applicable. Therefore ECO cannot fully guarantee that your export can
-    proceed.
-  </p>
+<p>
+  However this could change if, before the export takes place, there are changes to the legislation (including
+  country sanctions) or information becomes available, either to you or to the Export Control Organisation (ECO),
+  which suggests that an end-use control may be applicable. Therefore ECO cannot fully guarantee that your export can
+  proceed.
+</p>
 
-  <p>
-    In addition, ECO cannot comment on any action Her Majesty's Revenue &amp; Customs (HMRC) may wish to take at the point
-    of export, since HMRC have a legal obligation to verify export declarations and undertake examination of either
-    documents or goods where there are doubts about whether a prohibition or restriction may apply.
-  </p>
+<p>
+  In addition, ECO cannot comment on any action Her Majesty's Revenue &amp; Customs (HMRC) may wish to take at the point
+  of export, since HMRC have a legal obligation to verify export declarations and undertake examination of either
+  documents or goods where there are doubts about whether a prohibition or restriction may apply.
+</p>
 
-  <p>
-    Moreover ECO cannot comment on any action that the Customs Authority in another EU Member State may wish to take at
-    the point of export for goods located outside of the UK.
-  </p>
+<p>
+  Moreover ECO cannot comment on any action that the Customs Authority in another EU Member State may wish to take at
+  the point of export for goods located outside of the UK.
+</p>
 
-  <p>
-    We therefore advise that if, at any time from the date of this letter you have grounds for suspecting the items in
-    the Schedule are intended for Weapons of Mass Destruction (WMD) purposes (as further explained below) and/or if
-    there is a considerable delay between the date of this letter and the date of export, then you should make an
-    End-User Advice Enquiry on SPIRE for an up-to-date re-assessment of the end-users for which the export is intended.
-  </p>
+<p>
+  We therefore advise that if, at any time from the date of this letter you have grounds for suspecting the items in
+  the Schedule are intended for Weapons of Mass Destruction (WMD) purposes (as further explained below) and/or if
+  there is a considerable delay between the date of this letter and the date of export, then you should make an
+  End-User Advice Enquiry on SPIRE for an up-to-date re-assessment of the end-users for which the export is intended.
+</p>
 
-  <p>
-    Please note that ECO will not offer compensation for any loss of business as a result of exercising its statutory
-    functions to make export licence decisions. We would only consider cases where it can be shown that there has been
-    negligence or maladministration by Her Majesty's Government (HMG).
-  </p>
+<p>
+  Please note that ECO will not offer compensation for any loss of business as a result of exercising its statutory
+  functions to make export licence decisions. We would only consider cases where it can be shown that there has been
+  negligence or maladministration by Her Majesty's Government (HMG).
+</p>
 
-  <p>
-    You are strongly encouraged to carefully consider this letter and regularly check the information on our web pages
-    about current export control requirements, details of which are set out in the following paragraphs.
-  </p>
+<p>
+  You are strongly encouraged to carefully consider this letter and regularly check the information on our web pages
+  about current export control requirements, details of which are set out in the following paragraphs.
+</p>
 
-  <h2 class="heading-medium">Sanctions</h2>
-  <p>
-    For general advice on current embargoes and restrictions (including information on embargoed destinations and scope
-    of the sanctions), see:
-    <a href="https://www.gov.uk/sanctions-embargoes-and-restrictions" rel="noopener" target="_blank">https://www.gov.uk/sanctions-embargoes-and-restrictions</a>
-  </p>
+<h2 class="heading-medium">Sanctions</h2>
+<p>
+  For general advice on current embargoes and restrictions (including information on embargoed destinations and scope
+  of the sanctions), see:
+  <a href="https://www.gov.uk/sanctions-embargoes-and-restrictions" rel="noopener" target="_blank">https://www.gov.uk/sanctions-embargoes-and-restrictions</a>
+</p>
 
-  <h2 class="heading-medium">End-Use Controls</h2>
-  <p>
-    You will also need to be aware of the end-use controls and how they may apply to the items you intend to export.
-    For information and guidance on the operation of the WMD and Military End-Use Controls, and an explanation of the
-    legal responsibilities of exporters under those controls, see:
-    <a href="https://www.gov.uk/guidance/export-military-or-dual-use-goods-services-or-technology-special-rules" rel="noopener" target="_blank">https://www.gov.uk/guidance/export-military-or-dual-use-goods-services-or-technology-special-rules</a> and
-    <a href="https://www.gov.uk/military-end-use-control-guidance-notes" rel="noopener" target="_blank">https://www.gov.uk/military-end-use-control-guidance-notes</a>
-  </p>
+<h2 class="heading-medium">End-Use Controls</h2>
+<p>
+  You will also need to be aware of the end-use controls and how they may apply to the items you intend to export.
+  For information and guidance on the operation of the WMD and Military End-Use Controls, and an explanation of the
+  legal responsibilities of exporters under those controls, see:
+  <a href="https://www.gov.uk/guidance/export-military-or-dual-use-goods-services-or-technology-special-rules" rel="noopener" target="_blank">https://www.gov.uk/guidance/export-military-or-dual-use-goods-services-or-technology-special-rules</a> and
+  <a href="https://www.gov.uk/military-end-use-control-guidance-notes" rel="noopener" target="_blank">https://www.gov.uk/military-end-use-control-guidance-notes</a>
+</p>
 
-  <p>
-    As explained in the guidance, if now, or at any time in the future, you become aware or have any grounds for
-    suspecting that the items you wish to export might be used in any way in connection with nuclear, chemical or
-    biological weapons, or missiles to deliver them, as set out in Article 4 of Council Regulation (EC) No 428/2009, as
-    amended, and/or Articles 6, 7 and 8 of the Export Control Order 2008 (WMD purposes), then you should tell us of the
-    circumstances and apply for a licence.
-  </p>
+<p>
+  As explained in the guidance, if now, or at any time in the future, you become aware or have any grounds for
+  suspecting that the items you wish to export might be used in any way in connection with nuclear, chemical or
+  biological weapons, or missiles to deliver them, as set out in Article 4 of Council Regulation (EC) No 428/2009, as
+  amended, and/or Articles 6, 7 and 8 of the Export Control Order 2008 (WMD purposes), then you should tell us of the
+  circumstances and apply for a licence.
+</p>
 
-  <h2 class="heading-medium">Restrictions not operated by the Export Control Organisation</h2>
-  <p>
-    This application has not been assessed against other restrictions on exports (for example on antique goods or
-    pharmaceutical products) not administered by ECO. For further details of these restrictions, please see:
-    <a href="https://www.gov.uk/starting-to-export" rel="noopener" target="_blank">https://www.gov.uk/starting-to-export</a>
-  </p>
+<h2 class="heading-medium">Restrictions not operated by the Export Control Organisation</h2>
+<p>
+  This application has not been assessed against other restrictions on exports (for example on antique goods or
+  pharmaceutical products) not administered by ECO. For further details of these restrictions, please see:
+  <a href="https://www.gov.uk/starting-to-export" rel="noopener" target="_blank">https://www.gov.uk/starting-to-export</a>
+</p>
 
-  <p>
-    In addition you should be aware that there are significant restrictions on the transfer of funds and making economic
-    resources available (including the supply of goods) to persons, entities or bodies which are listed in the EU
-    sanctions legislation in respect of countries subject to UN or EU sanctions. Up-to-date details of these can be found
-    in the Notices issued by HM Treasury which are posted in the web-link below. In addition, the UK financial sanctions
-    against embargoed destinations are regularly reviewed and tightened by means of legislation issued by HM Treasury.
-    These may include prohibitions on all financial transactions and business relationships between UK financial and
-    credit institutions and banks incorporated in countries which are subject to sanctions. Whilst this legislation
-    affects financial and credit institutions and does not directly restrict exports, it could make it harder for you to
-    trade with the relevant embargoed destination/s, as your bank may not be able to handle payments from or to banks in
-    the countries subject to these financial restrictions.
-  </p>
+<p>
+  In addition you should be aware that there are significant restrictions on the transfer of funds and making economic
+  resources available (including the supply of goods) to persons, entities or bodies which are listed in the EU
+  sanctions legislation in respect of countries subject to UN or EU sanctions. Up-to-date details of these can be found
+  in the Notices issued by HM Treasury which are posted in the web-link below. In addition, the UK financial sanctions
+  against embargoed destinations are regularly reviewed and tightened by means of legislation issued by HM Treasury.
+  These may include prohibitions on all financial transactions and business relationships between UK financial and
+  credit institutions and banks incorporated in countries which are subject to sanctions. Whilst this legislation
+  affects financial and credit institutions and does not directly restrict exports, it could make it harder for you to
+  trade with the relevant embargoed destination/s, as your bank may not be able to handle payments from or to banks in
+  the countries subject to these financial restrictions.
+</p>
 
-  <p>
-    Full details on the financial restrictions can be found on HMT's Asset Freezing Unit webpage:
-    <a href="http://www.hm-treasury.gov.uk/fin_sanctions_index.htm" rel="noopener" target="_blank">http://www.hm-treasury.gov.uk/fin_sanctions_index.htm</a>
-  </p>
+<p>
+  Full details on the financial restrictions can be found on HM Treasury's 'Who is subject to financial sanctions in the UK?' page:
+  <a href="https://www.gov.uk/government/publications/financial-sanctions-consolidated-list-of-targets" rel="noopener" target="_blank">https://www.gov.uk/government/publications/financial-sanctions-consolidated-list-of-targets</a>
+</p>
 
-  <h2 class="heading-medium">Where to find further information</h2>
-  <p>
-    It is the responsibility of exporters to consult the current export control legislation, familiarise themselves
-    with export controls and make their own evaluation of the need for export licences.
-  </p>
+<h2 class="heading-medium">Where to find further information</h2>
+<p>
+  It is the responsibility of exporters to consult the current export control legislation, familiarise themselves
+  with export controls and make their own evaluation of the need for export licences.
+</p>
 
-  <p>
-    For general information on strategic export controls see:
-    <a href="https://www.gov.uk/beginners-guide-to-export-controls" rel="noopener" target="_blank">https://www.gov.uk/beginners-guide-to-export-controls</a>
-  </p>
+<p>
+  For general information on strategic export controls see:
+  <a href="https://www.gov.uk/beginners-guide-to-export-controls" rel="noopener" target="_blank">https://www.gov.uk/beginners-guide-to-export-controls</a>
+</p>
 
-  <p>
-    Finally, if you require further advice regarding the measures referred to in this letter, including how any
-    relevant export control legislation may apply to your particular case, we recommend that you seek independent legal
-    advice.
-  </p>
+<p>
+  Finally, if you require further advice regarding the measures referred to in this letter, including how any
+  relevant export control legislation may apply to your particular case, we recommend that you seek independent legal
+  advice.
+</p>
 
-  <p>Yours sincerely,</p>
+<p>Yours sincerely,</p>
 
-  <p class="bold">Export Control Organisation</p>
+<p class="bold">Export Control Organisation</p>
 
-  <hr>
+<hr>
 
-  <h2 class="heading-medium">Schedule of Goods</h2>
-  <p>
-    The following is your assessment of your item against the UK Strategic Export Control Lists.
-  </p>
-  
-  @nlrBreadcrumb
+<h2 class="heading-medium">Schedule of Goods</h2>
+<p>
+  The following is your assessment of your item against the UK Strategic Export Control Lists.
+</p>
 
-}
+@nlrBreadcrumb

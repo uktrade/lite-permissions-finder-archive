@@ -37,7 +37,7 @@ public class SessionServiceImpl implements SessionService {
     String sessionId = UUID.randomUUID().toString();
     long journeyId = journeyDao.getJourneysByJourneyName("MILITARY").get(0).getId();
     String resumeCode = generateResumeCode();
-    TriageSession triageSession = new TriageSession(sessionId, journeyId, resumeCode, null, null, null);
+    TriageSession triageSession = new TriageSession(sessionId, journeyId, resumeCode, null);
     sessionDao.insert(triageSession);
     return triageSession;
   }

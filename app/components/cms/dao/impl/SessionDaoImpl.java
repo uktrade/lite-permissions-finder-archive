@@ -20,8 +20,6 @@ public class SessionDaoImpl implements SessionDao {
     sessionJDBIDao.insert(triageSession.getId(),
         triageSession.getJourneyId(),
         triageSession.getResumeCode(),
-        triageSession.getOutcomeType(),
-        triageSession.getOutcomeHtml(),
         triageSession.getLastStageId());
   }
 
