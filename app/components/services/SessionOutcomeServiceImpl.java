@@ -10,6 +10,7 @@ import models.enums.OutcomeType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
+import models.view.SubAnswerView;
 import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
@@ -41,7 +42,9 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   private final JourneyConfigService journeyConfigService;
   private final SessionOutcomeDao sessionOutcomeDao;
   private final PermissionsFinderNotificationClient permissionsFinderNotificationClient;
+  private final RenderService renderService;
   private final views.html.nlr.nlrLetter nlrLetter;
+  private final views.html.triage.listedOutcomeJourney listedOutcomeJourney;
 
   @Inject
   public SessionOutcomeServiceImpl(@Named("ecjuEmailAddress") String ecjuEmailAddress, UserServiceClientJwt userService,
@@ -49,7 +52,8 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
                                    AnswerViewService answerViewService, JourneyConfigService journeyConfigService,
                                    SessionOutcomeDao sessionOutcomeDao,
                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient,
-                                   views.html.nlr.nlrLetter nlrLetter) {
+                                   RenderService renderService, views.html.nlr.nlrLetter nlrLetter,
+                                   views.html.triage.listedOutcomeJourney listedOutcomeJourney) {
     this.ecjuEmailAddress = ecjuEmailAddress;
     this.userService = userService;
     this.customerService = customerService;
@@ -58,7 +62,27 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     this.journeyConfigService = journeyConfigService;
     this.sessionOutcomeDao = sessionOutcomeDao;
     this.permissionsFinderNotificationClient = permissionsFinderNotificationClient;
+    this.renderService = renderService;
     this.nlrLetter = nlrLetter;
+    this.listedOutcomeJourney = listedOutcomeJourney;
+  }
+
+  @Override
+  public void generateItemListedOutcome(String userId, String sessionId, String controlEntryId) {
+    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
+    String controlCode = controlEntryConfig.getControlCode();
+    String description = renderService.getFullDescription(controlEntryConfig, HtmlRenderOption.OMIT_LINKS);
+    List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig);
+    Html html = listedOutcomeJourney.render(breadcrumbViews, controlCode, description, subAnswerViews);
+
+    CustomerView customerView = getCustomerId(userId);
+    String customerId = customerView.getCustomerId();
+    SiteView siteView = getSite(customerId, userId);
+    String id = createOutcomeId();
+    SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(),
+        OutcomeType.CONTROL_ENTRY_FOUND, html.toString());
+    sessionOutcomeDao.insert(sessionOutcome);
   }
 
   @Override
@@ -93,7 +117,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     String id = createOutcomeId();
     SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(), outcomeType, html.toString());
     sessionOutcomeDao.insert(sessionOutcome);
-    String url = routes.NlrController.renderOutcome(id).toString();
+    String url = routes.ViewOutcomeController.renderOutcome(id).toString();
     permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(),
         userDetailsView.getFullName(), url);
     permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress, userDetailsView.getFullName(), url,
