@@ -15,6 +15,7 @@ import models.cms.enums.StageAnswerOutcomeType;
 import triage.cache.JourneyConfigFactory;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JourneyConfigServiceImpl implements JourneyConfigService {
@@ -120,6 +121,14 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
         .map(e -> e.getId().toString())
         .map(this::getControlEntryConfigById)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public Optional<StageConfig> getPrincipleStageConfigForControlEntry(ControlEntryConfig controlEntryConfig) {
+    return getStageIdsForControlEntry(controlEntryConfig).stream()
+        .map(this::getStageConfigById)
+        .filter(stageConfig -> stageConfig.getQuestionType() == StageConfig.QuestionType.STANDARD)
+        .findAny();
   }
 
   @Override
