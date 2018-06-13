@@ -2,14 +2,15 @@ package controllers;
 
 import play.mvc.Controller;
 import play.mvc.Result;
-//import play.routing.JavaScriptReverseRouter;
+import play.routing.JavaScriptReverseRouter;
 
 public class JavaScriptRoutesController extends Controller {
 
-  public Result jsRoutes() {
+  public Result javascriptRoutes() {
     return ok(
-        // TODO AJAX routes go here
-//        JavaScriptReverseRouter.create("jsRoutes", "some-route")
+        JavaScriptReverseRouter.create("jsRoutes",
+            controllers.routes.javascript.LicenceFinderPollController.pollStatus()
+        )
     ).as("text/javascript");
   }
 

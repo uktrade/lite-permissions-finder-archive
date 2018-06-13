@@ -3,10 +3,10 @@
 @import views.html.common.page._
 @import views.html.common.state._
 @import views.html.common.form._
-@import models.ogel.OgelResultsDisplay
+@import models.view.licencefinder.ResultsView
 
 @this(standardPage: standardPage)
-@(form: Form[_], display: OgelResultsDisplay)
+@(form: Form[_], resultsView: ResultsView)
 
   @title = @{
     Html("")
@@ -14,7 +14,7 @@
 
   @chosenOgelFormField = @{"chosenOgel"}
 
-@standardPage(display.pageTitle, Some(heading(display.pageTitle))){
+@standardPage(resultsView.getTitle(), Some(heading(resultsView.getTitle()))){
   @errorSummary(form)
 }{
 
@@ -22,16 +22,10 @@
 
     @contextFormParams()
 
-    @if(display.ogels.size > 0) {
+    @if(resultsView.hasOgels()) {
       <p>
         Open licences allow you to export certain goods without making a new application each time you export them.
       </p>
-
-      @**
-      <p>
-        If you want to see the OGELs that you are already registered for, please log in.
-      </p>
-      **@
 
       <p>
         Select the option which best matches your requirements.
@@ -41,14 +35,16 @@
       <fieldset>
 
           @formRadioGroupContainer(form(chosenOgelFormField))(title, "h4", "heading-small") {
-            @for(ogel <- display.ogels) {
+            @for(ogelView <- resultsView.getOgelViews()) {
 
               <div class="form-group">
-
-              @formRadio(form("chosenOgel"), "<span class=\"bold\">OGEL (" + ogel.getName + ")</span>", ogel.getId, true, "label-trade-type")
-              @detailPanel("detailPanel"){Read more information} {
+                @if(ogelView.getAlreadyRegistered) {
+                  <span class="bold" style="margin-left:40px">You have already registered for this OGEL:</span>
+                }
+              @formRadio(form("chosenOgel"), "<span class=\"bold\">OGEL (" + ogelView.getName + ")</span>", ogelView.getId, true, "label-trade-type")
+              @detailPanel("detailPanel"){More information} {
                 <p>
-                  @ogel.getUsageSummary().iterator().next()
+                  @ogelView.getUsageSummary().iterator().next()
                 </p>
               }
               </div>
