@@ -21,7 +21,7 @@ public interface StageAnswerJDBIDao {
   StageAnswer getStageAnswerByGoToStageId(@Bind("goToStageId") long goToStageId);
 
   @Mapper(StageAnswerRSMapper.class)
-  @SqlQuery("SELECT * FROM stage_answer WHERE control_entry_id = :controlEntryId AND go_to_stage_answer_outcome_type = :goToStageAnswerOutcomeType::stage_answer_outcome_type")
+  @SqlQuery("SELECT * FROM stage_answer WHERE control_entry_id = :controlEntryId AND go_to_stage_answer_outcome_type = :goToStageAnswerOutcomeType")
   List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(
       @Bind("controlEntryId") long controlEntryId,
       @Bind("goToStageAnswerOutcomeType") String stageAnswerOutcomeType);
@@ -32,7 +32,7 @@ public interface StageAnswerJDBIDao {
 
   @SqlQuery(
       "INSERT INTO stage_answer (parent_stage_id, go_to_stage_id, go_to_stage_answer_outcome_type, control_entry_id, answer_text, display_order, answer_precedence, divider_above, nested_content, more_info_content) "
-          + "VALUES(:parentStageId, :goToStageId, :goToStageAnswerOutcomeType::stage_answer_outcome_type, :controlEntryId, :answerText, :displayOrder, :answerPrecedence, :dividerAbove, :nestedContent, :moreInfoContent) "
+          + "VALUES(:parentStageId, :goToStageId, :goToStageAnswerOutcomeType, :controlEntryId, :answerText, :displayOrder, :answerPrecedence, :dividerAbove, :nestedContent, :moreInfoContent) "
           + "RETURNING id")
   Long insert(
       @Bind("parentStageId") Long parentStageId,

@@ -22,7 +22,7 @@ public interface NoteJDBIDao {
 
   @SqlQuery(
       "INSERT INTO note (stage_id, note_text, note_type) " +
-          "VALUES (:stageId, :noteText, :noteType::note_type) " +
+          "VALUES (:stageId, :noteText, :noteType) " +
           "RETURNING id")
   Long insert(@Bind("stageId") Long stageId, @Bind("noteText") String noteText, @Bind("noteType") NoteType noteType);
 
