@@ -8,14 +8,11 @@ import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.common.state.ContextParamManager;
 import components.persistence.LicenceFinderDao;
-import components.services.controlcode.frontend.FrontendServiceClient;
-import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import models.OgelActivityType;
 import models.ogel.OgelResultsDisplay;
 import org.apache.commons.lang3.StringUtils;
 import org.pac4j.play.java.Secure;
-import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -32,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.inject.Named;
@@ -44,7 +40,6 @@ public class ResultsController extends Controller {
   private final LicenceFinderDao dao;
   private final CountryProvider countryProvider;
   private final HttpExecutionContext httpContext;
-  private final FrontendServiceClient frontendClient;
   private final ApplicableOgelServiceClient applicableClient;
   private final ContextParamManager contextParam;
   private final views.html.licencefinder.results results;
@@ -55,14 +50,12 @@ public class ResultsController extends Controller {
   public ResultsController(FormFactory formFactory,
                            HttpExecutionContext httpContext,
                            LicenceFinderDao dao, @Named("countryProviderExport") CountryProvider countryProvider,
-                           FrontendServiceClient frontendClient,
                            ApplicableOgelServiceClient applicableClient, ContextParamManager contextParam,
                            views.html.licencefinder.results results) {
     this.formFactory = formFactory;
     this.httpContext = httpContext;
     this.dao = dao;
     this.countryProvider = countryProvider;
-    this.frontendClient = frontendClient;
     this.applicableClient = applicableClient;
     this.contextParam = contextParam;
     this.results = results;
@@ -88,13 +81,8 @@ public class ResultsController extends Controller {
     if (chosenOgel.equals(NONE_ABOVE_KEY)) {
       String controlCode = dao.getControlCode();
       String destinationCountryName = countryProvider.getCountry(dao.getSourceCountry()).getCountryName();
-      try {
-        FrontendServiceResult result = frontendClient.get(controlCode).toCompletableFuture().get();
-        OgelResultsDisplay display = new OgelResultsDisplay(Collections.emptyList(), result.getFrontendControlCode(), null, controlCode, destinationCountryName);
-        return completedFuture(ok(results.render(form, display)));
-      } catch (InterruptedException | ExecutionException e) {
-        Logger.error("NONE_ABOVE_KEY error", e);
-      }
+      OgelResultsDisplay display = new OgelResultsDisplay(Collections.emptyList(), null, controlCode, destinationCountryName);
+      return completedFuture(ok(results.render(form, display)));
     }
 
     return contextParam.addParamsAndRedirect(routes.RegisterToUseController.renderRegisterToUseForm());
@@ -116,20 +104,16 @@ public class ResultsController extends Controller {
       showHistoricOgel = questionsForm.beforeOrLess;
     }
 
-    CompletionStage<FrontendServiceResult> frontendServiceStage = frontendClient.get(controlCode);
-
     return applicableClient.get(controlCode, dao.getSourceCountry(), exportRouteCountries, activities, showHistoricOgel)
-        .thenCombineAsync(frontendServiceStage, (applicableOgelView, frontendServiceResult) -> {
-          if (!applicableOgelView.isEmpty()) {
-            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
-                null, controlCode, destinationCountryName);
+        .thenApplyAsync(applicableOgelViews -> {
+          if (!applicableOgelViews.isEmpty()) {
+            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelViews, null, controlCode, destinationCountryName);
             return ok(results.render(form, display));
           } else {
             List<String> countryNames = CountryUtils.getFilteredCountries(CountryUtils.getSortedCountries(countryProvider.getCountries()), exportRouteCountries).stream()
                 .map(CountryView::getCountryName)
                 .collect(Collectors.toList());
-            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelView, frontendServiceResult.getFrontendControlCode(),
-                countryNames, controlCode, destinationCountryName);
+            OgelResultsDisplay display = new OgelResultsDisplay(applicableOgelViews, countryNames, controlCode, destinationCountryName);
 
             return ok(results.render(form, display));
           }
