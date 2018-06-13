@@ -28,7 +28,7 @@ public interface StageJDBIDao {
 
   @SqlQuery(
       "INSERT INTO stage (journey_id, control_entry_id, title, explanatory_notes, question_type, answer_type, next_stage_id, go_to_stage_outcome_type) "
-          + "VALUES (:journeyId, :controlEntryId, :title, :explanatoryNotes, :questionType::question_type, :answerType::answer_type, :nextStageId, :goToStageOutcomeType::stage_outcome_type) "
+          + "VALUES (:journeyId, :controlEntryId, :title, :explanatoryNotes, :questionType, :answerType, :nextStageId, :goToStageOutcomeType) "
           + "RETURNING id")
   Long insert(
       @Bind("journeyId") Long journeyId,
