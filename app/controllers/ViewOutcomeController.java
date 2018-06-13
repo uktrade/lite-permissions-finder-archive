@@ -12,8 +12,11 @@ import components.common.auth.SpireSAML2Client;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
 import models.enums.OutcomeType;
+import models.view.form.ItemDescriptionForm;
 import org.pac4j.play.java.Secure;
 import play.Logger;
+import play.data.Form;
+import play.data.FormFactory;
 import play.mvc.Result;
 import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
@@ -30,26 +33,31 @@ public class ViewOutcomeController {
   private final UserPrivilegeService userPrivilegeService;
   private final SpireAuthManager spireAuthManager;
   private final JourneyConfigService journeyConfigService;
+  private final FormFactory formFactory;
   private final views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess;
   private final views.html.nlr.nlrOutcome nlrOutcome;
   private final views.html.triage.listedOutcomeSaved listedOutcomeSaved;
+  private final views.html.nlr.nlrItemDescription nlrItemDescription;
 
   @Inject
   public ViewOutcomeController(SessionService sessionService, SessionOutcomeService sessionOutcomeService,
                                SessionOutcomeDao sessionOutcomeDao, UserPrivilegeService userPrivilegeService,
                                SpireAuthManager spireAuthManager, JourneyConfigService journeyConfigService,
-                               views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess,
+                               FormFactory formFactory, views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess,
                                views.html.nlr.nlrOutcome nlrOutcome,
-                               views.html.triage.listedOutcomeSaved listedOutcomeSaved) {
+                               views.html.triage.listedOutcomeSaved listedOutcomeSaved,
+                               views.html.nlr.nlrItemDescription nlrItemDescription) {
     this.sessionService = sessionService;
     this.sessionOutcomeService = sessionOutcomeService;
     this.sessionOutcomeDao = sessionOutcomeDao;
     this.userPrivilegeService = userPrivilegeService;
     this.spireAuthManager = spireAuthManager;
     this.journeyConfigService = journeyConfigService;
+    this.formFactory = formFactory;
     this.nlrRegisterSuccess = nlrRegisterSuccess;
     this.nlrOutcome = nlrOutcome;
     this.listedOutcomeSaved = listedOutcomeSaved;
+    this.nlrItemDescription = nlrItemDescription;
   }
 
   public Result renderOutcome(String outcomeId) {
@@ -84,29 +92,75 @@ public class ViewOutcomeController {
   }
 
   public Result registerNotFoundNlr(String sessionId, String controlEntryId) {
-    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    String outcomeId;
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
+    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId).toString();
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
-      String userId = spireAuthManager.getAuthInfoFromContext().getId();
-      outcomeId = sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode);
+      Form<ItemDescriptionForm> itemDescriptionForm = formFactory.form(ItemDescriptionForm.class);
+      return ok(nlrItemDescription.render(itemDescriptionForm, resumeCode, submitUrl));
     } else {
-      outcomeId = sessionOutcome.getId();
+      return redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId()));
     }
-    return ok(nlrRegisterSuccess.render(outcomeId, resumeCode));
+  }
+
+  public Result handleRegisterNotFoundNlrSubmit(String sessionId, String controlEntryId) {
+    SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
+    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId).toString();
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    if (sessionOutcome == null) {
+      Form<ItemDescriptionForm> form = formFactory.form(ItemDescriptionForm.class).bindFromRequest();
+      if (form.hasErrors()) {
+        return ok(nlrItemDescription.render(form, resumeCode, submitUrl));
+      } else {
+        String description = form.get().description.trim();
+        if (description.length() < 2 || description.length() > 200) {
+          return ok(nlrItemDescription.render(form.withError("description", "Item description is required."),
+              resumeCode, submitUrl));
+        } else {
+          String userId = spireAuthManager.getAuthInfoFromContext().getId();
+          String outcomeId = sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
+          return ok(nlrRegisterSuccess.render(outcomeId, resumeCode));
+        }
+      }
+    } else {
+      return redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId()));
+    }
   }
 
   public Result registerDecontrolNlr(String sessionId, String stageId) {
-    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    String outcomeId;
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
+    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId).toString();
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
-      String userId = spireAuthManager.getAuthInfoFromContext().getId();
-      outcomeId = sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode);
+      Form<ItemDescriptionForm> itemDescriptionForm = formFactory.form(ItemDescriptionForm.class);
+      return ok(nlrItemDescription.render(itemDescriptionForm, resumeCode, submitUrl));
     } else {
-      outcomeId = sessionOutcome.getId();
+      return redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId()));
     }
-    return ok(nlrRegisterSuccess.render(outcomeId, resumeCode));
+  }
+
+  public Result handleRegisterDecontrolNlrSubmit(String sessionId, String stageId) {
+    SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
+    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId).toString();
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    if (sessionOutcome == null) {
+      Form<ItemDescriptionForm> form = formFactory.form(ItemDescriptionForm.class).bindFromRequest();
+      if (form.hasErrors()) {
+        return ok(nlrItemDescription.render(form, resumeCode, submitUrl));
+      } else {
+        String description = form.get().description.trim();
+        if (description.length() < 2) {
+          return ok(nlrItemDescription.render(form.withError("description", "Item description is required."),
+              resumeCode, submitUrl));
+        } else {
+          String userId = spireAuthManager.getAuthInfoFromContext().getId();
+          String outcomeId = sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
+          return ok(nlrRegisterSuccess.render(outcomeId, resumeCode));
+        }
+      }
+    } else {
+      return redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId()));
+    }
   }
 
 }
