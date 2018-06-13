@@ -8,7 +8,7 @@
 @this(standardPage: standardPage)
 @(form: Form[_], stageId: String, sessionId: String, resumeCode: String, title: String, breadcrumbView: BreadcrumbView)(secondaryHeading: Html)(formContent: Html)
 
-@standardPage(title, None, twoThirdsColumn = false, resumeCode = resumeCode){
+@standardPage(title, None, twoThirdsColumn = false, resumeCode = resumeCode, showBackLink = true){
 }{
   @twoThirdsColumn{
     @errorSummary(form)

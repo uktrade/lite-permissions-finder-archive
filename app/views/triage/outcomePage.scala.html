@@ -4,7 +4,7 @@
 @this(standardPage: standardPage)
 @(title: String, sessionId: String, resumeCode: String, showSharingOptions: Boolean = true)(content: Html)
 
-@standardPage(title.toString, None, twoThirdsColumn = false, resumeCode = resumeCode) {
+@standardPage(title.toString, None, twoThirdsColumn = false, resumeCode = resumeCode, showBackLink = true) {
 
 } {
   <div class="grid-row outcome-page-header">
