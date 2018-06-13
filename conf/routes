@@ -156,7 +156,7 @@ GET     /save-listed-outcome/:controlEntryId   controllers.ViewOutcomeController
 GET     /register-nlr/not-found/:controlEntryId controllers.ViewOutcomeController.registerNotFoundNlr(sessionId, controlEntryId)
 GET     /register-nlr/decontrol/:stageId       controllers.ViewOutcomeController.registerDecontrolNlr(sessionId, stageId)
 
-GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId)
+GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId, sessionId)
 GET     /modal-content/definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
 GET     /modal-content/definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)
 
