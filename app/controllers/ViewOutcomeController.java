@@ -113,7 +113,7 @@ public class ViewOutcomeController {
         return ok(nlrItemDescription.render(form, resumeCode, submitUrl));
       } else {
         String description = form.get().description.trim();
-        if (description.length() < 2) {
+        if (description.length() < 2 || description.length() > 200) {
           return ok(nlrItemDescription.render(form.withError("description", "Item description is required."),
               resumeCode, submitUrl));
         } else {
