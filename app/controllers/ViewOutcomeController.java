@@ -11,6 +11,7 @@ import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
+import exceptions.TooManyCustomersOrSitesException;
 import models.enums.OutcomeType;
 import models.view.form.ItemDescriptionForm;
 import org.pac4j.play.java.Secure;
@@ -96,7 +97,11 @@ public class ViewOutcomeController {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
     if (sessionOutcome == null) {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
-      sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryId);
+      try {
+        sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryId);
+      } catch (TooManyCustomersOrSitesException exception) {
+        return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
+      }
     }
     return redirect(controllers.licencefinder.routes.TradeController.entry(controlEntryConfig.getControlCode()));
   }
@@ -128,7 +133,11 @@ public class ViewOutcomeController {
               resumeCode, submitUrl));
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
+          try {
+            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
+          } catch (TooManyCustomersOrSitesException e) {
+            return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
+          }
           return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
       }
@@ -164,7 +173,11 @@ public class ViewOutcomeController {
               resumeCode, submitUrl));
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
+          try {
+            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
+          } catch (TooManyCustomersOrSitesException e) {
+            return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
+          }
           return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
       }
