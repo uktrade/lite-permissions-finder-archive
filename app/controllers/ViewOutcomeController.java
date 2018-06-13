@@ -81,6 +81,16 @@ public class ViewOutcomeController {
     }
   }
 
+  public Result registerSuccess(String sessionId) {
+    SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
+    if (sessionOutcome != null) {
+      String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+      return ok(nlrRegisterSuccess.render(sessionOutcome.getId(), resumeCode));
+    } else {
+      return notFound("Unknown sessionId or no outcome for sessionId " + sessionId);
+    }
+  }
+
   public Result saveListedOutcome(String sessionId, String controlEntryId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
@@ -99,7 +109,7 @@ public class ViewOutcomeController {
       Form<ItemDescriptionForm> itemDescriptionForm = formFactory.form(ItemDescriptionForm.class);
       return ok(nlrItemDescription.render(itemDescriptionForm, resumeCode, submitUrl));
     } else {
-      return redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId()));
+      return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
     }
   }
 
@@ -118,12 +128,12 @@ public class ViewOutcomeController {
               resumeCode, submitUrl));
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          String outcomeId = sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
-          return ok(nlrRegisterSuccess.render(outcomeId, resumeCode));
+          sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
+          return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
       }
     } else {
-      return redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId()));
+      return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
     }
   }
 
@@ -135,7 +145,7 @@ public class ViewOutcomeController {
       Form<ItemDescriptionForm> itemDescriptionForm = formFactory.form(ItemDescriptionForm.class);
       return ok(nlrItemDescription.render(itemDescriptionForm, resumeCode, submitUrl));
     } else {
-      return redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId()));
+      return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
     }
   }
 
@@ -154,12 +164,12 @@ public class ViewOutcomeController {
               resumeCode, submitUrl));
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          String outcomeId = sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
-          return ok(nlrRegisterSuccess.render(outcomeId, resumeCode));
+          sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
+          return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
       }
     } else {
-      return redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId()));
+      return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
     }
   }
 
