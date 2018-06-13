@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
-import controllers.ogel.OgelQuestionsController.OgelQuestionsForm;
 import models.TradeType;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,7 +19,6 @@ public class PermissionsFinderDao {
   public static final String APPLICATION_CODE = "applicationCode";
   public static final String EMAIL_ADDRESS = "emailAddress";
   public static final String TRADE_TYPE = "tradeType";
-  public static final String OGEL_QUESTIONS = "ogelQuestions";
   public static final String OGEL_CONDITIONS_APPLY = "ogelConditionsApply";
   public static final String MULTIPLE_COUNTRIES = "multipleCountries";
   public static final String FINAL_DESTINATION_COUNTRY = "finalDestinationCountry";
@@ -92,14 +90,6 @@ public class PermissionsFinderDao {
       return Optional.empty();
     }
     return Optional.of(value.equalsIgnoreCase("true"));
-  }
-
-  public void saveOgelQuestionsForm(OgelQuestionsForm ogelQuestionsForm) {
-    commonRedisDao.writeObject(OGEL_QUESTIONS, ogelQuestionsForm);
-  }
-
-  public Optional<OgelQuestionsForm> getOgelQuestionsForm() {
-    return commonRedisDao.readObject(OGEL_QUESTIONS, OgelQuestionsForm.class);
   }
 
   public void saveOgelConditionsApply(boolean ogelConditionsApply) {

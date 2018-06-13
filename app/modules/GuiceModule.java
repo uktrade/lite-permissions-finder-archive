@@ -165,6 +165,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("searchServiceCredentials"))
         .to(config.getString("searchService.credentials"));
 
+    /*
     // controlCodeService
     bindConstant().annotatedWith(Names.named("controlCodeServiceAddress"))
         .to(config.getString("controlCodeService.address"));
@@ -172,6 +173,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
         .to(config.getString("controlCodeService.timeout"));
     bindConstant().annotatedWith(Names.named("controlCodeServiceCredentials"))
         .to(config.getString("controlCodeService.credentials"));
+        */
 
     // countryService
     bindConstant().annotatedWith(Names.named("countryServiceAddress"))

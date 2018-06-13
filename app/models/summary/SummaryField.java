@@ -1,7 +1,5 @@
 package models.summary;
 
-import components.services.controlcode.frontend.FrontendServiceResult;
-import uk.gov.bis.lite.controlcode.api.view.FrontEndControlCodeView.FrontEndControlCodeData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 
@@ -55,20 +53,6 @@ public class SummaryField {
     this.editLinkUrl = editLinkUrl;
     this.isContentHtml = isContentHtml;
     this.isValid = isValid;
-  }
-
-  /**
-   * Creates a SummaryField from a frontend service result and an edit link URL
-   *
-   * @param frontendServiceResult The frontend control code service result
-   * @param editLinkUrl           The edit link URL for the OGEL ID
-   * @return a SummaryField for the control code
-   */
-  public static SummaryField fromFrontendServiceResult(FrontendServiceResult frontendServiceResult, String editLinkUrl) {
-    FrontEndControlCodeData controlCodeData = frontendServiceResult.getControlCodeData();
-    String content = "<strong class=\"bold-small\">" + controlCodeData.getControlCode()
-        + "</strong> - " + controlCodeData.getTitle();
-    return new SummaryField(SummaryFieldType.CONTROL_CODE, "Classification", content, null, editLinkUrl, true, true);
   }
 
   /**

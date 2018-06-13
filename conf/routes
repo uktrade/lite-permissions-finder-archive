@@ -30,35 +30,11 @@ GET     /destination-country                  controllers.DestinationCountryCont
 
 POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
-GET     /export-licence-additional-conditions   controllers.ogel.OgelConditionsController.renderForm
-
-POST    /export-licence-additional-conditions   controllers.ogel.OgelConditionsController.handleSubmit
-
-GET     /export-licence-not-applicable                controllers.ogel.OgelNotApplicableController.renderForm
-
-POST    /export-licence-not-applicable                controllers.ogel.OgelNotApplicableController.handleSubmit
-
-GET     /export-open-general-export-licence-results   controllers.ogel.OgelResultsController.renderForm
-
-POST    /export-open-general-export-licence-results   controllers.ogel.OgelResultsController.handleSubmit
-
-GET     /export-questions                     controllers.ogel.OgelQuestionsController.renderForm
-
-POST    /export-questions                     controllers.ogel.OgelQuestionsController.handleSubmit
-
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 
 POST    /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
-
-GET     /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.renderForm
-
-POST    /register-for-open-general-export-licence     controllers.ogel.OgelSummaryController.handleSubmit
-
-GET     /register-to-use-ogel     controllers.ogel.OgelRegisterToUseController.renderForm
-
-POST    /register-to-use-ogel     controllers.ogel.OgelRegisterToUseController.handleSubmit
 
 GET     /trade-type                    controllers.TradeTypeController.renderForm
 
