@@ -1,0 +1,29 @@
+@import uk.gov.bis.lite.user.api.view.UserDetailsView
+@import uk.gov.bis.lite.customer.api.view.SiteView
+@import util._
+@import views.html.common.page._
+@import views.html.common.form._
+
+@this(standardPage: standardPage)
+@(form: Form[_], resumeCode: String, submitUrl: String)
+
+@standardPage("NLR Letter", Some(heading("Request a \"No Licence Required\" document")), twoThirdsColumn = true, resumeCode = resumeCode) {
+  @errorSummary(form)
+} {
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar sic tempor accuan eget.
+  </p>
+
+  <form action="@submitUrl" method="POST" enctype="multipart/form-data">
+
+    @views.html.helper.CSRF.formField
+
+    @formTextarea(form("description"), rows = "4", labelClass = "form-label-bold", cssClass = "form-control-wide") {
+      Item description
+    }
+
+    <button type="submit" class="button" name="action" value="continue">Request an NLR document</button>
+
+  </form>
+
+}

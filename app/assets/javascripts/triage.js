@@ -1,9 +1,11 @@
 var LITEPermissionsFinder = LITEPermissionsFinder || {};
 
 LITEPermissionsFinder.Triage = {
-  setupPage: function() {
+  setupPage: function(sessionId) {
     LITEPermissionsFinder.Triage._bindModals($(document.body));
+    this._sessionId = sessionId;
   },
+  _sessionId: '',
   _bindModals: function($target) {
     $target.on("click", "a[data-control-entry-id], a[data-definition-id]", LITEPermissionsFinder.Triage._modalLinkOnClick);
   },
@@ -21,7 +23,7 @@ LITEPermissionsFinder.Triage = {
     }
   },
   _ajaxDisplayControlEntryModal: function(controlEntryId) {
-    $.ajax("/modal-content/control-entry/" + controlEntryId)
+    $.ajax("/modal-content/control-entry/" + controlEntryId, {data: {sessionId: this._sessionId}})
       .done(function(data) {
         var $data = $(data);
         LITEPermissionsFinder.Triage._bindModals($data);

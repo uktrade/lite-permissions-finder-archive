@@ -2,7 +2,7 @@
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 
-@(controlCode: String, breadcrumbItemsViews: List[BreadcrumbItemView])
+@(controlCode: String, breadcrumbItemsViews: List[BreadcrumbItemView], controlEntryUrl: String)
 <div>
   <h1 class="heading-medium modal-heading">
     @controlCode
@@ -31,5 +31,10 @@
         }
       }
     }
+  }
+  @if(controlEntryUrl!=null) {
+    <p>
+      <a href="@controlEntryUrl">Go to this control entry</a>
+    </p>
   }
 </div>

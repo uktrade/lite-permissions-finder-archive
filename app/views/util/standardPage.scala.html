@@ -3,7 +3,7 @@
 @import play.mvc.Controller.ctx
 
 @this(govukTemplateDefaults: govukTemplateDefaults)
-@(htmlTitle: String, pageHeading: Option[Html], twoThirdsColumn: Boolean = true, resumeCode: String = "")(beforeHeader: Html)(content: Html)
+@(htmlTitle: String, pageHeading: Option[Html], twoThirdsColumn: Boolean = true, resumeCode: String = "", showBackLink: Boolean = false)(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle + " - Import & Export Licensing") {
 
@@ -13,7 +13,9 @@
 
     <div class="nav-container">
       <div class="back-link-container">
-        @backLink()
+        @if(showBackLink) {
+          <button class="link-back" onclick="window.history.back()">Back</button>
+        }
       </div>
 
       @if(resumeCode != "") {

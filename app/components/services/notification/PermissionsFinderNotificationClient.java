@@ -29,9 +29,11 @@ public class PermissionsFinderNotificationClient {
     notificationServiceClient.sendEmail("permissionsFinder:nlrDocumentToUser", emailAddress, params);
   }
 
-  public void sendNlrDocumentToEcjuEmail(String emailAddress, String applicantName, String nlrDocumentUrl, String applicationReference, String companyName, String siteAddress) {
+  public void sendNlrDocumentToEcjuEmail(String ecjuEmailAddress, String userEmailAddress, String applicantName,
+                                         String nlrDocumentUrl, String applicationReference, String companyName,
+                                         String siteAddress) {
     Map<String, String> params = new ImmutableMap.Builder<String, String>()
-        .put("emailAddress", emailAddress)
+        .put("emailAddress", userEmailAddress)
         .put("applicantName", applicantName)
         .put("nlrDocumentUrl", nlrDocumentUrl)
         .put("siteAddress", siteAddress)
@@ -39,7 +41,7 @@ public class PermissionsFinderNotificationClient {
         .put("companyName", companyName)
         .build();
 
-    notificationServiceClient.sendEmail("permissionsFinder:nlrDocumentToEcju", emailAddress, params);
+    notificationServiceClient.sendEmail("permissionsFinder:nlrDocumentToEcju", ecjuEmailAddress, params);
   }
 
   public void sendRegisteredOgelToUserEmail(String emailAddress, String applicantName, String ogelUrl) {
@@ -47,7 +49,8 @@ public class PermissionsFinderNotificationClient {
     notificationServiceClient.sendEmail("permissionsFinder:registeredOgelToUser", emailAddress, params);
   }
 
-  public void sendRegisteredOgelToEcjuEmail(String emailAddress, String applicantName, String applicationReference, String companyName, String siteAddress, String ogelUrl) {
+  public void sendRegisteredOgelToEcjuEmail(String emailAddress, String applicantName, String applicationReference,
+                                            String companyName, String siteAddress, String ogelUrl) {
     Map<String, String> params = new ImmutableMap.Builder<String, String>()
         .put("emailAddress", emailAddress)
         .put("applicantName", applicantName)

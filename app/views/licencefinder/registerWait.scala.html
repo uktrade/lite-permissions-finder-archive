@@ -1,0 +1,31 @@
+@import util._
+@import views.html.common.page._
+@import views.html.common.state._
+@import views.html.common.form._
+
+@this(standardPage: standardPage)
+@()
+
+
+@pageHeading = @{
+  "Please wait whilst we process your OGEL registration. This may take a short while to complete..."
+}
+
+@standardPage(pageHeading, Some(heading(pageHeading))){
+
+} {
+
+  <form id="registrationInterval" action="@controllers.licencefinder.routes.RegisterToUseController.handleRegistrationProcessed()" method="POST">
+
+    @contextFormParams()
+
+    <button type="submit" class="button">Refresh</button>
+
+  </form>
+
+  <script type="text/javascript">
+    $(function() {
+      LITEOgelRegistration.RegistrationInterval.setupPage();
+    });
+  </script>
+}

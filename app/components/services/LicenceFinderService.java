@@ -1,6 +1,6 @@
 package components.services;
 
-import components.persistence.enums.SubmissionStatus;
+import models.view.licencefinder.ResultsView;
 import uk.gov.bis.lite.permissions.api.view.CallbackView;
 
 import java.util.Optional;
@@ -16,12 +16,14 @@ public interface LicenceFinderService {
 
   Optional<String> getRegistrationReference(String transactionId);
 
-  SubmissionStatus getSubmissionStatus(String transactionId);
+  ResultsView getResultsView();
 
-  long getSecondsSinceRegistrationSubmission(String transactionId);
+  ResultsView getNoResultsView();
 
-  Optional<CallbackView.Result> getCallbackResult(String transactionId);
+  void updateUsersOgelIdRefMap(String userId);
 
-  String getRegistrationRef(String transactionId);
+  boolean isOgelIdAlreadyRegistered(String ogelId);
+
+  Optional<String> getUserOgelReference(String ogelId);
 
 }

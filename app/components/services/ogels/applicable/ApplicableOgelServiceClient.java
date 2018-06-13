@@ -45,6 +45,8 @@ public class ApplicableOgelServiceClient {
     return getApplicableOgelViews(controlCode, sourceCountry, destinationCountries, activityTypes, showHistoricOgel);
   }
 
+
+
   public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry, List<String> destinationCountries,
                                                        List<String> activityTypes) {
     return getApplicableOgelViews(controlCode, sourceCountry, destinationCountries, activityTypes, true);

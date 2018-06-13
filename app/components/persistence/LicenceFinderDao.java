@@ -1,5 +1,6 @@
 package components.persistence;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.persistence.CommonRedisDao;
@@ -7,6 +8,8 @@ import controllers.licencefinder.QuestionsController;
 import models.TradeType;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class LicenceFinderDao {
@@ -23,6 +26,7 @@ public class LicenceFinderDao {
   private static final String FIRST_CONSIGNEE_COUNTRY = "firstConsigneeCountry";
   private static final String MULTIPLE_COUNTRIES = "multipleCountries";
   private static final String SUBMISSION_REQUEST_ID = "submissionRequest:id";
+  private static final String USER_OGEL_ID_REF_MAP = "userOgelIdRefMap";
 
   private final CommonRedisDao dao;
 
@@ -127,6 +131,25 @@ public class LicenceFinderDao {
 
   public Optional<Boolean> getMultipleCountries() {
     return readBoolean(MULTIPLE_COUNTRIES);
+  }
+
+  /*
+  public void saveAlreadyRegisteredOgelSet(Set<String> ogelIds) {
+    dao.writeObject(ALREADY_REGISTERED_OGEL_ID_SET, ogelIds);
+  }
+
+  public Set<String> getAlreadyRegisteredOgelSet() {
+    return dao.readObject(ALREADY_REGISTERED_OGEL_ID_SET, new TypeReference<Set<String>>() {})
+        .orElse(new HashSet<>());
+  }*/
+
+  public void saveUserOgelIdRefMap(Map<String, String> ogelIdRefMap) {
+    dao.writeObject(USER_OGEL_ID_REF_MAP, ogelIdRefMap);
+  }
+
+  public Map<String, String>getUserOgelIdRefMap() {
+    return dao.readObject(USER_OGEL_ID_REF_MAP, new TypeReference<Map<String, String>>() {})
+        .orElse(new HashMap<>());
   }
 
   /**
