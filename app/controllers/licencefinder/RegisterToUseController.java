@@ -125,7 +125,7 @@ public class RegisterToUseController extends Controller {
             return ok(registerResult.render(view, ogelFullView, dashboardUrl));
           }, httpContext.current());
     }
-    return completedFuture(ok(registerWait.render(false)));
+    return completedFuture(ok(registerWait.render()));
   }
 
   /**
