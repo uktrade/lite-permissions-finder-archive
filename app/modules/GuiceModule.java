@@ -219,7 +219,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("userServiceCredentials")).to(config.getString("userService.credentials"));
 
     bindConstant().annotatedWith(Names.named("dashboardUrl")).to(config.getString("dashboard.url"));
-    bindConstant().annotatedWith(Names.named("permissionsFinderUrl")).to(config.getString("permissions.finder.url"));
+    bindConstant().annotatedWith(Names.named("permissionsFinderUrl")).to(config.getString("permissionsFinderUrl"));
 
     bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
 

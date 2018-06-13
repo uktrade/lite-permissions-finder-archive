@@ -34,6 +34,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d MMMM uuuu");
 
+  private final String permissionsFinderUrl;
   private final String ecjuEmailAddress;
   private final UserServiceClientJwt userService;
   private final CustomerService customerService;
@@ -47,13 +48,15 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   private final views.html.triage.listedOutcomeJourney listedOutcomeJourney;
 
   @Inject
-  public SessionOutcomeServiceImpl(@Named("ecjuEmailAddress") String ecjuEmailAddress, UserServiceClientJwt userService,
+  public SessionOutcomeServiceImpl(@Named("permissionsFinderUrl") String permissionsFinderUrl,
+                                   @Named("ecjuEmailAddress") String ecjuEmailAddress, UserServiceClientJwt userService,
                                    CustomerService customerService, BreadcrumbViewService breadcrumbViewService,
                                    AnswerViewService answerViewService, JourneyConfigService journeyConfigService,
                                    SessionOutcomeDao sessionOutcomeDao,
                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient,
                                    RenderService renderService, views.html.nlr.nlrLetter nlrLetter,
                                    views.html.triage.listedOutcomeJourney listedOutcomeJourney) {
+    this.permissionsFinderUrl = permissionsFinderUrl;
     this.ecjuEmailAddress = ecjuEmailAddress;
     this.userService = userService;
     this.customerService = customerService;
@@ -119,7 +122,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     String id = createOutcomeId();
     SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(), outcomeType, html.toString());
     sessionOutcomeDao.insert(sessionOutcome);
-    String url = routes.ViewOutcomeController.renderOutcome(id).toString();
+    String url = permissionsFinderUrl + routes.ViewOutcomeController.renderOutcome(id).toString();
     permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(),
         userDetailsView.getFullName(), url);
     permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress,
