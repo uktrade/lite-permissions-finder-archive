@@ -11,7 +11,7 @@ import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
-import exceptions.TooManyCustomersOrSitesException;
+import exceptions.InvalidUserAccountException;
 import models.enums.OutcomeType;
 import models.view.form.ItemDescriptionForm;
 import org.pac4j.play.java.Secure;
@@ -99,7 +99,7 @@ public class ViewOutcomeController {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
       try {
         sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryId);
-      } catch (TooManyCustomersOrSitesException exception) {
+      } catch (InvalidUserAccountException exception) {
         return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
       }
     }
@@ -135,7 +135,7 @@ public class ViewOutcomeController {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
           try {
             sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
-          } catch (TooManyCustomersOrSitesException e) {
+          } catch (InvalidUserAccountException exception) {
             return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
           }
           return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
@@ -175,7 +175,7 @@ public class ViewOutcomeController {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
           try {
             sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
-          } catch (TooManyCustomersOrSitesException e) {
+          } catch (InvalidUserAccountException exception) {
             return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
           }
           return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
