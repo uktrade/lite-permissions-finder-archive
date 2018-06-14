@@ -101,7 +101,7 @@ public class ViewOutcomeController {
       try {
         sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryId);
       } catch (InvalidUserAccountException exception) {
-        return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
+        return redirect(routes.StaticContentController.renderInvalidUserAccount());
       }
     }
     return redirect(controllers.licencefinder.routes.TradeController.entry(controlEntryConfig.getControlCode()));
@@ -137,7 +137,7 @@ public class ViewOutcomeController {
           try {
             sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
           } catch (InvalidUserAccountException exception) {
-            return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
+            return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }
           return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
@@ -177,7 +177,7 @@ public class ViewOutcomeController {
           try {
             sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
           } catch (InvalidUserAccountException exception) {
-            return redirect(routes.StaticContentController.renderTooManyCustomersOrSites());
+            return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }
           return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }

@@ -83,7 +83,7 @@ public class StaticContentController extends Controller {
     return renderStaticHtml(StaticHtml.VIRTUAL_EU);
   }
 
-  public Result renderTooManyCustomersOrSites() {
+  public Result renderInvalidUserAccount() {
     return renderStaticHtml(StaticHtml.TOO_MANY_CUSTOMERS_OR_SITES);
   }
 

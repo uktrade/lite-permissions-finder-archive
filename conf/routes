@@ -166,5 +166,5 @@ GET     /view-control-entry/:controlEntryId              controllers.modal.Modal
 GET     /view-definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinitionView(globalDefinitionId)
 GET     /view-definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinitionView(localDefinitionId)
 
-GET     /too-many-customers-or-sites                     controllers.StaticContentController.renderTooManyCustomersOrSites
+GET     /invalid-user-account                            controllers.StaticContentController.renderInvalidUserAccount
 GET     /unknown-outcome                                 controllers.StaticContentController.renderUnknownOutcome
