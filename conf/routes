@@ -141,3 +141,5 @@ GET     /modal-content/definition/local/:localDefinitionId        controllers.mo
 GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)
 GET     /view-definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinitionView(globalDefinitionId)
 GET     /view-definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinitionView(localDefinitionId)
+
+GET     /unknown-outcome                                 controllers.StaticContentController.renderUnknownOutcome

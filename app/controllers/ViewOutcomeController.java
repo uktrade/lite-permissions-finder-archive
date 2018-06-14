@@ -1,6 +1,5 @@
 package controllers;
 
-import static play.mvc.Results.notFound;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
@@ -63,7 +62,8 @@ public class ViewOutcomeController {
   public Result renderOutcome(String outcomeId) {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeById(outcomeId);
     if (sessionOutcome == null) {
-      return notFound("Unknown outcomeId " + outcomeId);
+      Logger.warn("Unknown outcomeId {}", outcomeId);
+      return redirect(routes.StaticContentController.renderUnknownOutcome());
     } else {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
       if (userPrivilegeService.canViewOutcome(userId, sessionOutcome)) {
@@ -76,7 +76,7 @@ public class ViewOutcomeController {
       } else {
         Logger.error("User with userId {} doesn't have privilege to view outcome with outcomeId {} ",
             userId, sessionOutcome.getId());
-        return notFound("Unknown outcomeId " + outcomeId);
+        return redirect(routes.StaticContentController.renderUnknownOutcome());
       }
     }
   }
@@ -87,7 +87,8 @@ public class ViewOutcomeController {
       String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
       return ok(nlrRegisterSuccess.render(sessionOutcome.getId(), resumeCode));
     } else {
-      return notFound("Unknown sessionId or no outcome for sessionId " + sessionId);
+      Logger.warn("Unknown sessionId or no outcome for sessionId {}", sessionId);
+      return redirect(routes.StaticContentController.renderUnknownOutcome());
     }
   }
 
