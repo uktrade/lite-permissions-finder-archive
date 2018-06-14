@@ -30,7 +30,8 @@ public class StaticContentController extends Controller {
     NOT_APPLICABLE("notApplicable.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence"),
-    TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites");
+    TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites"),
+    UNKNOWN_OUTCOME("unknownOutcome.html", "Unknown outcome");
 
     StaticHtml(String filename, String title, Html pageHeading) {
       this.filename = filename;
@@ -84,6 +85,10 @@ public class StaticContentController extends Controller {
 
   public Result renderTooManyCustomersOrSites() {
     return renderStaticHtml(StaticHtml.TOO_MANY_CUSTOMERS_OR_SITES);
+  }
+
+  public Result renderUnknownOutcome() {
+    return renderStaticHtml(StaticHtml.UNKNOWN_OUTCOME);
   }
 
 }

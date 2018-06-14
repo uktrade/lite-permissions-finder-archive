@@ -167,3 +167,4 @@ GET     /view-definition/global/:globalDefinitionId      controllers.modal.Modal
 GET     /view-definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinitionView(localDefinitionId)
 
 GET     /too-many-customers-or-sites                     controllers.StaticContentController.renderTooManyCustomersOrSites
+GET     /unknown-outcome                                 controllers.StaticContentController.renderUnknownOutcome
