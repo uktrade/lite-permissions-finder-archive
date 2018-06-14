@@ -4,7 +4,7 @@
 @import util._
 
 @this(standardPage: standardPage)
-@(controlCode: String, breadcrumbItemsViews: List[BreadcrumbItemView])
+@(controlCode: String, breadcrumbItemsViews: List[BreadcrumbItemView], description: String)
 
 @standardPage(controlCode, Some(heading(controlCode))) { } {
   <div>
@@ -19,7 +19,11 @@
               @Html(breadcrumbItemView.getDescription)
             }
           }{
-            @HtmlFormat.empty
+            @if(!description.isEmpty) {
+              <span class="detail-box-content">
+                @Html(description)
+              </span>
+            }
           }
         } else {
           @controlCodeBreadcrumbsStep(){
