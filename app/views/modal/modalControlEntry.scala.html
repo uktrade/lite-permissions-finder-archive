@@ -2,7 +2,7 @@
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 
-@(controlCode: String, breadcrumbItemsViews: List[BreadcrumbItemView], controlEntryUrl: String)
+@(controlCode: String, breadcrumbItemsViews: List[BreadcrumbItemView], controlEntryUrl: String, description: String)
 <div>
   <h1 class="heading-medium modal-heading">
     @controlCode
@@ -18,7 +18,11 @@
             @Html(breadcrumbItemView.getDescription)
           }
         }{
-          @HtmlFormat.empty
+          @if(!description.isEmpty) {
+            <span class="detail-box-content">
+              @Html(description)
+            </span>
+          }
         }
       } else {
         @controlCodeBreadcrumbsStep(){

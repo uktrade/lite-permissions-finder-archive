@@ -129,6 +129,11 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
     return createSubAnswerViews(subAnswers, false);
   }
 
+  @Override
+  public String createSubAnswerViewsHtml(ControlEntryConfig controlEntryConfig) {
+    return subAnswerViewsToHtml(createSubAnswerViews(createSubAnswers(controlEntryConfig), true));
+  }
+
   private List<SubAnswerView> createSubAnswerViews(List<SubAnswer> subAnswers, boolean html) {
     return subAnswers.stream()
         .map(subAnswer -> createSubAnswerView(subAnswer, html))

@@ -11,4 +11,6 @@ public interface AnswerViewService {
   List<AnswerView> createAnswerViews(StageConfig stageConfig, boolean html);
 
   List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig);
+
+  String createSubAnswerViewsHtml(ControlEntryConfig controlEntryConfig);
 }
