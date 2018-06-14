@@ -10,6 +10,7 @@ import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
+import exceptions.InvalidUserAccountException;
 import models.enums.OutcomeType;
 import models.view.form.ItemDescriptionForm;
 import org.pac4j.play.java.Secure;
@@ -97,7 +98,11 @@ public class ViewOutcomeController {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
     if (sessionOutcome == null) {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
-      sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryId);
+      try {
+        sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryId);
+      } catch (InvalidUserAccountException exception) {
+        return redirect(routes.StaticContentController.renderInvalidUserAccount());
+      }
     }
     return redirect(controllers.licencefinder.routes.TradeController.entry(controlEntryConfig.getControlCode()));
   }
@@ -129,7 +134,11 @@ public class ViewOutcomeController {
               resumeCode, submitUrl));
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
+          try {
+            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
+          } catch (InvalidUserAccountException exception) {
+            return redirect(routes.StaticContentController.renderInvalidUserAccount());
+          }
           return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
       }
@@ -165,7 +174,11 @@ public class ViewOutcomeController {
               resumeCode, submitUrl));
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
+          try {
+            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
+          } catch (InvalidUserAccountException exception) {
+            return redirect(routes.StaticContentController.renderInvalidUserAccount());
+          }
           return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
       }

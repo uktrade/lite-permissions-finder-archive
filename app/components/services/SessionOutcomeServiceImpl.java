@@ -6,6 +6,7 @@ import components.cms.dao.SessionOutcomeDao;
 import components.common.client.userservice.UserServiceClientJwt;
 import components.services.notification.PermissionsFinderNotificationClient;
 import controllers.routes;
+import exceptions.InvalidUserAccountException;
 import models.enums.OutcomeType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -71,7 +72,8 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   @Override
-  public void generateItemListedOutcome(String userId, String sessionId, String controlEntryId) {
+  public void generateItemListedOutcome(String userId, String sessionId,
+                                        String controlEntryId) throws InvalidUserAccountException {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     String controlCode = controlEntryConfig.getControlCode();
@@ -90,7 +92,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   @Override
   public String generateNotFoundNlrLetter(String userId, String sessionId, String controlEntryId, String resumeCode,
-                                          String description) {
+                                          String description) throws InvalidUserAccountException {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, null);
@@ -100,7 +102,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   @Override
   public String generateDecontrolNlrLetter(String userId, String sessionId, String stageId, String resumeCode,
-                                           String description) {
+                                           String description) throws InvalidUserAccountException {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, false, HtmlRenderOption.OMIT_LINKS);
@@ -110,7 +112,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   private String generateLetter(String userId, String sessionId, String resumeCode, OutcomeType outcomeType,
-                                Html nlrBreadcrumb, String description) {
+                                Html nlrBreadcrumb, String description) throws InvalidUserAccountException {
     CustomerView customerView = getCustomerId(userId);
     String customerId = customerView.getCustomerId();
     SiteView siteView = getSite(customerId, userId);
@@ -143,30 +145,30 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     }
   }
 
-  private SiteView getSite(String customerId, String userId) {
+  private SiteView getSite(String customerId, String userId) throws InvalidUserAccountException {
     Optional<List<SiteView>> optSites = customerService.getSitesByCustomerIdUserId(customerId, userId);
     if (optSites.isPresent()) {
       List<SiteView> sites = optSites.get();
       if (sites.size() == 1) {
         return sites.get(0);
       } else {
-        throw new RuntimeException("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
+        throw new InvalidUserAccountException("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
       }
     }
-    throw new RuntimeException("Not a single Site associated with user/customer: " + userId + "/" + customerId);
+    throw new InvalidUserAccountException("Not a single Site associated with user/customer: " + userId + "/" + customerId);
   }
 
-  private CustomerView getCustomerId(String userId) {
+  private CustomerView getCustomerId(String userId) throws InvalidUserAccountException {
     Optional<List<CustomerView>> optCustomers = customerService.getCustomersByUserId(userId);
     if (optCustomers.isPresent()) {
       List<CustomerView> customers = optCustomers.get();
       if (customers.size() == 1) {
         return customers.get(0);
       } else {
-        throw new RuntimeException("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
+        throw new InvalidUserAccountException("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
       }
     }
-    throw new RuntimeException("Not a single Customer associated with user: " + userId);
+    throw new InvalidUserAccountException("Not a single Customer associated with user: " + userId);
   }
 
 }
