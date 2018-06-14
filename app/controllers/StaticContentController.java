@@ -29,7 +29,8 @@ public class StaticContentController extends Controller {
     TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment"),
     NOT_APPLICABLE("notApplicable.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
-    VIRTUAL_EU("virtualEU.html", "You do not need a licence");
+    VIRTUAL_EU("virtualEU.html", "You do not need a licence"),
+    UNKNOWN_OUTCOME("unknownOutcome.html", "Unknown outcome");
 
     StaticHtml(String filename, String title, Html pageHeading) {
       this.filename = filename;
@@ -79,6 +80,10 @@ public class StaticContentController extends Controller {
 
   public Result renderVirtualEU() {
     return renderStaticHtml(StaticHtml.VIRTUAL_EU);
+  }
+
+  public Result renderUnknownOutcome() {
+    return renderStaticHtml(StaticHtml.UNKNOWN_OUTCOME);
   }
 
 }
