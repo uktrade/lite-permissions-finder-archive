@@ -152,7 +152,7 @@ public class OutcomeController extends Controller {
     List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
-    List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig, false);
+    List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig, true);
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbViews, controlCode, description, subAnswerViews));
   }
