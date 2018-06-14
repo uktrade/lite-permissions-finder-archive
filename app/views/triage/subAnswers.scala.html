@@ -7,7 +7,7 @@
     <ul>
     @for(subAnswerView <- subAnswerViews) {
       <li>
-        @subAnswerView.getText
+        @Html(subAnswerView.getText)
         @answerList(subAnswerView.getSubAnswerViews)
       </li>
     }
