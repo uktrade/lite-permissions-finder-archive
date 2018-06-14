@@ -8,7 +8,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
-import triage.config.StageConfig;
 import triage.text.HtmlRenderOption;
 import views.html.modal.modalControlEntry;
 
@@ -42,19 +41,11 @@ public class ModalControlEntryController extends Controller {
   }
 
   private String createGoToControlEntryUrl(ControlEntryConfig controlEntryConfig, String sessionId) {
-    List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
-    String stageId = stageIds.stream()
-        .map(journeyConfigService::getStageConfigById)
-        .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == StageConfig.QuestionType.STANDARD)
-        .findAny()
-        .map(stageConfig -> stageConfig.getStageId())
-        .orElse("TODO");
-
-    if (!stageId.equals("TODO")) {
-      return controllers.routes.StageController.render(stageId, sessionId).toString();
-    } else {
-      Logger.info("Cannot create \"Go to this control entry\" link for invalid stageId " + stageId);
-      return null;
-    }
+    return journeyConfigService.getPrincipleStageConfigForControlEntry(controlEntryConfig)
+        .map(stageConfig -> controllers.routes.StageController.render(stageConfig.getStageId(), sessionId).toString())
+        .orElseGet(() -> {
+          Logger.info("Cannot create \"Go to this control entry\" link for invalid controlEntryId " + controlEntryConfig.getId());
+          return null;
+        });
   }
 }

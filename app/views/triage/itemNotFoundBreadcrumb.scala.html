@@ -1,9 +1,8 @@
 @import models.view.BreadcrumbItemView
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
-@import com.google.common.collect.Iterables
 
-@(breadcrumbItemsViews: List[BreadcrumbItemView])
+@(breadcrumbItemsViews: List[BreadcrumbItemView], changeUrl: String)
 
 @controlCodeBreadcrumbs(isWide = true) {
   @for(breadcrumbItemView <- breadcrumbItemsViews) {
@@ -25,7 +24,7 @@
       }
     }
   }
-  @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = Iterables.getLast(breadcrumbItemsViews).getUrl) {
+  @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = changeUrl) {
     <span class="outcome-detail-box-heading">Item has none of the controlled characteristics</span>
   }(HtmlFormat.empty)
 }
