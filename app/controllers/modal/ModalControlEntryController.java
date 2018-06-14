@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import models.view.BreadcrumbItemView;
+import models.view.SubAnswerView;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -61,7 +62,8 @@ public class ModalControlEntryController extends Controller {
         builder.append("<li>");
         builder.append(htmlRenderService.convertRichTextToHtml(controlEntryConfigIterate.getFullDescription()));
         builder.append("</li>");
-        builder.append(answerViewService.createSubAnswerViewsHtml(controlEntryConfigIterate));
+        List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfigIterate, true);
+        builder.append(answerViewService.createSubAnswerViewsHtml(subAnswerViews));
       });
       builder.append("</ul>");
       return builder.toString();

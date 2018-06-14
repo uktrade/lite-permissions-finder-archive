@@ -10,7 +10,7 @@ import java.util.List;
 public interface AnswerViewService {
   List<AnswerView> createAnswerViews(StageConfig stageConfig, boolean html);
 
-  List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig);
+  List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig, boolean html);
 
-  String createSubAnswerViewsHtml(ControlEntryConfig controlEntryConfig);
+  String createSubAnswerViewsHtml(List<SubAnswerView> subAnswerViews);
 }

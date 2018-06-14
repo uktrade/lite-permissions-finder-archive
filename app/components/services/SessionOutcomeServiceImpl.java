@@ -76,7 +76,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig, HtmlRenderOption.OMIT_LINKS);
-    List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig);
+    List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig, false);
     Html html = listedOutcomeJourney.render(breadcrumbViews, controlCode, description, subAnswerViews);
 
     CustomerView customerView = getCustomerId(userId);

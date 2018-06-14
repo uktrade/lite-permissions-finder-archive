@@ -21,14 +21,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class AnswerViewViewServiceImpl implements AnswerViewService {
+public class AnswerViewServiceImpl implements AnswerViewService {
 
   private final HtmlRenderService htmlRenderService;
   private final JourneyConfigService journeyConfigService;
 
   @Inject
-  public AnswerViewViewServiceImpl(HtmlRenderService htmlRenderService,
-                                   JourneyConfigService journeyConfigService) {
+  public AnswerViewServiceImpl(HtmlRenderService htmlRenderService,
+                               JourneyConfigService journeyConfigService) {
     this.htmlRenderService = htmlRenderService;
     this.journeyConfigService = journeyConfigService;
   }
@@ -124,14 +124,14 @@ public class AnswerViewViewServiceImpl implements AnswerViewService {
   }
 
   @Override
-  public List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig) {
+  public List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig, boolean html) {
     List<SubAnswer> subAnswers = createSubAnswers(controlEntryConfig);
-    return createSubAnswerViews(subAnswers, false);
+    return createSubAnswerViews(subAnswers, html);
   }
 
   @Override
-  public String createSubAnswerViewsHtml(ControlEntryConfig controlEntryConfig) {
-    return subAnswerViewsToHtml(createSubAnswerViews(createSubAnswers(controlEntryConfig), true));
+  public String createSubAnswerViewsHtml(List<SubAnswerView> subAnswerViews) {
+    return subAnswerViewsToHtml(subAnswerViews);
   }
 
   private List<SubAnswerView> createSubAnswerViews(List<SubAnswer> subAnswers, boolean html) {

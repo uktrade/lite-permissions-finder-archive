@@ -55,7 +55,7 @@ import components.common.transaction.TransactionManager;
 import components.services.AnswerConfigService;
 import components.services.AnswerConfigServiceImpl;
 import components.services.AnswerViewService;
-import components.services.AnswerViewViewServiceImpl;
+import components.services.AnswerViewServiceImpl;
 import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
 import components.services.CustomerService;
@@ -136,7 +136,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(RenderService.class).to(RenderServiceImpl.class);
     bind(BreadcrumbViewService.class).to(BreadcrumbViewServiceImpl.class);
     bind(AnswerConfigService.class).to(AnswerConfigServiceImpl.class);
-    bind(AnswerViewService.class).to(AnswerViewViewServiceImpl.class);
+    bind(AnswerViewService.class).to(AnswerViewServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
     bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class).asEagerSingleton();
     bind(RichTextParser.class).to(RichTextParserImpl.class);
