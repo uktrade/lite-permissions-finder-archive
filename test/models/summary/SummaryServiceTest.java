@@ -11,11 +11,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import components.common.cache.CountryProvider;
 import components.common.state.ContextParamManager;
 import components.persistence.PermissionsFinderDao;
-import components.services.controlcode.frontend.FrontendServiceClient;
-import components.services.controlcode.frontend.FrontendServiceResult;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import components.services.ogels.ogel.OgelServiceClient;
-import controllers.ogel.OgelQuestionsController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,8 +46,6 @@ public class SummaryServiceTest {
   @Mock
   private PermissionsFinderDao dao;
   @Mock
-  private FrontendServiceClient frontendServiceClient;
-  @Mock
   private OgelServiceClient ogelServiceClient;
   @Mock
   private ApplicableOgelServiceClient applicableOgelServiceClient;
@@ -61,8 +56,6 @@ public class SummaryServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    JsonNode frontendControlCodesJson = Json.parse(this.getClass().getClassLoader().getResourceAsStream("models/summary/frontend-control-codes.json"));
-    FrontendServiceResult frontendServiceResult = new FrontendServiceResult(frontendControlCodesJson);
 
     JsonNode applicableOgelsJson = Json.parse(this.getClass().getClassLoader().getResourceAsStream("models/summary/applicable-ogels.json"));
     List<ApplicableOgelView> applicableOgelViews = Stream.of(Json.fromJson(applicableOgelsJson, ApplicableOgelView[].class)).collect(Collectors.toList());
@@ -72,10 +65,6 @@ public class SummaryServiceTest {
 
     CountryView countryView = new CountryView(DESTINATION_COUNTRY, "countryName", new ArrayList<>());
 
-    OgelQuestionsController.OgelQuestionsForm ogelQuestionsForm = new OgelQuestionsController.OgelQuestionsForm();
-    ogelQuestionsForm.forRepair = "true";
-    ogelQuestionsForm.forExhibition = "true";
-
     when(cpm.addParamsToCall(any(Call.class))).thenReturn("http://some-url");
     when(dao.getApplicationCode()).thenReturn(APPLICATION_CODE);
     when(dao.getOgelId()).thenReturn(OGEL_ID);
@@ -83,9 +72,6 @@ public class SummaryServiceTest {
     when(dao.getFinalDestinationCountry()).thenReturn(DESTINATION_COUNTRY);
     when(dao.getThroughDestinationCountries()).thenReturn(Collections.emptyList());
     when(dao.getSourceCountry()).thenReturn(SOURCE_COUNTRY);
-    when(dao.getOgelQuestionsForm()).thenReturn(Optional.of(ogelQuestionsForm));
-
-    when(frontendServiceClient.get(anyString())).thenReturn(CompletableFuture.completedFuture(frontendServiceResult));
 
     when(ogelServiceClient.get(anyString())).thenReturn(CompletableFuture.completedFuture(ogelFullView));
 
@@ -94,16 +80,7 @@ public class SummaryServiceTest {
 
     when(countryProvider.getCountries()).thenReturn(Collections.singletonList(countryView));
 
-    summaryService = new SummaryServiceImpl(cpm, dao, new HttpExecutionContext(Runnable::run), frontendServiceClient, ogelServiceClient, applicableOgelServiceClient, countryProvider);
-  }
-
-  @Test
-  public void summaryIsGenerated() throws Exception {
-    Summary summary = summaryService.composeSummary().toCompletableFuture().get();
-    assertThat(summary.applicationCode).isEqualTo(APPLICATION_CODE);
-    assertThat(summary.isValid()).isTrue();
-    assertThat(summary.summaryFields.isEmpty()).isFalse();
-    assertThat(summary.summaryFields.size()).isEqualTo(3);
+    summaryService = new SummaryServiceImpl(cpm, dao, new HttpExecutionContext(Runnable::run), ogelServiceClient, applicableOgelServiceClient, countryProvider);
   }
 
   @Test
@@ -118,28 +95,6 @@ public class SummaryServiceTest {
     Summary summary = summaryService.composeSummary().toCompletableFuture().get();
     Optional<SummaryField> field = summary.findSummaryField(SummaryFieldType.DESTINATION_COUNTRIES);
     assertThat(field.isPresent()).isTrue();
-  }
-
-  @Test
-  public void controlCodeFieldIsGenerated() throws Exception {
-    Summary summary = summaryService.composeSummary().toCompletableFuture().get();
-    Optional<SummaryField> field = summary.findSummaryField(SummaryFieldType.CONTROL_CODE);
-    assertThat(field.isPresent()).isTrue();
-  }
-
-  @Test
-  public void summaryFieldsAreValidated() throws Exception {
-    Summary summary = summaryService.composeSummary().toCompletableFuture().get();
-    assertThat(summary.summaryFields.size()).isEqualTo(3);
-    assertThat(summary.isValid()).isTrue();
-
-    // Add invalid field
-    SummaryField invalidField = mock(SummaryField.class);
-    when(invalidField.isValid()).thenReturn(false);
-    summary.addSummaryField(invalidField);
-
-    assertThat(summary.summaryFields.size()).isEqualTo(4);
-    assertThat(summary.isValid()).isFalse();
   }
 
   @Test

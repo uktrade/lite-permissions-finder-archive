@@ -157,22 +157,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     install(new CommonGuiceModule(config));
     install(new RedisSessionStoreModule(environment, config));
 
-    // searchService
-    bindConstant().annotatedWith(Names.named("searchServiceAddress"))
-        .to(config.getString("searchService.address"));
-    bindConstant().annotatedWith(Names.named("searchServiceTimeout"))
-        .to(config.getString("searchService.timeout"));
-    bindConstant().annotatedWith(Names.named("searchServiceCredentials"))
-        .to(config.getString("searchService.credentials"));
-
-    // controlCodeService
-    bindConstant().annotatedWith(Names.named("controlCodeServiceAddress"))
-        .to(config.getString("controlCodeService.address"));
-    bindConstant().annotatedWith(Names.named("controlCodeServiceTimeout"))
-        .to(config.getString("controlCodeService.timeout"));
-    bindConstant().annotatedWith(Names.named("controlCodeServiceCredentials"))
-        .to(config.getString("controlCodeService.credentials"));
-
     // countryService
     bindConstant().annotatedWith(Names.named("countryServiceAddress"))
         .to(config.getString("countryService.address"));
@@ -284,6 +268,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
                                                     RedissonClient redissonClient) {
     return new StatelessRedisDao(keyConfig, redissonClient);
   }
+
 
   @Provides
   public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(
