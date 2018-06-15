@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface JourneyConfigService {
 
+  long getDefaultJourneyId();
+
   String getInitialStageId();
 
   StageConfig getStageConfigById(String stageId);

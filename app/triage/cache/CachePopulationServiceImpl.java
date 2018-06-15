@@ -54,8 +54,6 @@ public class CachePopulationServiceImpl implements CachePopulationService {
 
     populateCachesForStage(journeyConfigService.getStageConfigById(journeyConfigService.getInitialStageId()));
 
-    //TODO: definitions
-
     String result = String.format("Config cache successfully populated\n" +
             "Bad control entries: %s\n" +
             "Bad global definition terms: %s\n" +

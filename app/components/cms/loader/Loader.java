@@ -34,6 +34,7 @@ import models.cms.enums.StageAnswerOutcomeType;
 import models.cms.enums.StageOutcomeType;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
+import triage.config.JourneyConfigServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,7 +77,7 @@ public class Loader {
     clearDown();
     NavigationLevel rootNavigationLevel = new NavigationLevel("ROOT", "ROOT", -1);
     rootNavigationLevel.addAllSubNavigationlevels(parserResult.getNavigationLevels());
-    Journey journey = new Journey().setJourneyName("MILITARY");
+    Journey journey = new Journey().setJourneyName(JourneyConfigServiceImpl.DEFAULT_JOURNEY_NAME);
     Long journeyId = journeyDao.insertJourney(journey);
     generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
     createControlEntries(null, rootNavigationLevel);
