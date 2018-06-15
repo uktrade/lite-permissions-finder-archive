@@ -1,6 +1,3 @@
-# Route Ogel Conditions
-GET         /ogel-conditions/:ogelId            controllers.ViewOgelController.viewOgel(ogelId: String)
-
 # Routes
 # ~~~~
 ->      /common                     common.Routes
