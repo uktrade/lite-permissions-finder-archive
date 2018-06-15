@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 public class JourneyConfigServiceImpl implements JourneyConfigService {
 
+  public static final String DEFAULT_JOURNEY_NAME = "MILITARY";
+
   private final JourneyDao journeyDao;
   private final StageDao stageDao;
   private final StageAnswerDao stageAnswerDao;
@@ -42,12 +44,22 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   }
 
   @Override
+  public long getDefaultJourneyId() {
+    return getDefaultJourney()
+        .map(Journey::getId)
+        .orElseThrow(() -> new IllegalStateException("No default journey is defined"));
+  }
+
+  @Override
   public String getInitialStageId() {
-    return journeyDao.getJourneysByJourneyName("MILITARY").stream()
+    return getDefaultJourney()
         .map(Journey::getInitialStageId)
         .map(Object::toString)
-        .findFirst()
-        .orElse(null);
+        .orElseThrow(() -> new IllegalStateException("No default journey is defined"));
+  }
+
+  private Optional<Journey> getDefaultJourney() {
+    return journeyDao.getJourneysByJourneyName(DEFAULT_JOURNEY_NAME).stream().findAny();
   }
 
   @Override
