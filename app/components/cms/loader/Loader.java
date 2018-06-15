@@ -191,23 +191,22 @@ public class Loader {
         if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
           NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
           if (subNavigationLevel.getButtons() == null) {
+            //Child entries without buttons are not a stage, we are actually on a leaf now
             if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
               stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
             } else {
-              //Child entries without buttons are not a stage, we are actually on a leaf now
               stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
             }
           } else {
             stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
           }
         } else {
+          //Child entries without buttons are not a stage, we are actually on a leaf now
           if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
             stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
           } else {
-            //Child entries without buttons are not a stage, we are actually on a leaf now
             stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
           }
-          stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
         }
       }
 
