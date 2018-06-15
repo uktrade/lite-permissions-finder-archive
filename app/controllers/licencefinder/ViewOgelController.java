@@ -183,12 +183,8 @@ public class ViewOgelController {
     if (info.hasError()) {
       return badRequest(errorPage.render("errorMessage"));
     } else {
-      return ok(viewOgel.render(info, getViewSummaryUrl(info.getOgelType())));
+      return ok(viewOgel.render(info));
     }
-  }
-
-  private String getViewSummaryUrl(String ogelType) {
-    return "/ogel-conditions/" + ogelType;
   }
 
 }

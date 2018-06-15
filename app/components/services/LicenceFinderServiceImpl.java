@@ -95,7 +95,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
    * Attempts to read callback reference set number times/period
    */
   public Optional<String> getRegistrationReference(String transactionId) {
-    //ThreadUtil.sleep(1500); // pause for a moment
     Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
     if (optRegisterLicence.isPresent()) {
       String ref = optRegisterLicence.get().getRegistrationReference();
@@ -237,9 +236,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       List<OgelRegistrationView> views = permissionsService.getOgelRegistrations(userId).toCompletableFuture().get();
       for(OgelRegistrationView view : views) {
         ogelIdRefMap.put(view.getOgelType(), view.getRegistrationReference());
-      }
-      ogelIdRefMap.put("OGL12", "GBOGE2017/12345"); // to enable testing with licence_finder_applicant@test.com user TODO remove once test data is updated to show an already registered Ogel
-    } catch (InterruptedException | ExecutionException e) {
+      } } catch (InterruptedException | ExecutionException e) {
       Logger.error("OgelRegistration exception", e);
     }
     return ogelIdRefMap;
