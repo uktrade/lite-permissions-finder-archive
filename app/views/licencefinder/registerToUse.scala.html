@@ -11,7 +11,7 @@
 @import utils.common.ViewUtil
 
 @this(standardPage: standardPage)
-@(form: Form[RegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean, questionViews: List[QuestionView])
+@(form: Form[RegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean, questionViews: List[QuestionView], sessionId: String)
 
 @pageHeading = @{
   "Register to use Open general export licence (" + ogel.getName + ")"
@@ -46,7 +46,7 @@
     </dl>
   </div>
 
-  <form action="@controllers.licencefinder.routes.RegisterToUseController.handleRegisterToUseSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.RegisterToUseController.handleRegisterToUseSubmit(sessionId)" method="POST">
 
     @contextFormParams()
 

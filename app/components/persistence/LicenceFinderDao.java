@@ -19,13 +19,11 @@ public class LicenceFinderDao {
   private static final String OGEL_ID = "ogelId";
   private static final String CUSTOMER_ID = "customerId";
   private static final String SITE_ID = "siteId";
-  private static final String APPLICATION_CODE = "applicationCode";
   private static final String TRADE_TYPE = "tradeType";
   private static final String OGEL_QUESTIONS = "ogelQuestions";
   private static final String DESTINATION_COUNTRY = "destinationCountry";
   private static final String FIRST_CONSIGNEE_COUNTRY = "firstConsigneeCountry";
   private static final String MULTIPLE_COUNTRIES = "multipleCountries";
-  private static final String SUBMISSION_REQUEST_ID = "submissionRequest:id";
   private static final String USER_OGEL_ID_REF_MAP = "userOgelIdRefMap";
 
   private final CommonRedisDao dao;
@@ -33,15 +31,6 @@ public class LicenceFinderDao {
   @Inject
   public LicenceFinderDao(@Named("permissionsFinderDaoHashCommon") CommonRedisDao dao) {
     this.dao = dao;
-  }
-
-
-  public void saveSubmissionRequestId(String requestId) {
-    dao.writeString(SUBMISSION_REQUEST_ID, requestId);
-  }
-
-  public String getSubmissionRequestId() {
-    return dao.readString(SUBMISSION_REQUEST_ID);
   }
 
   public void saveCustomerId(String arg) {
@@ -60,19 +49,19 @@ public class LicenceFinderDao {
     return dao.readString(SITE_ID);
   }
 
-  public void saveControlCode(String arg) {
-    dao.writeString(CONTROL_CODE, arg);
+  public void saveControlCode(String sessionId, String controlCode) {
+    dao.writeString(CONTROL_CODE, controlCode);
   }
 
-  public String getControlCode() {
+  public String getControlCode(String sessionId) {
     return dao.readString(CONTROL_CODE);
   }
 
-  public void saveSourceCountry(String arg) {
-    dao.writeString(SOURCE_COUNTRY, arg);
+  public void saveSourceCountry(String sessionId, String countryCode) {
+    dao.writeString(SOURCE_COUNTRY, countryCode);
   }
 
-  public String getSourceCountry() {
+  public String getSourceCountry(String sessionId) {
     return dao.readString(SOURCE_COUNTRY);
   }
 
@@ -82,14 +71,6 @@ public class LicenceFinderDao {
 
   public String getOgelId() {
     return dao.readString(OGEL_ID);
-  }
-
-  public void saveApplicationCode(String arg) {
-    dao.writeString(APPLICATION_CODE, arg);
-  }
-
-  public String getApplicationCode() {
-    return dao.readString(APPLICATION_CODE);
   }
 
   public void saveDestinationCountry(String arg) {
@@ -108,11 +89,11 @@ public class LicenceFinderDao {
     return dao.readString(FIRST_CONSIGNEE_COUNTRY);
   }
 
-  public void saveTradeType(TradeType tradeType) {
+  public void saveTradeType(String sessionId, TradeType tradeType) {
     dao.writeString(TRADE_TYPE, tradeType.toString());
   }
 
-  public Optional<TradeType> getTradeType() {
+  public Optional<TradeType> getTradeType(String sessionId) {
     String tradeType = dao.readString(TRADE_TYPE);
     return StringUtils.isBlank(tradeType) ? Optional.empty() : Optional.of(TradeType.valueOf(tradeType));
   }
@@ -132,16 +113,6 @@ public class LicenceFinderDao {
   public Optional<Boolean> getMultipleCountries() {
     return readBoolean(MULTIPLE_COUNTRIES);
   }
-
-  /*
-  public void saveAlreadyRegisteredOgelSet(Set<String> ogelIds) {
-    dao.writeObject(ALREADY_REGISTERED_OGEL_ID_SET, ogelIds);
-  }
-
-  public Set<String> getAlreadyRegisteredOgelSet() {
-    return dao.readObject(ALREADY_REGISTERED_OGEL_ID_SET, new TypeReference<Set<String>>() {})
-        .orElse(new HashSet<>());
-  }*/
 
   public void saveUserOgelIdRefMap(Map<String, String> ogelIdRefMap) {
     dao.writeObject(USER_OGEL_ID_REF_MAP, ogelIdRefMap);

@@ -40,24 +40,24 @@ public class QuestionsController extends Controller {
   /**
    * renderQuestionsForm
    */
-  public CompletionStage<Result> renderQuestionsForm() {
+  public CompletionStage<Result> renderQuestionsForm(String sessionId) {
     Optional<QuestionsForm> optForm = licenceFinderDao.getQuestionsForm();
-    return completedFuture(ok(questions.render(formFactory.form(QuestionsForm.class).fill(optForm.orElseGet(QuestionsForm::new)))));
+    return completedFuture(ok(questions.render(formFactory.form(QuestionsForm.class).fill(optForm.orElseGet(QuestionsForm::new)), sessionId)));
   }
 
   /**
    * handleQuestionsSubmit
    */
-  public CompletionStage<Result> handleQuestionsSubmit() {
+  public CompletionStage<Result> handleQuestionsSubmit(String sessionId) {
     Form<QuestionsForm> form = formFactory.form(QuestionsForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(questions.render(form)));
+      return completedFuture(ok(questions.render(form, sessionId)));
     } else {
       licenceFinderDao.saveQuestionsForm(form.get());
 
       // Take this opportunity in flow to save users CustomerId and SiteId
       licenceFinderService.persistCustomerAndSiteData();
-      return contextParam.addParamsAndRedirect(routes.ResultsController.renderResultsForm());
+      return contextParam.addParamsAndRedirect(routes.ResultsController.renderResultsForm(sessionId));
     }
   }
 

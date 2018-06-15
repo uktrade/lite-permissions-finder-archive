@@ -9,7 +9,7 @@
 @import play.twirl.api.HtmlFormat
 
 @this(standardPage: standardPage)
-@(form: Form[_], countries: List[CountryView], fieldOrderList: List[String])
+@(form: Form[_], countries: List[CountryView], fieldOrderList: List[String], sessionId: String)
 
 @multipleCountriesQuestion = @{
   Html(DestinationController.DESTINATION_MULTIPLE_QUESTION)
@@ -36,7 +36,7 @@
 @standardPage("Finding the right licence", Some(heading(DestinationController.DESTINATION_QUESTION))){
   @errorSummary(form, fieldOrder = fieldOrderList)
 } {
-  <form action="@controllers.licencefinder.routes.DestinationController.handleDestinationSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.DestinationController.handleDestinationSubmit(sessionId)" method="POST">
 
     @contextFormParams()
 

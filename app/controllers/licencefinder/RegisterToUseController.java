@@ -84,17 +84,17 @@ public class RegisterToUseController extends Controller {
   /**
    * renderRegisterToUseForm
    */
-  public CompletionStage<Result> renderRegisterToUseForm() {
-    return renderWithRegisterToUseForm(formFactory.form(RegisterToUseForm.class));
+  public CompletionStage<Result> renderRegisterToUseForm(String sessionId) {
+    return renderWithRegisterToUseForm(formFactory.form(RegisterToUseForm.class), sessionId);
   }
 
   /**
    * handleRegisterToUseSubmit
    */
-  public CompletionStage<Result> handleRegisterToUseSubmit() {
+  public CompletionStage<Result> handleRegisterToUseSubmit(String sessionId) {
     Form<RegisterToUseForm> form = formFactory.form(RegisterToUseForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return renderWithRegisterToUseForm(form);
+      return renderWithRegisterToUseForm(form, sessionId);
     }
 
     String transactionId = transactionManager.getTransactionId();
@@ -105,50 +105,50 @@ public class RegisterToUseController extends Controller {
       return ogelService.get(licenceFinderDao.getOgelId())
           .thenApplyAsync(ogelFullView -> {
             RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());
-            return ok(registerResult.render(view, ogelFullView, dashboardUrl));
+            return ok(registerResult.render(view, ogelFullView, dashboardUrl, sessionId));
           }, httpContext.current());
     }
 
-    return contextParamManager.addParamsAndRedirect(routes.RegisterToUseController.renderAwaitResult());
+    return contextParamManager.addParamsAndRedirect(routes.RegisterToUseController.renderAwaitResult(sessionId));
   }
 
   /**
    * renderAwaitResult
    */
-  public CompletionStage<Result> renderAwaitResult() {
+  public CompletionStage<Result> renderAwaitResult(String sessionId) {
     String transactionId = transactionManager.getTransactionId();
     Optional<String> regRef = licenceFinderService.getRegistrationReference(transactionId);
     if (regRef.isPresent()) {
       return ogelService.get(licenceFinderDao.getOgelId())
           .thenApplyAsync(ogelFullView -> {
             RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());
-            return ok(registerResult.render(view, ogelFullView, dashboardUrl));
+            return ok(registerResult.render(view, ogelFullView, dashboardUrl, sessionId));
           }, httpContext.current());
     }
-    return completedFuture(ok(registerWait.render()));
+    return completedFuture(ok(registerWait.render(sessionId)));
   }
 
   /**
    * Handles the RegistrationInterval form submission
    */
-  public CompletionStage<Result> handleRegistrationProcessed() {
-    return contextParamManager.addParamsAndRedirect(routes.RegisterToUseController.renderAwaitResult());
+  public CompletionStage<Result> handleRegistrationProcessed(String sessionId) {
+    return contextParamManager.addParamsAndRedirect(routes.RegisterToUseController.renderAwaitResult(sessionId));
   }
 
   /**
    * Private methods
    */
-  private CompletionStage<Result> renderWithRegisterToUseForm(Form<RegisterToUseForm> form) {
+  private CompletionStage<Result> renderWithRegisterToUseForm(Form<RegisterToUseForm> form, String sessionId) {
     return ogelService.get(licenceFinderDao.getOgelId())
         .thenApplyAsync(
-            ogelFullView -> ok(registerToUse.render(form, ogelFullView, licenceFinderDao.getControlCode(), true, getLicenceFinderAnswers())), httpContext.current());
+            ogelFullView -> ok(registerToUse.render(form, ogelFullView, licenceFinderDao.getControlCode(sessionId), true, getLicenceFinderAnswers(sessionId), sessionId)), httpContext.current());
   }
 
-  private List<QuestionView> getLicenceFinderAnswers() {
+  private List<QuestionView> getLicenceFinderAnswers(String sessionId) {
     List<QuestionView> views = new ArrayList<>();
 
-    views.add(new QuestionView(CONTROL_CODE_QUESTION, licenceFinderDao.getControlCode()));
-    licenceFinderDao.getTradeType().ifPresent(tradeType -> views.add(new QuestionView(GOODS_GOING_QUESTION, tradeType.getTitle())));
+    views.add(new QuestionView(CONTROL_CODE_QUESTION, licenceFinderDao.getControlCode(sessionId)));
+    licenceFinderDao.getTradeType(sessionId).ifPresent(tradeType -> views.add(new QuestionView(GOODS_GOING_QUESTION, tradeType.getTitle())));
     views.add(new QuestionView(DestinationController.DESTINATION_QUESTION, countryProvider.getCountry(licenceFinderDao.getDestinationCountry()).getCountryName()));
     licenceFinderDao.getMultipleCountries().ifPresent(aBoolean -> views.add(new QuestionView(DestinationController.DESTINATION_MULTIPLE_QUESTION, aBoolean ? "Yes" : "No")));
 

@@ -6,7 +6,7 @@
 @import models.view.licencefinder.ResultsView
 
 @this(standardPage: standardPage)
-@(form: Form[_], resultsView: ResultsView)
+@(form: Form[_], resultsView: ResultsView, sessionId: String)
 
   @title = @{
     Html("")
@@ -18,7 +18,7 @@
   @errorSummary(form)
 }{
 
-  <form action="@controllers.licencefinder.routes.ResultsController.handleResultsSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.ResultsController.handleResultsSubmit(sessionId)" method="POST">
 
     @contextFormParams()
 

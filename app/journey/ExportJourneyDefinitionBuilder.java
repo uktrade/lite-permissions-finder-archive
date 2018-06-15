@@ -6,7 +6,7 @@ import components.common.journey.JourneyStage;
 
 public class ExportJourneyDefinitionBuilder extends JourneyDefinitionBuilder {
 
-  private final JourneyStage tradeForm = defineStage("destinationCountries", controllers.licencefinder.routes.TradeController.renderTradeForm());
+  private final JourneyStage tradeForm = defineStage("destinationCountries", controllers.licencefinder.routes.TradeController.renderTradeForm("sessionId"));
 
   @Inject
   public ExportJourneyDefinitionBuilder() {

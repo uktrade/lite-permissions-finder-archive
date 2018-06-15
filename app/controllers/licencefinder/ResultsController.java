@@ -61,24 +61,24 @@ public class ResultsController extends Controller {
   /**
    * renderResultsForm
    */
-  public CompletionStage<Result> renderResultsForm() {
-    return renderWithForm(formFactory.form(ResultsForm.class));
+  public CompletionStage<Result> renderResultsForm(String sessionId) {
+    return renderWithForm(formFactory.form(ResultsForm.class), sessionId);
   }
 
   /**
    * handleResultsSubmit
    */
-  public CompletionStage<Result> handleResultsSubmit() {
+  public CompletionStage<Result> handleResultsSubmit(String sessionId) {
     Form<ResultsForm> form = formFactory.form(ResultsForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return renderWithForm(form);
+      return renderWithForm(form, sessionId);
     }
     String chosenOgelId = form.get().chosenOgel;
     licenceFinderDao.saveOgelId(chosenOgelId);
 
     // Return No licences available when 'None of the above' chosen
     if (chosenOgelId.equals(NONE_ABOVE_KEY)) {
-      return completedFuture(ok(results.render(form, licenceFinderService.getNoResultsView())));
+      return completedFuture(ok(results.render(form, licenceFinderService.getNoResultsView(sessionId), sessionId)));
     }
 
     // Check if we have a Ogel that the is already registered - return registerResult view
@@ -87,23 +87,23 @@ public class ResultsController extends Controller {
         Optional<String> optRef = licenceFinderService.getUserOgelReference(chosenOgelId);
         if(optRef.isPresent()) {
           RegisterResultView resultView = new RegisterResultView("You are already registered to use Open general export licence (" + ogelFullView.getName() + ")", optRef.get());
-          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl));
+          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl, sessionId));
         } else {
           RegisterResultView resultView = new RegisterResultView("You are already registered to use Open general export licence (" + ogelFullView.getName() + ")");
-          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl));
+          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl, sessionId));
         }
       }, httpContext.current());
     }
 
-    return contextParam.addParamsAndRedirect(routes.RegisterToUseController.renderRegisterToUseForm());
+    return contextParam.addParamsAndRedirect(routes.RegisterToUseController.renderRegisterToUseForm(sessionId));
   }
 
   /**
    * Private methods
    */
-  private CompletionStage<Result> renderWithForm(Form<ResultsForm> form) {
+  private CompletionStage<Result> renderWithForm(Form<ResultsForm> form, String sessionId) {
     licenceFinderService.updateUsersOgelIdRefMap(authManager.getAuthInfoFromContext().getId()); // update users current OgelId set
-    return completedFuture(ok(results.render(form, licenceFinderService.getResultsView())));
+    return completedFuture(ok(results.render(form, licenceFinderService.getResultsView(sessionId), sessionId)));
   }
 
   public static class ResultsForm {

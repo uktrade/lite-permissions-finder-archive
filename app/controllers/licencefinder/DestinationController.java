@@ -58,18 +58,18 @@ public class DestinationController extends Controller {
   /**
    * renderDestinationForm
    */
-  public CompletionStage<Result> renderDestinationForm() {
+  public CompletionStage<Result> renderDestinationForm(String sessionId) {
     DestinationForm form = new DestinationForm();
     form.destinationCountry = licenceFinderDao.getDestinationCountry();
     form.firstConsigneeCountry = licenceFinderDao.getFirstConsigneeCountry();
     licenceFinderDao.getMultipleCountries().ifPresent(aBoolean -> form.multipleCountries = aBoolean);
-    return completedFuture(ok(destination.render(formFactory.form(DestinationForm.class).fill(form), getCountries(), getFieldOrder())));
+    return completedFuture(ok(destination.render(formFactory.form(DestinationForm.class).fill(form), getCountries(), getFieldOrder(), sessionId)));
   }
 
   /**
    * handleDestinationSubmit
    */
-  public CompletionStage<Result> handleDestinationSubmit() {
+  public CompletionStage<Result> handleDestinationSubmit(String sessionId) {
 
     Form<DestinationForm> destinationForm = formFactory.form(DestinationForm.class).bindFromRequest();
 
@@ -83,7 +83,7 @@ public class DestinationController extends Controller {
     }
 
     if (destinationForm.hasErrors()) {
-      return completedFuture(ok(destination.render(destinationForm, countries, getFieldOrder())));
+      return completedFuture(ok(destination.render(destinationForm, countries, getFieldOrder(), sessionId)));
     }
 
 
@@ -101,7 +101,7 @@ public class DestinationController extends Controller {
     licenceFinderDao.saveMultipleCountries(form.multipleCountries);
     licenceFinderDao.saveDestinationCountry(form.destinationCountry);
 
-    return contextParam.addParamsAndRedirect(routes.QuestionsController.renderQuestionsForm());
+    return contextParam.addParamsAndRedirect(routes.QuestionsController.renderQuestionsForm(sessionId));
   }
 
   private List<CountryView> getCountries() {

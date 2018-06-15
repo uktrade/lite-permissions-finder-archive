@@ -80,15 +80,15 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   /**
    * Returns results view with Ogel list omitted
    */
-  public ResultsView getNoResultsView() {
-    return doGetResultsView(false);
+  public ResultsView getNoResultsView(String sessionId) {
+    return doGetResultsView(sessionId,false);
   }
 
   /**
    * Returns results view containing users selectable Ogels
    */
-  public ResultsView getResultsView() {
-    return doGetResultsView(true);
+  public ResultsView getResultsView(String sessionId) {
+    return doGetResultsView(sessionId, true);
   }
 
   /**
@@ -169,13 +169,13 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
    * Private methods
    */
 
-  private ResultsView doGetResultsView(boolean includeResults) {
+  private ResultsView doGetResultsView(String sessionId, boolean includeResults) {
 
-    String controlCode = licenceFinderDao.getControlCode();
+    String controlCode = licenceFinderDao.getControlCode(sessionId);
     String destinationCountry = licenceFinderDao.getDestinationCountry();
     String destinationCountryName = countryProvider.getCountry(destinationCountry).getCountryName();
     List<String> destinationCountries = getExportRouteCountries();
-    String sourceCountry = licenceFinderDao.getSourceCountry();
+    String sourceCountry = licenceFinderDao.getSourceCountry(sessionId);
 
     List<String> activities = Collections.emptyList();
     boolean showHistoricOgel = true; // set as default
