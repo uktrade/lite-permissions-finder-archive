@@ -3,20 +3,16 @@ package components.services.notification;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import components.common.client.NotificationServiceClient;
-import play.libs.concurrent.HttpExecutionContext;
 
 import java.util.Map;
 
 public class PermissionsFinderNotificationClient {
 
   private final NotificationServiceClient notificationServiceClient;
-  private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public PermissionsFinderNotificationClient(NotificationServiceClient notificationServiceClient,
-                                             HttpExecutionContext httpExecutionContext) {
+  public PermissionsFinderNotificationClient(NotificationServiceClient notificationServiceClient) {
     this.notificationServiceClient = notificationServiceClient;
-    this.httpExecutionContext = httpExecutionContext;
   }
 
   public void sendApplicationReferenceEmail(String emailAddress, String applicationReference) {

@@ -89,8 +89,6 @@ public class RichTextParserImpl implements RichTextParser {
 
         int lastEndIndex = 0;
         while (matcher.find()) {
-          //TODO does this need an option to skip first match?
-
           if (matcher.start() > 0) {
             //Create node for any simple text between matches (or before first match)
             String leadingText = textContent.substring(lastEndIndex, matcher.start());

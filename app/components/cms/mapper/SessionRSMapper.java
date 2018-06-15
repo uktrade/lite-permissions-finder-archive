@@ -13,9 +13,9 @@ public class SessionRSMapper implements ResultSetMapper<TriageSession> {
   @Override
   public TriageSession map(int index, ResultSet r, StatementContext ctx) throws SQLException {
     ResultSetWrapper rsw = new ResultSetWrapper(r);
-    String id = rsw.getString("id");
+    String id = r.getString("id");
     long journeyId = rsw.getLong("journey_id");
-    String resumeCode = rsw.getString("resume_code");
+    String resumeCode = r.getString("resume_code");
     Long lastStageId = rsw.getLong("last_stage_id");
     return new TriageSession(id, journeyId, resumeCode, lastStageId);
   }

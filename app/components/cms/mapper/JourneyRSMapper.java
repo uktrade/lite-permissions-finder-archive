@@ -13,7 +13,7 @@ public class JourneyRSMapper implements ResultSetMapper<Journey> {
   public Journey map(int index, ResultSet r, StatementContext ctx) throws SQLException {
     ResultSetWrapper rsw = new ResultSetWrapper(r);
     Long id = rsw.getLong("id");
-    String journeyName = rsw.getString("journey_name");
+    String journeyName = r.getString("journey_name");
     Long initialStageId = rsw.getLong("initial_stage_id");
     return new Journey()
         .setId(id)

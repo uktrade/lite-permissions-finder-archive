@@ -8,11 +8,11 @@ import java.util.Optional;
 public class StageConfig {
 
   public enum QuestionType {
-    STANDARD, DECONTROL;
+    STANDARD, DECONTROL
   }
 
   public enum AnswerType {
-    SELECT_ONE, SELECT_MANY;
+    SELECT_ONE, SELECT_MANY
   }
 
   private final String stageId;

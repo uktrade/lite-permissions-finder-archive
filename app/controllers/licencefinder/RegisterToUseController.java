@@ -34,6 +34,16 @@ import javax.inject.Named;
 @With(CommonContextAction.class)
 public class RegisterToUseController extends Controller {
 
+  private static final String CONTROL_CODE_QUESTION = "What Control list entry describes your goods?";
+  private static final String GOODS_GOING_QUESTION = "Where are your goods going?";
+  private static final String FIRST_COUNTRY = "First country or territory that will receive the items";
+  private static final String REPAIR_QUESTION = "Are you exporting goods for or after repair or replacement?";
+  private static final String EXHIBITION_QUESTION = "Are you exporting goods for or after exhibition or demonstration?";
+  private static final String BEFORE_OR_LESS_QUESTION = "Were your goods manufactured before 1897, and worth less than £30,000?";
+
+  private static final String YES = "Yes";
+  private static final String NO = "No";
+
   private final FormFactory formFactory;
   private final LicenceFinderDao licenceFinderDao;
   private final TransactionManager transactionManager;
@@ -47,16 +57,6 @@ public class RegisterToUseController extends Controller {
   private final views.html.licencefinder.registerToUse registerToUse;
   private final views.html.licencefinder.registerWait registerWait;
 
-  private final String CONTROL_CODE_QUESTION = "What Control list entry describes your goods?";
-  private final String GOODS_GOING_QUESTION = "Where are your goods going?";
-  private final String FIRST_COUNTRY = "First country or territory that will receive the items";
-  private final String REPAIR_QUESTION = "Are you exporting goods for or after repair or replacement?";
-  private final String EXHIBITION_QUESTION = "Are you exporting goods for or after exhibition or demonstration?";
-  private final String BEFORE_OR_LESS_QUESTION = "Were your goods manufactured before 1897, and worth less than £30,000?";
-
-  private final String YES = "Yes";
-  private final String NO = "No";
-
   @Inject
   public RegisterToUseController(TransactionManager transactionManager, FormFactory formFactory,
                                  HttpExecutionContext httpContext,
@@ -66,7 +66,8 @@ public class RegisterToUseController extends Controller {
                                  OgelService ogelService, LicenceFinderService licenceFinderService,
                                  views.html.licencefinder.registerResult registerResult,
                                  views.html.licencefinder.registerToUse registerToUse,
-                                 views.html.licencefinder.registerWait registerWait, ContextParamManager contextParamManager) {
+                                 views.html.licencefinder.registerWait registerWait,
+                                 ContextParamManager contextParamManager) {
     this.transactionManager = transactionManager;
     this.formFactory = formFactory;
     this.httpContext = httpContext;

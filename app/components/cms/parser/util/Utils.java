@@ -4,9 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import play.Logger;
 
 public class Utils {
-  private Utils(){}
+  private Utils() {
+  }
 
   public static String getCellStringValue(Row row, int index) {
     Cell cell = row.getCell(index);
@@ -29,7 +31,7 @@ public class Utils {
     } else {
       return null;
     }
-   }
+  }
 
   public static int columnToIndex(String column) {
     if (column == null || column.length() > 2 || column.length() == 0) {
@@ -42,7 +44,7 @@ public class Utils {
     } else {
       index = (((upperColumn.charAt(0) - 65) + 1) * 26) + (upperColumn.charAt(1) - 65);
     }
-    System.out.println("Column " + column + " produced index " + index );
+    Logger.info("Column {} produced index {}", column, index);
     return index;
-   }
+  }
 }

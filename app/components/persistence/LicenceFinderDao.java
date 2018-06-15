@@ -118,7 +118,7 @@ public class LicenceFinderDao {
     dao.writeObject(USER_OGEL_ID_REF_MAP, ogelIdRefMap);
   }
 
-  public Map<String, String>getUserOgelIdRefMap() {
+  public Map<String, String> getUserOgelIdRefMap() {
     return dao.readObject(USER_OGEL_ID_REF_MAP, new TypeReference<Map<String, String>>() {})
         .orElse(new HashMap<>());
   }

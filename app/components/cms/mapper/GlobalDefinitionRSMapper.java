@@ -14,8 +14,8 @@ public class GlobalDefinitionRSMapper implements ResultSetMapper<GlobalDefinitio
     ResultSetWrapper rsw = new ResultSetWrapper(r);
     Long id = rsw.getLong("id");
     Long journeyId = rsw.getLong("journey_id");
-    String term = rsw.getString("term");
-    String definitionText = rsw.getString("definition_text");
+    String term = r.getString("term");
+    String definitionText = r.getString("definition_text");
     return new GlobalDefinition()
         .setId(id)
         .setJourneyId(journeyId)

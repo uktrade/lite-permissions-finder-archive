@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 @With(SessionGuardAction.class)
 public class StageController extends Controller {
 
+  private static final String ACTION = "action";
+
   private final BreadcrumbViewService breadcrumbViewService;
   private final AnswerConfigService answerConfigService;
   private final AnswerViewService answerViewService;
@@ -184,7 +186,7 @@ public class StageController extends Controller {
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
     Form<MultiAnswerForm> multiAnswerFormForm = formFactory.form(MultiAnswerForm.class).bindFromRequest();
-    String actionParam = multiAnswerFormForm.rawData().get("action");
+    String actionParam = multiAnswerFormForm.rawData().get(ACTION);
     Action action = EnumUtil.parse(actionParam, Action.class);
     if (multiAnswerFormForm.hasErrors()) {
       Logger.error("MultiAnswerForm has unexpected errors");
@@ -227,7 +229,7 @@ public class StageController extends Controller {
 
   private Result handleSelectManySubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
     Form<MultiAnswerForm> multiAnswerFormForm = formFactory.form(MultiAnswerForm.class).bindFromRequest();
-    String actionParam = multiAnswerFormForm.rawData().get("action");
+    String actionParam = multiAnswerFormForm.rawData().get(ACTION);
     Action action = EnumUtil.parse(actionParam, Action.class);
     if (multiAnswerFormForm.hasErrors()) {
       Logger.error("MultiAnswerForm has unexpected errors");
@@ -263,7 +265,7 @@ public class StageController extends Controller {
 
   private Result handleSelectOneSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
     Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class).bindFromRequest();
-    String actionParam = answerForm.rawData().get("action");
+    String actionParam = answerForm.rawData().get(ACTION);
     String answer = answerForm.rawData().get("answer");
     Action action = EnumUtil.parse(actionParam, Action.class);
     if (action == Action.CONTINUE) {
@@ -298,8 +300,9 @@ public class StageController extends Controller {
   }
 
   private Result resultForStandardStageAnswer(String stageId, String sessionId, AnswerConfig answerConfig) {
-    if (answerConfig.getOutcomeType().isPresent()) {
-      OutcomeType outcomeType = answerConfig.getOutcomeType().get();
+    Optional<OutcomeType> outcomeTypeOptional = answerConfig.getOutcomeType();
+    if (outcomeTypeOptional.isPresent()) {
+      OutcomeType outcomeType = outcomeTypeOptional.get();
       if (outcomeType == OutcomeType.CONTROL_ENTRY_FOUND) {
         String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
             .map(ControlEntryConfig::getId)

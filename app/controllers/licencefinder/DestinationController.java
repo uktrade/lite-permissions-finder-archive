@@ -76,10 +76,8 @@ public class DestinationController extends Controller {
     DestinationForm form = destinationForm.get();
     List<CountryView> countries = getCountries();
 
-    if (form.multipleCountries != null && form.multipleCountries) {
-      if (form.firstConsigneeCountry == null || form.firstConsigneeCountry.isEmpty()) {
-        destinationForm.reject(FIRST_CONSIGNEE_COUNTRY, "Enter a country or territory");
-      }
+    if (form.multipleCountries != null && form.multipleCountries && StringUtils.isEmpty(form.firstConsigneeCountry)) {
+      destinationForm.reject(FIRST_CONSIGNEE_COUNTRY, "Enter a country or territory");
     }
 
     if (destinationForm.hasErrors()) {
@@ -129,12 +127,10 @@ public class DestinationController extends Controller {
     public String firstConsigneeCountry;
 
     public ValidationError validate() {
-      if (multipleCountries != null && multipleCountries) {
-        if (firstConsigneeCountry == null || firstConsigneeCountry.isEmpty()) {
-          // Could not get to work, got binding error here - validation code is in controller method for now
-          // TODO work out why this was happening
-          //return new ValidationError("firstConsigneeCountry", "Enter this text");
-        }
+      if (multipleCountries != null && multipleCountries && StringUtils.isEmpty(firstConsigneeCountry)) {
+        // Could not get to work, got binding error here - validation code is in controller method for now
+        // TODO work out why this was happening
+        //return new ValidationError("firstConsigneeCountry", "Enter this text");
       }
       return null;
     }

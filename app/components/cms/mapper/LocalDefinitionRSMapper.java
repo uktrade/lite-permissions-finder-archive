@@ -14,8 +14,8 @@ public class LocalDefinitionRSMapper implements ResultSetMapper<LocalDefinition>
     ResultSetWrapper rsw = new ResultSetWrapper(r);
     Long id = rsw.getLong("id");
     Long controlEntryId = rsw.getLong("control_entry_id");
-    String term = rsw.getString("term");
-    String definitionText = rsw.getString("definition_text");
+    String term = r.getString("term");
+    String definitionText = r.getString("definition_text");
     return new LocalDefinition()
         .setId(id)
         .setControlEntryId(controlEntryId)
