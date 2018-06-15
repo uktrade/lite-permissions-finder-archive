@@ -28,11 +28,4 @@ public class ResultSetWrapper {
     }
   }
 
-  public String getString(String columnLabel) throws SQLException {
-    return resultSet.getString(columnLabel);
-  }
-
-  public boolean getBoolean(String columnLabel) throws SQLException {
-    return resultSet.getBoolean(columnLabel);
-  }
 }
