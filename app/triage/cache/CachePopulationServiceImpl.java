@@ -6,9 +6,12 @@ import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.LocalDefinitionDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import triage.config.AnswerConfig;
 import triage.config.DefinitionConfigService;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
+
+import java.util.Optional;
 
 public class CachePopulationServiceImpl implements CachePopulationService {
 
@@ -69,14 +72,14 @@ public class CachePopulationServiceImpl implements CachePopulationService {
     journeyConfigService.getNoteConfigsByStageId(stageConfig.getStageId());
 
     stageConfig.getAnswerConfigs().stream()
-        .filter(e -> e.getNextStageId().isPresent())
-        .map(e -> e.getNextStageId().get())
+        .map(AnswerConfig::getNextStageId)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .map(journeyConfigService::getStageConfigById)
         .forEach(this::populateCachesForStage);
 
-    if (stageConfig.getNextStageId().isPresent()) {
-      populateCachesForStage(journeyConfigService.getStageConfigById(stageConfig.getNextStageId().get()));
-    }
+    stageConfig.getNextStageId().ifPresent(nextStageId ->
+        populateCachesForStage(journeyConfigService.getStageConfigById(nextStageId)));
   }
 
   private void populateCachesForControlEntries() {

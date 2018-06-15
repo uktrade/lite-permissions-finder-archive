@@ -17,15 +17,15 @@ public class StageAnswerRSMapper implements ResultSetMapper<StageAnswer> {
     Long id = rsw.getLong("id");
     Long parentStageId = rsw.getLong("parent_stage_id");
     Long goToStageId = rsw.getLong("go_to_stage_id");
-    String goToStageAnswerOutcomeTypeStr = rsw.getString("go_to_stage_answer_outcome_type");
+    String goToStageAnswerOutcomeTypeStr = r.getString("go_to_stage_answer_outcome_type");
     StageAnswerOutcomeType goToStageAnswerOutcomeType = EnumUtils.getEnum(StageAnswerOutcomeType.class, goToStageAnswerOutcomeTypeStr);
     Long controlEntryId = rsw.getLong("control_entry_id");
-    String answerText = rsw.getString("answer_text");
+    String answerText = r.getString("answer_text");
     Integer displayOrder = rsw.getInt("display_order");
     Integer answerPrecedence = rsw.getInt("answer_precedence");
-    Boolean dividerAbove = rsw.getBoolean("divider_above");
-    String nestedContent = rsw.getString("nested_content");
-    String moreInfoContent = rsw.getString("more_info_content");
+    boolean dividerAbove = r.getBoolean("divider_above");
+    String nestedContent = r.getString("nested_content");
+    String moreInfoContent = r.getString("more_info_content");
     return new StageAnswer()
         .setId(id)
         .setParentStageId(parentStageId)

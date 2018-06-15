@@ -9,7 +9,7 @@ public enum TradeType {
   BROKERING("Between non-UK countries"),
   TRANSSHIPMENT("Through the UK, from one non-UK country to another");
 
-  private String title;
+  private final String title;
 
   TradeType(String title) {
     this.title = title;

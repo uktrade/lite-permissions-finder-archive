@@ -44,7 +44,7 @@ public class ApplicableOgelConsumerPact {
   private static final String DESTINATION_COUNTRY = "CTRY3";
 
   @Rule
-  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
+  public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
@@ -77,7 +77,7 @@ public class ApplicableOgelConsumerPact {
         .uponReceiving("a request for applicable ogels")
           .headers(AUTH_HEADERS)
           .path("/applicable-ogels")
-          .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY.value() + "&destinationCountry=" + DESTINATION_COUNTRY)
+          .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY + "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(200)
@@ -95,7 +95,7 @@ public class ApplicableOgelConsumerPact {
         .uponReceiving("a request for applicable ogels")
           .headers(AUTH_HEADERS)
           .path("/applicable-ogels")
-          .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY.value() + "&destinationCountry=" + DESTINATION_COUNTRY)
+          .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY + "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
           .status(200)
@@ -142,7 +142,7 @@ public class ApplicableOgelConsumerPact {
           .headers(AUTH_HEADERS)
           .path("/applicable-ogels")
           .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY +
-            "&activityType=" + OgelActivityType.MIL_GOV.value() + "&activityType=" + OgelActivityType.MIL_ANY.value() +
+            "&activityType=" + OgelActivityType.MIL_GOV + "&activityType=" + OgelActivityType.MIL_ANY +
             "&destinationCountry=" + DESTINATION_COUNTRY)
           .method("GET")
         .willRespondWith()
@@ -156,7 +156,7 @@ public class ApplicableOgelConsumerPact {
   @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsExist")
   public void applicableOgelsExistTest() throws Exception {
     List<ApplicableOgelView> result;
-    List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.value());
+    List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.toString());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
@@ -177,7 +177,7 @@ public class ApplicableOgelConsumerPact {
   @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsDoNotExist")
   public void applicableOgelsDoNotExistTest() throws Exception {
     List<ApplicableOgelView> result;
-    List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.value());
+    List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.toString());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
@@ -210,7 +210,7 @@ public class ApplicableOgelConsumerPact {
   @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsExistForMultipleActivityTypes")
   public void applicableOgelsExistForMultipleActivityTypesTest() throws Exception {
     List<ApplicableOgelView> result;
-    List<String> activityTypes = Arrays.asList(OgelActivityType.MIL_GOV.value(), OgelActivityType.MIL_ANY.value());
+    List<String> activityTypes = Arrays.asList(OgelActivityType.MIL_GOV.toString(), OgelActivityType.MIL_ANY.toString());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)

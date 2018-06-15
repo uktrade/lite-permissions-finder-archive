@@ -36,12 +36,14 @@ import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import triage.config.JourneyConfigServiceImpl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Loader {
+
+  private static final String REGEX_NEW_LINE = "\\r?\\n";
+
   private final ControlEntryDao controlEntryDao;
   private final GlobalDefinitionDao globalDefinitionDao;
   private final JourneyDao journeyDao;
@@ -109,7 +111,7 @@ public class Loader {
 
     Logger.debug("Generated id {} for cell {}", id, navigationLevel.getCellAddress());
 
-    ArrayList<NavigationLevel> subNavigationLevels = navigationLevel.getSubNavigationLevels();
+    List<NavigationLevel> subNavigationLevels = navigationLevel.getSubNavigationLevels();
 
     for (int i = 0; i < subNavigationLevels.size(); i++) {
       NavigationLevel subNavigationLevel = subNavigationLevels.get(i);
@@ -277,7 +279,7 @@ public class Loader {
       StageAnswer decontrolStageAnswer = new StageAnswer();
 
       List<String> tokens =
-          Arrays.stream(decontrolEntries.get(i).split("\\r?\\n"))
+          Arrays.stream(decontrolEntries.get(i).split(REGEX_NEW_LINE))
               .filter(StringUtils::isNotBlank)
               .collect(Collectors.toList());
 
@@ -308,7 +310,7 @@ public class Loader {
     Definitions definitions = navigationLevel.getDefinitions();
 
     if (definitions != null && definitions.getLocal() != null) {
-      List<String> localDefinitionStrs = Arrays.stream(definitions.getLocal().split("\\r?\\n"))
+      List<String> localDefinitionStrs = Arrays.stream(definitions.getLocal().split(REGEX_NEW_LINE))
           .filter(StringUtils::isNotBlank)
           .map(String::trim)
           .collect(Collectors.toList());
@@ -372,7 +374,7 @@ public class Loader {
       return;
     }
 
-    List<String> noteTexts = Arrays.stream(noteText.split("\\r?\\n"))
+    List<String> noteTexts = Arrays.stream(noteText.split(REGEX_NEW_LINE))
         .map(String::trim)
         .filter(StringUtils::isNotBlank)
         .collect(Collectors.toList());
