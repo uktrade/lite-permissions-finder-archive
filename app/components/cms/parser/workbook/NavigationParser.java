@@ -13,6 +13,7 @@ import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Nesting;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.OnPageContent;
+import components.cms.parser.model.navigation.column.Redirect;
 import components.cms.parser.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
@@ -91,6 +92,10 @@ public class NavigationParser {
       static final int SEE_ALSO = Utils.columnToIndex("AF");
       static final int TECH_NOTE = Utils.columnToIndex("AG");
     }
+
+    static class Redirect {
+      static final int TCFCF = Utils.columnToIndex("AH");
+    }
   }
 
   public static List<NavigationLevel> parse(Workbook workbook) {
@@ -135,6 +140,7 @@ public class NavigationParser {
             Decontrols decontrols = getDecontrols(row);
             Definitions definitions = getDefinitions(row);
             Notes notes = getNotes(row);
+            Redirect redirect = getRedirect(row);
             navigationLevel =
                 new NavigationLevel(
                     navCellAddress,
@@ -149,7 +155,8 @@ public class NavigationParser {
                     breadcrumbs,
                     decontrols,
                     definitions,
-                    notes);
+                    notes,
+                    redirect);
           } catch (ParserException e) {
             Logger.error("Error progressing nav cell: {}, {}", navCellAddress, e.getMessage());
           }
@@ -263,5 +270,10 @@ public class NavigationParser {
     String seeAlso = Utils.getCellStringValue(row, ColumnIndices.Notes.SEE_ALSO);
     String techNote = Utils.getCellStringValue(row, ColumnIndices.Notes.TECH_NOTE);
     return new Notes(nb, note, seeAlso, techNote);
+  }
+
+  private static Redirect getRedirect(Row row) {
+    String tcfcf = Utils.getCellStringValue(row, ColumnIndices.Redirect.TCFCF);
+    return new Redirect("X".equalsIgnoreCase(tcfcf));
   }
 }

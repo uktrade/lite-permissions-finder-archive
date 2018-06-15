@@ -191,12 +191,22 @@ public class Loader {
         if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
           NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
           if (subNavigationLevel.getButtons() == null) {
-            //Child entries without buttons are not a stage, we are actually on a leaf now
-            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+            if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
+            } else {
+              //Child entries without buttons are not a stage, we are actually on a leaf now
+              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+            }
           } else {
             stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
           }
         } else {
+          if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
+          } else {
+            //Child entries without buttons are not a stage, we are actually on a leaf now
+            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+          }
           stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
         }
       }
@@ -255,12 +265,20 @@ public class Loader {
       //This can happen if the current row has "nested content" child rows which are not actual stages
       if (nextStageId == null) {
         Logger.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
-        decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+        if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+          decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
+        } else {
+          decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+        }
       } else {
         decontrolStage.setNextStageId(nextStageId);
       }
     } else {
-      decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+      if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+        decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
+      } else {
+        decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+      }
     }
 
     Long decontrolStageId = stageDao.insertStage(decontrolStage);

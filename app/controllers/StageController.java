@@ -214,6 +214,9 @@ public class StageController extends Controller {
                   stageId)));
           sessionService.updateLastStageId(sessionId, stageId);
           return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
+        } else if (stageConfig.getOutcomeType().map(e -> e == OutcomeType.TOO_COMPLEX).orElse(false)) {
+          //TODO too complex for code finder outcome
+          return ok("Too complex content TODO");
         } else {
           Logger.error("Decontrol stageConfig doesn't have nextStageId or applicable outcomeType");
           return redirectToStage(stageId, sessionId);

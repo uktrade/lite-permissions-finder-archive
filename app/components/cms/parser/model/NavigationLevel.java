@@ -10,6 +10,7 @@ import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Nesting;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.OnPageContent;
+import components.cms.parser.model.navigation.column.Redirect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,10 +30,11 @@ public class NavigationLevel {
   private final Decontrols decontrols;
   private final Definitions definitions;
   private final Notes notes;
+  private final Redirect redirect;
   private final LoadingMetadata loadingMetadata;
 
   public NavigationLevel(String cellAddress, String content, int level) {
-    this(cellAddress, content, level, null, null, null, null, null, null, null, null, null, null);
+    this(cellAddress, content, level, null, null, null, null, null, null, null, null, null, null, null);
   }
 
   public NavigationLevel(
@@ -48,7 +50,8 @@ public class NavigationLevel {
       Breadcrumbs breadcrumbs,
       Decontrols decontrols,
       Definitions definitions,
-      Notes notes
+      Notes notes,
+      Redirect redirect
   ) {
     this.cellAddress = cellAddress;
     this.content = content;
@@ -63,6 +66,7 @@ public class NavigationLevel {
     this.decontrols = decontrols;
     this.definitions = definitions;
     this.notes = notes;
+    this.redirect = redirect;
     loadingMetadata = new LoadingMetadata();
     subNavigationLevels = new ArrayList<>();
   }
@@ -130,6 +134,10 @@ public class NavigationLevel {
 
   public Notes getNotes() {
     return notes;
+  }
+
+  public Redirect getRedirect() {
+    return redirect;
   }
 
   public void addSubNavigationLevel(NavigationLevel navigationLevel) {
