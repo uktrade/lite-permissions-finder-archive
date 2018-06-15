@@ -10,35 +10,15 @@ GET     /                                     controllers.EntryPointController.i
 
 POST    /                                     controllers.EntryPointController.handleSubmit
 
-GET     /change-destinations                  controllers.ChangeController.changeDestinationCountries
-
-POST    /change-destinations                  controllers.ChangeController.changeDestinationCountries
-
-GET     /change-goods-rating                  controllers.ChangeController.changeControlCode
-
-POST    /change-goods-rating                  controllers.ChangeController.changeControlCode
-
-GET     /change-licence-type                  controllers.ChangeController.changeOgelType
-
-POST    /change-licence-type                  controllers.ChangeController.changeOgelType
-
 GET     /continue-application                 controllers.ContinueApplicationController.renderForm
 
 POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
-
-GET     /destination-country                  controllers.DestinationCountryController.renderForm
-
-POST    /destination-country                  controllers.DestinationCountryController.handleSubmit
 
 GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 
 POST    /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
 
 GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
-
-GET     /trade-type                    controllers.TradeTypeController.renderForm
-
-POST    /trade-type                    controllers.TradeTypeController.handleSubmit
 
 GET     /trade-type/brokering          controllers.StaticContentController.renderBrokering
 
@@ -50,13 +30,6 @@ GET     /start-application                    controllers.StartApplicationContro
 
 POST    /start-application                    controllers.StartApplicationController.handleSubmit(sessionId)
 
-GET     /summary                              controllers.SummaryController.renderForm
-
-POST    /summary                              controllers.SummaryController.handleSubmit
-
-GET     /summary-continue                     controllers.SummaryController.renderFormContinue
-
-POST    /summary-continue                     controllers.SummaryController.handleSubmitContinue
 
 # Licence finder
 GET     /licencefinder/entry/:controlCode     controllers.licencefinder.TradeController.entry(controlCode)
@@ -100,9 +73,6 @@ POST    /samlResponse    org.pac4j.play.CallbackController.callback()
 GET     /logout          org.pac4j.play.LogoutController.logout()
 GET     /logged-out      controllers.AuthorisationController.loggedOut()
 GET     /unauthorised    controllers.AuthorisationController.unauthorised()
-
-GET     /test            controllers.DummyController.test()
-GET     /test/frontend-components/:component controllers.FrontendComponentTestController.test(component)
 
 GET     /outcome/not-found/:controlEntryId controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
 POST    /outcome/not-found/:controlEntryId controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
