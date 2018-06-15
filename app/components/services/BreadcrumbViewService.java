@@ -10,16 +10,15 @@ import java.util.List;
 
 public interface BreadcrumbViewService {
 
-  BreadcrumbView createBreadcrumbView(String stageId, String sessionId, HtmlRenderOption... htmlRenderOptions);
+  BreadcrumbView createBreadcrumbViewFromControlEntryId(String sessionId, String controlEntryId);
 
-  BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean includeChangeLinks, HtmlRenderOption... htmlRenderOptions);
+  BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean includeChangeLinks,
+                                      HtmlRenderOption... htmlRenderOptions);
 
   ControlEntryConfig getControlEntryConfig(StageConfig stageConfig);
 
   List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
-                                                     HtmlRenderOption... htmlRenderOptions);
+                                                     boolean includeChangeLinks, HtmlRenderOption... htmlRenderOptions);
 
-  List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig, boolean includeChangeLinks,
-                                                     HtmlRenderOption... htmlRenderOptions);
-
+  String createDecontrolUrl(String sessionId, ControlEntryConfig controlEntryConfig);
 }

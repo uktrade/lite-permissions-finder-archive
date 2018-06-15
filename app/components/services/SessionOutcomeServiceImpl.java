@@ -106,7 +106,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, false, HtmlRenderOption.OMIT_LINKS);
-    Html nlrBreadcrumb = decontrolBreadcrumb.render(breadcrumbView, answerViews);
+    Html nlrBreadcrumb = decontrolBreadcrumb.render(null, breadcrumbView, answerViews);
 
     return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
   }

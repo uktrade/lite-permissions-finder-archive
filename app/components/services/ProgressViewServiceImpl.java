@@ -29,6 +29,13 @@ public class ProgressViewServiceImpl implements ProgressViewService {
   }
 
   @Override
+  public ProgressView createProgressView(ControlEntryConfig controlEntryConfig) {
+    String code = controlEntryConfig.getControlCode();
+    String description = renderService.getSummaryDescription(controlEntryConfig);
+    return new ProgressView(code, description);
+  }
+
+  @Override
   public ProgressView createProgressView(StageConfig stageConfig) {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     String code;

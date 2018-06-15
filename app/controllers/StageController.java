@@ -140,7 +140,7 @@ public class StageController extends Controller {
     String title = stageConfig.getQuestionTitle().orElse("Select one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
     return ok(selectOne.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
@@ -155,13 +155,12 @@ public class StageController extends Controller {
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
 
     List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
-
-    LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
-        Collectors.toMap(e -> e, e -> selectedAnswers.contains(e.getValue()), (a, b) -> a, LinkedHashMap::new));
+    LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
+    answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
     return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
   }
@@ -172,14 +171,13 @@ public class StageController extends Controller {
     String title = stageConfig.getQuestionTitle().orElse("Select at least one");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
 
     List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
-
-    LinkedHashMap<AnswerView, Boolean> answers = answerViews.stream().collect(
-        Collectors.toMap(e -> e, e -> selectedAnswers.contains(e.getValue()), (a, b) -> a, LinkedHashMap::new));
+    LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
+    answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
     return ok(selectMany.render(multiAnswerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
   }
@@ -217,8 +215,11 @@ public class StageController extends Controller {
           sessionService.updateLastStageId(sessionId, stageId);
           return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
         } else if (stageConfig.getOutcomeType().map(e -> e == OutcomeType.TOO_COMPLEX).orElse(false)) {
-          //TODO too complex for code finder outcome
-          return ok("Too complex content TODO");
+          String controlEntryId = stageConfig.getRelatedControlEntry()
+              .map(ControlEntryConfig::getId)
+              .orElseThrow(() -> new BusinessRuleException(String.format(
+                  "Decontrol stage %s must have an associated control entry if it has a TOO_COMPLEX outcome type", stageId)));
+          return redirect(routes.OutcomeController.outcomeNoResult(controlEntryId, sessionId));
         } else {
           Logger.error("Decontrol stageConfig doesn't have nextStageId or applicable outcomeType");
           return redirectToStage(stageId, sessionId);
@@ -313,8 +314,11 @@ public class StageController extends Controller {
                 answerConfig.getAnswerId()));
         return redirect(controllers.routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
       } else if (outcomeType == OutcomeType.TOO_COMPLEX) {
-        //TODO too complex for code finder outcome
-        return ok("Too complex content TODO");
+        String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
+            .map(ControlEntryConfig::getId)
+            .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +
+                answerConfig.getAnswerId()));
+        return redirect(routes.OutcomeController.outcomeNoResult(controlEntryId, sessionId));
       } else {
         Logger.error("Unexpected outcome type %s on answer %s", outcomeType, answerConfig.getAnswerId());
         return redirectToStage(stageId, sessionId);
