@@ -68,7 +68,7 @@ public class OutcomeController extends Controller {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     //TODO graceful handling if control entry not found
     Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();
-    if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
+    if (form.hasErrors() || !isChecked(form)) {
       return renderItemNotFound(form, controlEntryConfig, sessionId);
     } else {
       return redirect(routes.ViewOutcomeController.registerNotFoundNlr(sessionId, controlEntryId));
@@ -98,7 +98,7 @@ public class OutcomeController extends Controller {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     //TODO graceful handling if control entry not found
     Form<RequestOgelForm> form = formFactory.form(RequestOgelForm.class).bindFromRequest();
-    if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
+    if (form.hasErrors() || !isChecked(form)) {
       return renderOutcomeListed(form, controlEntryConfig, sessionId);
     } else {
       return redirect(routes.ViewOutcomeController.saveListedOutcome(sessionId, controlEntryId));
@@ -123,7 +123,6 @@ public class OutcomeController extends Controller {
 
   public Result handleOutcomeDecontrolSubmit(String stageId, String sessionId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (stageConfig == null || PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
       return redirectToIndex(sessionId);
     } else {
@@ -133,7 +132,7 @@ public class OutcomeController extends Controller {
         return redirectToIndex(sessionId);
       } else {
         Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();
-        if (form.hasErrors() || !"true".equals(form.rawData().get("answer"))) {
+        if (form.hasErrors() || !isChecked(form)) {
           return renderOutcomeDecontrol(form, stageId, sessionId, answers);
         } else {
           return redirect(routes.ViewOutcomeController.registerDecontrolNlr(sessionId, stageId));
@@ -171,6 +170,10 @@ public class OutcomeController extends Controller {
   private Result redirectToIndex(String sessionId) {
     String initialStageId = journeyConfigService.getInitialStageId();
     return redirect(routes.StageController.render(initialStageId, sessionId));
+  }
+
+  private boolean isChecked(Form form) {
+    return "true".equals(form.rawData().get("answer"));
   }
 
 }

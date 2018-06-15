@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class ResultSetWrapper {
   private final ResultSet resultSet;
 
-  public ResultSetWrapper(ResultSet resultSet){
+  public ResultSetWrapper(ResultSet resultSet) {
     this.resultSet = resultSet;
   }
 
@@ -32,12 +32,7 @@ public class ResultSetWrapper {
     return resultSet.getString(columnLabel);
   }
 
-  public Boolean getBoolean(String columnLabel) throws SQLException {
-    boolean resultBool = resultSet.getBoolean(columnLabel);
-    if (resultSet.wasNull()) {
-      return null;
-    } else {
-      return resultBool;
-    }
+  public boolean getBoolean(String columnLabel) throws SQLException {
+    return resultSet.getBoolean(columnLabel);
   }
 }

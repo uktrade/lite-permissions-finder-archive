@@ -17,8 +17,8 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
     String controlCode = rsw.getString("control_code");
     String fullDescription = rsw.getString("full_description");
     String summaryDescription = rsw.getString("summary_description");
-    Boolean nested = rsw.getBoolean("nested");
-    Boolean selectable = rsw.getBoolean("selectable");
+    boolean nested = rsw.getBoolean("nested");
+    boolean selectable = rsw.getBoolean("selectable");
     String regime = rsw.getString("regime");
     return new ControlEntry()
         .setId(id)

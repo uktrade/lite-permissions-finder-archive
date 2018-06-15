@@ -27,11 +27,15 @@ public class StaticContentController extends Controller {
   public enum StaticHtml {
     BROKERING("tradetypes/brokering.html", "Trade controls, trafficking and brokering"),
     TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment"),
-    NOT_APPLICABLE("notApplicable.html", "No licence available", headingBannerFunc.apply("You have reached the end of this service")),
+    NOT_APPLICABLE("notApplicable.html", "No licence available", HEADING_BANNER_FUNC.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     VIRTUAL_EU("virtualEU.html", "You do not need a licence"),
     TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites"),
     UNKNOWN_OUTCOME("unknownOutcome.html", "Unknown outcome");
+
+    private final String filename;
+    private final String title;
+    private final Html pageHeading;
 
     StaticHtml(String filename, String title, Html pageHeading) {
       this.filename = filename;
@@ -41,17 +45,13 @@ public class StaticContentController extends Controller {
 
     StaticHtml(String filename, String title) {
       // Standard page headings are shown by default
-      this(filename, title, headingStandardFunc.apply(title));
+      this(filename, title, HEADING_STANDARD_FUNC.apply(title));
     }
-
-    private final String filename;
-    private final String title;
-    private final Html pageHeading;
 
   }
 
-  private static final Function<String, Html> headingStandardFunc = title -> heading.render(title, "heading-large", false);
-  private final static Function<String, Html> headingBannerFunc = headingBanner::render;
+  private static final Function<String, Html> HEADING_STANDARD_FUNC = title -> heading.render(title, "heading-large", false);
+  private static final Function<String, Html> HEADING_BANNER_FUNC = headingBanner::render;
 
   public Result renderStaticHtml(StaticHtml staticHtml) {
     try {

@@ -66,8 +66,9 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     List<RichText> richTextList = new ArrayList<>();
     richTextList.add(controlEntryConfig.getFullDescription());
     List<SubAnswerView> subAnswerViews;
-    if (answerConfig.getNestedContent().isPresent()) {
-      RichText nestedContent = answerConfig.getNestedContent().get();
+    Optional<RichText> nestedContentOptional = answerConfig.getNestedContent();
+    if (nestedContentOptional.isPresent()) {
+      RichText nestedContent = nestedContentOptional.get();
       richTextList.add(nestedContent);
       subAnswerViews = new ArrayList<>();
     } else {
@@ -104,8 +105,9 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     }
     List<RichText> richTextList = new ArrayList<>();
     richTextList.add(labelText);
-    if (answerConfig.getNestedContent().isPresent()) {
-      RichText nestedContent = answerConfig.getNestedContent().get();
+    Optional<RichText> nestedContentOptional = answerConfig.getNestedContent();
+    if (nestedContentOptional.isPresent()) {
+      RichText nestedContent = nestedContentOptional.get();
       richTextList.add(nestedContent);
     }
     String definitions = htmlRenderService.createDefinitions(richTextList);
@@ -178,10 +180,13 @@ public class AnswerViewServiceImpl implements AnswerViewService {
           stringBuilder.append(htmlRenderService.convertRichTextToHtml(controlEntryConfig.getFullDescription()));
           String subAnswerViewsToHtml = subAnswerViewsToHtml(createSubAnswerViews(createSubAnswers(controlEntryConfig), true));
           stringBuilder.append(subAnswerViewsToHtml);
-        } else if (answerConfig.getLabelText().isPresent()) {
-          stringBuilder.append(htmlRenderService.convertRichTextToHtml(answerConfig.getLabelText().get()));
         } else {
-          throw new BusinessRuleException("Both answerConfig.getAssociatedControlEntryConfig and answerConfig.getLabelText are absent.");
+          Optional<RichText> labelTextOptional = answerConfig.getLabelText();
+          if (labelTextOptional.isPresent()) {
+            stringBuilder.append(htmlRenderService.convertRichTextToHtml(labelTextOptional.get()));
+          } else {
+            throw new BusinessRuleException("Both answerConfig.getAssociatedControlEntryConfig and answerConfig.getLabelText are absent.");
+          }
         }
         stringBuilder.append("</li>");
       }

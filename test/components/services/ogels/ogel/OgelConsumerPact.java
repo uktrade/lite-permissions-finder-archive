@@ -43,7 +43,7 @@ public class OgelConsumerPact {
   private static final String OGEL_HOW_TO_USE = "how to use";
 
   @Rule
-  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
+  public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
@@ -93,9 +93,6 @@ public class OgelConsumerPact {
         .integerType("code", 404)
         .stringType("message", "No Ogel Found With Given Ogel ID: " + OGEL_ID)
         .asBody();
-
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
 
     return builder
         .given("provided OGEL does not exist")

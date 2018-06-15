@@ -118,9 +118,8 @@ import javax.inject.Named;
 
 public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
-  private Environment environment;
-
-  private Config config;
+  private final Environment environment;
+  private final Config config;
 
   public GuiceModule(Environment environment, Config config) {
     this.environment = environment;

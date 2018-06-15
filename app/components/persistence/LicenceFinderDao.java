@@ -133,21 +133,11 @@ public class LicenceFinderDao {
     return readBoolean(MULTIPLE_COUNTRIES);
   }
 
-  /*
-  public void saveAlreadyRegisteredOgelSet(Set<String> ogelIds) {
-    dao.writeObject(ALREADY_REGISTERED_OGEL_ID_SET, ogelIds);
-  }
-
-  public Set<String> getAlreadyRegisteredOgelSet() {
-    return dao.readObject(ALREADY_REGISTERED_OGEL_ID_SET, new TypeReference<Set<String>>() {})
-        .orElse(new HashSet<>());
-  }*/
-
   public void saveUserOgelIdRefMap(Map<String, String> ogelIdRefMap) {
     dao.writeObject(USER_OGEL_ID_REF_MAP, ogelIdRefMap);
   }
 
-  public Map<String, String>getUserOgelIdRefMap() {
+  public Map<String, String> getUserOgelIdRefMap() {
     return dao.readObject(USER_OGEL_ID_REF_MAP, new TypeReference<Map<String, String>>() {})
         .orElse(new HashMap<>());
   }
