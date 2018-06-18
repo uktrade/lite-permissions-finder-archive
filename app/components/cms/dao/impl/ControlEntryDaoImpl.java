@@ -46,7 +46,8 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
         controlEntry.getSummaryDescription(),
         controlEntry.isNested(),
         controlEntry.isSelectable(),
-        controlEntry.getRegime());
+        controlEntry.getRegime(),
+        controlEntry.getDisplayOrder());
   }
 
   @Override
