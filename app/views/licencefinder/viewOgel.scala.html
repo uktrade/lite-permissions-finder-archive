@@ -58,6 +58,9 @@
     @Html(HtmlFormat.escape(licenceInfo.getSiteAddress).toString().replace("\n", "<br/>"))
   </p>
 
+  <p>
+    <a href="@licenceInfo.getLicenceUrl" class="font-large not-visited" id="licence-terms-link">Terms and conditions of this licence</a>
+  </p>
 
   <a href="javascript:window.print()">Print this page</a>
 }

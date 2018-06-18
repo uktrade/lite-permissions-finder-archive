@@ -7,11 +7,11 @@ import static uk.gov.bis.lite.permissions.api.view.OgelRegistrationView.Status.S
 
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
+import components.common.auth.SpireAuthManager;
+import components.common.auth.SpireSAML2Client;
 import components.services.CustomerService;
 import components.services.OgelService;
 import components.services.PermissionsService;
-import components.common.auth.SpireAuthManager;
-import components.common.auth.SpireSAML2Client;
 import models.summary.LicenceInfo;
 import org.pac4j.play.java.Secure;
 import play.Logger;
@@ -90,12 +90,13 @@ public class ViewOgelController {
   private LicenceInfo combine(LicenceInfo info, OgelFullView ogel) {
     if (info.hasError()) {
       return info;
-    }
-    if (ogel == null) {
+    } else if (ogel == null) {
       return info.setDefaultError();
+    } else {
+      info.setLicenceType(ogel.getName());
+      info.setLicenceUrl(ogel.getLink());
+      return info;
     }
-    info.setLicenceType(ogel.getName());
-    return info;
   }
 
   private CompletionStage<LicenceInfo> getOgelRegistration(LicenceInfo info) {
