@@ -33,8 +33,11 @@ public class StartApplicationController {
   }
 
   public Result createApplication() {
-    flash("error", flash("error"));
-    flash("detail", flash("detail"));
+    if (StringUtils.isNoneBlank(flash("error"))) {
+      flash("error", flash("error"));
+      flash("detail", flash("detail"));
+    }
+
     TriageSession triageSession = sessionService.createNewSession();
     return redirect(routes.StartApplicationController.renderStartApplication(triageSession.getId()));
   }
