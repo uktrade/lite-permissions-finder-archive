@@ -19,12 +19,12 @@ public class StageRSMapper implements ResultSetMapper<Stage> {
     Long id = rsw.getLong("id");
     Long journeyId = rsw.getLong("journey_id");
     Long controlEntryId = rsw.getLong("control_entry_id");
-    String title = rsw.getString("title");
-    String explanatoryNotes = rsw.getString("explanatory_notes");
-    QuestionType questionType = EnumUtils.getEnum(QuestionType.class, rsw.getString("question_type"));
-    AnswerType answerType = EnumUtils.getEnum(AnswerType.class, rsw.getString("answer_type"));
+    String title = r.getString("title");
+    String explanatoryNotes = r.getString("explanatory_notes");
+    QuestionType questionType = EnumUtils.getEnum(QuestionType.class, r.getString("question_type"));
+    AnswerType answerType = EnumUtils.getEnum(AnswerType.class, r.getString("answer_type"));
     Long nextStageId = rsw.getLong("next_stage_id");
-    String stageOutcomeTypeStr = rsw.getString("go_to_stage_outcome_type");
+    String stageOutcomeTypeStr = r.getString("go_to_stage_outcome_type");
     StageOutcomeType stageOutcomeType = EnumUtils.getEnum(StageOutcomeType.class, stageOutcomeTypeStr);
     return new Stage()
         .setId(id)

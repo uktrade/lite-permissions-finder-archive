@@ -20,7 +20,7 @@ public class CountryServiceConsumerPact {
   private WSClient ws;
 
   @Rule
-  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.COUNTRY_SERVICE_PROVIDER, this);
+  public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.COUNTRY_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {

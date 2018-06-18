@@ -10,6 +10,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
+import components.services.OgelServiceImpl;
 import exceptions.ServiceException;
 import org.junit.After;
 import org.junit.Before;
@@ -26,8 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class OgelConsumerPact {
-  private OgelServiceClient client;
+public class OgelServiceConsumerPact {
+  private OgelServiceImpl client;
   private WSClient ws;
 
   // service:password
@@ -43,16 +44,16 @@ public class OgelConsumerPact {
   private static final String OGEL_HOW_TO_USE = "how to use";
 
   @Rule
-  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
+  public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
 
   @Before
   public void setUp() throws Exception {
     ws = WSTestClient.newClient(mockProvider.getPort());
-    client = new OgelServiceClient(new HttpExecutionContext(Runnable::run),
+    client = new OgelServiceImpl(
         ws,
         mockProvider.getUrl(),
         10000,
-        "service:password");
+        "service:password", new HttpExecutionContext(Runnable::run));
   }
 
   @After
@@ -93,9 +94,6 @@ public class OgelConsumerPact {
         .integerType("code", 404)
         .stringType("message", "No Ogel Found With Given Ogel ID: " + OGEL_ID)
         .asBody();
-
-    Map<String, String> headers = new HashMap<>();
-    headers.put("Content-Type", "application/json");
 
     return builder
         .given("provided OGEL does not exist")

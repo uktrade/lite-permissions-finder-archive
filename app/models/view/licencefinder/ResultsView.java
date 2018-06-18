@@ -36,7 +36,7 @@ public class ResultsView {
   }
 
   public boolean hasOgels() {
-    return ogelViews != null && ogelViews.size() > 0;
+    return ogelViews != null && !ogelViews.isEmpty();
   }
 
   public String getControlCode() {

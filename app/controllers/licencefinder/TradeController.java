@@ -55,7 +55,7 @@ public class TradeController extends Controller {
    */
   public CompletionStage<Result> renderTradeForm() {
     TradeTypeForm form = new TradeTypeForm();
-    dao.getTradeType().ifPresent((e) -> form.tradeType = e.toString());
+    dao.getTradeType().ifPresent(tradeType -> form.tradeType = tradeType.toString());
     return completedFuture(ok(trade.render(formFactory.form(TradeTypeForm.class).fill(form), dao.getControlCode())));
   }
 

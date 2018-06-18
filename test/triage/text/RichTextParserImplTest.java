@@ -24,7 +24,7 @@ public class RichTextParserImplTest {
   private static final String PL9001_ID = "2";
   private static final String _1A001_ID = "3";
 
-  private RichTextParserImpl richTextParser = new RichTextParserImpl(new ParserLookupServiceMock());
+  private final RichTextParserImpl richTextParser = new RichTextParserImpl(new ParserLookupServiceMock());
 
   private static ControlEntry createControlEntry(String id, String code) {
     return new ControlEntry().setId(Long.parseLong(id)).setControlCode(code);

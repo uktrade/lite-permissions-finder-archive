@@ -14,6 +14,7 @@ import components.cms.parser.model.navigation.column.Redirect;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class NavigationLevel {
   private final String cellAddress;
@@ -92,7 +93,7 @@ public class NavigationLevel {
     return level;
   }
 
-  public ArrayList<NavigationLevel> getSubNavigationLevels() {
+  public List<NavigationLevel> getSubNavigationLevels() {
     return subNavigationLevels;
   }
 

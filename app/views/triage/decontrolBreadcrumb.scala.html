@@ -4,7 +4,7 @@
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import com.google.common.collect.Iterables
 
-@(breadcrumbView: BreadcrumbView, answerViews: List[AnswerView])
+@(changeUrl: String, breadcrumbView: BreadcrumbView, answerViews: List[AnswerView])
 
 @controlCodeBreadcrumbs(isWide = true) {
   @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
@@ -26,7 +26,7 @@
       }
     }
   }
-  @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = breadcrumbView.getDecontrolUrl) {
+  @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = changeUrl) {
     <h2 class="outcome-detail-box-heading">Item is decontrolled</h2>
     @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText!=null) {
       <span class="bold">@Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getText</span>

@@ -22,6 +22,7 @@ import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
 
   public Optional<String> getUserOgelReference(String ogelId) {
     Map<String, String> ogelIdRefMap = licenceFinderDao.getUserOgelIdRefMap();
-    if(ogelIdRefMap.keySet().contains(ogelId)) {
+    if (ogelIdRefMap.keySet().contains(ogelId)) {
       return Optional.of(ogelIdRefMap.get(ogelId));
     }
     return Optional.empty();
@@ -95,7 +96,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
    * Attempts to read callback reference set number times/period
    */
   public Optional<String> getRegistrationReference(String transactionId) {
-    //ThreadUtil.sleep(1500); // pause for a moment
     Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
     if (optRegisterLicence.isPresent()) {
       String ref = optRegisterLicence.get().getRegistrationReference();
@@ -117,7 +117,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     String callbackUrl = permissionsFinderUrl + "/licencefinder/registration-callback?transactionId=" + transactionId;
 
 
-    if(StringUtils.isBlank(customerId) || StringUtils.isBlank(siteId)) {
+    if (StringUtils.isBlank(customerId) || StringUtils.isBlank(siteId)) {
       throw new ServiceException("Customer and/or Site could not be determined - a user can only have one associated Customer and only one associated Site");
     }
 
@@ -137,7 +137,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   public void handleCallback(String transactionId, CallbackView callbackView) {
     String regRef = callbackView.getRegistrationReference();
     Optional<RegisterLicence> optRegisterLicence = getRegisterLicence(transactionId);
-    if(optRegisterLicence.isPresent()) {
+    if (optRegisterLicence.isPresent()) {
       RegisterLicence registerLicence = optRegisterLicence.get();
       registerLicence.setRegistrationReference(regRef);
       saveRegisterLicence(registerLicence);
@@ -151,11 +151,11 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   public void persistCustomerAndSiteData() {
     String userId = getUserId();
     Optional<String> optCustomerId = getCustomerId(userId);
-    if(optCustomerId.isPresent()) {
+    if (optCustomerId.isPresent()) {
       String customerId = optCustomerId.get();
       licenceFinderDao.saveCustomerId(customerId); // persist customerId
       Optional<String> optSiteId = getSiteId(userId, optCustomerId.get());
-      if(optSiteId.isPresent()) {
+      if (optSiteId.isPresent()) {
         String siteId = optSiteId.get();
         licenceFinderDao.saveSiteId(siteId); // persist siteId
       } else {
@@ -192,7 +192,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
 
     try {
       List<OgelView> ogelViews = stage.thenApply(views -> getOgelViews(views, licenceFinderDao.getUserOgelIdRefMap().keySet())).toCompletableFuture().get();
-      if(!ogelViews.isEmpty() && includeResults) {
+      if (!ogelViews.isEmpty() && includeResults) {
         resultView.setOgelViews(ogelViews);
       }
 
@@ -203,19 +203,14 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   }
 
   private List<String> getActivityTypes(QuestionsController.QuestionsForm questionsForm) {
-    Map<OgelActivityType, String> map = new HashMap<>();
-    map.put(OgelActivityType.DU_ANY, OgelActivityType.DU_ANY.value());
-    map.put(OgelActivityType.EXHIBITION, OgelActivityType.EXHIBITION.value());
-    map.put(OgelActivityType.MIL_ANY, OgelActivityType.MIL_ANY.value());
-    map.put(OgelActivityType.MIL_GOV, OgelActivityType.MIL_GOV.value());
-    map.put(OgelActivityType.REPAIR, OgelActivityType.REPAIR.value());
-    if (!questionsForm.forRepair) {
-      map.remove(OgelActivityType.REPAIR);
+    Set<OgelActivityType> set = EnumSet.of(OgelActivityType.DU_ANY, OgelActivityType.MIL_ANY, OgelActivityType.MIL_GOV);
+    if (questionsForm.forRepair) {
+      set.add(OgelActivityType.REPAIR);
     }
-    if (!questionsForm.forExhibition) {
-      map.remove(OgelActivityType.EXHIBITION);
+    if (questionsForm.forExhibition) {
+      set.add(OgelActivityType.EXHIBITION);
     }
-    return map.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+    return set.stream().map(OgelActivityType::toString).collect(Collectors.toList());
   }
 
   private List<String> getExportRouteCountries() {
@@ -235,11 +230,9 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     Map<String, String> ogelIdRefMap = new HashMap<>();
     try {
       List<OgelRegistrationView> views = permissionsService.getOgelRegistrations(userId).toCompletableFuture().get();
-      for(OgelRegistrationView view : views) {
+      for (OgelRegistrationView view : views) {
         ogelIdRefMap.put(view.getOgelType(), view.getRegistrationReference());
-      }
-      ogelIdRefMap.put("OGL12", "GBOGE2017/12345"); // to enable testing with licence_finder_applicant@test.com user TODO remove once test data is updated to show an already registered Ogel
-    } catch (InterruptedException | ExecutionException e) {
+      } } catch (InterruptedException | ExecutionException e) {
       Logger.error("OgelRegistration exception", e);
     }
     return ogelIdRefMap;
@@ -247,9 +240,9 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
 
   private List<OgelView> getOgelViews(List<ApplicableOgelView> applicableViews, Set<String> existingOgels) {
     List<OgelView> ogelViews = new ArrayList<>();
-    for(ApplicableOgelView applicableView : applicableViews) {
+    for (ApplicableOgelView applicableView : applicableViews) {
       OgelView view = new OgelView(applicableView);
-      if(existingOgels.contains(view.getId())) {
+      if (existingOgels.contains(view.getId())) {
         view.setAlreadyRegistered(true);
       }
       ogelViews.add(view);
@@ -258,7 +251,8 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     return ogelViews;
   }
 
-  private void registrationResponseReceived(String transactionId, PermissionsServiceImpl.RegistrationResponse response, RegisterLicence registerLicence) {
+  private void registrationResponseReceived(String transactionId, PermissionsServiceImpl.RegistrationResponse response,
+                                            RegisterLicence registerLicence) {
     Logger.info("Response: " + response.isSuccess());
     Logger.info("RequestId: " + response.getRequestId());
     registerLicence.setRequestId(response.getRequestId());

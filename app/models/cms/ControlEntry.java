@@ -6,8 +6,8 @@ public class ControlEntry {
   private String controlCode;
   private String fullDescription;
   private String summaryDescription;
-  private Boolean nested;
-  private Boolean selectable;
+  private boolean nested;
+  private boolean selectable;
   private String regime;
   private Integer displayOrder;
 
@@ -56,20 +56,20 @@ public class ControlEntry {
     return this;
   }
 
-  public Boolean isNested() {
+  public boolean isNested() {
     return nested;
   }
 
-  public ControlEntry setNested(Boolean nested) {
+  public ControlEntry setNested(boolean nested) {
     this.nested = nested;
     return this;
   }
 
-  public Boolean isSelectable() {
+  public boolean isSelectable() {
     return selectable;
   }
 
-  public ControlEntry setSelectable(Boolean selectable) {
+  public ControlEntry setSelectable(boolean selectable) {
     this.selectable = selectable;
     return this;
   }

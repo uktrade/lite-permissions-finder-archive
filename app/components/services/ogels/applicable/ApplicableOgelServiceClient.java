@@ -40,20 +40,23 @@ public class ApplicableOgelServiceClient {
     this.credentials = credentials;
   }
 
-  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry, List<String> destinationCountries,
+  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry,
+                                                       List<String> destinationCountries,
                                                        List<String> activityTypes, boolean showHistoricOgel) {
     return getApplicableOgelViews(controlCode, sourceCountry, destinationCountries, activityTypes, showHistoricOgel);
   }
 
 
-
-  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry, List<String> destinationCountries,
+  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry,
+                                                       List<String> destinationCountries,
                                                        List<String> activityTypes) {
     return getApplicableOgelViews(controlCode, sourceCountry, destinationCountries, activityTypes, true);
   }
 
   private CompletionStage<List<ApplicableOgelView>> getApplicableOgelViews(String controlCode, String sourceCountry,
-                                                       List<String> destinationCountries, List<String> activityTypes, boolean showHistoricOgel) {
+                                                                           List<String> destinationCountries,
+                                                                           List<String> activityTypes,
+                                                                           boolean showHistoricOgel) {
 
     WSRequest req = wsClient.url(webServiceUrl)
         .setAuth(credentials)
@@ -63,9 +66,9 @@ public class ApplicableOgelServiceClient {
         .addQueryParameter("controlCode", controlCode)
         .addQueryParameter("sourceCountry", sourceCountry);
 
-    destinationCountries.forEach(country -> req.setQueryParameter("destinationCountry", country));
+    destinationCountries.forEach(country -> req.addQueryParameter("destinationCountry", country));
 
-    activityTypes.forEach(activityType -> req.setQueryParameter("activityType", activityType));
+    activityTypes.forEach(activityType -> req.addQueryParameter("activityType", activityType));
 
     return req.get().handleAsync((response, error) -> {
       if (error != null) {

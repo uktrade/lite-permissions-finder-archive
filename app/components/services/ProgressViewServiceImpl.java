@@ -7,6 +7,9 @@ import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.text.HtmlRenderService;
+import triage.text.RichText;
+
+import java.util.Optional;
 
 public class ProgressViewServiceImpl implements ProgressViewService {
 
@@ -26,6 +29,13 @@ public class ProgressViewServiceImpl implements ProgressViewService {
   }
 
   @Override
+  public ProgressView createProgressView(ControlEntryConfig controlEntryConfig) {
+    String code = controlEntryConfig.getControlCode();
+    String description = renderService.getSummaryDescription(controlEntryConfig);
+    return new ProgressView(code, description);
+  }
+
+  @Override
   public ProgressView createProgressView(StageConfig stageConfig) {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     String code;
@@ -35,9 +45,15 @@ public class ProgressViewServiceImpl implements ProgressViewService {
       description = renderService.getSummaryDescription(controlEntryConfig);
     } else {
       AnswerConfig answerConfig = journeyConfigService.getStageAnswerForPreviousStage(stageConfig.getStageId());
-      if (answerConfig != null && answerConfig.getLabelText().isPresent()) {
-        code = null;
-        description = htmlRenderService.convertRichTextToPlainText(answerConfig.getLabelText().get());
+      if (answerConfig != null) {
+        Optional<RichText> labelTextOptional = answerConfig.getLabelText();
+        if (labelTextOptional.isPresent()) {
+          code = null;
+          description = htmlRenderService.convertRichTextToPlainText(labelTextOptional.get());
+        } else {
+          code = null;
+          description = "UK Military List";
+        }
       } else {
         code = null;
         description = "UK Military List";

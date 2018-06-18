@@ -78,8 +78,6 @@ import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
 import journey.ExportJourneyDefinitionBuilder;
 import journey.PermissionsFinderJourneySerialiser;
-import models.summary.SummaryService;
-import models.summary.SummaryServiceImpl;
 import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
@@ -120,9 +118,8 @@ import javax.inject.Named;
 
 public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
-  private Environment environment;
-
-  private Config config;
+  private final Environment environment;
+  private final Config config;
 
   public GuiceModule(Environment environment, Config config) {
     this.environment = environment;
@@ -209,8 +206,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bindConstant().annotatedWith(Names.named("ecjuEmailAddress")).to(config.getString("ecjuEmailAddress"));
 
-    bind(SummaryService.class).to(SummaryServiceImpl.class);
-
     // CMS dao's
     bind(ControlEntryDao.class).to(ControlEntryDaoImpl.class);
     bind(GlobalDefinitionDao.class).to(GlobalDefinitionDaoImpl.class);
@@ -269,12 +264,13 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     return new StatelessRedisDao(keyConfig, redissonClient);
   }
 
-
+/**/
   @Provides
   public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(
       ExportJourneyDefinitionBuilder exportBuilder) {
     return Arrays.asList(exportBuilder);
   }
+
 
   @Provides
   @Singleton

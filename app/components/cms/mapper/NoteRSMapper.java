@@ -16,8 +16,8 @@ public class NoteRSMapper implements ResultSetMapper<Note> {
     ResultSetWrapper rsw = new ResultSetWrapper(r);
     Long id = rsw.getLong("id");
     Long stageId = rsw.getLong("stage_id");
-    String noteText = rsw.getString("note_text");
-    NoteType noteType = EnumUtils.getEnum(NoteType.class, rsw.getString("note_type"));
+    String noteText = r.getString("note_text");
+    NoteType noteType = EnumUtils.getEnum(NoteType.class, r.getString("note_type"));
     return new Note()
         .setId(id)
         .setStageId(stageId)

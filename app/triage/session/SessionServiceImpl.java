@@ -1,9 +1,9 @@
 package triage.session;
 
 import com.google.inject.Inject;
-import components.cms.dao.JourneyDao;
 import components.cms.dao.SessionDao;
 import components.cms.dao.SessionStageDao;
+import triage.config.JourneyConfigService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,19 +23,20 @@ public class SessionServiceImpl implements SessionService {
 
   private final SessionDao sessionDao;
   private final SessionStageDao sessionStageDao;
-  private final JourneyDao journeyDao;
+  private final JourneyConfigService journeyConfigService;
 
   @Inject
-  public SessionServiceImpl(SessionDao sessionDao, SessionStageDao sessionStageDao, JourneyDao journeyDao) {
+  public SessionServiceImpl(SessionDao sessionDao, SessionStageDao sessionStageDao,
+                            JourneyConfigService journeyConfigService) {
     this.sessionDao = sessionDao;
     this.sessionStageDao = sessionStageDao;
-    this.journeyDao = journeyDao;
+    this.journeyConfigService = journeyConfigService;
   }
 
   @Override
   public TriageSession createNewSession() {
     String sessionId = UUID.randomUUID().toString();
-    long journeyId = journeyDao.getJourneysByJourneyName("MILITARY").get(0).getId();
+    long journeyId = journeyConfigService.getDefaultJourneyId();
     String resumeCode = generateResumeCode();
     TriageSession triageSession = new TriageSession(sessionId, journeyId, resumeCode, null);
     sessionDao.insert(triageSession);
