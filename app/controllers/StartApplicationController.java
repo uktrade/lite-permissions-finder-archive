@@ -1,5 +1,6 @@
 package controllers;
 
+import static play.mvc.Controller.flash;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
@@ -32,6 +33,8 @@ public class StartApplicationController {
   }
 
   public Result createApplication() {
+    flash("error", flash("error"));
+    flash("detail", flash("detail"));
     TriageSession triageSession = sessionService.createNewSession();
     return redirect(routes.StartApplicationController.renderStartApplication(triageSession.getId()));
   }
