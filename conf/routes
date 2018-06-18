@@ -45,10 +45,10 @@ GET    /licencefinder/await-registration      controllers.licencefinder.Register
 POST    /licencefinder/new-registration      controllers.licencefinder.RegisterToUseController.handleRegistrationProcessed(sessionId)
 
 GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef, sessionId)
-GET     /licencefinder/poll-status       controllers.LicenceFinderPollController.pollStatus(ctx_transaction)
+GET     /licencefinder/poll-status       controllers.LicenceFinderPollController.pollStatus(sessionId)
 
 + nocsrf
-POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(transactionId)
+POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(sessionId)
 
 # JavaScript routes
 GET     /assets/javascripts/routes          controllers.JavaScriptRoutesController.javascriptRoutes()

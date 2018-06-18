@@ -25,12 +25,15 @@ public class LicenceFinderPollController {
   /***
    * Polls to check any registration reference for current transaction
    */
-  public Result pollStatus(String transactionId) {
+  public Result pollStatus(String sessionId) {
+
+    Logger.info("sessionId: " + sessionId);
+
     ObjectNode json = Json.newObject();
     try {
-      json.put("complete", licenceFinderService.getRegistrationReference(transactionId).isPresent());
+      json.put("complete", licenceFinderService.getRegistrationReference(sessionId).isPresent());
     } catch (Exception e) {
-      Logger.error("Error reading registration submission status for " + transactionId, e);
+      Logger.error("Error reading registration submission status for " + sessionId, e);
       json.put("complete", false);
     }
     return ok(json);
