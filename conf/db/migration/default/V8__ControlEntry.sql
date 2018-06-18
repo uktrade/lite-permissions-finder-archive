@@ -1,0 +1,1 @@
+ALTER TABLE control_entry ADD COLUMN display_order INT NOT NULL DEFAULT 0

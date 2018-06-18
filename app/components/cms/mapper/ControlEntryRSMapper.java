@@ -20,6 +20,7 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
     Boolean nested = rsw.getBoolean("nested");
     Boolean selectable = rsw.getBoolean("selectable");
     String regime = rsw.getString("regime");
+    Integer displayOrder = rsw.getInt("display_order");
     return new ControlEntry()
         .setId(id)
         .setParentControlEntryId(parentControlEntryId)
@@ -28,6 +29,7 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
         .setSummaryDescription(summaryDescription)
         .setNested(nested)
         .setSelectable(selectable)
-        .setRegime(regime);
+        .setRegime(regime)
+        .setDisplayOrder(displayOrder);
   }
 }
