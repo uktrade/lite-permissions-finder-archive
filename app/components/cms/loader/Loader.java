@@ -80,7 +80,7 @@ public class Loader {
     Journey journey = new Journey().setJourneyName(JourneyConfigServiceImpl.DEFAULT_JOURNEY_NAME);
     Long journeyId = journeyDao.insertJourney(journey);
     generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
-    createControlEntries(null, rootNavigationLevel);
+    createControlEntries(null, 1, rootNavigationLevel);
     createStages(journeyId, rootNavigationLevel);
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
@@ -120,7 +120,7 @@ public class Loader {
   }
 
 
-  private void createControlEntries(Long parentControlEntryId, NavigationLevel navigationLevel) {
+  private void createControlEntries(Long parentControlEntryId, int displayOrder, NavigationLevel navigationLevel) {
     Long controlEntryId = null;
 
     ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
@@ -143,6 +143,7 @@ public class Loader {
       } else {
         controlEntry.setSelectable(false);
       }
+      controlEntry.setDisplayOrder(displayOrder);
       controlEntryId = controlEntryDao.insertControlEntry(controlEntry);
 
       Logger.debug("Inserted control entry id {}", controlEntryId);
@@ -150,8 +151,8 @@ public class Loader {
 
     navigationLevel.getLoadingMetadata().setControlEntryId(controlEntryId);
 
-    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
-      createControlEntries(controlEntryId, subNavigationLevel);
+    for (int i = 0; i < navigationLevel.getSubNavigationLevels().size(); i++) {
+      createControlEntries(controlEntryId, i + 1, navigationLevel.getSubNavigationLevels().get(i));
     }
   }
 
@@ -195,12 +196,21 @@ public class Loader {
           NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
           if (subNavigationLevel.getButtons() == null) {
             //Child entries without buttons are not a stage, we are actually on a leaf now
-            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+            if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
+            } else {
+              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+            }
           } else {
             stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
           }
         } else {
-          stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+          //Child entries without buttons are not a stage, we are actually on a leaf now
+          if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
+          } else {
+            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+          }
         }
       }
 
@@ -258,12 +268,20 @@ public class Loader {
       //This can happen if the current row has "nested content" child rows which are not actual stages
       if (nextStageId == null) {
         Logger.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
-        decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+        if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+          decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
+        } else {
+          decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+        }
       } else {
         decontrolStage.setNextStageId(nextStageId);
       }
     } else {
-      decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+      if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+        decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
+      } else {
+        decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+      }
     }
 
     Long decontrolStageId = stageDao.insertStage(decontrolStage);

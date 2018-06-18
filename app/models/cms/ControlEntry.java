@@ -9,6 +9,7 @@ public class ControlEntry {
   private boolean nested;
   private boolean selectable;
   private String regime;
+  private Integer displayOrder;
 
   public Long getId() {
     return id;
@@ -79,6 +80,15 @@ public class ControlEntry {
 
   public ControlEntry setRegime(String regime) {
     this.regime = regime;
+    return this;
+  }
+
+  public Integer getDisplayOrder() {
+    return displayOrder;
+  }
+
+  public ControlEntry setDisplayOrder(Integer displayOrder) {
+    this.displayOrder = displayOrder;
     return this;
   }
 }

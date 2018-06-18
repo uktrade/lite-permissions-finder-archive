@@ -38,7 +38,7 @@ public class ModalControlEntryController extends Controller {
 
   public Result renderControlEntryModal(String controlEntryId, String sessionId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, true);
     String controlEntryUrl = createGoToControlEntryUrl(controlEntryConfig, sessionId);
     String description = createDescription(controlEntryConfig);
     return ok(modalControlEntry.render(controlEntryConfig.getControlCode(), breadcrumbItemViews, controlEntryUrl, description));
@@ -46,7 +46,8 @@ public class ModalControlEntryController extends Controller {
 
   public Result renderControlEntryView(String controlEntryId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, true,
+        HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
     String description = createDescription(controlEntryConfig);
     return ok(modalControlEntryView.render(controlEntryConfig.getControlCode(), breadcrumbItemViews, description));
   }

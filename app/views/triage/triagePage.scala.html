@@ -5,7 +5,7 @@
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import views.html.util._
 
-@this(standardPage: standardPage)
+@this(standardPage: standardPage, triageBreadcrumb: triageBreadcrumb)
 @(form: Form[_], stageId: String, sessionId: String, resumeCode: String, title: String, breadcrumbView: BreadcrumbView)(secondaryHeading: Html)(formContent: Html)
 
 @standardPage(title, None, twoThirdsColumn = false, resumeCode = resumeCode, showBackLink = true){
@@ -38,45 +38,7 @@
       </form>
     </div>
     <div class="column-one-third">
-      <h2 class="heading-medium">You are here</h2>
-      @controlCodeBreadcrumbs(){
-        @for((breadcrumbItemView, index) <- breadcrumbView.getBreadcrumbItemViews.zipWithIndex) {
-          @if(index == breadcrumbView.getBreadcrumbItemViews.size - 1) {
-            @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = breadcrumbItemView.getUrl){
-              @if(breadcrumbItemView.getText!=null) {
-                <span class="bold">@breadcrumbItemView.getText</span>
-              }
-              @if(breadcrumbItemView.getDescription!=null) {
-                @Html(breadcrumbItemView.getDescription)
-              }
-              @if(breadcrumbView.isDecontrol) {
-                <p>
-                  Checking against decontrols
-                </p>
-              }
-            }{
-              @if(!breadcrumbView.getNoteViews.isEmpty) {
-                @controlCodeBreadcrumbsNotes() {
-                  @for(noteView <- breadcrumbView.getNoteViews) {
-                    <li>@Html(noteView.getText)</li>
-                  }
-                }
-              } else {
-                @HtmlFormat.empty
-              }
-            }
-          } else {
-            @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl){
-              @if(breadcrumbItemView.getText!=null) {
-                <span class="bold">@breadcrumbItemView.getText</span>
-              }
-              @if(breadcrumbItemView.getDescription!=null) {
-                @Html(breadcrumbItemView.getDescription)
-              }
-            }
-          }
-        }
-      }
+      @triageBreadcrumb(breadcrumbView)
     </div>
   </div>
 

@@ -71,6 +71,7 @@ GET     /logout          org.pac4j.play.LogoutController.logout()
 GET     /logged-out      controllers.AuthorisationController.loggedOut()
 GET     /unauthorised    controllers.AuthorisationController.unauthorised()
 
+GET     /outcome/no-result/:controlEntryId controllers.OutcomeController.outcomeNoResult(controlEntryId, sessionId)
 GET     /outcome/not-found/:controlEntryId controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
 POST    /outcome/not-found/:controlEntryId controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
 GET     /outcome/listed/:controlEntryId   controllers.OutcomeController.outcomeListed(controlEntryId, sessionId)
