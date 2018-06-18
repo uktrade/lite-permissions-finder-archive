@@ -14,10 +14,11 @@ public class LicenceInfo {
   private String customerId;
   private String siteId;
   private String ogelType;
+  private String licenceUrl;
 
   private String error;
 
-  public String getError () {
+  public String getError() {
     return error;
   }
 
@@ -25,6 +26,7 @@ public class LicenceInfo {
     this.error = "Unable to view the OGEL with reference - " + licenceNumber;
     return this;
   }
+
   public LicenceInfo setError(String error) {
     this.error = error;
     return this;
@@ -113,6 +115,14 @@ public class LicenceInfo {
 
   public String getOgelType() {
     return ogelType;
+  }
+
+  public String getLicenceUrl() {
+    return licenceUrl;
+  }
+
+  public void setLicenceUrl(String licenceUrl) {
+    this.licenceUrl = licenceUrl;
   }
 
 }
