@@ -92,6 +92,9 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         case CONTROL_ENTRY_FOUND:
           stageOutcomeType = OutcomeType.CONTROL_ENTRY_FOUND;
           break;
+        case TOO_COMPLEX:
+          stageOutcomeType = OutcomeType.TOO_COMPLEX;
+          break;
       }
     }
 
