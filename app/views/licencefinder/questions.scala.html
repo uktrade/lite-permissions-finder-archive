@@ -11,8 +11,6 @@
 
   <form action="@controllers.licencefinder.routes.QuestionsController.handleQuestionsSubmit(sessionId)" method="POST">
 
-    @contextFormParams()
-
     @formRadioBoolean(form("forRepair"), Html("Are you exporting goods for or after repair or replacement?"))
 
     @formRadioBoolean(form("forExhibition"), Html("Are you exporting goods for or after exhibition or demonstration?"))

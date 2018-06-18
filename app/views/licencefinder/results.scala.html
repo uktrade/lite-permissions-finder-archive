@@ -20,8 +20,6 @@
 
   <form action="@controllers.licencefinder.routes.ResultsController.handleResultsSubmit(sessionId)" method="POST">
 
-    @contextFormParams()
-
     @if(resultsView.hasOgels()) {
       <p>
         Open licences allow you to export certain goods without making a new application each time you export them.
