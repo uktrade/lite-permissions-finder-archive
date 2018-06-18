@@ -36,25 +36,23 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   }
 
   @Override
-  public BreadcrumbView createBreadcrumbView(String stageId, String sessionId, HtmlRenderOption... htmlRenderOptions) {
-    return createBreadcrumbView(stageId, sessionId, true, htmlRenderOptions);
+  public BreadcrumbView createBreadcrumbViewFromControlEntryId(String sessionId, String controlEntryId) {
+    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig, true);
+    return new BreadcrumbView(breadcrumbItemViews, new ArrayList<>(), false);
   }
 
   @Override
-  public BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean includeChangeLinks, HtmlRenderOption... htmlRenderOptions) {
+  public BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean includeChangeLinks,
+                                             HtmlRenderOption... htmlRenderOptions) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     boolean decontrol = PageTypeUtil.getPageType(stageConfig) == PageType.DECONTROL;
     ControlEntryConfig controlEntryConfig = getControlEntryConfig(stageConfig);
 
-    String decontrolUrl = null;
-    if (includeChangeLinks && decontrol) {
-      decontrolUrl = createDecontrolUrl(sessionId, controlEntryConfig);
-    }
-
     List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig, includeChangeLinks,
         htmlRenderOptions);
     List<NoteView> noteViews = createNoteViews(stageId);
-    return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol, decontrolUrl);
+    return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol);
   }
 
   @Override
@@ -74,12 +72,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   @Override
   public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
-                                                            HtmlRenderOption... htmlRenderOptions) {
-    return createBreadcrumbItemViews(sessionId, controlEntryConfig, true, htmlRenderOptions);
-  }
-
-  @Override
-  public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig, boolean includeChangeLinks,
+                                                            boolean includeChangeLinks,
                                                             HtmlRenderOption... htmlRenderOptions) {
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
@@ -89,8 +82,10 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     return Lists.reverse(breadcrumbItemViews);
   }
 
-  private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
-                                                                        boolean includeChangeLinks, HtmlRenderOption... htmlRenderOptions) {
+  private List<BreadcrumbItemView> createControlCodeBreadcrumbItemViews(String sessionId,
+                                                                        ControlEntryConfig controlEntryConfig,
+                                                                        boolean includeChangeLinks,
+                                                                        HtmlRenderOption... htmlRenderOptions) {
     String controlCode = controlEntryConfig.getControlCode();
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     List<NoteView> noteViews = createNoteViews(stageIds, htmlRenderOptions);
@@ -145,7 +140,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     }
   }
 
-  private String createDecontrolUrl(String sessionId, ControlEntryConfig controlEntryConfig) {
+  @Override
+  public String createDecontrolUrl(String sessionId, ControlEntryConfig controlEntryConfig) {
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     StageConfig stageConfig = stageIds.stream()
         .map(journeyConfigService::getStageConfigById)
