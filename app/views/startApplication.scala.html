@@ -2,7 +2,6 @@
 @import util._
 @import views.html.common.form._
 @import views.html.common.page._
-@import views.html.common.state._
 
 @this(standardPage: standardPage)
 @(form: Form[_], sessionId: String, resumeCode: String)
@@ -37,7 +36,7 @@
 
   <form action="@StartApplicationController.handleSubmit(sessionId)" method="POST">
 
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
 
     <p>
     @detailPanel("email-me-code") {Email me this code} {

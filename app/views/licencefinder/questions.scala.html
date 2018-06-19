@@ -1,7 +1,6 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
-@import views.html.common.state._
 
 @this(standardPage: standardPage)
 @(form: Form[_])
@@ -11,7 +10,7 @@
 
   <form action="@controllers.licencefinder.routes.QuestionsController.handleQuestionsSubmit()" method="POST">
 
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
 
     @formRadioBoolean(form("forRepair"), Html("Are you exporting goods for or after repair or replacement?"))
 
