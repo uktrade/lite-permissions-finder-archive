@@ -6,7 +6,7 @@
 @import views.html.util._
 
 @this(standardPage: standardPage, triageBreadcrumb: triageBreadcrumb)
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, title: String, breadcrumbView: BreadcrumbView)(secondaryHeading: Html)(formContent: Html)
+@(form: Form[_], url:String, sessionId: String, resumeCode: String, title: String, breadcrumbView: BreadcrumbView, breadcrumbTitle: String = "")(secondaryHeading: Html)(formContent: Html)
 
 @standardPage(title, None, twoThirdsColumn = false, resumeCode = resumeCode, showBackLink = true){
 }{
@@ -28,7 +28,7 @@
         </h1>
       </header>
 
-      <form action="@routes.StageController.handleSubmit(stageId,sessionId)" method="POST">
+      <form action="@url" method="POST">
         @contextFormParams()
         @formContent
 
@@ -38,7 +38,7 @@
       </form>
     </div>
     <div class="column-one-third">
-      @triageBreadcrumb(breadcrumbView)
+      @triageBreadcrumb(breadcrumbView, breadcrumbTitle)
     </div>
   </div>
 

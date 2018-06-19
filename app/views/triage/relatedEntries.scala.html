@@ -1,0 +1,32 @@
+@import org.apache.commons.lang3.StringUtils
+@import models.view.AnswerView
+@import models.view.BreadcrumbView
+@import views.html.triage.subAnswers
+@import views.html.frontendComponents.formCheckboxWithDetailPanel
+@import views.html.common.form._
+@import views.html.triage.subAnswers
+@import views.html.frontendComponents.formRadioWithDetailPanel
+
+@this(triagePage: triagePage)
+@(form: Form[_], controlEntryId: String, sessionId: String, resumeCode: String, controlCode: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
+
+@triagePage(form, routes.StageController.relatedEntries(controlEntryId, sessionId).toString, sessionId, resumeCode, "Check related entries", breadcrumbView, "Checking against related entries"){
+  @controlCode: Checking against related entries
+}{
+  <p class="form-hint">
+    You have not found your item under control list entry @controlCode.
+  </p>
+  <p class="form-hint">
+    Check the following related control list entries before proceeding.
+  </p>
+  @formRadioGroupContainer(form("answer"))(null) {
+    @for(answerView <- answerViews) {
+      @if(answerView.isDividerAbove) {
+        <p class="form-block">or</p>
+      }
+      @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
+        @answerMoreInformation(answerView)
+      }
+    }
+  }
+}

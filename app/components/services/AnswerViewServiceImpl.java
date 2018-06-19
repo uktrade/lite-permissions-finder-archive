@@ -41,6 +41,13 @@ public class AnswerViewServiceImpl implements AnswerViewService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public List<AnswerView> createAnswerViewsFromControlEntryConfigs(List<ControlEntryConfig> controlEntryConfigs) {
+    return controlEntryConfigs.stream()
+        .map(controlEntryConfig -> createAnswerViewFromControlEntryConfig(null, controlEntryConfig, false))
+        .collect(Collectors.toList());
+  }
+
   private AnswerView createAnswerView(AnswerConfig answerConfig, boolean html) {
     Optional<ControlEntryConfig> associatedControlEntryConfig = answerConfig.getAssociatedControlEntryConfig();
     if (associatedControlEntryConfig.isPresent()) {
@@ -66,7 +73,7 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     List<RichText> richTextList = new ArrayList<>();
     richTextList.add(controlEntryConfig.getFullDescription());
     List<SubAnswerView> subAnswerViews;
-    Optional<RichText> nestedContentOptional = answerConfig.getNestedContent();
+    Optional<RichText> nestedContentOptional = answerConfig == null ? Optional.empty() : answerConfig.getNestedContent();
     if (nestedContentOptional.isPresent()) {
       RichText nestedContent = nestedContentOptional.get();
       richTextList.add(nestedContent);
@@ -80,20 +87,24 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     String definitions = htmlRenderService.createDefinitions(richTextList);
     String relatedItems = htmlRenderService.createRelatedItemsHtml(richTextList);
     String moreInformation;
+    Optional<String> nextStageId = answerConfig != null ? answerConfig.getNextStageId() :
+        journeyConfigService.getPrincipleStageConfigForControlEntry(controlEntryConfig).map(StageConfig::getStageId);
     if (!subAnswerViews.isEmpty()) {
       moreInformation = "";
     } else {
-      Optional<String> nextStageId = answerConfig.getNextStageId();
       if (nextStageId.isPresent()) {
         moreInformation = createMoreInformation(nextStageId.get());
       } else {
         moreInformation = "";
       }
     }
-    String nestedContent = createdNestedContent(answerConfig, html);
+    String nestedContent = answerConfig != null ? createdNestedContent(answerConfig, html) : "";
     boolean detailPanel = hasDetailPanel(moreInformation, definitions, relatedItems);
-    return new AnswerView(prompt, answerConfig.getAnswerId(), answerConfig.isDividerAbove(), subAnswerViews,
-        nestedContent, moreInformation, definitions, relatedItems, detailPanel);
+    String value = answerConfig != null ? answerConfig.getAnswerId() : nextStageId.orElseThrow(() ->
+        new BusinessRuleException(String.format("Expected controlEntryConfig %s to have principalStageConfig", controlEntryConfig.getId())));
+    boolean dividerAbove = answerConfig != null && answerConfig.isDividerAbove();
+    return new AnswerView(prompt, value, dividerAbove, subAnswerViews, nestedContent, moreInformation, definitions,
+        relatedItems, detailPanel);
   }
 
   private AnswerView createAnswerViewFromLabelText(AnswerConfig answerConfig, RichText labelText, boolean html) {
