@@ -1,6 +1,5 @@
 @import util._
 @import views.html.common.page._
-@import views.html.common.state._
 @import views.html.common.form._
 
 @this(standardPage: standardPage)
@@ -17,7 +16,7 @@
 
   <form id="registrationInterval" action="@controllers.licencefinder.routes.RegisterToUseController.handleRegistrationProcessed()" method="POST">
 
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
 
     <button type="submit" class="button">Refresh</button>
 

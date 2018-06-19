@@ -4,7 +4,6 @@
 @import views.html.common.form.formCheckbox
 @import util._
 @import views.html.common.page._
-@import views.html.common.state._
 @import views.html.ogel._
 @import java.util.Map
 @import models.view.QuestionView
@@ -48,7 +47,7 @@
 
   <form action="@controllers.licencefinder.routes.RegisterToUseController.handleRegisterToUseSubmit()" method="POST">
 
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
 
 
     <div class="form-group">

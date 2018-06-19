@@ -3,7 +3,6 @@
 @import utils.common.SelectOption
 @import views.html.common.form._
 @import views.html.common.page._
-@import views.html.common.state._
 
 @this(standardPage: standardPage)
 @(form: Form[_], options: List[SelectOption], sessionId: String, resumeCode: String)
@@ -19,7 +18,7 @@
 
   <form action="@routes.OnboardingController.handleSubmit(sessionId)" method="POST">
 
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
     @formRadioGroup(form("speciallyDesigned"), options, promptCssClass = "visually-hidden")(question)
 
     <button type="submit" class="button">Continue</button>
