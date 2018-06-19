@@ -38,6 +38,8 @@
 } {
   <form action="@controllers.licencefinder.routes.DestinationController.handleDestinationSubmit(sessionId)" method="POST">
 
+    @views.html.helper.CSRF.formField
+
     @countrySelect(form(DestinationController.DESTINATION_COUNTRY), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(countryDetailPanel))
 
     @formRadioBooleanWithContent(form(DestinationController.MULTIPLE_COUNTRIES), multipleCountriesQuestion, "h1", "heading-large") {

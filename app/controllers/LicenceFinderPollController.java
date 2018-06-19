@@ -26,9 +26,6 @@ public class LicenceFinderPollController {
    * Polls to check any registration reference for current transaction
    */
   public Result pollStatus(String sessionId) {
-
-    Logger.info("sessionId: " + sessionId);
-
     ObjectNode json = Json.newObject();
     try {
       json.put("complete", licenceFinderService.getRegistrationReference(sessionId).isPresent());

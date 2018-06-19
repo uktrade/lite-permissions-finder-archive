@@ -48,6 +48,8 @@
 
   <form action="@controllers.licencefinder.routes.RegisterToUseController.handleRegisterToUseSubmit(sessionId)" method="POST">
 
+    @views.html.helper.CSRF.formField
+
     <div class="form-group">
       @formCheckbox(form("confirmRead"), "I confirm that I have read the OGEL and its criteria in full.")
 
