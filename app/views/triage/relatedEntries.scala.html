@@ -10,7 +10,7 @@
 @this(triagePage: triagePage)
 @(form: Form[_], controlEntryId: String, sessionId: String, resumeCode: String, controlCode: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
 
-@triagePage(form, routes.StageController.relatedEntries(controlEntryId, sessionId).toString, sessionId, resumeCode, "Check related entries", breadcrumbView, "Checking against related entries"){
+@triagePage(form, routes.StageController.handleRelatedEntriesSubmit(controlEntryId, sessionId).toString, sessionId, resumeCode, "Check related entries", breadcrumbView, "Checking against related entries"){
   @controlCode: Checking against related entries
 }{
   <p class="form-hint">
