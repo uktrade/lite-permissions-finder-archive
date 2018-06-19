@@ -55,7 +55,6 @@ public class ViewOgelController {
    * viewOgel
    */
   public CompletionStage<Result> viewOgel(String registrationReference, String sessionId) {
-    Logger.info("sessionId: " + sessionId);
     LicenceInfo licenceInfo = new LicenceInfo();
     licenceInfo.setLicenceNumber(registrationReference);
 

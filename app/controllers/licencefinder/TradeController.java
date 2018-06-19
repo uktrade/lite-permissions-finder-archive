@@ -9,7 +9,6 @@ import components.persistence.LicenceFinderDao;
 import exceptions.FormStateException;
 import models.TradeType;
 import org.pac4j.play.java.Secure;
-import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -17,7 +16,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
@@ -40,11 +38,7 @@ public class TradeController extends Controller {
    * Licence finder flow entry point
    */
   public CompletionStage<Result> entry(String controlCode) {
-
     String sessionId = UUID.randomUUID().toString();
-    Logger.info("SessionId: " + sessionId);
-    Logger.info("controlCode: " + controlCode);
-
     licenceFinderDao.saveControlCode(sessionId, controlCode);
     return renderTradeForm(sessionId);
   }
@@ -62,7 +56,6 @@ public class TradeController extends Controller {
    * handleTradeSubmit
    */
   public CompletionStage<Result> handleTradeSubmit(String sessionId) {
-    Logger.info("handleTradeSubmit SessionId: " + sessionId);
     Form<TradeTypeForm> form = formFactory.form(TradeTypeForm.class).bindFromRequest();
     String controlCode = licenceFinderDao.getControlCode(sessionId);
     if (form.hasErrors()) {
@@ -75,7 +68,7 @@ public class TradeController extends Controller {
     switch (tradeType) {
       case EXPORT:
         licenceFinderDao.saveSourceCountry(sessionId, UNITED_KINGDOM);
-        return CompletableFuture.completedFuture(redirect(routes.DestinationController.renderDestinationForm(sessionId)));
+        return completedFuture(redirect(routes.DestinationController.renderDestinationForm(sessionId)));
       case TRANSSHIPMENT:
         return completedFuture(redirect(controllers.routes.StaticContentController.renderTranshipment()));
       case BROKERING:

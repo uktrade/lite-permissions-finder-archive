@@ -4,7 +4,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
-import components.common.CommonContextAction;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.persistence.LicenceFinderDao;
@@ -19,7 +18,6 @@ import play.data.validation.Constraints;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.With;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,6 @@ import java.util.concurrent.CompletionStage;
 import javax.inject.Named;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
-@With(CommonContextAction.class)
 public class RegisterToUseController extends Controller {
 
   private static final String CONTROL_CODE_QUESTION = "What Control list entry describes your goods?";

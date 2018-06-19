@@ -175,10 +175,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     List<String> destinationCountries = getExportRouteCountries(sessionId);
     String sourceCountry = licenceFinderDao.getSourceCountry(sessionId);
 
-    Logger.info("controlCode: " + controlCode);
-    Logger.info("destinationCountryName: " + destinationCountryName);
-    Logger.info("sourceCountry: " + sourceCountry);
-
     List<String> activities = Collections.emptyList();
     boolean showHistoricOgel = true; // set as default
     Optional<QuestionsController.QuestionsForm> optQuestionsForm = licenceFinderDao.getQuestionsForm(sessionId);
@@ -233,7 +229,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       List<OgelRegistrationView> views = permissionsService.getOgelRegistrations(userId).toCompletableFuture().get();
       for (OgelRegistrationView view : views) {
         ogelIdRefMap.put(view.getOgelType(), view.getRegistrationReference());
-        Logger.info("getUserOgelIdRefMap: " + view.getOgelType());
       }
     } catch (InterruptedException | ExecutionException e) {
       Logger.error("OgelRegistration exception", e);
@@ -256,10 +251,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
 
   private void registrationResponseReceived(String sessionId, PermissionsServiceImpl.RegistrationResponse response,
                                             RegisterLicence registerLicence) {
-    Logger.info("Response: " + response.isSuccess());
-    Logger.info("RequestId: " + response.getRequestId());
     registerLicence.setRequestId(response.getRequestId());
-
     licenceFinderDao.saveRegisterLicence(sessionId, registerLicence);
   }
 

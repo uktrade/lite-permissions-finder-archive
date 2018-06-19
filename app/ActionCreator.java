@@ -1,6 +1,5 @@
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import components.common.CommonContextAction;
 import components.common.logging.CorrelationId;
 import play.mvc.Action;
 import play.mvc.Http;
@@ -12,11 +11,11 @@ import java.lang.reflect.Method;
  */
 public class ActionCreator implements play.http.ActionCreator {
 
-  private final Provider<CommonContextAction> commonContextActionProvider;
+  private final Provider<ContextAction> contextActionProvider;
 
   @Inject
-  public ActionCreator(Provider<CommonContextAction> commonContextActionProvider) {
-    this.commonContextActionProvider = commonContextActionProvider;
+  public ActionCreator(Provider<ContextAction> contextActionProvider) {
+    this.contextActionProvider = contextActionProvider;
   }
 
   @Override
@@ -25,6 +24,6 @@ public class ActionCreator implements play.http.ActionCreator {
     CorrelationId.setUp(request);
 
     //Ensure a new action instance is created for each request (Play requirement)
-    return commonContextActionProvider.get();
+    return contextActionProvider.get();
   }
 }

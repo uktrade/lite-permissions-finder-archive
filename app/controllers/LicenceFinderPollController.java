@@ -5,14 +5,11 @@ import static play.mvc.Results.ok;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import components.common.CommonContextAction;
 import components.services.LicenceFinderService;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Result;
-import play.mvc.With;
 
-@With(CommonContextAction.class)
 public class LicenceFinderPollController {
 
   private final LicenceFinderService licenceFinderService;

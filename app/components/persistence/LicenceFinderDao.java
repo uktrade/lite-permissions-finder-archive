@@ -34,16 +34,16 @@ public class LicenceFinderDao {
     this.statelessRedisDao = statelessRedisDao;
   }
 
-  public void saveCustomerId(String sessionId, String arg) {
-    statelessRedisDao.writeString(sessionId, CUSTOMER_ID, arg);
+  public void saveCustomerId(String sessionId, String customerId) {
+    statelessRedisDao.writeString(sessionId, CUSTOMER_ID, customerId);
   }
 
   public String getCustomerId(String sessionId) {
     return statelessRedisDao.readString(sessionId, CUSTOMER_ID);
   }
 
-  public void saveSiteId(String sessionId, String arg) {
-    statelessRedisDao.writeString(sessionId, SITE_ID, arg);
+  public void saveSiteId(String sessionId, String siteId) {
+    statelessRedisDao.writeString(sessionId, SITE_ID, siteId);
   }
 
   public String getSiteId(String sessionId) {
@@ -66,24 +66,24 @@ public class LicenceFinderDao {
     return statelessRedisDao.readString(sessionId, SOURCE_COUNTRY);
   }
 
-  public void saveOgelId(String sessionId, String arg) {
-    statelessRedisDao.writeString(sessionId, OGEL_ID, arg);
+  public void saveOgelId(String sessionId, String ogelId) {
+    statelessRedisDao.writeString(sessionId, OGEL_ID, ogelId);
   }
 
   public String getOgelId(String sessionId) {
     return statelessRedisDao.readString(sessionId, OGEL_ID);
   }
 
-  public void saveDestinationCountry(String sessionId, String arg) {
-    statelessRedisDao.writeString(sessionId, DESTINATION_COUNTRY, arg);
+  public void saveDestinationCountry(String sessionId, String countryCode) {
+    statelessRedisDao.writeString(sessionId, DESTINATION_COUNTRY, countryCode);
   }
 
   public String getDestinationCountry(String sessionId) {
     return statelessRedisDao.readString(sessionId, DESTINATION_COUNTRY);
   }
 
-  public void saveFirstConsigneeCountry(String sessionId, String arg) {
-    statelessRedisDao.writeString(sessionId, FIRST_CONSIGNEE_COUNTRY, arg);
+  public void saveFirstConsigneeCountry(String sessionId, String countryCode) {
+    statelessRedisDao.writeString(sessionId, FIRST_CONSIGNEE_COUNTRY, countryCode);
   }
 
   public String getFirstConsigneeCountry(String sessionId) {
@@ -120,9 +120,9 @@ public class LicenceFinderDao {
   }
 
   public Map<String, String> getUserOgelIdRefMap(String sessionId) {
-    return statelessRedisDao.readObject(sessionId, USER_OGEL_ID_REF_MAP, new TypeReference<Map<String, String>>() {
-    })
-        .orElse(new HashMap<>());
+    return statelessRedisDao.readObject(sessionId, USER_OGEL_ID_REF_MAP,
+        new TypeReference<Map<String, String>>() {
+    }).orElse(new HashMap<>());
   }
 
   public void saveRegisterLicence(String sessionId, RegisterLicence registerLicence) {
