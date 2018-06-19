@@ -1,7 +1,6 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
-@import views.html.common.state._
 @import controllers.routes.ContinueApplicationController;
 
 @this(standardPage: standardPage)
@@ -12,7 +11,7 @@
 
   <form action="@ContinueApplicationController.handleSubmit" method="POST">
 
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
 
     @formInput(form("resumeCode"), Some(Html(""))) {
       Enter the code you received when you saved your progress

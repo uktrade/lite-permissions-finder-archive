@@ -90,11 +90,6 @@ POST    /onboarding             controllers.OnboardingController.handleSubmit(se
 
 + nocsrf
 PUT     /cms/spreadsheet                      controllers.cms.UploadController.spreadsheetUpload
-+ nocsrf
-PUT     /cms/populate-caches                  controllers.cms.CacheController.populateCaches
-
-GET     /cms/dummy/test-all                   controllers.cms.DummyController.testAll
-GET     /cms/dummy/test-journey               controllers.cms.DummyController.createTestJourney
 
 GET     /view-outcome/:outcomeId               controllers.ViewOutcomeController.renderOutcome(outcomeId)
 GET     /save-listed-outcome/:controlEntryId   controllers.ViewOutcomeController.saveListedOutcome(sessionId, controlEntryId)

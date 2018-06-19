@@ -1,5 +1,4 @@
 @import util._
-@import views.html.common.state._
 @import controllers.routes.EntryPointController
 
 @this(govukTemplateDefaults: govukTemplateDefaults)
@@ -38,7 +37,7 @@
 
         <form action="@EntryPointController.handleSubmit" method="POST">
 
-          @contextFormParams()
+          @views.html.helper.CSRF.formField
 
           <button type="submit" class="button button-start start-application" name="action" value="start">Start now</button>
 
