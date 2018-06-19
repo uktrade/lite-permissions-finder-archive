@@ -14,7 +14,7 @@ import models.cms.StageAnswer;
 import models.cms.enums.StageAnswerOutcomeType;
 import triage.cache.JourneyConfigFactory;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -146,7 +146,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
 
   @Override
   public List<ControlEntryConfig> getRelatedControlEntries(ControlEntryConfig controlEntryConfig) {
-    return Arrays.asList(controlEntryConfig, controlEntryConfig);
+    return new ArrayList<>();
   }
 
   @Override
