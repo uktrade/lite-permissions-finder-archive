@@ -111,8 +111,8 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     String customerId = licenceFinderDao.getCustomerId(sessionId);
     String siteId = licenceFinderDao.getSiteId(sessionId);
     String ogelId = licenceFinderDao.getOgelId(sessionId);
-    String callbackUrl = permissionsFinderUrl + "/licencefinder/registration-callback?sessionId=" + sessionId;
 
+    String callbackUrl = permissionsFinderUrl + controllers.licencefinder.routes.RegistrationController.handleRegistrationCallback(sessionId);
 
     if (StringUtils.isBlank(customerId) || StringUtils.isBlank(siteId)) {
       throw new ServiceException("Customer and/or Site could not be determined - a user can only have one associated Customer and only one associated Site");
