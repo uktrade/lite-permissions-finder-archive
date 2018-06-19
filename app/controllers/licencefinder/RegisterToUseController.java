@@ -134,7 +134,7 @@ public class RegisterToUseController extends Controller {
   private CompletionStage<Result> renderWithRegisterToUseForm(Form<RegisterToUseForm> form, String sessionId) {
     return ogelService.get(licenceFinderDao.getOgelId(sessionId))
         .thenApplyAsync(
-            ogelFullView -> ok(registerToUse.render(form, ogelFullView, licenceFinderDao.getControlCode(sessionId), true, getLicenceFinderAnswers(sessionId), sessionId)), httpContext.current());
+            ogelFullView -> ok(registerToUse.render(form, ogelFullView, getLicenceFinderAnswers(sessionId), sessionId)), httpContext.current());
   }
 
   private List<QuestionView> getLicenceFinderAnswers(String sessionId) {

@@ -11,7 +11,7 @@
 @import utils.common.ViewUtil
 
 @this(standardPage: standardPage)
-@(form: Form[RegisterToUseForm], ogel: OgelFullView, physicalGoodControlCode: String, allowedToProceed: Boolean, questionViews: List[QuestionView], sessionId: String)
+@(form: Form[RegisterToUseForm], ogel: OgelFullView, questionViews: List[QuestionView], sessionId: String)
 
 @pageHeading = @{
   "Register to use Open general export licence (" + ogel.getName + ")"
