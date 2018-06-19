@@ -1,7 +1,6 @@
 @import models.view.BreadcrumbView
 @import models.view.AnswerView
 @import views.html.triage.outcomePage
-@import views.html.common.state.contextFormParams
 @import views.html.common.form.formCheckbox
 @import views.html.common.page._
 
@@ -50,7 +49,7 @@
   </div>
 
   <form action="@routes.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)" method="POST">
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
 
     <div class="form-group">
       @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")

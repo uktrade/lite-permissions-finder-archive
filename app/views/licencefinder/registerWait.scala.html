@@ -1,6 +1,5 @@
 @import util._
 @import views.html.common.page._
-@import views.html.common.state._
 @import views.html.common.form._
 
 @this(standardPage: standardPage)
@@ -18,8 +17,6 @@
   <form id="registrationInterval" action="@controllers.licencefinder.routes.RegisterToUseController.handleRegistrationProcessed(sessionId)" method="POST">
 
     @views.html.helper.CSRF.formField
-
-    <input type="hidden" name="sessionId" value="@sessionId">
 
     <button type="submit" class="button">Refresh</button>
 
