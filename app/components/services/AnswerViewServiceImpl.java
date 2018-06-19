@@ -5,6 +5,8 @@ import exceptions.BusinessRuleException;
 import models.view.AnswerView;
 import models.view.SubAnswerView;
 import org.apache.commons.lang3.StringUtils;
+import play.twirl.api.Html;
+import play.twirl.api.HtmlFormat;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
@@ -103,8 +105,9 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     String value = answerConfig != null ? answerConfig.getAnswerId() : nextStageId.orElseThrow(() ->
         new BusinessRuleException(String.format("Expected controlEntryConfig %s to have principalStageConfig", controlEntryConfig.getId())));
     boolean dividerAbove = answerConfig != null && answerConfig.isDividerAbove();
+    Html htmlAbove = htmlRenderService.createControlEntryLinkHtml(controlEntryConfig);
     return new AnswerView(prompt, value, dividerAbove, subAnswerViews, nestedContent, moreInformation, definitions,
-        relatedItems, detailPanel);
+        relatedItems, detailPanel, htmlAbove);
   }
 
   private AnswerView createAnswerViewFromLabelText(AnswerConfig answerConfig, RichText labelText, boolean html) {
@@ -133,7 +136,7 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     }
     boolean detailPanel = hasDetailPanel(moreInformation, definitions, relatedItems);
     return new AnswerView(prompt, answerConfig.getAnswerId(), answerConfig.isDividerAbove(), new ArrayList<>(),
-        nestedContent, moreInformation, definitions, relatedItems, detailPanel);
+        nestedContent, moreInformation, definitions, relatedItems, detailPanel, HtmlFormat.empty());
   }
 
   @Override

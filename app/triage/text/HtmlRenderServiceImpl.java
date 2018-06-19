@@ -3,6 +3,8 @@ package triage.text;
 import com.google.inject.Inject;
 import models.enums.HtmlType;
 import org.apache.commons.lang3.StringUtils;
+import play.twirl.api.Html;
+import triage.config.ControlEntryConfig;
 import triage.config.DefinitionConfig;
 import triage.config.DefinitionConfigService;
 
@@ -81,6 +83,14 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
         .collect(Collectors.joining(", "));
   }
 
+  @Override
+  public Html createControlEntryLinkHtml(ControlEntryConfig controlEntryConfig) {
+    String id = controlEntryConfig.getId();
+    String text = controlEntryConfig.getControlCode();
+    String link = String.format(CONTROL_ENTRY_TEXT, id, id, text, "", text);
+    return new Html("Related entry: " + link);
+  }
+
   private static String unescape(String str) {
     return str.replace("'", "\"");
   }
@@ -130,7 +140,8 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     return String.format(DEFINITION_TEXT, type, definitionId, definitionId, type, text, TARGET_ATTR_BLANK, text);
   }
 
-  private String createControlEntryHtml(ControlEntryReferenceNode controlEntryReferenceNode, boolean omitLinkTargetAttr) {
+  private String createControlEntryHtml(ControlEntryReferenceNode controlEntryReferenceNode,
+                                        boolean omitLinkTargetAttr) {
     String controlEntryId = controlEntryReferenceNode.getControlEntryId();
     String textContent = controlEntryReferenceNode.getTextContent();
     if (omitLinkTargetAttr) {
@@ -232,7 +243,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     return htmlParts;
   }
 
-  private boolean getOption(HtmlRenderOption option, HtmlRenderOption...options) {
+  private boolean getOption(HtmlRenderOption option, HtmlRenderOption... options) {
     return Arrays.stream(options).anyMatch(htmlRenderOption -> option == htmlRenderOption);
   }
 }

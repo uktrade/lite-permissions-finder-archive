@@ -24,6 +24,9 @@
       @if(answerView.isDividerAbove) {
         <p class="form-block">or</p>
       }
+      <p class="form-block">
+        @answerView.getHtmlAbove
+      </p>
       @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
         @answerMoreInformation(answerView)
       }
