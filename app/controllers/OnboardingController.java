@@ -50,7 +50,7 @@ public class OnboardingController {
       case YES:
         return completedFuture(redirect(routes.StageController.index(sessionId)));
       case NO:
-        return completedFuture(ok("Link to EU Dual-Use List holding page - link TBC"));
+        return completedFuture(redirect(routes.StaticContentController.renderOtherControlList()));
       default:
         return completedFuture(ok("Link to don't know page - link TBC"));
     }
