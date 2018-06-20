@@ -165,14 +165,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("ogelServiceCredentials"))
         .to(config.getString("ogelService.credentials"));
 
-    // ogelRegistration
-    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceAddress"))
-        .to(config.getString("ogelRegistrationService.address"));
-    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceTimeout"))
-        .to(config.getString("ogelRegistrationService.timeout"));
-    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
-        .to(config.getString("ogelRegistrationService.sharedSecret"));
-
     bind(JourneySerialiser.class).to(PermissionsFinderJourneySerialiser.class);
 
     bindConstant().annotatedWith(Names.named("basicAuthUser"))
