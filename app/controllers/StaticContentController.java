@@ -29,7 +29,6 @@ public class StaticContentController extends Controller {
     TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment"),
     NOT_APPLICABLE("notApplicable.html", "No licence available", HEADING_BANNER_FUNC.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
-    VIRTUAL_EU("virtualEU.html", "You do not need a licence"),
     TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites"),
     UNKNOWN_OUTCOME("unknownOutcome.html", "Unknown outcome");
 
@@ -77,10 +76,6 @@ public class StaticContentController extends Controller {
 
   public Result renderNotImplemented() {
     return renderStaticHtml(StaticHtml.NOT_IMPLEMENTED);
-  }
-
-  public Result renderVirtualEU() {
-    return renderStaticHtml(StaticHtml.VIRTUAL_EU);
   }
 
   public Result renderInvalidUserAccount() {
