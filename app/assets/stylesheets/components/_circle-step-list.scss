@@ -1,7 +1,7 @@
 ol.circle-step-list {
   counter-reset: circle-step-list-counter;
 
-  li {
+  &>li {
     position: relative;
     padding-left: 55px;
     padding-top: 8px;
@@ -11,8 +11,8 @@ ol.circle-step-list {
       display: inline-block;
       @include border-radius(50%);
 
-      content:counter(circle-step-list-counter);
-      counter-increment:circle-step-list-counter;
+      content: counter(circle-step-list-counter);
+      counter-increment: circle-step-list-counter;
 
       position: absolute;
       top: 0;
