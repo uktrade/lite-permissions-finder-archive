@@ -28,9 +28,10 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       "<a href='/view-control-entry/%s' data-control-entry-id='%s' title='View %s'%s>%s</a>");
   private static final String TARGET_ATTR_BLANK = unescape(" target='_blank'");
   private static final Set<HtmlType> LEVELS = EnumSet.of(HtmlType.LIST_LEVEL_1, HtmlType.LIST_LEVEL_2, HtmlType.LIST_LEVEL_3);
-  private static final Pattern PATTERN_LEVEL_1 = Pattern.compile("\\*(?!\\*)(.*?)\\n");
-  private static final Pattern PATTERN_LEVEL_2 = Pattern.compile("\\*\\*(.*?)\\n");
-  private static final Pattern PATTERN_LEVEL_3 = Pattern.compile("\\*\\*\\*(.*?)\\n");
+  private static final Pattern PATTERN_LEVEL_1 = Pattern.compile("\\*(?!\\*)(.*?)(\\n|$)");
+  private static final Pattern PATTERN_LEVEL_2 = Pattern.compile("\\*\\*(.*?)(\\n|$)");
+  private static final Pattern PATTERN_LEVEL_3 = Pattern.compile("\\*\\*\\*(.*?)(\\n|$)");
+  private static final Pattern PATTERN_UL_IN_P = Pattern.compile("<p>\\s*?(<ul>.*?<\\/ul>)\\s*?<\\/p>", Pattern.MULTILINE);
 
   private final DefinitionConfigService definitionConfigService;
 
@@ -47,10 +48,10 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   @Override
   public String convertRichTextToHtml(RichText richText, HtmlRenderOption... htmlRenderOptions) {
     if (getOption(HtmlRenderOption.OMIT_LINKS, htmlRenderOptions)) {
-      return convertNewlinesToBrs(renderLists(convertRichTextToPlainText(richText)));
+      return convertToParagraphs(renderLists(convertRichTextToPlainText(richText)));
     } else {
       boolean omitLinkTargetAttr = getOption(HtmlRenderOption.OMIT_LINK_TARGET_ATTR, htmlRenderOptions);
-      return convertNewlinesToBrs(renderLists(addLinks(richText, omitLinkTargetAttr)));
+      return convertToParagraphs(renderLists(addLinks(richText, omitLinkTargetAttr)));
     }
   }
 
@@ -85,8 +86,17 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     return str.replace("'", "\"");
   }
 
-  private String convertNewlinesToBrs(String input) {
-    return input.replace("\n", "<br>");
+  private String convertToParagraphs(String input) {
+    String output = input.trim();
+
+    if (output.contains("\n")) {
+      output = "<p>" + output + "</p>";
+      output = output.replace("\n", "<br>");
+      output = output.replace("<br><br>", "</p><p>");
+      output = PATTERN_UL_IN_P.matcher(output).replaceAll("$1");
+    }
+
+    return output;
   }
 
   private String addLinks(RichText richText, boolean omitLinkTargetAttr) {
@@ -199,7 +209,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     for (AtomicBoolean atomicBoolean : atomicBooleans) {
       if (atomicBoolean.get()) {
         atomicBoolean.set(false);
-        stringBuilder.append("</ul>");
+        stringBuilder.append("</ul>\n");
       }
     }
   }

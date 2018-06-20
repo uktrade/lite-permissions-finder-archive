@@ -41,6 +41,6 @@ LITEPermissionsFinder.Triage = {
       .fail(LITEPermissionsFinder.Triage._ajaxDisplayFailureModal);
   },
   _ajaxDisplayFailureModal: function() {
-    LITECommon.Modal.displayModal("Sorry, cannot show this information", "error");
+    LITECommon.Modal.displayModal('Sorry, this information can\'t be shown at the moment. Please <a href="#" class="close-modal">close</a> and try again.', "error");
   }
 };
