@@ -9,6 +9,7 @@ import components.common.auth.SpireSAML2Client;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
 import components.services.OgelService;
+import controllers.UserGuardAction;
 import models.view.RegisterResultView;
 import org.pac4j.play.java.Secure;
 import play.data.Form;
@@ -17,12 +18,14 @@ import play.data.validation.Constraints.Required;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.With;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
+@With(UserGuardAction.class)
 public class ResultsController extends Controller {
 
   private final FormFactory formFactory;

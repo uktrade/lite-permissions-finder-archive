@@ -93,12 +93,24 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
    * Attempts to read callback reference set number times/period
    */
   public Optional<String> getRegistrationReference(String sessionId) {
-    Optional<RegisterLicence> optRegisterLicence = licenceFinderDao.getRegisterLicence(sessionId);
-    if (optRegisterLicence.isPresent()) {
-      String ref = optRegisterLicence.get().getRegistrationReference();
-      if (!StringUtils.isBlank(ref)) {
-        return Optional.of(ref);
+    if(licenceFinderDao.registerLicenceExists(sessionId)) {
+      Optional<RegisterLicence> optRegisterLicence = licenceFinderDao.getRegisterLicence(sessionId);
+      if (optRegisterLicence.isPresent()) {
+        String ref = optRegisterLicence.get().getRegistrationReference();
+        if (!StringUtils.isBlank(ref)) {
+          return Optional.of(ref);
+        }
       }
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Attempts to read callback reference set number times/period
+   */
+  public Optional<RegisterLicence> getRegisterLicence(String sessionId) {
+    if(licenceFinderDao.registerLicenceExists(sessionId)) {
+      return licenceFinderDao.getRegisterLicence(sessionId);
     }
     return Optional.empty();
   }
