@@ -78,7 +78,7 @@ public class RegisterAwaitController extends Controller {
       return ogelService.get(licenceFinderDao.getOgelId(sessionId))
           .thenApplyAsync(ogelFullView -> {
             RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());
-            return ok(registerResult.render(view, ogelFullView, dashboardUrl, sessionId));
+            return ok(registerResult.render(view, ogelFullView, dashboardUrl));
           }, httpContext.current());
     }
     return completedFuture(ok(registerWait.render(sessionId)));
@@ -89,6 +89,5 @@ public class RegisterAwaitController extends Controller {
    */
   public CompletionStage<Result> handleRegistrationProcessed(String sessionId) {
     return completedFuture(redirect(routes.RegisterAwaitController.renderAwaitResult(sessionId)));
-    //return CompletableFuture.completedFuture(redirect(licencefinder.routes.RegisterAwaitController.renderAwaitResult(sessionId)));
   }
 }

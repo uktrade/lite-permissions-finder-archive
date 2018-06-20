@@ -88,10 +88,10 @@ public class ResultsController extends Controller {
         Optional<String> optRef = licenceFinderService.getUserOgelReference(sessionId, chosenOgelId);
         if(optRef.isPresent()) {
           RegisterResultView resultView = new RegisterResultView("You are already registered to use Open general export licence (" + ogelFullView.getName() + ")", optRef.get());
-          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl, sessionId));
+          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl));
         } else {
           RegisterResultView resultView = new RegisterResultView("You are already registered to use Open general export licence (" + ogelFullView.getName() + ")");
-          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl, sessionId));
+          return ok(registerResult.render(resultView, ogelFullView, dashboardUrl));
         }
       }, httpContext.current());
     }
