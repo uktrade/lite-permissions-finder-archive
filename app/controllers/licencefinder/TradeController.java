@@ -5,8 +5,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
-import components.common.state.ContextParamManager;
-import components.common.transaction.TransactionManager;
 import components.persistence.LicenceFinderDao;
 import exceptions.FormStateException;
 import models.TradeType;
@@ -17,26 +15,22 @@ import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class TradeController extends Controller {
 
   private final FormFactory formFactory;
-  private final LicenceFinderDao dao;
-  private final TransactionManager transactionManager;
-  private final ContextParamManager contextParam;
+  private final LicenceFinderDao licenceFinderDao;
   private final views.html.licencefinder.trade trade;
 
   private static final String UNITED_KINGDOM = "CTRY0";
 
   @Inject
-  public TradeController(TransactionManager transactionManager, FormFactory formFactory,
-                         LicenceFinderDao dao, ContextParamManager contextParam, views.html.licencefinder.trade trade) {
-    this.transactionManager = transactionManager;
+  public TradeController(FormFactory formFactory, LicenceFinderDao licenceFinderDao, views.html.licencefinder.trade trade) {
     this.formFactory = formFactory;
-    this.dao = dao;
-    this.contextParam = contextParam;
+    this.licenceFinderDao = licenceFinderDao;
     this.trade = trade;
   }
 
@@ -44,38 +38,37 @@ public class TradeController extends Controller {
    * Licence finder flow entry point
    */
   public CompletionStage<Result> entry(String controlCode) {
-    transactionManager.createTransaction();
-    dao.saveControlCode(controlCode);
-    dao.saveApplicationCode("ABCD-1234");
-    return renderTradeForm();
+    String sessionId = UUID.randomUUID().toString();
+    licenceFinderDao.saveControlCode(sessionId, controlCode);
+    return renderTradeForm(sessionId);
   }
 
   /**
    * renderTradeForm
    */
-  public CompletionStage<Result> renderTradeForm() {
+  public CompletionStage<Result> renderTradeForm(String sessionId) {
     TradeTypeForm form = new TradeTypeForm();
-    dao.getTradeType().ifPresent(tradeType -> form.tradeType = tradeType.toString());
-    return completedFuture(ok(trade.render(formFactory.form(TradeTypeForm.class).fill(form), dao.getControlCode())));
+    licenceFinderDao.getTradeType(sessionId).ifPresent((e) -> form.tradeType = e.toString());
+    return completedFuture(ok(trade.render(formFactory.form(TradeTypeForm.class).fill(form), licenceFinderDao.getControlCode(sessionId), sessionId)));
   }
 
   /**
    * handleTradeSubmit
    */
-  public CompletionStage<Result> handleTradeSubmit() {
+  public CompletionStage<Result> handleTradeSubmit(String sessionId) {
     Form<TradeTypeForm> form = formFactory.form(TradeTypeForm.class).bindFromRequest();
-    String controlCode = dao.getControlCode();
+    String controlCode = licenceFinderDao.getControlCode(sessionId);
     if (form.hasErrors()) {
-      return completedFuture(ok(trade.render(form, controlCode)));
+      return completedFuture(ok(trade.render(form, controlCode, sessionId)));
     }
 
     TradeType tradeType = TradeType.valueOf(form.get().tradeType);
-    dao.saveTradeType(tradeType);
+    licenceFinderDao.saveTradeType(sessionId, tradeType);
 
     switch (tradeType) {
       case EXPORT:
-        dao.saveSourceCountry(UNITED_KINGDOM);
-        return contextParam.addParamsAndRedirect(routes.DestinationController.renderDestinationForm());
+        licenceFinderDao.saveSourceCountry(sessionId, UNITED_KINGDOM);
+        return completedFuture(redirect(routes.DestinationController.renderDestinationForm(sessionId)));
       case TRANSSHIPMENT:
         return completedFuture(redirect(controllers.routes.StaticContentController.renderTranshipment()));
       case BROKERING:

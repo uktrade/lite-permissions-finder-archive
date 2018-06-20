@@ -30,25 +30,25 @@ POST    /start-application                    controllers.StartApplicationContro
 
 # Licence finder
 GET     /licencefinder/entry/:controlCode     controllers.licencefinder.TradeController.entry(controlCode)
-GET     /licencefinder/trade                 controllers.licencefinder.TradeController.renderTradeForm
-POST    /licencefinder/trade                 controllers.licencefinder.TradeController.handleTradeSubmit
-GET     /licencefinder/destination           controllers.licencefinder.DestinationController.renderDestinationForm
-POST    /licencefinder/destination           controllers.licencefinder.DestinationController.handleDestinationSubmit
-GET     /licencefinder/questions             controllers.licencefinder.QuestionsController.renderQuestionsForm
-POST    /licencefinder/questions             controllers.licencefinder.QuestionsController.handleQuestionsSubmit
-GET     /licencefinder/results               controllers.licencefinder.ResultsController.renderResultsForm
-POST    /licencefinder/results               controllers.licencefinder.ResultsController.handleResultsSubmit
-GET     /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.renderRegisterToUseForm
-POST    /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.handleRegisterToUseSubmit
+GET     /licencefinder/trade                 controllers.licencefinder.TradeController.renderTradeForm(sessionId)
+POST    /licencefinder/trade                 controllers.licencefinder.TradeController.handleTradeSubmit(sessionId)
+GET     /licencefinder/destination           controllers.licencefinder.DestinationController.renderDestinationForm(sessionId)
+POST    /licencefinder/destination           controllers.licencefinder.DestinationController.handleDestinationSubmit(sessionId)
+GET     /licencefinder/questions             controllers.licencefinder.QuestionsController.renderQuestionsForm(sessionId)
+POST    /licencefinder/questions             controllers.licencefinder.QuestionsController.handleQuestionsSubmit(sessionId)
+GET     /licencefinder/results               controllers.licencefinder.ResultsController.renderResultsForm(sessionId)
+POST    /licencefinder/results               controllers.licencefinder.ResultsController.handleResultsSubmit(sessionId)
+GET     /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.renderRegisterToUseForm(sessionId)
+POST    /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.handleRegisterToUseSubmit(sessionId)
 
-GET    /licencefinder/await-registration      controllers.licencefinder.RegisterToUseController.renderAwaitResult
-POST    /licencefinder/new-registration      controllers.licencefinder.RegisterToUseController.handleRegistrationProcessed
+GET    /licencefinder/await-registration      controllers.licencefinder.RegisterToUseController.renderAwaitResult(sessionId)
+POST    /licencefinder/new-registration      controllers.licencefinder.RegisterToUseController.handleRegistrationProcessed(sessionId)
 
-GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
-GET     /licencefinder/poll-status       controllers.LicenceFinderPollController.pollStatus(ctx_transaction)
+GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef, sessionId)
+GET     /licencefinder/poll-status       controllers.LicenceFinderPollController.pollStatus(sessionId)
 
 + nocsrf
-POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(transactionId)
+POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(sessionId)
 
 # JavaScript routes
 GET     /assets/javascripts/routes          controllers.JavaScriptRoutesController.javascriptRoutes()

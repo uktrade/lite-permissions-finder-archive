@@ -5,14 +5,14 @@
 @import views.html.ogel._
 
 @this(standardPage: standardPage)
-@(view: RegisterResultView, ogel: OgelFullView, dashboardUrl: String)
+@(view: RegisterResultView, ogel: OgelFullView, dashboardUrl: String, sessionId: String)
 @standardPage(view.getTitle, Some(heading(view.getTitle))) {
 
 }{
 
   @if(view.hasRegistrationRef) {
     <p>
-      <a id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(view.getRegistrationRef)"
+      <a id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(view.getRegistrationRef, sessionId)"
       class="link underlined ogel-link" target="_blank">View your licence<span class="visually-hidden"> (opens in a new tab)</span></a>
     </p>
   } else {
