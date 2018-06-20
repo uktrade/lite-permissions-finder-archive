@@ -15,6 +15,7 @@ POST    /onboarding                 controllers.OnboardingController.handleSubmi
 
 #Static content
 GET     /not-implemented               controllers.StaticContentController.renderNotImplemented
+GET     /more-information-required     controllers.StaticContentController.renderMoreInformationRequired
 GET     /other-control-list            controllers.StaticContentController.renderOtherControlList
 GET     /trade-type/brokering          controllers.StaticContentController.renderBrokering
 GET     /trade-type/transhipment       controllers.StaticContentController.renderTranshipment

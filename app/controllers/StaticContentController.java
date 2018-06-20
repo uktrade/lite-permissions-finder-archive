@@ -26,6 +26,7 @@ public class StaticContentController extends Controller {
 
   public enum StaticHtml {
     BROKERING("tradetypes/brokering.html", "Trade controls, trafficking and brokering"),
+    MORE_INFORMATION_REQUIRED("moreInformationRequired.html", "Find out more about your item"),
     NOT_APPLICABLE("notApplicable.html", "No licence available", HEADING_BANNER_FUNC.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
     OTHER_CONTROL_LIST("otherControlList.html", "Check your item against another control list"),
@@ -73,6 +74,10 @@ public class StaticContentController extends Controller {
 
   public Result renderInvalidUserAccount() {
     return renderStaticHtml(StaticHtml.TOO_MANY_CUSTOMERS_OR_SITES);
+  }
+
+  public Result renderMoreInformationRequired() {
+    return renderStaticHtml(StaticHtml.MORE_INFORMATION_REQUIRED);
   }
 
   public Result renderNotImplemented() {
