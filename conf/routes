@@ -45,7 +45,7 @@ GET    /licencefinder/await-registration     controllers.licencefinder.RegisterA
 POST    /licencefinder/new-registration      controllers.licencefinder.RegisterAwaitController.handleRegistrationProcessed(sessionId)
 GET    /licencefinder/registration-success     controllers.licencefinder.RegisterAwaitController.registrationSuccess(sessionId, registrationRef)
 
-GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef, sessionId)
+GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
 GET     /licencefinder/poll-status       controllers.LicenceFinderPollController.pollStatus(sessionId)
 
 + nocsrf

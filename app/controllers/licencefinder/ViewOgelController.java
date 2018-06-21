@@ -12,13 +12,11 @@ import components.common.auth.SpireSAML2Client;
 import components.services.CustomerService;
 import components.services.OgelService;
 import components.services.PermissionsService;
-import controllers.LicenceFinderUserGuardAction;
 import models.summary.LicenceInfo;
 import org.pac4j.play.java.Secure;
 import play.Logger;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
-import play.mvc.With;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
@@ -29,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
-@With({LicenceFinderUserGuardAction.class})
 public class ViewOgelController {
 
   private final PermissionsService permissionsService;
@@ -57,7 +54,7 @@ public class ViewOgelController {
   /**
    * viewOgel
    */
-  public CompletionStage<Result> viewOgel(String registrationReference, String sessionId) {
+  public CompletionStage<Result> viewOgel(String registrationReference) {
     LicenceInfo licenceInfo = new LicenceInfo();
     licenceInfo.setLicenceNumber(registrationReference);
 
