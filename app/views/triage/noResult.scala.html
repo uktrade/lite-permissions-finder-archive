@@ -16,7 +16,7 @@
     <div class="column-two-thirds">
 
       <header class="page-header">
-        <h1 class="heading-large">
+        <h1 class="heading-xlarge">
           <span class="heading-secondary">
             @if(progressView.getCode != null) {
               @progressView.getCode&nbsp;
@@ -28,7 +28,7 @@
           We cannot find your item
         </h1>
       </header>
-      <p>
+      <p class="lede">
         Based on the choices you've made, we cannot help you find the control list entry for your item here.
       </p>
       <p>
@@ -40,29 +40,29 @@
         Always double-check if your items are controlled. If you export controlled items without the correct export
         licence you could have your items seized, be fined and face up to 10 years in prison.
       </div>
-      <h1 class="heading-large">
+      <h2 class="heading-large">
         What you should do next
-      </h1>
+      </h2>
       <p>
         You need to log in to SPIRE to use and submit your request through the CLCAS where you'll be asked to:
       </p>
-      <ul>
+      <ul class="list list-bullet">
         <li>
-          - describe your item and how it will be used
+          describe your item and how it will be used
         </li>
         <li>
-          - outline your item's original design intent – for example, if it was specially designed or modified for military
+          outline your item's original design intent – for example, if it was specially designed or modified for military
           use
         </li>
         <li>
-          - upload your item's technical details – for example, data sheets, product brochures and technical summaries
+          upload your item's technical details – for example, data sheets, product brochures and technical summaries
         </li>
       </ul>
-      <p>
-        <a href="#">
-          Log in to SPIRE and submit a request via the Control List Classification Advice Service (CLCAS)[TODO Link]
+      <div class="call-to-action">
+        <a href="https://www.spire.trade.gov.uk/" rel="external" target="_blank">
+          Log in to SPIRE and submit a request via the Control List Classification Advice Service (CLCAS)<span class="visually-hidden"> (opens in a new tab)</span>
         </a>
-      </p>
+      </div>
     </div>
     <div class="column-one-third">
       @triageBreadcrumb(breadcrumbView, "")
