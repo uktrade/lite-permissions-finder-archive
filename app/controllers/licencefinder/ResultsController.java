@@ -46,7 +46,8 @@ public class ResultsController extends Controller {
                            HttpExecutionContext httpContext,
                            LicenceFinderDao licenceFinderDao,
                            views.html.licencefinder.results results,
-                           SpireAuthManager authManager, LicenceFinderService licenceFinderService, views.html.licencefinder.registerResult registerResult, OgelService ogelService,
+                           SpireAuthManager authManager, LicenceFinderService licenceFinderService,
+                           views.html.licencefinder.registerResult registerResult, OgelService ogelService,
                            @com.google.inject.name.Named("dashboardUrl") String dashboardUrl) {
     this.formFactory = formFactory;
     this.httpContext = httpContext;
@@ -83,10 +84,10 @@ public class ResultsController extends Controller {
     }
 
     // Check if we have a Ogel that the is already registered - return registerResult view
-    if(licenceFinderService.isOgelIdAlreadyRegistered(sessionId, chosenOgelId)) {
+    if (licenceFinderService.isOgelIdAlreadyRegistered(sessionId, chosenOgelId)) {
       return ogelService.get(licenceFinderDao.getOgelId(sessionId)).thenApplyAsync(ogelFullView -> {
         Optional<String> optRef = licenceFinderService.getUserOgelReference(sessionId, chosenOgelId);
-        if(optRef.isPresent()) {
+        if (optRef.isPresent()) {
           RegisterResultView resultView = new RegisterResultView("You are already registered to use Open general export licence (" + ogelFullView.getName() + ")", optRef.get());
           return ok(registerResult.render(resultView, ogelFullView, dashboardUrl));
         } else {

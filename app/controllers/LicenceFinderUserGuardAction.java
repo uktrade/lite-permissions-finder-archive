@@ -22,8 +22,8 @@ public class LicenceFinderUserGuardAction extends Action.Simple {
   private final views.html.licencefinder.errorPage errorPage;
 
   @Inject
-  public LicenceFinderUserGuardAction(LicenceFinderDao licenceFinderDao,
-                                      SpireAuthManager authManager, views.html.licencefinder.errorPage errorPage) {
+  public LicenceFinderUserGuardAction(LicenceFinderDao licenceFinderDao, SpireAuthManager authManager,
+                                      views.html.licencefinder.errorPage errorPage) {
     this.licenceFinderDao = licenceFinderDao;
     this.authManager = authManager;
     this.errorPage = errorPage;

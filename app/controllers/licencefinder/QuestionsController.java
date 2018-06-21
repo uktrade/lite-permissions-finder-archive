@@ -31,7 +31,8 @@ public class QuestionsController extends Controller {
   private final views.html.licencefinder.questions questions;
 
   @Inject
-  public QuestionsController(FormFactory formFactory, LicenceFinderDao licenceFinderDao, LicenceFinderService licenceFinderService,
+  public QuestionsController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
+                             LicenceFinderService licenceFinderService,
                              views.html.licencefinder.questions questions) {
     this.formFactory = formFactory;
     this.licenceFinderDao = licenceFinderDao;

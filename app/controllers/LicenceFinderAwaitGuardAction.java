@@ -22,8 +22,7 @@ public class LicenceFinderAwaitGuardAction extends Action.Simple {
   private final views.html.licencefinder.errorPage errorPage;
 
   @Inject
-  public LicenceFinderAwaitGuardAction(LicenceFinderDao licenceFinderDao,
-                                       views.html.licencefinder.errorPage errorPage) {
+  public LicenceFinderAwaitGuardAction(LicenceFinderDao licenceFinderDao, views.html.licencefinder.errorPage errorPage) {
     this.licenceFinderDao = licenceFinderDao;
     this.errorPage = errorPage;
   }
