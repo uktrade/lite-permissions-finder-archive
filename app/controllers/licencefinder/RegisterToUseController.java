@@ -96,7 +96,7 @@ public class RegisterToUseController extends Controller {
       return ogelService.get(licenceFinderDao.getOgelId(sessionId))
           .thenApplyAsync(ogelFullView -> {
             RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());
-            return ok(registerResult.render(view, ogelFullView, dashboardUrl, sessionId));
+            return ok(registerResult.render(view, ogelFullView, dashboardUrl));
           }, httpContext.current());
     }
 
@@ -112,7 +112,7 @@ public class RegisterToUseController extends Controller {
       return ogelService.get(licenceFinderDao.getOgelId(sessionId))
           .thenApplyAsync(ogelFullView -> {
             RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());
-            return ok(registerResult.render(view, ogelFullView, dashboardUrl, sessionId));
+            return ok(registerResult.render(view, ogelFullView, dashboardUrl));
           }, httpContext.current());
     }
     return completedFuture(ok(registerWait.render(sessionId)));

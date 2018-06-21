@@ -38,7 +38,7 @@ GET     /licencefinder/await-registration       controllers.licencefinder.Regist
 POST    /licencefinder/new-registration         controllers.licencefinder.RegisterToUseController.handleRegistrationProcessed(sessionId)
 GET     /licencefinder/poll-status              controllers.LicenceFinderPollController.pollStatus(sessionId)
 
-GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef, sessionId)
+GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
 
 + nocsrf
 POST   /licencefinder/registration-callback     controllers.licencefinder.RegistrationController.handleRegistrationCallback(sessionId)
