@@ -11,5 +11,7 @@ public interface JourneyConfigFactory {
 
   ControlEntryConfig createControlEntryConfigForId(String controlEntryId);
 
+  List<ControlEntryConfig> createRelatedControlEntryConfigsForId(String controlEntryId);
+
   List<NoteConfig> createNoteConfigsForStageId(String stageId);
 }
