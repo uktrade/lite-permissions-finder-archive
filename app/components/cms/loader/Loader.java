@@ -85,7 +85,6 @@ public class Loader {
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
     createGlobalDefinitions(parserResult.getDefinitions(), journeyId);
-    createNotes(rootNavigationLevel);
 
     // Resolve initial stage id from stage associated with first sub-level of navigation levels
     Long initialStageId = rootNavigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
@@ -183,9 +182,8 @@ public class Loader {
   private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId, int displayOrder,
                                                     NavigationLevel navigationLevel) {
     if (!isRoot) {
-      LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
       StageAnswer stageAnswer = new StageAnswer();
-      stageAnswer.setParentStageId(loadingMetadata.getStageId());
+      stageAnswer.setParentStageId(navigationLevel.getLoadingMetadata().getStageId());
 
       Decontrols decontrols = navigationLevel.getDecontrols();
       if (decontrols != null && decontrols.getContent() != null) {
@@ -199,7 +197,7 @@ public class Loader {
             if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
               stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
             } else {
-              stageAnswer.setGoToStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId()));
+              stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
             }
           } else {
             stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
@@ -209,7 +207,7 @@ public class Loader {
           if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
             stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
           } else {
-            stageAnswer.setGoToStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId()));
+            stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
           }
         }
       }
@@ -217,7 +215,7 @@ public class Loader {
       ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
       if (controlListEntries != null) {
         if (controlListEntries.getRating() != null) {
-          stageAnswer.setControlEntryId(loadingMetadata.getControlEntryId());
+          stageAnswer.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
         } else {
           stageAnswer.setAnswerText(navigationLevel.getContent());
         }
@@ -239,7 +237,12 @@ public class Loader {
 
       Logger.debug("Inserted stage answer id {}", stageAnswerId);
 
-      loadingMetadata.setStageAnswerId(stageAnswerId);
+      if (stageAnswer.getGoToStageId() != null) {
+        createNotes(navigationLevel.getNotes(), stageAnswer.getGoToStageId());
+      } else {
+        Logger.error("No stageId to associate note with, cell id {}", navigationLevel.getCellAddress());
+      }
+      navigationLevel.getLoadingMetadata().setStageAnswerId(stageAnswerId);
     }
 
     for (int i = 0; i < navigationLevel.getSubNavigationLevels().size(); i++) {
@@ -251,7 +254,7 @@ public class Loader {
     }
   }
 
-  private long createItemStage(long journeyId, long controlEntryId) {
+  private long createItemStage(long journeyId, long controlEntryId, Notes notes) {
     Stage stage = new Stage();
     stage.setJourneyId(journeyId);
     stage.setQuestionType(QuestionType.ITEM);
@@ -261,6 +264,8 @@ public class Loader {
     Long stageId = stageDao.insertStage(stage);
 
     Logger.debug("Inserted item stage id {}", stageId);
+
+    createNotes(notes, stageId);
 
     return stageId;
   }
@@ -285,7 +290,7 @@ public class Loader {
         if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
           decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
         } else {
-          decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId()));
+          decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId(), navigationLevel.getNotes()));
         }
       } else {
         decontrolStage.setNextStageId(nextStageId);
@@ -294,7 +299,7 @@ public class Loader {
       if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
         decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
       } else {
-        decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId()));
+        decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId(), navigationLevel.getNotes()));
       }
     }
 
@@ -371,41 +376,21 @@ public class Loader {
     }
   }
 
-  private void createNotes(NavigationLevel navigationLevel) {
-    Notes notes = navigationLevel.getNotes();
+  private void createNotes(Notes notes, long stageId) {
     if (notes != null) {
       if (notes.getNb() != null) {
-        splitAndInsertNote(notes.getNb(), NoteType.NB, navigationLevel);
+        splitAndInsertNote(notes.getNb(), NoteType.NB, stageId);
       } else if (notes.getNote() != null) {
-        splitAndInsertNote(notes.getNote(), NoteType.NOTE, navigationLevel);
+        splitAndInsertNote(notes.getNote(), NoteType.NOTE, stageId);
       } else if (notes.getSeeAlso() != null) {
-        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, navigationLevel);
+        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, stageId);
       } else if (notes.getTechNote() != null) {
-        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, navigationLevel);
+        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, stageId);
       }
-    }
-
-    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
-      createNotes(subNavigationLevel);
     }
   }
 
-  private void splitAndInsertNote(String noteText, NoteType noteType, NavigationLevel navigationLevel) {
-    Long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
-
-    if (stageAnswerId == null) {
-      Logger.error("No stage answer id to associate note with, cell id {}", navigationLevel.getCellAddress());
-      return;
-    }
-
-    StageAnswer stageAnswer = stageAnswerDao.getStageAnswer(stageAnswerId);
-    Long stageId = stageAnswer.getGoToStageId();
-
-    if (stageId == null) {
-      Logger.error("No stage id to associate note with, stage answer id {}, cell id {}", stageAnswerId, navigationLevel.getCellAddress());
-      return;
-    }
-
+  private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
     List<String> noteTexts = Arrays.stream(noteText.split(REGEX_NEW_LINE))
         .map(String::trim)
         .filter(StringUtils::isNotBlank)
