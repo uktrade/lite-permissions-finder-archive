@@ -7,11 +7,21 @@
 @this(standardPage: standardPage)
 @(form: Form[_], resumeCode: String, submitUrl: String)
 
-@standardPage("NLR Letter", Some(heading("Request a \"No Licence Required\" document")), twoThirdsColumn = true, resumeCode = resumeCode) {
+@standardPage("Generate a \"No Licence Required\" document", Some(heading("Generate a \"No Licence Required\" document")), twoThirdsColumn = true, resumeCode = resumeCode) {
   @errorSummary(form)
 } {
+  <div class="notice">
+    <i class="icon icon-important">
+      <span class="visually-hidden">Warning</span>
+    </i>
+    <strong>Always double-check if your items are controlled. If you export controlled items without the correct export
+      licence you could have your items seized, be fined and face up to 10 years in prison.</strong>
+  </div>
   <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar sic tempor accuan eget.
+    You have assessed your item and determined it is not listed. You can generate a no licence required document if you
+    believe that any sanctions, embargoes or end-use controls do not apply. Describe in the field below the item being
+    exported. This description should be the same description used on other export documentation. It will be attached to
+    your NLR along with the choices you made in the tool.
   </p>
 
   <form action="@submitUrl" method="POST" enctype="multipart/form-data">
@@ -22,7 +32,7 @@
       Item description
     }
 
-    <button type="submit" class="button" name="action" value="continue">Request an NLR document</button>
+    <button type="submit" class="button" name="action" value="continue">Generate NLR</button>
 
   </form>
 
