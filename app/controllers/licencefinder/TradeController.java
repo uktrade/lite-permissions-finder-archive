@@ -7,6 +7,8 @@ import components.auth.SamlAuthorizer;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.persistence.LicenceFinderDao;
+import controllers.LicenceFinderAwaitGuardAction;
+import controllers.LicenceFinderUserGuardAction;
 import exceptions.FormStateException;
 import models.TradeType;
 import org.pac4j.play.java.Secure;
@@ -15,11 +17,12 @@ import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.With;
 
-import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
+@With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
 public class TradeController extends Controller {
 
   private final FormFactory formFactory;
@@ -36,16 +39,6 @@ public class TradeController extends Controller {
     this.licenceFinderDao = licenceFinderDao;
     this.trade = trade;
     this.authManager = authManager;
-  }
-
-  /**
-   * Licence finder flow entry point
-   */
-  public CompletionStage<Result> entry(String controlCode) {
-    String sessionId = UUID.randomUUID().toString();
-    licenceFinderDao.saveControlCode(sessionId, controlCode);
-    licenceFinderDao.saveUserId(sessionId, authManager.getAuthInfoFromContext().getId());
-    return renderTradeForm(sessionId);
   }
 
   /**

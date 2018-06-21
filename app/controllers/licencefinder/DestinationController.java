@@ -7,7 +7,8 @@ import components.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.persistence.LicenceFinderDao;
-import controllers.UserGuardAction;
+import controllers.LicenceFinderAwaitGuardAction;
+import controllers.LicenceFinderUserGuardAction;
 import exceptions.FormStateException;
 import org.apache.commons.lang.StringUtils;
 import org.pac4j.play.java.Secure;
@@ -30,7 +31,7 @@ import java.util.concurrent.CompletionStage;
 import javax.inject.Named;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
-@With(UserGuardAction.class)
+@With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
 public class DestinationController extends Controller {
 
   private final FormFactory formFactory;

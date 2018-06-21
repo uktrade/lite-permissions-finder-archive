@@ -7,6 +7,7 @@ import controllers.licencefinder.QuestionsController;
 import models.TradeType;
 import models.persistence.RegisterLicence;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.client.RedisException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -139,11 +140,14 @@ public class LicenceFinderDao {
   }
 
   public Optional<RegisterLicence> getRegisterLicence(String sessionId) {
-    return statelessRedisDao.readObject(sessionId, REGISTER_LICENCE, RegisterLicence.class);
-  }
-
-  public boolean registerLicenceExists(String sessionId) {
-    return statelessRedisDao.transactionExists(sessionId, REGISTER_LICENCE);
+    try {
+      if(statelessRedisDao.transactionExists(sessionId, REGISTER_LICENCE)) {
+        return statelessRedisDao.readObject(sessionId, REGISTER_LICENCE, RegisterLicence.class);
+      }
+    } catch(RedisException e) {
+      // ignore
+    }
+    return Optional.empty();
   }
 
   /**

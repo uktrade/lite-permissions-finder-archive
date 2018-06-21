@@ -7,9 +7,9 @@ import components.common.cache.CountryProvider;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
 import components.services.OgelService;
-import controllers.UserGuardAction;
+import controllers.LicenceFinderAwaitGuardAction;
+import controllers.LicenceFinderUserGuardAction;
 import models.view.QuestionView;
-import models.view.RegisterResultView;
 import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
@@ -28,7 +28,7 @@ import java.util.concurrent.CompletionStage;
 import javax.inject.Named;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
-@With(UserGuardAction.class)
+@With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
 public class RegisterToUseController extends Controller {
 
   private static final String CONTROL_CODE_QUESTION = "What Control list entry describes your goods?";
@@ -45,10 +45,8 @@ public class RegisterToUseController extends Controller {
   private final LicenceFinderDao licenceFinderDao;
   private final CountryProvider countryProvider;
   private final HttpExecutionContext httpContext;
-  private final String dashboardUrl;
   private final OgelService ogelService;
   private final LicenceFinderService licenceFinderService;
-  private final views.html.licencefinder.registerResult registerResult;
   private final views.html.licencefinder.registerToUse registerToUse;
 
   @Inject
@@ -56,18 +54,14 @@ public class RegisterToUseController extends Controller {
                                  HttpExecutionContext httpContext,
                                  LicenceFinderDao licenceFinderDao,
                                  @Named("countryProviderExport") CountryProvider countryProvider,
-                                 @com.google.inject.name.Named("dashboardUrl") String dashboardUrl,
                                  OgelService ogelService, LicenceFinderService licenceFinderService,
-                                 views.html.licencefinder.registerResult registerResult,
                                  views.html.licencefinder.registerToUse registerToUse) {
     this.formFactory = formFactory;
     this.httpContext = httpContext;
     this.licenceFinderDao = licenceFinderDao;
     this.countryProvider = countryProvider;
-    this.dashboardUrl = dashboardUrl;
     this.ogelService = ogelService;
     this.licenceFinderService = licenceFinderService;
-    this.registerResult = registerResult;
     this.registerToUse = registerToUse;
   }
 
@@ -91,11 +85,7 @@ public class RegisterToUseController extends Controller {
 
     Optional<String> regRef = licenceFinderService.getRegistrationReference(sessionId);
     if (regRef.isPresent()) {
-      return ogelService.get(licenceFinderDao.getOgelId(sessionId))
-          .thenApplyAsync(ogelFullView -> {
-            RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", regRef.get());
-            return ok(registerResult.render(view, ogelFullView, dashboardUrl));
-          }, httpContext.current());
+      return CompletableFuture.completedFuture(redirect(routes.RegisterAwaitController.registrationSuccess(sessionId, regRef.get())));
     }
     return CompletableFuture.completedFuture(redirect(routes.RegisterAwaitController.renderAwaitResult(sessionId)));
   }

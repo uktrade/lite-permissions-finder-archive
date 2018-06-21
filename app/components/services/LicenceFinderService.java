@@ -1,6 +1,5 @@
 package components.services;
 
-import models.persistence.RegisterLicence;
 import models.view.licencefinder.ResultsView;
 import uk.gov.bis.lite.permissions.api.view.CallbackView;
 
@@ -16,8 +15,6 @@ public interface LicenceFinderService {
   void handleCallback(String sessionId, CallbackView callbackView);
 
   Optional<String> getRegistrationReference(String sessionId);
-
-  Optional<RegisterLicence> getRegisterLicence(String sessionId);
 
   ResultsView getResultsView(String sessionId);
 
