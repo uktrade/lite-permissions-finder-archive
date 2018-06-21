@@ -199,7 +199,7 @@ public class Loader {
             if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
               stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
             } else {
-              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+              stageAnswer.setGoToStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId()));
             }
           } else {
             stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
@@ -209,7 +209,7 @@ public class Loader {
           if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
             stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
           } else {
-            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+            stageAnswer.setGoToStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId()));
           }
         }
       }
@@ -251,6 +251,20 @@ public class Loader {
     }
   }
 
+  private long createItemStage(long journeyId, long controlEntryId) {
+    Stage stage = new Stage();
+    stage.setJourneyId(journeyId);
+    stage.setQuestionType(QuestionType.ITEM);
+    stage.setAnswerType(AnswerType.SELECT_ONE);
+    stage.setControlEntryId(controlEntryId);
+
+    Long stageId = stageDao.insertStage(stage);
+
+    Logger.debug("Inserted item stage id {}", stageId);
+
+    return stageId;
+  }
+
   private long createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
     Decontrols decontrols = navigationLevel.getDecontrols();
     LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
@@ -271,7 +285,7 @@ public class Loader {
         if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
           decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
         } else {
-          decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+          decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId()));
         }
       } else {
         decontrolStage.setNextStageId(nextStageId);
@@ -280,7 +294,7 @@ public class Loader {
       if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
         decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
       } else {
-        decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+        decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId()));
       }
     }
 
