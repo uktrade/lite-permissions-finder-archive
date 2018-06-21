@@ -1,0 +1,29 @@
+@import models.view.AnswerView
+@import models.view.BreadcrumbView
+@import models.view.ProgressView
+@import views.html.common.form._
+@import views.html.triage.subAnswers
+@import views.html.frontendComponents.formRadioWithDetailPanel
+@import org.apache.commons.lang3.StringUtils
+
+@this(triagePage: triagePage)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String, explanatoryText: String, breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
+
+@triagePage(form, routes.StageController.handleSubmit(stageId, sessionId).toString, sessionId, resumeCode, title, breadcrumbView, ""){
+  @if(progressView.getCode != null) {
+    @progressView.getCode&nbsp;
+  }
+  @if(progressView.getDescription != null) {
+    @Html(progressView.getDescription)
+  }
+}{
+  ITEM PAGE
+  @if(StringUtils.isNotBlank(explanatoryText)) {
+    <p>@Html(explanatoryText)</p>
+  }
+  @noteMessage(showNoteMessage)
+
+  TODO: breadcrumb
+
+  @formRadioBoolean(form("answer"), Html("Does this describe your item?"))
+}
