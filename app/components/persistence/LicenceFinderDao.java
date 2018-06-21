@@ -7,6 +7,7 @@ import controllers.licencefinder.QuestionsController;
 import models.TradeType;
 import models.persistence.RegisterLicence;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.client.RedisException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class LicenceFinderDao {
 
   private static final String CONTROL_CODE = "controlCode";
+  private static final String USER_ID = "userId";
   private static final String SOURCE_COUNTRY = "sourceCountry";
   private static final String OGEL_ID = "ogelId";
   private static final String CUSTOMER_ID = "customerId";
@@ -56,6 +58,14 @@ public class LicenceFinderDao {
 
   public String getControlCode(String sessionId) {
     return statelessRedisDao.readString(sessionId, CONTROL_CODE);
+  }
+
+  public void saveUserId(String sessionId, String userId) {
+    statelessRedisDao.writeString(sessionId, USER_ID, userId);
+  }
+
+  public String getUserId(String sessionId) {
+    return statelessRedisDao.readString(sessionId, USER_ID);
   }
 
   public void saveSourceCountry(String sessionId, String countryCode) {
@@ -130,7 +140,14 @@ public class LicenceFinderDao {
   }
 
   public Optional<RegisterLicence> getRegisterLicence(String sessionId) {
-    return statelessRedisDao.readObject(sessionId, REGISTER_LICENCE, RegisterLicence.class);
+    try {
+      if(statelessRedisDao.transactionExists(sessionId, REGISTER_LICENCE)) {
+        return statelessRedisDao.readObject(sessionId, REGISTER_LICENCE, RegisterLicence.class);
+      }
+    } catch(RedisException e) {
+      // ignore
+    }
+    return Optional.empty();
   }
 
   /**

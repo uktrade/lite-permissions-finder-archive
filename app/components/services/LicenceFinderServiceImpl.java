@@ -93,8 +93,9 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
    * Attempts to read callback reference set number times/period
    */
   public Optional<String> getRegistrationReference(String sessionId) {
+
     Optional<RegisterLicence> optRegisterLicence = licenceFinderDao.getRegisterLicence(sessionId);
-    if (optRegisterLicence.isPresent()) {
+    if(optRegisterLicence.isPresent()) {
       String ref = optRegisterLicence.get().getRegistrationReference();
       if (!StringUtils.isBlank(ref)) {
         return Optional.of(ref);
