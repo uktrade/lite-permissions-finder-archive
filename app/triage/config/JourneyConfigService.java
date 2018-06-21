@@ -31,6 +31,8 @@ public interface JourneyConfigService {
 
   Optional<StageConfig> getPrincipleStageConfigForControlEntry(ControlEntryConfig controlEntryConfig);
 
+  List<ControlEntryConfig> getRelatedControlEntries(ControlEntryConfig controlEntryConfig);
+
   void flushCache();
 
 }

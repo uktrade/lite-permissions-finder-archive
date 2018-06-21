@@ -41,7 +41,7 @@ GET     /licencefinder/poll-status              controllers.LicenceFinderPollCon
 GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
 
 + nocsrf
-POST   /licencefinder/registration-callback     controllers.licencefinder.RegistrationController.handleRegistrationCallback(sessionId)
+POST    /licencefinder/registration-callback     controllers.licencefinder.RegistrationController.handleRegistrationCallback(sessionId)
 
 # JavaScript routes
 GET     /assets/javascripts/routes             controllers.JavaScriptRoutesController.javascriptRoutes()
@@ -73,6 +73,8 @@ GET     /outcome/dropout                            controllers.OutcomeControlle
 GET     /stage                                      controllers.StageController.index(sessionId)
 GET     /stage/:stageId                             controllers.StageController.render(stageId, sessionId)
 POST    /stage/:stageId                             controllers.StageController.handleSubmit(stageId, sessionId)
+GET     /stage/related/:controlEntryId              controllers.StageController.relatedEntries(controlEntryId, sessionId)
+POST    /stage/related/:controlEntryId              controllers.StageController.handleRelatedEntriesSubmit(controlEntryId, sessionId)
 
 + nocsrf
 PUT     /cms/spreadsheet                            controllers.cms.UploadController.spreadsheetUpload
