@@ -7,6 +7,8 @@ import components.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.persistence.LicenceFinderDao;
+import controllers.LicenceFinderAwaitGuardAction;
+import controllers.LicenceFinderUserGuardAction;
 import exceptions.FormStateException;
 import org.apache.commons.lang.StringUtils;
 import org.pac4j.play.java.Secure;
@@ -16,6 +18,7 @@ import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.With;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
 
@@ -28,6 +31,7 @@ import java.util.concurrent.CompletionStage;
 import javax.inject.Named;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
+@With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
 public class DestinationController extends Controller {
 
   private final FormFactory formFactory;

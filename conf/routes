@@ -29,7 +29,7 @@ POST    /start-application                    controllers.StartApplicationContro
 
 
 # Licence finder
-GET     /licencefinder/entry/:controlCode     controllers.licencefinder.TradeController.entry(controlCode)
+GET     /licencefinder/entry/:controlCode    controllers.licencefinder.EntryController.entry(controlCode)
 GET     /licencefinder/trade                 controllers.licencefinder.TradeController.renderTradeForm(sessionId)
 POST    /licencefinder/trade                 controllers.licencefinder.TradeController.handleTradeSubmit(sessionId)
 GET     /licencefinder/destination           controllers.licencefinder.DestinationController.renderDestinationForm(sessionId)
@@ -41,8 +41,9 @@ POST    /licencefinder/results               controllers.licencefinder.ResultsCo
 GET     /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.renderRegisterToUseForm(sessionId)
 POST    /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.handleRegisterToUseSubmit(sessionId)
 
-GET    /licencefinder/await-registration      controllers.licencefinder.RegisterToUseController.renderAwaitResult(sessionId)
-POST    /licencefinder/new-registration      controllers.licencefinder.RegisterToUseController.handleRegistrationProcessed(sessionId)
+GET    /licencefinder/await-registration     controllers.licencefinder.RegisterAwaitController.renderAwaitResult(sessionId)
+POST    /licencefinder/new-registration      controllers.licencefinder.RegisterAwaitController.handleRegistrationProcessed(sessionId)
+GET    /licencefinder/registration-success     controllers.licencefinder.RegisterAwaitController.registrationSuccess(sessionId, registrationRef)
 
 GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
 GET     /licencefinder/poll-status       controllers.LicenceFinderPollController.pollStatus(sessionId)
