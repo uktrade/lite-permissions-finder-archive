@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import controllers.routes;
 import models.cms.enums.StageAnswerOutcomeType;
-import models.enums.PageType;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.NoteView;
@@ -13,7 +12,6 @@ import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
-import utils.PageTypeUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,20 +37,19 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   public BreadcrumbView createBreadcrumbViewFromControlEntryId(String sessionId, String controlEntryId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig, true);
-    return new BreadcrumbView(breadcrumbItemViews, new ArrayList<>(), false);
+    return new BreadcrumbView(breadcrumbItemViews, new ArrayList<>());
   }
 
   @Override
   public BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean includeChangeLinks,
                                              HtmlRenderOption... htmlRenderOptions) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    boolean decontrol = PageTypeUtil.getPageType(stageConfig) == PageType.DECONTROL;
     ControlEntryConfig controlEntryConfig = getControlEntryConfig(stageConfig);
 
     List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig, includeChangeLinks,
         htmlRenderOptions);
     List<NoteView> noteViews = createNoteViews(stageId);
-    return new BreadcrumbView(breadcrumbItemViews, noteViews, decontrol);
+    return new BreadcrumbView(breadcrumbItemViews, noteViews);
   }
 
   @Override

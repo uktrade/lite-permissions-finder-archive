@@ -55,15 +55,15 @@ public class StageController extends Controller {
   private final views.html.triage.decontrol decontrol;
   private final views.html.triage.selectOne selectOne;
   private final views.html.triage.selectMany selectMany;
+  private final views.html.triage.relatedEntries relatedEntries;
 
   @Inject
   public StageController(BreadcrumbViewService breadcrumbViewService, AnswerConfigService answerConfigService,
                          AnswerViewService answerViewService, SessionService sessionService, FormFactory formFactory,
                          JourneyConfigService journeyConfigService, RenderService renderService,
-                         ProgressViewService progressViewService,
-                         views.html.triage.selectOne selectOne,
-                         views.html.triage.selectMany selectMany,
-                         views.html.triage.decontrol decontrol) {
+                         ProgressViewService progressViewService, views.html.triage.selectOne selectOne,
+                         views.html.triage.selectMany selectMany, views.html.triage.decontrol decontrol,
+                         views.html.triage.relatedEntries relatedEntries) {
     this.breadcrumbViewService = breadcrumbViewService;
     this.answerConfigService = answerConfigService;
     this.answerViewService = answerViewService;
@@ -75,6 +75,7 @@ public class StageController extends Controller {
     this.selectOne = selectOne;
     this.selectMany = selectMany;
     this.decontrol = decontrol;
+    this.relatedEntries = relatedEntries;
   }
 
   public Result index(String sessionId) {
@@ -133,6 +134,48 @@ public class StageController extends Controller {
           return redirectToIndex(sessionId);
       }
     }
+  }
+
+  public Result relatedEntries(String controlEntryId, String sessionId) {
+    Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class);
+    return renderRelatedEntries(answerForm, controlEntryId, sessionId);
+  }
+
+  public Result handleRelatedEntriesSubmit(String controlEntryId, String sessionId) {
+    Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class).bindFromRequest();
+    String actionParam = answerForm.rawData().get(ACTION);
+    Action action = EnumUtil.parse(actionParam, Action.class);
+    if (action == Action.CONTINUE) {
+      if (answerForm.hasErrors()) {
+        return renderRelatedEntries(answerForm, controlEntryId, sessionId);
+      } else {
+        String answer = answerForm.get().answer;
+        ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+        List<ControlEntryConfig> controlEntryConfigs = journeyConfigService.getRelatedControlEntries(controlEntryConfig);
+        List<AnswerView> answerViews = answerViewService.createAnswerViewsFromControlEntryConfigs(controlEntryConfigs);
+        if (answerViews.stream().anyMatch(answerView -> answerView.getValue().equals(answer))) {
+          return redirect(routes.StageController.render(answerForm.get().answer, sessionId));
+        } else {
+          Logger.warn("Answer {} not allowed in handleRelatedEntriesSubmit for controlEntryId {}", answer, controlEntryId);
+          return redirectToIndex(sessionId);
+        }
+      }
+    } else if (action == Action.NONE) {
+      return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId));
+    } else {
+      Logger.error("Unknown action " + actionParam);
+      return redirectToIndex(sessionId);
+    }
+  }
+
+  private Result renderRelatedEntries(Form<AnswerForm> answerForm, String controlEntryId, String sessionId) {
+    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    String controlCode = controlEntryConfig.getControlCode();
+    List<ControlEntryConfig> controlEntryConfigs = journeyConfigService.getRelatedControlEntries(controlEntryConfig);
+    List<AnswerView> answerViews = answerViewService.createAnswerViewsFromControlEntryConfigs(controlEntryConfigs);
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbViewFromControlEntryId(sessionId, controlEntryId);
+    return ok(relatedEntries.render(answerForm, controlEntryId, sessionId, resumeCode, controlCode, answerViews, breadcrumbView));
   }
 
   private Result renderSelectOne(Form<AnswerForm> answerForm, String stageId, String sessionId, String resumeCode) {
@@ -297,7 +340,12 @@ public class StageController extends Controller {
   private Result resultForSelectOneOrManyActionNone(String sessionId, StageConfig stageConfig) {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     if (controlEntryConfig != null) {
-      return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryConfig.getId(), sessionId));
+      List<ControlEntryConfig> controlEntryConfigs = journeyConfigService.getRelatedControlEntries(controlEntryConfig);
+      if (controlEntryConfigs.isEmpty()) {
+        return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryConfig.getId(), sessionId));
+      } else {
+        return redirect(routes.StageController.relatedEntries(controlEntryConfig.getId(), sessionId));
+      }
     } else {
       return redirect(routes.OutcomeController.outcomeDropout(sessionId));
     }

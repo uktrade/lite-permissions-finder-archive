@@ -3,7 +3,7 @@
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 
 @this()
-@(breadcrumbView: BreadcrumbView)
+@(breadcrumbView: BreadcrumbView, breadcrumbTitle: String)
 
 <h2 class="heading-medium">You are here</h2>
 @controlCodeBreadcrumbs(){
@@ -16,9 +16,9 @@
         @if(breadcrumbItemView.getDescription!=null) {
           @Html(breadcrumbItemView.getDescription)
         }
-        @if(breadcrumbView.isDecontrol) {
+        @if(!breadcrumbTitle.isEmpty) {
           <p>
-            Checking against decontrols
+            @breadcrumbTitle
           </p>
         }
       }{
