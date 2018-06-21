@@ -1,11 +1,10 @@
 @import util._
 @import views.html.common.page._
 @import views.html.common.form._
-@import views.html.common.state._
 @import models.TradeType
 
 @this(standardPage: standardPage)
-@(form: Form[_], controlCode: String)
+@(form: Form[_], controlCode: String, sessionId: String)
 @question = {Where are your items going?}
 
 @standardPage(question.toString, Some(heading(question.toString))) {
@@ -19,9 +18,9 @@
   </div>
   <br>
 
-  <form action="@controllers.licencefinder.routes.TradeController.handleTradeSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.TradeController.handleTradeSubmit(sessionId)" method="POST">
 
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
 
     <fieldset>
       <legend class="visually-hidden">@question</legend>

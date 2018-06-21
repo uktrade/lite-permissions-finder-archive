@@ -14,6 +14,7 @@ import models.cms.StageAnswer;
 import models.cms.enums.StageAnswerOutcomeType;
 import triage.cache.JourneyConfigFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -141,6 +142,11 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
         .map(this::getStageConfigById)
         .filter(stageConfig -> stageConfig.getQuestionType() == StageConfig.QuestionType.STANDARD)
         .findAny();
+  }
+
+  @Override
+  public List<ControlEntryConfig> getRelatedControlEntries(ControlEntryConfig controlEntryConfig) {
+    return new ArrayList<>();
   }
 
   @Override

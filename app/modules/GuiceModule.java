@@ -43,15 +43,11 @@ import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
 import components.common.client.CountryServiceClient;
 import components.common.client.userservice.UserServiceClientBasicAuth;
-import components.common.journey.JourneyContextParamProvider;
 import components.common.journey.JourneyDefinitionBuilder;
 import components.common.journey.JourneySerialiser;
-import components.common.persistence.CommonRedisDao;
 import components.common.persistence.RedisKeyConfig;
 import components.common.persistence.StatelessRedisDao;
 import components.common.state.ContextParamManager;
-import components.common.transaction.TransactionContextParamProvider;
-import components.common.transaction.TransactionManager;
 import components.services.AnswerConfigService;
 import components.services.AnswerConfigServiceImpl;
 import components.services.AnswerViewService;
@@ -108,7 +104,6 @@ import triage.text.ParserLookupService;
 import triage.text.ParserLookupServiceDaoImpl;
 import triage.text.RichTextParser;
 import triage.text.RichTextParserImpl;
-import utils.appcode.ApplicationCodeContextParamProvider;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -169,14 +164,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
         .to(config.getString("ogelService.timeout"));
     bindConstant().annotatedWith(Names.named("ogelServiceCredentials"))
         .to(config.getString("ogelService.credentials"));
-
-    // ogelRegistration
-    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceAddress"))
-        .to(config.getString("ogelRegistrationService.address"));
-    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceTimeout"))
-        .to(config.getString("ogelRegistrationService.timeout"));
-    bindConstant().annotatedWith(Names.named("ogelRegistrationServiceSharedSecret"))
-        .to(config.getString("ogelRegistrationService.sharedSecret"));
 
     bind(JourneySerialiser.class).to(PermissionsFinderJourneySerialiser.class);
 
@@ -252,25 +239,20 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   }
 
   @Provides
-  @Named("permissionsFinderDaoHashCommon")
-  public CommonRedisDao providePermissionsFinderDaoHashCommon(StatelessRedisDao statelessRedisDao,
-                                                              TransactionManager transactionManager) {
-    return new CommonRedisDao(statelessRedisDao, transactionManager);
-  }
-
-  @Provides
   public StatelessRedisDao provideStatelessRedisDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig,
                                                     RedissonClient redissonClient) {
     return new StatelessRedisDao(keyConfig, redissonClient);
   }
 
-/**/
+  /**
+   * Cannot remove because JourneyBackController is defined in common routes
+   * TODO update common module
+   */
   @Provides
   public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(
       ExportJourneyDefinitionBuilder exportBuilder) {
     return Arrays.asList(exportBuilder);
   }
-
 
   @Provides
   @Singleton
@@ -324,8 +306,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   public ContextParamManager provideContextParamManager() {
-    return new ContextParamManager(new JourneyContextParamProvider(), new TransactionContextParamProvider(), new ApplicationCodeContextParamProvider());
+    return new ContextParamManager();
   }
+
 
   @Provides
   @Singleton

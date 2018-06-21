@@ -1,12 +1,11 @@
 @import controllers.licencefinder.ResultsController
 @import util._
 @import views.html.common.page._
-@import views.html.common.state._
 @import views.html.common.form._
 @import models.view.licencefinder.ResultsView
 
 @this(standardPage: standardPage)
-@(form: Form[_], resultsView: ResultsView)
+@(form: Form[_], resultsView: ResultsView, sessionId: String)
 
   @title = @{
     Html("")
@@ -18,9 +17,9 @@
   @errorSummary(form)
 }{
 
-  <form action="@controllers.licencefinder.routes.ResultsController.handleResultsSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.ResultsController.handleResultsSubmit(sessionId)" method="POST">
 
-    @contextFormParams()
+    @views.html.helper.CSRF.formField
 
     @if(resultsView.hasOgels()) {
       <p>

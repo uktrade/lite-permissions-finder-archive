@@ -5,13 +5,10 @@ import static play.mvc.Results.forbidden;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
-import components.common.CommonContextAction;
 import play.mvc.Result;
-import play.mvc.With;
 import views.html.auth.loggedOut;
 import views.html.auth.unauthorised;
 
-@With(CommonContextAction.class)
 public class AuthorisationController {
 
   private final unauthorised unauthorised;
