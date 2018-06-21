@@ -158,37 +158,25 @@ public class Loader {
 
   private void createStages(long journeyId, NavigationLevel navigationLevel) {
     // Make the stage for all sub navigation levels of this navigation level (skip rating-only rows without buttons)
-    if (navigationLevel.getSubNavigationLevels().isEmpty()) {
-      Stage stage = new Stage();
-      stage.setJourneyId(journeyId);
-      stage.setQuestionType(QuestionType.ITEM);
-      stage.setAnswerType(AnswerType.SELECT_ONE);
-      stage.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
+    if (navigationLevel.getSubNavigationLevels().isEmpty() || navigationLevel.getSubNavigationLevels().get(0).getButtons() == null) {
+      return;
+    }
+    NavigationLevel topSubNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
+    Stage stage = new Stage();
+    stage.setJourneyId(journeyId);
+    stage.setQuestionType(QuestionType.STANDARD);
+    stage.setTitle(topSubNavigationLevel.getOnPageContent().getTitle());
+    stage.setExplanatoryNotes(topSubNavigationLevel.getOnPageContent().getExplanatoryNotes());
+    stage.setAnswerType(mapButtonsToAnswerType(topSubNavigationLevel.getButtons()));
+    stage.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
 
-      Long stageId = stageDao.insertStage(stage);
+    Long stageId = stageDao.insertStage(stage);
 
-      Logger.debug("Inserted stage id {}", stageId);
+    Logger.debug("Inserted stage id {}", stageId);
 
-      navigationLevel.getLoadingMetadata().setStageId(stageId);
-    } else {
-      NavigationLevel topSubNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
-      if (topSubNavigationLevel.getButtons() != null) {
-        Stage stage = new Stage();
-        stage.setJourneyId(journeyId);
-        stage.setQuestionType(QuestionType.STANDARD);
-        stage.setTitle(topSubNavigationLevel.getOnPageContent().getTitle());
-        stage.setExplanatoryNotes(topSubNavigationLevel.getOnPageContent().getExplanatoryNotes());
-        stage.setAnswerType(mapButtonsToAnswerType(topSubNavigationLevel.getButtons()));
-        stage.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
-        Long stageId = stageDao.insertStage(stage);
-
-        Logger.debug("Inserted stage id {}", stageId);
-
-        for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
-          subNavigationLevel.getLoadingMetadata().setStageId(stageId);
-          createStages(journeyId, subNavigationLevel);
-        }
-      }
+    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
+      subNavigationLevel.getLoadingMetadata().setStageId(stageId);
+      createStages(journeyId, subNavigationLevel);
     }
   }
 
@@ -389,24 +377,18 @@ public class Loader {
   }
 
   private void splitAndInsertNote(String noteText, NoteType noteType, NavigationLevel navigationLevel) {
-    LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
-    Long stageId;
-    if (loadingMetadata.getStageId() != null && stageDao.getStage(loadingMetadata.getStageId()).getQuestionType() == QuestionType.ITEM) {
-      stageId = loadingMetadata.getStageId();
-    } else {
-      Long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
+    Long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
 
-      if (stageAnswerId == null) {
-        Logger.error("No stage answer id to associate note with, cell id {}", navigationLevel.getCellAddress());
-        return;
-      }
-
-      StageAnswer stageAnswer = stageAnswerDao.getStageAnswer(stageAnswerId);
-      stageId = stageAnswer.getGoToStageId();
+    if (stageAnswerId == null) {
+      Logger.error("No stage answer id to associate note with, cell id {}", navigationLevel.getCellAddress());
+      return;
     }
 
+    StageAnswer stageAnswer = stageAnswerDao.getStageAnswer(stageAnswerId);
+    Long stageId = stageAnswer.getGoToStageId();
+
     if (stageId == null) {
-      Logger.error("No stage id to associate note with, cell id {}", navigationLevel.getCellAddress());
+      Logger.error("No stage id to associate note with, stage answer id {}, cell id {}", stageAnswerId, navigationLevel.getCellAddress());
       return;
     }
 
