@@ -48,12 +48,8 @@ POST    /licencefinder/registration-callback     controllers.licencefinder.Regis
 GET     /assets/javascripts/routes             controllers.JavaScriptRoutesController.javascriptRoutes()
 GET     /assets/*file                          controllers.Assets.versioned(path="/public", file: Asset)
 
-#Admin
-GET     /admin/build                                controllers.admin.AdminController.buildInfo
-GET     /admin/transactions                         controllers.admin.AdminController.permissionsFinderTransactions
-GET     /admin/transactions/:id                     controllers.admin.AdminController.permissionsFinderTransactionById(id)
-GET     /admin/application-codes                    controllers.admin.AdminController.applicationCodes
-GET     /admin/application-codes/:applicationCode   controllers.admin.AdminController.applicationCodeByCode(applicationCode)
+#Build info
+GET     /admin/build                          controllers.admin.AdminController.buildInfo
 
 #Pac4j
 + nocsrf

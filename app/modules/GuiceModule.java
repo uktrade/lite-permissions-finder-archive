@@ -37,17 +37,13 @@ import components.cms.dao.impl.SessionDaoImpl;
 import components.cms.dao.impl.SessionStageDaoImpl;
 import components.cms.dao.impl.StageAnswerDaoImpl;
 import components.cms.dao.impl.StageDaoImpl;
-import components.common.CommonGuiceModule;
 import components.common.auth.SpireAuthManager;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
 import components.common.client.CountryServiceClient;
 import components.common.client.userservice.UserServiceClientBasicAuth;
-import components.common.journey.JourneyDefinitionBuilder;
-import components.common.journey.JourneySerialiser;
 import components.common.persistence.RedisKeyConfig;
 import components.common.persistence.StatelessRedisDao;
-import components.common.state.ContextParamManager;
 import components.services.AnswerConfigService;
 import components.services.AnswerConfigServiceImpl;
 import components.services.AnswerViewService;
@@ -72,8 +68,6 @@ import components.services.UserPrivilegeService;
 import components.services.UserPrivilegeServiceImpl;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
-import journey.ExportJourneyDefinitionBuilder;
-import journey.PermissionsFinderJourneySerialiser;
 import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
@@ -105,8 +99,6 @@ import triage.text.ParserLookupServiceDaoImpl;
 import triage.text.RichTextParser;
 import triage.text.RichTextParserImpl;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
@@ -146,7 +138,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(UserPrivilegeService.class).to(UserPrivilegeServiceImpl.class);
 
     install(new SamlModule(config));
-    install(new CommonGuiceModule(config));
     install(new RedisSessionStoreModule(environment, config));
 
     // countryService
@@ -164,8 +155,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
         .to(config.getString("ogelService.timeout"));
     bindConstant().annotatedWith(Names.named("ogelServiceCredentials"))
         .to(config.getString("ogelService.credentials"));
-
-    bind(JourneySerialiser.class).to(PermissionsFinderJourneySerialiser.class);
 
     bindConstant().annotatedWith(Names.named("basicAuthUser"))
         .to(config.getString("basicAuth.user"));
@@ -239,19 +228,10 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   }
 
   @Provides
-  public StatelessRedisDao provideStatelessRedisDao(@Named("permissionsFinderDaoHash") RedisKeyConfig keyConfig,
-                                                    RedissonClient redissonClient) {
-    return new StatelessRedisDao(keyConfig, redissonClient);
-  }
-
-  /**
-   * Cannot remove because JourneyBackController is defined in common routes
-   * TODO update common module
-   */
-  @Provides
-  public Collection<JourneyDefinitionBuilder> provideJourneyDefinitionBuilders(
-      ExportJourneyDefinitionBuilder exportBuilder) {
-    return Arrays.asList(exportBuilder);
+  public StatelessRedisDao provideStatelessRedisDao(RedissonClient redissonClient) {
+    RedisKeyConfig redisKeyConfig = new RedisKeyConfig(config.getString("redis.keyPrefix"),
+        "licenceFinderDao", config.getInt("redis.hashTtlSeconds"));
+    return new StatelessRedisDao(redisKeyConfig, redissonClient);
   }
 
   @Provides
@@ -303,12 +283,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "EU country cache", actorSystem.dispatcher(), null);
     actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefExport, "EXPORT country cache", actorSystem.dispatcher(), null);
   }
-
-  @Provides
-  public ContextParamManager provideContextParamManager() {
-    return new ContextParamManager();
-  }
-
 
   @Provides
   @Singleton

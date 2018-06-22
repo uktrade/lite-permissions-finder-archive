@@ -23,7 +23,7 @@ public class ActionCreator implements play.http.ActionCreator {
     // Set up the Correlation ID for this request
     CorrelationId.setUp(request);
 
-    //Ensure a new action instance is created for each request (Play requirement)
+    // Ensure a new action instance is created for each request (Play requirement)
     return contextActionProvider.get();
   }
 }
