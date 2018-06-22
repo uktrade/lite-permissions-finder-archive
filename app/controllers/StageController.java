@@ -12,7 +12,9 @@ import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
+import models.view.NoteView;
 import models.view.ProgressView;
+import models.view.SubAnswerView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
 import org.apache.commons.collections4.ListUtils;
@@ -32,6 +34,7 @@ import utils.EnumUtil;
 import utils.PageTypeUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -133,7 +136,7 @@ public class StageController extends Controller {
         case DECONTROL:
           return handleDecontrolSubmit(stageId, sessionId, stageConfig, resumeCode);
         case ITEM:
-          return ok("TODO: item form submit");
+          return handleItemSubmit(stageId, sessionId, stageConfig, resumeCode);
         case UNKNOWN:
         default:
           Logger.error("Unknown stageId " + stageId);
@@ -174,6 +177,26 @@ public class StageController extends Controller {
     }
   }
 
+  private Result handleItemSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
+    Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class).bindFromRequest();
+    if (answerForm.hasErrors()) {
+      return renderItem(answerForm, stageId, sessionId, resumeCode);
+    } else {
+      String controlEntryId = stageConfig.getRelatedControlEntry()
+          .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for item stage " + stageId))
+          .getId();
+      String answer = answerForm.get().answer;
+      if ("true".equals(answer)) {
+        return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
+      } else if ("false".equals(answer)) {
+        return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId));
+      } else {
+        Logger.error("Unknown answer {}", answer);
+        return renderItem(answerForm, stageId, sessionId, resumeCode);
+      }
+    }
+  }
+
   private Result renderRelatedEntries(Form<AnswerForm> answerForm, String controlEntryId, String sessionId) {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     String controlCode = controlEntryConfig.getControlCode();
@@ -197,12 +220,12 @@ public class StageController extends Controller {
 
   private Result renderItem(Form<AnswerForm> answerForm, String stageId, String sessionId, String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    String title = stageConfig.getQuestionTitle().orElse("Select one");
-    String explanatoryText = renderService.getExplanatoryText(stageConfig);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
-    ProgressView progressView = progressViewService.createProgressView(stageConfig);
-    boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
-    return ok(item.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, breadcrumbView, showNoteMessage));
+    ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
+    String controlCode = controlEntryConfig.getControlCode();
+    String description = renderService.getFullDescription(controlEntryConfig);
+    List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig, true);
+    return ok(item.render(answerForm, stageId, sessionId, resumeCode, breadcrumbView, controlCode, description, subAnswerViews));
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,

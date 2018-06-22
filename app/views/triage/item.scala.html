@@ -1,29 +1,71 @@
-@import models.view.AnswerView
 @import models.view.BreadcrumbView
-@import models.view.ProgressView
+@import models.view.SubAnswerView
 @import views.html.common.form._
 @import views.html.triage.subAnswers
-@import views.html.frontendComponents.formRadioWithDetailPanel
-@import org.apache.commons.lang3.StringUtils
+@import views.html.frontendComponents.controlCodeBreadcrumbs._
+@import play.twirl.api.HtmlFormat
+@import views.html.util._
+@import views.html.common.page._
 
-@this(triagePage: triagePage)
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String, explanatoryText: String, breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
+@this(standardPage: standardPage)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, breadcrumbView: BreadcrumbView, controlCode: String, description: String, subAnswerViews: List[SubAnswerView])
 
-@triagePage(form, routes.StageController.handleSubmit(stageId, sessionId).toString, sessionId, resumeCode, title, breadcrumbView, ""){
-  @if(progressView.getCode != null) {
-    @progressView.getCode&nbsp;
-  }
-  @if(progressView.getDescription != null) {
-    @Html(progressView.getDescription)
-  }
+@standardPage("Is this your item?", Some(heading("Is this your item?")), true, resumeCode, true){
+  @errorSummary(form)
 }{
-  ITEM PAGE
-  @if(StringUtils.isNotBlank(explanatoryText)) {
-    <p>@Html(explanatoryText)</p>
+  <p>
+    <div>
+      @Html(description)
+    </div>
+    @if(!subAnswerViews.isEmpty) {
+      @subAnswers(subAnswerViews)
+    }
+  </p>
+
+  <p>
+    NB. This is the control list classification hierarchy for this item.
+  </p>
+
+  <p>
+    It does not necessarily reflect your journey through this online tool.
+  </p>
+
+  @controlCodeBreadcrumbs(isWide = true) {
+    @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
+      @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
+        @if(breadcrumbItemView.getText!=null) {
+          <span class="bold">@breadcrumbItemView.getText</span>
+        }
+        @if(breadcrumbItemView.getDescription!=null) {
+          @Html(breadcrumbItemView.getDescription)
+        }
+      }
+    }
+    @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
+      <h2 class="outcome-detail-box-heading">@controlCode</h2>
+      <div>
+        @Html(description)
+      </div>
+      @if(!subAnswerViews.isEmpty) {
+        @subAnswers(subAnswerViews)
+      }
+    }(HtmlFormat.empty)
   }
-  @noteMessage(showNoteMessage)
 
-  TODO: breadcrumb
+  <p>
+    @if(!breadcrumbView.getNoteViews.isEmpty) {
+      @controlCodeBreadcrumbsNotes() {
+        @for(noteView <- breadcrumbView.getNoteViews) {
+          <li>@Html(noteView.getText)</li>
+        }
+      }
+    }
+  </p>
 
-  @formRadioBoolean(form("answer"), Html("Does this describe your item?"))
+  <form action="@routes.StageController.handleSubmit(stageId, sessionId).toString" method="POST">
+    @views.html.helper.CSRF.formField
+    @formRadioBoolean(form("answer"), Html("Does this describe your item?"))
+    <button type="submit" class="button" name="action" value="continue">Save and continue</button>
+  </form>
+
 }
