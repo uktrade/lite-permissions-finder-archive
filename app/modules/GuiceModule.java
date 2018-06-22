@@ -231,7 +231,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Provides
   public StatelessRedisDao provideStatelessRedisDao(RedissonClient redissonClient) {
     RedisKeyConfig redisKeyConfig = new RedisKeyConfig(config.getString("redis.keyPrefix"),
-        config.getString("redis.hashName"), config.getInt("redis.hashTtlSeconds"));
+        "licenceFinderDao", config.getInt("redis.hashTtlSeconds"));
     return new StatelessRedisDao(redisKeyConfig, redissonClient);
   }
 

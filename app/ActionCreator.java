@@ -11,11 +11,11 @@ import java.lang.reflect.Method;
  */
 public class ActionCreator implements play.http.ActionCreator {
 
-  private final Provider<ContextAction> contextAction;
+  private final Provider<ContextAction> contextActionProvider;
 
   @Inject
-  public ActionCreator(Provider<ContextAction> contextAction) {
-    this.contextAction = contextAction;
+  public ActionCreator(Provider<ContextAction> contextActionProvider) {
+    this.contextActionProvider = contextActionProvider;
   }
 
   @Override
@@ -23,7 +23,7 @@ public class ActionCreator implements play.http.ActionCreator {
     // Set up the Correlation ID for this request
     CorrelationId.setUp(request);
 
-    //Ensure a new action instance is created for each request (Play requirement)
-    return contextAction.get();
+    // Ensure a new action instance is created for each request (Play requirement)
+    return contextActionProvider.get();
   }
 }
