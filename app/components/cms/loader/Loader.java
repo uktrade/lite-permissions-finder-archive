@@ -185,10 +185,13 @@ public class Loader {
       StageAnswer stageAnswer = new StageAnswer();
       stageAnswer.setParentStageId(navigationLevel.getLoadingMetadata().getStageId());
 
+      Long attachNotesToStageId = null;
+
       Decontrols decontrols = navigationLevel.getDecontrols();
       if (decontrols != null && decontrols.getContent() != null) {
-        long decontrolStageId = createDecontrolStage(journeyId, navigationLevel);
-        stageAnswer.setGoToStageId(decontrolStageId);
+        Stage decontrolStage = createDecontrolStage(journeyId, navigationLevel);
+        stageAnswer.setGoToStageId(decontrolStage.getId());
+        attachNotesToStageId = decontrolStage.getNextStageId();
       } else {
         if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
           NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
@@ -200,7 +203,9 @@ public class Loader {
               stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
             }
           } else {
-            stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
+            Long goToStageId = subNavigationLevel.getLoadingMetadata().getStageId();
+            stageAnswer.setGoToStageId(goToStageId);
+            attachNotesToStageId = goToStageId;
           }
         } else {
           //Child entries without buttons are not a stage, we are actually on a leaf now
@@ -237,10 +242,10 @@ public class Loader {
 
       Logger.debug("Inserted stage answer id {}", stageAnswerId);
 
-      if (stageAnswer.getGoToStageId() != null) {
-        createNotes(navigationLevel.getNotes(), stageAnswer.getGoToStageId());
+      if (attachNotesToStageId != null) {
+        createNotes(navigationLevel.getNotes(), attachNotesToStageId);
       } else {
-        Logger.error("No stageId to associate note with, cell id {}", navigationLevel.getCellAddress());
+        Logger.debug("No stageId to associate note with, cell id {}", navigationLevel.getCellAddress());
       }
       navigationLevel.getLoadingMetadata().setStageAnswerId(stageAnswerId);
     }
@@ -270,7 +275,7 @@ public class Loader {
     return stageId;
   }
 
-  private long createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
+  private Stage createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
     Decontrols decontrols = navigationLevel.getDecontrols();
     LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
 
@@ -304,6 +309,7 @@ public class Loader {
     }
 
     Long decontrolStageId = stageDao.insertStage(decontrolStage);
+    decontrolStage.setId(decontrolStageId);
 
     Logger.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
 
@@ -340,7 +346,7 @@ public class Loader {
       Logger.debug("Inserted stage answer id {} DECONTROL", decontrolStageAnswerId);
     }
 
-    return decontrolStageId;
+    return decontrolStage;
   }
 
   private void createLocalDefinitions(NavigationLevel navigationLevel) {
@@ -377,7 +383,7 @@ public class Loader {
   }
 
   private void createNotes(Notes notes, long stageId) {
-    if (notes != null) {
+    if (notes != null && !notes.isCreated()) {
       if (notes.getNb() != null) {
         splitAndInsertNote(notes.getNb(), NoteType.NB, stageId);
       } else if (notes.getNote() != null) {
@@ -387,6 +393,7 @@ public class Loader {
       } else if (notes.getTechNote() != null) {
         splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, stageId);
       }
+      notes.setCreated(true);
     }
   }
 
