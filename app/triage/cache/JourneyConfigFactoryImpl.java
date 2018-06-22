@@ -82,6 +82,9 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
       case DECONTROL:
         questionType = StageConfig.QuestionType.DECONTROL;
         break;
+      case ITEM:
+        questionType = StageConfig.QuestionType.ITEM;
+        break;
     }
 
     StageConfig.AnswerType answerType = null;

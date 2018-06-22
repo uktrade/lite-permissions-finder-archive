@@ -85,7 +85,6 @@ public class Loader {
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
     createGlobalDefinitions(parserResult.getDefinitions(), journeyId);
-    createNotes(rootNavigationLevel);
 
     // Resolve initial stage id from stage associated with first sub-level of navigation levels
     Long initialStageId = rootNavigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
@@ -183,14 +182,16 @@ public class Loader {
   private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId, int displayOrder,
                                                     NavigationLevel navigationLevel) {
     if (!isRoot) {
-      LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
       StageAnswer stageAnswer = new StageAnswer();
-      stageAnswer.setParentStageId(loadingMetadata.getStageId());
+      stageAnswer.setParentStageId(navigationLevel.getLoadingMetadata().getStageId());
+
+      Long attachNotesToStageId = null;
 
       Decontrols decontrols = navigationLevel.getDecontrols();
       if (decontrols != null && decontrols.getContent() != null) {
-        long decontrolStageId = createDecontrolStage(journeyId, navigationLevel);
-        stageAnswer.setGoToStageId(decontrolStageId);
+        Stage decontrolStage = createDecontrolStage(journeyId, navigationLevel);
+        stageAnswer.setGoToStageId(decontrolStage.getId());
+        attachNotesToStageId = decontrolStage.getNextStageId();
       } else {
         if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
           NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
@@ -199,17 +200,19 @@ public class Loader {
             if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
               stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
             } else {
-              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+              stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
             }
           } else {
-            stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
+            Long goToStageId = subNavigationLevel.getLoadingMetadata().getStageId();
+            stageAnswer.setGoToStageId(goToStageId);
+            attachNotesToStageId = goToStageId;
           }
         } else {
           //Child entries without buttons are not a stage, we are actually on a leaf now
           if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
             stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
           } else {
-            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+            stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
           }
         }
       }
@@ -217,7 +220,7 @@ public class Loader {
       ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
       if (controlListEntries != null) {
         if (controlListEntries.getRating() != null) {
-          stageAnswer.setControlEntryId(loadingMetadata.getControlEntryId());
+          stageAnswer.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
         } else {
           stageAnswer.setAnswerText(navigationLevel.getContent());
         }
@@ -239,7 +242,12 @@ public class Loader {
 
       Logger.debug("Inserted stage answer id {}", stageAnswerId);
 
-      loadingMetadata.setStageAnswerId(stageAnswerId);
+      if (attachNotesToStageId != null) {
+        createNotes(navigationLevel.getNotes(), attachNotesToStageId);
+      } else {
+        Logger.debug("No stageId to associate note with, cell id {}", navigationLevel.getCellAddress());
+      }
+      navigationLevel.getLoadingMetadata().setStageAnswerId(stageAnswerId);
     }
 
     for (int i = 0; i < navigationLevel.getSubNavigationLevels().size(); i++) {
@@ -251,7 +259,23 @@ public class Loader {
     }
   }
 
-  private long createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
+  private long createItemStage(long journeyId, long controlEntryId, Notes notes) {
+    Stage stage = new Stage();
+    stage.setJourneyId(journeyId);
+    stage.setQuestionType(QuestionType.ITEM);
+    stage.setAnswerType(AnswerType.SELECT_ONE);
+    stage.setControlEntryId(controlEntryId);
+
+    Long stageId = stageDao.insertStage(stage);
+
+    Logger.debug("Inserted item stage id {}", stageId);
+
+    createNotes(notes, stageId);
+
+    return stageId;
+  }
+
+  private Stage createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
     Decontrols decontrols = navigationLevel.getDecontrols();
     LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
 
@@ -271,7 +295,7 @@ public class Loader {
         if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
           decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
         } else {
-          decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+          decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId(), navigationLevel.getNotes()));
         }
       } else {
         decontrolStage.setNextStageId(nextStageId);
@@ -280,11 +304,12 @@ public class Loader {
       if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
         decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
       } else {
-        decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+        decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId(), navigationLevel.getNotes()));
       }
     }
 
     Long decontrolStageId = stageDao.insertStage(decontrolStage);
+    decontrolStage.setId(decontrolStageId);
 
     Logger.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
 
@@ -321,7 +346,7 @@ public class Loader {
       Logger.debug("Inserted stage answer id {} DECONTROL", decontrolStageAnswerId);
     }
 
-    return decontrolStageId;
+    return decontrolStage;
   }
 
   private void createLocalDefinitions(NavigationLevel navigationLevel) {
@@ -357,41 +382,22 @@ public class Loader {
     }
   }
 
-  private void createNotes(NavigationLevel navigationLevel) {
-    Notes notes = navigationLevel.getNotes();
-    if (notes != null) {
+  private void createNotes(Notes notes, long stageId) {
+    if (notes != null && !notes.isCreated()) {
       if (notes.getNb() != null) {
-        splitAndInsertNote(notes.getNb(), NoteType.NB, navigationLevel);
+        splitAndInsertNote(notes.getNb(), NoteType.NB, stageId);
       } else if (notes.getNote() != null) {
-        splitAndInsertNote(notes.getNote(), NoteType.NOTE, navigationLevel);
+        splitAndInsertNote(notes.getNote(), NoteType.NOTE, stageId);
       } else if (notes.getSeeAlso() != null) {
-        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, navigationLevel);
+        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, stageId);
       } else if (notes.getTechNote() != null) {
-        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, navigationLevel);
+        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, stageId);
       }
-    }
-
-    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
-      createNotes(subNavigationLevel);
+      notes.setCreated(true);
     }
   }
 
-  private void splitAndInsertNote(String noteText, NoteType noteType, NavigationLevel navigationLevel) {
-    Long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
-
-    if (stageAnswerId == null) {
-      Logger.error("No stage answer id to associate note with, cell id {}", navigationLevel.getCellAddress());
-      return;
-    }
-
-    StageAnswer stageAnswer = stageAnswerDao.getStageAnswer(stageAnswerId);
-    Long stageId = stageAnswer.getGoToStageId();
-
-    if (stageId == null) {
-      Logger.error("No stage id to associate note with, stage answer id {}, cell id {}", stageAnswerId, navigationLevel.getCellAddress());
-      return;
-    }
-
+  private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
     List<String> noteTexts = Arrays.stream(noteText.split(REGEX_NEW_LINE))
         .map(String::trim)
         .filter(StringUtils::isNotBlank)

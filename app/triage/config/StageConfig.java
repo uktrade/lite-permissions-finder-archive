@@ -8,7 +8,7 @@ import java.util.Optional;
 public class StageConfig {
 
   public enum QuestionType {
-    STANDARD, DECONTROL
+    STANDARD, DECONTROL, ITEM
   }
 
   public enum AnswerType {
