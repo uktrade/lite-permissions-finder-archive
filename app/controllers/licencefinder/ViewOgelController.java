@@ -182,7 +182,7 @@ public class ViewOgelController {
    */
   private Result renderViewOgel(LicenceInfo info) {
     if (info.hasError()) {
-      return badRequest(errorPage.render("errorMessage"));
+      return badRequest(errorPage.render("Open general export licence not found. This OGEL does not exist or cannot be found."));
     } else {
       return ok(viewOgel.render(info));
     }
