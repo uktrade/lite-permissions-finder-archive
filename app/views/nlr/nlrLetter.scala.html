@@ -1,6 +1,7 @@
 @import uk.gov.bis.lite.user.api.view.UserDetailsView
 @import uk.gov.bis.lite.customer.api.view.SiteView
 @import util._
+@import utils.common.ViewUtil
 
 @this()
 @(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: String)
@@ -172,22 +173,22 @@
 
 <p class="bold">Export Control Organisation</p>
 
-<hr>
+<hr class="break-page">
 
 <h2 class="heading-medium">Description of Goods</h2>
 <p>
-  The following is your description of your item.
+  The following is your description of your item:
 </p>
 
-<p>
-  <span class="bold">@description</span>
-</p>
+<blockquote class="break-word">
+  @Html(ViewUtil.newlinesToParagraphs(description))
+</blockquote>
 
 <hr>
 
 <h2 class="heading-medium">Schedule of Goods</h2>
 <p>
-  The following is your assessment of your item against the UK Strategic Export Control Lists.
+  The following is your assessment of your item against the UK Strategic Export Control Lists:
 </p>
 
 @nlrBreadcrumb

@@ -19,3 +19,25 @@
     }
   }
 }
+
+@mixin styled-blockquote() {
+  blockquote {
+    margin: 0 0 0 -30px;
+    padding: 0 0 0 20px;
+
+    p {
+      padding-left: 30px;
+
+      &:before {
+        content: "\201C";
+        float: left;
+        clear: both;
+        margin-left: -15px;
+      }
+
+      &:last-child:after {
+        content: "\201D";
+      }
+    }
+  }
+}
