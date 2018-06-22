@@ -26,19 +26,20 @@
       technical specifications of your item.
     </li>
     <li>
-      If you have consulted and used the right information, and you believe this is the correct classification code then
-      you should proceed to register for an OGEL. If you're not eligible for an OGEL then you'll be taken through to the
-      SIEL application.
+      If you think that the control list entry is wrong, we recommend going back through the process with someone who
+      knows the technical details of your item.
     </li>
     <li>
-      If you think that the classification is wrong, we recommend going back through the process with the appropriate
-      knowledge/technical knowledge or contact the Control List Classification Advice Service.
+      If you have consulted and used the right information, and you believe this is the correct classification code
+      then you should proceed to register for an Open General Export Licence (OGEL). If you're not eligible for an OGEL
+      then you'll be taken through to SPIRE.
     </li>
   </ol>
 
   <div class="banner danger-banner">
     <span class="visually-hidden">Warning:</span>
-    Controlled items will require a licence to move between countries.
+    Always double-check if your items are controlled. If you export controlled items without the correct export licence
+    you could have your items seized, be fined and face up to 10 years in prison.
   </div>
 
   <form action="@routes.OutcomeController.handleOutcomeListedSubmit(controlEntryId, sessionId)" method="POST">
@@ -48,9 +49,7 @@
       @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")
     </div>
 
-    <button type="submit" class="button" name="action" value="continue">Check for an OGEL</button>
+    <button type="submit" class="button" name="action" value="continue">Find an OGEL</button>
   </form>
-  <p></p>
-  If necessary please contact the Control List Classification Advice Service (CLCAS) [TODO Link] for any further advice.
 
 }

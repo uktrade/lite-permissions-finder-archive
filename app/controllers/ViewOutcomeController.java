@@ -104,7 +104,7 @@ public class ViewOutcomeController {
         return redirect(routes.StaticContentController.renderInvalidUserAccount());
       }
     }
-    return redirect(controllers.licencefinder.routes.TradeController.entry(controlEntryConfig.getControlCode()));
+    return redirect(controllers.licencefinder.routes.EntryController.entry(controlEntryConfig.getControlCode()));
   }
 
   public Result registerNotFoundNlr(String sessionId, String controlEntryId) {

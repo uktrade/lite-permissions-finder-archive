@@ -36,23 +36,23 @@ public class OnboardingController {
         sessionId, resumeCode)));
   }
 
-  public CompletionStage<Result> handleSubmit(String sessionId) {
+  public Result handleSubmit(String sessionId) {
     Form<OnboardingForm> form = formFactory.form(OnboardingForm.class).bindFromRequest();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
 
     if (form.hasErrors()) {
-      return completedFuture(ok(onboardingContent.render(form, getSelectOptions(), sessionId, resumeCode)));
+      return ok(onboardingContent.render(form, getSelectOptions(), sessionId, resumeCode));
     }
 
     SpeciallyDesigned isSpecialParam = form.get().speciallyDesigned;
 
     switch (isSpecialParam) {
       case YES:
-        return completedFuture(redirect(routes.StageController.index(sessionId)));
+        return redirect(routes.StageController.index(sessionId));
       case NO:
-        return completedFuture(ok("Link to EU Dual-Use List holding page - link TBC"));
+        return redirect(routes.StaticContentController.renderOtherControlList());
       default:
-        return completedFuture(ok("Link to don't know page - link TBC"));
+        return redirect(routes.StaticContentController.renderMoreInformationRequired());
     }
   }
 
