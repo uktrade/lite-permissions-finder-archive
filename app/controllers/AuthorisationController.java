@@ -1,21 +1,18 @@
 package controllers;
 
-import static play.mvc.Controller.session;
 import static play.mvc.Results.forbidden;
 import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import play.mvc.Result;
-import views.html.auth.loggedOut;
-import views.html.auth.unauthorised;
 
 public class AuthorisationController {
 
-  private final unauthorised unauthorised;
-  private final loggedOut loggedOut;
+  private final views.html.auth.unauthorised unauthorised;
+  private final views.html.auth.loggedOut loggedOut;
 
   @Inject
-  public AuthorisationController(unauthorised unauthorised, loggedOut loggedOut) {
+  public AuthorisationController(views.html.auth.unauthorised unauthorised, views.html.auth.loggedOut loggedOut) {
     this.unauthorised = unauthorised;
     this.loggedOut = loggedOut;
   }
@@ -25,7 +22,6 @@ public class AuthorisationController {
   }
 
   public Result loggedOut() {
-    session().clear();
     return ok(loggedOut.render());
   }
 
