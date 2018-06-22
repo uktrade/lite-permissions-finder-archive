@@ -26,11 +26,12 @@ public class StaticContentController extends Controller {
 
   public enum StaticHtml {
     BROKERING("tradetypes/brokering.html", "Trade controls, trafficking and brokering"),
-    TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment"),
+    MORE_INFORMATION_REQUIRED("moreInformationRequired.html", "Find out more about your item"),
     NOT_APPLICABLE("notApplicable.html", "No licence available", HEADING_BANNER_FUNC.apply("You have reached the end of this service")),
     NOT_IMPLEMENTED("notImplemented.html", "This section is currently under development"),
-    VIRTUAL_EU("virtualEU.html", "You do not need a licence"),
+    OTHER_CONTROL_LIST("otherControlList.html", "Check your item against another control list"),
     TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites"),
+    TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment"),
     UNKNOWN_OUTCOME("unknownOutcome.html", "Unknown outcome");
 
     private final String filename;
@@ -71,20 +72,24 @@ public class StaticContentController extends Controller {
     return renderStaticHtml(StaticHtml.BROKERING);
   }
 
-  public Result renderTranshipment() {
-    return renderStaticHtml(StaticHtml.TRANSHIPMENT);
+  public Result renderInvalidUserAccount() {
+    return renderStaticHtml(StaticHtml.TOO_MANY_CUSTOMERS_OR_SITES);
+  }
+
+  public Result renderMoreInformationRequired() {
+    return renderStaticHtml(StaticHtml.MORE_INFORMATION_REQUIRED);
   }
 
   public Result renderNotImplemented() {
     return renderStaticHtml(StaticHtml.NOT_IMPLEMENTED);
   }
 
-  public Result renderVirtualEU() {
-    return renderStaticHtml(StaticHtml.VIRTUAL_EU);
+  public Result renderOtherControlList() {
+    return renderStaticHtml(StaticHtml.OTHER_CONTROL_LIST);
   }
 
-  public Result renderInvalidUserAccount() {
-    return renderStaticHtml(StaticHtml.TOO_MANY_CUSTOMERS_OR_SITES);
+  public Result renderTranshipment() {
+    return renderStaticHtml(StaticHtml.TRANSHIPMENT);
   }
 
   public Result renderUnknownOutcome() {

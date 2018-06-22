@@ -14,7 +14,7 @@
   }
 
   <p class="lede">
-    Based on the answers you've provided, your item is not included on the UK Strategic Export Control Lists.
+    Based on the choices you've made, your item is not controlled on the UK Military List.
   </p>
 
   @decontrolBreadcrumb(decontrolUrl, breadcrumbView, answerViews)
@@ -23,29 +23,36 @@
 
   <ol class="circle-step-list">
     <li>
-      If you have not consulted the relevant item design margins and/or a technical officer with the appropriate
-      knowledge, we advise you do so before requesting a No Licence Required (NLR) document or proceeding past this page.
+      Get someone who knows the technical details of your item to help you check the choices you've made against the
+      technical specifications of your item.
     </li>
     <li>
-      Even if if your item is not controlled it may still be affected by end use controls and any
-      <a href="https://www.gov.uk/guidance/sanctions-embargoes-and-restrictions" rel="external" target="_blank">
+      Even if if your item is not controlled it may still be affected by
+      <a href="https://www.gov.uk/guidance/supplementary-wmd-end-use-controls" rel="external" target="_blank">
+        WMD<span class="visually-hidden"> (opens in a new tab)</span>
+      </a> and
+      <a href="https://www.gov.uk/guidance/military-end-use-control-guidance-notes" rel="external" target="_blank">
+        military<span class="visually-hidden"> (opens in a new tab)</span>
+      </a> end use controls and any
+      <a href="https://www.gov.uk/guidance/current-arms-embargoes-and-other-restrictions" rel="external" target="_blank">
         sanctions and embargoes<span class="visually-hidden"> (opens in a new tab)</span>
       </a>.
       Refer to the
       <a href="#" rel="external" target="_blank">
         end user advisory service (LINK TO BE UPDATED)<span class="visually-hidden"> (opens in a new tab)</span>
       </a>
-      to understand whether your item may need a licence.
+      and the links above to understand whether your item may need a licence.
     </li>
     <li>
-      You may request an NLR document if, following the points above, you believe that your item is still not subject
-      to controls.
+      You may generate a no licence required (NLR) document if, following the points above, you believe that your item
+      is still not subject to controls.
     </li>
   </ol>
 
   <div class="banner danger-banner">
     <span class="visually-hidden">Warning:</span>
-    If you export your item without a licence, you will be responsible for any penalties should a licence be required.
+    Always double-check if your items are controlled. If you export controlled items without the correct export licence
+    you could have your items seized, be fined and face up to 10 years in prison.
   </div>
 
   <form action="@routes.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)" method="POST">
@@ -55,7 +62,7 @@
       @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")
     </div>
 
-    <button type="submit" class="button" name="action" value="continue">Request an NLR document</button>
+    <button type="submit" class="button" name="action" value="continue">Generate an NLR document</button>
   </form>
 
 }

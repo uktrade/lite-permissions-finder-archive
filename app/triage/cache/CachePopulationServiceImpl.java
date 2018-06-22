@@ -83,7 +83,8 @@ public class CachePopulationServiceImpl implements CachePopulationService {
   }
 
   private void populateCachesForControlEntries() {
-    controlEntryDao.getAllControlEntries()
-        .forEach(e -> journeyConfigService.getControlEntryConfigById(e.getId().toString()));
+    controlEntryDao.getAllControlEntries().stream()
+        .map(controlEntry -> journeyConfigService.getControlEntryConfigById(Long.toString(controlEntry.getId())))
+        .forEach(journeyConfigService::getRelatedControlEntries);
   }
 }

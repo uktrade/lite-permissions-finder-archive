@@ -58,6 +58,14 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
   }
 
   @Override
+  public List<ControlEntryConfig> createRelatedControlEntryConfigsForId(String controlEntryId) {
+    return controlEntryDao.getRelatedControlCodeEntries(Long.parseLong(controlEntryId))
+        .stream()
+        .map(this::createControlEntryConfig)
+        .collect(Collectors.toList());
+  }
+
+  @Override
   public List<NoteConfig> createNoteConfigsForStageId(String stageId) {
     return noteDao.getNotesForStageId(Long.parseLong(stageId))
         .stream()
@@ -73,6 +81,9 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         break;
       case DECONTROL:
         questionType = StageConfig.QuestionType.DECONTROL;
+        break;
+      case ITEM:
+        questionType = StageConfig.QuestionType.ITEM;
         break;
     }
 

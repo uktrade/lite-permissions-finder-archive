@@ -14,7 +14,6 @@ import models.cms.StageAnswer;
 import models.cms.enums.StageAnswerOutcomeType;
 import triage.cache.JourneyConfigFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,6 +29,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
 
   private final LoadingCache<String, StageConfig> stageConfigCache;
   private final LoadingCache<String, ControlEntryConfig> controlEntryCache;
+  private final LoadingCache<String, List<ControlEntryConfig>> relatedControlEntryCache;
   private final LoadingCache<String, List<NoteConfig>> noteCache;
 
   @Inject
@@ -41,6 +41,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
     this.controlEntryDao = controlEntryDao;
     this.stageConfigCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createStageConfigForId));
     this.controlEntryCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createControlEntryConfigForId));
+    this.relatedControlEntryCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createRelatedControlEntryConfigsForId));
     this.noteCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createNoteConfigsForStageId));
   }
 
@@ -146,13 +147,14 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
 
   @Override
   public List<ControlEntryConfig> getRelatedControlEntries(ControlEntryConfig controlEntryConfig) {
-    return new ArrayList<>();
+    return relatedControlEntryCache.getUnchecked(controlEntryConfig.getId());
   }
 
   @Override
   public void flushCache() {
     stageConfigCache.invalidateAll();
     controlEntryCache.invalidateAll();
+    relatedControlEntryCache.invalidateAll();
     noteCache.invalidateAll();
 
     stageConfigCache.cleanUp();

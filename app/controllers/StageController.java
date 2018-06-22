@@ -56,6 +56,7 @@ public class StageController extends Controller {
   private final views.html.triage.selectOne selectOne;
   private final views.html.triage.selectMany selectMany;
   private final views.html.triage.relatedEntries relatedEntries;
+  private final views.html.triage.item item;
 
   @Inject
   public StageController(BreadcrumbViewService breadcrumbViewService, AnswerConfigService answerConfigService,
@@ -63,7 +64,7 @@ public class StageController extends Controller {
                          JourneyConfigService journeyConfigService, RenderService renderService,
                          ProgressViewService progressViewService, views.html.triage.selectOne selectOne,
                          views.html.triage.selectMany selectMany, views.html.triage.decontrol decontrol,
-                         views.html.triage.relatedEntries relatedEntries) {
+                         views.html.triage.relatedEntries relatedEntries, views.html.triage.item item) {
     this.breadcrumbViewService = breadcrumbViewService;
     this.answerConfigService = answerConfigService;
     this.answerViewService = answerViewService;
@@ -76,6 +77,7 @@ public class StageController extends Controller {
     this.selectMany = selectMany;
     this.decontrol = decontrol;
     this.relatedEntries = relatedEntries;
+    this.item = item;
   }
 
   public Result index(String sessionId) {
@@ -105,6 +107,8 @@ public class StageController extends Controller {
           form.answers = new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId));
           Form<MultiAnswerForm> filledForm = formFactory.form(MultiAnswerForm.class).fill(form);
           return renderDecontrol(filledForm, stageId, sessionId, resumeCode);
+        case ITEM:
+          return renderItem(formFactory.form(AnswerForm.class), stageId, sessionId, resumeCode);
         case UNKNOWN:
         default:
           Logger.error("Unknown stageId " + stageId);
@@ -128,6 +132,8 @@ public class StageController extends Controller {
           return handleSelectManySubmit(stageId, sessionId, stageConfig, resumeCode);
         case DECONTROL:
           return handleDecontrolSubmit(stageId, sessionId, stageConfig, resumeCode);
+        case ITEM:
+          return ok("TODO: item form submit");
         case UNKNOWN:
         default:
           Logger.error("Unknown stageId " + stageId);
@@ -187,6 +193,16 @@ public class StageController extends Controller {
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
     boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
     return ok(selectOne.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
+  }
+
+  private Result renderItem(Form<AnswerForm> answerForm, String stageId, String sessionId, String resumeCode) {
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
+    String title = stageConfig.getQuestionTitle().orElse("Select one");
+    String explanatoryText = renderService.getExplanatoryText(stageConfig);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
+    ProgressView progressView = progressViewService.createProgressView(stageConfig);
+    boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
+    return ok(item.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, breadcrumbView, showNoteMessage));
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,

@@ -12,6 +12,8 @@ public class PageTypeUtil {
       return PageType.SELECT_MANY;
     } else if (stageConfig.getQuestionType() == StageConfig.QuestionType.DECONTROL && stageConfig.getAnswerType() == StageConfig.AnswerType.SELECT_MANY) {
       return PageType.DECONTROL;
+    } else if (stageConfig.getQuestionType() == StageConfig.QuestionType.ITEM) {
+      return PageType.ITEM;
     } else {
       return PageType.UNKNOWN;
     }

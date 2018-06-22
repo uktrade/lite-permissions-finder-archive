@@ -14,6 +14,8 @@ public interface ControlEntryDao {
 
   ControlEntry getControlEntryByControlCode(String controlCode);
 
+  List<ControlEntry> getRelatedControlCodeEntries(long controlEntryId);
+
   Long insertControlEntry(ControlEntry controlEntry);
 
   void deleteControlEntry(long id);

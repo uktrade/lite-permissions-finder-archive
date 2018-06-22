@@ -5,6 +5,7 @@ public class Notes {
   private final String note;
   private final String seeAlso;
   private final String techNote;
+  private boolean created = false;
 
   public Notes(String nb, String note, String seeAlso, String techNote) {
     this.nb = nb;
@@ -27,5 +28,13 @@ public class Notes {
 
   public String getTechNote() {
     return techNote;
+  }
+
+  public boolean isCreated() {
+    return created;
+  }
+
+  public void setCreated(boolean created) {
+    this.created = created;
   }
 }

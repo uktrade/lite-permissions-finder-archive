@@ -2,58 +2,51 @@
 # ~~~~
 ->      /common                     common.Routes
 
-# Main index page
-GET     /                                     controllers.EntryPointController.index
+#Start pages
+GET     /                           controllers.EntryPointController.index
+POST    /                           controllers.EntryPointController.handleSubmit
+GET     /continue-application       controllers.ContinueApplicationController.renderForm
+POST    /continue-application       controllers.ContinueApplicationController.handleSubmit
+GET     /create-application         controllers.StartApplicationController.createApplication
+GET     /start-application          controllers.StartApplicationController.renderStartApplication(sessionId)
+POST    /start-application          controllers.StartApplicationController.handleSubmit(sessionId)
+GET     /onboarding                 controllers.OnboardingController.renderForm(sessionId)
+POST    /onboarding                 controllers.OnboardingController.handleSubmit(sessionId)
 
-POST    /                                     controllers.EntryPointController.handleSubmit
-
-GET     /continue-application                 controllers.ContinueApplicationController.renderForm
-
-POST    /continue-application                 controllers.ContinueApplicationController.handleSubmit
-
-GET     /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
-
-POST    /eu-intra-community-trade             controllers.StaticContentController.renderVirtualEU
-
-GET     /not-implemented                      controllers.StaticContentController.renderNotImplemented
-
+#Static content
+GET     /not-implemented               controllers.StaticContentController.renderNotImplemented
+GET     /more-information-required     controllers.StaticContentController.renderMoreInformationRequired
+GET     /other-control-list            controllers.StaticContentController.renderOtherControlList
 GET     /trade-type/brokering          controllers.StaticContentController.renderBrokering
-
 GET     /trade-type/transhipment       controllers.StaticContentController.renderTranshipment
-
-GET     /create-application                   controllers.StartApplicationController.createApplication
-
-GET     /start-application                    controllers.StartApplicationController.renderStartApplication(sessionId)
-
-POST    /start-application                    controllers.StartApplicationController.handleSubmit(sessionId)
-
+GET     /invalid-user-account          controllers.StaticContentController.renderInvalidUserAccount
+GET     /unknown-outcome               controllers.StaticContentController.renderUnknownOutcome
 
 # Licence finder
-GET     /licencefinder/entry/:controlCode    controllers.licencefinder.EntryController.entry(controlCode)
-GET     /licencefinder/trade                 controllers.licencefinder.TradeController.renderTradeForm(sessionId)
-POST    /licencefinder/trade                 controllers.licencefinder.TradeController.handleTradeSubmit(sessionId)
-GET     /licencefinder/destination           controllers.licencefinder.DestinationController.renderDestinationForm(sessionId)
-POST    /licencefinder/destination           controllers.licencefinder.DestinationController.handleDestinationSubmit(sessionId)
-GET     /licencefinder/questions             controllers.licencefinder.QuestionsController.renderQuestionsForm(sessionId)
-POST    /licencefinder/questions             controllers.licencefinder.QuestionsController.handleQuestionsSubmit(sessionId)
-GET     /licencefinder/results               controllers.licencefinder.ResultsController.renderResultsForm(sessionId)
-POST    /licencefinder/results               controllers.licencefinder.ResultsController.handleResultsSubmit(sessionId)
-GET     /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.renderRegisterToUseForm(sessionId)
-POST    /licencefinder/register-to-use       controllers.licencefinder.RegisterToUseController.handleRegisterToUseSubmit(sessionId)
-
-GET    /licencefinder/await-registration     controllers.licencefinder.RegisterAwaitController.renderAwaitResult(sessionId)
-POST    /licencefinder/new-registration      controllers.licencefinder.RegisterAwaitController.handleRegistrationProcessed(sessionId)
-GET    /licencefinder/registration-success     controllers.licencefinder.RegisterAwaitController.registrationSuccess(sessionId, registrationRef)
+GET     /licencefinder/entry/:controlCode       controllers.licencefinder.EntryController.entry(controlCode)
+GET     /licencefinder/trade                    controllers.licencefinder.TradeController.renderTradeForm(sessionId)
+POST    /licencefinder/trade                    controllers.licencefinder.TradeController.handleTradeSubmit(sessionId)
+GET     /licencefinder/destination              controllers.licencefinder.DestinationController.renderDestinationForm(sessionId)
+POST    /licencefinder/destination              controllers.licencefinder.DestinationController.handleDestinationSubmit(sessionId)
+GET     /licencefinder/questions                controllers.licencefinder.QuestionsController.renderQuestionsForm(sessionId)
+POST    /licencefinder/questions                controllers.licencefinder.QuestionsController.handleQuestionsSubmit(sessionId)
+GET     /licencefinder/results                  controllers.licencefinder.ResultsController.renderResultsForm(sessionId)
+POST    /licencefinder/results                  controllers.licencefinder.ResultsController.handleResultsSubmit(sessionId)
+GET     /licencefinder/register-to-use          controllers.licencefinder.RegisterToUseController.renderRegisterToUseForm(sessionId)
+POST    /licencefinder/register-to-use          controllers.licencefinder.RegisterToUseController.handleRegisterToUseSubmit(sessionId)
+GET     /licencefinder/await-registration       controllers.licencefinder.RegisterAwaitController.renderAwaitResult(sessionId)
+POST    /licencefinder/new-registration         controllers.licencefinder.RegisterAwaitController.handleRegistrationProcessed(sessionId)
+GET     /licencefinder/registration-success     controllers.licencefinder.RegisterAwaitController.registrationSuccess(sessionId, registrationRef)
+GET     /licencefinder/poll-status              controllers.LicenceFinderPollController.pollStatus(sessionId)
 
 GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
-GET     /licencefinder/poll-status       controllers.LicenceFinderPollController.pollStatus(sessionId)
 
 + nocsrf
-POST   /licencefinder/registration-callback  controllers.licencefinder.RegistrationController.handleRegistrationCallback(sessionId)
+POST    /licencefinder/registration-callback     controllers.licencefinder.RegistrationController.handleRegistrationCallback(sessionId)
 
 # JavaScript routes
-GET     /assets/javascripts/routes          controllers.JavaScriptRoutesController.javascriptRoutes()
-GET     /assets/*file                       controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/javascripts/routes             controllers.JavaScriptRoutesController.javascriptRoutes()
+GET     /assets/*file                          controllers.Assets.versioned(path="/public", file: Asset)
 
 #Build info
 GET     /admin/build                          controllers.admin.AdminController.buildInfo
@@ -66,40 +59,40 @@ GET     /admin/build                          controllers.admin.AdminController.
 
 #GET     /admin/application-codes/:applicationCode   controllers.admin.AdminController.applicationCodeByCode(applicationCode)
 
+#Pac4j
 + nocsrf
-POST    /samlResponse    org.pac4j.play.CallbackController.callback()
-GET     /logout          org.pac4j.play.LogoutController.logout()
-GET     /logged-out      controllers.AuthorisationController.loggedOut()
-GET     /unauthorised    controllers.AuthorisationController.unauthorised()
+POST    /samlResponse       org.pac4j.play.CallbackController.callback()
+GET     /logout             org.pac4j.play.LogoutController.logout()
+GET     /logged-out         controllers.AuthorisationController.loggedOut()
+GET     /unauthorised       controllers.AuthorisationController.unauthorised()
 
-GET     /outcome/no-result/:controlEntryId controllers.OutcomeController.outcomeNoResult(controlEntryId, sessionId)
-GET     /outcome/not-found/:controlEntryId controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
-POST    /outcome/not-found/:controlEntryId controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
-GET     /outcome/listed/:controlEntryId   controllers.OutcomeController.outcomeListed(controlEntryId, sessionId)
-POST    /outcome/listed/:controlEntryId   controllers.OutcomeController.handleOutcomeListedSubmit(controlEntryId, sessionId)
-GET     /outcome/decontrol/:stageId controllers.OutcomeController.outcomeDecontrol(stageId, sessionId)
-POST    /outcome/decontrol/:stageId controllers.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)
-GET     /outcome/dropout            controllers.OutcomeController.outcomeDropout(sessionId)
-GET     /stage                      controllers.StageController.index(sessionId)
-GET     /stage/:stageId             controllers.StageController.render(stageId, sessionId)
-POST    /stage/:stageId             controllers.StageController.handleSubmit(stageId, sessionId)
-GET     /stage/related/:controlEntryId controllers.StageController.relatedEntries(controlEntryId, sessionId)
-POST    /stage/related/:controlEntryId controllers.StageController.handleRelatedEntriesSubmit(controlEntryId, sessionId)
-
-GET     /onboarding             controllers.OnboardingController.renderForm(sessionId)
-POST    /onboarding             controllers.OnboardingController.handleSubmit(sessionId)
+#Code finder
+GET     /outcome/no-result/:controlEntryId          controllers.OutcomeController.outcomeNoResult(controlEntryId, sessionId)
+GET     /outcome/not-found/:controlEntryId          controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
+POST    /outcome/not-found/:controlEntryId          controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
+GET     /outcome/listed/:controlEntryId             controllers.OutcomeController.outcomeListed(controlEntryId, sessionId)
+POST    /outcome/listed/:controlEntryId             controllers.OutcomeController.handleOutcomeListedSubmit(controlEntryId, sessionId)
+GET     /outcome/decontrol/:stageId                 controllers.OutcomeController.outcomeDecontrol(stageId, sessionId)
+POST    /outcome/decontrol/:stageId                 controllers.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)
+GET     /outcome/dropout                            controllers.OutcomeController.outcomeDropout(sessionId)
+GET     /stage                                      controllers.StageController.index(sessionId)
+GET     /stage/:stageId                             controllers.StageController.render(stageId, sessionId)
+POST    /stage/:stageId                             controllers.StageController.handleSubmit(stageId, sessionId)
+GET     /stage/related/:controlEntryId              controllers.StageController.relatedEntries(controlEntryId, sessionId)
+POST    /stage/related/:controlEntryId              controllers.StageController.handleRelatedEntriesSubmit(controlEntryId, sessionId)
 
 + nocsrf
-PUT     /cms/spreadsheet                      controllers.cms.UploadController.spreadsheetUpload
+PUT     /cms/spreadsheet                            controllers.cms.UploadController.spreadsheetUpload
 
-GET     /view-outcome/:outcomeId               controllers.ViewOutcomeController.renderOutcome(outcomeId)
-GET     /save-listed-outcome/:controlEntryId   controllers.ViewOutcomeController.saveListedOutcome(sessionId, controlEntryId)
-GET     /register-nlr/not-found/:controlEntryId controllers.ViewOutcomeController.registerNotFoundNlr(sessionId, controlEntryId)
-POST    /register-nlr/not-found/:controlEntryId controllers.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId)
-GET     /register-nlr/decontrol/:stageId       controllers.ViewOutcomeController.registerDecontrolNlr(sessionId, stageId)
-POST    /register-nlr/decontrol/:stageId       controllers.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId)
-GET     /register-nlr/success                  controllers.ViewOutcomeController.registerSuccess(sessionId)
+GET     /view-outcome/:outcomeId                    controllers.ViewOutcomeController.renderOutcome(outcomeId)
+GET     /save-listed-outcome/:controlEntryId        controllers.ViewOutcomeController.saveListedOutcome(sessionId, controlEntryId)
+GET     /register-nlr/not-found/:controlEntryId     controllers.ViewOutcomeController.registerNotFoundNlr(sessionId, controlEntryId)
+POST    /register-nlr/not-found/:controlEntryId     controllers.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId)
+GET     /register-nlr/decontrol/:stageId            controllers.ViewOutcomeController.registerDecontrolNlr(sessionId, stageId)
+POST    /register-nlr/decontrol/:stageId            controllers.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId)
+GET     /register-nlr/success                       controllers.ViewOutcomeController.registerSuccess(sessionId)
 
+#Modals
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId, sessionId)
 GET     /modal-content/definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
 GET     /modal-content/definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)
@@ -107,6 +100,3 @@ GET     /modal-content/definition/local/:localDefinitionId        controllers.mo
 GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)
 GET     /view-definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinitionView(globalDefinitionId)
 GET     /view-definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinitionView(localDefinitionId)
-
-GET     /invalid-user-account                            controllers.StaticContentController.renderInvalidUserAccount
-GET     /unknown-outcome                                 controllers.StaticContentController.renderUnknownOutcome
