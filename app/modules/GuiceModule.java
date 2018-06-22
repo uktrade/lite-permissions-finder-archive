@@ -44,7 +44,6 @@ import components.common.client.CountryServiceClient;
 import components.common.client.userservice.UserServiceClientBasicAuth;
 import components.common.persistence.RedisKeyConfig;
 import components.common.persistence.StatelessRedisDao;
-import components.common.state.ContextParamManager;
 import components.services.AnswerConfigService;
 import components.services.AnswerConfigServiceImpl;
 import components.services.AnswerViewService;
@@ -284,12 +283,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "EU country cache", actorSystem.dispatcher(), null);
     actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefExport, "EXPORT country cache", actorSystem.dispatcher(), null);
   }
-
-  @Provides
-  public ContextParamManager provideContextParamManager() {
-    return new ContextParamManager();
-  }
-
 
   @Provides
   @Singleton
