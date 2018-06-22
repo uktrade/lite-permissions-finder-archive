@@ -1,6 +1,7 @@
-package components.cms.dao;
+package components.cms.dao.impl;
 
 import com.google.inject.Inject;
+import components.cms.dao.SessionOutcomeDao;
 import components.cms.jdbi.SessionOutcomeJDBIDao;
 import org.skife.jdbi.v2.DBI;
 import triage.session.SessionOutcome;
