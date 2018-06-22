@@ -6,6 +6,7 @@ import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
+import components.cms.dao.RelatedControlEntryDao;
 import components.cms.dao.SessionStageDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
@@ -25,6 +26,7 @@ import models.cms.GlobalDefinition;
 import models.cms.Journey;
 import models.cms.LocalDefinition;
 import models.cms.Note;
+import models.cms.RelatedControlEntry;
 import models.cms.Stage;
 import models.cms.StageAnswer;
 import models.cms.enums.AnswerType;
@@ -52,6 +54,7 @@ public class Loader {
   private final StageAnswerDao stageAnswerDao;
   private final StageDao stageDao;
   private final SessionStageDao sessionStageDao;
+  private final RelatedControlEntryDao relatedControlEntryDao;
 
   @Inject
   public Loader(
@@ -62,7 +65,8 @@ public class Loader {
       NoteDao noteDao,
       StageAnswerDao stageAnswerDao,
       StageDao stageDao,
-      SessionStageDao sessionStageDao) {
+      SessionStageDao sessionStageDao,
+      RelatedControlEntryDao relatedControlEntryDao) {
     this.controlEntryDao = controlEntryDao;
     this.globalDefinitionDao = globalDefinitionDao;
     this.journeyDao = journeyDao;
@@ -71,6 +75,7 @@ public class Loader {
     this.stageAnswerDao = stageAnswerDao;
     this.stageDao = stageDao;
     this.sessionStageDao = sessionStageDao;
+    this.relatedControlEntryDao = relatedControlEntryDao;
   }
 
   public void load(ParserResult parserResult) {
@@ -85,6 +90,7 @@ public class Loader {
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
     createGlobalDefinitions(parserResult.getDefinitions(), journeyId);
+    createRelatedControlEntries(true, rootNavigationLevel);
 
     // Resolve initial stage id from stage associated with first sub-level of navigation levels
     Long initialStageId = rootNavigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
@@ -437,7 +443,35 @@ public class Loader {
     }
   }
 
+  private void createRelatedControlEntries(boolean isRoot, NavigationLevel navigationLevel) {
+    if (!isRoot) {
+      String relatedCodes = navigationLevel.getLoops().getRelatedCodes();
+      LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
+      if (loadingMetadata.getControlEntryId() != null && StringUtils.isNotBlank(relatedCodes)) {
+        List<String> relatedCodeList = Arrays.stream(relatedCodes.split(REGEX_NEW_LINE))
+            .map(String::trim)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
+
+        for (String relatedCode : relatedCodeList) {
+          ControlEntry controlEntry = controlEntryDao.getControlEntryByControlCode(relatedCode);
+          RelatedControlEntry relatedControlEntry = new RelatedControlEntry()
+              .setControlEntryId(loadingMetadata.getControlEntryId())
+              .setRelatedControlEntryId(controlEntry.getId());
+          relatedControlEntryDao.insertRelatedControlEntry(relatedControlEntry);
+
+          Logger.debug("Inserted related control entry: control entry id {}, related control entry id {}", relatedControlEntry.getControlEntryId(), relatedControlEntry.getRelatedControlEntryId());
+        }
+      }
+    }
+
+    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
+      createRelatedControlEntries(false, subNavigationLevel);
+    }
+  }
+
   private void clearDown() {
+    relatedControlEntryDao.deleteAllRelatedControlEntries();
     sessionStageDao.deleteAllSessionStages();
     localDefinitionDao.deleteAllLocalDefinitions();
     globalDefinitionDao.deleteAllGlobalDefinitions();
