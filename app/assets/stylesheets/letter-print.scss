@@ -5,6 +5,7 @@
 
 // Components
 @import "components/logos";
+@import "components/mixins";
 
 #global-cookie-message,
 #global-header,
@@ -23,7 +24,7 @@ a[href^="/"]:after, a[href^="http://"]:after, a[href^="https://"]:after {
   content: none;
 }
 
-hr {
+hr.break-page {
   visibility: hidden;
   page-break-before: always;
 }
@@ -31,6 +32,12 @@ hr {
 h2 {
   page-break-after: avoid;
 }
+
+.break-word {
+  word-wrap: break-word;
+}
+
+@include styled-blockquote;
 
 // The normal grid classes only show on tablet-width and up. We want them to be used regardless
 // of the size of the page that's being printed.

@@ -92,7 +92,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   @Override
   public String generateNotFoundNlrLetter(String userId, String sessionId, String controlEntryId, String resumeCode,
-                                          String description) throws InvalidUserAccountException {
+                                          Html description) throws InvalidUserAccountException {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, null);
@@ -102,7 +102,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   @Override
   public String generateDecontrolNlrLetter(String userId, String sessionId, String stageId, String resumeCode,
-                                           String description) throws InvalidUserAccountException {
+                                           Html description) throws InvalidUserAccountException {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, false, HtmlRenderOption.OMIT_LINKS);
@@ -112,7 +112,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   private String generateLetter(String userId, String sessionId, String resumeCode, OutcomeType outcomeType,
-                                Html nlrBreadcrumb, String description) throws InvalidUserAccountException {
+                                Html nlrBreadcrumb, Html description) throws InvalidUserAccountException {
     CustomerView customerView = getCustomerId(userId);
     String customerId = customerView.getCustomerId();
     SiteView siteView = getSite(customerId, userId);
