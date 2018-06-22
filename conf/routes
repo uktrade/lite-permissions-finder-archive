@@ -58,13 +58,13 @@ GET     /assets/*file                       controllers.Assets.versioned(path="/
 #Build info
 GET     /admin/build                          controllers.admin.AdminController.buildInfo
 
-GET     /admin/transactions                   controllers.admin.AdminController.permissionsFinderTransactions
+#GET     /admin/transactions                   controllers.admin.AdminController.permissionsFinderTransactions
 
-GET     /admin/transactions/:id               controllers.admin.AdminController.permissionsFinderTransactionById(id)
+#GET     /admin/transactions/:id               controllers.admin.AdminController.permissionsFinderTransactionById(id)
 
-GET     /admin/application-codes              controllers.admin.AdminController.applicationCodes
+#GET     /admin/application-codes              controllers.admin.AdminController.applicationCodes
 
-GET     /admin/application-codes/:applicationCode   controllers.admin.AdminController.applicationCodeByCode(applicationCode)
+#GET     /admin/application-codes/:applicationCode   controllers.admin.AdminController.applicationCodeByCode(applicationCode)
 
 + nocsrf
 POST    /samlResponse    org.pac4j.play.CallbackController.callback()
