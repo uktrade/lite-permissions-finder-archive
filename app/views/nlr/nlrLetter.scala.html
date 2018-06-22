@@ -4,7 +4,7 @@
 @import utils.common.ViewUtil
 
 @this()
-@(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: String)
+@(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: Html)
 
 <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
 
@@ -181,7 +181,7 @@
 </p>
 
 <blockquote class="break-word">
-  @Html(ViewUtil.newlinesToParagraphs(description))
+  @description
 </blockquote>
 
 <hr>
