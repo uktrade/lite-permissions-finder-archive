@@ -141,7 +141,8 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   public Optional<StageConfig> getPrincipleStageConfigForControlEntry(ControlEntryConfig controlEntryConfig) {
     return getStageIdsForControlEntry(controlEntryConfig).stream()
         .map(this::getStageConfigById)
-        .filter(stageConfig -> stageConfig.getQuestionType() == StageConfig.QuestionType.STANDARD)
+        .filter(stageConfig -> stageConfig.getQuestionType() == StageConfig.QuestionType.STANDARD ||
+            stageConfig.getQuestionType() == StageConfig.QuestionType.ITEM)
         .findAny();
   }
 

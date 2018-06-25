@@ -111,7 +111,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     } else {
       Optional<StageConfig> stageConfigOptional = stageIds.stream()
           .map(journeyConfigService::getStageConfigById)
-          .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == StageConfig.QuestionType.STANDARD)
+          .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == StageConfig.QuestionType.STANDARD ||
+              stageConfigIterate.getQuestionType() == StageConfig.QuestionType.ITEM)
           .findAny()
           .map(stageConfigIterate -> journeyConfigService.getStageConfigForPreviousStage(stageConfigIterate.getStageId()))
           .map(this::getNonDecontrolStageConfig);
