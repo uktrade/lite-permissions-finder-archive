@@ -10,9 +10,7 @@ import exceptions.BusinessRuleException;
 import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
-import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
-import models.view.NoteView;
 import models.view.ProgressView;
 import models.view.SubAnswerView;
 import models.view.form.AnswerForm;
@@ -34,7 +32,6 @@ import utils.EnumUtil;
 import utils.PageTypeUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -214,8 +211,7 @@ public class StageController extends Controller {
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
-    boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
-    return ok(selectOne.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
+    return ok(selectOne.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result renderItem(Form<AnswerForm> answerForm, String stageId, String sessionId, String resumeCode) {
@@ -238,13 +234,12 @@ public class StageController extends Controller {
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
-    boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
 
     List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
-    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
+    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answers, breadcrumbView));
   }
 
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,
@@ -255,13 +250,12 @@ public class StageController extends Controller {
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
-    boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
 
     List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
-    return ok(selectMany.render(multiAnswerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
+    return ok(selectMany.render(multiAnswerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
@@ -428,11 +422,6 @@ public class StageController extends Controller {
 
   private Result redirectToStage(String stageId, String sessionId) {
     return redirect(routes.StageController.render(stageId, sessionId));
-  }
-
-  private boolean isShowNoteMessage(BreadcrumbView breadcrumbView) {
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbView.getBreadcrumbItemViews();
-    return !breadcrumbItemViews.isEmpty() && !breadcrumbItemViews.get(breadcrumbItemViews.size() - 1).getNoteViews().isEmpty();
   }
 
 }
