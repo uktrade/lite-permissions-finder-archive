@@ -22,9 +22,9 @@ import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
+import components.cms.dao.RelatedControlEntryDao;
 import components.cms.dao.SessionDao;
 import components.cms.dao.SessionOutcomeDao;
-import components.cms.dao.SessionOutcomeDaoImpl;
 import components.cms.dao.SessionStageDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
@@ -33,7 +33,9 @@ import components.cms.dao.impl.GlobalDefinitionDaoImpl;
 import components.cms.dao.impl.JourneyDaoImpl;
 import components.cms.dao.impl.LocalDefinitionDaoImpl;
 import components.cms.dao.impl.NoteDaoImpl;
+import components.cms.dao.impl.RelatedControlEntryDaoImpl;
 import components.cms.dao.impl.SessionDaoImpl;
+import components.cms.dao.impl.SessionOutcomeDaoImpl;
 import components.cms.dao.impl.SessionStageDaoImpl;
 import components.cms.dao.impl.StageAnswerDaoImpl;
 import components.cms.dao.impl.StageDaoImpl;
@@ -190,6 +192,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(NoteDao.class).to(NoteDaoImpl.class);
     bind(StageAnswerDao.class).to(StageAnswerDaoImpl.class);
     bind(StageDao.class).to(StageDaoImpl.class);
+    bind(RelatedControlEntryDao.class).to(RelatedControlEntryDaoImpl.class);
 
     bind(SessionDao.class).to(SessionDaoImpl.class);
     bind(SessionStageDao.class).to(SessionStageDaoImpl.class);
