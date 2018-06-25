@@ -44,3 +44,8 @@ LITEPermissionsFinder.Triage = {
     LITECommon.Modal.displayModal("Sorry, cannot show this information", "error");
   }
 };
+
+$(document).ready( function() {
+  var sessionId = document.getElementById('sessionId').value;
+  LITEPermissionsFinder.Triage.setupPage(sessionId);
+});
