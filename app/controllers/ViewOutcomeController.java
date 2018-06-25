@@ -23,6 +23,7 @@ import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.session.SessionOutcome;
 import triage.session.SessionService;
+import utils.HtmlUtil;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class ViewOutcomeController {
@@ -135,7 +136,8 @@ public class ViewOutcomeController {
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
           try {
-            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
+            Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
+            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, htmlDescription);
           } catch (InvalidUserAccountException exception) {
             return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }
@@ -175,7 +177,8 @@ public class ViewOutcomeController {
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
           try {
-            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
+            Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
+            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, htmlDescription);
           } catch (InvalidUserAccountException exception) {
             return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }
