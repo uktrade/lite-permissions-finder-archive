@@ -455,12 +455,18 @@ public class Loader {
 
         for (String relatedCode : relatedCodeList) {
           ControlEntry controlEntry = controlEntryDao.getControlEntryByControlCode(relatedCode);
-          RelatedControlEntry relatedControlEntry = new RelatedControlEntry()
-              .setControlEntryId(loadingMetadata.getControlEntryId())
-              .setRelatedControlEntryId(controlEntry.getId());
-          relatedControlEntryDao.insertRelatedControlEntry(relatedControlEntry);
 
-          Logger.debug("Inserted related control entry: control entry id {}, related control entry id {}", relatedControlEntry.getControlEntryId(), relatedControlEntry.getRelatedControlEntryId());
+          if (controlEntry == null) {
+            Logger.error("No control entry record found for related code {}", relatedCode);
+          } else {
+            RelatedControlEntry relatedControlEntry = new RelatedControlEntry()
+                .setControlEntryId(loadingMetadata.getControlEntryId())
+                .setRelatedControlEntryId(controlEntry.getId());
+            relatedControlEntryDao.insertRelatedControlEntry(relatedControlEntry);
+
+            Logger.debug("Inserted related control entry: control entry id {}, related control entry id {}",
+                relatedControlEntry.getControlEntryId(), relatedControlEntry.getRelatedControlEntryId());
+          }
         }
       }
     }
