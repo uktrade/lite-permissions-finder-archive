@@ -8,7 +8,7 @@ POST    /                           controllers.EntryPointController.handleSubmi
 GET     /continue-application       controllers.ContinueApplicationController.renderForm
 POST    /continue-application       controllers.ContinueApplicationController.handleSubmit
 GET     /create-application         controllers.StartApplicationController.createApplication
-GET     /start-application          controllers.StartApplicationController.renderStartApplication(sessionId)
+GET     /start-application          controllers.StartApplicationController.renderStartApplication(sessionId ?= null)
 POST    /start-application          controllers.StartApplicationController.handleSubmit(sessionId)
 GET     /onboarding                 controllers.OnboardingController.renderForm(sessionId)
 POST    /onboarding                 controllers.OnboardingController.handleSubmit(sessionId)

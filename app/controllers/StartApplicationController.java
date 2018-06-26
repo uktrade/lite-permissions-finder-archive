@@ -47,9 +47,10 @@ public class StartApplicationController {
     if (triageSession == null) {
       Logger.error("Unknown sessionId " + sessionId);
       return redirect(routes.StartApplicationController.createApplication());
+    } else {
+      return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getId(),
+          triageSession.getResumeCode()));
     }
-    return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getId(),
-        triageSession.getResumeCode()));
   }
 
   public Result handleSubmit(String sessionId) {
@@ -64,7 +65,7 @@ public class StartApplicationController {
       } else {
         String emailAddress = form.get().emailAddress;
         if (StringUtils.isNoneBlank(emailAddress)) {
-          String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+          String resumeCode = triageSession.getResumeCode();
           permissionsFinderNotificationClient.sendApplicationReferenceEmail(emailAddress.trim(), resumeCode);
         }
         return redirect(routes.OnboardingController.renderForm(sessionId));
