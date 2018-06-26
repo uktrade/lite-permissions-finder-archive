@@ -31,10 +31,11 @@ public class LicenceFinderAwaitGuardAction extends Action.Simple {
   public CompletionStage<Result> call(Http.Context ctx) {
 
     // Ensure we have a sessionId in request
-    String sessionId = ctx.request().getQueryString("sessionId");
-    if (StringUtils.isBlank(sessionId)) {
+    if (!hasSessionId(ctx)) {
       return completedFuture(badRequest(errorPage.render("No session found")));
     }
+
+    String sessionId = ctx.request().getQueryString("sessionId");
 
     // Redirect to registerWait
     Optional<RegisterLicence> optRegisterLicence = licenceFinderDao.getRegisterLicence(sessionId);
@@ -45,4 +46,10 @@ public class LicenceFinderAwaitGuardAction extends Action.Simple {
     // No action required
     return delegate.call(ctx);
   }
+
+
+  boolean hasSessionId(Http.Context ctx) {
+    return !StringUtils.isBlank(ctx.request().getQueryString("sessionId"));
+  }
+
 }
