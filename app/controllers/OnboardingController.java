@@ -50,9 +50,9 @@ public class OnboardingController {
       case YES:
         return redirect(routes.StageController.index(sessionId));
       case NO:
-        return redirect(routes.StaticContentController.renderOtherControlList());
+        return redirect(routes.StaticContentController.renderOtherControlList(sessionId));
       default:
-        return redirect(routes.StaticContentController.renderMoreInformationRequired());
+        return redirect(routes.StaticContentController.renderMoreInformationRequired(sessionId));
     }
   }
 

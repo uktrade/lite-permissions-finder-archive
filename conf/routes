@@ -14,8 +14,8 @@ GET     /onboarding                 controllers.OnboardingController.renderForm(
 POST    /onboarding                 controllers.OnboardingController.handleSubmit(sessionId)
 
 #Static content
-GET     /more-information-required     controllers.StaticContentController.renderMoreInformationRequired
-GET     /other-control-list            controllers.StaticContentController.renderOtherControlList
+GET     /more-information-required     controllers.StaticContentController.renderMoreInformationRequired(sessionId)
+GET     /other-control-list            controllers.StaticContentController.renderOtherControlList(sessionId)
 GET     /trade-type/brokering          controllers.StaticContentController.renderBrokering
 GET     /trade-type/transhipment       controllers.StaticContentController.renderTranshipment
 GET     /invalid-user-account          controllers.StaticContentController.renderInvalidUserAccount

@@ -1,5 +1,5 @@
 @import util._
 
 @this(standardPage: standardPage)
-@(title: String, pageHeading: Option[Html], content: Html)
-@standardPage(title, pageHeading){ }(content)
+@(title: String, pageHeading: Option[Html], content: Html, showBackLink: Boolean, resumeCode: String)
+@standardPage(title, pageHeading, showBackLink = showBackLink, resumeCode = resumeCode){ }(content)
