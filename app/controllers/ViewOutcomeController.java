@@ -16,13 +16,13 @@ import models.view.form.ItemDescriptionForm;
 import org.pac4j.play.java.Secure;
 import play.Logger;
 import play.data.Form;
-import play.data.FormFactory;
 import play.mvc.Result;
 import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.session.SessionOutcome;
 import triage.session.SessionService;
+import utils.CustomFormFactory;
 import utils.HtmlUtil;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
@@ -34,7 +34,7 @@ public class ViewOutcomeController {
   private final UserPrivilegeService userPrivilegeService;
   private final SpireAuthManager spireAuthManager;
   private final JourneyConfigService journeyConfigService;
-  private final FormFactory formFactory;
+  private final CustomFormFactory customFormFactory;
   private final views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess;
   private final views.html.nlr.nlrOutcome nlrOutcome;
   private final views.html.triage.listedOutcomeSaved listedOutcomeSaved;
@@ -44,7 +44,8 @@ public class ViewOutcomeController {
   public ViewOutcomeController(SessionService sessionService, SessionOutcomeService sessionOutcomeService,
                                SessionOutcomeDao sessionOutcomeDao, UserPrivilegeService userPrivilegeService,
                                SpireAuthManager spireAuthManager, JourneyConfigService journeyConfigService,
-                               FormFactory formFactory, views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess,
+                               CustomFormFactory customFormFactory,
+                               views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess,
                                views.html.nlr.nlrOutcome nlrOutcome,
                                views.html.triage.listedOutcomeSaved listedOutcomeSaved,
                                views.html.nlr.nlrItemDescription nlrItemDescription) {
@@ -54,7 +55,7 @@ public class ViewOutcomeController {
     this.userPrivilegeService = userPrivilegeService;
     this.spireAuthManager = spireAuthManager;
     this.journeyConfigService = journeyConfigService;
-    this.formFactory = formFactory;
+    this.customFormFactory = customFormFactory;
     this.nlrRegisterSuccess = nlrRegisterSuccess;
     this.nlrOutcome = nlrOutcome;
     this.listedOutcomeSaved = listedOutcomeSaved;
@@ -113,7 +114,7 @@ public class ViewOutcomeController {
     String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId).toString();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
-      Form<ItemDescriptionForm> itemDescriptionForm = formFactory.form(ItemDescriptionForm.class);
+      Form<ItemDescriptionForm> itemDescriptionForm = customFormFactory.form(ItemDescriptionForm.class);
       return ok(nlrItemDescription.render(itemDescriptionForm, resumeCode, submitUrl));
     } else {
       return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
@@ -125,24 +126,18 @@ public class ViewOutcomeController {
     String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId).toString();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
-      Form<ItemDescriptionForm> form = formFactory.form(ItemDescriptionForm.class).bindFromRequest();
+      Form<ItemDescriptionForm> form = customFormFactory.bindFromRequest(ItemDescriptionForm.class);
       if (form.hasErrors()) {
         return ok(nlrItemDescription.render(form, resumeCode, submitUrl));
       } else {
-        String description = form.get().description.trim();
-        if (description.length() < 2) {
-          return ok(nlrItemDescription.render(form.withError("description", "Item description is required."),
-              resumeCode, submitUrl));
-        } else {
-          String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          try {
-            Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
-            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, htmlDescription);
-          } catch (InvalidUserAccountException exception) {
-            return redirect(routes.StaticContentController.renderInvalidUserAccount());
-          }
-          return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
+        String userId = spireAuthManager.getAuthInfoFromContext().getId();
+        try {
+          Html htmlDescription = HtmlUtil.newlinesToParagraphs(form.get().description);
+          sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, htmlDescription);
+        } catch (InvalidUserAccountException exception) {
+          return redirect(routes.StaticContentController.renderInvalidUserAccount());
         }
+        return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
       }
     } else {
       return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
@@ -154,7 +149,7 @@ public class ViewOutcomeController {
     String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId).toString();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
-      Form<ItemDescriptionForm> itemDescriptionForm = formFactory.form(ItemDescriptionForm.class);
+      Form<ItemDescriptionForm> itemDescriptionForm = customFormFactory.form(ItemDescriptionForm.class);
       return ok(nlrItemDescription.render(itemDescriptionForm, resumeCode, submitUrl));
     } else {
       return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
@@ -166,24 +161,18 @@ public class ViewOutcomeController {
     String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId).toString();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
-      Form<ItemDescriptionForm> form = formFactory.form(ItemDescriptionForm.class).bindFromRequest();
+      Form<ItemDescriptionForm> form = customFormFactory.bindFromRequest(ItemDescriptionForm.class);
       if (form.hasErrors()) {
         return ok(nlrItemDescription.render(form, resumeCode, submitUrl));
       } else {
-        String description = form.get().description.trim();
-        if (description.length() < 2) {
-          return ok(nlrItemDescription.render(form.withError("description", "Item description is required."),
-              resumeCode, submitUrl));
-        } else {
-          String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          try {
-            Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
-            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, htmlDescription);
-          } catch (InvalidUserAccountException exception) {
-            return redirect(routes.StaticContentController.renderInvalidUserAccount());
-          }
-          return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
+        String userId = spireAuthManager.getAuthInfoFromContext().getId();
+        try {
+          Html htmlDescription = HtmlUtil.newlinesToParagraphs(form.get().description);
+          sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, htmlDescription);
+        } catch (InvalidUserAccountException exception) {
+          return redirect(routes.StaticContentController.renderInvalidUserAccount());
         }
+        return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
       }
     } else {
       return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
