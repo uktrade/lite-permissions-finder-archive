@@ -6,7 +6,8 @@
 @import org.apache.commons.lang3.StringUtils
 
 @this(triagePage: triagePage)
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String, explanatoryText: String, answerViews: Map[AnswerView, Boolean], breadcrumbView: BreadcrumbView)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String,
+  explanatoryText: String, relatedEntryDescription: String, answerViews: Map[AnswerView, Boolean], breadcrumbView: BreadcrumbView)
 
 @triagePage(form, routes.StageController.handleSubmit(stageId, sessionId).toString, sessionId, resumeCode, title, breadcrumbView, ""){
   @if(progressView.getCode != null) {
@@ -17,7 +18,10 @@
   }
 }{
   @if(StringUtils.isNotBlank(explanatoryText)) {
-    <p>@Html(explanatoryText)</p>
+    <p class="form-hint">@Html(explanatoryText)</p>
+  }
+  @if(StringUtils.isNotBlank(relatedEntryDescription)) {
+    <p>@Html(relatedEntryDescription)</p>
   }
   @noteMessage(!breadcrumbView.getNoteViews.isEmpty)
   <div class="form-group">

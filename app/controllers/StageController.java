@@ -16,6 +16,7 @@ import models.view.SubAnswerView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
@@ -206,8 +207,9 @@ public class StageController extends Controller {
 
   private Result renderSelectOne(Form<AnswerForm> answerForm, String stageId, String sessionId, String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    String title = stageConfig.getQuestionTitle().orElse("Select one");
-    String explanatoryText = renderService.getExplanatoryText(stageConfig);
+    String title = stageConfig.getQuestionTitle().orElse("Check if your item is listed");
+    String explanatoryText = StringUtils.defaultIfBlank(renderService.getExplanatoryText(stageConfig),
+        "Select the control list entry which best describes your item.");
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
@@ -245,8 +247,17 @@ public class StageController extends Controller {
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,
                                   String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    String title = stageConfig.getQuestionTitle().orElse("Select at least one");
-    String explanatoryText = renderService.getExplanatoryText(stageConfig);
+    String title = stageConfig.getQuestionTitle().orElse("Check if your item is listed");
+    String explanatoryText = StringUtils.defaultIfBlank(renderService.getExplanatoryText(stageConfig),
+        "Select all the control list entries which describe your item.");
+
+    //Only render the related control entry description as a default when no explanatory text is provided by the CMS
+    String relatedEntryDescription = null;
+    Optional<ControlEntryConfig> relatedControlEntry = stageConfig.getRelatedControlEntry();
+    if (stageConfig.getExplanatoryNote().isPresent() && relatedControlEntry.isPresent()) {
+      relatedEntryDescription = renderService.getFullDescription(relatedControlEntry.get());
+    }
+
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
@@ -255,7 +266,8 @@ public class StageController extends Controller {
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
-    return ok(selectMany.render(multiAnswerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView));
+    return ok(selectMany.render(multiAnswerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText,
+        relatedEntryDescription, answers, breadcrumbView));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
