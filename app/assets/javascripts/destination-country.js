@@ -7,3 +7,7 @@ LITEPermissionsFinder.DestinationCountry = {
     });
   }
 };
+
+$(document).ready(function(){
+  LITEPermissionsFinder.DestinationCountry.setupPage();
+});

@@ -44,3 +44,7 @@ LITEOgelRegistration.RegistrationInterval = {
     }, 3000);
   }
 };
+
+$(function() {
+  LITEOgelRegistration.RegistrationInterval.setupPage();
+});

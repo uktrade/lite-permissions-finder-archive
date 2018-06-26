@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <script type="text/javascript">
-    $(document).ready(function(){LITEPermissionsFinder.Triage.setupPage('@sessionId')});
-  </script>
+  <input type="hidden" id="sessionId" value="@sessionId"/>
+  <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/triage.js")">
+
 }
