@@ -186,7 +186,7 @@ public class StageController extends Controller {
       if ("true".equals(answer)) {
         return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
       } else if ("false".equals(answer)) {
-        return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId));
+        return resultForNoMatch(sessionId, stageConfig);
       } else {
         Logger.error("Unknown answer {}", answer);
         return renderItem(answerForm, stageId, sessionId, resumeCode);
@@ -329,7 +329,7 @@ public class StageController extends Controller {
         }
       } else if (action == Action.NONE) {
         sessionService.updateLastStageId(sessionId, stageId);
-        return resultForSelectOneOrManyActionNone(sessionId, stageConfig);
+        return resultForNoMatch(sessionId, stageConfig);
       } else {
         Logger.error("Unknown action " + actionParam);
         return redirectToStage(stageId, sessionId);
@@ -363,14 +363,14 @@ public class StageController extends Controller {
       }
     } else if (action == Action.NONE) {
       sessionService.updateLastStageId(sessionId, stageId);
-      return resultForSelectOneOrManyActionNone(sessionId, stageConfig);
+      return resultForNoMatch(sessionId, stageConfig);
     } else {
       Logger.error("Unknown action " + actionParam);
       return redirectToStage(stageId, sessionId);
     }
   }
 
-  private Result resultForSelectOneOrManyActionNone(String sessionId, StageConfig stageConfig) {
+  private Result resultForNoMatch(String sessionId, StageConfig stageConfig) {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     if (controlEntryConfig != null) {
       List<ControlEntryConfig> controlEntryConfigs = journeyConfigService.getRelatedControlEntries(controlEntryConfig);
