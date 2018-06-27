@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.cms.dao.StageAnswerDao;
 import components.cms.jdbi.StageAnswerJDBIDao;
 import models.cms.StageAnswer;
-import models.cms.enums.OutcomeType;
 import org.skife.jdbi.v2.DBI;
 
 import java.util.List;
@@ -26,11 +25,6 @@ public class StageAnswerDaoImpl implements StageAnswerDao {
   @Override
   public StageAnswer getStageAnswerByGoToStageId(long goToStageId) {
     return stageAnswerJDBIDao.getStageAnswerByGoToStageId(goToStageId);
-  }
-
-  @Override
-  public List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(long controlEntryId, OutcomeType outcomeType) {
-    return stageAnswerJDBIDao.getStageAnswersByControlEntryIdAndOutcomeType(controlEntryId, outcomeType.toString());
   }
 
   @Override

@@ -392,13 +392,7 @@ public class StageController extends Controller {
     Optional<OutcomeType> outcomeTypeOptional = answerConfig.getOutcomeType();
     if (outcomeTypeOptional.isPresent()) {
       OutcomeType outcomeType = outcomeTypeOptional.get();
-      if (outcomeType == OutcomeType.CONTROL_ENTRY_FOUND) {
-        String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
-            .map(ControlEntryConfig::getId)
-            .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +
-                answerConfig.getAnswerId()));
-        return redirect(controllers.routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
-      } else if (outcomeType == OutcomeType.TOO_COMPLEX) {
+      if (outcomeType == OutcomeType.TOO_COMPLEX) {
         String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
             .map(ControlEntryConfig::getId)
             .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +

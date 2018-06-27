@@ -11,7 +11,6 @@ import components.cms.dao.StageDao;
 import models.cms.Journey;
 import models.cms.Stage;
 import models.cms.StageAnswer;
-import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
 import triage.cache.JourneyConfigFactory;
 
@@ -68,16 +67,6 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   @Override
   public StageConfig getStageConfigById(String stageId) {
     return stageConfigCache.getUnchecked(stageId);
-  }
-
-  @Override
-  public List<StageConfig> getStageConfigsByControlEntryIdAndOutcomeType(String controlEntryId,
-                                                                         OutcomeType outcomeType) {
-    return stageAnswerDao.getStageAnswersByControlEntryIdAndOutcomeType(Long.parseLong(controlEntryId), outcomeType).stream()
-        .map(StageAnswer::getStageId)
-        .distinct()
-        .map(stageId -> stageConfigCache.getUnchecked(Long.toString(stageId)))
-        .collect(Collectors.toList());
   }
 
   @Override

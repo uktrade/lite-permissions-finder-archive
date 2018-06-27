@@ -3,7 +3,6 @@ package components.services;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import controllers.routes;
-import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
@@ -90,7 +89,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     String description = renderService.getSummaryDescription(controlEntryConfig, htmlRenderOptions);
     String url = null;
     if (includeChangeLinks) {
-      url = createChangeUrl(sessionId, controlEntryConfig.getId(), stageIds);
+      url = createChangeUrl(sessionId, stageIds);
     }
     BreadcrumbItemView breadcrumbItemView = new BreadcrumbItemView(controlCode, description, url, noteViews);
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
@@ -100,29 +99,19 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     return breadcrumbItemViews;
   }
 
-  private String createChangeUrl(String sessionId, String controlEntryId, List<String> stageIds) {
-    if (stageIds.isEmpty()) {
-      List<StageConfig> stageConfigs = journeyConfigService.getStageConfigsByControlEntryIdAndOutcomeType(
-          controlEntryId, OutcomeType.CONTROL_ENTRY_FOUND);
-      if (stageConfigs.isEmpty()) {
-        return null;
-      } else {
-        return routes.StageController.render(stageConfigs.get(0).getStageId(), sessionId).toString();
-      }
+  private String createChangeUrl(String sessionId, List<String> stageIds) {
+    Optional<StageConfig> stageConfigOptional = stageIds.stream()
+        .map(journeyConfigService::getStageConfigById)
+        .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == QuestionType.STANDARD ||
+            stageConfigIterate.getQuestionType() == QuestionType.ITEM)
+        .findAny()
+        .map(stageConfigIterate -> journeyConfigService.getStageConfigForPreviousStage(stageConfigIterate.getStageId()))
+        .map(this::getNonDecontrolStageConfig);
+    if (stageConfigOptional.isPresent()) {
+      StageConfig stageConfig = stageConfigOptional.get();
+      return routes.StageController.render(stageConfig.getStageId(), sessionId).toString();
     } else {
-      Optional<StageConfig> stageConfigOptional = stageIds.stream()
-          .map(journeyConfigService::getStageConfigById)
-          .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == QuestionType.STANDARD ||
-              stageConfigIterate.getQuestionType() == QuestionType.ITEM)
-          .findAny()
-          .map(stageConfigIterate -> journeyConfigService.getStageConfigForPreviousStage(stageConfigIterate.getStageId()))
-          .map(this::getNonDecontrolStageConfig);
-      if (stageConfigOptional.isPresent()) {
-        StageConfig stageConfig = stageConfigOptional.get();
-        return routes.StageController.render(stageConfig.getStageId(), sessionId).toString();
-      } else {
-        return null;
-      }
+      return null;
     }
   }
 
