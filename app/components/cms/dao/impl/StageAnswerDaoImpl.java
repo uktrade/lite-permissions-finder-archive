@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import components.cms.dao.StageAnswerDao;
 import components.cms.jdbi.StageAnswerJDBIDao;
 import models.cms.StageAnswer;
-import models.cms.enums.StageAnswerOutcomeType;
+import models.cms.enums.OutcomeType;
 import org.skife.jdbi.v2.DBI;
 
 import java.util.List;
@@ -29,23 +29,21 @@ public class StageAnswerDaoImpl implements StageAnswerDao {
   }
 
   @Override
-  public List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(
-      long controlEntryId,
-      StageAnswerOutcomeType stageAnswerOutcomeType) {
-    return stageAnswerJDBIDao.getStageAnswersByControlEntryIdAndOutcomeType(controlEntryId, stageAnswerOutcomeType.toString());
+  public List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(long controlEntryId, OutcomeType outcomeType) {
+    return stageAnswerJDBIDao.getStageAnswersByControlEntryIdAndOutcomeType(controlEntryId, outcomeType.toString());
   }
 
   @Override
   public List<StageAnswer> getStageAnswersForStageId(long stageId) {
-    return stageAnswerJDBIDao.getForParentStageId(stageId);
+    return stageAnswerJDBIDao.getForStageId(stageId);
   }
 
   @Override
   public Long insertStageAnswer(StageAnswer stageAnswer) {
     return stageAnswerJDBIDao.insert(
-        stageAnswer.getParentStageId(),
+        stageAnswer.getStageId(),
         stageAnswer.getGoToStageId(),
-        stageAnswer.getGoToStageAnswerOutcomeType(),
+        stageAnswer.getGoToOutcomeType(),
         stageAnswer.getControlEntryId(),
         stageAnswer.getAnswerText(),
         stageAnswer.getDisplayOrder(),

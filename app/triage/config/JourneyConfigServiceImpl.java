@@ -11,7 +11,8 @@ import components.cms.dao.StageDao;
 import models.cms.Journey;
 import models.cms.Stage;
 import models.cms.StageAnswer;
-import models.cms.enums.StageAnswerOutcomeType;
+import models.cms.enums.OutcomeType;
+import models.cms.enums.QuestionType;
 import triage.cache.JourneyConfigFactory;
 
 import java.util.List;
@@ -71,9 +72,9 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
 
   @Override
   public List<StageConfig> getStageConfigsByControlEntryIdAndOutcomeType(String controlEntryId,
-                                                                         StageAnswerOutcomeType stageAnswerOutcomeType) {
-    return stageAnswerDao.getStageAnswersByControlEntryIdAndOutcomeType(Long.parseLong(controlEntryId), stageAnswerOutcomeType).stream()
-        .map(StageAnswer::getParentStageId)
+                                                                         OutcomeType outcomeType) {
+    return stageAnswerDao.getStageAnswersByControlEntryIdAndOutcomeType(Long.parseLong(controlEntryId), outcomeType).stream()
+        .map(StageAnswer::getStageId)
         .distinct()
         .map(stageId -> stageConfigCache.getUnchecked(Long.toString(stageId)))
         .collect(Collectors.toList());
@@ -83,7 +84,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   public AnswerConfig getStageAnswerForPreviousStage(String stageId) {
     StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
     if (stageAnswer != null) {
-      return stageConfigCache.getUnchecked(stageAnswer.getParentStageId().toString())
+      return stageConfigCache.getUnchecked(stageAnswer.getStageId().toString())
           .getAnswerConfigs()
           .stream()
           .filter(e -> e.getAnswerId().equals(stageAnswer.getId().toString()))
@@ -100,7 +101,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
     if (stage == null) {
       StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
       if (stageAnswer != null) {
-        return getStageConfigById(stageAnswer.getParentStageId().toString());
+        return getStageConfigById(stageAnswer.getStageId().toString());
       } else {
         return null;
       }
@@ -141,8 +142,8 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   public Optional<StageConfig> getPrincipleStageConfigForControlEntry(ControlEntryConfig controlEntryConfig) {
     return getStageIdsForControlEntry(controlEntryConfig).stream()
         .map(this::getStageConfigById)
-        .filter(stageConfig -> stageConfig.getQuestionType() == StageConfig.QuestionType.STANDARD ||
-            stageConfig.getQuestionType() == StageConfig.QuestionType.ITEM)
+        .filter(stageConfig -> stageConfig.getQuestionType() == QuestionType.STANDARD ||
+            stageConfig.getQuestionType() == QuestionType.ITEM)
         .findAny();
   }
 

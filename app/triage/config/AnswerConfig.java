@@ -1,5 +1,6 @@
 package triage.config;
 
+import models.cms.enums.OutcomeType;
 import triage.text.RichText;
 
 import java.util.Optional;

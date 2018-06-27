@@ -1,12 +1,9 @@
 package triage.config;
 
+import models.cms.enums.NoteType;
 import triage.text.RichText;
 
 public class NoteConfig {
-
-  public enum NoteType {
-    NOTE, TECHNICAL_NOTE, NB, SEE_ALSO
-  }
 
   private final String noteId;
   private final String stageId;

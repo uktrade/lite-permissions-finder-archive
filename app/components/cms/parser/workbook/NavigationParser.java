@@ -90,7 +90,7 @@ public class NavigationParser {
       static final int NB = Utils.columnToIndex("AD");
       static final int NOTE = Utils.columnToIndex("AE");
       static final int SEE_ALSO = Utils.columnToIndex("AF");
-      static final int TECH_NOTE = Utils.columnToIndex("AG");
+      static final int TECHNICAL_NOTE = Utils.columnToIndex("AG");
     }
 
     static class Redirect {
@@ -268,7 +268,7 @@ public class NavigationParser {
     String nb = Utils.getCellStringValue(row, ColumnIndices.Notes.NB);
     String note = Utils.getCellStringValue(row, ColumnIndices.Notes.NOTE);
     String seeAlso = Utils.getCellStringValue(row, ColumnIndices.Notes.SEE_ALSO);
-    String techNote = Utils.getCellStringValue(row, ColumnIndices.Notes.TECH_NOTE);
+    String techNote = Utils.getCellStringValue(row, ColumnIndices.Notes.TECHNICAL_NOTE);
     return new Notes(nb, note, seeAlso, techNote);
   }
 

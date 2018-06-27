@@ -1,7 +1,7 @@
 package components.cms.dao;
 
 import models.cms.StageAnswer;
-import models.cms.enums.StageAnswerOutcomeType;
+import models.cms.enums.OutcomeType;
 
 import java.util.List;
 
@@ -11,8 +11,7 @@ public interface StageAnswerDao {
 
   StageAnswer getStageAnswerByGoToStageId(long goToStageId);
 
-  List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(long controlEntryId,
-                                                                  StageAnswerOutcomeType stageAnswerOutcomeType);
+  List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(long controlEntryId, OutcomeType outcomeType);
 
   List<StageAnswer> getStageAnswersForStageId(long stageId);
 

@@ -7,6 +7,7 @@ import components.services.BreadcrumbViewService;
 import components.services.ProgressViewService;
 import components.services.RenderService;
 import exceptions.BusinessRuleException;
+import models.cms.enums.OutcomeType;
 import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
@@ -26,7 +27,6 @@ import play.mvc.With;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
-import triage.config.OutcomeType;
 import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.EnumUtil;
@@ -294,15 +294,7 @@ public class StageController extends Controller {
         if (nextStageId.isPresent()) {
           sessionService.updateLastStageId(sessionId, stageId);
           return redirectToStage(nextStageId.get(), sessionId);
-        } else if (stageConfig.getOutcomeType().map(e -> e == OutcomeType.CONTROL_ENTRY_FOUND).orElse(false)) {
-          String controlEntryId = stageConfig.getRelatedControlEntry()
-              .map(ControlEntryConfig::getId)
-              .orElseThrow(() -> new BusinessRuleException(String.format(
-                  "Decontrol stage %s must have an associated control entry if it has a CONTROL_ENTRY_FOUND outcome type",
-                  stageId)));
-          sessionService.updateLastStageId(sessionId, stageId);
-          return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
-        } else if (stageConfig.getOutcomeType().map(e -> e == OutcomeType.TOO_COMPLEX).orElse(false)) {
+        } else if (stageConfig.getOutcomeType().orElse(null) == OutcomeType.TOO_COMPLEX) {
           String controlEntryId = stageConfig.getRelatedControlEntry()
               .map(ControlEntryConfig::getId)
               .orElseThrow(() -> new BusinessRuleException(String.format(

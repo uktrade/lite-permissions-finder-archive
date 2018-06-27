@@ -3,7 +3,8 @@ package components.services;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import controllers.routes;
-import models.cms.enums.StageAnswerOutcomeType;
+import models.cms.enums.OutcomeType;
+import models.cms.enums.QuestionType;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.NoteView;
@@ -102,7 +103,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   private String createChangeUrl(String sessionId, String controlEntryId, List<String> stageIds) {
     if (stageIds.isEmpty()) {
       List<StageConfig> stageConfigs = journeyConfigService.getStageConfigsByControlEntryIdAndOutcomeType(
-          controlEntryId, StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+          controlEntryId, OutcomeType.CONTROL_ENTRY_FOUND);
       if (stageConfigs.isEmpty()) {
         return null;
       } else {
@@ -111,8 +112,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     } else {
       Optional<StageConfig> stageConfigOptional = stageIds.stream()
           .map(journeyConfigService::getStageConfigById)
-          .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == StageConfig.QuestionType.STANDARD ||
-              stageConfigIterate.getQuestionType() == StageConfig.QuestionType.ITEM)
+          .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == QuestionType.STANDARD ||
+              stageConfigIterate.getQuestionType() == QuestionType.ITEM)
           .findAny()
           .map(stageConfigIterate -> journeyConfigService.getStageConfigForPreviousStage(stageConfigIterate.getStageId()))
           .map(this::getNonDecontrolStageConfig);
@@ -126,7 +127,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   }
 
   private StageConfig getNonDecontrolStageConfig(StageConfig stageConfig) {
-    if (stageConfig.getQuestionType() == StageConfig.QuestionType.DECONTROL) {
+    if (stageConfig.getQuestionType() == QuestionType.DECONTROL) {
       StageConfig parentStageConfig = journeyConfigService.getStageConfigForPreviousStage(stageConfig.getStageId());
       if (parentStageConfig != null) {
         return getNonDecontrolStageConfig(parentStageConfig);
@@ -143,7 +144,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     StageConfig stageConfig = stageIds.stream()
         .map(journeyConfigService::getStageConfigById)
-        .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == StageConfig.QuestionType.DECONTROL)
+        .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == QuestionType.DECONTROL)
         .findAny()
         .orElse(null);
     if (stageConfig != null) {

@@ -1,7 +1,7 @@
 package triage.session;
 
 
-import models.enums.OutcomeType;
+import models.enums.SessionOutcomeType;
 
 public class SessionOutcome {
 
@@ -10,11 +10,11 @@ public class SessionOutcome {
   private final String userId;
   private final String customerId;
   private final String siteId;
-  private final OutcomeType outcomeType;
+  private final SessionOutcomeType outcomeType;
   private final String outcomeHtml;
 
   public SessionOutcome(String id, String sessionId, String userId, String customerId, String siteId,
-                        OutcomeType outcomeType, String outcomeHtml) {
+                        SessionOutcomeType outcomeType, String outcomeHtml) {
     this.id = id;
     this.sessionId = sessionId;
     this.userId = userId;
@@ -44,7 +44,7 @@ public class SessionOutcome {
     return siteId;
   }
 
-  public OutcomeType getOutcomeType() {
+  public SessionOutcomeType getOutcomeType() {
     return outcomeType;
   }
 

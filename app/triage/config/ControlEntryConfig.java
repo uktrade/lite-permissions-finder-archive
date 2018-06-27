@@ -10,22 +10,18 @@ public class ControlEntryConfig {
   private final String controlCode;
   private final RichText fullDescription;
   private final RichText summaryDescription;
-
   private final ControlEntryConfig parentControlEntry;
-
   private final boolean nestedChildren;
-  private final boolean selectable;
 
   public ControlEntryConfig(String id, String controlCode, RichText fullDescription,
-                            RichText summaryDescription,
-                            ControlEntryConfig parentControlEntry, boolean nestedChildren, boolean selectable) {
+                            RichText summaryDescription, ControlEntryConfig parentControlEntry,
+                            boolean nestedChildren) {
     this.id = id;
     this.controlCode = controlCode;
     this.fullDescription = fullDescription;
     this.summaryDescription = summaryDescription;
     this.parentControlEntry = parentControlEntry;
     this.nestedChildren = nestedChildren;
-    this.selectable = selectable;
   }
 
   public String getId() {
@@ -53,7 +49,4 @@ public class ControlEntryConfig {
     return nestedChildren;
   }
 
-  public boolean isSelectable() {
-    return selectable;
-  }
 }

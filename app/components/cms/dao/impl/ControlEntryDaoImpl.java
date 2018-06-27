@@ -50,8 +50,6 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
         controlEntry.getFullDescription(),
         controlEntry.getSummaryDescription(),
         controlEntry.isNested(),
-        controlEntry.isSelectable(),
-        controlEntry.getRegime(),
         controlEntry.getDisplayOrder());
   }
 

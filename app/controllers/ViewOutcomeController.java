@@ -11,7 +11,7 @@ import components.common.auth.SpireSAML2Client;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
 import exceptions.InvalidUserAccountException;
-import models.enums.OutcomeType;
+import models.enums.SessionOutcomeType;
 import models.view.form.ItemDescriptionForm;
 import org.pac4j.play.java.Secure;
 import play.Logger;
@@ -69,7 +69,7 @@ public class ViewOutcomeController {
     } else {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
       if (userPrivilegeService.canViewOutcome(userId, sessionOutcome)) {
-        if (sessionOutcome.getOutcomeType() == OutcomeType.CONTROL_ENTRY_FOUND) {
+        if (sessionOutcome.getOutcomeType() == SessionOutcomeType.CONTROL_ENTRY_FOUND) {
           String resumeCode = sessionService.getSessionById(sessionOutcome.getSessionId()).getResumeCode();
           return ok(listedOutcomeSaved.render(resumeCode, new Html(sessionOutcome.getOutcomeHtml())));
         } else {

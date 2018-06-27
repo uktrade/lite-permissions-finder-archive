@@ -2,6 +2,7 @@ package components.services;
 
 import com.google.inject.Inject;
 import exceptions.BusinessRuleException;
+import models.cms.enums.QuestionType;
 import models.view.AnswerView;
 import models.view.SubAnswerView;
 import org.apache.commons.lang3.StringUtils;
@@ -180,7 +181,7 @@ public class AnswerViewServiceImpl implements AnswerViewService {
 
   private String createMoreInformation(String stageId) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    if (stageConfig.getQuestionType() == StageConfig.QuestionType.STANDARD) {
+    if (stageConfig.getQuestionType() == QuestionType.STANDARD) {
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.append("<ul>");
       List<AnswerConfig> answerConfigs = stageConfig.getAnswerConfigs().stream()

@@ -18,8 +18,6 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
     String fullDescription = r.getString("full_description");
     String summaryDescription = r.getString("summary_description");
     boolean nested = r.getBoolean("nested");
-    boolean selectable = r.getBoolean("selectable");
-    String regime = r.getString("regime");
     Integer displayOrder = rsw.getInt("display_order");
     return new ControlEntry()
         .setId(id)
@@ -28,8 +26,6 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
         .setFullDescription(fullDescription)
         .setSummaryDescription(summaryDescription)
         .setNested(nested)
-        .setSelectable(selectable)
-        .setRegime(regime)
         .setDisplayOrder(displayOrder);
   }
 }

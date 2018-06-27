@@ -1,12 +1,12 @@
 package models.cms;
 
-import models.cms.enums.StageAnswerOutcomeType;
+import models.cms.enums.OutcomeType;
 
 public class StageAnswer {
   private Long id;
-  private Long parentStageId;
+  private Long stageId;
   private Long goToStageId;
-  private StageAnswerOutcomeType goToStageAnswerOutcomeType;
+  private OutcomeType goToOutcomeType;
   private Long controlEntryId;
   private String answerText;
   private Integer displayOrder;
@@ -24,12 +24,12 @@ public class StageAnswer {
     return this;
   }
 
-  public Long getParentStageId() {
-    return parentStageId;
+  public Long getStageId() {
+    return stageId;
   }
 
-  public StageAnswer setParentStageId(Long parentStageId) {
-    this.parentStageId = parentStageId;
+  public StageAnswer setStageId(Long stageId) {
+    this.stageId = stageId;
     return this;
   }
 
@@ -42,12 +42,12 @@ public class StageAnswer {
     return this;
   }
 
-  public StageAnswerOutcomeType getGoToStageAnswerOutcomeType() {
-    return goToStageAnswerOutcomeType;
+  public OutcomeType getGoToOutcomeType() {
+    return goToOutcomeType;
   }
 
-  public StageAnswer setGoToStageAnswerOutcomeType(StageAnswerOutcomeType goToStageAnswerOutcomeType) {
-    this.goToStageAnswerOutcomeType = goToStageAnswerOutcomeType;
+  public StageAnswer setGoToOutcomeType(OutcomeType goToOutcomeType) {
+    this.goToOutcomeType = goToOutcomeType;
     return this;
   }
 
