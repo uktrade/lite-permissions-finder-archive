@@ -267,4 +267,61 @@ public class RichTextParserImplTest {
     assertThat(node0).isInstanceOf(SimpleTextNode.class);
     assertThat(node0.getTextContent()).isEqualTo("Leading text ML2 trailing text");
   }
+
+  @Test
+  public void testParseModalContentLink_parseForControlEntry_single() {
+    RichText richText = richTextParser.parseForControlEntry("[example](https://example.org)", CONTROL_ENTRY_ID);
+
+    assertThat(richText.getRichTextNodes()).hasSize(1);
+
+    RichTextNode node0 = richText.getRichTextNodes().get(0);
+    assertThat(node0).isInstanceOf(ModalContentLinkNode.class);
+    assertThat(node0.getTextContent()).isEqualTo("example");
+
+    ModalContentLinkNode modalNode0 = (ModalContentLinkNode) node0;
+    assertThat(modalNode0.getContentId()).isEqualTo("https://example.org");
+    assertThat(modalNode0.getLinkText()).isEqualTo("example");
+    assertThat(modalNode0.getTextContent()).isEqualTo("example");
+  }
+
+  @Test
+  public void testParseModalContentLink_parseForControlEntry_multiple() {
+    RichText richText = richTextParser.parseForControlEntry("[example0](https://0.example.org)[example1](https://1.example.org)", CONTROL_ENTRY_ID);
+
+    assertThat(richText.getRichTextNodes()).hasSize(2);
+
+    RichTextNode node0 = richText.getRichTextNodes().get(0);
+    assertThat(node0).isInstanceOf(ModalContentLinkNode.class);
+    assertThat(node0.getTextContent()).isEqualTo("example0");
+
+    ModalContentLinkNode modalNode0 = (ModalContentLinkNode) node0;
+    assertThat(modalNode0.getContentId()).isEqualTo("https://0.example.org");
+    assertThat(modalNode0.getLinkText()).isEqualTo("example0");
+    assertThat(modalNode0.getTextContent()).isEqualTo("example0");
+
+    RichTextNode node1 = richText.getRichTextNodes().get(1);
+    assertThat(node1).isInstanceOf(ModalContentLinkNode.class);
+    assertThat(node1.getTextContent()).isEqualTo("example1");
+
+    ModalContentLinkNode modalNode1 = (ModalContentLinkNode) node1;
+    assertThat(modalNode1.getContentId()).isEqualTo("https://1.example.org");
+    assertThat(modalNode1.getLinkText()).isEqualTo("example1");
+    assertThat(modalNode1.getTextContent()).isEqualTo("example1");
+  }
+
+  @Test
+  public void testParseModalContentLink_parseForStage_single() {
+    RichText richText = richTextParser.parseForStage("[example](https://example.org)", STAGE_ID);
+
+    assertThat(richText.getRichTextNodes()).hasSize(1);
+
+    RichTextNode node0 = richText.getRichTextNodes().get(0);
+    assertThat(node0).isInstanceOf(ModalContentLinkNode.class);
+    assertThat(node0.getTextContent()).isEqualTo("example");
+
+    ModalContentLinkNode modalNode0 = (ModalContentLinkNode) node0;
+    assertThat(modalNode0.getContentId()).isEqualTo("https://example.org");
+    assertThat(modalNode0.getLinkText()).isEqualTo("example");
+    assertThat(modalNode0.getTextContent()).isEqualTo("example");
+  }
 }

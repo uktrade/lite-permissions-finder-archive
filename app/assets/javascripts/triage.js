@@ -14,10 +14,13 @@ LITEPermissionsFinder.Triage = {
     var $target = $(event.target);
     var dataControlEntryId = $target.attr("data-control-entry-id");
     var dataDefinitionId = $target.attr("data-definition-id");
+    var dataModalContentId = $target.attr("data-modal-content-id");
     if (typeof dataControlEntryId !== typeof undefined && dataControlEntryId !== false) {
       LITEPermissionsFinder.Triage._ajaxDisplayControlEntryModal(dataControlEntryId);
     } else if (typeof dataDefinitionId !== typeof undefined && dataDefinitionId !== false) {
       LITEPermissionsFinder.Triage._ajaxDisplayDefinitionModal(dataDefinitionId, $target.attr("data-definition-type"));
+    } else if (typeof dataModalContentId !== typeof undefined && dataModalContentId !== false) {
+      LITEPermissionsFinder.Triage._ajaxDisplayModalContentModal(dataModalContentId);
     } else {
       LITEPermissionsFinder.Triage._ajaxDisplayFailureModal();
     }
@@ -37,6 +40,15 @@ LITEPermissionsFinder.Triage = {
         var $data = $(data);
         LITEPermissionsFinder.Triage._bindModals($data);
         LITECommon.Modal.displayModal($data, "definition");
+      })
+      .fail(LITEPermissionsFinder.Triage._ajaxDisplayFailureModal);
+  },
+  _ajaxDisplayModalContentModal: function(modalContentId) {
+    $.ajax("/modal-content/content/" + modalContentId)
+      .done(function(data) {
+        var $data = $(data);
+        LITEPermissionsFinder.Triage._bindModals($data);
+        LITECommon.Modal.displayModal($data, "content");
       })
       .fail(LITEPermissionsFinder.Triage._ajaxDisplayFailureModal);
   },
