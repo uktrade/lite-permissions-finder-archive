@@ -10,14 +10,13 @@ import exceptions.BusinessRuleException;
 import models.enums.Action;
 import models.enums.PageType;
 import models.view.AnswerView;
-import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
-import models.view.NoteView;
 import models.view.ProgressView;
 import models.view.SubAnswerView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
@@ -34,7 +33,6 @@ import utils.EnumUtil;
 import utils.PageTypeUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -189,7 +187,7 @@ public class StageController extends Controller {
       if ("true".equals(answer)) {
         return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
       } else if ("false".equals(answer)) {
-        return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId));
+        return resultForNoMatch(sessionId, stageConfig);
       } else {
         Logger.error("Unknown answer {}", answer);
         return renderItem(answerForm, stageId, sessionId, resumeCode);
@@ -209,13 +207,13 @@ public class StageController extends Controller {
 
   private Result renderSelectOne(Form<AnswerForm> answerForm, String stageId, String sessionId, String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    String title = stageConfig.getQuestionTitle().orElse("Select one");
-    String explanatoryText = renderService.getExplanatoryText(stageConfig);
+    String title = stageConfig.getQuestionTitle().orElse("Check if your item is listed");
+    String explanatoryText = StringUtils.defaultIfBlank(renderService.getExplanatoryText(stageConfig),
+        "Select the control list entry which best describes your item.");
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
-    boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
-    return ok(selectOne.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView, showNoteMessage));
+    return ok(selectOne.render(answerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answerViews, breadcrumbView));
   }
 
   private Result renderItem(Form<AnswerForm> answerForm, String stageId, String sessionId, String resumeCode) {
@@ -238,30 +236,38 @@ public class StageController extends Controller {
         .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageId));
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
-    boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
 
     List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
-    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
+    return ok(decontrol.render(multiAnswerForm, stageId, sessionId, resumeCode, controlCode, title, explanatoryText, answers, breadcrumbView));
   }
 
   private Result renderSelectMany(Form<MultiAnswerForm> multiAnswerForm, String stageId, String sessionId,
                                   String resumeCode) {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
-    String title = stageConfig.getQuestionTitle().orElse("Select at least one");
-    String explanatoryText = renderService.getExplanatoryText(stageConfig);
+    String title = stageConfig.getQuestionTitle().orElse("Check if your item is listed");
+    String explanatoryText = StringUtils.defaultIfBlank(renderService.getExplanatoryText(stageConfig),
+        "Select all the control list entries which describe your item.");
+
+    //Only render the related control entry description as a default when no explanatory text is provided by the CMS
+    String relatedEntryDescription = null;
+    Optional<ControlEntryConfig> relatedControlEntry = stageConfig.getRelatedControlEntry();
+    if (stageConfig.getExplanatoryNote().isPresent() && relatedControlEntry.isPresent()) {
+      relatedEntryDescription = renderService.getFullDescription(relatedControlEntry.get());
+    }
+
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
-    boolean showNoteMessage = isShowNoteMessage(breadcrumbView);
 
     List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
-    return ok(selectMany.render(multiAnswerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText, answers, breadcrumbView, showNoteMessage));
+    return ok(selectMany.render(multiAnswerForm, stageId, sessionId, resumeCode, progressView, title, explanatoryText,
+        relatedEntryDescription, answers, breadcrumbView));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
@@ -335,7 +341,7 @@ public class StageController extends Controller {
         }
       } else if (action == Action.NONE) {
         sessionService.updateLastStageId(sessionId, stageId);
-        return resultForSelectOneOrManyActionNone(sessionId, stageConfig);
+        return resultForNoMatch(sessionId, stageConfig);
       } else {
         Logger.error("Unknown action " + actionParam);
         return redirectToStage(stageId, sessionId);
@@ -369,14 +375,14 @@ public class StageController extends Controller {
       }
     } else if (action == Action.NONE) {
       sessionService.updateLastStageId(sessionId, stageId);
-      return resultForSelectOneOrManyActionNone(sessionId, stageConfig);
+      return resultForNoMatch(sessionId, stageConfig);
     } else {
       Logger.error("Unknown action " + actionParam);
       return redirectToStage(stageId, sessionId);
     }
   }
 
-  private Result resultForSelectOneOrManyActionNone(String sessionId, StageConfig stageConfig) {
+  private Result resultForNoMatch(String sessionId, StageConfig stageConfig) {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     if (controlEntryConfig != null) {
       List<ControlEntryConfig> controlEntryConfigs = journeyConfigService.getRelatedControlEntries(controlEntryConfig);
@@ -428,11 +434,6 @@ public class StageController extends Controller {
 
   private Result redirectToStage(String stageId, String sessionId) {
     return redirect(routes.StageController.render(stageId, sessionId));
-  }
-
-  private boolean isShowNoteMessage(BreadcrumbView breadcrumbView) {
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbView.getBreadcrumbItemViews();
-    return !breadcrumbItemViews.isEmpty() && !breadcrumbItemViews.get(breadcrumbItemViews.size() - 1).getNoteViews().isEmpty();
   }
 
 }

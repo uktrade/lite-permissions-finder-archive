@@ -5,7 +5,7 @@
 @import views.html.frontendComponents.formCheckboxWithDetailPanel
 
 @this(triagePage: triagePage)
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, controlCode: String, title: String, explanatoryText: String, answerViews: Map[AnswerView, Boolean], breadcrumbView: BreadcrumbView, showNoteMessage: Boolean)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, controlCode: String, title: String, explanatoryText: String, answerViews: Map[AnswerView, Boolean], breadcrumbView: BreadcrumbView)
 
 @triagePage(form, routes.StageController.handleSubmit(stageId, sessionId).toString, sessionId, resumeCode, title, breadcrumbView, "Checking against decontrols"){
   @controlCode: Checking against decontrols
@@ -13,7 +13,7 @@
   <p class="form-hint">
     Decontrols describe items not controlled under the UK Strategic Export Control Lists. Select all that apply.
   </p>
-  @noteMessage(showNoteMessage)
+  @noteMessage(!breadcrumbView.getNoteViews.isEmpty)
   <p>
     @if(StringUtils.isNotBlank(explanatoryText)) {
       @Html(explanatoryText)
