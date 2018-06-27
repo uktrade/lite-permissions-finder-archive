@@ -29,6 +29,8 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   private static final String CONTROL_ENTRY_TEXT = unescape(
       "<a href='/view-control-entry/%s' data-control-entry-id='%s' title='View %s'%s>%s</a>");
   private static final String TARGET_ATTR_BLANK = unescape(" target='_blank'");
+  private static final String MODAL_CONTENT_LINK_TEXT = unescape(
+          "<a href='/view-modal-content/%s' data-modal-content-id='%s' title='View %s'>%s</a>");
   private static final Set<HtmlType> LEVELS = EnumSet.of(HtmlType.LIST_LEVEL_1, HtmlType.LIST_LEVEL_2, HtmlType.LIST_LEVEL_3);
   private static final Pattern PATTERN_LEVEL_1 = Pattern.compile("\\*(?!\\*)(.*?)\\n");
   private static final Pattern PATTERN_LEVEL_2 = Pattern.compile("\\*\\*(.*?)\\n");
@@ -121,6 +123,10 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
         stringBuilder.append(html);
       } else if (richTextNode instanceof SimpleTextNode) {
         stringBuilder.append(richTextNode.getTextContent());
+      } else if (richTextNode instanceof ModalContentLinkNode) {
+        ModalContentLinkNode mclNode = (ModalContentLinkNode) richTextNode;
+        String html = String.format(MODAL_CONTENT_LINK_TEXT, mclNode.getContentId(), mclNode.getContentId(), mclNode.getLinkText(), mclNode.getLinkText());
+        stringBuilder.append(html);
       }
     }
     return stringBuilder.toString();
