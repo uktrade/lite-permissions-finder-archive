@@ -29,9 +29,10 @@ public class EntryController extends Controller {
   /**
    * Licence finder flow entry point
    */
-  public CompletionStage<Result> entry(String controlCode) {
+  public CompletionStage<Result> entry(String controlCode, String resumeCode) {
     String sessionId = UUID.randomUUID().toString();
     licenceFinderDao.saveControlCode(sessionId, controlCode);
+    licenceFinderDao.saveResumeCode(sessionId, resumeCode);
     licenceFinderDao.saveUserId(sessionId, authManager.getAuthInfoFromContext().getId());
     return completedFuture(redirect(routes.TradeController.renderTradeForm(sessionId)));
   }

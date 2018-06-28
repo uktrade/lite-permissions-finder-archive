@@ -4,13 +4,16 @@ import com.google.inject.Inject;
 import components.common.auth.SpireAuthManager;
 import components.common.cache.CountryProvider;
 import components.persistence.LicenceFinderDao;
+import components.services.notification.PermissionsFinderNotificationClient;
 import components.services.ogels.applicable.ApplicableOgelServiceClient;
 import controllers.licencefinder.QuestionsController;
 import exceptions.ServiceException;
 import models.OgelActivityType;
 import models.persistence.RegisterLicence;
+import models.view.licencefinder.Customer;
 import models.view.licencefinder.OgelView;
 import models.view.licencefinder.ResultsView;
+import models.view.licencefinder.Site;
 import org.apache.commons.lang.StringUtils;
 import play.Logger;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
@@ -42,13 +45,15 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   private final String permissionsFinderUrl;
   private final ApplicableOgelServiceClient applicableClient;
   private final CountryProvider countryProvider;
+  private final PermissionsFinderNotificationClient notificationClient;
 
   @Inject
   public LicenceFinderServiceImpl(LicenceFinderDao licenceFinderDao, CustomerService customerService,
                                   PermissionsService permissionsService, SpireAuthManager authManager,
                                   @com.google.inject.name.Named("permissionsFinderUrl") String permissionsFinderUrl,
                                   ApplicableOgelServiceClient applicableClient,
-                                  @Named("countryProviderExport") CountryProvider countryProvider) {
+                                  @Named("countryProviderExport") CountryProvider countryProvider,
+                                  PermissionsFinderNotificationClient notificationClient) {
     this.licenceFinderDao = licenceFinderDao;
     this.permissionsService = permissionsService;
     this.customerService = customerService;
@@ -56,6 +61,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     this.permissionsFinderUrl = permissionsFinderUrl;
     this.applicableClient = applicableClient;
     this.countryProvider = countryProvider;
+    this.notificationClient = notificationClient;
   }
 
   public void updateUsersOgelIdRefMap(String sessionId, String userId) {
@@ -140,6 +146,28 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       registerLicence.setRegistrationReference(regRef);
       licenceFinderDao.saveRegisterLicence(sessionId, registerLicence);
       Logger.info("RegisterLicence updated with registrationReference: " + regRef);
+
+      // Send confirmation email to user
+
+      String registrationRef = registerLicence.getRegistrationReference();
+      String ogelUrl = permissionsFinderUrl + controllers.licencefinder.routes.ViewOgelController.viewOgel(registrationRef);
+
+
+      String userEmailAddress = "";
+      String userName = "";
+
+      notificationClient.sendRegisteredOgelToUserEmail(userEmailAddress, userName, ogelUrl);
+
+      // Send confirmation email to Ecju
+
+      String emailAddress = "";
+      String applicantName = "";
+      String applicationReference = "";
+      String companyName = "";
+      String siteAddress = "";
+
+      notificationClient.sendRegisteredOgelEmailToEcju(emailAddress, applicantName, applicationReference, companyName, siteAddress, ogelUrl);
+
     }
   }
 
@@ -275,6 +303,25 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   }
 
   /**
+   * We only return a Customer if there is only one Customer associated with the user
+   */
+  private Optional<Customer> getCustomer(String userId) {
+    Optional<List<CustomerView>> optCustomers = customerService.getCustomersByUserId(userId);
+    if (optCustomers.isPresent()) {
+      List<CustomerView> customerViews = optCustomers.get();
+
+      // Check for single customer only TODO change when requirement changes
+      if (customerViews.size() == 1) {
+        CustomerView customerView = customerViews.get(0);
+        return Optional.of(new Customer(customerView.getCustomerId(), customerView.getCompanyName()));
+      } else {
+        Logger.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customerViews.size());
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
    * We only return a SiteId if there is only one Site associated with the user/customer
    */
   private Optional<String> getSiteId(String userId, String customerId) {
@@ -284,6 +331,24 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       // Check for single site only TODO change when requirement changes
       if (sites.size() == 1) {
         return Optional.of(sites.get(0).getSiteId());
+      } else {
+        Logger.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * We only return a Site if there is only one Site associated with the user/customer
+   */
+  private Optional<Site> getSite(String userId, String customerId) {
+    Optional<List<SiteView>> optSites = customerService.getSitesByCustomerIdUserId(customerId, userId);
+    if (optSites.isPresent()) {
+      List<SiteView> sites = optSites.get();
+      // Check for single site only TODO change when requirement changes
+      if (sites.size() == 1) {
+        SiteView siteView = sites.get(0);
+        return Optional.of(new Site(siteView.getSiteId(), siteView.getAddress().getPlainText()));
       } else {
         Logger.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
       }

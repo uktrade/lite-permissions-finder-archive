@@ -36,7 +36,6 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d MMMM uuuu");
 
   private final String permissionsFinderUrl;
-  private final String ecjuEmailAddress;
   private final UserServiceClientJwt userService;
   private final CustomerService customerService;
   private final BreadcrumbViewService breadcrumbViewService;
@@ -50,7 +49,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   @Inject
   public SessionOutcomeServiceImpl(@Named("permissionsFinderUrl") String permissionsFinderUrl,
-                                   @Named("ecjuEmailAddress") String ecjuEmailAddress, UserServiceClientJwt userService,
+                                   UserServiceClientJwt userService,
                                    CustomerService customerService, BreadcrumbViewService breadcrumbViewService,
                                    AnswerViewService answerViewService, JourneyConfigService journeyConfigService,
                                    SessionOutcomeDao sessionOutcomeDao,
@@ -58,7 +57,6 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
                                    RenderService renderService, views.html.nlr.nlrLetter nlrLetter,
                                    views.html.triage.listedOutcomeJourney listedOutcomeJourney) {
     this.permissionsFinderUrl = permissionsFinderUrl;
-    this.ecjuEmailAddress = ecjuEmailAddress;
     this.userService = userService;
     this.customerService = customerService;
     this.breadcrumbViewService = breadcrumbViewService;
@@ -127,9 +125,8 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     String url = permissionsFinderUrl + routes.ViewOutcomeController.renderOutcome(id).toString();
     permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(),
         userDetailsView.getFullName(), url);
-    permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(ecjuEmailAddress,
-        userDetailsView.getContactEmailAddress(), userDetailsView.getFullName(), url, resumeCode,
-        customerView.getCompanyName(), address.getPlainText());
+    permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(userDetailsView.getContactEmailAddress(),
+        userDetailsView.getFullName(), url, resumeCode, customerView.getCompanyName(), address.getPlainText());
     return id;
   }
 
