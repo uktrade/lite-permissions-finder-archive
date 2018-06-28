@@ -1,10 +1,10 @@
 package controllers;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Controller.flash;
 
 import com.google.inject.Inject;
 import components.cms.dao.SessionOutcomeDao;
+import components.services.FlashService;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.mvc.Action;
@@ -19,13 +19,16 @@ import java.util.concurrent.CompletionStage;
 
 public class SessionGuardAction extends Action.Simple {
 
+  private final FlashService flashService;
   private final SessionService sessionService;
   private final JourneyConfigService journeyConfigService;
   private final SessionOutcomeDao sessionOutcomeDao;
 
   @Inject
-  public SessionGuardAction(SessionService sessionService, JourneyConfigService journeyConfigService,
+  public SessionGuardAction(FlashService flashService, SessionService sessionService,
+                            JourneyConfigService journeyConfigService,
                             SessionOutcomeDao sessionOutcomeDao) {
+    this.flashService = flashService;
     this.sessionService = sessionService;
     this.journeyConfigService = journeyConfigService;
     this.sessionOutcomeDao = sessionOutcomeDao;
@@ -60,8 +63,7 @@ public class SessionGuardAction extends Action.Simple {
   }
 
   private CompletionStage<Result> unknownSession(String sessionId) {
-    flash("error", "Sorry, your session is no longer valid.");
-    flash("detail", "Please start again.");
+    flashService.flashInvalidSession();
     Logger.error("Unknown or blank sessionId " + sessionId);
     return completedFuture(redirect(routes.StartApplicationController.createApplication()));
   }

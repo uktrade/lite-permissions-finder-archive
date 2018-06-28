@@ -3,6 +3,7 @@ package controllers;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.google.inject.Inject;
+import components.services.FlashService;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -19,11 +20,14 @@ import java.util.function.Function;
 
 public class StaticContentController extends Controller {
 
+  private final FlashService flashService;
   private final SessionService sessionService;
   private final views.html.staticContent staticContent;
 
   @Inject
-  public StaticContentController(SessionService sessionService, views.html.staticContent staticContent) {
+  public StaticContentController(FlashService flashService, SessionService sessionService,
+                                 views.html.staticContent staticContent) {
+    this.flashService = flashService;
     this.sessionService = sessionService;
     this.staticContent = staticContent;
   }
@@ -113,8 +117,7 @@ public class StaticContentController extends Controller {
   }
 
   private Result unknownSession(String sessionId) {
-    flash("error", "Sorry, your session is no longer valid.");
-    flash("detail", "Please start again.");
+    flashService.flashInvalidSession();
     Logger.error("Unknown or blank sessionId " + sessionId);
     return redirect(routes.StartApplicationController.createApplication());
   }
