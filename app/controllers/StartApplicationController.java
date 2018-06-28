@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import components.services.notification.PermissionsFinderNotificationClient;
 import models.view.form.StartApplicationForm;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -16,6 +16,8 @@ import triage.session.SessionService;
 import triage.session.TriageSession;
 
 public class StartApplicationController {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StartApplicationController.class);
 
   private final FormFactory formFactory;
   private final SessionService sessionService;
@@ -45,7 +47,7 @@ public class StartApplicationController {
   public Result renderStartApplication(String sessionId) {
     TriageSession triageSession = sessionService.getSessionById(sessionId);
     if (triageSession == null) {
-      Logger.error("Unknown sessionId " + sessionId);
+      LOGGER.error("Unknown sessionId " + sessionId);
       return redirect(routes.StartApplicationController.createApplication());
     } else {
       return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getId(),
@@ -56,7 +58,7 @@ public class StartApplicationController {
   public Result handleSubmit(String sessionId) {
     TriageSession triageSession = sessionService.getSessionById(sessionId);
     if (triageSession == null) {
-      Logger.error("Unknown sessionId " + sessionId);
+      LOGGER.error("Unknown sessionId " + sessionId);
       return redirect(routes.StartApplicationController.createApplication());
     } else {
       Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();

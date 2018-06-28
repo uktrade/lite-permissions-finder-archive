@@ -18,7 +18,7 @@ import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 
 @With(SessionGuardAction.class)
 public class StageController extends Controller {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StageController.class);
 
   private static final String ACTION = "action";
 
@@ -112,7 +114,7 @@ public class StageController extends Controller {
           return renderItem(formFactory.form(AnswerForm.class), stageId, sessionId, resumeCode);
         case UNKNOWN:
         default:
-          Logger.error("Unknown stageId " + stageId);
+          LOGGER.error("Unknown stageId " + stageId);
           return redirectToIndex(sessionId);
       }
     }
@@ -122,7 +124,7 @@ public class StageController extends Controller {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (stageConfig == null) {
-      Logger.error("Unknown stageId " + stageId);
+      LOGGER.error("Unknown stageId " + stageId);
       return redirectToIndex(sessionId);
     } else {
       PageType pageType = PageTypeUtil.getPageType(stageConfig);
@@ -137,7 +139,7 @@ public class StageController extends Controller {
           return handleItemSubmit(stageId, sessionId, stageConfig, resumeCode);
         case UNKNOWN:
         default:
-          Logger.error("Unknown stageId " + stageId);
+          LOGGER.error("Unknown stageId " + stageId);
           return redirectToIndex(sessionId);
       }
     }
@@ -163,14 +165,14 @@ public class StageController extends Controller {
         if (answerViews.stream().anyMatch(answerView -> answerView.getValue().equals(answer))) {
           return redirect(routes.StageController.render(answerForm.get().answer, sessionId));
         } else {
-          Logger.warn("Answer {} not allowed in handleRelatedEntriesSubmit for controlEntryId {}", answer, controlEntryId);
+          LOGGER.warn("Answer {} not allowed in handleRelatedEntriesSubmit for controlEntryId {}", answer, controlEntryId);
           return redirectToIndex(sessionId);
         }
       }
     } else if (action == Action.NONE) {
       return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId));
     } else {
-      Logger.error("Unknown action " + actionParam);
+      LOGGER.error("Unknown action " + actionParam);
       return redirectToIndex(sessionId);
     }
   }
@@ -189,7 +191,7 @@ public class StageController extends Controller {
       } else if ("false".equals(answer)) {
         return resultForNoMatch(sessionId, stageConfig);
       } else {
-        Logger.error("Unknown answer {}", answer);
+        LOGGER.error("Unknown answer {}", answer);
         return renderItem(answerForm, stageId, sessionId, resumeCode);
       }
     }
@@ -275,7 +277,7 @@ public class StageController extends Controller {
     String actionParam = multiAnswerFormForm.rawData().get(ACTION);
     Action action = EnumUtil.parse(actionParam, Action.class);
     if (multiAnswerFormForm.hasErrors()) {
-      Logger.error("MultiAnswerForm has unexpected errors");
+      LOGGER.error("MultiAnswerForm has unexpected errors");
       return redirectToStage(stageId, sessionId);
     } else {
       if (action == Action.CONTINUE) {
@@ -301,11 +303,11 @@ public class StageController extends Controller {
                   "Decontrol stage %s must have an associated control entry if it has a TOO_COMPLEX outcome type", stageId)));
           return redirect(routes.OutcomeController.outcomeNoResult(controlEntryId, sessionId));
         } else {
-          Logger.error("Decontrol stageConfig doesn't have nextStageId or applicable outcomeType");
+          LOGGER.error("Decontrol stageConfig doesn't have nextStageId or applicable outcomeType");
           return redirectToStage(stageId, sessionId);
         }
       } else {
-        Logger.error("Unknown action " + actionParam);
+        LOGGER.error("Unknown action " + actionParam);
         return redirectToStage(stageId, sessionId);
       }
     }
@@ -316,7 +318,7 @@ public class StageController extends Controller {
     String actionParam = multiAnswerFormForm.rawData().get(ACTION);
     Action action = EnumUtil.parse(actionParam, Action.class);
     if (multiAnswerFormForm.hasErrors()) {
-      Logger.error("MultiAnswerForm has unexpected errors");
+      LOGGER.error("MultiAnswerForm has unexpected errors");
       return redirectToStage(stageId, sessionId);
     } else {
       if (action == Action.CONTINUE) {
@@ -335,7 +337,7 @@ public class StageController extends Controller {
         sessionService.updateLastStageId(sessionId, stageId);
         return resultForNoMatch(sessionId, stageConfig);
       } else {
-        Logger.error("Unknown action " + actionParam);
+        LOGGER.error("Unknown action " + actionParam);
         return redirectToStage(stageId, sessionId);
       }
     }
@@ -362,14 +364,14 @@ public class StageController extends Controller {
         sessionService.updateLastStageId(sessionId, stageId);
         return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
       } else {
-        Logger.error("Unknown answer " + answer);
+        LOGGER.error("Unknown answer " + answer);
         return renderSelectOne(answerForm, stageId, sessionId, resumeCode);
       }
     } else if (action == Action.NONE) {
       sessionService.updateLastStageId(sessionId, stageId);
       return resultForNoMatch(sessionId, stageConfig);
     } else {
-      Logger.error("Unknown action " + actionParam);
+      LOGGER.error("Unknown action " + actionParam);
       return redirectToStage(stageId, sessionId);
     }
   }
@@ -399,7 +401,7 @@ public class StageController extends Controller {
                 answerConfig.getAnswerId()));
         return redirect(routes.OutcomeController.outcomeNoResult(controlEntryId, sessionId));
       } else {
-        Logger.error("Unexpected outcome type %s on answer %s", outcomeType, answerConfig.getAnswerId());
+        LOGGER.error("Unexpected outcome type %s on answer %s", outcomeType, answerConfig.getAnswerId());
         return redirectToStage(stageId, sessionId);
       }
     } else {
@@ -407,7 +409,7 @@ public class StageController extends Controller {
       if (nextStageId.isPresent()) {
         return redirectToStage(nextStageId.get(), sessionId);
       } else {
-        Logger.error("AnswerConfig doesn't have next stageId.");
+        LOGGER.error("AnswerConfig doesn't have next stageId.");
         return redirectToStage(stageId, sessionId);
       }
     }
