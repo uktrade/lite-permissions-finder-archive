@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.NoteConfig;
-import triage.config.OutcomeType;
 import triage.config.StageConfig;
 import triage.text.RichText;
 import triage.text.RichTextParser;
@@ -74,41 +73,6 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
   }
 
   private StageConfig createStageConfig(Stage stage) {
-    StageConfig.QuestionType questionType = null;
-    switch (stage.getQuestionType()) {
-      case STANDARD:
-        questionType = StageConfig.QuestionType.STANDARD;
-        break;
-      case DECONTROL:
-        questionType = StageConfig.QuestionType.DECONTROL;
-        break;
-      case ITEM:
-        questionType = StageConfig.QuestionType.ITEM;
-        break;
-    }
-
-    StageConfig.AnswerType answerType = null;
-    switch (stage.getAnswerType()) {
-      case SELECT_ONE:
-        answerType = StageConfig.AnswerType.SELECT_ONE;
-        break;
-      case SELECT_MANY:
-        answerType = StageConfig.AnswerType.SELECT_MANY;
-        break;
-    }
-
-    OutcomeType stageOutcomeType = null;
-    if (stage.getStageOutcomeType() != null) {
-      switch (stage.getStageOutcomeType()) {
-        case CONTROL_ENTRY_FOUND:
-          stageOutcomeType = OutcomeType.CONTROL_ENTRY_FOUND;
-          break;
-        case TOO_COMPLEX:
-          stageOutcomeType = OutcomeType.TOO_COMPLEX;
-          break;
-      }
-    }
-
     RichText explanatoryNote = richTextParser.parseForStage(StringUtils.defaultString(stage.getExplanatoryNotes()),
         Long.toString(stage.getId()));
     String nextStageId = Optional.ofNullable(stage.getNextStageId()).map(Object::toString).orElse(null);
@@ -123,27 +87,13 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         .sorted(Comparator.comparing(AnswerConfig::getDisplayOrder))
         .collect(Collectors.toList());
 
-    return new StageConfig(Long.toString(stage.getId()), stage.getTitle(), explanatoryNote, questionType, answerType,
-        nextStageId, stageOutcomeType, controlEntryConfig, answerConfigs);
+    return new StageConfig(Long.toString(stage.getId()), stage.getTitle(), explanatoryNote, stage.getQuestionType(),
+        stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), controlEntryConfig, answerConfigs);
   }
 
   private AnswerConfig createAnswerConfig(StageAnswer stageAnswer) {
 
     String nextStageId = Optional.ofNullable(stageAnswer.getGoToStageId()).map(Object::toString).orElse(null);
-    OutcomeType outcomeType = null;
-    if (stageAnswer.getGoToStageAnswerOutcomeType() != null) {
-      switch (stageAnswer.getGoToStageAnswerOutcomeType()) {
-        case CONTROL_ENTRY_FOUND:
-          outcomeType = OutcomeType.CONTROL_ENTRY_FOUND;
-          break;
-        case DECONTROL:
-          outcomeType = OutcomeType.DECONTROL;
-          break;
-        case TOO_COMPLEX:
-          outcomeType = OutcomeType.TOO_COMPLEX;
-          break;
-      }
-    }
 
     RichText labelText = Optional.ofNullable(stageAnswer.getAnswerText())
         .map(e -> richTextParser.parseForStage(e, nextStageId)).orElse(null);
@@ -160,7 +110,7 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
     Integer answerPrecedence = Optional.ofNullable(stageAnswer.getAnswerPrecedence()).orElse(
         stageAnswer.getDisplayOrder());
 
-    return new AnswerConfig(stageAnswer.getId().toString(), nextStageId, outcomeType, labelText, nestedContent,
+    return new AnswerConfig(stageAnswer.getId().toString(), nextStageId, stageAnswer.getGoToOutcomeType(), labelText, nestedContent,
         moreInfoContent, controlEntryConfig, stageAnswer.getDisplayOrder(), answerPrecedence,
         stageAnswer.isDividerAbove());
   }
@@ -182,30 +132,13 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         .anyMatch(ControlEntry::isNested);
 
     return new ControlEntryConfig(Long.toString(controlEntry.getId()), controlEntry.getControlCode(), fullDescription,
-        summaryDescription, parentControlEntryConfig, hasNestedChildren, controlEntry.isSelectable());
+        summaryDescription, parentControlEntryConfig, hasNestedChildren);
   }
 
   private NoteConfig createNoteConfig(Note note) {
     String stageId = note.getStageId().toString();
     RichText noteText = richTextParser.parseForStage(note.getNoteText(), stageId);
-
-    NoteConfig.NoteType noteType = null;
-    switch (note.getNoteType()) {
-      case NB:
-        noteType = NoteConfig.NoteType.NB;
-        break;
-      case NOTE:
-        noteType = NoteConfig.NoteType.NOTE;
-        break;
-      case SEE_ALSO:
-        noteType = NoteConfig.NoteType.SEE_ALSO;
-        break;
-      case TECH_NOTE:
-        noteType = NoteConfig.NoteType.TECHNICAL_NOTE;
-        break;
-    }
-
-    return new NoteConfig(note.getId().toString(), stageId, noteText, noteType);
+    return new NoteConfig(note.getId().toString(), stageId, noteText, note.getNoteType());
   }
 
 }

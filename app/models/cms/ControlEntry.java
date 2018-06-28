@@ -7,8 +7,6 @@ public class ControlEntry {
   private String fullDescription;
   private String summaryDescription;
   private boolean nested;
-  private boolean selectable;
-  private String regime;
   private Integer displayOrder;
 
   public Long getId() {
@@ -62,24 +60,6 @@ public class ControlEntry {
 
   public ControlEntry setNested(boolean nested) {
     this.nested = nested;
-    return this;
-  }
-
-  public boolean isSelectable() {
-    return selectable;
-  }
-
-  public ControlEntry setSelectable(boolean selectable) {
-    this.selectable = selectable;
-    return this;
-  }
-
-  public String getRegime() {
-    return regime;
-  }
-
-  public ControlEntry setRegime(String regime) {
-    this.regime = regime;
     return this;
   }
 

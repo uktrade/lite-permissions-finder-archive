@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import components.common.client.userservice.UserServiceClientBasicAuth;
 import components.common.client.userservice.UserServiceClientJwt;
-import models.enums.OutcomeType;
+import models.enums.SessionOutcomeType;
 import org.junit.Test;
 import triage.session.SessionOutcome;
 import uk.gov.bis.lite.user.api.view.CustomerView;
@@ -32,7 +32,7 @@ public class UserPrivilegeServiceImplTest {
   private final UserServiceClientJwt userServiceClient = mock(UserServiceClientJwt.class);
   private final UserServiceClientBasicAuth userServiceClientBasicAuth = mock(UserServiceClientBasicAuth.class);
   private final UserPrivilegeServiceImpl userPrivilegeServiceImpl = new UserPrivilegeServiceImpl(userServiceClient, userServiceClientBasicAuth);
-  private final SessionOutcome sessionOutcome = new SessionOutcome("id", "sessionId", USER_ID, CUSTOMER_ID, SITE_ID, OutcomeType.NLR_DECONTROL, "");
+  private final SessionOutcome sessionOutcome = new SessionOutcome("id", "sessionId", USER_ID, CUSTOMER_ID, SITE_ID, SessionOutcomeType.NLR_DECONTROL, "");
 
   @Test
   public void canViewOutcomeIfRegulator() {

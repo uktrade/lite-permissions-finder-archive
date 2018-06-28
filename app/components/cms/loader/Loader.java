@@ -31,9 +31,8 @@ import models.cms.Stage;
 import models.cms.StageAnswer;
 import models.cms.enums.AnswerType;
 import models.cms.enums.NoteType;
+import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
-import models.cms.enums.StageAnswerOutcomeType;
-import models.cms.enums.StageOutcomeType;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import triage.config.JourneyConfigServiceImpl;
@@ -143,11 +142,6 @@ public class Loader {
       } else {
         controlEntry.setNested(false);
       }
-      if (navigationLevel.getButtons() != null) {
-        controlEntry.setSelectable(true);
-      } else {
-        controlEntry.setSelectable(false);
-      }
       controlEntry.setDisplayOrder(displayOrder);
       controlEntryId = controlEntryDao.insertControlEntry(controlEntry);
 
@@ -189,7 +183,7 @@ public class Loader {
                                                     NavigationLevel navigationLevel) {
     if (!isRoot) {
       StageAnswer stageAnswer = new StageAnswer();
-      stageAnswer.setParentStageId(navigationLevel.getLoadingMetadata().getStageId());
+      stageAnswer.setStageId(navigationLevel.getLoadingMetadata().getStageId());
 
       Long attachNotesToStageId = null;
 
@@ -204,7 +198,7 @@ public class Loader {
           if (subNavigationLevel.getButtons() == null) {
             //Child entries without buttons are not a stage, we are actually on a leaf now
             if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
+              stageAnswer.setGoToOutcomeType(OutcomeType.TOO_COMPLEX);
             } else {
               stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
             }
@@ -216,7 +210,7 @@ public class Loader {
         } else {
           //Child entries without buttons are not a stage, we are actually on a leaf now
           if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
+            stageAnswer.setGoToOutcomeType(OutcomeType.TOO_COMPLEX);
           } else {
             stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
           }
@@ -299,7 +293,7 @@ public class Loader {
       if (nextStageId == null) {
         Logger.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
         if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-          decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
+          decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
         } else {
           decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId(), navigationLevel.getNotes()));
         }
@@ -308,7 +302,7 @@ public class Loader {
       }
     } else {
       if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-        decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
+        decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
       } else {
         decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId(), navigationLevel.getNotes()));
       }
@@ -342,8 +336,8 @@ public class Loader {
         Logger.error("Unable to derive answer text for decontrol stage answer, stage id {}, cell id {}", decontrolStageId, navigationLevel.getCellAddress());
       }
 
-      decontrolStageAnswer.setParentStageId(decontrolStageId);
-      decontrolStageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.DECONTROL);
+      decontrolStageAnswer.setStageId(decontrolStageId);
+      decontrolStageAnswer.setGoToOutcomeType(OutcomeType.DECONTROL);
       decontrolStageAnswer.setDisplayOrder(i + 1);
       decontrolStageAnswer.setDividerAbove(false);
 
@@ -397,7 +391,7 @@ public class Loader {
       } else if (notes.getSeeAlso() != null) {
         splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, stageId);
       } else if (notes.getTechNote() != null) {
-        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, stageId);
+        splitAndInsertNote(notes.getTechNote(), NoteType.TECHNICAL_NOTE, stageId);
       }
       notes.setCreated(true);
     }

@@ -33,8 +33,8 @@ public interface ControlEntryJDBIDao {
   List<ControlEntry> getRelatedControlCodeEntries(@Bind("controlEntryId") long controlEntryId);
 
   @SqlQuery(
-      "INSERT INTO control_entry (parent_control_entry_id, control_code, full_description, summary_description, nested, selectable, regime, display_order) "
-          + "VALUES (:parentControlEntryId, :controlCode, :fullDescription, :summaryDescription, :nested, :selectable, :regime, :displayOrder) "
+      "INSERT INTO control_entry (parent_control_entry_id, control_code, full_description, summary_description, nested, display_order) "
+          + "VALUES (:parentControlEntryId, :controlCode, :fullDescription, :summaryDescription, :nested, :displayOrder) "
           + "RETURNING id")
   Long insert(
       @Bind("parentControlEntryId") Long parentControlEntryId,
@@ -42,8 +42,6 @@ public interface ControlEntryJDBIDao {
       @Bind("fullDescription") String fullDescription,
       @Bind("summaryDescription") String summaryDescription,
       @Bind("nested") Boolean nested,
-      @Bind("selectable") Boolean selectable,
-      @Bind("regime") String regime,
       @Bind("displayOrder") Integer displayOrder
   );
 
