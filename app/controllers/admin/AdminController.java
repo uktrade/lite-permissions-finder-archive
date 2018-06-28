@@ -21,4 +21,8 @@ public class AdminController extends Controller {
     return ok(buildinfo.BuildInfo$.MODULE$.toJson()).as("application/json");
   }
 
+  @With(BasicAuthAction.class)
+  public Result ping() {
+    return ok("pong");
+  }
 }
