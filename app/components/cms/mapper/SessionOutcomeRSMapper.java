@@ -1,6 +1,6 @@
 package components.cms.mapper;
 
-import models.enums.OutcomeType;
+import models.enums.SessionOutcomeType;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import triage.session.SessionOutcome;
@@ -18,7 +18,7 @@ public class SessionOutcomeRSMapper implements ResultSetMapper<SessionOutcome> {
     String customerId = r.getString("customer_id");
     String siteId = r.getString("site_id");
     String outcomeTypeStr = r.getString("outcome_type");
-    OutcomeType outcomeType = OutcomeType.valueOf(outcomeTypeStr);
+    SessionOutcomeType outcomeType = SessionOutcomeType.valueOf(outcomeTypeStr);
     String outcomeHtml = r.getString("outcome_html");
     return new SessionOutcome(id, sessionId, userId, customerId, siteId, outcomeType, outcomeHtml);
   }

@@ -6,7 +6,7 @@ var LITEOgelRegistration = {};
 LITEOgelRegistration.RegistrationInterval = {
 
   setupPage: function () {
-    var route = jsRoutes.controllers.LicenceFinderPollController.pollStatus($("input[name=ctx_transaction]").val());
+    var route = jsRoutes.controllers.LicenceFinderPollController.pollStatus($("input[name=sessionId]").val());
     LITEOgelRegistration.RegistrationInterval._pollRegistrationStatus(route);
     setTimeout(function(){
       $('#pleaseWaitHeading').addClass('hidden');
@@ -44,3 +44,7 @@ LITEOgelRegistration.RegistrationInterval = {
     }, 3000);
   }
 };
+
+$(function() {
+  LITEOgelRegistration.RegistrationInterval.setupPage();
+});

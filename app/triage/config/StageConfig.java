@@ -1,19 +1,14 @@
 package triage.config;
 
+import models.cms.enums.AnswerType;
+import models.cms.enums.OutcomeType;
+import models.cms.enums.QuestionType;
 import triage.text.RichText;
 
 import java.util.List;
 import java.util.Optional;
 
 public class StageConfig {
-
-  public enum QuestionType {
-    STANDARD, DECONTROL
-  }
-
-  public enum AnswerType {
-    SELECT_ONE, SELECT_MANY
-  }
 
   private final String stageId;
   private final String questionTitle;

@@ -11,10 +11,10 @@ import components.common.auth.SpireSAML2Client;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
 import exceptions.InvalidUserAccountException;
-import models.enums.OutcomeType;
+import models.enums.SessionOutcomeType;
 import models.view.form.ItemDescriptionForm;
 import org.pac4j.play.java.Secure;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -23,9 +23,12 @@ import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.session.SessionOutcome;
 import triage.session.SessionService;
+import utils.HtmlUtil;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class ViewOutcomeController {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ViewOutcomeController.class);
 
   private final SessionService sessionService;
   private final SessionOutcomeService sessionOutcomeService;
@@ -63,19 +66,19 @@ public class ViewOutcomeController {
   public Result renderOutcome(String outcomeId) {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeById(outcomeId);
     if (sessionOutcome == null) {
-      Logger.warn("Unknown outcomeId {}", outcomeId);
+      LOGGER.warn("Unknown outcomeId {}", outcomeId);
       return redirect(routes.StaticContentController.renderUnknownOutcome());
     } else {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
       if (userPrivilegeService.canViewOutcome(userId, sessionOutcome)) {
-        if (sessionOutcome.getOutcomeType() == OutcomeType.CONTROL_ENTRY_FOUND) {
+        if (sessionOutcome.getOutcomeType() == SessionOutcomeType.CONTROL_ENTRY_FOUND) {
           String resumeCode = sessionService.getSessionById(sessionOutcome.getSessionId()).getResumeCode();
           return ok(listedOutcomeSaved.render(resumeCode, new Html(sessionOutcome.getOutcomeHtml())));
         } else {
           return ok(nlrOutcome.render(new Html(sessionOutcome.getOutcomeHtml())));
         }
       } else {
-        Logger.error("User with userId {} doesn't have privilege to view outcome with outcomeId {} ",
+        LOGGER.error("User with userId {} doesn't have privilege to view outcome with outcomeId {} ",
             userId, sessionOutcome.getId());
         return redirect(routes.StaticContentController.renderUnknownOutcome());
       }
@@ -88,7 +91,7 @@ public class ViewOutcomeController {
       String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
       return ok(nlrRegisterSuccess.render(sessionOutcome.getId(), resumeCode));
     } else {
-      Logger.warn("Unknown sessionId or no outcome for sessionId {}", sessionId);
+      LOGGER.warn("Unknown sessionId or no outcome for sessionId {}", sessionId);
       return redirect(routes.StaticContentController.renderUnknownOutcome());
     }
   }
@@ -104,7 +107,7 @@ public class ViewOutcomeController {
         return redirect(routes.StaticContentController.renderInvalidUserAccount());
       }
     }
-    return redirect(controllers.licencefinder.routes.TradeController.entry(controlEntryConfig.getControlCode()));
+    return redirect(controllers.licencefinder.routes.EntryController.entry(controlEntryConfig.getControlCode()));
   }
 
   public Result registerNotFoundNlr(String sessionId, String controlEntryId) {
@@ -135,7 +138,8 @@ public class ViewOutcomeController {
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
           try {
-            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, description);
+            Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
+            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, htmlDescription);
           } catch (InvalidUserAccountException exception) {
             return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }
@@ -175,7 +179,8 @@ public class ViewOutcomeController {
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
           try {
-            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, description);
+            Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
+            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, htmlDescription);
           } catch (InvalidUserAccountException exception) {
             return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }

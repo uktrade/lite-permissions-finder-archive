@@ -6,6 +6,7 @@
   @include ul-has-bullets;
 }
 
+.heading-xlarge .heading-secondary,
 .heading-large .heading-secondary {
   @include core-19;
   padding-top: 0;
@@ -86,6 +87,26 @@ a[data-control-entry-id] {
     margin-top: -7px;
   }
 }
+
+.call-to-action {
+  margin: 2em 0;
+  background-color: $panel-colour;
+  padding: 2em;
+}
+
+.break-word {
+  word-wrap: break-word;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.print-only {
+  display: none;
+}
+
+@include styled-blockquote;
 
 .media-desktop,
 .media-tablet,

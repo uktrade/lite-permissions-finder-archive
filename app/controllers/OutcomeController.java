@@ -13,7 +13,7 @@ import models.view.ProgressView;
 import models.view.SubAnswerView;
 import models.view.form.RequestNlrForm;
 import models.view.form.RequestOgelForm;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class OutcomeController extends Controller {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(OutcomeController.class);
 
   private final JourneyConfigService journeyConfigService;
   private final SessionService sessionService;
@@ -96,7 +98,7 @@ public class OutcomeController extends Controller {
     String changeUrl = journeyConfigService.getPrincipleStageConfigForControlEntry(controlEntryConfig)
         .map(stageConfig -> routes.StageController.render(stageConfig.getStageId(), sessionId).toString())
         .orElseGet(() -> {
-          Logger.warn("Unable to create changeUrl for controlEntryId " + controlEntryConfig.getId());
+          LOGGER.warn("Unable to create changeUrl for controlEntryId " + controlEntryConfig.getId());
           return null;
         });
 
@@ -128,7 +130,7 @@ public class OutcomeController extends Controller {
     } else {
       Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
       if (answers.isEmpty()) {
-        Logger.error("Answers cannot be empty on outcome decontrol page.");
+        LOGGER.error("Answers cannot be empty on outcome decontrol page.");
         return redirectToIndex(sessionId);
       } else {
         Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class);
@@ -144,7 +146,7 @@ public class OutcomeController extends Controller {
     } else {
       Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
       if (answers.isEmpty()) {
-        Logger.error("Answers cannot be empty on outcome decontrol page.");
+        LOGGER.error("Answers cannot be empty on outcome decontrol page.");
         return redirectToIndex(sessionId);
       } else {
         Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();

@@ -3,11 +3,11 @@
 @this(standardPage: standardPage)
 @()
 
-@standardPage("Logged Out", Some(heading("Logged Out"))) {
+@standardPage("You're signed out", Some(heading("You're signed out"))) {
 
 } {
 
-  <p>You have been successfully logged out.</p>
-  <a href="@routes.EntryPointController.index()">Index</a>
+  <p>You have been successfully signed out.</p>
+  <a href="@routes.EntryPointController.index()">Return to the start of this service</a>
 
 }

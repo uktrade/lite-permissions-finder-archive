@@ -3,12 +3,12 @@
 @import views.html.common.form._
 
 @this(standardPage: standardPage)
-@(form: Form[_])
+@(form: Form[_], sessionId: String)
 @standardPage("Refining your licence results", Some(heading("Refining your licence results"))){
   @errorSummary(form, fieldOrder = scala.List("forRepair", "forExhibition", "beforeOrLess"))
 } {
 
-  <form action="@controllers.licencefinder.routes.QuestionsController.handleQuestionsSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.QuestionsController.handleQuestionsSubmit(sessionId)" method="POST">
 
     @views.html.helper.CSRF.formField
 
@@ -24,7 +24,4 @@
 
   </form>
 
-  <script type="text/javascript">
-    $(document).ready(function(){LITEPermissionsFinder.OgelQuestions.setupPage()});
-  </script>
 }

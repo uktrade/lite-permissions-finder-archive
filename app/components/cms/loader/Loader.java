@@ -6,6 +6,7 @@ import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.LocalDefinitionDao;
 import components.cms.dao.NoteDao;
+import components.cms.dao.RelatedControlEntryDao;
 import components.cms.dao.SessionStageDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
@@ -25,15 +26,15 @@ import models.cms.GlobalDefinition;
 import models.cms.Journey;
 import models.cms.LocalDefinition;
 import models.cms.Note;
+import models.cms.RelatedControlEntry;
 import models.cms.Stage;
 import models.cms.StageAnswer;
 import models.cms.enums.AnswerType;
 import models.cms.enums.NoteType;
+import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
-import models.cms.enums.StageAnswerOutcomeType;
-import models.cms.enums.StageOutcomeType;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import triage.config.JourneyConfigServiceImpl;
 
 import java.util.Arrays;
@@ -41,6 +42,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Loader {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 
   private static final String REGEX_NEW_LINE = "\\r?\\n";
 
@@ -52,6 +55,7 @@ public class Loader {
   private final StageAnswerDao stageAnswerDao;
   private final StageDao stageDao;
   private final SessionStageDao sessionStageDao;
+  private final RelatedControlEntryDao relatedControlEntryDao;
 
   @Inject
   public Loader(
@@ -62,7 +66,8 @@ public class Loader {
       NoteDao noteDao,
       StageAnswerDao stageAnswerDao,
       StageDao stageDao,
-      SessionStageDao sessionStageDao) {
+      SessionStageDao sessionStageDao,
+      RelatedControlEntryDao relatedControlEntryDao) {
     this.controlEntryDao = controlEntryDao;
     this.globalDefinitionDao = globalDefinitionDao;
     this.journeyDao = journeyDao;
@@ -71,6 +76,7 @@ public class Loader {
     this.stageAnswerDao = stageAnswerDao;
     this.stageDao = stageDao;
     this.sessionStageDao = sessionStageDao;
+    this.relatedControlEntryDao = relatedControlEntryDao;
   }
 
   public void load(ParserResult parserResult) {
@@ -85,7 +91,7 @@ public class Loader {
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
     createGlobalDefinitions(parserResult.getDefinitions(), journeyId);
-    createNotes(rootNavigationLevel);
+    createRelatedControlEntries(true, rootNavigationLevel);
 
     // Resolve initial stage id from stage associated with first sub-level of navigation levels
     Long initialStageId = rootNavigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
@@ -109,7 +115,7 @@ public class Loader {
     LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
     loadingMetadata.setId(id);
 
-    Logger.debug("Generated id {} for cell {}", id, navigationLevel.getCellAddress());
+    LOGGER.debug("Generated id {} for cell {}", id, navigationLevel.getCellAddress());
 
     List<NavigationLevel> subNavigationLevels = navigationLevel.getSubNavigationLevels();
 
@@ -138,15 +144,10 @@ public class Loader {
       } else {
         controlEntry.setNested(false);
       }
-      if (navigationLevel.getButtons() != null) {
-        controlEntry.setSelectable(true);
-      } else {
-        controlEntry.setSelectable(false);
-      }
       controlEntry.setDisplayOrder(displayOrder);
       controlEntryId = controlEntryDao.insertControlEntry(controlEntry);
 
-      Logger.debug("Inserted control entry id {}", controlEntryId);
+      LOGGER.debug("Inserted control entry id {}", controlEntryId);
     }
 
     navigationLevel.getLoadingMetadata().setControlEntryId(controlEntryId);
@@ -172,7 +173,7 @@ public class Loader {
 
     Long stageId = stageDao.insertStage(stage);
 
-    Logger.debug("Inserted stage id {}", stageId);
+    LOGGER.debug("Inserted stage id {}", stageId);
 
     for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
       subNavigationLevel.getLoadingMetadata().setStageId(stageId);
@@ -183,33 +184,37 @@ public class Loader {
   private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId, int displayOrder,
                                                     NavigationLevel navigationLevel) {
     if (!isRoot) {
-      LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
       StageAnswer stageAnswer = new StageAnswer();
-      stageAnswer.setParentStageId(loadingMetadata.getStageId());
+      stageAnswer.setStageId(navigationLevel.getLoadingMetadata().getStageId());
+
+      Long attachNotesToStageId = null;
 
       Decontrols decontrols = navigationLevel.getDecontrols();
       if (decontrols != null && decontrols.getContent() != null) {
-        long decontrolStageId = createDecontrolStage(journeyId, navigationLevel);
-        stageAnswer.setGoToStageId(decontrolStageId);
+        Stage decontrolStage = createDecontrolStage(journeyId, navigationLevel);
+        stageAnswer.setGoToStageId(decontrolStage.getId());
+        attachNotesToStageId = decontrolStage.getNextStageId();
       } else {
         if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
           NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
           if (subNavigationLevel.getButtons() == null) {
             //Child entries without buttons are not a stage, we are actually on a leaf now
             if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
+              stageAnswer.setGoToOutcomeType(OutcomeType.TOO_COMPLEX);
             } else {
-              stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+              stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
             }
           } else {
-            stageAnswer.setGoToStageId(subNavigationLevel.getLoadingMetadata().getStageId());
+            Long goToStageId = subNavigationLevel.getLoadingMetadata().getStageId();
+            stageAnswer.setGoToStageId(goToStageId);
+            attachNotesToStageId = goToStageId;
           }
         } else {
           //Child entries without buttons are not a stage, we are actually on a leaf now
           if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.TOO_COMPLEX);
+            stageAnswer.setGoToOutcomeType(OutcomeType.TOO_COMPLEX);
           } else {
-            stageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.CONTROL_ENTRY_FOUND);
+            stageAnswer.setGoToStageId(createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(), navigationLevel.getNotes()));
           }
         }
       }
@@ -217,7 +222,7 @@ public class Loader {
       ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
       if (controlListEntries != null) {
         if (controlListEntries.getRating() != null) {
-          stageAnswer.setControlEntryId(loadingMetadata.getControlEntryId());
+          stageAnswer.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
         } else {
           stageAnswer.setAnswerText(navigationLevel.getContent());
         }
@@ -237,9 +242,14 @@ public class Loader {
 
       Long stageAnswerId = stageAnswerDao.insertStageAnswer(stageAnswer);
 
-      Logger.debug("Inserted stage answer id {}", stageAnswerId);
+      LOGGER.debug("Inserted stage answer id {}", stageAnswerId);
 
-      loadingMetadata.setStageAnswerId(stageAnswerId);
+      if (attachNotesToStageId != null) {
+        createNotes(navigationLevel.getNotes(), attachNotesToStageId);
+      } else {
+        LOGGER.debug("No stageId to associate note with, cell id {}", navigationLevel.getCellAddress());
+      }
+      navigationLevel.getLoadingMetadata().setStageAnswerId(stageAnswerId);
     }
 
     for (int i = 0; i < navigationLevel.getSubNavigationLevels().size(); i++) {
@@ -251,7 +261,23 @@ public class Loader {
     }
   }
 
-  private long createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
+  private long createItemStage(long journeyId, long controlEntryId, Notes notes) {
+    Stage stage = new Stage();
+    stage.setJourneyId(journeyId);
+    stage.setQuestionType(QuestionType.ITEM);
+    stage.setAnswerType(AnswerType.SELECT_ONE);
+    stage.setControlEntryId(controlEntryId);
+
+    Long stageId = stageDao.insertStage(stage);
+
+    LOGGER.debug("Inserted item stage id {}", stageId);
+
+    createNotes(notes, stageId);
+
+    return stageId;
+  }
+
+  private Stage createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
     Decontrols decontrols = navigationLevel.getDecontrols();
     LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
 
@@ -267,26 +293,27 @@ public class Loader {
       Long nextStageId = navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
       //This can happen if the current row has "nested content" child rows which are not actual stages
       if (nextStageId == null) {
-        Logger.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
+        LOGGER.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
         if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-          decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
+          decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
         } else {
-          decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+          decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId(), navigationLevel.getNotes()));
         }
       } else {
         decontrolStage.setNextStageId(nextStageId);
       }
     } else {
       if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-        decontrolStage.setStageOutcomeType(StageOutcomeType.TOO_COMPLEX);
+        decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
       } else {
-        decontrolStage.setStageOutcomeType(StageOutcomeType.CONTROL_ENTRY_FOUND);
+        decontrolStage.setNextStageId(createItemStage(journeyId, loadingMetadata.getControlEntryId(), navigationLevel.getNotes()));
       }
     }
 
     Long decontrolStageId = stageDao.insertStage(decontrolStage);
+    decontrolStage.setId(decontrolStageId);
 
-    Logger.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
+    LOGGER.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
 
     List<String> decontrolEntries =
         Arrays.stream(decontrols.getContent().split("\\r?\\n(?!\\*)"))
@@ -308,20 +335,20 @@ public class Loader {
           decontrolStageAnswer.setNestedContent(nestedContent);
         }
       } else {
-        Logger.error("Unable to derive answer text for decontrol stage answer, stage id {}, cell id {}", decontrolStageId, navigationLevel.getCellAddress());
+        LOGGER.error("Unable to derive answer text for decontrol stage answer, stage id {}, cell id {}", decontrolStageId, navigationLevel.getCellAddress());
       }
 
-      decontrolStageAnswer.setParentStageId(decontrolStageId);
-      decontrolStageAnswer.setGoToStageAnswerOutcomeType(StageAnswerOutcomeType.DECONTROL);
+      decontrolStageAnswer.setStageId(decontrolStageId);
+      decontrolStageAnswer.setGoToOutcomeType(OutcomeType.DECONTROL);
       decontrolStageAnswer.setDisplayOrder(i + 1);
       decontrolStageAnswer.setDividerAbove(false);
 
       Long decontrolStageAnswerId = stageAnswerDao.insertStageAnswer(decontrolStageAnswer);
 
-      Logger.debug("Inserted stage answer id {} DECONTROL", decontrolStageAnswerId);
+      LOGGER.debug("Inserted stage answer id {} DECONTROL", decontrolStageAnswerId);
     }
 
-    return decontrolStageId;
+    return decontrolStage;
   }
 
   private void createLocalDefinitions(NavigationLevel navigationLevel) {
@@ -338,7 +365,7 @@ public class Loader {
         int secondIdx = localDefinitionStr.indexOf('\'', firstIdx + 1);
         String term = localDefinitionStr.substring(firstIdx + 1, secondIdx);
         if (StringUtils.isBlank(term)) {
-          Logger.error("Error deriving term from local definition {}, navigation cell address {}", localDefinitionStr, navigationLevel.getCellAddress());
+          LOGGER.error("Error deriving term from local definition {}, navigation cell address {}", localDefinitionStr, navigationLevel.getCellAddress());
         } else {
           LocalDefinition localDefinition = new LocalDefinition();
           localDefinition.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
@@ -347,7 +374,7 @@ public class Loader {
 
           Long localDefinitionId = localDefinitionDao.insertLocalDefinition(localDefinition);
 
-          Logger.debug("Inserted local definition id {}", localDefinitionId);
+          LOGGER.debug("Inserted local definition id {}", localDefinitionId);
         }
       }
     }
@@ -357,41 +384,22 @@ public class Loader {
     }
   }
 
-  private void createNotes(NavigationLevel navigationLevel) {
-    Notes notes = navigationLevel.getNotes();
-    if (notes != null) {
+  private void createNotes(Notes notes, long stageId) {
+    if (notes != null && !notes.isCreated()) {
       if (notes.getNb() != null) {
-        splitAndInsertNote(notes.getNb(), NoteType.NB, navigationLevel);
+        splitAndInsertNote(notes.getNb(), NoteType.NB, stageId);
       } else if (notes.getNote() != null) {
-        splitAndInsertNote(notes.getNote(), NoteType.NOTE, navigationLevel);
+        splitAndInsertNote(notes.getNote(), NoteType.NOTE, stageId);
       } else if (notes.getSeeAlso() != null) {
-        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, navigationLevel);
+        splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, stageId);
       } else if (notes.getTechNote() != null) {
-        splitAndInsertNote(notes.getTechNote(), NoteType.TECH_NOTE, navigationLevel);
+        splitAndInsertNote(notes.getTechNote(), NoteType.TECHNICAL_NOTE, stageId);
       }
-    }
-
-    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
-      createNotes(subNavigationLevel);
+      notes.setCreated(true);
     }
   }
 
-  private void splitAndInsertNote(String noteText, NoteType noteType, NavigationLevel navigationLevel) {
-    Long stageAnswerId = navigationLevel.getLoadingMetadata().getStageAnswerId();
-
-    if (stageAnswerId == null) {
-      Logger.error("No stage answer id to associate note with, cell id {}", navigationLevel.getCellAddress());
-      return;
-    }
-
-    StageAnswer stageAnswer = stageAnswerDao.getStageAnswer(stageAnswerId);
-    Long stageId = stageAnswer.getGoToStageId();
-
-    if (stageId == null) {
-      Logger.error("No stage id to associate note with, stage answer id {}, cell id {}", stageAnswerId, navigationLevel.getCellAddress());
-      return;
-    }
-
+  private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
     List<String> noteTexts = Arrays.stream(noteText.split(REGEX_NEW_LINE))
         .map(String::trim)
         .filter(StringUtils::isNotBlank)
@@ -405,7 +413,7 @@ public class Loader {
 
       Long noteId = noteDao.insertNote(note);
 
-      Logger.debug("Inserted note with id {}", noteId);
+      LOGGER.debug("Inserted note with id {}", noteId);
     }
   }
 
@@ -415,7 +423,7 @@ public class Loader {
         String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"");
         String definitionText = definition.getNewContent();
         if (StringUtils.isAnyEmpty(term, definitionText)) {
-          Logger.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,
+          LOGGER.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,
               definitionText);
         } else {
           GlobalDefinition globalDefinition = new GlobalDefinition()
@@ -425,13 +433,47 @@ public class Loader {
 
           Long globalDefinitionId = globalDefinitionDao.insertGlobalDefinition(globalDefinition);
 
-          Logger.debug("Inserted global definition with id {}", globalDefinitionId);
+          LOGGER.debug("Inserted global definition with id {}", globalDefinitionId);
         }
       }
     }
   }
 
+  private void createRelatedControlEntries(boolean isRoot, NavigationLevel navigationLevel) {
+    if (!isRoot) {
+      String relatedCodes = navigationLevel.getLoops().getRelatedCodes();
+      LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
+      if (loadingMetadata.getControlEntryId() != null && StringUtils.isNotBlank(relatedCodes)) {
+        List<String> relatedCodeList = Arrays.stream(relatedCodes.split(REGEX_NEW_LINE))
+            .map(String::trim)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
+
+        for (String relatedCode : relatedCodeList) {
+          ControlEntry controlEntry = controlEntryDao.getControlEntryByControlCode(relatedCode);
+
+          if (controlEntry == null) {
+            LOGGER.error("No control entry record found for related code {}", relatedCode);
+          } else {
+            RelatedControlEntry relatedControlEntry = new RelatedControlEntry()
+                .setControlEntryId(loadingMetadata.getControlEntryId())
+                .setRelatedControlEntryId(controlEntry.getId());
+            relatedControlEntryDao.insertRelatedControlEntry(relatedControlEntry);
+
+            LOGGER.debug("Inserted related control entry: control entry id {}, related control entry id {}",
+                relatedControlEntry.getControlEntryId(), relatedControlEntry.getRelatedControlEntryId());
+          }
+        }
+      }
+    }
+
+    for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
+      createRelatedControlEntries(false, subNavigationLevel);
+    }
+  }
+
   private void clearDown() {
+    relatedControlEntryDao.deleteAllRelatedControlEntries();
     sessionStageDao.deleteAllSessionStages();
     localDefinitionDao.deleteAllLocalDefinitions();
     globalDefinitionDao.deleteAllGlobalDefinitions();

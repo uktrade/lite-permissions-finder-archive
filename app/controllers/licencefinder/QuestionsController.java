@@ -5,59 +5,63 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import com.google.inject.Inject;
 import components.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
-import components.common.state.ContextParamManager;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
+import controllers.LicenceFinderAwaitGuardAction;
+import controllers.LicenceFinderUserGuardAction;
 import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.With;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
+@With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
 public class QuestionsController extends Controller {
 
   private final FormFactory formFactory;
   private final LicenceFinderDao licenceFinderDao;
   private final LicenceFinderService licenceFinderService;
-  private final ContextParamManager contextParam;
   private final views.html.licencefinder.questions questions;
 
   @Inject
-  public QuestionsController(FormFactory formFactory, LicenceFinderDao licenceFinderDao, LicenceFinderService licenceFinderService,
-                             ContextParamManager contextParam, views.html.licencefinder.questions questions) {
+  public QuestionsController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
+                             LicenceFinderService licenceFinderService,
+                             views.html.licencefinder.questions questions) {
     this.formFactory = formFactory;
     this.licenceFinderDao = licenceFinderDao;
     this.licenceFinderService = licenceFinderService;
-    this.contextParam = contextParam;
     this.questions = questions;
   }
 
   /**
    * renderQuestionsForm
    */
-  public CompletionStage<Result> renderQuestionsForm() {
-    Optional<QuestionsForm> optForm = licenceFinderDao.getQuestionsForm();
-    return completedFuture(ok(questions.render(formFactory.form(QuestionsForm.class).fill(optForm.orElseGet(QuestionsForm::new)))));
+  public CompletionStage<Result> renderQuestionsForm(String sessionId) {
+    Optional<QuestionsForm> optForm = licenceFinderDao.getQuestionsForm(sessionId);
+    return completedFuture(ok(questions.render(formFactory.form(QuestionsForm.class).fill(optForm.orElseGet(QuestionsForm::new)), sessionId)));
   }
 
   /**
    * handleQuestionsSubmit
    */
-  public CompletionStage<Result> handleQuestionsSubmit() {
+  public CompletionStage<Result> handleQuestionsSubmit(String sessionId) {
     Form<QuestionsForm> form = formFactory.form(QuestionsForm.class).bindFromRequest();
     if (form.hasErrors()) {
-      return completedFuture(ok(questions.render(form)));
+      return completedFuture(ok(questions.render(form, sessionId)));
     } else {
-      licenceFinderDao.saveQuestionsForm(form.get());
+      licenceFinderDao.saveQuestionsForm(sessionId, form.get());
 
       // Take this opportunity in flow to save users CustomerId and SiteId
-      licenceFinderService.persistCustomerAndSiteData();
-      return contextParam.addParamsAndRedirect(routes.ResultsController.renderResultsForm());
+      licenceFinderService.persistCustomerAndSiteData(sessionId);
+
+      return CompletableFuture.completedFuture(redirect(routes.ResultsController.renderResultsForm(sessionId)));
     }
   }
 

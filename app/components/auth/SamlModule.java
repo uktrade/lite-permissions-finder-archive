@@ -31,7 +31,7 @@ public class SamlModule extends AbstractModule {
   @Singleton
   @Provides
   public PlaySessionStore providePlaySessionStore(@NamedCache("pac4j-session-store") SyncCacheApi syncCacheApi) {
-    PlayCacheSessionStore playCacheSessionStore = new PlayCacheSessionStore(syncCacheApi);
+    PlayCacheSessionStore playCacheSessionStore = new FixedPlayCacheSessionStore(syncCacheApi);
     playCacheSessionStore.setTimeout((int) TimeUnit.MINUTES.toSeconds(config.getInt("pac4j.sessionTimeoutMinutes")));
     return playCacheSessionStore;
   }

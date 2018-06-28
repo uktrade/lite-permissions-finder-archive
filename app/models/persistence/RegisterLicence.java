@@ -2,7 +2,7 @@ package models.persistence;
 
 public class RegisterLicence {
 
-  private String transactionId;
+  private String sessionId;
   private String requestId;
   private String registrationReference;
   private String userId;
@@ -11,12 +11,12 @@ public class RegisterLicence {
   private String ogelId;
   private String callbackUrl;
 
-  public String getTransactionId() {
-    return transactionId;
+  public String getSessionId() {
+    return sessionId;
   }
 
-  public void setTransactionId(String transactionId) {
-    this.transactionId = transactionId;
+  public void setSessionId(String sessionId) {
+    this.sessionId = sessionId;
   }
 
   public String getUserId() {

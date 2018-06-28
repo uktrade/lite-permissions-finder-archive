@@ -11,7 +11,7 @@ import components.cms.dao.StageDao;
 import models.cms.Journey;
 import models.cms.Stage;
 import models.cms.StageAnswer;
-import models.cms.enums.StageAnswerOutcomeType;
+import models.cms.enums.QuestionType;
 import triage.cache.JourneyConfigFactory;
 
 import java.util.List;
@@ -29,6 +29,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
 
   private final LoadingCache<String, StageConfig> stageConfigCache;
   private final LoadingCache<String, ControlEntryConfig> controlEntryCache;
+  private final LoadingCache<String, List<ControlEntryConfig>> relatedControlEntryCache;
   private final LoadingCache<String, List<NoteConfig>> noteCache;
 
   @Inject
@@ -40,6 +41,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
     this.controlEntryDao = controlEntryDao;
     this.stageConfigCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createStageConfigForId));
     this.controlEntryCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createControlEntryConfigForId));
+    this.relatedControlEntryCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createRelatedControlEntryConfigsForId));
     this.noteCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createNoteConfigsForStageId));
   }
 
@@ -68,20 +70,10 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<StageConfig> getStageConfigsByControlEntryIdAndOutcomeType(String controlEntryId,
-                                                                         StageAnswerOutcomeType stageAnswerOutcomeType) {
-    return stageAnswerDao.getStageAnswersByControlEntryIdAndOutcomeType(Long.parseLong(controlEntryId), stageAnswerOutcomeType).stream()
-        .map(StageAnswer::getParentStageId)
-        .distinct()
-        .map(stageId -> stageConfigCache.getUnchecked(Long.toString(stageId)))
-        .collect(Collectors.toList());
-  }
-
-  @Override
   public AnswerConfig getStageAnswerForPreviousStage(String stageId) {
     StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
     if (stageAnswer != null) {
-      return stageConfigCache.getUnchecked(stageAnswer.getParentStageId().toString())
+      return stageConfigCache.getUnchecked(stageAnswer.getStageId().toString())
           .getAnswerConfigs()
           .stream()
           .filter(e -> e.getAnswerId().equals(stageAnswer.getId().toString()))
@@ -98,7 +90,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
     if (stage == null) {
       StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
       if (stageAnswer != null) {
-        return getStageConfigById(stageAnswer.getParentStageId().toString());
+        return getStageConfigById(stageAnswer.getStageId().toString());
       } else {
         return null;
       }
@@ -139,14 +131,21 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   public Optional<StageConfig> getPrincipleStageConfigForControlEntry(ControlEntryConfig controlEntryConfig) {
     return getStageIdsForControlEntry(controlEntryConfig).stream()
         .map(this::getStageConfigById)
-        .filter(stageConfig -> stageConfig.getQuestionType() == StageConfig.QuestionType.STANDARD)
+        .filter(stageConfig -> stageConfig.getQuestionType() == QuestionType.STANDARD ||
+            stageConfig.getQuestionType() == QuestionType.ITEM)
         .findAny();
+  }
+
+  @Override
+  public List<ControlEntryConfig> getRelatedControlEntries(ControlEntryConfig controlEntryConfig) {
+    return relatedControlEntryCache.getUnchecked(controlEntryConfig.getId());
   }
 
   @Override
   public void flushCache() {
     stageConfigCache.invalidateAll();
     controlEntryCache.invalidateAll();
+    relatedControlEntryCache.invalidateAll();
     noteCache.invalidateAll();
 
     stageConfigCache.cleanUp();

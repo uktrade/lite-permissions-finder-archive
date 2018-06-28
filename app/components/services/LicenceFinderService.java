@@ -8,22 +8,22 @@ import java.util.concurrent.CompletionStage;
 
 public interface LicenceFinderService {
 
-  void persistCustomerAndSiteData();
+  void persistCustomerAndSiteData(String sessionId);
 
-  CompletionStage<Void> registerOgel(String transactionId);
+  CompletionStage<Void> registerOgel(String sessionId);
 
-  void handleCallback(String transactionId, CallbackView callbackView);
+  void handleCallback(String sessionId, CallbackView callbackView);
 
-  Optional<String> getRegistrationReference(String transactionId);
+  Optional<String> getRegistrationReference(String sessionId);
 
-  ResultsView getResultsView();
+  ResultsView getResultsView(String sessionId);
 
-  ResultsView getNoResultsView();
+  ResultsView getNoResultsView(String sessionId);
 
-  void updateUsersOgelIdRefMap(String userId);
+  void updateUsersOgelIdRefMap(String sessionId, String userId);
 
-  boolean isOgelIdAlreadyRegistered(String ogelId);
+  boolean isOgelIdAlreadyRegistered(String sessionId, String ogelId);
 
-  Optional<String> getUserOgelReference(String ogelId);
+  Optional<String> getUserOgelReference(String sessionId, String ogelId);
 
 }

@@ -15,6 +15,7 @@ public class RichTextParserImpl implements RichTextParser {
   private static final Pattern LOCAL_DEFINITION_PATTERN = Pattern.compile("\'(.*?)'");
   //only go to p to avoid picking "0Hz"
   private static final Pattern CONTROL_ENTRY_PATTERN = Pattern.compile("(?:ML|PL|[0-9][A-Z])[0-9a-p]+");
+  private static final Pattern MODAL_CONTENT_LINK_PATTERN = Pattern.compile("\\[(.*?)\\]\\((.*?)\\)");
 
   private final ParserLookupService parserLookupService;
 
@@ -27,7 +28,8 @@ public class RichTextParserImpl implements RichTextParser {
   public RichText parseForStage(String text, String stageId) {
     List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(Collections.singletonList(new SimpleTextNode(text)));
     List<RichTextNode> withControlEntries = parseControlEntries(withGlobalDefinitions);
-    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withControlEntries);
+    List<RichTextNode> withModalContentLinks = parseModalContentLinks(withControlEntries);
+    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withModalContentLinks);
     return new RichText(withFlattenedSimpleTextNodes);
   }
 
@@ -36,7 +38,8 @@ public class RichTextParserImpl implements RichTextParser {
     List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(Collections.singletonList(new SimpleTextNode(text)));
     List<RichTextNode> withLocalDefinitions = parseLocalDefinitions(withGlobalDefinitions, controlEntryId);
     List<RichTextNode> withControlEntries = parseControlEntries(withLocalDefinitions);
-    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withControlEntries);
+    List<RichTextNode> withModalContentLinks = parseModalContentLinks(withControlEntries);
+    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withModalContentLinks);
     return new RichText(withFlattenedSimpleTextNodes);
   }
 
@@ -50,6 +53,10 @@ public class RichTextParserImpl implements RichTextParser {
 
   private List<RichTextNode> parseControlEntries(List<RichTextNode> inputNodes) {
     return parseDefinitions(inputNodes, CONTROL_ENTRY_PATTERN, this::createControlEntry);
+  }
+
+  private List<RichTextNode> parseModalContentLinks(List<RichTextNode> inputNodes) {
+    return parseDefinitions(inputNodes, MODAL_CONTENT_LINK_PATTERN, this::createModalContentLinkNode);
   }
 
   private RichTextNode createGlobalDefinition(Matcher matcher) {
@@ -76,6 +83,12 @@ public class RichTextParserImpl implements RichTextParser {
     return parserLookupService.getControlEntryForCode(controlCode)
         .map(controlEntry -> (RichTextNode) new ControlEntryReferenceNode(controlCode, controlEntry.getId().toString()))
         .orElse(new SimpleTextNode(controlCode));
+  }
+
+  private RichTextNode createModalContentLinkNode(Matcher matcher) {
+    String linkText = matcher.group(1);
+    String contentId = matcher.group(2);
+    return new ModalContentLinkNode(linkText, contentId);
   }
 
   private List<RichTextNode> parseDefinitions(List<RichTextNode> inputNodes, Pattern pattern,

@@ -14,7 +14,7 @@ import components.services.OgelService;
 import components.services.PermissionsService;
 import models.summary.LicenceInfo;
 import org.pac4j.play.java.Secure;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
@@ -28,6 +28,8 @@ import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class ViewOgelController {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ViewOgelController.class);
 
   private final PermissionsService permissionsService;
   private final OgelService ogelService;
@@ -107,14 +109,14 @@ public class ViewOgelController {
     return permissionsService.getOgelRegistration(userId, registrationReference)
         .thenApplyAsync(result -> {
           if (!result.isPresent()) {
-            Logger.error("OgelRegistrationServiceClient - Failed to get OGEL registration {userId={}, registrationReference={}}.", userId, registrationReference);
+            LOGGER.error("OgelRegistrationServiceClient - Failed to get OGEL registration {userId={}, registrationReference={}}.", userId, registrationReference);
             return info.setDefaultError();
           }
 
           OgelRegistrationView view = result.get();
           Status status = view.getStatus();
           if (status == DEREGISTERED || status == SURRENDERED) {
-            Logger.error("OGEL registration is no longer active - {userId={}, registrationReference={}, status={}}.", userId, registrationReference, status);
+            LOGGER.error("OGEL registration is no longer active - {userId={}, registrationReference={}, status={}}.", userId, registrationReference, status);
             return info.setError("This OGEL is no longer active.");
           } else {
             info.setRegistrationDate(view.getRegistrationDate());
@@ -134,7 +136,7 @@ public class ViewOgelController {
     return ogelService.getOgel(ogelType)
         .thenApplyAsync(ogel -> {
               if (!ogel.isPresent()) {
-                Logger.error("OgelServiceClient - Failed to get OGEL {ogelType={}}.", ogelType);
+                LOGGER.error("OgelServiceClient - Failed to get OGEL {ogelType={}}.", ogelType);
               }
               return ogel.orElse(null);
             },
@@ -150,7 +152,7 @@ public class ViewOgelController {
     String customerId = info.getCustomerId();
     return customerService.getCustomer(customerId).handleAsync((customer, error) -> {
           if (error != null || !customer.isPresent()) {
-            Logger.error("CustomerServiceClient - Failed to get Customer {customerId={}}.", customerId);
+            LOGGER.error("CustomerServiceClient - Failed to get Customer {customerId={}}.", customerId);
             return null;
           } else {
             return customer.get();
@@ -169,7 +171,7 @@ public class ViewOgelController {
     return customerService.getSite(siteId)
         .handleAsync((site, error) -> {
           if (error != null) {
-            Logger.error("CustomerServiceClient - Failed to get Site {siteId={}}.", siteId);
+            LOGGER.error("CustomerServiceClient - Failed to get Site {siteId={}}.", siteId);
             return null;
           } else {
             return site;
@@ -182,7 +184,7 @@ public class ViewOgelController {
    */
   private Result renderViewOgel(LicenceInfo info) {
     if (info.hasError()) {
-      return badRequest(errorPage.render("errorMessage"));
+      return badRequest(errorPage.render("Open general export licence not found. This OGEL does not exist or cannot be found."));
     } else {
       return ok(viewOgel.render(info));
     }

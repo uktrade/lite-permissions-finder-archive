@@ -7,7 +7,7 @@ import components.common.client.userservice.UserServiceClientJwt;
 import components.services.notification.PermissionsFinderNotificationClient;
 import controllers.routes;
 import exceptions.InvalidUserAccountException;
-import models.enums.OutcomeType;
+import models.enums.SessionOutcomeType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
@@ -86,33 +86,33 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     SiteView siteView = getSite(customerId, userId);
     String id = createOutcomeId();
     SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(),
-        OutcomeType.CONTROL_ENTRY_FOUND, html.toString());
+        SessionOutcomeType.CONTROL_ENTRY_FOUND, html.toString());
     sessionOutcomeDao.insert(sessionOutcome);
   }
 
   @Override
   public String generateNotFoundNlrLetter(String userId, String sessionId, String controlEntryId, String resumeCode,
-                                          String description) throws InvalidUserAccountException {
+                                          Html description) throws InvalidUserAccountException {
     ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, null);
 
-    return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_NOT_FOUND, nlrBreadcrumb, description);
+    return generateLetter(userId, sessionId, resumeCode, SessionOutcomeType.NLR_NOT_FOUND, nlrBreadcrumb, description);
   }
 
   @Override
   public String generateDecontrolNlrLetter(String userId, String sessionId, String stageId, String resumeCode,
-                                           String description) throws InvalidUserAccountException {
+                                           Html description) throws InvalidUserAccountException {
     StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = decontrolBreadcrumb.render(null, breadcrumbView, answerViews);
 
-    return generateLetter(userId, sessionId, resumeCode, OutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
+    return generateLetter(userId, sessionId, resumeCode, SessionOutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
   }
 
-  private String generateLetter(String userId, String sessionId, String resumeCode, OutcomeType outcomeType,
-                                Html nlrBreadcrumb, String description) throws InvalidUserAccountException {
+  private String generateLetter(String userId, String sessionId, String resumeCode, SessionOutcomeType outcomeType,
+                                Html nlrBreadcrumb, Html description) throws InvalidUserAccountException {
     CustomerView customerView = getCustomerId(userId);
     String customerId = customerView.getCustomerId();
     SiteView siteView = getSite(customerId, userId);

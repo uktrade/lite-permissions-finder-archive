@@ -2,7 +2,7 @@ package components.cms.jdbi;
 
 import components.cms.mapper.StageAnswerRSMapper;
 import models.cms.StageAnswer;
-import models.cms.enums.StageAnswerOutcomeType;
+import models.cms.enums.OutcomeType;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
@@ -27,17 +27,17 @@ public interface StageAnswerJDBIDao {
       @Bind("goToStageAnswerOutcomeType") String stageAnswerOutcomeType);
 
   @Mapper(StageAnswerRSMapper.class)
-  @SqlQuery("SELECT * FROM stage_answer WHERE parent_stage_id = :stageId")
-  List<StageAnswer> getForParentStageId(@Bind("stageId") long stageId);
+  @SqlQuery("SELECT * FROM stage_answer WHERE stage_id = :stageId")
+  List<StageAnswer> getForStageId(@Bind("stageId") long stageId);
 
   @SqlQuery(
-      "INSERT INTO stage_answer (parent_stage_id, go_to_stage_id, go_to_stage_answer_outcome_type, control_entry_id, answer_text, display_order, answer_precedence, divider_above, nested_content, more_info_content) "
-          + "VALUES(:parentStageId, :goToStageId, :goToStageAnswerOutcomeType, :controlEntryId, :answerText, :displayOrder, :answerPrecedence, :dividerAbove, :nestedContent, :moreInfoContent) "
+      "INSERT INTO stage_answer (stage_id, go_to_stage_id, go_to_outcome_type, control_entry_id, answer_text, display_order, answer_precedence, divider_above, nested_content, more_info_content) "
+          + "VALUES(:stageId, :goToStageId, :goToOutcomeType, :controlEntryId, :answerText, :displayOrder, :answerPrecedence, :dividerAbove, :nestedContent, :moreInfoContent) "
           + "RETURNING id")
   Long insert(
-      @Bind("parentStageId") Long parentStageId,
+      @Bind("stageId") Long stageId,
       @Bind("goToStageId") Long goToStageId,
-      @Bind("goToStageAnswerOutcomeType") StageAnswerOutcomeType goToStageAnswerOutcomeType,
+      @Bind("goToOutcomeType") OutcomeType outcomeType,
       @Bind("controlEntryId") Long controlEntryId,
       @Bind("answerText") String answerText,
       @Bind("displayOrder") Integer displayOrder,

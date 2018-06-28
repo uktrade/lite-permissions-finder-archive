@@ -1,9 +1,10 @@
 @import uk.gov.bis.lite.user.api.view.UserDetailsView
 @import uk.gov.bis.lite.customer.api.view.SiteView
 @import util._
+@import utils.common.ViewUtil
 
 @this()
-@(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: String)
+@(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: Html)
 
 <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
 
@@ -17,8 +18,8 @@
       Reference Code: @resumeCode
     </p>
     <p>
-      @userDetailsView.getTitle @userDetailsView.getFullName<br>
-    @Html(address.getPlainText.replace("\n", "<br>"))
+      @userDetailsView.getFullName<br>
+      @Html(address.getPlainText.replace("\n", "<br>"))
     </p>
     <p>
       <span class="bold">Tel<span class="visually-hidden">ephone</span></span> @userDetailsView.getContactPhoneNumber<br>
@@ -58,12 +59,13 @@
 </p>
 
 <p>
-  Based on the choices you made on the online tool, the item does not currently require an export licence.
+  Based on the choices you made in the "Check if your item is controlled" service, the item does not currently require
+  an export licence.
 </p>
 
 <p>
-  This assessment is made taking into account the choices you made on the online tool and the legislation in force at
-  the date of this letter.
+  This assessment is made taking into account the choices you made in the "Check if your item is controlled" service
+  and the legislation in force at the date of this letter.
 </p>
 
 <p>
@@ -172,22 +174,22 @@
 
 <p class="bold">Export Control Organisation</p>
 
-<hr>
+<hr class="break-page">
 
 <h2 class="heading-medium">Description of Goods</h2>
 <p>
-  The following is your description of your item.
+  The following is your description of your item:
 </p>
 
-<p>
-  <span class="bold">@description</span>
-</p>
+<blockquote class="break-word">
+  @description
+</blockquote>
 
 <hr>
 
 <h2 class="heading-medium">Schedule of Goods</h2>
 <p>
-  The following is your assessment of your item against the UK Strategic Export Control Lists.
+  The following is your assessment of your item against the UK Strategic Export Control Lists:
 </p>
 
 @nlrBreadcrumb

@@ -23,3 +23,32 @@
     }
   }
 }
+
+@mixin styled-blockquote() {
+  blockquote {
+    margin: 0 0 0 -#{$gutter};
+    padding: 0 0 0 $gutter-two-thirds;
+
+    p {
+      padding-left: $gutter;
+
+      &:before {
+        content: "\201C";
+        float: left;
+        clear: both;
+        margin-left: -$gutter-half;
+      }
+
+      &:last-child:after {
+        content: "\201D";
+      }
+    }
+
+    @include ul-has-bullets;
+
+    ul {
+      padding-left: $gutter + $gutter-two-thirds;
+      margin-bottom: $gutter-two-thirds;
+    }
+  }
+}

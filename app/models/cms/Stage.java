@@ -1,8 +1,8 @@
 package models.cms;
 
 import models.cms.enums.AnswerType;
+import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
-import models.cms.enums.StageOutcomeType;
 
 public class Stage {
   private Long id;
@@ -13,7 +13,7 @@ public class Stage {
   private QuestionType questionType;
   private AnswerType answerType;
   private Long nextStageId;
-  private StageOutcomeType stageOutcomeType;
+  private OutcomeType stageOutcomeType;
 
   public Long getId() {
     return id;
@@ -87,11 +87,11 @@ public class Stage {
     return this;
   }
 
-  public StageOutcomeType getStageOutcomeType() {
+  public OutcomeType getStageOutcomeType() {
     return stageOutcomeType;
   }
 
-  public Stage setStageOutcomeType(StageOutcomeType stageOutcomeType) {
+  public Stage setStageOutcomeType(OutcomeType stageOutcomeType) {
     this.stageOutcomeType = stageOutcomeType;
     return this;
   }

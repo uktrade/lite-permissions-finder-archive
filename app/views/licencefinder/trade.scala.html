@@ -4,7 +4,7 @@
 @import models.TradeType
 
 @this(standardPage: standardPage)
-@(form: Form[_], controlCode: String)
+@(form: Form[_], controlCode: String, sessionId: String)
 @question = {Where are your items going?}
 
 @standardPage(question.toString, Some(heading(question.toString))) {
@@ -18,7 +18,7 @@
   </div>
   <br>
 
-  <form action="@controllers.licencefinder.routes.TradeController.handleTradeSubmit()" method="POST">
+  <form action="@controllers.licencefinder.routes.TradeController.handleTradeSubmit(sessionId)" method="POST">
 
     @views.html.helper.CSRF.formField
 
