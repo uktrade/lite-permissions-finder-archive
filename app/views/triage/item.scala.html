@@ -13,21 +13,16 @@
 @standardPage("Is this your item?", Some(heading("Is this your item?")), true, resumeCode, true){
   @errorSummary(form)
 }{
-  <p>
-    <div>
-      @Html(description)
-    </div>
+  <blockquote>
+    <p>@Html(description)</p>
     @if(!subAnswerViews.isEmpty) {
       @subAnswers(subAnswerViews)
     }
-  </p>
+  </blockquote>
 
   <p>
-    NB. This is the control list classification hierarchy for this item.
-  </p>
-
-  <p>
-    It does not necessarily reflect your journey through this online tool.
+    This is the control list classification hierarchy for this item.
+    It does not necessarily reflect your journey through this service.
   </p>
 
   @controlCodeBreadcrumbs(isWide = true) {
@@ -49,18 +44,16 @@
       @if(!subAnswerViews.isEmpty) {
         @subAnswers(subAnswerViews)
       }
-    }(HtmlFormat.empty)
-  }
-
-  <p>
-    @if(!breadcrumbView.getNoteViews.isEmpty) {
-      @controlCodeBreadcrumbsNotes() {
-        @for(noteView <- breadcrumbView.getNoteViews) {
-          <li>@Html(noteView.getText)</li>
+    }{
+      @if(!breadcrumbView.getNoteViews.isEmpty) {
+        @controlCodeBreadcrumbsNotes() {
+          @for(noteView <- breadcrumbView.getNoteViews) {
+            <li>@Html(noteView.getText)</li>
+          }
         }
       }
     }
-  </p>
+  }
 
   <form action="@routes.StageController.handleSubmit(stageId, sessionId).toString" method="POST">
     @views.html.helper.CSRF.formField
