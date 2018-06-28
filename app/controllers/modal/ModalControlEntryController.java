@@ -5,7 +5,7 @@ import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
 import models.view.BreadcrumbItemView;
 import models.view.SubAnswerView;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import triage.config.ControlEntryConfig;
@@ -17,6 +17,9 @@ import views.html.modal.modalControlEntry;
 import java.util.List;
 
 public class ModalControlEntryController extends Controller {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ModalControlEntryController.class);
+
   private final JourneyConfigService journeyConfigService;
   private final BreadcrumbViewService breadcrumbViewService;
   private final AnswerViewService answerViewService;
@@ -75,7 +78,7 @@ public class ModalControlEntryController extends Controller {
     return journeyConfigService.getPrincipleStageConfigForControlEntry(controlEntryConfig)
         .map(stageConfig -> controllers.routes.StageController.render(stageConfig.getStageId(), sessionId).toString())
         .orElseGet(() -> {
-          Logger.info("Cannot create \"Go to this control entry\" link for invalid controlEntryId " + controlEntryConfig.getId());
+          LOGGER.info("Cannot create \"Go to this control entry\" link for invalid controlEntryId " + controlEntryConfig.getId());
           return null;
         });
   }

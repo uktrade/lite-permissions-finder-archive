@@ -6,7 +6,7 @@ import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class OgelServiceImpl implements OgelService {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(OgelServiceImpl.class);
 
   private static final String OGELS_PATH = "/ogels/";
 
@@ -69,9 +71,9 @@ public class OgelServiceImpl implements OgelService {
 
     return request.get().handleAsync((response, error) -> {
       if (error != null) {
-        Logger.error("OGEL service client failure {request path=" + path + "}", error);
+        LOGGER.error("OGEL service client failure {request path=" + path + "}", error);
       } else if (response.getStatus() != 200) {
-        Logger.error("OGEL service error response {request path=" + path + "} - {}", response.getBody());
+        LOGGER.error("OGEL service error response {request path=" + path + "} - {}", response.getBody());
       } else {
         OgelFullView ogelInfo = Json.fromJson(response.asJson(), OgelFullView.class);
         return Optional.of(ogelInfo);

@@ -4,9 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Utils {
+  
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+  
   private Utils() {
   }
 
@@ -44,7 +47,7 @@ public class Utils {
     } else {
       index = (((upperColumn.charAt(0) - 65) + 1) * 26) + (upperColumn.charAt(1) - 65);
     }
-    Logger.info("Column {} produced index {}", column, index);
+    LOGGER.info("Column {} produced index {}", column, index);
     return index;
   }
 }

@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import components.cms.dao.SessionOutcomeDao;
 import components.services.FlashService;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -18,6 +18,8 @@ import triage.session.TriageSession;
 import java.util.concurrent.CompletionStage;
 
 public class SessionGuardAction extends Action.Simple {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(SessionGuardAction.class);
 
   private final FlashService flashService;
   private final SessionService sessionService;
@@ -51,7 +53,7 @@ public class SessionGuardAction extends Action.Simple {
           long sessionJourneyId = triageSession.getJourneyId();
           long currentJourneyId = journeyConfigService.getDefaultJourneyId();
           if (sessionJourneyId != currentJourneyId) {
-            Logger.warn("SessionId {} has journeyId {} which doesn't match current journeyId {}",
+            LOGGER.warn("SessionId {} has journeyId {} which doesn't match current journeyId {}",
                 sessionId, sessionJourneyId, currentJourneyId);
             return unknownSession(sessionId);
           } else {
@@ -64,7 +66,7 @@ public class SessionGuardAction extends Action.Simple {
 
   private CompletionStage<Result> unknownSession(String sessionId) {
     flashService.flashInvalidSession();
-    Logger.error("Unknown or blank sessionId " + sessionId);
+    LOGGER.error("Unknown or blank sessionId " + sessionId);
     return completedFuture(redirect(routes.StartApplicationController.createApplication()));
   }
 

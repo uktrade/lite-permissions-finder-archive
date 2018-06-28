@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import components.services.FlashService;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.twirl.api.Html;
@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.function.Function;
 
 public class StaticContentController extends Controller {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StaticContentController.class);
 
   private final FlashService flashService;
   private final SessionService sessionService;
@@ -118,7 +120,7 @@ public class StaticContentController extends Controller {
 
   private Result unknownSession(String sessionId) {
     flashService.flashInvalidSession();
-    Logger.error("Unknown or blank sessionId " + sessionId);
+    LOGGER.error("Unknown or blank sessionId " + sessionId);
     return redirect(routes.StartApplicationController.createApplication());
   }
 

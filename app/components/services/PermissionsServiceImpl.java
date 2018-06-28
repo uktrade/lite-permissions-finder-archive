@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import filters.common.JwtRequestFilter;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 public class PermissionsServiceImpl implements PermissionsService {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PermissionsServiceImpl.class);
 
   private static final String REGISTER_OGEL_PATH = "/register-ogel";
   private static final String QUERY_PARAM_CALLBACK_URL = "callbackUrl";
@@ -69,7 +71,7 @@ public class PermissionsServiceImpl implements PermissionsService {
         .setRequestTimeout(Duration.ofMillis(timeout))
         .addQueryParameter(QUERY_PARAM_CALLBACK_URL, callbackUrl);
 
-    Logger.info("Sending register OGEL request: " + permissionsServiceAddress + REGISTER_OGEL_PATH);
+    LOGGER.info("Sending register OGEL request: " + permissionsServiceAddress + REGISTER_OGEL_PATH);
 
     return request.post(Json.toJson(param)).handle((result, error) -> handleResponse(result, error, callbackUrl));
   }
@@ -83,7 +85,7 @@ public class PermissionsServiceImpl implements PermissionsService {
           return mapper.readValue(r, new TypeReference<List<OgelRegistrationView>>() {});
         } catch (IOException e) {
           String errorMessage = "Failed to parse Permission registration service response.";
-          Logger.error(errorMessage + " {request path=" + path + "}", e);
+          LOGGER.error(errorMessage + " {request path=" + path + "}", e);
         }
       }
       return new ArrayList<>();
@@ -109,10 +111,10 @@ public class PermissionsServiceImpl implements PermissionsService {
           return Optional.of(ogelRegistrations.get(0));
         } else {
           String errorMessage = "Expected only one OGEL registration in Permission registration service response. But received - {}.";
-          Logger.error(errorMessage + " {request path=" + path + ", registrationReference=" + registrationReference + "}", ogelRegistrations.size());
+          LOGGER.error(errorMessage + " {request path=" + path + ", registrationReference=" + registrationReference + "}", ogelRegistrations.size());
         }
       } catch (IOException e) {
-        Logger.error("Failed to parse Permission registration service response.", e);
+        LOGGER.error("Failed to parse Permission registration service response.", e);
       }
     }
 
@@ -136,10 +138,10 @@ public class PermissionsServiceImpl implements PermissionsService {
     return request.get().handle((result, error) -> {
       if (error != null) {
         String errorMessage = "Permission registration service client failure.";
-        Logger.error(errorMessage + " {request path=" + path + ", parameters=" + parameters + "}", error);
+        LOGGER.error(errorMessage + " {request path=" + path + ", parameters=" + parameters + "}", error);
       } else if (result.getStatus() != 200) {
         String errorMessage = "Permission registration service error response - {}";
-        Logger.error(errorMessage + " {request path=" + path + ", parameters=" + parameters + "}", result.getBody());
+        LOGGER.error(errorMessage + " {request path=" + path + ", parameters=" + parameters + "}", result.getBody());
       } else {
         return result.asJson().toString();
       }
@@ -151,11 +153,11 @@ public class PermissionsServiceImpl implements PermissionsService {
   public static RegistrationResponse handleResponse(WSResponse response, Throwable throwable, String callbackUrl) {
     if (throwable != null) {
       String errorMessage = "Permission registration service client failure.";
-      Logger.error(errorMessage + " {request path=" + REGISTER_OGEL_PATH + ", callbackUrl=" + callbackUrl + "}", throwable);
+      LOGGER.error(errorMessage + " {request path=" + REGISTER_OGEL_PATH + ", callbackUrl=" + callbackUrl + "}", throwable);
       return failure();
     } else if (response.getStatus() != 200) {
       String errorMessage = "Permission registration service error response - {}";
-      Logger.error(errorMessage + " {request path=" + REGISTER_OGEL_PATH + ", callbackUrl=" + callbackUrl + "}", response.getBody());
+      LOGGER.error(errorMessage + " {request path=" + REGISTER_OGEL_PATH + ", callbackUrl=" + callbackUrl + "}", response.getBody());
       return failure();
     } else {
       RegisterOgelResponse registerOgelResponse = Json.fromJson(response.asJson(), RegisterOgelResponse.class);

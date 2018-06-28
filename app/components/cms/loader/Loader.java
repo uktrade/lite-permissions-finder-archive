@@ -34,7 +34,7 @@ import models.cms.enums.NoteType;
 import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import triage.config.JourneyConfigServiceImpl;
 
 import java.util.Arrays;
@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Loader {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 
   private static final String REGEX_NEW_LINE = "\\r?\\n";
 
@@ -113,7 +115,7 @@ public class Loader {
     LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
     loadingMetadata.setId(id);
 
-    Logger.debug("Generated id {} for cell {}", id, navigationLevel.getCellAddress());
+    LOGGER.debug("Generated id {} for cell {}", id, navigationLevel.getCellAddress());
 
     List<NavigationLevel> subNavigationLevels = navigationLevel.getSubNavigationLevels();
 
@@ -145,7 +147,7 @@ public class Loader {
       controlEntry.setDisplayOrder(displayOrder);
       controlEntryId = controlEntryDao.insertControlEntry(controlEntry);
 
-      Logger.debug("Inserted control entry id {}", controlEntryId);
+      LOGGER.debug("Inserted control entry id {}", controlEntryId);
     }
 
     navigationLevel.getLoadingMetadata().setControlEntryId(controlEntryId);
@@ -171,7 +173,7 @@ public class Loader {
 
     Long stageId = stageDao.insertStage(stage);
 
-    Logger.debug("Inserted stage id {}", stageId);
+    LOGGER.debug("Inserted stage id {}", stageId);
 
     for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
       subNavigationLevel.getLoadingMetadata().setStageId(stageId);
@@ -240,12 +242,12 @@ public class Loader {
 
       Long stageAnswerId = stageAnswerDao.insertStageAnswer(stageAnswer);
 
-      Logger.debug("Inserted stage answer id {}", stageAnswerId);
+      LOGGER.debug("Inserted stage answer id {}", stageAnswerId);
 
       if (attachNotesToStageId != null) {
         createNotes(navigationLevel.getNotes(), attachNotesToStageId);
       } else {
-        Logger.debug("No stageId to associate note with, cell id {}", navigationLevel.getCellAddress());
+        LOGGER.debug("No stageId to associate note with, cell id {}", navigationLevel.getCellAddress());
       }
       navigationLevel.getLoadingMetadata().setStageAnswerId(stageAnswerId);
     }
@@ -268,7 +270,7 @@ public class Loader {
 
     Long stageId = stageDao.insertStage(stage);
 
-    Logger.debug("Inserted item stage id {}", stageId);
+    LOGGER.debug("Inserted item stage id {}", stageId);
 
     createNotes(notes, stageId);
 
@@ -291,7 +293,7 @@ public class Loader {
       Long nextStageId = navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
       //This can happen if the current row has "nested content" child rows which are not actual stages
       if (nextStageId == null) {
-        Logger.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
+        LOGGER.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
         if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
           decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
         } else {
@@ -311,7 +313,7 @@ public class Loader {
     Long decontrolStageId = stageDao.insertStage(decontrolStage);
     decontrolStage.setId(decontrolStageId);
 
-    Logger.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
+    LOGGER.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
 
     List<String> decontrolEntries =
         Arrays.stream(decontrols.getContent().split("\\r?\\n(?!\\*)"))
@@ -333,7 +335,7 @@ public class Loader {
           decontrolStageAnswer.setNestedContent(nestedContent);
         }
       } else {
-        Logger.error("Unable to derive answer text for decontrol stage answer, stage id {}, cell id {}", decontrolStageId, navigationLevel.getCellAddress());
+        LOGGER.error("Unable to derive answer text for decontrol stage answer, stage id {}, cell id {}", decontrolStageId, navigationLevel.getCellAddress());
       }
 
       decontrolStageAnswer.setStageId(decontrolStageId);
@@ -343,7 +345,7 @@ public class Loader {
 
       Long decontrolStageAnswerId = stageAnswerDao.insertStageAnswer(decontrolStageAnswer);
 
-      Logger.debug("Inserted stage answer id {} DECONTROL", decontrolStageAnswerId);
+      LOGGER.debug("Inserted stage answer id {} DECONTROL", decontrolStageAnswerId);
     }
 
     return decontrolStage;
@@ -363,7 +365,7 @@ public class Loader {
         int secondIdx = localDefinitionStr.indexOf('\'', firstIdx + 1);
         String term = localDefinitionStr.substring(firstIdx + 1, secondIdx);
         if (StringUtils.isBlank(term)) {
-          Logger.error("Error deriving term from local definition {}, navigation cell address {}", localDefinitionStr, navigationLevel.getCellAddress());
+          LOGGER.error("Error deriving term from local definition {}, navigation cell address {}", localDefinitionStr, navigationLevel.getCellAddress());
         } else {
           LocalDefinition localDefinition = new LocalDefinition();
           localDefinition.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
@@ -372,7 +374,7 @@ public class Loader {
 
           Long localDefinitionId = localDefinitionDao.insertLocalDefinition(localDefinition);
 
-          Logger.debug("Inserted local definition id {}", localDefinitionId);
+          LOGGER.debug("Inserted local definition id {}", localDefinitionId);
         }
       }
     }
@@ -411,7 +413,7 @@ public class Loader {
 
       Long noteId = noteDao.insertNote(note);
 
-      Logger.debug("Inserted note with id {}", noteId);
+      LOGGER.debug("Inserted note with id {}", noteId);
     }
   }
 
@@ -421,7 +423,7 @@ public class Loader {
         String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"");
         String definitionText = definition.getNewContent();
         if (StringUtils.isAnyEmpty(term, definitionText)) {
-          Logger.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,
+          LOGGER.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,
               definitionText);
         } else {
           GlobalDefinition globalDefinition = new GlobalDefinition()
@@ -431,7 +433,7 @@ public class Loader {
 
           Long globalDefinitionId = globalDefinitionDao.insertGlobalDefinition(globalDefinition);
 
-          Logger.debug("Inserted global definition with id {}", globalDefinitionId);
+          LOGGER.debug("Inserted global definition with id {}", globalDefinitionId);
         }
       }
     }
@@ -451,14 +453,14 @@ public class Loader {
           ControlEntry controlEntry = controlEntryDao.getControlEntryByControlCode(relatedCode);
 
           if (controlEntry == null) {
-            Logger.error("No control entry record found for related code {}", relatedCode);
+            LOGGER.error("No control entry record found for related code {}", relatedCode);
           } else {
             RelatedControlEntry relatedControlEntry = new RelatedControlEntry()
                 .setControlEntryId(loadingMetadata.getControlEntryId())
                 .setRelatedControlEntryId(controlEntry.getId());
             relatedControlEntryDao.insertRelatedControlEntry(relatedControlEntry);
 
-            Logger.debug("Inserted related control entry: control entry id {}, related control entry id {}",
+            LOGGER.debug("Inserted related control entry: control entry id {}, related control entry id {}",
                 relatedControlEntry.getControlEntryId(), relatedControlEntry.getRelatedControlEntryId());
           }
         }
