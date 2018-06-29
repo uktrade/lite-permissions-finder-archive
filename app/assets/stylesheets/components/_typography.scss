@@ -92,6 +92,14 @@ a[data-control-entry-id] {
   word-wrap: break-word;
 }
 
+.no-wrap {
+  white-space: nowrap;
+}
+
+.print-only {
+  display: none;
+}
+
 @include styled-blockquote;
 
 .media-desktop,

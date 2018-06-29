@@ -6,7 +6,7 @@ import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ApplicableOgelServiceClient {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ApplicableOgelServiceClient.class);
 
   private final HttpExecutionContext httpExecutionContext;
   private final WSClient wsClient;
@@ -90,7 +92,7 @@ public class ApplicableOgelServiceClient {
         .filter(view -> showHistoricOgel || !StringUtils.containsIgnoreCase(view.getName(), "historic military goods"))
         .collect(Collectors.toList());
 
-    Logger.info("Filter Historic Ogels (" + showHistoricOgel + ") [" + views.length + "/" + filteredViews.size() + "]");
+    LOGGER.info("Filter Historic Ogels (" + showHistoricOgel + ") [" + views.length + "/" + filteredViews.size() + "]");
     return filteredViews;
   }
 

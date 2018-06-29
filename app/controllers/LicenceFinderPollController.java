@@ -6,11 +6,13 @@ import static play.mvc.Results.ok;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import components.services.LicenceFinderService;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.Result;
 
 public class LicenceFinderPollController {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(LicenceFinderPollController.class);
 
   private final LicenceFinderService licenceFinderService;
 
@@ -27,7 +29,7 @@ public class LicenceFinderPollController {
     try {
       json.put("complete", licenceFinderService.getRegistrationReference(sessionId).isPresent());
     } catch (Exception e) {
-      Logger.error("Error reading registration submission status for " + sessionId, e);
+      LOGGER.error("Error reading registration submission status for " + sessionId, e);
       json.put("complete", false);
     }
     return ok(json);

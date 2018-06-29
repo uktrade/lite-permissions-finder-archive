@@ -54,6 +54,8 @@ import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
 import components.services.CustomerService;
 import components.services.CustomerServiceImpl;
+import components.services.FlashService;
+import components.services.FlashServiceImpl;
 import components.services.LicenceFinderService;
 import components.services.LicenceFinderServiceImpl;
 import components.services.OgelService;
@@ -138,6 +140,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(OgelService.class).to(OgelServiceImpl.class);
     bind(SessionOutcomeService.class).to(SessionOutcomeServiceImpl.class);
     bind(UserPrivilegeService.class).to(UserPrivilegeServiceImpl.class);
+    bind(FlashService.class).to(FlashServiceImpl.class);
 
     install(new SamlModule(config));
     install(new RedisSessionStoreModule(environment, config));

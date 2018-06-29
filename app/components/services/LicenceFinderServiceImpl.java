@@ -15,7 +15,7 @@ import models.view.licencefinder.OgelView;
 import models.view.licencefinder.ResultsView;
 import models.view.licencefinder.Site;
 import org.apache.commons.lang.StringUtils;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 import javax.inject.Named;
 
 public class LicenceFinderServiceImpl implements LicenceFinderService {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(LicenceFinderServiceImpl.class);
 
   private final LicenceFinderDao licenceFinderDao;
   private final CustomerService customerService;
@@ -85,7 +87,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
    * Returns results view with Ogel list omitted
    */
   public ResultsView getNoResultsView(String sessionId) {
-    return doGetResultsView(sessionId,false);
+    return doGetResultsView(sessionId, false);
   }
 
   /**
@@ -101,7 +103,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   public Optional<String> getRegistrationReference(String sessionId) {
 
     Optional<RegisterLicence> optRegisterLicence = licenceFinderDao.getRegisterLicence(sessionId);
-    if(optRegisterLicence.isPresent()) {
+    if (optRegisterLicence.isPresent()) {
       String ref = optRegisterLicence.get().getRegistrationReference();
       if (!StringUtils.isBlank(ref)) {
         return Optional.of(ref);
@@ -145,7 +147,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       RegisterLicence registerLicence = optRegisterLicence.get();
       registerLicence.setRegistrationReference(regRef);
       licenceFinderDao.saveRegisterLicence(sessionId, registerLicence);
-      Logger.info("RegisterLicence updated with registrationReference: " + regRef);
+      LOGGER.info("RegisterLicence updated with registrationReference: " + regRef);
 
       // Send confirmation email to user
 
@@ -185,10 +187,10 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
         String siteId = optSiteId.get();
         licenceFinderDao.saveSiteId(sessionId, siteId); // persist siteId
       } else {
-        Logger.warn("Not a single Site associated with user/customer: " + userId + "/" + customerId);
+        LOGGER.warn("Not a single Site associated with user/customer: " + userId + "/" + customerId);
       }
     } else {
-      Logger.warn("Not a single Customer associated with user: " + userId);
+      LOGGER.warn("Not a single Customer associated with user: " + userId);
     }
   }
 
@@ -223,7 +225,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       }
 
     } catch (InterruptedException | ExecutionException e) {
-      Logger.error("getResultsView exception", e);
+      LOGGER.error("getResultsView exception", e);
     }
     return resultView;
   }
@@ -260,7 +262,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
         ogelIdRefMap.put(view.getOgelType(), view.getRegistrationReference());
       }
     } catch (InterruptedException | ExecutionException e) {
-      Logger.error("OgelRegistration exception", e);
+      LOGGER.error("OgelRegistration exception", e);
     }
     return ogelIdRefMap;
   }
@@ -296,7 +298,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       if (customers.size() == 1) {
         return Optional.of(customers.get(0).getCustomerId());
       } else {
-        Logger.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
+        LOGGER.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
       }
     }
     return Optional.empty();
@@ -315,7 +317,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
         CustomerView customerView = customerViews.get(0);
         return Optional.of(new Customer(customerView.getCustomerId(), customerView.getCompanyName()));
       } else {
-        Logger.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customerViews.size());
+        LOGGER.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customerViews.size());
       }
     }
     return Optional.empty();
@@ -332,7 +334,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       if (sites.size() == 1) {
         return Optional.of(sites.get(0).getSiteId());
       } else {
-        Logger.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
+        LOGGER.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
       }
     }
     return Optional.empty();
@@ -350,7 +352,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
         SiteView siteView = sites.get(0);
         return Optional.of(new Site(siteView.getSiteId(), siteView.getAddress().getPlainText()));
       } else {
-        Logger.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
+        LOGGER.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
       }
     }
     return Optional.empty();

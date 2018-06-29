@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import play.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -28,6 +28,9 @@ import java.util.Deque;
 import java.util.List;
 
 public class NavigationParser {
+  
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(NavigationParser.class);
+  
   private static class SheetIndices {
     static final int UK_MILITARY_LIST = 6; // Sheet 7
   }
@@ -158,7 +161,7 @@ public class NavigationParser {
                     notes,
                     redirect);
           } catch (ParserException e) {
-            Logger.error("Error progressing nav cell: {}, {}", navCellAddress, e.getMessage());
+            LOGGER.error("Error progressing nav cell: {}, {}", navCellAddress, e.getMessage());
           }
 
           if (currIndentLevel < prevIndentLevel) {
