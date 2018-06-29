@@ -29,7 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
@@ -114,7 +113,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     CustomerView customerView = getCustomerId(userId);
     String customerId = customerView.getCustomerId();
     SiteView siteView = getSite(customerId, userId);
-    UserDetailsView userDetailsView = getUserDetailsView(userId);
+    UserDetailsView userDetailsView = userService.getUserDetails(userId);
     SiteView.SiteViewAddress address = siteView.getAddress();
     String todayDate = DATE_TIME_FORMATTER.format(LocalDate.now());
 
@@ -132,14 +131,6 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   private String createOutcomeId() {
     return "out_" + UUID.randomUUID().toString().replace("-", "");
-  }
-
-  private UserDetailsView getUserDetailsView(String userId) {
-    try {
-      return userService.getUserDetailsView(userId).toCompletableFuture().get();
-    } catch (InterruptedException | ExecutionException exception) {
-      throw new RuntimeException("Unable to get userDetailsView for userId " + userId, exception);
-    }
   }
 
   private SiteView getSite(String customerId, String userId) throws InvalidUserAccountException {

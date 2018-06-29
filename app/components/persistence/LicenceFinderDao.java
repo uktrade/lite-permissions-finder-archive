@@ -58,6 +58,7 @@ public class LicenceFinderDao {
     return statelessRedisDao.readObject(sessionId, SITE, Site.class);
   }
 
+  /*
   public void saveCustomerId(String sessionId, String customerId) {
     statelessRedisDao.writeString(sessionId, CUSTOMER_ID, customerId);
   }
@@ -73,6 +74,7 @@ public class LicenceFinderDao {
   public String getSiteId(String sessionId) {
     return statelessRedisDao.readString(sessionId, SITE_ID);
   }
+  */
 
   public void saveControlCode(String sessionId, String controlCode) {
     statelessRedisDao.writeString(sessionId, CONTROL_CODE, controlCode);

@@ -5,6 +5,8 @@ public class Site {
   private String id;
   private String address;
 
+  public Site() {}
+
   public Site(String id, String address) {
     this.id = id;
     this.address = address;
