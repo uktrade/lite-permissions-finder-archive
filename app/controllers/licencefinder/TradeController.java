@@ -3,7 +3,7 @@ package controllers.licencefinder;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
-import components.auth.SamlAuthorizer;
+import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.persistence.LicenceFinderDao;
 import controllers.LicenceFinderAwaitGuardAction;
@@ -31,7 +31,8 @@ public class TradeController extends Controller {
   private static final String UNITED_KINGDOM = "CTRY0";
 
   @Inject
-  public TradeController(FormFactory formFactory, LicenceFinderDao licenceFinderDao, views.html.licencefinder.trade trade) {
+  public TradeController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
+                         views.html.licencefinder.trade trade) {
     this.formFactory = formFactory;
     this.licenceFinderDao = licenceFinderDao;
     this.trade = trade;

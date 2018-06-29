@@ -4,8 +4,8 @@ import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
-import components.auth.SamlAuthorizer;
 import components.cms.dao.SessionOutcomeDao;
+import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.services.SessionOutcomeService;

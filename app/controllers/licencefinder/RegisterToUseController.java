@@ -1,7 +1,7 @@
 package controllers.licencefinder;
 
 import com.google.inject.Inject;
-import components.auth.SamlAuthorizer;
+import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.persistence.LicenceFinderDao;
