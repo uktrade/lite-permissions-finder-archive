@@ -324,4 +324,20 @@ public class RichTextParserImplTest {
     assertThat(modalNode0.getLinkText()).isEqualTo("example");
     assertThat(modalNode0.getTextContent()).isEqualTo("example");
   }
+
+  @Test
+  public void testParseModalContentLink_containingControlEntryReference() {
+    RichText richText = richTextParser.parseForControlEntry("[See also ML1 in another list](control-entry-not-included)", CONTROL_ENTRY_ID);
+
+    assertThat(richText.getRichTextNodes()).hasSize(1);
+
+    RichTextNode node0 = richText.getRichTextNodes().get(0);
+    assertThat(node0).isInstanceOf(ModalContentLinkNode.class);
+    assertThat(node0.getTextContent()).isEqualTo("See also ML1 in another list");
+
+    ModalContentLinkNode modalNode0 = (ModalContentLinkNode) node0;
+    assertThat(modalNode0.getContentId()).isEqualTo("control-entry-not-included");
+    assertThat(modalNode0.getLinkText()).isEqualTo("See also ML1 in another list");
+    assertThat(modalNode0.getTextContent()).isEqualTo("See also ML1 in another list");
+  }
 }

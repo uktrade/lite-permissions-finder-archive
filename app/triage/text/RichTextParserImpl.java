@@ -26,20 +26,20 @@ public class RichTextParserImpl implements RichTextParser {
 
   @Override
   public RichText parseForStage(String text, String stageId) {
-    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(Collections.singletonList(new SimpleTextNode(text)));
+    List<RichTextNode> withModalContentLinks = parseModalContentLinks(Collections.singletonList(new SimpleTextNode(text)));
+    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(withModalContentLinks);
     List<RichTextNode> withControlEntries = parseControlEntries(withGlobalDefinitions);
-    List<RichTextNode> withModalContentLinks = parseModalContentLinks(withControlEntries);
-    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withModalContentLinks);
+    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withControlEntries);
     return new RichText(withFlattenedSimpleTextNodes);
   }
 
   @Override
   public RichText parseForControlEntry(String text, String controlEntryId) {
-    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(Collections.singletonList(new SimpleTextNode(text)));
+    List<RichTextNode> withModalContentLinks = parseModalContentLinks(Collections.singletonList(new SimpleTextNode(text)));
+    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(withModalContentLinks);
     List<RichTextNode> withLocalDefinitions = parseLocalDefinitions(withGlobalDefinitions, controlEntryId);
     List<RichTextNode> withControlEntries = parseControlEntries(withLocalDefinitions);
-    List<RichTextNode> withModalContentLinks = parseModalContentLinks(withControlEntries);
-    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withModalContentLinks);
+    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withControlEntries);
     return new RichText(withFlattenedSimpleTextNodes);
   }
 
