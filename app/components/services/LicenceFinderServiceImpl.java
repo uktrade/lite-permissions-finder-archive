@@ -149,12 +149,20 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       registerLicence.setCustomerId(customerId);
 
       // Add user information to licence application data
-      UserDetailsView userDetailsView = userService.getUserDetails(registerLicence.getUserId());
+      UserDetailsView userDetailsView = getUserDetails(registerLicence.getUserId());
       registerLicence.setUserEmailAddress(userDetailsView.getContactEmailAddress());
       registerLicence.setUserFullName(userDetailsView.getFullName());
 
       return permissionsService.registerOgel(userId, customerId, siteId, ogelId, callbackUrl)
           .thenAcceptAsync(response -> registrationResponseReceived(sessionId, response, registerLicence));
+    }
+  }
+
+  public UserDetailsView getUserDetails(String userId) {
+    try {
+      return userService.getUserDetailsView(userId).toCompletableFuture().get();
+    } catch (InterruptedException | ExecutionException exception) {
+      throw new RuntimeException("Unable to get userDetailsView for userId " + userId, exception);
     }
   }
 
