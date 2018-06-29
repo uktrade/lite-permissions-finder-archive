@@ -105,6 +105,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       output = "<p>" + output + "</p>";
       output = output.replace("\n", "<br>");
       output = output.replace("<br><br>", "</p><p>");
+      output = output.replace("</ul><br>", "</ul>");
       output = PATTERN_UL_IN_P.matcher(output).replaceAll("$1");
     }
 
