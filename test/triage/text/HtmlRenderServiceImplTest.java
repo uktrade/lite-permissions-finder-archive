@@ -41,11 +41,11 @@ public class HtmlRenderServiceImplTest {
 
   @Test
   public void textBeforeAndAfterListTest() {
-    String text = "text before *Item1\n**Part A\n***Info (i)\ntext after";
+    String text = "text before\n\n*Item1\n**Part A\n***Info (i)\n\ntext after";
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(text));
 
     assertThat(html).isEqualTo(
-        "text before <ul><li>Item1</li><ul><li>Part A</li><ul><li>Info (i)</li></ul></ul></ul>text after");
+        "<p>text before</p><ul><li>Item1</li><ul><li>Part A</li><ul><li>Info (i)</li></ul></ul></ul><p>text after</p>");
   }
 
   @Test
@@ -144,7 +144,14 @@ public class HtmlRenderServiceImplTest {
   public void textWithNewlineTest() {
     SimpleTextNode simpleTextNode = new SimpleTextNode("This is line 1.\nThis is line 2");
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(simpleTextNode)));
-    assertThat(html).isEqualTo("This is line 1.<br>This is line 2");
+    assertThat(html).isEqualTo("<p>This is line 1.<br>This is line 2</p>");
+  }
+
+  @Test
+  public void textWithMultipleNewlinesTest() {
+    SimpleTextNode simpleTextNode = new SimpleTextNode("This is line 1.\n\nThis is line 2");
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(simpleTextNode)));
+    assertThat(html).isEqualTo("<p>This is line 1.</p><p>This is line 2</p>");
   }
 
   @Test
@@ -163,25 +170,25 @@ public class HtmlRenderServiceImplTest {
     DefinitionReferenceNode laser = new DefinitionReferenceNode("\"laser\"", "123", true);
     DefinitionReferenceNode radio = new DefinitionReferenceNode("radio", "abc", true);
     ModalContentLinkNode example = new ModalContentLinkNode("example", "exampleId");
-    SimpleTextNode text1 = new SimpleTextNode("This is text 1");
-    SimpleTextNode text2 = new SimpleTextNode("This is text 2 \nwith newline");
-    SimpleTextNode list1 = new SimpleTextNode("*1\n**A\n**B\n***(i)\n***(ii)\n");
-    SimpleTextNode list2 = new SimpleTextNode("*a\n*b\n*c\n");
+    SimpleTextNode text1 = new SimpleTextNode("This is text 1\n\n");
+    SimpleTextNode text2 = new SimpleTextNode("This is text 2 \nwith newline\n\n");
+    SimpleTextNode list1 = new SimpleTextNode("*1\n**A\n**B\n***(i)\n***(ii)\n\n");
+    SimpleTextNode list2 = new SimpleTextNode("*a\n*b\n*c\n\n");
     List<RichTextNode> richTextNodes = Arrays.asList(ml1, laser, text1, list1, ml2, radio, text2, list2, example);
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(richTextNodes));
 
     assertThat(html)
         .isEqualTo(
             unescape(
-                "<a href='/view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1' target='_blank'>Code ML1</a>"
+                "<p><a href='/view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1' target='_blank'>Code ML1</a>"
                     + "<a href='/view-definition/global/123' data-definition-id='123' data-definition-type='global' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"
-                    + "This is text 1"
+                    + "This is text 1</p>"
                     + "<ul><li>1</li><ul><li>A</li><li>B</li><ul><li>(i)</li><li>(ii)</li></ul></ul></ul>"
-                    + "<a href='/view-control-entry/ML2' data-control-entry-id='ML2' title='View Code ML2' target='_blank'>Code ML2</a>"
+                    + "<p><a href='/view-control-entry/ML2' data-control-entry-id='ML2' title='View Code ML2' target='_blank'>Code ML2</a>"
                     + "<a href='/view-definition/global/abc' data-definition-id='abc' data-definition-type='global' title='View definition of &quot;radio&quot;' target='_blank'>radio</a>"
-                    + "This is text 2 <br>with newline"
-                    + "<ul><li>a</li><li>b</li><li>c</li></ul>" +
-                    "<a href='/view-modal-content/exampleId' data-modal-content-id='exampleId' title='View example'>example</a>"));
+                    + "This is text 2 <br>with newline</p>"
+                    + "<ul><li>a</li><li>b</li><li>c</li></ul>"
+                    + "<p><a href='/view-modal-content/exampleId' data-modal-content-id='exampleId' title='View example'>example</a></p>"));
   }
 
   private String unescape(String str) {

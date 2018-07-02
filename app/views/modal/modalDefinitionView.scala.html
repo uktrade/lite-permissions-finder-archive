@@ -4,7 +4,7 @@
 
 @(term : String, definitionTextHtml: String)
 @standardPage(term, Some(heading(term))) { } {
-  <div>
-    <p>@Html(definitionTextHtml)</p>
+  <div class="prose">
+    @Html(definitionTextHtml)
   </div>
 }
