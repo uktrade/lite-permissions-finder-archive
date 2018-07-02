@@ -5,7 +5,10 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.typesafe.config.Config;
+import components.common.auth.SamlAuthorizer;
+import components.common.auth.SamlHttpActionAdapter;
 import components.common.auth.SamlUtil;
+import controllers.routes;
 import org.pac4j.play.LogoutController;
 import org.pac4j.play.store.PlayCacheSessionStore;
 import org.pac4j.play.store.PlaySessionStore;
@@ -41,7 +44,7 @@ public class SamlModule extends AbstractModule {
   public org.pac4j.core.config.Config provideConfig(PlaySessionStore playSessionStore, SamlAuthorizer samlAuthorizer) {
     return SamlUtil.buildConfig(config,
         playSessionStore,
-        new SamlHttpActionAdaptor(),
+        new SamlHttpActionAdapter(routes.AuthorisationController.unauthorised()),
         ImmutableMap.of(SamlAuthorizer.AUTHORIZER_NAME, samlAuthorizer));
   }
 

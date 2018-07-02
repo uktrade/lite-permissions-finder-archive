@@ -6,7 +6,7 @@ import static uk.gov.bis.lite.permissions.api.view.OgelRegistrationView.Status.D
 import static uk.gov.bis.lite.permissions.api.view.OgelRegistrationView.Status.SURRENDERED;
 
 import com.google.inject.Inject;
-import components.auth.SamlAuthorizer;
+import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.services.CustomerService;
