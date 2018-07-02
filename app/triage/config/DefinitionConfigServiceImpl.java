@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
+import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.LocalDefinitionDao;
 import models.cms.GlobalDefinition;
@@ -17,6 +18,7 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
   private final RichTextParser richTextParser;
   private final GlobalDefinitionDao globalDefinitionDao;
   private final LocalDefinitionDao localDefinitionDao;
+  private final ControlEntryDao controlEntryDao;
 
   private final LoadingCache<String, DefinitionConfig> globalDefinitionCache;
   private final LoadingCache<String, DefinitionConfig> localDefinitionCache;
@@ -24,10 +26,11 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
 
   @Inject
   public DefinitionConfigServiceImpl(GlobalDefinitionDao globalDefinitionDao, LocalDefinitionDao localDefinitionDao,
-                                     RichTextParser richTextParser) {
+                                     ControlEntryDao controlEntryDao, RichTextParser richTextParser) {
     this.richTextParser = richTextParser;
     this.localDefinitionDao = localDefinitionDao;
     this.globalDefinitionDao = globalDefinitionDao;
+    this.controlEntryDao = controlEntryDao;
     this.globalDefinitionCache = CacheBuilder.newBuilder().build(CacheLoader.from(this::createGlobalDefinition));
     this.localDefinitionCache = CacheBuilder.newBuilder().build(CacheLoader.from(this::createLocalDefinition));
   }
@@ -49,9 +52,9 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
   }
 
   private DefinitionConfig createLocalDefinition(String id) {
-    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(id));
     LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(id));
-    RichText richDefinitionText = richTextParser.parseForControlEntry(localDefinition.getDefinitionText(), Long.toString(localDefinition.getControlEntryId()), Long.toString(globalDefinition.getJourneyId()));
+    Long controlEntryId = localDefinition.getControlEntryId();
+    RichText richDefinitionText = richTextParser.parseForControlEntry(localDefinition.getDefinitionText(), Long.toString(controlEntryId), Long.toString(controlEntryDao.getControlEntry(controlEntryId).getJourneyId()));
     return new DefinitionConfig(Long.toString(localDefinition.getId()), localDefinition.getTerm(), richDefinitionText, null);
   }
 
