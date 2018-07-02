@@ -25,26 +25,26 @@ public class RichTextParserImpl implements RichTextParser {
   }
 
   @Override
-  public RichText parseForStage(String text, String stageId) {
-    List<RichTextNode> withModalContentLinks = parseModalContentLinks(Collections.singletonList(new SimpleTextNode(text)));
-    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(withModalContentLinks);
+  public RichText parseForStage(String text, String stageId, String journeyId) {
+    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(Collections.singletonList(new SimpleTextNode(text)), journeyId);
     List<RichTextNode> withControlEntries = parseControlEntries(withGlobalDefinitions);
-    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withControlEntries);
+    List<RichTextNode> withModalContentLinks = parseModalContentLinks(withControlEntries);
+    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withModalContentLinks);
     return new RichText(withFlattenedSimpleTextNodes);
   }
 
   @Override
-  public RichText parseForControlEntry(String text, String controlEntryId) {
-    List<RichTextNode> withModalContentLinks = parseModalContentLinks(Collections.singletonList(new SimpleTextNode(text)));
-    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(withModalContentLinks);
+  public RichText parseForControlEntry(String text, String controlEntryId, String journeyId) {
+    List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(Collections.singletonList(new SimpleTextNode(text)), journeyId);
     List<RichTextNode> withLocalDefinitions = parseLocalDefinitions(withGlobalDefinitions, controlEntryId);
     List<RichTextNode> withControlEntries = parseControlEntries(withLocalDefinitions);
-    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withControlEntries);
+    List<RichTextNode> withModalContentLinks = parseModalContentLinks(withControlEntries);
+    List<RichTextNode> withFlattenedSimpleTextNodes = flattenConsecutiveSimpleTextNodes(withModalContentLinks);
     return new RichText(withFlattenedSimpleTextNodes);
   }
 
-  private List<RichTextNode> parseGlobalDefinitions(List<RichTextNode> inputNodes) {
-    return parseDefinitions(inputNodes, GLOBAL_DEFINITION_PATTERN, this::createGlobalDefinition);
+  private List<RichTextNode> parseGlobalDefinitions(List<RichTextNode> inputNodes, String journeyId) {
+    return parseDefinitions(inputNodes, GLOBAL_DEFINITION_PATTERN, matcher -> createGlobalDefinition(matcher, journeyId));
   }
 
   private List<RichTextNode> parseLocalDefinitions(List<RichTextNode> inputNodes, String controlEntryId) {
@@ -59,11 +59,11 @@ public class RichTextParserImpl implements RichTextParser {
     return parseDefinitions(inputNodes, MODAL_CONTENT_LINK_PATTERN, this::createModalContentLinkNode);
   }
 
-  private RichTextNode createGlobalDefinition(Matcher matcher) {
+  private RichTextNode createGlobalDefinition(Matcher matcher, String journeyId) {
     String termInQuotes = matcher.group(0);
     String term = matcher.group(1);
 
-    return parserLookupService.getGlobalDefinitionForTerm(term)
+    return parserLookupService.getGlobalDefinitionForTerm(term, journeyId)
         .map(definition -> (RichTextNode) new DefinitionReferenceNode(termInQuotes, definition.getId().toString(), true))
         .orElse(new SimpleTextNode(termInQuotes));
   }

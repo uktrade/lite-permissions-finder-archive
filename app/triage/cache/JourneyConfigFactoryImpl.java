@@ -73,8 +73,9 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
   }
 
   private StageConfig createStageConfig(Stage stage) {
+    String journeyId = Long.toString(stage.getJourneyId());
     RichText explanatoryNote = richTextParser.parseForStage(StringUtils.defaultString(stage.getExplanatoryNotes()),
-        Long.toString(stage.getId()));
+        Long.toString(stage.getId()), journeyId);
     String nextStageId = Optional.ofNullable(stage.getNextStageId()).map(Object::toString).orElse(null);
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stage.getControlEntryId())
         .map(controlEntryDao::getControlEntry)
@@ -83,7 +84,7 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
     List<AnswerConfig> answerConfigs = stageAnswerDao.getStageAnswersForStageId(stage.getId())
         .stream()
-        .map(this::createAnswerConfig)
+        .map(stageAnswer -> createAnswerConfig(stageAnswer, journeyId))
         .sorted(Comparator.comparing(AnswerConfig::getDisplayOrder))
         .collect(Collectors.toList());
 
@@ -91,16 +92,16 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), controlEntryConfig, answerConfigs);
   }
 
-  private AnswerConfig createAnswerConfig(StageAnswer stageAnswer) {
+  private AnswerConfig createAnswerConfig(StageAnswer stageAnswer, String journeyId) {
 
     String nextStageId = Optional.ofNullable(stageAnswer.getGoToStageId()).map(Object::toString).orElse(null);
 
     RichText labelText = Optional.ofNullable(stageAnswer.getAnswerText())
-        .map(e -> richTextParser.parseForStage(e, nextStageId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, nextStageId, journeyId)).orElse(null);
     RichText nestedContent = Optional.ofNullable(stageAnswer.getNestedContent())
-        .map(e -> richTextParser.parseForStage(e, nextStageId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, nextStageId, journeyId)).orElse(null);
     RichText moreInfoContent = Optional.ofNullable(stageAnswer.getMoreInfoContent())
-        .map(e -> richTextParser.parseForStage(e, nextStageId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, nextStageId, journeyId)).orElse(null);
 
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stageAnswer.getControlEntryId())
         .map(controlEntryDao::getControlEntry)
@@ -117,9 +118,9 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
   private ControlEntryConfig createControlEntryConfig(ControlEntry controlEntry) {
     String controlEntryId = controlEntry.getId().toString();
-    RichText fullDescription = richTextParser.parseForControlEntry(controlEntry.getFullDescription(), controlEntryId);
+    RichText fullDescription = richTextParser.parseForControlEntry(controlEntry.getFullDescription(), controlEntryId, Long.toString(controlEntry.getJourneyId()));
     String summaryDescriptionString = StringUtils.defaultString(controlEntry.getSummaryDescription());
-    RichText summaryDescription = richTextParser.parseForControlEntry(summaryDescriptionString, controlEntryId);
+    RichText summaryDescription = richTextParser.parseForControlEntry(summaryDescriptionString, controlEntryId, Long.toString(controlEntry.getJourneyId()));
 
     ControlEntryConfig parentControlEntryConfig = null;
     if (controlEntry.getParentControlEntryId() != null) {
@@ -137,7 +138,8 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
   private NoteConfig createNoteConfig(Note note) {
     String stageId = note.getStageId().toString();
-    RichText noteText = richTextParser.parseForStage(note.getNoteText(), stageId);
+    Long journeyId = Optional.ofNullable(stageDao.getStage(Long.parseLong(stageId))).map(Stage::getJourneyId).orElse(null);
+    RichText noteText = richTextParser.parseForStage(note.getNoteText(), stageId, Long.toString(journeyId));
     return new NoteConfig(note.getId().toString(), stageId, noteText, note.getNoteType());
   }
 

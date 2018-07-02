@@ -44,13 +44,14 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
 
   private DefinitionConfig createGlobalDefinition(String id) {
     GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(id));
-    RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
+    RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null, Long.toString(globalDefinition.getJourneyId()));
     return new DefinitionConfig(Long.toString(globalDefinition.getId()), globalDefinition.getTerm(), richDefinitionText, null);
   }
 
   private DefinitionConfig createLocalDefinition(String id) {
+    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(id));
     LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(id));
-    RichText richDefinitionText = richTextParser.parseForStage(localDefinition.getDefinitionText(), null);
+    RichText richDefinitionText = richTextParser.parseForControlEntry(localDefinition.getDefinitionText(), Long.toString(localDefinition.getControlEntryId()), Long.toString(globalDefinition.getJourneyId()));
     return new DefinitionConfig(Long.toString(localDefinition.getId()), localDefinition.getTerm(), richDefinitionText, null);
   }
 

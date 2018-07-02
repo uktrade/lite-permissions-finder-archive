@@ -8,7 +8,7 @@ public interface GlobalDefinitionDao {
 
   GlobalDefinition getGlobalDefinition(long id);
 
-  GlobalDefinition getGlobalDefinitionByTerm(String term);
+  GlobalDefinition getGlobalDefinitionByTermAndJourneyId(String term, long journeyId);
 
   List<Long> getAllIds();
 
