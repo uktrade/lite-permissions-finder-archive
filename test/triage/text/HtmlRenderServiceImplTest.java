@@ -148,6 +148,13 @@ public class HtmlRenderServiceImplTest {
   }
 
   @Test
+  public void textWithMultipleNewlinesTest() {
+    SimpleTextNode simpleTextNode = new SimpleTextNode("This is line 1.\n\nThis is line 2");
+    String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(simpleTextNode)));
+    assertThat(html).isEqualTo("<p>This is line 1.</p><p>This is line 2</p>");
+  }
+
+  @Test
   public void modelContentLinkTest() {
     ModalContentLinkNode modalContentLinkNode = new ModalContentLinkNode("example", "exampleId");
     RichText richText = new RichText(Collections.singletonList(modalContentLinkNode));
