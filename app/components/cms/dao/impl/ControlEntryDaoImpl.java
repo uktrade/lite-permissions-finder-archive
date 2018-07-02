@@ -50,7 +50,8 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
         controlEntry.getFullDescription(),
         controlEntry.getSummaryDescription(),
         controlEntry.isNested(),
-        controlEntry.getDisplayOrder());
+        controlEntry.getDisplayOrder(),
+        controlEntry.getJourneyId());
   }
 
   @Override
