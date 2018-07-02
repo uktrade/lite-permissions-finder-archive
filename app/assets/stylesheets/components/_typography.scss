@@ -1,5 +1,11 @@
 @import "mixins";
 
+// Use the .prose class for text which should have sensible default styling applied to elements without classes
+// (for example, bullet points on lists)
+.prose {
+  @include ul-has-bullets;
+}
+
 .heading-xlarge .heading-secondary,
 .heading-large .heading-secondary {
   @include core-19;
@@ -37,11 +43,11 @@
 
 
 label {
-  @include ul-has-bullets;
+  @extend .prose;
 }
 
 .panel {
-  @include ul-has-bullets;
+  @extend .prose;
 }
 
 a[data-definition-id],
