@@ -120,45 +120,42 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   /**
    * registerOgel
    */
-  public CompletionStage<Void> registerOgel(String sessionId) {
+  public void registerOgel(String sessionId) {
     String userId = getUserId();
-
-
-    // String customerId = licenceFinderDao.getCustomerId(sessionId);
-    // String siteId = licenceFinderDao.getSiteId(sessionId);
 
     Optional<Customer> optCustomer = licenceFinderDao.getCustomer(sessionId);
     Optional<Site> optSite = licenceFinderDao.getSite(sessionId);
     if (!optCustomer.isPresent() || !optSite.isPresent()) {
       throw new ServiceException("Customer and/or Site could not be determined - a user can only have one associated Customer and only one associated Site");
-    } else {
-      String customerId = optCustomer.get().getId();
-      String siteId = optSite.get().getId();
-      String ogelId = licenceFinderDao.getOgelId(sessionId);
-
-      String callbackUrl = permissionsFinderUrl + controllers.licencefinder.routes.RegistrationController.handleRegistrationCallback(sessionId);
-
-      if (StringUtils.isBlank(customerId) || StringUtils.isBlank(siteId)) {
-        throw new ServiceException("Customer and/or Site could not be determined - a user can only have one associated Customer and only one associated Site");
-      }
-
-      RegisterLicence registerLicence = new RegisterLicence();
-      registerLicence.setSessionId(sessionId);
-      registerLicence.setUserId(userId);
-      registerLicence.setOgelId(ogelId);
-      registerLicence.setCustomerId(customerId);
-
-      // Add user information to licence application data
-      UserDetailsView userDetailsView = getUserDetails(registerLicence.getUserId());
-      registerLicence.setUserEmailAddress(userDetailsView.getContactEmailAddress());
-      registerLicence.setUserFullName(userDetailsView.getFullName());
-
-      return permissionsService.registerOgel(userId, customerId, siteId, ogelId, callbackUrl)
-          .thenAcceptAsync(response -> registrationResponseReceived(sessionId, response, registerLicence));
     }
+
+    String customerId = optCustomer.get().getId();
+    String siteId = optSite.get().getId();
+    String ogelId = licenceFinderDao.getOgelId(sessionId);
+
+    String callbackUrl = permissionsFinderUrl + controllers.licencefinder.routes.RegistrationController.handleRegistrationCallback(sessionId);
+
+    if (StringUtils.isBlank(customerId) || StringUtils.isBlank(siteId)) {
+      throw new ServiceException("Customer and/or Site could not be determined - a user can only have one associated Customer and only one associated Site");
+    }
+
+    RegisterLicence registerLicence = new RegisterLicence();
+    registerLicence.setSessionId(sessionId);
+    registerLicence.setUserId(userId);
+    registerLicence.setOgelId(ogelId);
+    registerLicence.setCustomerId(customerId);
+
+    // Add user information to licence application data
+    UserDetailsView userDetailsView = getUserDetails(registerLicence.getUserId());
+    registerLicence.setUserEmailAddress(userDetailsView.getContactEmailAddress());
+    registerLicence.setUserFullName(userDetailsView.getFullName());
+
+    permissionsService.registerOgel(userId, customerId, siteId, ogelId, callbackUrl)
+        .thenAcceptAsync(response -> registrationResponseReceived(sessionId, response, registerLicence));
+
   }
 
-  public UserDetailsView getUserDetails(String userId) {
+  private UserDetailsView getUserDetails(String userId) {
     try {
       return userService.getUserDetailsView(userId).toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException exception) {
@@ -167,7 +164,9 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   }
 
   /**
-   * handleCallback
+   * handleCallback handles callback from permission service after Ogel submission
+   * Updates licence registration reference
+   * Handles logic to send confirmation emails to user and to ECJU
    */
   public void handleCallback(String sessionId, CallbackView callbackView) {
     String regRef = callbackView.getRegistrationReference();
@@ -176,26 +175,18 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       RegisterLicence registerLicence = optRegisterLicence.get();
       registerLicence.setRegistrationReference(regRef);
       licenceFinderDao.saveRegisterLicence(sessionId, registerLicence);
-      LOGGER.info("RegisterLicence updated with registrationReference: " + regRef);
 
-      // Send confirmation email to user
+      // Send confirmation emails
       Optional<Customer> optCustomer = licenceFinderDao.getCustomer(sessionId);
       Optional<Site> optSite = licenceFinderDao.getSite(sessionId);
       if (optCustomer.isPresent() && optSite.isPresent()) {
         Customer customer = optCustomer.get();
         Site site = optSite.get();
-
-        LOGGER.info("USER_ID: " + registerLicence.getUserId());
-        // UserDetailsView userDetailsView = userService.getUserDetails(registerLicence.getUserId());
-
         String registrationRef = registerLicence.getRegistrationReference();
-        String ogelUrl = permissionsFinderUrl + controllers.licencefinder.routes.ViewOgelController.viewOgel(registrationRef);
 
-        //String userEmailAddress = userDetailsView.getContactEmailAddress();
+        // Send confirmation email to user
+        String ogelUrl = permissionsFinderUrl + controllers.licencefinder.routes.ViewOgelController.viewOgel(registrationRef);
         String userEmailAddress = registerLicence.getUserEmailAddress();
-        LOGGER.info("userEmailAddress: " + userEmailAddress);
-        userEmailAddress = "dan.haynes@digital.trade.gov.uk";
-        //String applicantName = userDetailsView.getFullName();
         String applicantName = registerLicence.getUserFullName();
         notificationClient.sendRegisteredOgelToUserEmail(userEmailAddress, applicantName, ogelUrl);
 
@@ -203,9 +194,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
         String resumeCode = licenceFinderDao.getResumeCode(sessionId);
         String companyName = customer.getCompanyName();
         String siteAddress = site.getAddress();
-
         notificationClient.sendRegisteredOgelEmailToEcju(userEmailAddress, applicantName, resumeCode, companyName, siteAddress, ogelUrl);
-
       }
     }
   }
@@ -230,24 +219,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     } else {
       LOGGER.warn("Not a single Customer associated with user: " + userId);
     }
-
-    /*
-    String userId = getUserId();
-    Optional<String> optCustomerId = getCustomerId(userId);
-    if (optCustomerId.isPresent()) {
-      String customerId = optCustomerId.get();
-      licenceFinderDao.saveCustomerId(sessionId, customerId); // persist customerId
-      Optional<String> optSiteId = getSiteId(userId, optCustomerId.get());
-      if (optSiteId.isPresent()) {
-        String siteId = optSiteId.get();
-        licenceFinderDao.saveSiteId(sessionId, siteId); // persist siteId
-      } else {
-        LOGGER.warn("Not a single Site associated with user/customer: " + userId + "/" + customerId);
-      }
-    } else {
-      LOGGER.warn("Not a single Customer associated with user: " + userId);
-    }
-    */
   }
 
   /**
@@ -344,24 +315,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   }
 
   /**
-   * We only return a CustomerId if there is only one Customer associated with the user
-   */
-  private Optional<String> getCustomerId(String userId) {
-    Optional<List<CustomerView>> optCustomers = customerService.getCustomersByUserId(userId);
-    if (optCustomers.isPresent()) {
-      List<CustomerView> customers = optCustomers.get();
-
-      // Check for single customer only TODO change when requirement changes
-      if (customers.size() == 1) {
-        return Optional.of(customers.get(0).getCustomerId());
-      } else {
-        LOGGER.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
-      }
-    }
-    return Optional.empty();
-  }
-
-  /**
    * We only return a Customer if there is only one Customer associated with the user
    */
   private Optional<Customer> getCustomer(String userId) {
@@ -375,23 +328,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
         return Optional.of(new Customer(customerView.getCustomerId(), customerView.getCompanyName()));
       } else {
         LOGGER.warn("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customerViews.size());
-      }
-    }
-    return Optional.empty();
-  }
-
-  /**
-   * We only return a SiteId if there is only one Site associated with the user/customer
-   */
-  private Optional<String> getSiteId(String userId, String customerId) {
-    Optional<List<SiteView>> optSites = customerService.getSitesByCustomerIdUserId(customerId, userId);
-    if (optSites.isPresent()) {
-      List<SiteView> sites = optSites.get();
-      // Check for single site only TODO change when requirement changes
-      if (sites.size() == 1) {
-        return Optional.of(sites.get(0).getSiteId());
-      } else {
-        LOGGER.warn("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
       }
     }
     return Optional.empty();

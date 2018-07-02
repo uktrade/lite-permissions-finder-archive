@@ -4,13 +4,12 @@ import models.view.licencefinder.ResultsView;
 import uk.gov.bis.lite.permissions.api.view.CallbackView;
 
 import java.util.Optional;
-import java.util.concurrent.CompletionStage;
 
 public interface LicenceFinderService {
 
   void persistCustomerAndSiteData(String sessionId);
 
-  CompletionStage<Void> registerOgel(String sessionId);
+  void registerOgel(String sessionId);
 
   void handleCallback(String sessionId, CallbackView callbackView);
 

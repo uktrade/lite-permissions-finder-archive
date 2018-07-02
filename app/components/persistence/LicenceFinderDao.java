@@ -22,8 +22,6 @@ public class LicenceFinderDao {
   private static final String USER_ID = "userId";
   private static final String SOURCE_COUNTRY = "sourceCountry";
   private static final String OGEL_ID = "ogelId";
-  private static final String CUSTOMER_ID = "customerId";
-  private static final String SITE_ID = "siteId";
   private static final String TRADE_TYPE = "tradeType";
   private static final String OGEL_QUESTIONS = "ogelQuestions";
   private static final String DESTINATION_COUNTRY = "destinationCountry";
@@ -57,24 +55,6 @@ public class LicenceFinderDao {
   public Optional<Site> getSite(String sessionId) {
     return statelessRedisDao.readObject(sessionId, SITE, Site.class);
   }
-
-  /*
-  public void saveCustomerId(String sessionId, String customerId) {
-    statelessRedisDao.writeString(sessionId, CUSTOMER_ID, customerId);
-  }
-
-  public String getCustomerId(String sessionId) {
-    return statelessRedisDao.readString(sessionId, CUSTOMER_ID);
-  }
-
-  public void saveSiteId(String sessionId, String siteId) {
-    statelessRedisDao.writeString(sessionId, SITE_ID, siteId);
-  }
-
-  public String getSiteId(String sessionId) {
-    return statelessRedisDao.readString(sessionId, SITE_ID);
-  }
-  */
 
   public void saveControlCode(String sessionId, String controlCode) {
     statelessRedisDao.writeString(sessionId, CONTROL_CODE, controlCode);
