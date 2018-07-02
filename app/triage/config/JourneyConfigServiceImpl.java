@@ -8,6 +8,7 @@ import components.cms.dao.ControlEntryDao;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
+import exceptions.UnknownParameterException;
 import models.cms.Journey;
 import models.cms.Stage;
 import models.cms.StageAnswer;
@@ -27,8 +28,8 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   private final StageAnswerDao stageAnswerDao;
   private final ControlEntryDao controlEntryDao;
 
-  private final LoadingCache<String, StageConfig> stageConfigCache;
-  private final LoadingCache<String, ControlEntryConfig> controlEntryCache;
+  private final LoadingCache<String, Optional<StageConfig>> stageConfigCache;
+  private final LoadingCache<String, Optional<ControlEntryConfig>> controlEntryCache;
   private final LoadingCache<String, List<ControlEntryConfig>> relatedControlEntryCache;
   private final LoadingCache<String, List<NoteConfig>> noteCache;
 
@@ -65,20 +66,31 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   }
 
   @Override
+  public StageConfig getStageConfigNotNull(String stageId) {
+    return stageConfigCache.getUnchecked(stageId)
+        .orElseThrow(() -> new UnknownParameterException("Unknown stageId " + stageId));
+  }
+
+  @Override
   public StageConfig getStageConfigById(String stageId) {
-    return stageConfigCache.getUnchecked(stageId);
+    return stageConfigCache.getUnchecked(stageId).orElse(null);
   }
 
   @Override
   public AnswerConfig getStageAnswerForPreviousStage(String stageId) {
     StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
     if (stageAnswer != null) {
-      return stageConfigCache.getUnchecked(stageAnswer.getStageId().toString())
-          .getAnswerConfigs()
-          .stream()
-          .filter(e -> e.getAnswerId().equals(stageAnswer.getId().toString()))
-          .findFirst()
-          .orElse(null);
+      Optional<StageConfig> stageConfigOptional = stageConfigCache.getUnchecked(stageAnswer.getStageId().toString());
+      if (stageConfigOptional.isPresent()) {
+        return stageConfigOptional.get()
+            .getAnswerConfigs()
+            .stream()
+            .filter(e -> e.getAnswerId().equals(stageAnswer.getId().toString()))
+            .findFirst()
+            .orElse(null);
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
@@ -105,8 +117,14 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   }
 
   @Override
+  public ControlEntryConfig getControlEntryNotNull(String controlEntryId) {
+    return controlEntryCache.getUnchecked(controlEntryId)
+        .orElseThrow(() -> new UnknownParameterException("Unknown controlEntryId " + controlEntryId));
+  }
+
+  @Override
   public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
-    return controlEntryCache.getUnchecked(controlEntryId);
+    return controlEntryCache.getUnchecked(controlEntryId).orElse(null);
   }
 
   @Override

@@ -34,21 +34,19 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   }
 
   @Override
-  public BreadcrumbView createBreadcrumbViewFromControlEntryId(String sessionId, String controlEntryId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+  public BreadcrumbView createBreadcrumbViewFromControlEntry(String sessionId, ControlEntryConfig controlEntryConfig) {
     List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig, true);
     return new BreadcrumbView(breadcrumbItemViews, new ArrayList<>());
   }
 
   @Override
-  public BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean includeChangeLinks,
+  public BreadcrumbView createBreadcrumbView(StageConfig stageConfig, String sessionId, boolean includeChangeLinks,
                                              HtmlRenderOption... htmlRenderOptions) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     ControlEntryConfig controlEntryConfig = getControlEntryConfig(stageConfig);
 
     List<BreadcrumbItemView> breadcrumbItemViews = createBreadcrumbItemViews(sessionId, controlEntryConfig, includeChangeLinks,
         htmlRenderOptions);
-    List<NoteView> noteViews = createNoteViews(stageId);
+    List<NoteView> noteViews = createNoteViews(stageConfig.getStageId());
     return new BreadcrumbView(breadcrumbItemViews, noteViews);
   }
 

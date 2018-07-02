@@ -5,11 +5,12 @@ import triage.config.NoteConfig;
 import triage.config.StageConfig;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface JourneyConfigFactory {
-  StageConfig createStageConfigForId(String stageId);
+  Optional<StageConfig> createStageConfigForId(String stageId);
 
-  ControlEntryConfig createControlEntryConfigForId(String controlEntryId);
+  Optional<ControlEntryConfig> createControlEntryConfigForId(String controlEntryId);
 
   List<ControlEntryConfig> createRelatedControlEntryConfigsForId(String controlEntryId);
 

@@ -7,10 +7,13 @@ import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.LocalDefinitionDao;
+import exceptions.UnknownParameterException;
 import models.cms.GlobalDefinition;
 import models.cms.LocalDefinition;
 import triage.text.RichText;
 import triage.text.RichTextParser;
+
+import java.util.Optional;
 
 public class DefinitionConfigServiceImpl implements DefinitionConfigService {
 
@@ -18,8 +21,8 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
   private final GlobalDefinitionDao globalDefinitionDao;
   private final LocalDefinitionDao localDefinitionDao;
 
-  private final LoadingCache<String, DefinitionConfig> globalDefinitionCache;
-  private final LoadingCache<String, DefinitionConfig> localDefinitionCache;
+  private final LoadingCache<String, Optional<DefinitionConfig>> globalDefinitionCache;
+  private final LoadingCache<String, Optional<DefinitionConfig>> localDefinitionCache;
 
 
   @Inject
@@ -33,25 +36,59 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
   }
 
   @Override
+  public DefinitionConfig getGlobalDefinitionNotNull(String id) {
+    return globalDefinitionCache.getUnchecked(id)
+        .orElseThrow(() -> new UnknownParameterException("Unknown globalDefinitionId " + id));
+  }
+
+  @Override
   public DefinitionConfig getGlobalDefinition(String id) {
-    return globalDefinitionCache.getUnchecked(id);
+    return globalDefinitionCache.getUnchecked(id).orElse(null);
+  }
+
+  @Override
+  public DefinitionConfig getLocalDefinitionNotNull(String id) {
+    return localDefinitionCache.getUnchecked(id)
+        .orElseThrow(() -> new UnknownParameterException("Unknown localDefinitionId " + id));
   }
 
   @Override
   public DefinitionConfig getLocalDefinition(String id) {
-    return localDefinitionCache.getUnchecked(id);
+    return localDefinitionCache.getUnchecked(id).orElse(null);
   }
 
-  private DefinitionConfig createGlobalDefinition(String id) {
-    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(id));
-    RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
-    return new DefinitionConfig(Long.toString(globalDefinition.getId()), globalDefinition.getTerm(), richDefinitionText, null);
+  private Optional<DefinitionConfig> createGlobalDefinition(String definitionId) {
+    long id;
+    try {
+      id = Long.parseLong(definitionId);
+    } catch (NumberFormatException nfe) {
+      return Optional.empty();
+    }
+    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(id);
+    if (globalDefinition == null) {
+      return Optional.empty();
+    } else {
+      RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null);
+      DefinitionConfig definitionConfig = new DefinitionConfig(Long.toString(globalDefinition.getId()), globalDefinition.getTerm(), richDefinitionText, null);
+      return Optional.of(definitionConfig);
+    }
   }
 
-  private DefinitionConfig createLocalDefinition(String id) {
-    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(id));
-    RichText richDefinitionText = richTextParser.parseForStage(localDefinition.getDefinitionText(), null);
-    return new DefinitionConfig(Long.toString(localDefinition.getId()), localDefinition.getTerm(), richDefinitionText, null);
+  private Optional<DefinitionConfig> createLocalDefinition(String definitionId) {
+    long id;
+    try {
+      id = Long.parseLong(definitionId);
+    } catch (NumberFormatException nfe) {
+      return Optional.empty();
+    }
+    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(id);
+    if (localDefinition == null) {
+      return Optional.empty();
+    } else {
+      RichText richDefinitionText = richTextParser.parseForStage(localDefinition.getDefinitionText(), null);
+      DefinitionConfig definitionConfig = new DefinitionConfig(Long.toString(localDefinition.getId()), localDefinition.getTerm(), richDefinitionText, null);
+      return Optional.of(definitionConfig);
+    }
   }
 
   @Override

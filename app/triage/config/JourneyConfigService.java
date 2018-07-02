@@ -9,9 +9,13 @@ public interface JourneyConfigService {
 
   String getInitialStageId();
 
+  StageConfig getStageConfigNotNull(String stageId);
+
   StageConfig getStageConfigById(String stageId);
 
   List<NoteConfig> getNoteConfigsByStageId(String stageId);
+
+  ControlEntryConfig getControlEntryNotNull(String controlEntryId);
 
   ControlEntryConfig getControlEntryConfigById(String controlEntryId);
 
