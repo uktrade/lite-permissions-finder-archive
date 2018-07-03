@@ -9,6 +9,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints;
 import play.mvc.Result;
+import play.mvc.With;
 import triage.session.SessionService;
 import utils.common.SelectOption;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
+@With(SessionGuardAction.class)
 public class OnboardingController {
 
   private final FormFactory formFactory;

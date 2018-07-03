@@ -42,18 +42,27 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
   }
 
   @Override
-  public StageConfig createStageConfigForId(String stageId) {
-    Stage stage = stageDao.getStage(Long.parseLong(stageId));
-    if (stage == null) {
-      return null;
-    } else {
-      return createStageConfig(stage);
+  public Optional<StageConfig> createStageConfigForId(String stageId) {
+    long id;
+    try {
+      id = Long.parseLong(stageId);
+    } catch (NumberFormatException nfe) {
+      return Optional.empty();
     }
+    return Optional.ofNullable(stageDao.getStage(id))
+        .map(this::createStageConfig);
   }
 
   @Override
-  public ControlEntryConfig createControlEntryConfigForId(String controlEntryId) {
-    return createControlEntryConfig(controlEntryDao.getControlEntry(Long.parseLong(controlEntryId)));
+  public Optional<ControlEntryConfig> createControlEntryConfigForId(String controlEntryId) {
+    long id;
+    try {
+      id = Long.parseLong(controlEntryId);
+    } catch (NumberFormatException nfe) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(controlEntryDao.getControlEntry(id))
+        .map(this::createControlEntryConfig);
   }
 
   @Override

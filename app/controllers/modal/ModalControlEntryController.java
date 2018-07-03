@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import triage.config.ControlEntryConfig;
+import triage.config.ControllerConfigService;
 import triage.config.JourneyConfigService;
 import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
@@ -21,6 +22,7 @@ public class ModalControlEntryController extends Controller {
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ModalControlEntryController.class);
 
   private final JourneyConfigService journeyConfigService;
+  private final ControllerConfigService controllerConfigService;
   private final BreadcrumbViewService breadcrumbViewService;
   private final AnswerViewService answerViewService;
   private final HtmlRenderService htmlRenderService;
@@ -28,11 +30,13 @@ public class ModalControlEntryController extends Controller {
 
   @Inject
   public ModalControlEntryController(JourneyConfigService journeyConfigService,
+                                     ControllerConfigService controllerConfigService,
                                      BreadcrumbViewService breadcrumbViewService,
                                      AnswerViewService answerViewService,
                                      HtmlRenderService htmlRenderService,
                                      views.html.modal.modalControlEntryView modalControlEntryView) {
     this.journeyConfigService = journeyConfigService;
+    this.controllerConfigService = controllerConfigService;
     this.breadcrumbViewService = breadcrumbViewService;
     this.answerViewService = answerViewService;
     this.htmlRenderService = htmlRenderService;
@@ -40,7 +44,8 @@ public class ModalControlEntryController extends Controller {
   }
 
   public Result renderControlEntryModal(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
+
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, true);
     String controlEntryUrl = createGoToControlEntryUrl(controlEntryConfig, sessionId);
     String description = createDescription(controlEntryConfig);
@@ -48,7 +53,8 @@ public class ModalControlEntryController extends Controller {
   }
 
   public Result renderControlEntryView(String controlEntryId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
+
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, true,
         HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
     String description = createDescription(controlEntryConfig);
@@ -82,4 +88,5 @@ public class ModalControlEntryController extends Controller {
           return null;
         });
   }
+
 }

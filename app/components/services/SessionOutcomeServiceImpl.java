@@ -71,8 +71,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   @Override
   public void generateItemListedOutcome(String userId, String sessionId,
-                                        String controlEntryId) throws InvalidUserAccountException {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+                                        ControlEntryConfig controlEntryConfig) throws InvalidUserAccountException {
     List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig, HtmlRenderOption.OMIT_LINKS);
@@ -89,9 +88,8 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   @Override
-  public String generateNotFoundNlrLetter(String userId, String sessionId, String controlEntryId, String resumeCode,
-                                          Html description) throws InvalidUserAccountException {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+  public String generateNotFoundNlrLetter(String userId, String sessionId, ControlEntryConfig controlEntryConfig,
+                                          String resumeCode, Html description) throws InvalidUserAccountException {
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, null);
 
@@ -99,11 +97,10 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   @Override
-  public String generateDecontrolNlrLetter(String userId, String sessionId, String stageId, String resumeCode,
+  public String generateDecontrolNlrLetter(String userId, String sessionId, StageConfig stageConfig, String resumeCode,
                                            Html description) throws InvalidUserAccountException {
-    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
-    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageId, sessionId, false, HtmlRenderOption.OMIT_LINKS);
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = decontrolBreadcrumb.render(null, breadcrumbView, answerViews);
 
     return generateLetter(userId, sessionId, resumeCode, SessionOutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);

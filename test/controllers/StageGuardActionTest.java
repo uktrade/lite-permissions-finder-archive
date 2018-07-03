@@ -17,7 +17,7 @@ import triage.session.SessionOutcome;
 import triage.session.SessionService;
 import triage.session.TriageSession;
 
-public class SessionGuardActionTest {
+public class StageGuardActionTest {
 
   private static final String SESSION_ID = "session-id";
 
@@ -25,7 +25,7 @@ public class SessionGuardActionTest {
   private final SessionService sessionService = mock(SessionService.class);
   private final JourneyConfigService journeyConfigService = mock(JourneyConfigService.class);
   private final SessionOutcomeDao sessionOutcomeDao = mock(SessionOutcomeDao.class);
-  private final SessionGuardAction sessionGuardAction = new SessionGuardAction(flashService, sessionService,
+  private final StageGuardAction sessionGuardAction = new StageGuardAction(flashService, sessionService,
       journeyConfigService, sessionOutcomeDao);
 
   @Test
