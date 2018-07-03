@@ -11,6 +11,11 @@ public class RegisterLicence {
   private String ogelId;
   private String callbackUrl;
 
+  private String userEmailAddress;
+  private String userFullName;
+
+  public RegisterLicence() {}
+
   public String getSessionId() {
     return sessionId;
   }
@@ -73,5 +78,21 @@ public class RegisterLicence {
 
   public void setRegistrationReference(String registrationReference) {
     this.registrationReference = registrationReference;
+  }
+
+  public String getUserEmailAddress() {
+    return userEmailAddress;
+  }
+
+  public void setUserEmailAddress(String userEmailAddress) {
+    this.userEmailAddress = userEmailAddress;
+  }
+
+  public String getUserFullName() {
+    return userFullName;
+  }
+
+  public void setUserFullName(String userFullName) {
+    this.userFullName = userFullName;
   }
 }

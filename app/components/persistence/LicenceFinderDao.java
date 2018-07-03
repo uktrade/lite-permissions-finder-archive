@@ -6,6 +6,8 @@ import components.common.persistence.StatelessRedisDao;
 import controllers.licencefinder.QuestionsController;
 import models.TradeType;
 import models.persistence.RegisterLicence;
+import models.view.licencefinder.Customer;
+import models.view.licencefinder.Site;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.client.RedisException;
 
@@ -16,11 +18,10 @@ import java.util.Optional;
 public class LicenceFinderDao {
 
   private static final String CONTROL_CODE = "controlCode";
+  private static final String RESUME_CODE = "resumeCode";
   private static final String USER_ID = "userId";
   private static final String SOURCE_COUNTRY = "sourceCountry";
   private static final String OGEL_ID = "ogelId";
-  private static final String CUSTOMER_ID = "customerId";
-  private static final String SITE_ID = "siteId";
   private static final String TRADE_TYPE = "tradeType";
   private static final String OGEL_QUESTIONS = "ogelQuestions";
   private static final String DESTINATION_COUNTRY = "destinationCountry";
@@ -29,6 +30,9 @@ public class LicenceFinderDao {
   private static final String USER_OGEL_ID_REF_MAP = "userOgelIdRefMap";
   private static final String REGISTER_LICENCE = "registerLicence";
 
+  private static final String CUSTOMER = "customer";
+  private static final String SITE = "site";
+
   private final StatelessRedisDao statelessRedisDao;
 
   @Inject
@@ -36,20 +40,20 @@ public class LicenceFinderDao {
     this.statelessRedisDao = statelessRedisDao;
   }
 
-  public void saveCustomerId(String sessionId, String customerId) {
-    statelessRedisDao.writeString(sessionId, CUSTOMER_ID, customerId);
+  public void saveCustomer(String sessionId, Customer customer) {
+    statelessRedisDao.writeObject(sessionId, CUSTOMER, customer);
   }
 
-  public String getCustomerId(String sessionId) {
-    return statelessRedisDao.readString(sessionId, CUSTOMER_ID);
+  public Optional<Customer> getCustomer(String sessionId) {
+    return statelessRedisDao.readObject(sessionId, CUSTOMER, Customer.class);
   }
 
-  public void saveSiteId(String sessionId, String siteId) {
-    statelessRedisDao.writeString(sessionId, SITE_ID, siteId);
+  public void saveSite(String sessionId, Site site) {
+    statelessRedisDao.writeObject(sessionId, SITE, site);
   }
 
-  public String getSiteId(String sessionId) {
-    return statelessRedisDao.readString(sessionId, SITE_ID);
+  public Optional<Site> getSite(String sessionId) {
+    return statelessRedisDao.readObject(sessionId, SITE, Site.class);
   }
 
   public void saveControlCode(String sessionId, String controlCode) {
@@ -58,6 +62,14 @@ public class LicenceFinderDao {
 
   public String getControlCode(String sessionId) {
     return statelessRedisDao.readString(sessionId, CONTROL_CODE);
+  }
+
+  public void saveResumeCode(String sessionId, String resumeCode) {
+    statelessRedisDao.writeString(sessionId, RESUME_CODE, resumeCode);
+  }
+
+  public String getResumeCode(String sessionId) {
+    return statelessRedisDao.readString(sessionId, RESUME_CODE);
   }
 
   public void saveUserId(String sessionId, String userId) {

@@ -23,6 +23,7 @@ import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.session.SessionOutcome;
 import triage.session.SessionService;
+import triage.session.TriageSession;
 import utils.HtmlUtil;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
@@ -107,7 +108,10 @@ public class ViewOutcomeController {
         return redirect(routes.StaticContentController.renderInvalidUserAccount());
       }
     }
-    return redirect(controllers.licencefinder.routes.EntryController.entry(controlEntryConfig.getControlCode()));
+
+    TriageSession triageSession = sessionService.getSessionById(sessionId);
+
+    return redirect(controllers.licencefinder.routes.EntryController.entry(controlEntryConfig.getControlCode(), triageSession.getResumeCode()));
   }
 
   public Result registerNotFoundNlr(String sessionId, String controlEntryId) {
