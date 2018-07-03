@@ -159,7 +159,7 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     try {
       return userService.getUserDetailsView(userId).toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException exception) {
-      throw new RuntimeException("Unable to get userDetailsView for userId " + userId, exception);
+      throw new ServiceException("Unable to get userDetailsView for userId " + userId);
     }
   }
 
@@ -195,12 +195,14 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
         String companyName = customer.getCompanyName();
         String siteAddress = site.getAddress();
         notificationClient.sendRegisteredOgelEmailToEcju(userEmailAddress, applicantName, resumeCode, companyName, siteAddress, ogelUrl);
+      } else {
+        LOGGER.info("Missing Customer/Site information for licence registration reference: " + registerLicence.getRegistrationReference());
       }
     }
   }
 
   /**
-   * persistCustomerAndSiteData
+   * Persists current users' Customer/Site data so it can be used later in flow
    */
   public void persistCustomerAndSiteData(String sessionId) {
 
