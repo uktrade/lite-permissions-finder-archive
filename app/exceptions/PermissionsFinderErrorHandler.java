@@ -7,8 +7,8 @@ import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import controllers.common.ErrorHandler;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 import play.Environment;
-import play.Logger;
 import play.api.OptionalSourceMapper;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -17,6 +17,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class PermissionsFinderErrorHandler extends ErrorHandler {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PermissionsFinderErrorHandler.class);
 
   private final views.html.licencefinder.errorPage errorPage;
 
@@ -31,7 +33,7 @@ public class PermissionsFinderErrorHandler extends ErrorHandler {
   public CompletionStage<Result> onClientError(Http.RequestHeader request, int statusCode, String message) {
     if (statusCode == Http.Status.NOT_FOUND ||
         (statusCode == Http.Status.BAD_REQUEST && StringUtils.startsWith(message, "Missing parameter"))) {
-      Logger.error(statusCode + " " + message);
+      LOGGER.warn(statusCode + " " + message);
       return CompletableFuture.completedFuture(notFound(errorPage.render("This page could not be found")));
     } else {
       return super.onClientError(request, statusCode, message);
@@ -41,7 +43,7 @@ public class PermissionsFinderErrorHandler extends ErrorHandler {
   @Override
   public CompletionStage<Result> onServerError(Http.RequestHeader request, Throwable exception) {
     if (exception instanceof UnknownParameterException) {
-      Logger.warn("onServerError", exception);
+      LOGGER.warn("onServerError", exception);
       return CompletableFuture.completedFuture(badRequest(errorPage.render("This page could not be found")));
     } else {
       return super.onServerError(request, exception);

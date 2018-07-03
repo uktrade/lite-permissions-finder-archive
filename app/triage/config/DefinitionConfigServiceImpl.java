@@ -7,7 +7,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.LocalDefinitionDao;
-import exceptions.UnknownParameterException;
 import models.cms.GlobalDefinition;
 import models.cms.LocalDefinition;
 import triage.text.RichText;
@@ -36,25 +35,13 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
   }
 
   @Override
-  public DefinitionConfig getGlobalDefinitionNotNull(String id) {
-    return globalDefinitionCache.getUnchecked(id)
-        .orElseThrow(() -> new UnknownParameterException("Unknown globalDefinitionId " + id));
+  public Optional<DefinitionConfig> getGlobalDefinition(String id) {
+    return globalDefinitionCache.getUnchecked(id);
   }
 
   @Override
-  public DefinitionConfig getGlobalDefinition(String id) {
-    return globalDefinitionCache.getUnchecked(id).orElse(null);
-  }
-
-  @Override
-  public DefinitionConfig getLocalDefinitionNotNull(String id) {
-    return localDefinitionCache.getUnchecked(id)
-        .orElseThrow(() -> new UnknownParameterException("Unknown localDefinitionId " + id));
-  }
-
-  @Override
-  public DefinitionConfig getLocalDefinition(String id) {
-    return localDefinitionCache.getUnchecked(id).orElse(null);
+  public Optional<DefinitionConfig> getLocalDefinition(String id) {
+    return localDefinitionCache.getUnchecked(id);
   }
 
   private Optional<DefinitionConfig> createGlobalDefinition(String definitionId) {

@@ -180,7 +180,8 @@ public class AnswerViewServiceImpl implements AnswerViewService {
   }
 
   private String createMoreInformation(String stageId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId);
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId).orElseThrow(() ->
+        new BusinessRuleException("Unknown stageId " + stageId));
     if (stageConfig.getQuestionType() == QuestionType.STANDARD) {
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.append("<ul>");

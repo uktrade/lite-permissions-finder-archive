@@ -27,6 +27,7 @@ import play.mvc.Result;
 import play.mvc.With;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
+import triage.config.ControllerConfigService;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.session.SessionService;
@@ -54,6 +55,7 @@ public class StageController extends Controller {
   private final SessionService sessionService;
   private final FormFactory formFactory;
   private final JourneyConfigService journeyConfigService;
+  private final ControllerConfigService controllerConfigService;
   private final RenderService renderService;
   private final ProgressViewService progressViewService;
   private final views.html.triage.decontrol decontrol;
@@ -65,7 +67,8 @@ public class StageController extends Controller {
   @Inject
   public StageController(BreadcrumbViewService breadcrumbViewService, AnswerConfigService answerConfigService,
                          AnswerViewService answerViewService, SessionService sessionService, FormFactory formFactory,
-                         JourneyConfigService journeyConfigService, RenderService renderService,
+                         JourneyConfigService journeyConfigService,
+                         ControllerConfigService controllerConfigService, RenderService renderService,
                          ProgressViewService progressViewService, views.html.triage.selectOne selectOne,
                          views.html.triage.selectMany selectMany, views.html.triage.decontrol decontrol,
                          views.html.triage.relatedEntries relatedEntries, views.html.triage.item item) {
@@ -75,6 +78,7 @@ public class StageController extends Controller {
     this.sessionService = sessionService;
     this.formFactory = formFactory;
     this.journeyConfigService = journeyConfigService;
+    this.controllerConfigService = controllerConfigService;
     this.renderService = renderService;
     this.progressViewService = progressViewService;
     this.selectOne = selectOne;
@@ -89,7 +93,7 @@ public class StageController extends Controller {
   }
 
   public Result render(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigNotNull(stageId);
+    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     PageType pageType = PageTypeUtil.getPageType(stageConfig);
@@ -113,12 +117,12 @@ public class StageController extends Controller {
         return renderItem(formFactory.form(AnswerForm.class), stageConfig, sessionId, resumeCode);
       case UNKNOWN:
       default:
-        throw new UnknownParameterException("Unknown stageId " + stageId);
+        throw UnknownParameterException.unknownStageId(stageId);
     }
   }
 
   public Result handleSubmit(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigNotNull(stageId);
+    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     PageType pageType = PageTypeUtil.getPageType(stageConfig);
@@ -133,19 +137,19 @@ public class StageController extends Controller {
         return handleItemSubmit(stageId, sessionId, stageConfig, resumeCode);
       case UNKNOWN:
       default:
-        throw new UnknownParameterException("Unknown stageId " + stageId);
+        throw UnknownParameterException.unknownStageId(stageId);
     }
   }
 
   public Result relatedEntries(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryNotNull(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
     Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class);
     return renderRelatedEntries(answerForm, controlEntryConfig, sessionId);
   }
 
   public Result handleRelatedEntriesSubmit(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryNotNull(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
     Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class).bindFromRequest();
     String actionParam = answerForm.rawData().get(ACTION);
@@ -167,7 +171,7 @@ public class StageController extends Controller {
     } else if (action == Action.NONE) {
       return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId));
     } else {
-      throw new UnknownParameterException("Unknown action " + actionParam);
+      throw UnknownParameterException.unknownAction(actionParam);
     }
   }
 
@@ -298,7 +302,7 @@ public class StageController extends Controller {
           return redirectToStage(stageId, sessionId);
         }
       } else {
-        throw new UnknownParameterException("Unknown action " + actionParam);
+        throw UnknownParameterException.unknownAction(actionParam);
       }
     }
   }
@@ -327,7 +331,7 @@ public class StageController extends Controller {
         sessionService.updateLastStageId(sessionId, stageId);
         return resultForNoMatch(sessionId, stageConfig);
       } else {
-        throw new UnknownParameterException("Unknown action " + actionParam);
+        throw UnknownParameterException.unknownAction(actionParam);
       }
     }
   }

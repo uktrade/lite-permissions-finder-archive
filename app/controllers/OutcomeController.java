@@ -21,6 +21,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
 import triage.config.ControlEntryConfig;
+import triage.config.ControllerConfigService;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.session.SessionService;
@@ -36,6 +37,7 @@ public class OutcomeController extends Controller {
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(OutcomeController.class);
 
   private final JourneyConfigService journeyConfigService;
+  private final ControllerConfigService controllerConfigService;
   private final SessionService sessionService;
   private final FormFactory formFactory;
   private final AnswerViewService answerViewService;
@@ -49,7 +51,8 @@ public class OutcomeController extends Controller {
   private final views.html.triage.noResult noResult;
 
   @Inject
-  public OutcomeController(JourneyConfigService journeyConfigService, SessionService sessionService,
+  public OutcomeController(JourneyConfigService journeyConfigService,
+                           ControllerConfigService controllerConfigService, SessionService sessionService,
                            FormFactory formFactory, AnswerViewService answerViewService,
                            BreadcrumbViewService breadcrumbViewService, RenderService renderService,
                            ProgressViewService progressViewService,
@@ -57,6 +60,7 @@ public class OutcomeController extends Controller {
                            views.html.triage.listedOutcome listedOutcome, views.html.triage.itemNotFound itemNotFound,
                            views.html.triage.noResult noResult) {
     this.journeyConfigService = journeyConfigService;
+    this.controllerConfigService = controllerConfigService;
     this.sessionService = sessionService;
     this.formFactory = formFactory;
     this.answerViewService = answerViewService;
@@ -71,7 +75,7 @@ public class OutcomeController extends Controller {
   }
 
   public Result outcomeNoResult(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryNotNull(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
     ProgressView progressView = progressViewService.createProgressView(controlEntryConfig);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbViewFromControlEntry(sessionId, controlEntryConfig);
@@ -80,14 +84,14 @@ public class OutcomeController extends Controller {
   }
 
   public Result outcomeItemNotFound(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryNotNull(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
     Form<RequestNlrForm> requestNlrFormForm = formFactory.form(RequestNlrForm.class);
     return renderItemNotFound(requestNlrFormForm, controlEntryConfig, sessionId);
   }
 
   public Result handleOutcomeItemNotFoundSubmit(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryNotNull(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
     Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();
     if (form.hasErrors() || !isChecked(form)) {
@@ -98,14 +102,14 @@ public class OutcomeController extends Controller {
   }
 
   public Result outcomeListed(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryNotNull(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
     Form<RequestOgelForm> form = formFactory.form(RequestOgelForm.class);
     return renderOutcomeListed(form, controlEntryConfig, sessionId);
   }
 
   public Result handleOutcomeListedSubmit(String controlEntryId, String sessionId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryNotNull(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
     Form<RequestOgelForm> form = formFactory.form(RequestOgelForm.class).bindFromRequest();
     if (form.hasErrors() || !isChecked(form)) {
@@ -116,10 +120,10 @@ public class OutcomeController extends Controller {
   }
 
   public Result outcomeDecontrol(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigNotNull(stageId);
+    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
     if (PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
-      throw new UnknownParameterException("Unknown stageId " + stageId);
+      throw UnknownParameterException.unknownStageId(stageId);
     } else {
       Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
       if (answers.isEmpty()) {
@@ -133,10 +137,10 @@ public class OutcomeController extends Controller {
   }
 
   public Result handleOutcomeDecontrolSubmit(String stageId, String sessionId) {
-    StageConfig stageConfig = journeyConfigService.getStageConfigNotNull(stageId);
+    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
     if (PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
-      throw new UnknownParameterException("Unknown stageId " + stageId);
+      throw UnknownParameterException.unknownStageId(stageId);
     } else {
       Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageConfig.getStageId());
       if (answers.isEmpty()) {

@@ -100,6 +100,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   private String createChangeUrl(String sessionId, List<String> stageIds) {
     Optional<StageConfig> stageConfigOptional = stageIds.stream()
         .map(journeyConfigService::getStageConfigById)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == QuestionType.STANDARD ||
             stageConfigIterate.getQuestionType() == QuestionType.ITEM)
         .findAny()
@@ -131,6 +133,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
     StageConfig stageConfig = stageIds.stream()
         .map(journeyConfigService::getStageConfigById)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .filter(stageConfigIterate -> stageConfigIterate.getQuestionType() == QuestionType.DECONTROL)
         .findAny()
         .orElse(null);

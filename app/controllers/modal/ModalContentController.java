@@ -54,7 +54,7 @@ public class ModalContentController extends Controller {
 
   private Html getModalContentNotNull(String modalContentId) {
     return Optional.ofNullable(MODAL_CONTENT_ID_MAP.get(modalContentId)).orElseThrow(() ->
-        new UnknownParameterException("Unknown modalContentId " + modalContentId));
+        UnknownParameterException.unknownModalContentId(modalContentId));
   }
 
 }

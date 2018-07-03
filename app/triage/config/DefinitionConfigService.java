@@ -1,14 +1,12 @@
 package triage.config;
 
+import java.util.Optional;
+
 public interface DefinitionConfigService {
 
-  DefinitionConfig getGlobalDefinitionNotNull(String id);
+  Optional<DefinitionConfig> getGlobalDefinition(String id);
 
-  DefinitionConfig getGlobalDefinition(String id);
-
-  DefinitionConfig getLocalDefinitionNotNull(String id);
-
-  DefinitionConfig getLocalDefinition(String id);
+  Optional<DefinitionConfig> getLocalDefinition(String id);
 
   void flushCache();
 }

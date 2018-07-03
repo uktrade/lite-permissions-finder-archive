@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.LocalDefinitionDao;
+import exceptions.BusinessRuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import triage.config.AnswerConfig;
@@ -52,7 +53,8 @@ public class CachePopulationServiceImpl implements CachePopulationService {
 
     populateCachesForControlEntries();
 
-    populateCachesForStage(journeyConfigService.getStageConfigById(journeyConfigService.getInitialStageId()));
+    String initialStageId = journeyConfigService.getInitialStageId();
+    populateCachesForStage(initialStageId);
 
     String result = String.format("Config cache successfully populated\n" +
             "Bad control entries: %s\n" +
@@ -66,7 +68,10 @@ public class CachePopulationServiceImpl implements CachePopulationService {
     return result;
   }
 
-  private void populateCachesForStage(StageConfig stageConfig) {
+  private void populateCachesForStage(String stageId) {
+    StageConfig stageConfig = journeyConfigService.getStageConfigById(stageId).orElseThrow(() ->
+        new BusinessRuleException("Unknown stageId " + stageId));
+
     LOGGER.debug("Populating caches for stage {}", stageConfig.getStageId());
 
     journeyConfigService.getNoteConfigsByStageId(stageConfig.getStageId());
@@ -75,16 +80,18 @@ public class CachePopulationServiceImpl implements CachePopulationService {
         .map(AnswerConfig::getNextStageId)
         .filter(Optional::isPresent)
         .map(Optional::get)
-        .map(journeyConfigService::getStageConfigById)
         .forEach(this::populateCachesForStage);
 
-    stageConfig.getNextStageId().ifPresent(nextStageId ->
-        populateCachesForStage(journeyConfigService.getStageConfigById(nextStageId)));
+    stageConfig.getNextStageId().ifPresent(this::populateCachesForStage);
   }
 
   private void populateCachesForControlEntries() {
     controlEntryDao.getAllControlEntries().stream()
-        .map(controlEntry -> journeyConfigService.getControlEntryConfigById(Long.toString(controlEntry.getId())))
+        .map(controlEntry -> {
+          String controlEntryId = Long.toString(controlEntry.getId());
+          return journeyConfigService.getControlEntryConfigById(controlEntryId).orElseThrow(() ->
+              new BusinessRuleException("Unknown controlEntryId " + controlEntry.getId()));
+        })
         .forEach(journeyConfigService::getRelatedControlEntries);
   }
 }
