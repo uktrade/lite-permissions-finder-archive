@@ -6,7 +6,6 @@ import static play.mvc.Results.notFound;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import controllers.common.ErrorHandler;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 import play.Environment;
 import play.api.OptionalSourceMapper;
@@ -31,8 +30,7 @@ public class PermissionsFinderErrorHandler extends ErrorHandler {
 
   @Override
   public CompletionStage<Result> onClientError(Http.RequestHeader request, int statusCode, String message) {
-    if (statusCode == Http.Status.NOT_FOUND ||
-        (statusCode == Http.Status.BAD_REQUEST && StringUtils.startsWith(message, "Missing parameter"))) {
+    if (statusCode == Http.Status.NOT_FOUND || statusCode == Http.Status.BAD_REQUEST) {
       LOGGER.warn(statusCode + " " + message);
       return CompletableFuture.completedFuture(notFound(errorPage.render("This page could not be found")));
     } else {
