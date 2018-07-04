@@ -86,7 +86,7 @@ public class Loader {
     Journey journey = new Journey().setJourneyName(JourneyConfigServiceImpl.DEFAULT_JOURNEY_NAME);
     Long journeyId = journeyDao.insertJourney(journey);
     generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
-    createControlEntries(null, 1, rootNavigationLevel);
+    createControlEntries(null, 1, rootNavigationLevel, journeyId);
     createStages(journeyId, rootNavigationLevel);
     createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
     createLocalDefinitions(rootNavigationLevel);
@@ -126,7 +126,7 @@ public class Loader {
   }
 
 
-  private void createControlEntries(Long parentControlEntryId, int displayOrder, NavigationLevel navigationLevel) {
+  private void createControlEntries(Long parentControlEntryId, int displayOrder, NavigationLevel navigationLevel, long journeyId) {
     Long controlEntryId = null;
 
     ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
@@ -145,6 +145,7 @@ public class Loader {
         controlEntry.setNested(false);
       }
       controlEntry.setDisplayOrder(displayOrder);
+      controlEntry.setJourneyId(journeyId);
       controlEntryId = controlEntryDao.insertControlEntry(controlEntry);
 
       LOGGER.debug("Inserted control entry id {}", controlEntryId);
@@ -153,7 +154,7 @@ public class Loader {
     navigationLevel.getLoadingMetadata().setControlEntryId(controlEntryId);
 
     for (int i = 0; i < navigationLevel.getSubNavigationLevels().size(); i++) {
-      createControlEntries(controlEntryId, i + 1, navigationLevel.getSubNavigationLevels().get(i));
+      createControlEntries(controlEntryId, i + 1, navigationLevel.getSubNavigationLevels().get(i), journeyId);
     }
   }
 

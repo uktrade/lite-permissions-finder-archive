@@ -23,7 +23,7 @@ public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
   }
 
   @Override
-  public GlobalDefinition getGlobalDefinitionByTerm(String term) {
+  public GlobalDefinition getGlobalDefinitionByTermAndJourneyId(String term, long journeyId) {
     return globalDefinitionJDBIDao.getByTerm(term);
   }
 

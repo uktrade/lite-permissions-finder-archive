@@ -10,7 +10,7 @@ public interface ParserLookupService {
 
   Optional<ControlEntry> getControlEntryForCode(String code);
 
-  Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term);
+  Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term, String journeyId);
 
   Optional<LocalDefinition> getLocalDefinitionForTerm(String term, String controlEntryId);
 

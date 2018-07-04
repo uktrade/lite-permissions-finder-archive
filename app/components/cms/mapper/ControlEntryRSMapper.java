@@ -19,6 +19,7 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
     String summaryDescription = r.getString("summary_description");
     boolean nested = r.getBoolean("nested");
     Integer displayOrder = rsw.getInt("display_order");
+    Long journeyId = rsw.getLong("journey_id");
     return new ControlEntry()
         .setId(id)
         .setParentControlEntryId(parentControlEntryId)
@@ -26,6 +27,7 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
         .setFullDescription(fullDescription)
         .setSummaryDescription(summaryDescription)
         .setNested(nested)
-        .setDisplayOrder(displayOrder);
+        .setDisplayOrder(displayOrder)
+        .setJourneyId(journeyId);
   }
 }

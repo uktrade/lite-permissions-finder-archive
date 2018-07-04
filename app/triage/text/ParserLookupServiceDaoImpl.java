@@ -38,8 +38,8 @@ public class ParserLookupServiceDaoImpl implements ParserLookupService {
   }
 
   @Override
-  public Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term) {
-    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinitionByTerm(term);
+  public Optional<GlobalDefinition> getGlobalDefinitionForTerm(String term, String journeyId) {
+    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinitionByTermAndJourneyId(term, Long.valueOf(journeyId));
     if (globalDefinition == null) {
       cacheValidator.logUnmatchedGlobalDefinition(term);
     }

@@ -8,6 +8,7 @@ public class ControlEntry {
   private String summaryDescription;
   private boolean nested;
   private Integer displayOrder;
+  private Long journeyId;
 
   public Long getId() {
     return id;
@@ -69,6 +70,15 @@ public class ControlEntry {
 
   public ControlEntry setDisplayOrder(Integer displayOrder) {
     this.displayOrder = displayOrder;
+    return this;
+  }
+
+  public Long getJourneyId() {
+    return journeyId;
+  }
+
+  public ControlEntry setJourneyId(Long journeyId) {
+    this.journeyId = journeyId;
     return this;
   }
 }
