@@ -28,7 +28,6 @@ import triage.session.SessionService;
 import triage.session.TriageSession;
 import utils.HtmlUtil;
 
-@With(SessionGuardAction.class)
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class ViewOutcomeController {
 
@@ -90,6 +89,7 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result registerSuccess(String sessionId) {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
     if (sessionOutcome != null) {
@@ -101,6 +101,7 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result saveListedOutcome(String sessionId, String controlEntryId) {
     ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
@@ -119,6 +120,7 @@ public class ViewOutcomeController {
     return redirect(controllers.licencefinder.routes.EntryController.entry(controlEntryConfig.getControlCode(), triageSession.getResumeCode()));
   }
 
+  @With(SessionGuardAction.class)
   public Result registerNotFoundNlr(String sessionId, String controlEntryId) {
     ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
@@ -133,6 +135,7 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result handleRegisterNotFoundNlrSubmit(String sessionId, String controlEntryId) {
     ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
 
@@ -164,6 +167,7 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result registerDecontrolNlr(String sessionId, String stageId) {
     StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
@@ -178,6 +182,7 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result handleRegisterDecontrolNlrSubmit(String sessionId, String stageId) {
     StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
