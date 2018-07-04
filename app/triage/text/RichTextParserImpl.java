@@ -25,7 +25,7 @@ public class RichTextParserImpl implements RichTextParser {
   }
 
   @Override
-  public RichText parseForStage(String text, String stageId, String journeyId) {
+  public RichText parseForStage(String text, String journeyId) {
     List<RichTextNode> withModalContentLinks = parseModalContentLinks(Collections.singletonList(new SimpleTextNode(text)));
     List<RichTextNode> withGlobalDefinitions = parseGlobalDefinitions(withModalContentLinks, journeyId);
     List<RichTextNode> withControlEntries = parseControlEntries(withGlobalDefinitions);

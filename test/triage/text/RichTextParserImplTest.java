@@ -73,7 +73,7 @@ public class RichTextParserImplTest {
 
   @Test
   public void testParseGlobalDefinition() {
-    RichText richText = richTextParser.parseForStage("\"Lasers\" trailing text", STAGE_ID, JOURNEY_ID);
+    RichText richText = richTextParser.parseForStage("\"Lasers\" trailing text", JOURNEY_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(2);
     RichTextNode node0 = richText.getRichTextNodes().get(0);
@@ -89,7 +89,7 @@ public class RichTextParserImplTest {
 
   @Test
   public void testParseMultipleWordGlobalDefinition() {
-    RichText richText = richTextParser.parseForStage("\"Radio controllers\" trailing text", STAGE_ID, JOURNEY_ID);
+    RichText richText = richTextParser.parseForStage("\"Radio controllers\" trailing text", JOURNEY_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(2);
     RichTextNode node0 = richText.getRichTextNodes().get(0);
@@ -105,7 +105,7 @@ public class RichTextParserImplTest {
 
   @Test
   public void testParseMultipleGlobalDefinitions() {
-    RichText richText = richTextParser.parseForStage("Leading text \"lasers\" and \"missiles\" trailing text", STAGE_ID, JOURNEY_ID);
+    RichText richText = richTextParser.parseForStage("Leading text \"lasers\" and \"missiles\" trailing text", JOURNEY_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(5);
 
@@ -136,7 +136,7 @@ public class RichTextParserImplTest {
 
   @Test
   public void testParseControlEntry() {
-    RichText richText = richTextParser.parseForStage("Leading text ML1 trailing text", STAGE_ID, JOURNEY_ID);
+    RichText richText = richTextParser.parseForStage("Leading text ML1 trailing text", JOURNEY_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(3);
 
@@ -156,7 +156,7 @@ public class RichTextParserImplTest {
 
   @Test
   public void testParseMultipleControlEntries() {
-    RichText richText = richTextParser.parseForStage("ML1, PL9001 and 1A001", STAGE_ID, JOURNEY_ID);
+    RichText richText = richTextParser.parseForStage("ML1, PL9001 and 1A001", JOURNEY_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(5);
 
@@ -260,7 +260,7 @@ public class RichTextParserImplTest {
   @Test
   public void testParseControlEntry_unmatchedCode() {
     //ML2 is not a match
-    RichText richText = richTextParser.parseForStage("Leading text ML2 trailing text", STAGE_ID, JOURNEY_ID);
+    RichText richText = richTextParser.parseForStage("Leading text ML2 trailing text", JOURNEY_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(1);
 
@@ -312,7 +312,7 @@ public class RichTextParserImplTest {
 
   @Test
   public void testParseModalContentLink_parseForStage_single() {
-    RichText richText = richTextParser.parseForStage("[example](https://example.org)", STAGE_ID, JOURNEY_ID);
+    RichText richText = richTextParser.parseForStage("[example](https://example.org)", JOURNEY_ID);
 
     assertThat(richText.getRichTextNodes()).hasSize(1);
 

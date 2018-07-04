@@ -58,8 +58,10 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
     if (globalDefinition == null) {
       return Optional.empty();
     } else {
-      RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null, Long.toString(globalDefinition.getJourneyId()));
-      DefinitionConfig definitionConfig = new DefinitionConfig(Long.toString(globalDefinition.getId()), globalDefinition.getTerm(), richDefinitionText, null);
+      RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(),
+          Long.toString(globalDefinition.getJourneyId()));
+      DefinitionConfig definitionConfig = new DefinitionConfig(Long.toString(globalDefinition.getId()),
+          globalDefinition.getTerm(), richDefinitionText, null);
       return Optional.of(definitionConfig);
     }
   }
@@ -76,8 +78,10 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
       return Optional.empty();
     } else {
       Long controlEntryId = localDefinition.getControlEntryId();
-      RichText richDefinitionText = richTextParser.parseForControlEntry(localDefinition.getDefinitionText(), Long.toString(controlEntryId), Long.toString(controlEntryDao.getControlEntry(controlEntryId).getJourneyId()));
-      DefinitionConfig definitionConfig = new DefinitionConfig(Long.toString(localDefinition.getId()), localDefinition.getTerm(), richDefinitionText, null);
+      RichText richDefinitionText = richTextParser.parseForControlEntry(localDefinition.getDefinitionText(), Long.toString(controlEntryId),
+          Long.toString(controlEntryDao.getControlEntry(controlEntryId).getJourneyId()));
+      DefinitionConfig definitionConfig = new DefinitionConfig(Long.toString(localDefinition.getId()), localDefinition.getTerm(),
+          richDefinitionText, null);
       return Optional.of(definitionConfig);
     }
   }
