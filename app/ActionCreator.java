@@ -21,7 +21,7 @@ public class ActionCreator implements play.http.ActionCreator {
   @Override
   public Action createAction(Http.Request request, Method actionMethod) {
     // Set up the Correlation ID for this request
-    CorrelationId.setUp(request);
+    CorrelationId.get();
 
     // Ensure a new action instance is created for each request (Play requirement)
     return contextActionProvider.get();

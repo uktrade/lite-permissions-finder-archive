@@ -4,16 +4,17 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
-import exceptions.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
-import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
+import utils.MyLogger;
+import utils.MyLoggerFactory;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 public class ApplicableOgelServiceClient {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ApplicableOgelServiceClient.class);
+  private static final MyLogger MY_LOGGER = MyLoggerFactory.getLogger(ApplicableOgelServiceClient.class);
 
   private final HttpExecutionContext httpExecutionContext;
   private final WSClient wsClient;
@@ -68,20 +70,25 @@ public class ApplicableOgelServiceClient {
         .addQueryParameter("controlCode", controlCode)
         .addQueryParameter("sourceCountry", sourceCountry);
 
-    destinationCountries.forEach(country -> req.addQueryParameter("destinationCountry", country));
-
-    activityTypes.forEach(activityType -> req.addQueryParameter("activityType", activityType));
-
     return req.get().handleAsync((response, error) -> {
-      if (error != null) {
-        throw new ServiceException("OGEL service request failed", error);
-      } else if (response.getStatus() != 200) {
-        throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /applicable-ogels: %s",
-            response.getStatus()));
-      } else {
-        return filterHistoric(Json.fromJson(response.asJson(), ApplicableOgelView[].class), showHistoricOgel);
-      }
+      MY_LOGGER.error("handleAsync");
+      return new ArrayList<>();
     }, httpExecutionContext.current());
+
+//    destinationCountries.forEach(country -> req.addQueryParameter("destinationCountry", country));
+//
+//    activityTypes.forEach(activityType -> req.addQueryParameter("activityType", activityType));
+//
+//    return req.get().handleAsync((response, error) -> {
+//      if (error != null) {
+//        throw new ServiceException("OGEL service request failed", error);
+//      } else if (response.getStatus() != 200) {
+//        throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /applicable-ogels: %s",
+//            response.getStatus()));
+//      } else {
+//        return filterHistoric(Json.fromJson(response.asJson(), ApplicableOgelView[].class), showHistoricOgel);
+//      }
+//    }, httpExecutionContext.current());
   }
 
   /**

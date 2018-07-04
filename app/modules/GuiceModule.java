@@ -104,12 +104,16 @@ import triage.text.ParserLookupService;
 import triage.text.ParserLookupServiceDaoImpl;
 import triage.text.RichTextParser;
 import triage.text.RichTextParserImpl;
+import utils.MyLogger;
+import utils.MyLoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
 
 public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
+
+  private static final MyLogger MY_LOGGER = MyLoggerFactory.getLogger(GuiceModule.class);
 
   private final Environment environment;
   private final Config config;
@@ -121,6 +125,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
+    MY_LOGGER.error("configure");
     bind(DefinitionConfigService.class).to(DefinitionConfigServiceImpl.class).asEagerSingleton();
     bind(ProgressViewService.class).to(ProgressViewServiceImpl.class);
     bind(RenderService.class).to(RenderServiceImpl.class);
