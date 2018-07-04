@@ -37,7 +37,6 @@ public class StaticContentController extends Controller {
   public enum StaticHtml {
     BROKERING("tradetypes/brokering.html", "Trade controls, trafficking and brokering", false),
     MORE_INFORMATION_REQUIRED("moreInformationRequired.html", "Find out more about your item", true),
-    NOT_APPLICABLE("notApplicable.html", "No licence available", false, HEADING_BANNER_FUNC.apply("You have reached the end of this service")),
     OTHER_CONTROL_LIST("otherControlList.html", "Check your item against another control list", true),
     TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites", false),
     TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment", false),
