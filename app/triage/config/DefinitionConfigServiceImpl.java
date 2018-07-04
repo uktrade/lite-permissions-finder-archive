@@ -13,6 +13,8 @@ import models.cms.LocalDefinition;
 import triage.text.RichText;
 import triage.text.RichTextParser;
 
+import java.util.Optional;
+
 public class DefinitionConfigServiceImpl implements DefinitionConfigService {
 
   private final RichTextParser richTextParser;
@@ -20,8 +22,8 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
   private final LocalDefinitionDao localDefinitionDao;
   private final ControlEntryDao controlEntryDao;
 
-  private final LoadingCache<String, DefinitionConfig> globalDefinitionCache;
-  private final LoadingCache<String, DefinitionConfig> localDefinitionCache;
+  private final LoadingCache<String, Optional<DefinitionConfig>> globalDefinitionCache;
+  private final LoadingCache<String, Optional<DefinitionConfig>> localDefinitionCache;
 
 
   @Inject
@@ -36,26 +38,48 @@ public class DefinitionConfigServiceImpl implements DefinitionConfigService {
   }
 
   @Override
-  public DefinitionConfig getGlobalDefinition(String id) {
+  public Optional<DefinitionConfig> getGlobalDefinition(String id) {
     return globalDefinitionCache.getUnchecked(id);
   }
 
   @Override
-  public DefinitionConfig getLocalDefinition(String id) {
+  public Optional<DefinitionConfig> getLocalDefinition(String id) {
     return localDefinitionCache.getUnchecked(id);
   }
 
-  private DefinitionConfig createGlobalDefinition(String id) {
-    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(Long.parseLong(id));
-    RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null, Long.toString(globalDefinition.getJourneyId()));
-    return new DefinitionConfig(Long.toString(globalDefinition.getId()), globalDefinition.getTerm(), richDefinitionText, null);
+  private Optional<DefinitionConfig> createGlobalDefinition(String definitionId) {
+    long id;
+    try {
+      id = Long.parseLong(definitionId);
+    } catch (NumberFormatException nfe) {
+      return Optional.empty();
+    }
+    GlobalDefinition globalDefinition = globalDefinitionDao.getGlobalDefinition(id);
+    if (globalDefinition == null) {
+      return Optional.empty();
+    } else {
+      RichText richDefinitionText = richTextParser.parseForStage(globalDefinition.getDefinitionText(), null, Long.toString(globalDefinition.getJourneyId()));
+      DefinitionConfig definitionConfig = new DefinitionConfig(Long.toString(globalDefinition.getId()), globalDefinition.getTerm(), richDefinitionText, null);
+      return Optional.of(definitionConfig);
+    }
   }
 
-  private DefinitionConfig createLocalDefinition(String id) {
-    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(Long.parseLong(id));
-    Long controlEntryId = localDefinition.getControlEntryId();
-    RichText richDefinitionText = richTextParser.parseForControlEntry(localDefinition.getDefinitionText(), Long.toString(controlEntryId), Long.toString(controlEntryDao.getControlEntry(controlEntryId).getJourneyId()));
-    return new DefinitionConfig(Long.toString(localDefinition.getId()), localDefinition.getTerm(), richDefinitionText, null);
+  private Optional<DefinitionConfig> createLocalDefinition(String definitionId) {
+    long id;
+    try {
+      id = Long.parseLong(definitionId);
+    } catch (NumberFormatException nfe) {
+      return Optional.empty();
+    }
+    LocalDefinition localDefinition = localDefinitionDao.getLocalDefinition(id);
+    if (localDefinition == null) {
+      return Optional.empty();
+    } else {
+      Long controlEntryId = localDefinition.getControlEntryId();
+      RichText richDefinitionText = richTextParser.parseForControlEntry(localDefinition.getDefinitionText(), Long.toString(controlEntryId), Long.toString(controlEntryDao.getControlEntry(controlEntryId).getJourneyId()));
+      DefinitionConfig definitionConfig = new DefinitionConfig(Long.toString(localDefinition.getId()), localDefinition.getTerm(), richDefinitionText, null);
+      return Optional.of(definitionConfig);
+    }
   }
 
   @Override

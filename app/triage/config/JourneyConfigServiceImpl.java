@@ -27,8 +27,8 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   private final StageAnswerDao stageAnswerDao;
   private final ControlEntryDao controlEntryDao;
 
-  private final LoadingCache<String, StageConfig> stageConfigCache;
-  private final LoadingCache<String, ControlEntryConfig> controlEntryCache;
+  private final LoadingCache<String, Optional<StageConfig>> stageConfigCache;
+  private final LoadingCache<String, Optional<ControlEntryConfig>> controlEntryCache;
   private final LoadingCache<String, List<ControlEntryConfig>> relatedControlEntryCache;
   private final LoadingCache<String, List<NoteConfig>> noteCache;
 
@@ -65,7 +65,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   }
 
   @Override
-  public StageConfig getStageConfigById(String stageId) {
+  public Optional<StageConfig> getStageConfigById(String stageId) {
     return stageConfigCache.getUnchecked(stageId);
   }
 
@@ -73,12 +73,17 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   public AnswerConfig getStageAnswerForPreviousStage(String stageId) {
     StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
     if (stageAnswer != null) {
-      return stageConfigCache.getUnchecked(stageAnswer.getStageId().toString())
-          .getAnswerConfigs()
-          .stream()
-          .filter(e -> e.getAnswerId().equals(stageAnswer.getId().toString()))
-          .findFirst()
-          .orElse(null);
+      Optional<StageConfig> stageConfigOptional = stageConfigCache.getUnchecked(stageAnswer.getStageId().toString());
+      if (stageConfigOptional.isPresent()) {
+        return stageConfigOptional.get()
+            .getAnswerConfigs()
+            .stream()
+            .filter(e -> e.getAnswerId().equals(stageAnswer.getId().toString()))
+            .findFirst()
+            .orElse(null);
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
@@ -90,12 +95,12 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
     if (stage == null) {
       StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
       if (stageAnswer != null) {
-        return getStageConfigById(stageAnswer.getStageId().toString());
+        return getStageConfigById(stageAnswer.getStageId().toString()).orElse(null);
       } else {
         return null;
       }
     } else {
-      return getStageConfigById(stage.getId().toString());
+      return getStageConfigById(stage.getId().toString()).orElse(null);
     }
   }
 
@@ -105,7 +110,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   }
 
   @Override
-  public ControlEntryConfig getControlEntryConfigById(String controlEntryId) {
+  public Optional<ControlEntryConfig> getControlEntryConfigById(String controlEntryId) {
     return controlEntryCache.getUnchecked(controlEntryId);
   }
 
@@ -124,6 +129,8 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
         .stream()
         .map(e -> e.getId().toString())
         .map(this::getControlEntryConfigById)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .collect(Collectors.toList());
   }
 
@@ -131,6 +138,8 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   public Optional<StageConfig> getPrincipleStageConfigForControlEntry(ControlEntryConfig controlEntryConfig) {
     return getStageIdsForControlEntry(controlEntryConfig).stream()
         .map(this::getStageConfigById)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .filter(stageConfig -> stageConfig.getQuestionType() == QuestionType.STANDARD ||
             stageConfig.getQuestionType() == QuestionType.ITEM)
         .findAny();

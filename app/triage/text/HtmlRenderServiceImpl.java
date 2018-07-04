@@ -1,6 +1,7 @@
 package triage.text;
 
 import com.google.inject.Inject;
+import exceptions.BusinessRuleException;
 import models.enums.HtmlType;
 import org.apache.commons.lang3.StringUtils;
 import play.twirl.api.Html;
@@ -30,7 +31,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       "<a href='/view-control-entry/%s' data-control-entry-id='%s' title='View %s'%s>%s</a>");
   private static final String TARGET_ATTR_BLANK = unescape(" target='_blank'");
   private static final String MODAL_CONTENT_LINK_TEXT = unescape(
-          "<a href='/view-modal-content/%s' data-modal-content-id='%s' title='View %s'>%s</a>");
+      "<a href='/view-modal-content/%s' data-modal-content-id='%s' title='View %s'>%s</a>");
   private static final Set<HtmlType> LEVELS = EnumSet.of(HtmlType.LIST_LEVEL_1, HtmlType.LIST_LEVEL_2, HtmlType.LIST_LEVEL_3);
   private static final Pattern PATTERN_LEVEL_1 = Pattern.compile("\\*(?!\\*)(.*?)(\\n|$)");
   private static final Pattern PATTERN_LEVEL_2 = Pattern.compile("\\*\\*(.*?)(\\n|$)");
@@ -147,10 +148,12 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     String definitionId = definitionReferenceNode.getReferencedDefinitionId();
     String text;
     if (definitionReferenceNode.isGlobal()) {
-      DefinitionConfig definitionConfig = definitionConfigService.getGlobalDefinition(definitionId);
+      DefinitionConfig definitionConfig = definitionConfigService.getGlobalDefinition(definitionId).orElseThrow(() ->
+          new BusinessRuleException("Unknown globalDefinitionId " + definitionId));
       text = definitionConfig.getTerm();
     } else {
-      DefinitionConfig definitionConfig = definitionConfigService.getLocalDefinition(definitionId);
+      DefinitionConfig definitionConfig = definitionConfigService.getLocalDefinition(definitionId).orElseThrow(() ->
+          new BusinessRuleException("Unknown localDefinitionId " + definitionId));
       text = definitionConfig.getTerm();
     }
     String type = definitionReferenceNode.isGlobal() ? "global" : "local";

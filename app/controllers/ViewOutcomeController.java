@@ -18,11 +18,14 @@ import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
+import play.mvc.With;
 import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
-import triage.config.JourneyConfigService;
+import triage.config.ControllerConfigService;
+import triage.config.StageConfig;
 import triage.session.SessionOutcome;
 import triage.session.SessionService;
+import triage.session.TriageSession;
 import utils.HtmlUtil;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
@@ -35,7 +38,7 @@ public class ViewOutcomeController {
   private final SessionOutcomeDao sessionOutcomeDao;
   private final UserPrivilegeService userPrivilegeService;
   private final SpireAuthManager spireAuthManager;
-  private final JourneyConfigService journeyConfigService;
+  private final ControllerConfigService controllerConfigService;
   private final FormFactory formFactory;
   private final views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess;
   private final views.html.nlr.nlrOutcome nlrOutcome;
@@ -45,7 +48,8 @@ public class ViewOutcomeController {
   @Inject
   public ViewOutcomeController(SessionService sessionService, SessionOutcomeService sessionOutcomeService,
                                SessionOutcomeDao sessionOutcomeDao, UserPrivilegeService userPrivilegeService,
-                               SpireAuthManager spireAuthManager, JourneyConfigService journeyConfigService,
+                               SpireAuthManager spireAuthManager,
+                               ControllerConfigService controllerConfigService,
                                FormFactory formFactory, views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess,
                                views.html.nlr.nlrOutcome nlrOutcome,
                                views.html.triage.listedOutcomeSaved listedOutcomeSaved,
@@ -55,7 +59,7 @@ public class ViewOutcomeController {
     this.sessionOutcomeDao = sessionOutcomeDao;
     this.userPrivilegeService = userPrivilegeService;
     this.spireAuthManager = spireAuthManager;
-    this.journeyConfigService = journeyConfigService;
+    this.controllerConfigService = controllerConfigService;
     this.formFactory = formFactory;
     this.nlrRegisterSuccess = nlrRegisterSuccess;
     this.nlrOutcome = nlrOutcome;
@@ -85,6 +89,7 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result registerSuccess(String sessionId) {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
     if (sessionOutcome != null) {
@@ -96,23 +101,31 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result saveListedOutcome(String sessionId, String controlEntryId) {
-    ControlEntryConfig controlEntryConfig = journeyConfigService.getControlEntryConfigById(controlEntryId);
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
+
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
     if (sessionOutcome == null) {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
       try {
-        sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryId);
+        sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryConfig);
       } catch (InvalidUserAccountException exception) {
         return redirect(routes.StaticContentController.renderInvalidUserAccount());
       }
     }
-    return redirect(controllers.licencefinder.routes.EntryController.entry(controlEntryConfig.getControlCode()));
+
+    TriageSession triageSession = sessionService.getSessionById(sessionId);
+
+    return redirect(controllers.licencefinder.routes.EntryController.entry(controlEntryConfig.getControlCode(), triageSession.getResumeCode()));
   }
 
+  @With(SessionGuardAction.class)
   public Result registerNotFoundNlr(String sessionId, String controlEntryId) {
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
+
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
-    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId).toString();
+    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryConfig.getId()).toString();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
       Form<ItemDescriptionForm> itemDescriptionForm = formFactory.form(ItemDescriptionForm.class);
@@ -122,9 +135,12 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result handleRegisterNotFoundNlrSubmit(String sessionId, String controlEntryId) {
+    ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
+
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
-    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryId).toString();
+    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterNotFoundNlrSubmit(sessionId, controlEntryConfig.getId()).toString();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
       Form<ItemDescriptionForm> form = formFactory.form(ItemDescriptionForm.class).bindFromRequest();
@@ -139,7 +155,7 @@ public class ViewOutcomeController {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
           try {
             Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
-            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryId, resumeCode, htmlDescription);
+            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryConfig, resumeCode, htmlDescription);
           } catch (InvalidUserAccountException exception) {
             return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }
@@ -151,9 +167,12 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result registerDecontrolNlr(String sessionId, String stageId) {
+    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
+
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
-    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId).toString();
+    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageConfig.getStageId()).toString();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
       Form<ItemDescriptionForm> itemDescriptionForm = formFactory.form(ItemDescriptionForm.class);
@@ -163,9 +182,12 @@ public class ViewOutcomeController {
     }
   }
 
+  @With(SessionGuardAction.class)
   public Result handleRegisterDecontrolNlrSubmit(String sessionId, String stageId) {
+    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
+
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
-    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId).toString();
+    String submitUrl = controllers.routes.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageConfig.getStageId()).toString();
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     if (sessionOutcome == null) {
       Form<ItemDescriptionForm> form = formFactory.form(ItemDescriptionForm.class).bindFromRequest();
@@ -180,7 +202,7 @@ public class ViewOutcomeController {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
           try {
             Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
-            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageId, resumeCode, htmlDescription);
+            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageConfig, resumeCode, htmlDescription);
           } catch (InvalidUserAccountException exception) {
             return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }

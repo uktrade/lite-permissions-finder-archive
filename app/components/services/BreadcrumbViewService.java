@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface BreadcrumbViewService {
 
-  BreadcrumbView createBreadcrumbViewFromControlEntryId(String sessionId, String controlEntryId);
+  BreadcrumbView createBreadcrumbViewFromControlEntry(String sessionId, ControlEntryConfig controlEntryConfig);
 
-  BreadcrumbView createBreadcrumbView(String stageId, String sessionId, boolean includeChangeLinks,
+  BreadcrumbView createBreadcrumbView(StageConfig stageConfig, String sessionId, boolean includeChangeLinks,
                                       HtmlRenderOption... htmlRenderOptions);
 
   ControlEntryConfig getControlEntryConfig(StageConfig stageConfig);

@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.persistence.LicenceFinderDao;
-import components.services.LicenceFinderService;
 import controllers.LicenceFinderAwaitGuardAction;
 import controllers.LicenceFinderUserGuardAction;
 import org.pac4j.play.java.Secure;
@@ -27,16 +26,13 @@ public class QuestionsController extends Controller {
 
   private final FormFactory formFactory;
   private final LicenceFinderDao licenceFinderDao;
-  private final LicenceFinderService licenceFinderService;
   private final views.html.licencefinder.questions questions;
 
   @Inject
   public QuestionsController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
-                             LicenceFinderService licenceFinderService,
                              views.html.licencefinder.questions questions) {
     this.formFactory = formFactory;
     this.licenceFinderDao = licenceFinderDao;
-    this.licenceFinderService = licenceFinderService;
     this.questions = questions;
   }
 
@@ -57,10 +53,6 @@ public class QuestionsController extends Controller {
       return completedFuture(ok(questions.render(form, sessionId)));
     } else {
       licenceFinderDao.saveQuestionsForm(sessionId, form.get());
-
-      // Take this opportunity in flow to save users CustomerId and SiteId
-      licenceFinderService.persistCustomerAndSiteData(sessionId);
-
       return CompletableFuture.completedFuture(redirect(routes.ResultsController.renderResultsForm(sessionId)));
     }
   }

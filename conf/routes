@@ -22,7 +22,7 @@ GET     /invalid-user-account          controllers.StaticContentController.rende
 GET     /unknown-outcome               controllers.StaticContentController.renderUnknownOutcome
 
 # Licence finder
-GET     /licencefinder/entry/:controlCode       controllers.licencefinder.EntryController.entry(controlCode)
+GET     /licencefinder/entry/:controlCode       controllers.licencefinder.EntryController.entry(controlCode, resumeCode ?= null)
 GET     /licencefinder/trade                    controllers.licencefinder.TradeController.renderTradeForm(sessionId)
 POST    /licencefinder/trade                    controllers.licencefinder.TradeController.handleTradeSubmit(sessionId)
 GET     /licencefinder/destination              controllers.licencefinder.DestinationController.renderDestinationForm(sessionId)

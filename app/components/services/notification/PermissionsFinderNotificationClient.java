@@ -2,6 +2,7 @@ package components.services.notification;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import components.common.client.NotificationServiceClient;
 
 import java.util.Map;
@@ -9,10 +10,13 @@ import java.util.Map;
 public class PermissionsFinderNotificationClient {
 
   private final NotificationServiceClient notificationServiceClient;
+  private final String ecjuEmailAddress;
 
   @Inject
-  public PermissionsFinderNotificationClient(NotificationServiceClient notificationServiceClient) {
+  public PermissionsFinderNotificationClient(NotificationServiceClient notificationServiceClient,
+                                             @Named("ecjuEmailAddress") String ecjuEmailAddress) {
     this.notificationServiceClient = notificationServiceClient;
+    this.ecjuEmailAddress = ecjuEmailAddress;
   }
 
   public void sendApplicationReferenceEmail(String emailAddress, String applicationReference) {
@@ -25,7 +29,7 @@ public class PermissionsFinderNotificationClient {
     notificationServiceClient.sendEmail("permissionsFinder:nlrDocumentToUser", emailAddress, params);
   }
 
-  public void sendNlrDocumentToEcjuEmail(String ecjuEmailAddress, String userEmailAddress, String applicantName,
+  public void sendNlrDocumentToEcjuEmail(String userEmailAddress, String applicantName,
                                          String nlrDocumentUrl, String applicationReference, String companyName,
                                          String siteAddress) {
     Map<String, String> params = new ImmutableMap.Builder<String, String>()
@@ -45,7 +49,7 @@ public class PermissionsFinderNotificationClient {
     notificationServiceClient.sendEmail("permissionsFinder:registeredOgelToUser", emailAddress, params);
   }
 
-  public void sendRegisteredOgelToEcjuEmail(String emailAddress, String applicantName, String applicationReference,
+  public void sendRegisteredOgelEmailToEcju(String emailAddress, String applicantName, String applicationReference,
                                             String companyName, String siteAddress, String ogelUrl) {
     Map<String, String> params = new ImmutableMap.Builder<String, String>()
         .put("emailAddress", emailAddress)
