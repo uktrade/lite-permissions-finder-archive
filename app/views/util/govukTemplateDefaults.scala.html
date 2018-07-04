@@ -1,16 +1,22 @@
 @import views.html.common.page.govukTemplate
 @import play.twirl.api.HtmlFormat
 @import components.common.auth.SpireAuthManager
+@import models.template.GATemplateHtml
 
-@this(spireAuthManager: SpireAuthManager)
+@this(spireAuthManager: SpireAuthManager, gaTemplateHtml: GATemplateHtml)
 @(htmlTitle: String, propositionHeading: Option[Html] = None)(content: Html)
 
 @head = {
+  @Html(gaTemplateHtml.getHead)
   <!--[if gt IE 8]><!-->
   <link href="@controllers.routes.Assets.versioned("stylesheets/permissions-finder.css")" media="screen" rel="stylesheet" type="text/css" />
   <!--<![endif]-->
   <!--[if (lte IE 8) & (gte IE 6)]><link href="@controllers.routes.Assets.versioned("stylesheets/permissions-finder-ie.css")" media="screen" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="@controllers.routes.Assets.versioned("stylesheets/permissions-finder-print.css")" media="print" rel="stylesheet" type="text/css" />
+}
+
+@bodyStart = {
+  @Html(gaTemplateHtml.getBody)
 }
 
 @bodyEnd = {
@@ -40,7 +46,7 @@
   htmlLang = None
 )(
   head = head,
-  bodyStart = HtmlFormat.empty,
+  bodyStart = bodyStart,
   bodyEnd = bodyEnd,
   insideHeader = HtmlFormat.empty,
   afterHeader = HtmlFormat.empty,

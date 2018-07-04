@@ -104,6 +104,7 @@ import triage.text.ParserLookupService;
 import triage.text.ParserLookupServiceDaoImpl;
 import triage.text.RichTextParser;
 import triage.text.RichTextParserImpl;
+import models.template.GATemplateHtml;
 
 import java.util.concurrent.TimeUnit;
 
@@ -189,6 +190,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bindConstant().annotatedWith(Names.named("jwtSharedSecret")).to(config.getString("jwtSharedSecret"));
 
     bindConstant().annotatedWith(Names.named("ecjuEmailAddress")).to(config.getString("ecjuEmailAddress"));
+
+    bindConstant().annotatedWith(Names.named("gaHeadHtml")).to(config.getString("gaHtml.head"));
+    bindConstant().annotatedWith(Names.named("gaBodyHtml")).to(config.getString("gaHtml.body"));
 
     // CMS dao's
     bind(ControlEntryDao.class).to(ControlEntryDaoImpl.class);
@@ -306,5 +310,11 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Singleton
   public DBI provideDataSourceDbi(Config config, Database database) {
     return new DBI(database.getUrl());
+  }
+
+  @Provides
+  @Singleton
+  public GATemplateHtml provide(@Named("gaHeadHtml") String gaHeadHtml, @Named("gaBodyHtml") String gaBodyHtml) {
+    return new GATemplateHtml(gaHeadHtml, gaBodyHtml);
   }
 }
