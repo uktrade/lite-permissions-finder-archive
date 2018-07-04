@@ -10,18 +10,25 @@
 @triagePage(form, routes.StageController.handleSubmit(stageId, sessionId).toString, sessionId, resumeCode, title, breadcrumbView, "Checking against decontrols"){
   @controlCode: Checking against decontrols
 }{
-  <p class="form-hint">
-    Decontrols describe items not controlled under the UK Strategic Export Control Lists. Select all that apply.
-  </p>
-  @noteMessage(!breadcrumbView.getNoteViews.isEmpty)
-  <p>
-    @if(StringUtils.isNotBlank(explanatoryText)) {
-      @Html(explanatoryText)
-    } else {
-      This control list entry does not control:
-    }
-  </p>
-  <div class="form-group">
-    @multiSelectCheckboxes(form("answers"), answerViews)
+  <div class="form-group @if(form("answers").error.isDefined) { form-group-error }">
+    <div class="fieldset">
+      <div class="legend">
+        <p class="form-hint">
+          Decontrols describe items not controlled under the UK Strategic Export Control Lists. Select all that apply.
+        </p>
+        @noteMessage(!breadcrumbView.getNoteViews.isEmpty)
+        <p>
+          @if(StringUtils.isNotBlank(explanatoryText)) {
+            @Html(explanatoryText)
+          } else {
+            This control list entry does not control:
+          }
+        </p>
+        @if(form("answers").error.isDefined) {
+          <span class="error-message">@Messages(form("answers").error.get.message)</span>
+        }
+      </div>
+      @multiSelectCheckboxes(form("answers"), answerViews)
+    </div>
   </div>
 }

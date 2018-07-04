@@ -17,14 +17,24 @@
     @Html(progressView.getDescription)
   }
 }{
-  @if(StringUtils.isNotBlank(explanatoryText)) {
-    <p class="form-hint">@Html(explanatoryText)</p>
-  }
-  @if(StringUtils.isNotBlank(relatedEntryDescription)) {
-    <p>@Html(relatedEntryDescription)</p>
-  }
-  @noteMessage(!breadcrumbView.getNoteViews.isEmpty)
-  <div class="form-group">
-    @multiSelectCheckboxes(form("answers"), answerViews)
+  <div class="form-group @if(form("answers").error.isDefined) { form-group-error }">
+    <div class="fieldset">
+      <div class="legend">
+        <p class="form-hint">
+          Select all the control list entries which describe your item.
+        </p>
+        @noteMessage(!breadcrumbView.getNoteViews.isEmpty)
+        @if(StringUtils.isNotBlank(explanatoryText)) {
+          <p>@Html(explanatoryText)</p>
+        }
+        @if(StringUtils.isNotBlank(relatedEntryDescription)) {
+          <p>@Html(relatedEntryDescription)</p>
+        }
+        @if(form("answers").error.isDefined) {
+          <span class="error-message">@Messages(form("answers").error.get.message)</span>
+        }
+      </div>
+      @multiSelectCheckboxes(form("answers"), answerViews)
+    </div>
   </div>
 }
