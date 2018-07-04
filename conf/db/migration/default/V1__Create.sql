@@ -1,10 +1,3 @@
-CREATE TABLE journey (
-  id               BIGSERIAL PRIMARY KEY,
-  timestamp        TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  journey_name     TEXT      NOT NULL,
-  initial_stage_id BIGINT
-);
-
 CREATE TABLE control_entry (
   id                      BIGSERIAL PRIMARY KEY,
   parent_control_entry_id BIGINT,
@@ -13,9 +6,14 @@ CREATE TABLE control_entry (
   summary_description     TEXT,
   nested                  BOOLEAN   NOT NULL,
   display_order           INT       NOT NULL DEFAULT 0,
-  journey_id              BIGINT    NOT NULL,
-  FOREIGN KEY (parent_control_entry_id) REFERENCES control_entry(id),
-  FOREIGN KEY (journey_id)              REFERENCES journey(id)
+  FOREIGN KEY (parent_control_entry_id) REFERENCES control_entry(id)
+);
+
+CREATE TABLE journey (
+  id               BIGSERIAL PRIMARY KEY,
+  timestamp        TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  journey_name     TEXT      NOT NULL,
+  initial_stage_id BIGINT
 );
 
 CREATE TABLE global_definition (
