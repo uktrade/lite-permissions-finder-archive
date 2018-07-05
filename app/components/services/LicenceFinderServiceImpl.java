@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,6 +75,35 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   public void updateUsersOgelIdRefMap(String sessionId, String userId) {
     // Store map of already registered Ogel Id to reference map for user
     licenceFinderDao.saveUserOgelIdRefMap(sessionId, getUserOgelIdRefMap(userId));
+  }
+
+  public boolean isValidOgelId(String sessionId, String ogelId) {
+    boolean isValid = false;
+
+    String controlCode = licenceFinderDao.getControlCode(sessionId);
+    List<String> destinationCountries = getExportRouteCountries(sessionId);
+    String sourceCountry = licenceFinderDao.getSourceCountry(sessionId);
+
+    List<String> activities = Collections.emptyList();
+    boolean showHistoricOgel = true; // set as default
+    Optional<QuestionsController.QuestionsForm> optQuestionsForm = licenceFinderDao.getQuestionsForm(sessionId);
+    if (optQuestionsForm.isPresent()) {
+      QuestionsController.QuestionsForm questionsForm = optQuestionsForm.get();
+      activities = getActivityTypes(questionsForm);
+      showHistoricOgel = questionsForm.beforeOrLess;
+    }
+
+    CompletionStage<List<ApplicableOgelView>> stage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activities, showHistoricOgel);
+
+    try {
+      Set<String> ogelIdSet = stage.thenApply(this::getOgelIds).toCompletableFuture().get();
+      if(ogelIdSet.contains(ogelId)) {
+        isValid = true;
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      LOGGER.error("ogelIdSet exception", e);
+    }
+    return isValid;
   }
 
   public boolean isOgelIdAlreadyRegistered(String sessionId, String ogelId) {
@@ -305,8 +335,15 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       }
       ogelViews.add(view);
     }
-
     return ogelViews;
+  }
+
+  private Set<String> getOgelIds(List<ApplicableOgelView> applicableViews) {
+    Set<String> ogelIdSet = new HashSet<>();
+    for (ApplicableOgelView applicableView : applicableViews) {
+      ogelIdSet.add(applicableView.getId());
+    }
+    return ogelIdSet;
   }
 
   private void registrationResponseReceived(String sessionId, PermissionsServiceImpl.RegistrationResponse response,
