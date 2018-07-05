@@ -110,6 +110,7 @@
       background: $grey-4;
       padding: $gutter-one-third;
       border-top: 1px solid $border-colour;
+      @include ul-has-bullets;
 
       @media print {
         border-top-color: $black;
@@ -124,7 +125,7 @@
         margin-top: 0;
       }
 
-      .breadcrumb-notes {
+      ul.breadcrumb-notes {
         margin: 0 (-$gutter-one-third) (-$gutter-one-third) (-$gutter-one-third);
         list-style-type: none;
         padding: 0;
@@ -132,6 +133,7 @@
         li {
           border-bottom: 1px solid $border-colour;
           padding: $gutter-half $gutter-one-third;
+          margin: 0;
 
           @media print {
             border-bottom-color: $black;

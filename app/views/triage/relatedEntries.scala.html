@@ -13,10 +13,10 @@
 @triagePage(form, routes.StageController.handleRelatedEntriesSubmit(controlEntryId, sessionId).toString, sessionId, resumeCode, "Check related entries", breadcrumbView, "Checking against related entries"){
   @controlCode: Checking against related entries
 }{
-  <p class="form-hint">
+  <p>
     You have not found your item under control list entry @controlCode.
   </p>
-  <p class="form-hint">
+  <p>
     Check the following related control list entries before proceeding.
   </p>
   @formRadioGroupContainer(form("answer"))(null) {
@@ -24,12 +24,14 @@
       @if(answerView.isDividerAbove) {
         <p class="form-block">or</p>
       }
-      <p class="form-block">
-        @answerView.getHtmlAbove
-      </p>
-      @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
-        @answerMoreInformation(answerView)
-      }
+      <div class="form-group">
+        <h2 class="heading-small">
+          @answerView.getHtmlAbove
+        </h2>
+        @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
+          @answerMoreInformation(answerView)
+        }
+      </div>
     }
   }
 }

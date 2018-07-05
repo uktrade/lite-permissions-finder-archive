@@ -90,9 +90,10 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   @Override
   public Html createControlEntryLinkHtml(ControlEntryConfig controlEntryConfig) {
     String id = controlEntryConfig.getId();
-    String text = controlEntryConfig.getControlCode();
-    String link = String.format(CONTROL_ENTRY_TEXT, id, id, text, "", text);
-    return new Html("Related entry: " + link);
+    String controlEntryText = controlEntryConfig.getControlCode();
+    String leftLink = String.format(CONTROL_ENTRY_TEXT, id, id, controlEntryText, "", controlEntryText);
+    String rightLink = String.format(CONTROL_ENTRY_TEXT, id, id, controlEntryText, "", "View " + controlEntryText);
+    return new Html("Related entry: " + leftLink  +"<span class=\"view-related-entry-link\">" + rightLink + "</span>");
   }
 
   private static String unescape(String str) {

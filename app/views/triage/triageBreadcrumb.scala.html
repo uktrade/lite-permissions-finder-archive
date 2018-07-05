@@ -16,20 +16,17 @@
         @if(breadcrumbItemView.getDescription!=null) {
           @Html(breadcrumbItemView.getDescription)
         }
-        @if(!breadcrumbTitle.isEmpty) {
-          <p>
-            @breadcrumbTitle
-          </p>
-        }
       }{
+        @if(!breadcrumbTitle.isEmpty) {
+          @breadcrumbTitle
+        }
+
         @if(!breadcrumbView.getNoteViews.isEmpty) {
           @controlCodeBreadcrumbsNotes() {
             @for(noteView <- breadcrumbView.getNoteViews) {
               <li>@Html(noteView.getText)</li>
             }
           }
-        } else {
-        @HtmlFormat.empty
         }
       }
     } else {

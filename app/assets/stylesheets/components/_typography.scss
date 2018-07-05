@@ -73,6 +73,16 @@ a[data-control-entry-id] {
   }
 }
 
+.view-related-entry-link {
+  display: none;
+
+  @include media(tablet) {
+    display: block;
+    float: right;
+    font-weight: normal;
+  }
+}
+
 .notice {
   margin-top: em(5, 16);
   margin-bottom: em(20, 16);
