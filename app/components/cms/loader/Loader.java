@@ -126,7 +126,8 @@ public class Loader {
   }
 
 
-  private void createControlEntries(Long parentControlEntryId, int displayOrder, NavigationLevel navigationLevel, long journeyId) {
+  private void createControlEntries(Long parentControlEntryId, int displayOrder, NavigationLevel navigationLevel,
+                                    long journeyId) {
     Long controlEntryId = null;
 
     ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
@@ -389,11 +390,14 @@ public class Loader {
     if (notes != null && !notes.isCreated()) {
       if (notes.getNb() != null) {
         splitAndInsertNote(notes.getNb(), NoteType.NB, stageId);
-      } else if (notes.getNote() != null) {
+      }
+      if (notes.getNote() != null) {
         splitAndInsertNote(notes.getNote(), NoteType.NOTE, stageId);
-      } else if (notes.getSeeAlso() != null) {
+      }
+      if (notes.getSeeAlso() != null) {
         splitAndInsertNote(notes.getSeeAlso(), NoteType.SEE_ALSO, stageId);
-      } else if (notes.getTechNote() != null) {
+      }
+      if (notes.getTechNote() != null) {
         splitAndInsertNote(notes.getTechNote(), NoteType.TECHNICAL_NOTE, stageId);
       }
       notes.setCreated(true);
