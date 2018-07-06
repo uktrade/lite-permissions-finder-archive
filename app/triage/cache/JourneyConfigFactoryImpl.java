@@ -148,8 +148,17 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
   private NoteConfig createNoteConfig(Note note) {
     String stageId = note.getStageId().toString();
-    Long journeyId = Optional.ofNullable(stageDao.getStage(Long.parseLong(stageId))).map(Stage::getJourneyId).orElse(null);
-    RichText noteText = richTextParser.parseForStage(note.getNoteText(), Long.toString(journeyId));
+    Stage stage = stageDao.getStage(Long.parseLong(stageId));
+    String controlEntryId = Optional.ofNullable(stage.getControlEntryId()).map(Object::toString).orElse(null);
+    String journeyId = stage.getJourneyId().toString();
+
+    RichText noteText;
+    if (StringUtils.isNotBlank(controlEntryId)) {
+      noteText = richTextParser.parseForControlEntry(note.getNoteText(), controlEntryId, journeyId);
+    } else {
+      noteText = richTextParser.parseForStage(note.getNoteText(), journeyId);
+    }
+
     return new NoteConfig(note.getId().toString(), stageId, noteText, note.getNoteType());
   }
 
