@@ -19,6 +19,8 @@ public interface LicenceFinderService {
 
   ResultsView getNoResultsView(String sessionId);
 
+  boolean isValidOgelId(String sessionId, String ogelId);
+
   void updateUsersOgelIdRefMap(String sessionId, String userId);
 
   boolean isOgelIdAlreadyRegistered(String sessionId, String ogelId);

@@ -76,6 +76,36 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     licenceFinderDao.saveUserOgelIdRefMap(sessionId, getUserOgelIdRefMap(userId));
   }
 
+  public boolean isValidOgelId(String sessionId, String ogelId) {
+
+    String controlCode = licenceFinderDao.getControlCode(sessionId);
+    List<String> destinationCountries = getExportRouteCountries(sessionId);
+    String sourceCountry = licenceFinderDao.getSourceCountry(sessionId);
+
+    List<String> activities = Collections.emptyList();
+    boolean showHistoricOgel = true; // set as default
+    Optional<QuestionsController.QuestionsForm> optQuestionsForm = licenceFinderDao.getQuestionsForm(sessionId);
+    if (optQuestionsForm.isPresent()) {
+      QuestionsController.QuestionsForm questionsForm = optQuestionsForm.get();
+      activities = getActivityTypes(questionsForm);
+      showHistoricOgel = questionsForm.beforeOrLess;
+    }
+
+    CompletionStage<List<ApplicableOgelView>> stage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activities, showHistoricOgel);
+
+    try {
+      Set<String> ogelIdSet = stage.thenApply(views -> views.stream().map(ApplicableOgelView::getId)
+              .collect(Collectors.toSet())
+      ).toCompletableFuture().get();
+      if(ogelIdSet.contains(ogelId)) {
+        return true;
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      LOGGER.error("ogelIdSet exception", e);
+    }
+    return false;
+  }
+
   public boolean isOgelIdAlreadyRegistered(String sessionId, String ogelId) {
     return licenceFinderDao.getUserOgelIdRefMap(sessionId).keySet().contains(ogelId);
   }
@@ -305,7 +335,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       }
       ogelViews.add(view);
     }
-
     return ogelViews;
   }
 

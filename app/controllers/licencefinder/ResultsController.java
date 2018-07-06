@@ -13,6 +13,7 @@ import controllers.LicenceFinderAwaitGuardAction;
 import controllers.LicenceFinderUserGuardAction;
 import models.view.RegisterResultView;
 import org.pac4j.play.java.Secure;
+import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints.Required;
@@ -75,7 +76,14 @@ public class ResultsController extends Controller {
     if (form.hasErrors()) {
       return renderWithForm(form, sessionId);
     }
+
     String chosenOgelId = form.get().chosenOgel;
+
+    // We make sure submitted OgelId is a id that is valid for this user - if not we re-render original form
+    if(!licenceFinderService.isValidOgelId(sessionId, chosenOgelId) && !chosenOgelId.equals(NONE_ABOVE_KEY)) {
+      return renderWithForm(form, sessionId);
+    }
+
     licenceFinderDao.saveOgelId(sessionId, chosenOgelId);
 
     // Return No licences available when 'None of the above' chosen
