@@ -30,20 +30,14 @@
     </p>
   }
 
-  <div class="form-group">
-    <dl class="answer-summary">
-      <table class="answer-summary-sub-table">
-        <tbody>
-          @for((questionView, index) <- questionViews.iterator.zipWithIndex) {
-            <tr>
-              <td>@questionView.getQuestion</td>
-              <td>@questionView.getAnswer</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </dl>
-  </div>
+  <dl class="govuk-check-your-answers form-group">
+    @for((questionView, index) <- questionViews.iterator.zipWithIndex) {
+      <div>
+        <dt class="cya-question">@questionView.getQuestion</dt>
+        <dd class="cya-answer">@questionView.getAnswer</dd>
+      </div>
+    }
+  </dl>
 
   <form action="@controllers.licencefinder.routes.RegisterToUseController.handleRegisterToUseSubmit(sessionId)" method="POST">
 

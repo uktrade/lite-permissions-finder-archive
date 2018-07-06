@@ -65,7 +65,7 @@ public class QuestionsController extends Controller {
     @Required(message = "Select whether you are exporting goods for or after exhibition or demonstration")
     public Boolean forExhibition;
 
-    @Required(message = "Select whether your goods were manufactured before 1897, or are worth less than £30,000")
+    @Required(message = "Select whether your goods were manufactured before 1897 and are worth less than £35,000")
     public Boolean beforeOrLess;
 
   }

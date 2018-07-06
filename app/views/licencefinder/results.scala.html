@@ -3,15 +3,19 @@
 @import views.html.common.page._
 @import views.html.common.form._
 @import models.view.licencefinder.ResultsView
+@import views.html.frontendComponents.formRadioWithDetailPanel
 
 @this(standardPage: standardPage)
 @(form: Form[_], resultsView: ResultsView, sessionId: String)
 
-  @title = @{
-    Html("")
-  }
+@chosenOgelFormField = @{"chosenOgel"}
 
-  @chosenOgelFormField = @{"chosenOgel"}
+@ogelLabel(alreadyRegistered: Boolean, ogelName: String) = {
+  @if(alreadyRegistered) {
+    <span class="bold">You have already registered for this OGEL:</span><br>
+  }
+  OGEL (@ogelName)
+}
 
 @standardPage(resultsView.getTitle(), Some(heading(resultsView.getTitle()))){
   @errorSummary(form)
@@ -26,36 +30,20 @@
         Open licences allow you to export certain goods without making a new application each time you export them.
       </p>
 
-      <p>
-        Select the option which best matches your requirements.
-      </p>
-
-
-      <fieldset>
-
-          @formRadioGroupContainer(form(chosenOgelFormField))(title, "h4", "heading-small") {
-            @for(ogelView <- resultsView.getOgelViews()) {
-
-              <div class="form-group">
-                @if(ogelView.getAlreadyRegistered) {
-                  <span class="bold" style="margin-left:40px">You have already registered for this OGEL:</span>
-                }
-              @formRadio(form("chosenOgel"), "<span class=\"bold\">OGEL (" + ogelView.getName + ")</span>", ogelView.getId, true, "label-trade-type")
-              @detailPanel("detailPanel"){More information} {
-                <p>
-                  @ogelView.getUsageSummary().iterator().next()
-                </p>
-              }
-              </div>
-            }
-<hr>
-            @formRadio(form("chosenOgel"), "<span class=\"bold\">None of the above applies fully to my situation</span>", ResultsController.NONE_ABOVE_KEY, true, "label-trade-type")
+      @formRadioGroupContainer(form(chosenOgelFormField))(Html("Select the option which best matches your requirements."), "p", "") {
+        @for(ogelView <- resultsView.getOgelViews()) {
+          @formRadioWithDetailPanel(form("chosenOgel"), ogelLabel(ogelView.getAlreadyRegistered, ogelView.getName).toString, ogelView.getId, true, detailPanelId = ogelView.getId + "detailPanel", detailPanelPrompt = "More information") {
+            @ogelView.getUsageSummary().iterator().next()
+          }
         }
 
-      </fieldset>
+        <p class="form-block">or</p>
+        @formRadio(form("chosenOgel"), "None of the above applies fully to my situation", ResultsController.NONE_ABOVE_KEY, true)
+      }
 
-      <button type="submit" class="button">Continue</button>
-
+      <div class="form-group">
+        <button type="submit" class="button">Continue</button>
+      </div>
     } else {
       <p>
         Your goods cannot be exported via an open licence. We will need to know more about the goods you want to export.

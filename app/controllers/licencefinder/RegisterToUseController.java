@@ -31,12 +31,12 @@ import javax.inject.Named;
 @With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
 public class RegisterToUseController extends Controller {
 
-  private static final String CONTROL_CODE_QUESTION = "What Control list entry describes your goods?";
+  private static final String CONTROL_CODE_QUESTION = "What control list entry describes your goods?";
   private static final String GOODS_GOING_QUESTION = "Where are your goods going?";
   private static final String FIRST_COUNTRY = "First country or territory that will receive the items";
   private static final String REPAIR_QUESTION = "Are you exporting goods for or after repair or replacement?";
   private static final String EXHIBITION_QUESTION = "Are you exporting goods for or after exhibition or demonstration?";
-  private static final String BEFORE_OR_LESS_QUESTION = "Were your goods manufactured before 1897, and worth less than £30,000?";
+  private static final String BEFORE_OR_LESS_QUESTION = "Were your goods manufactured before 1897 and are they worth less than £35,000?";
 
   private static final String YES = "Yes";
   private static final String NO = "No";
