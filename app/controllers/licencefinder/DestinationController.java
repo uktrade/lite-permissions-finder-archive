@@ -57,9 +57,6 @@ public class DestinationController extends Controller {
     this.destination = destination;
   }
 
-  /**
-   * renderDestinationForm
-   */
   public CompletionStage<Result> renderDestinationForm(String sessionId) {
     DestinationForm form = new DestinationForm();
     form.destinationCountry = licenceFinderDao.getDestinationCountry(sessionId);
@@ -68,23 +65,16 @@ public class DestinationController extends Controller {
     return completedFuture(ok(destination.render(formFactory.form(DestinationForm.class).fill(form), getCountries(), getFieldOrder(), sessionId)));
   }
 
-  /**
-   * handleDestinationSubmit
-   */
   public CompletionStage<Result> handleDestinationSubmit(String sessionId) {
 
     Form<DestinationForm> destinationForm = formFactory.form(DestinationForm.class).bindFromRequest();
 
-    DestinationForm form = destinationForm.get();
     List<CountryView> countries = getCountries();
-
-    if (form.multipleCountries != null && form.multipleCountries && StringUtils.isEmpty(form.firstConsigneeCountry)) {
-      destinationForm.reject(FIRST_CONSIGNEE_COUNTRY, "Enter a country or territory");
-    }
-
     if (destinationForm.hasErrors()) {
       return completedFuture(ok(destination.render(destinationForm, countries, getFieldOrder(), sessionId)));
     }
+
+    DestinationForm form = destinationForm.get();
 
     if (countries.stream().noneMatch(country -> country.getCountryRef().equals(form.destinationCountry))) {
       throw new FormStateException("Invalid value for " + DESTINATION_COUNTRY + " \"" + form.destinationCountry + "\"");
@@ -129,11 +119,10 @@ public class DestinationController extends Controller {
 
     public ValidationError validate() {
       if (multipleCountries != null && multipleCountries && StringUtils.isEmpty(firstConsigneeCountry)) {
-        // Could not get to work, got binding error here - validation code is in controller method for now
-        // TODO work out why this was happening
-        //return new ValidationError("firstConsigneeCountry", "Enter this text");
+        return new ValidationError("firstConsigneeCountry", "Enter this text");
+      } else {
+        return null;
       }
-      return null;
     }
   }
 }
