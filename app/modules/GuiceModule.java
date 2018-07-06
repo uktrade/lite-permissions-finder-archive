@@ -72,6 +72,7 @@ import components.services.UserPrivilegeService;
 import components.services.UserPrivilegeServiceImpl;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
+import models.template.AnalyticsTemplateHtml;
 import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
@@ -104,7 +105,6 @@ import triage.text.ParserLookupService;
 import triage.text.ParserLookupServiceDaoImpl;
 import triage.text.RichTextParser;
 import triage.text.RichTextParserImpl;
-import models.template.GATemplateHtml;
 
 import java.util.concurrent.TimeUnit;
 
@@ -191,8 +191,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bindConstant().annotatedWith(Names.named("ecjuEmailAddress")).to(config.getString("ecjuEmailAddress"));
 
-    bindConstant().annotatedWith(Names.named("gaHeadHtml")).to(config.getString("gaHtml.head"));
-    bindConstant().annotatedWith(Names.named("gaBodyHtml")).to(config.getString("gaHtml.body"));
+    bindConstant().annotatedWith(Names.named("analyticsHeadHtml")).to(config.getString("analyticsHtml.head"));
+    bindConstant().annotatedWith(Names.named("analyticsBodyHtml")).to(config.getString("analyticsHtml.body"));
 
     // CMS dao's
     bind(ControlEntryDao.class).to(ControlEntryDaoImpl.class);
@@ -314,7 +314,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   @Singleton
-  public GATemplateHtml provide(@Named("gaHeadHtml") String gaHeadHtml, @Named("gaBodyHtml") String gaBodyHtml) {
-    return new GATemplateHtml(gaHeadHtml, gaBodyHtml);
+  public AnalyticsTemplateHtml provide(@Named("analyticsHeadHtml") String analyticsHeadHtml, @Named("analyticsBodyHtml") String analyticsBodyHtml) {
+    return new AnalyticsTemplateHtml(analyticsHeadHtml, analyticsBodyHtml);
   }
 }
