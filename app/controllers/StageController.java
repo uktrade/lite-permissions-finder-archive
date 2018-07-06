@@ -18,7 +18,6 @@ import models.view.SubAnswerView;
 import models.view.form.AnswerForm;
 import models.view.form.MultiAnswerForm;
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
@@ -169,7 +168,11 @@ public class StageController extends Controller {
         }
       }
     } else if (action == Action.NONE) {
-      return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId));
+      if (isHighLevelDropout(controlEntryConfig)) {
+        return redirect(routes.OutcomeController.outcomeDropout(sessionId));
+      } else {
+        return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId));
+      }
     } else {
       throw UnknownParameterException.unknownAction(actionParam);
     }
@@ -370,11 +373,13 @@ public class StageController extends Controller {
   private Result resultForNoMatch(String sessionId, StageConfig stageConfig) {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     if (controlEntryConfig != null) {
-      List<ControlEntryConfig> controlEntryConfigs = journeyConfigService.getRelatedControlEntries(controlEntryConfig);
-      if (controlEntryConfigs.isEmpty()) {
-        return redirect(routes.OutcomeController.outcomeItemNotFound(controlEntryConfig.getId(), sessionId));
-      } else {
+      List<ControlEntryConfig> relatedControlEntries = journeyConfigService.getRelatedControlEntries(controlEntryConfig);
+      if (!relatedControlEntries.isEmpty()) {
         return redirect(routes.StageController.relatedEntries(controlEntryConfig.getId(), sessionId));
+      } else if (isHighLevelDropout(controlEntryConfig)) {
+        return redirect(routes.OutcomeController.outcomeDropout(sessionId));
+      } else {
+        return redirect(controllers.routes.OutcomeController.outcomeItemNotFound(controlEntryConfig.getId(), sessionId));
       }
     } else {
       return redirect(routes.OutcomeController.outcomeDropout(sessionId));
@@ -404,6 +409,11 @@ public class StageController extends Controller {
         return redirectToStage(stageId, sessionId);
       }
     }
+  }
+
+  private boolean isHighLevelDropout(ControlEntryConfig controlEntryConfig) {
+    //Business rule: "top level" control entries (e.g. ML1, ML2) are considered too high level for an NLR outcome
+    return !controlEntryConfig.getParentControlEntry().isPresent();
   }
 
   private Result redirectToIndex(String sessionId) {
