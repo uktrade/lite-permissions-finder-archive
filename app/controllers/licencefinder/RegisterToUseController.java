@@ -2,14 +2,19 @@ package controllers.licencefinder;
 
 import com.google.inject.Inject;
 import components.common.auth.SamlAuthorizer;
+import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
 import components.services.OgelService;
-import controllers.LicenceFinderAwaitGuardAction;
-import controllers.LicenceFinderUserGuardAction;
+import controllers.guard.LicenceFinderAwaitGuardAction;
+import controllers.guard.LicenceFinderUserGuardAction;
+import exceptions.UnknownParameterException;
+import models.TradeType;
 import models.view.QuestionView;
+import models.view.licencefinder.Customer;
+import models.view.licencefinder.Site;
 import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
@@ -41,6 +46,7 @@ public class RegisterToUseController extends Controller {
   private static final String YES = "Yes";
   private static final String NO = "No";
 
+  private final SpireAuthManager spireAuthManager;
   private final FormFactory formFactory;
   private final LicenceFinderDao licenceFinderDao;
   private final CountryProvider countryProvider;
@@ -50,12 +56,13 @@ public class RegisterToUseController extends Controller {
   private final views.html.licencefinder.registerToUse registerToUse;
 
   @Inject
-  public RegisterToUseController(FormFactory formFactory,
+  public RegisterToUseController(SpireAuthManager spireAuthManager, FormFactory formFactory,
                                  HttpExecutionContext httpContext,
                                  LicenceFinderDao licenceFinderDao,
                                  @Named("countryProviderExport") CountryProvider countryProvider,
                                  OgelService ogelService, LicenceFinderService licenceFinderService,
                                  views.html.licencefinder.registerToUse registerToUse) {
+    this.spireAuthManager = spireAuthManager;
     this.formFactory = formFactory;
     this.httpContext = httpContext;
     this.licenceFinderDao = licenceFinderDao;
@@ -65,64 +72,82 @@ public class RegisterToUseController extends Controller {
     this.registerToUse = registerToUse;
   }
 
-  /**
-   * renderRegisterToUseForm
-   */
   public CompletionStage<Result> renderRegisterToUseForm(String sessionId) {
-    return renderWithRegisterToUseForm(formFactory.form(RegisterToUseForm.class), sessionId);
+    if (licenceFinderService.canAccessRegisterToUseController(sessionId)) {
+      String ogelId = licenceFinderDao.getOgelId(sessionId).orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+      return renderWithRegisterToUseForm(formFactory.form(RegisterToUseForm.class), sessionId, ogelId);
+    } else {
+      throw UnknownParameterException.unknownOgelRegistrationOrder();
+    }
   }
 
-  /**
-   * handleRegisterToUseSubmit
-   */
   public CompletionStage<Result> handleRegisterToUseSubmit(String sessionId) {
-    Form<RegisterToUseForm> form = formFactory.form(RegisterToUseForm.class).bindFromRequest();
-    if (form.hasErrors()) {
-      return renderWithRegisterToUseForm(form, sessionId);
+    if (licenceFinderService.canAccessRegisterToUseController(sessionId)) {
+      String ogelId = licenceFinderDao.getOgelId(sessionId).orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+      Form<RegisterToUseForm> form = formFactory.form(RegisterToUseForm.class).bindFromRequest();
+      if (form.hasErrors()) {
+        return renderWithRegisterToUseForm(form, sessionId, ogelId);
+      } else {
+        String userId = spireAuthManager.getAuthInfoFromContext().getId();
+        Customer customer = licenceFinderDao.getCustomer(sessionId).orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+        Site site = licenceFinderDao.getSite(sessionId).orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+        licenceFinderService.registerOgel(sessionId, userId, ogelId, customer.getId(), site.getId());
+        Optional<String> referenceOptional = licenceFinderService.getRegistrationReference(sessionId);
+        if (referenceOptional.isPresent()) {
+          String reference = referenceOptional.get();
+          return CompletableFuture.completedFuture(redirect(routes.RegisterAwaitController.registrationSuccess(sessionId, reference)));
+        } else {
+          return CompletableFuture.completedFuture(redirect(routes.RegisterAwaitController.renderAwaitResult(sessionId)));
+        }
+      }
+    } else {
+      throw UnknownParameterException.unknownOgelRegistrationOrder();
     }
-
-    licenceFinderService.registerOgel(sessionId);
-
-    Optional<String> regRef = licenceFinderService.getRegistrationReference(sessionId);
-    if (regRef.isPresent()) {
-      return CompletableFuture.completedFuture(redirect(routes.RegisterAwaitController.registrationSuccess(sessionId, regRef.get())));
-    }
-    return CompletableFuture.completedFuture(redirect(routes.RegisterAwaitController.renderAwaitResult(sessionId)));
   }
 
-  /**
-   * Private methods
-   */
-  private CompletionStage<Result> renderWithRegisterToUseForm(Form<RegisterToUseForm> form, String sessionId) {
-    return ogelService.get(licenceFinderDao.getOgelId(sessionId))
-        .thenApplyAsync(
-            ogelFullView -> ok(registerToUse.render(form, ogelFullView, getLicenceFinderAnswers(sessionId), sessionId)), httpContext.current());
+  private CompletionStage<Result> renderWithRegisterToUseForm(Form<RegisterToUseForm> form, String sessionId,
+                                                              String ogelId) {
+    return ogelService.getById(ogelId).thenApplyAsync(ogelFullView ->
+            ok(registerToUse.render(form, ogelFullView, getLicenceFinderAnswers(sessionId), sessionId)),
+        httpContext.current());
   }
 
   private List<QuestionView> getLicenceFinderAnswers(String sessionId) {
     List<QuestionView> views = new ArrayList<>();
 
-    views.add(new QuestionView(CONTROL_CODE_QUESTION, licenceFinderDao.getControlCode(sessionId)));
-    licenceFinderDao.getTradeType(sessionId).ifPresent(tradeType -> views.add(new QuestionView(GOODS_GOING_QUESTION, tradeType.getTitle())));
-    views.add(new QuestionView(DestinationController.DESTINATION_QUESTION, countryProvider.getCountry(licenceFinderDao.getDestinationCountry(sessionId)).getCountryName()));
-    licenceFinderDao.getMultipleCountries(sessionId).ifPresent(aBoolean -> views.add(new QuestionView(DestinationController.DESTINATION_MULTIPLE_QUESTION, aBoolean ? "Yes" : "No")));
+    String controlCode = licenceFinderDao.getControlCode(sessionId)
+        .orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+    views.add(new QuestionView(CONTROL_CODE_QUESTION, controlCode));
 
-    Optional<Boolean> optMultipleCountries = licenceFinderDao.getMultipleCountries(sessionId);
-    if (optMultipleCountries.isPresent()) {
-      boolean isMultiple = optMultipleCountries.get();
-      if (isMultiple) {
-        views.add(new QuestionView(FIRST_COUNTRY, countryProvider.getCountry(licenceFinderDao.getFirstConsigneeCountry(sessionId)).getCountryName()));
-      }
+    TradeType tradeType = licenceFinderDao.getTradeType(sessionId)
+        .orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+    views.add(new QuestionView(GOODS_GOING_QUESTION, tradeType.getTitle()));
+
+    String destinationCountry = licenceFinderDao.getDestinationCountry(sessionId)
+        .orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+    String destinationCountryName = countryProvider.getCountry(destinationCountry).getCountryName();
+    views.add(new QuestionView(DestinationController.DESTINATION_QUESTION, destinationCountryName));
+
+    boolean multipleCountries = licenceFinderDao.getMultipleCountries(sessionId)
+        .orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+    views.add(new QuestionView(DestinationController.DESTINATION_MULTIPLE_QUESTION, toAnswer(multipleCountries)));
+    if (multipleCountries) {
+      String firstConsigneeCountry = licenceFinderDao.getFirstConsigneeCountry(sessionId)
+          .orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+      String firstConsigneeCountryName = countryProvider.getCountry(firstConsigneeCountry).getCountryName();
+      views.add(new QuestionView(FIRST_COUNTRY, firstConsigneeCountryName));
     }
 
-    Optional<QuestionsController.QuestionsForm> optForm = licenceFinderDao.getQuestionsForm(sessionId);
-    if (optForm.isPresent()) {
-      QuestionsController.QuestionsForm form = optForm.get();
-      views.add(new QuestionView(REPAIR_QUESTION, form.forRepair ? YES : NO));
-      views.add(new QuestionView(EXHIBITION_QUESTION, form.forExhibition ? YES : NO));
-      views.add(new QuestionView(BEFORE_OR_LESS_QUESTION, form.beforeOrLess ? YES : NO));
-    }
+    QuestionsController.QuestionsForm questionsForm = licenceFinderDao.getQuestionsForm(sessionId)
+        .orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+    views.add(new QuestionView(REPAIR_QUESTION, toAnswer(questionsForm.forRepair)));
+    views.add(new QuestionView(EXHIBITION_QUESTION, toAnswer(questionsForm.forExhibition)));
+    views.add(new QuestionView(BEFORE_OR_LESS_QUESTION, toAnswer(questionsForm.beforeOrLess)));
     return views;
+  }
+
+  private String toAnswer(boolean bool) {
+    return bool ? YES : NO;
   }
 
   public static class RegisterToUseForm {

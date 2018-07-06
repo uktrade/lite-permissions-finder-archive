@@ -8,9 +8,11 @@ import components.cms.dao.SessionOutcomeDao;
 import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
+import components.services.AccountService;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
-import exceptions.InvalidUserAccountException;
+import controllers.guard.SessionGuardAction;
+import models.AccountData;
 import models.enums.SessionOutcomeType;
 import models.view.form.ItemDescriptionForm;
 import org.pac4j.play.java.Secure;
@@ -28,11 +30,14 @@ import triage.session.SessionService;
 import triage.session.TriageSession;
 import utils.HtmlUtil;
 
+import java.util.Optional;
+
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 public class ViewOutcomeController {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ViewOutcomeController.class);
 
+  private final AccountService accountService;
   private final SessionService sessionService;
   private final SessionOutcomeService sessionOutcomeService;
   private final SessionOutcomeDao sessionOutcomeDao;
@@ -46,7 +51,8 @@ public class ViewOutcomeController {
   private final views.html.nlr.nlrItemDescription nlrItemDescription;
 
   @Inject
-  public ViewOutcomeController(SessionService sessionService, SessionOutcomeService sessionOutcomeService,
+  public ViewOutcomeController(AccountService accountService, SessionService sessionService,
+                               SessionOutcomeService sessionOutcomeService,
                                SessionOutcomeDao sessionOutcomeDao, UserPrivilegeService userPrivilegeService,
                                SpireAuthManager spireAuthManager,
                                ControllerConfigService controllerConfigService,
@@ -54,6 +60,7 @@ public class ViewOutcomeController {
                                views.html.nlr.nlrOutcome nlrOutcome,
                                views.html.triage.listedOutcomeSaved listedOutcomeSaved,
                                views.html.nlr.nlrItemDescription nlrItemDescription) {
+    this.accountService = accountService;
     this.sessionService = sessionService;
     this.sessionOutcomeService = sessionOutcomeService;
     this.sessionOutcomeDao = sessionOutcomeDao;
@@ -108,15 +115,14 @@ public class ViewOutcomeController {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
     if (sessionOutcome == null) {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
-      try {
-        sessionOutcomeService.generateItemListedOutcome(userId, sessionId, controlEntryConfig);
-      } catch (InvalidUserAccountException exception) {
+      Optional<AccountData> accountDataOptional = accountService.getAccountData(userId);
+      if (accountDataOptional.isPresent()) {
+        sessionOutcomeService.generateItemListedOutcome(sessionId, userId, accountDataOptional.get(), controlEntryConfig);
+      } else {
         return redirect(routes.StaticContentController.renderInvalidUserAccount());
       }
     }
-
     TriageSession triageSession = sessionService.getSessionById(sessionId);
-
     return redirect(controllers.licencefinder.routes.EntryController.entry(controlEntryConfig.getControlCode(), triageSession.getResumeCode()));
   }
 
@@ -153,13 +159,14 @@ public class ViewOutcomeController {
               resumeCode, submitUrl));
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          try {
+          Optional<AccountData> accountDataOptional = accountService.getAccountData(userId);
+          if (accountDataOptional.isPresent()) {
             Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
-            sessionOutcomeService.generateNotFoundNlrLetter(userId, sessionId, controlEntryConfig, resumeCode, htmlDescription);
-          } catch (InvalidUserAccountException exception) {
+            sessionOutcomeService.generateNotFoundNlrLetter(sessionId, userId, accountDataOptional.get(), controlEntryConfig, resumeCode, htmlDescription);
+            return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
+          } else {
             return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }
-          return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
       }
     } else {
@@ -200,13 +207,15 @@ public class ViewOutcomeController {
               resumeCode, submitUrl));
         } else {
           String userId = spireAuthManager.getAuthInfoFromContext().getId();
-          try {
+          Optional<AccountData> accountDataOptional = accountService.getAccountData(userId);
+          if (accountDataOptional.isPresent()) {
             Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
-            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, stageConfig, resumeCode, htmlDescription);
-          } catch (InvalidUserAccountException exception) {
+            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, accountDataOptional.get(), stageConfig,
+                resumeCode, htmlDescription);
+            return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
+          } else {
             return redirect(routes.StaticContentController.renderInvalidUserAccount());
           }
-          return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
         }
       }
     } else {

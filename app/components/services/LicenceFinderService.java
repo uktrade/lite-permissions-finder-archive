@@ -1,30 +1,47 @@
 package components.services;
 
-import models.view.licencefinder.ResultsView;
+import controllers.licencefinder.QuestionsController;
+import models.view.licencefinder.OgelView;
+import uk.gov.bis.lite.customer.api.view.CustomerView;
+import uk.gov.bis.lite.customer.api.view.SiteView;
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.permissions.api.view.CallbackView;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface LicenceFinderService {
 
-  void persistCustomerAndSiteData(String sessionId);
+  void persistCustomerAndSiteData(String sessionId, CustomerView customerView, SiteView siteView);
 
-  void registerOgel(String sessionId);
+  void registerOgel(String sessionId, String userId, String customerId, String siteId, String ogelId);
 
   void handleCallback(String sessionId, CallbackView callbackView);
 
+  List<ApplicableOgelView> getApplicableOgelViews(String controlCode, String sourceCountry,
+                                                  List<String> destinationCountries,
+                                                  QuestionsController.QuestionsForm questionsForm);
+
   Optional<String> getRegistrationReference(String sessionId);
 
-  ResultsView getResultsView(String sessionId);
+  void saveDestinations(String sessionId, String destinationCountry, String firstConsigneeCountry,
+                        boolean multipleCountries);
 
-  ResultsView getNoResultsView(String sessionId);
+  boolean canAccessTradeController(String sessionId);
 
-  boolean isValidOgelId(String sessionId, String ogelId);
+  boolean canAccessDestinationController(String sessionId);
 
-  void updateUsersOgelIdRefMap(String sessionId, String userId);
+  boolean canAccessQuestionController(String sessionId);
 
-  boolean isOgelIdAlreadyRegistered(String sessionId, String ogelId);
+  boolean canAccessChooseOgelController(String sessionId);
 
-  Optional<String> getUserOgelReference(String sessionId, String ogelId);
+  boolean canAccessRegisterToUseController(String sessionId);
 
+  Map<String, String> getUserOgelIdReferenceMap(String sessionId);
+
+  void updateUserOgelIdReferenceMap(String sessionId, String userId);
+
+  List<OgelView> getOgelViews(List<ApplicableOgelView> applicableViews, Set<String> existingOgels);
 }

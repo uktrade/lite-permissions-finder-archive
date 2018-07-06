@@ -6,6 +6,7 @@ import static play.mvc.Results.notFound;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import controllers.common.ErrorHandler;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.LoggerFactory;
 import play.Environment;
 import play.api.OptionalSourceMapper;
@@ -40,8 +41,8 @@ public class PermissionsFinderErrorHandler extends ErrorHandler {
 
   @Override
   public CompletionStage<Result> onServerError(Http.RequestHeader request, Throwable exception) {
-    if (exception instanceof UnknownParameterException) {
-      LOGGER.warn("onServerError", exception);
+    if (ExceptionUtils.indexOfThrowable(exception, UnknownParameterException.class) != -1) {
+      LOGGER.warn("Unknown parameter", exception);
       return CompletableFuture.completedFuture(badRequest(errorPage.render("This page could not be found")));
     } else {
       return super.onServerError(request, exception);

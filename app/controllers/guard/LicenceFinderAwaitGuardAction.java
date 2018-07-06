@@ -1,30 +1,36 @@
-package controllers;
+package controllers.guard;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
+import components.persistence.LicenceFinderDao;
 import components.services.FlashService;
+import controllers.routes;
+import models.persistence.RegisterLicence;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
-import triage.session.SessionService;
-import triage.session.TriageSession;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
-public class SessionGuardAction extends Action.Simple {
+/**
+ * Checks for a Registration reference associated with session and redirects to RegisterAwaitController controller if found
+ */
+public class LicenceFinderAwaitGuardAction extends Action.Simple {
 
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(SessionGuardAction.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LicenceFinderAwaitGuardAction.class);
 
+  private final LicenceFinderDao licenceFinderDao;
   private final FlashService flashService;
-  private final SessionService sessionService;
 
   @Inject
-  public SessionGuardAction(FlashService flashService, SessionService sessionService) {
+  public LicenceFinderAwaitGuardAction(LicenceFinderDao licenceFinderDao, FlashService flashService) {
+    this.licenceFinderDao = licenceFinderDao;
     this.flashService = flashService;
-    this.sessionService = sessionService;
   }
 
   @Override
@@ -33,9 +39,9 @@ public class SessionGuardAction extends Action.Simple {
     if (StringUtils.isBlank(sessionId)) {
       return unknownSession(sessionId);
     } else {
-      TriageSession triageSession = sessionService.getSessionById(sessionId);
-      if (triageSession == null) {
-        return unknownSession(sessionId);
+      Optional<RegisterLicence> optRegisterLicence = licenceFinderDao.getRegisterLicence(sessionId);
+      if (optRegisterLicence.isPresent()) {
+        return completedFuture(redirect(controllers.licencefinder.routes.RegisterAwaitController.renderAwaitResult(sessionId)));
       } else {
         return delegate.call(ctx);
       }

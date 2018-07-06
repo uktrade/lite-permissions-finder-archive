@@ -42,6 +42,7 @@ public class RegistrationController extends Controller {
     }
 
     try {
+      // TODO Possible refactor in separate pull request
       licenceFinderService.handleCallback(sessionId, callbackView);
       return ok(Json.toJson(okResponse()));
     } catch (Exception e) {

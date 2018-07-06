@@ -8,7 +8,8 @@ import components.common.auth.SpireSAML2Client;
 import components.persistence.LicenceFinderDao;
 import components.services.LicenceFinderService;
 import components.services.OgelService;
-import controllers.LicenceFinderUserGuardAction;
+import controllers.guard.LicenceFinderUserGuardAction;
+import exceptions.UnknownParameterException;
 import models.view.RegisterResultView;
 import org.pac4j.play.java.Secure;
 import play.libs.concurrent.HttpExecutionContext;
@@ -51,22 +52,31 @@ public class RegisterAwaitController extends Controller {
    * renderAwaitResult
    */
   public CompletionStage<Result> renderAwaitResult(String sessionId) {
-    Optional<String> regRef = licenceFinderService.getRegistrationReference(sessionId);
-    if (regRef.isPresent()) {
-      return registrationSuccess(sessionId, regRef.get());
+    Optional<String> reference = licenceFinderService.getRegistrationReference(sessionId);
+    if (reference.isPresent()) {
+      return registrationSuccess(sessionId, reference.get());
+    } else {
+      return completedFuture(ok(registerWait.render(sessionId)));
     }
-    return completedFuture(ok(registerWait.render(sessionId)));
   }
 
   /**
    * registrationSuccess
    */
   public CompletionStage<Result> registrationSuccess(String sessionId, String registrationRef) {
-    return ogelService.get(licenceFinderDao.getOgelId(sessionId))
-        .thenApplyAsync(ogelFullView -> {
-          RegisterResultView view = new RegisterResultView("You have successfully registered to use Open general export licence (" + ogelFullView.getName() + ") ", registrationRef);
-          return ok(registerResult.render(view, ogelFullView, dashboardUrl));
-        }, httpContext.current());
+    Optional<String> reference = licenceFinderService.getRegistrationReference(sessionId);
+    if (reference.isPresent()) {
+      String ogelId = licenceFinderDao.getOgelId(sessionId).orElseThrow(UnknownParameterException::unknownOgelRegistrationOrder);
+      return ogelService.getById(ogelId)
+          .thenApplyAsync(ogelFullView -> {
+            String title = "You have successfully registered to use Open general export licence " + ogelFullView.getName();
+            RegisterResultView view = new RegisterResultView(title, registrationRef);
+            return ok(registerResult.render(view, ogelFullView, dashboardUrl));
+          }, httpContext.current());
+    } else {
+      throw UnknownParameterException.unknownOgelReference(registrationRef);
+    }
+
   }
 
   /**

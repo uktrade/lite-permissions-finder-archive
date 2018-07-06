@@ -28,6 +28,12 @@ public class ControllerConfigServiceImpl implements ControllerConfigService {
   }
 
   @Override
+  public ControlEntryConfig getControlEntryConfigByControlCode(String controlCode) {
+    return journeyConfigService.getControlEntryConfigByControlCode(controlCode)
+        .orElseThrow(() -> UnknownParameterException.unknownControlCode(controlCode));
+  }
+
+  @Override
   public DefinitionConfig getGlobalDefinitionConfig(String globalDefinitionId) {
     return definitionConfigService.getGlobalDefinition(globalDefinitionId)
         .orElseThrow(() -> UnknownParameterException.unknownGlobalDefinitionId(globalDefinitionId));

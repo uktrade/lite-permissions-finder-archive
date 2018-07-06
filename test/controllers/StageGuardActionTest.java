@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import components.cms.dao.SessionOutcomeDao;
 import components.services.FlashService;
+import controllers.guard.StageGuardAction;
 import models.enums.SessionOutcomeType;
 import org.junit.Test;
 import play.mvc.Action;

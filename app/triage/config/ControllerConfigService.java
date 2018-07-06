@@ -6,6 +6,8 @@ public interface ControllerConfigService {
 
   ControlEntryConfig getControlEntryConfig(String controlEntryId);
 
+  ControlEntryConfig getControlEntryConfigByControlCode(String controlCode);
+
   DefinitionConfig getGlobalDefinitionConfig(String globalDefinitionId);
 
   DefinitionConfig getLocalDefinitionConfig(String localDefinitionId);

@@ -46,6 +46,8 @@ import components.common.client.CountryServiceClient;
 import components.common.client.userservice.UserServiceClientBasicAuth;
 import components.common.persistence.RedisKeyConfig;
 import components.common.persistence.StatelessRedisDao;
+import components.services.AccountService;
+import components.services.AccountServiceImpl;
 import components.services.AnswerConfigService;
 import components.services.AnswerConfigServiceImpl;
 import components.services.AnswerViewService;
@@ -122,6 +124,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
+    bind(AccountService.class).to(AccountServiceImpl.class);
     bind(DefinitionConfigService.class).to(DefinitionConfigServiceImpl.class).asEagerSingleton();
     bind(ProgressViewService.class).to(ProgressViewServiceImpl.class);
     bind(RenderService.class).to(RenderServiceImpl.class);

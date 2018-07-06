@@ -8,6 +8,7 @@ import components.cms.dao.ControlEntryDao;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
+import models.cms.ControlEntry;
 import models.cms.Journey;
 import models.cms.Stage;
 import models.cms.StageAnswer;
@@ -112,6 +113,16 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   @Override
   public Optional<ControlEntryConfig> getControlEntryConfigById(String controlEntryId) {
     return controlEntryCache.getUnchecked(controlEntryId);
+  }
+
+  @Override
+  public Optional<ControlEntryConfig> getControlEntryConfigByControlCode(String controlCode) {
+    ControlEntry controlEntry = controlEntryDao.getControlEntryByControlCode(controlCode);
+    if (controlEntry == null) {
+      return Optional.empty();
+    } else {
+      return controlEntryCache.getUnchecked(Long.toString(controlEntry.getId()));
+    }
   }
 
   @Override

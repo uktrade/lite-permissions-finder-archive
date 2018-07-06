@@ -5,6 +5,7 @@ import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
+import controllers.guard.SessionGuardAction;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints;

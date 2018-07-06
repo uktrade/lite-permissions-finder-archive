@@ -1,18 +1,18 @@
 package components.services;
 
-import exceptions.InvalidUserAccountException;
+import models.AccountData;
 import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
 import triage.config.StageConfig;
 
 public interface SessionOutcomeService {
 
-  void generateItemListedOutcome(String userId, String sessionId,
-                                 ControlEntryConfig controlEntryConfig) throws InvalidUserAccountException;
+  void generateItemListedOutcome(String sessionId, String userId, AccountData accountData,
+                                 ControlEntryConfig controlEntryConfig);
 
-  String generateNotFoundNlrLetter(String userId, String sessionId, ControlEntryConfig controlEntryConfig,
-                                   String resumeCode, Html description) throws InvalidUserAccountException;
+  String generateNotFoundNlrLetter(String sessionId, String userId, AccountData accountData,
+                                   ControlEntryConfig controlEntryConfig, String resumeCode, Html description);
 
-  String generateDecontrolNlrLetter(String userId, String sessionId, StageConfig stageConfig, String resumeCode,
-                                    Html description) throws InvalidUserAccountException;
+  String generateDecontrolNlrLetter(String sessionId, String userId, AccountData accountData,
+                                    StageConfig stageConfig, String resumeCode, Html description);
 }

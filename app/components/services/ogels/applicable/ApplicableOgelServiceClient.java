@@ -12,6 +12,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
+import utils.RequestUtil;
 
 import java.time.Duration;
 import java.util.List;
@@ -60,7 +61,7 @@ public class ApplicableOgelServiceClient {
                                                                            List<String> activityTypes,
                                                                            boolean showHistoricOgel) {
 
-    WSRequest req = wsClient.url(webServiceUrl)
+    WSRequest request = wsClient.url(webServiceUrl)
         .setAuth(credentials)
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
@@ -68,16 +69,15 @@ public class ApplicableOgelServiceClient {
         .addQueryParameter("controlCode", controlCode)
         .addQueryParameter("sourceCountry", sourceCountry);
 
-    destinationCountries.forEach(country -> req.addQueryParameter("destinationCountry", country));
+    destinationCountries.forEach(country -> request.addQueryParameter("destinationCountry", country));
 
-    activityTypes.forEach(activityType -> req.addQueryParameter("activityType", activityType));
+    activityTypes.forEach(activityType -> request.addQueryParameter("activityType", activityType));
 
-    return req.get().handleAsync((response, error) -> {
-      if (error != null) {
-        throw new ServiceException("OGEL service request failed", error);
-      } else if (response.getStatus() != 200) {
-        throw new ServiceException(String.format("Unexpected HTTP status code from OGEL service /applicable-ogels: %s",
-            response.getStatus()));
+    return request.get().handleAsync((response, error) -> {
+      if (RequestUtil.hasError(response, error)) {
+        String message = "Applicable ogel service request failed";
+        RequestUtil.logError(request, response, error, message);
+        throw new ServiceException(message);
       } else {
         return filterHistoric(Json.fromJson(response.asJson(), ApplicableOgelView[].class), showHistoricOgel);
       }
@@ -88,12 +88,9 @@ public class ApplicableOgelServiceClient {
    * Removes historic ogels from results if required
    */
   private List<ApplicableOgelView> filterHistoric(ApplicableOgelView[] views, boolean showHistoricOgel) {
-    List<ApplicableOgelView> filteredViews = Stream.of(views)
+    return Stream.of(views)
         .filter(view -> showHistoricOgel || !StringUtils.containsIgnoreCase(view.getName(), "historic military goods"))
         .collect(Collectors.toList());
-
-    LOGGER.info("Filter Historic Ogels (" + showHistoricOgel + ") [" + views.length + "/" + filteredViews.size() + "]");
-    return filteredViews;
   }
 
 }
