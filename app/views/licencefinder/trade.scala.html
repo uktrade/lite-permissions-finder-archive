@@ -16,7 +16,6 @@
       You should use this service once for each type of item you are moving. Multiple item searches will be added later.
     </p>
   </div>
-  <br>
 
   <form action="@controllers.licencefinder.routes.TradeController.handleTradeSubmit(sessionId)" method="POST">
 
@@ -28,17 +27,17 @@
       @fieldContainer(form("tradeType")) {
 
         <p>
-          Finding results for moving goods described in Control list entry @controlCode:
+          Finding results for moving goods described in control list entry <span class="bold">@controlCode</span>:
         </p>
 
         @formRadio(form("tradeType"), "<span class=\"bold\">From the UK to another country</span><br>This is known as an export",
-          TradeType.EXPORT.toString, true, "label-trade-type")
+          TradeType.EXPORT.toString, true)
 
         @formRadio(form("tradeType"), "<span class=\"bold\">Between non-UK countries</span><br>This is known as trafficking or brokering",
-          TradeType.BROKERING.toString, true, "label-trade-type")
+          TradeType.BROKERING.toString, true)
 
         @formRadio(form("tradeType"), "<span class=\"bold\">Through the UK, from one non-UK country to another</span><br>This is known as transhipment",
-          TradeType.TRANSSHIPMENT.toString, true, "label-trade-type")
+          TradeType.TRANSSHIPMENT.toString, true)
       }
 
     </fieldset>

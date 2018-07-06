@@ -21,7 +21,7 @@ public class ResultsView {
 
   public String getTitle() {
     if (ogelViews != null && !ogelViews.isEmpty()) {
-      return "Open licences available for exporting goods described in Control list entry " + controlCode + " to " + destinationCountry;
+      return "Open licences available for exporting goods described in control list entry " + controlCode + " to " + destinationCountry;
     } else {
       return "No open licences available";
     }

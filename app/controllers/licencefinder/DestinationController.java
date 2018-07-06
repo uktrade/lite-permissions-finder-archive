@@ -119,7 +119,7 @@ public class DestinationController extends Controller {
 
     public ValidationError validate() {
       if (multipleCountries != null && multipleCountries && StringUtils.isEmpty(firstConsigneeCountry)) {
-        return new ValidationError("firstConsigneeCountry", "Enter this text");
+        return new ValidationError("firstConsigneeCountry", "Enter the first consignee's country or territory");
       } else {
         return null;
       }

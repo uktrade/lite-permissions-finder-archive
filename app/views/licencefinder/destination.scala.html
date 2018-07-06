@@ -41,8 +41,8 @@
 
     @countrySelect(form(DestinationController.DESTINATION_COUNTRY), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(countryDetailPanel))
 
-    @formRadioBooleanWithContent(form(DestinationController.MULTIPLE_COUNTRIES), multipleCountriesQuestion, "h1", "heading-large") {
-      @countrySelect(form(DestinationController.FIRST_CONSIGNEE_COUNTRY), countries, Some("Type the country or territory where the first consignee or other party will receive the items"), Some("form-hint"), None, Some(countryDetailPanel))
+    @formRadioBooleanWithContent(form(DestinationController.MULTIPLE_COUNTRIES), multipleCountriesQuestion) {
+      @countrySelect(form(DestinationController.FIRST_CONSIGNEE_COUNTRY), countries, Some("Type the country or territory where the first consignee or other party will receive the items"), detailPanel = Some(countryDetailPanel))
     }(HtmlFormat.empty)
 
     <div class="form-group">
