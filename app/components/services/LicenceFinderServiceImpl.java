@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -78,7 +77,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
   }
 
   public boolean isValidOgelId(String sessionId, String ogelId) {
-    boolean isValid = false;
 
     String controlCode = licenceFinderDao.getControlCode(sessionId);
     List<String> destinationCountries = getExportRouteCountries(sessionId);
@@ -96,14 +94,16 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
     CompletionStage<List<ApplicableOgelView>> stage = applicableClient.get(controlCode, sourceCountry, destinationCountries, activities, showHistoricOgel);
 
     try {
-      Set<String> ogelIdSet = stage.thenApply(this::getOgelIds).toCompletableFuture().get();
+      Set<String> ogelIdSet = stage.thenApply(views -> views.stream().map(ApplicableOgelView::getId)
+              .collect(Collectors.toSet())
+      ).toCompletableFuture().get();
       if(ogelIdSet.contains(ogelId)) {
-        isValid = true;
+        return true;
       }
     } catch (InterruptedException | ExecutionException e) {
       LOGGER.error("ogelIdSet exception", e);
     }
-    return isValid;
+    return false;
   }
 
   public boolean isOgelIdAlreadyRegistered(String sessionId, String ogelId) {
@@ -336,14 +336,6 @@ public class LicenceFinderServiceImpl implements LicenceFinderService {
       ogelViews.add(view);
     }
     return ogelViews;
-  }
-
-  private Set<String> getOgelIds(List<ApplicableOgelView> applicableViews) {
-    Set<String> ogelIdSet = new HashSet<>();
-    for (ApplicableOgelView applicableView : applicableViews) {
-      ogelIdSet.add(applicableView.getId());
-    }
-    return ogelIdSet;
   }
 
   private void registrationResponseReceived(String sessionId, PermissionsServiceImpl.RegistrationResponse response,
