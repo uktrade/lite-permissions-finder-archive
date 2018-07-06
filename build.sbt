@@ -19,7 +19,7 @@ scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   javaJdbc,
-  ehcache,
+  cacheApi,
   javaWs,
   filters
 )
