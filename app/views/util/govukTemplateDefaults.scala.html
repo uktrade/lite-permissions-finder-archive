@@ -1,13 +1,13 @@
 @import views.html.common.page.govukTemplate
 @import play.twirl.api.HtmlFormat
 @import components.common.auth.SpireAuthManager
-@import models.template.AnalyticsTemplateHtml
+@import models.template.AnalyticsSnippets
 
-@this(spireAuthManager: SpireAuthManager, analyticsTemplateHtml: AnalyticsTemplateHtml)
+@this(spireAuthManager: SpireAuthManager, analyticsSnippets: AnalyticsSnippets)
 @(htmlTitle: String, propositionHeading: Option[Html] = None)(content: Html)
 
 @head = {
-  @Html(analyticsTemplateHtml.getHead)
+  <script type="text/javascript" src="@controllers.routes.AnalyticsController.getAnalyticsJs()"></script>
   <!--[if gt IE 8]><!-->
   <link href="@controllers.routes.Assets.versioned("stylesheets/permissions-finder.css")" media="screen" rel="stylesheet" type="text/css" />
   <!--<![endif]-->
@@ -16,7 +16,7 @@
 }
 
 @bodyStart = {
-  @Html(analyticsTemplateHtml.getBody)
+  @Html(analyticsSnippets.getBodyHtml)
 }
 
 @bodyEnd = {

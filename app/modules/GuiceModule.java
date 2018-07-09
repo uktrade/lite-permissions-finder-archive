@@ -72,7 +72,7 @@ import components.services.UserPrivilegeService;
 import components.services.UserPrivilegeServiceImpl;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
-import models.template.AnalyticsTemplateHtml;
+import models.template.AnalyticsSnippets;
 import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
@@ -191,8 +191,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bindConstant().annotatedWith(Names.named("ecjuEmailAddress")).to(config.getString("ecjuEmailAddress"));
 
-    bindConstant().annotatedWith(Names.named("analyticsHeadHtml")).to(config.getString("analyticsHtml.head"));
-    bindConstant().annotatedWith(Names.named("analyticsBodyHtml")).to(config.getString("analyticsHtml.body"));
+    bindConstant().annotatedWith(Names.named("analyticsHeadJs")).to(config.getString("analytics.headJs"));
+    bindConstant().annotatedWith(Names.named("analyticsBodyHtml")).to(config.getString("analytics.bodyHtml"));
 
     // CMS dao's
     bind(ControlEntryDao.class).to(ControlEntryDaoImpl.class);
@@ -314,7 +314,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   @Singleton
-  public AnalyticsTemplateHtml provide(@Named("analyticsHeadHtml") String analyticsHeadHtml, @Named("analyticsBodyHtml") String analyticsBodyHtml) {
-    return new AnalyticsTemplateHtml(analyticsHeadHtml, analyticsBodyHtml);
+  public AnalyticsSnippets provide(@Named("analyticsHeadJs") String analyticsHeadJs, @Named("analyticsBodyHtml") String analyticsBodyHtml) {
+    return new AnalyticsSnippets(analyticsHeadJs, analyticsBodyHtml);
   }
 }
