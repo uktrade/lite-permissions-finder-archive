@@ -311,10 +311,4 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   public DBI provideDataSourceDbi(Config config, Database database) {
     return new DBI(database.getUrl());
   }
-
-  @Provides
-  @Singleton
-  public AnalyticsSnippets provide(@Named("analyticsHeadJs") String analyticsHeadJs, @Named("analyticsBodyHtml") String analyticsBodyHtml) {
-    return new AnalyticsSnippets(analyticsHeadJs, analyticsBodyHtml);
-  }
 }
