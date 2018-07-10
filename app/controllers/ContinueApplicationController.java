@@ -45,7 +45,7 @@ public class ContinueApplicationController {
           if (lastStageId != null) {
             return redirect(routes.StageController.render(Long.toString(lastStageId), sessionId));
           } else {
-            return redirect(routes.StageController.index(sessionId));
+            return redirect(routes.OnboardingController.renderForm(sessionId));
           }
         } else {
           Form formWithError = form.withError("resumeCode", "You have entered an invalid reference code");
