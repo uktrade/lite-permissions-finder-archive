@@ -1,6 +1,7 @@
 package components.services;
 
 import com.google.inject.Inject;
+import components.comparator.RelatedEntriesComparator;
 import exceptions.BusinessRuleException;
 import models.cms.enums.QuestionType;
 import models.view.AnswerView;
@@ -47,6 +48,7 @@ public class AnswerViewServiceImpl implements AnswerViewService {
   @Override
   public List<AnswerView> createAnswerViewsFromControlEntryConfigs(List<ControlEntryConfig> controlEntryConfigs) {
     return controlEntryConfigs.stream()
+        .sorted(Comparator.comparing(ControlEntryConfig::getControlCode, new RelatedEntriesComparator()))
         .map(controlEntryConfig -> createAnswerViewFromControlEntryConfig(null, controlEntryConfig, false))
         .collect(Collectors.toList());
   }
