@@ -11,4 +11,6 @@ public interface OgelService {
 
   CompletionStage<OgelFullView> get(String ogelId);
 
+  CompletionStage<Boolean> ping();
+
 }

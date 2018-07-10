@@ -22,6 +22,7 @@ public class OgelServiceImpl implements OgelService {
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(OgelServiceImpl.class);
 
   private static final String OGELS_PATH = "/ogels/";
+  private static final String PING_PATH = "/admin/ping";
 
   private final WSClient wsClient;
   private final String ogelServiceAddress;
@@ -42,6 +43,17 @@ public class OgelServiceImpl implements OgelService {
     this.credentials = credentials;
     this.webServiceUrl = ogelServiceAddress + "/ogels";
     this.httpExecutionContext = httpExecutionContext;
+  }
+
+  public CompletionStage<Boolean> ping() {
+    String url = ogelServiceAddress + PING_PATH;
+    return wsClient.url(url)
+        .setRequestFilter(CorrelationId.requestFilter)
+        .setRequestFilter(ServiceClientLogger.requestFilter("User basic", "GET", httpExecutionContext))
+        .setRequestTimeout(Duration.ofMillis(ogelServiceTimeout))
+        .setAuth(credentials)
+        .get()
+        .handleAsync((response, error) -> response.getStatus() == 200, httpExecutionContext.current());
   }
 
   public CompletionStage<OgelFullView> get(String ogelId) {

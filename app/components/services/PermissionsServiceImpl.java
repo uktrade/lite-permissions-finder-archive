@@ -35,10 +35,12 @@ public class PermissionsServiceImpl implements PermissionsService {
   private static final String REGISTER_OGEL_PATH = "/register-ogel";
   private static final String QUERY_PARAM_CALLBACK_URL = "callbackUrl";
   private static final String OGEL_REGISTRATIONS_PATH = "/ogel-registrations/user/";
+  private static final String PING_PATH = "/admin/ping";
 
   private final WSClient wsClient;
   private final String permissionsServiceAddress;
   private final int timeout;
+  private final String credentials;
   private final JwtRequestFilter jwtRequestFilter;
   private final ObjectMapper mapper;
 
@@ -46,12 +48,23 @@ public class PermissionsServiceImpl implements PermissionsService {
   public PermissionsServiceImpl(WSClient wsClient,
                                 @Named("permissionsServiceAddress") String permissionsServiceAddress,
                                 @Named("permissionsServiceTimeout") int timeout,
+                                @Named("permissionsServiceCredentials") String credentials,
                                 JwtRequestFilter jwtRequestFilter, ObjectMapper mapper) {
     this.wsClient = wsClient;
     this.permissionsServiceAddress = permissionsServiceAddress;
     this.timeout = timeout;
     this.jwtRequestFilter = jwtRequestFilter;
     this.mapper = mapper;
+    this.credentials = credentials;
+  }
+
+  public CompletionStage<Boolean> ping() {
+    String url = permissionsServiceAddress + PING_PATH;
+    return wsClient.url(url)
+        .setRequestTimeout(Duration.ofMillis(timeout))
+        .setAuth(credentials)
+        .get()
+        .handleAsync((response, error) -> response.getStatus() == 200);
   }
 
   /**

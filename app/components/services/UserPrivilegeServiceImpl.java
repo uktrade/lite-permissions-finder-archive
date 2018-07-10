@@ -21,6 +21,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
   private final UserServiceClientBasicAuth userServiceClientBasicAuth;
 
   @Inject
+
   public UserPrivilegeServiceImpl(UserServiceClientJwt userServiceClient,
                                   UserServiceClientBasicAuth userServiceClientBasicAuth) {
     this.userServiceClient = userServiceClient;

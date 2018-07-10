@@ -8,6 +8,9 @@ import java.util.concurrent.CompletionStage;
 
 public interface PermissionsService {
 
+
+  CompletionStage<Boolean> ping();
+
   CompletionStage<PermissionsServiceImpl.RegistrationResponse> registerOgel(String userId, String customerId, String siteId, String ogelId, String callbackUrl);
 
   CompletionStage<List<OgelRegistrationView>> getOgelRegistrations(String userId);
