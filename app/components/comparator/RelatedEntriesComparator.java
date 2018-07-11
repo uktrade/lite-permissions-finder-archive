@@ -1,73 +1,45 @@
 package components.comparator;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
 public class RelatedEntriesComparator implements Comparator<String> {
 
   public int compare(String string1, String string2) {
 
-    if (Character.isAlphabetic(string1.charAt(0)) && Character.isAlphabetic(string2.charAt(0))) {
-      List<CharGroup> list = getCharGroup(string1, string2);
+    String[] arr1 = string1.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+    String[] arr2 = string2.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
 
-      if (list.get(0).group1.equals(list.get(1).group1)) {
-        if (NumberUtils.isCreatable(list.get(0).group2) && NumberUtils.isCreatable(list.get(1).group2)) {
-          return Long.compare(Long.valueOf(list.get(0).group2), Long.valueOf(list.get(1).group2));
+    for (int i = 0; i < Math.min(arr1.length, arr2.length); i++) {
+
+      if (isDigit(arr1[i]) && isDigit(arr2[i])) {
+        if (arr1[i].equals(arr2[i])) {
+          continue;
+        }
+        if (!arr1[i].equals(arr2[i])) {
+          return Long.compare(Long.valueOf(arr1[i]), Long.valueOf(arr2[i]));
         }
       }
-      if (!list.get(0).group1.equals(list.get(1).group1)) {
-        return string1.compareToIgnoreCase(string2);
+
+      if (isLetter(arr1[i]) && isLetter(arr2[i])) {
+        if (arr1[i].equals(arr2[i])) {
+          continue;
+        }
+        if (!arr1[i].equals(arr2[i])) {
+          return arr1[i].compareToIgnoreCase(arr2[i]);
+        }
       }
     }
     return string1.compareTo(string2);
   }
 
-  public List<CharGroup> getCharGroup(String s1, String s2) {
-    CharGroup cg1 = createCharGroup(s1);
-    CharGroup cg2 = createCharGroup(s2);
-
-    return Arrays.asList(cg1, cg2);
+  private static boolean isDigit(String s) {
+    String regex = "^[0-9].*";
+    return s.matches(regex);
   }
 
-  /**
-   * example code ML1a1
-   * group1 ML
-   * group2 1a1
-   */
-  public CharGroup createCharGroup(String s) {
-    String group1 = null;
-    String group2 = null;
-    char[] ch = s.toCharArray();
-    for (int i = 0; i < ch.length; i++) {
-      if (Character.isDigit(ch[i])) {
-        group2 = s.substring(i);
-        break;
-      }
-      group1 = group1 + ch[i];
-    }
-    return new CharGroup(group1, group2);
-  }
-
-  class CharGroup {
-
-    private String group1;
-    private String group2;
-
-    public CharGroup(String group1, String group2) {
-      this.group1 = group1;
-      this.group2 = group2;
-    }
-
-    public String getGroup1() {
-      return group1;
-    }
-
-    public String getGroup2() {
-      return group2;
-    }
+  private static boolean isLetter(String s) {
+    String regex = "^[a-zA-Z].*";
+    return s.matches(regex);
   }
 
 }
