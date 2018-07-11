@@ -2,6 +2,7 @@ package components.services;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import models.admin.PingAuditResult;
 import org.slf4j.LoggerFactory;
 import play.libs.ws.WSClient;
 
@@ -51,26 +52,41 @@ public class PingServiceImpl implements PingService {
     this.userServiceCredentials = userServiceCredentials;
   }
 
-  public void pingAudit() {
+  public PingAuditResult pingAudit() {
     LOGGER.info("pingAudit started...");
+
+    PingAuditResult result = new PingAuditResult();
 
     try {
       CompletionStage<Boolean> userServiceStage = userServicePing();
-      LOGGER.info("User service ping acknowledged: " + userServiceStage.toCompletableFuture().get());
+      boolean userServiceOk = userServiceStage.toCompletableFuture().get();
+      result.addDetailPart("UserService", userServiceOk);
 
       CompletionStage<Boolean> permissionsServiceStage = permissionsService.ping();
-      LOGGER.info("Permissions service ping acknowledged: " + permissionsServiceStage.toCompletableFuture().get());
+      boolean permissionsServiceOk = permissionsServiceStage.toCompletableFuture().get();
+      result.addDetailPart("PermissionsService", permissionsServiceOk);
 
       CompletionStage<Boolean> ogelServiceStage = ogelService.ping();
-      LOGGER.info("Ogel service ping acknowledged: " + ogelServiceStage.toCompletableFuture().get());
+      boolean ogelServiceOk = ogelServiceStage.toCompletableFuture().get();
+      result.addDetailPart("OgelService", ogelServiceOk);
 
       CompletionStage<Boolean> countryServiceStage = countryServicePing();
-      LOGGER.info("Country service ping acknowledged: " + countryServiceStage.toCompletableFuture().get());
+      boolean countryServiceOk = countryServiceStage.toCompletableFuture().get();
+      result.addDetailPart("CountryService", countryServiceOk);
+
+      LOGGER.info("User service ping acknowledged: " + userServiceOk);
+      LOGGER.info("Permissions service ping acknowledged: " + permissionsServiceOk);
+      LOGGER.info("Ogel service ping acknowledged: " + ogelServiceOk);
+      LOGGER.info("Country service ping acknowledged: " + countryServiceOk);
+
+      if(userServiceOk && permissionsServiceOk && ogelServiceOk && countryServiceOk) {
+        result.setStatusOk();
+      }
 
     } catch (InterruptedException | ExecutionException e) {
       LOGGER.error("doPingAudit", e);
     }
-
+    return result;
   }
 
   private CompletionStage<Boolean> countryServicePing() {

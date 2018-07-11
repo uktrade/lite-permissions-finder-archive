@@ -1,6 +1,8 @@
 package components.services;
 
+import models.admin.PingAuditResult;
+
 public interface PingService {
 
-  void pingAudit();
+  PingAuditResult pingAudit();
 }
