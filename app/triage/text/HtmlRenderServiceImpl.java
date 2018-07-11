@@ -1,6 +1,7 @@
 package triage.text;
 
 import com.google.inject.Inject;
+import components.comparator.AlphanumComparator;
 import exceptions.BusinessRuleException;
 import models.enums.HtmlType;
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +69,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
         .flatMap(Collection::stream)
         .filter(richTextNode -> richTextNode instanceof ControlEntryReferenceNode)
         .map(richTextNode -> (ControlEntryReferenceNode) richTextNode)
-        .sorted(Comparator.comparing(ControlEntryReferenceNode::getTextContent))
+        .sorted(Comparator.comparing(ControlEntryReferenceNode::getTextContent, new AlphanumComparator()))
         .map(controlEntryReferenceNode -> createControlEntryHtml(controlEntryReferenceNode, omitLinkTargetAttr))
         .distinct()
         .collect(Collectors.joining(", "));
