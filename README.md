@@ -137,3 +137,29 @@ On resuming a transaction, if the key `ogelRegistrationServiceTransactionExists`
 transaction is `true`. This indicates that the "resumed" application has been handed over to the OGEL registration application. 
 The user will then be redirected to the OGEL registration application in the manner documented earlier. See `ContinueApplicationController` 
 for more information.
+
+## Licence Finder Flow
+Stage1: EntryController
+controlCode
+resumeCode
+userId
+customer
+site
+
+Stage2: TradeController
+tradeType
+sourceCountry
+
+Stage3: DestinationsController
+destinationCountry
+multipleCountries
+firstConsigneeCountry if multipleCountries is true
+
+Stage4: QuestionsController
+questionForm
+
+Stage5: ChooseOgelController
+ogelId
+
+Stage6: RegisterToUseController
+registerLicence

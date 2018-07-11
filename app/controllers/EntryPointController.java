@@ -1,7 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
-import exceptions.FormStateException;
+import exceptions.UnknownParameterException;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -24,17 +24,14 @@ public class EntryPointController extends Controller {
 
   public Result handleSubmit() {
     Form<EntryPointForm> form = formFactory.form(EntryPointForm.class).bindFromRequest();
-    if (!form.hasErrors()) {
-      String action = form.get().action;
-      if ("start".equals(action)) {
-        return redirect(routes.StartApplicationController.createApplication());
-      }
-      if ("continue".equals(action)) {
-        return redirect(routes.ContinueApplicationController.renderForm());
-      }
-      throw new FormStateException("Unknown value for action: \"" + action + "\"");
+    String action = form.rawData().get("action");
+    if ("start".equals(action)) {
+      return redirect(routes.StartApplicationController.createApplication());
+    } else if ("continue".equals(action)) {
+      return redirect(routes.ContinueApplicationController.renderForm());
+    } else {
+      throw UnknownParameterException.unknownAction(action);
     }
-    throw new FormStateException("Unhandled form state");
   }
 
   public static class EntryPointForm {

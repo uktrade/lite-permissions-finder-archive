@@ -16,26 +16,6 @@ public class LicenceInfo {
   private String ogelType;
   private String licenceUrl;
 
-  private String error;
-
-  public String getError() {
-    return error;
-  }
-
-  public LicenceInfo setDefaultError() {
-    this.error = "Unable to view the OGEL with reference - " + licenceNumber;
-    return this;
-  }
-
-  public LicenceInfo setError(String error) {
-    this.error = error;
-    return this;
-  }
-
-  public boolean hasError() {
-    return error != null;
-  }
-
   public String getLicenceNumber() {
     return licenceNumber;
   }
