@@ -37,11 +37,3 @@
     }
   }
 }
-
-#print-letter {
-  float: right;
-
-  @include media(mobile) {
-    float: none;
-  }
-}
