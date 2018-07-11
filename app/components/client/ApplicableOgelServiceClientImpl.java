@@ -1,4 +1,4 @@
-package components.services.ogels.applicable;
+package components.client;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -6,7 +6,6 @@ import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -20,9 +19,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ApplicableOgelServiceClient {
-
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ApplicableOgelServiceClient.class);
+public class ApplicableOgelServiceClientImpl implements ApplicableOgelServiceClient {
 
   private final HttpExecutionContext httpExecutionContext;
   private final WSClient wsClient;
@@ -31,11 +28,11 @@ public class ApplicableOgelServiceClient {
   private final String credentials;
 
   @Inject
-  public ApplicableOgelServiceClient(HttpExecutionContext httpExecutionContext,
-                                     WSClient wsClient,
-                                     @Named("ogelServiceAddress") String webServiceAddress,
-                                     @Named("ogelServiceTimeout") int webServiceTimeout,
-                                     @Named("ogelServiceCredentials") String credentials) {
+  public ApplicableOgelServiceClientImpl(HttpExecutionContext httpExecutionContext,
+                                         WSClient wsClient,
+                                         @Named("ogelServiceAddress") String webServiceAddress,
+                                         @Named("ogelServiceTimeout") int webServiceTimeout,
+                                         @Named("ogelServiceCredentials") String credentials) {
     this.httpExecutionContext = httpExecutionContext;
     this.wsClient = wsClient;
     this.webServiceTimeout = webServiceTimeout;
@@ -43,24 +40,10 @@ public class ApplicableOgelServiceClient {
     this.credentials = credentials;
   }
 
+  @Override
   public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry,
                                                        List<String> destinationCountries,
                                                        List<String> activityTypes, boolean showHistoricOgel) {
-    return getApplicableOgelViews(controlCode, sourceCountry, destinationCountries, activityTypes, showHistoricOgel);
-  }
-
-
-  public CompletionStage<List<ApplicableOgelView>> get(String controlCode, String sourceCountry,
-                                                       List<String> destinationCountries,
-                                                       List<String> activityTypes) {
-    return getApplicableOgelViews(controlCode, sourceCountry, destinationCountries, activityTypes, true);
-  }
-
-  private CompletionStage<List<ApplicableOgelView>> getApplicableOgelViews(String controlCode, String sourceCountry,
-                                                                           List<String> destinationCountries,
-                                                                           List<String> activityTypes,
-                                                                           boolean showHistoricOgel) {
-
     WSRequest request = wsClient.url(webServiceUrl)
         .setAuth(credentials)
         .setRequestFilter(CorrelationId.requestFilter)

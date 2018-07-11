@@ -1,4 +1,4 @@
-package components.services;
+package components.client;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public class PermissionsServiceImpl implements PermissionsService {
+public class PermissionsServiceClientImpl implements PermissionsServiceClient {
 
   private static final String REGISTER_OGEL_PATH = "/register-ogel";
   private static final String QUERY_PARAM_CALLBACK_URL = "callbackUrl";
@@ -30,8 +30,8 @@ public class PermissionsServiceImpl implements PermissionsService {
   private final JwtRequestFilter jwtRequestFilter;
 
   @Inject
-  public PermissionsServiceImpl(WSClient wsClient, @Named("permissionsServiceAddress") String permissionsServiceAddress,
-                                @Named("permissionsServiceTimeout") int timeout, JwtRequestFilter jwtRequestFilter) {
+  public PermissionsServiceClientImpl(WSClient wsClient, @Named("permissionsServiceAddress") String permissionsServiceAddress,
+                                      @Named("permissionsServiceTimeout") int timeout, JwtRequestFilter jwtRequestFilter) {
     this.wsClient = wsClient;
     this.permissionsServiceAddress = permissionsServiceAddress;
     this.timeout = timeout;
@@ -76,7 +76,7 @@ public class PermissionsServiceImpl implements PermissionsService {
 
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
-        String message = "Permission registration service client failure";
+        String message = "Permission registration service client getOgelRegistrations failure";
         RequestUtil.logError(request, response, error, message);
         throw new ServiceException(message);
       } else {
@@ -97,7 +97,7 @@ public class PermissionsServiceImpl implements PermissionsService {
 
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
-        String message = "Permission registration service client failure";
+        String message = "Permission registration service client getOgelRegistration failure";
         RequestUtil.logError(request, response, error, message);
         throw new ServiceException(message);
       } else {

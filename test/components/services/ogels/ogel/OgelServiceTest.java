@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static play.mvc.Results.ok;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import components.services.OgelServiceImpl;
+import components.client.OgelServiceClientImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.concurrent.CompletionStage;
 
 public class OgelServiceTest {
-  private OgelServiceImpl client;
+  private OgelServiceClientImpl client;
   private WSClient ws;
   private Server server;
 
@@ -35,7 +35,7 @@ public class OgelServiceTest {
         .build());
     int port = server.httpPort();
     ws = WSTestClient.newClient(port);
-    client = new OgelServiceImpl(
+    client = new OgelServiceClientImpl(
         ws,
         "http://localhost:" + port,
         10000,
@@ -44,7 +44,7 @@ public class OgelServiceTest {
 
   @Test
   public void shouldGetOgel() throws Exception {
-    CompletionStage<OgelFullView> result = client.get("OGL61");
+    CompletionStage<OgelFullView> result = client.getById("OGL61");
     OgelFullView ogel = result.toCompletableFuture().get();
     assertThat(ogel.getId()).isEqualTo("OGL991");
   }

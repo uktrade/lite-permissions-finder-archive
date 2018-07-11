@@ -1,4 +1,4 @@
-package components.services;
+package components.client;
 
 import uk.gov.bis.lite.customer.api.view.CustomerView;
 import uk.gov.bis.lite.customer.api.view.SiteView;
@@ -6,7 +6,7 @@ import uk.gov.bis.lite.customer.api.view.SiteView;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public interface CustomerService {
+public interface CustomerServiceClient {
 
   CompletionStage<List<CustomerView>> getCustomersByUserId(String userId);
 

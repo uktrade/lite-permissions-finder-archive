@@ -1,8 +1,9 @@
-package components.services;
+package components.client;
 
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.client.OgelServiceClient;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
@@ -16,7 +17,7 @@ import utils.RequestUtil;
 import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
-public class OgelServiceImpl implements OgelService {
+public class OgelServiceClientImpl implements OgelServiceClient {
 
   private final WSClient wsClient;
   private final String ogelServiceAddress;
@@ -25,11 +26,11 @@ public class OgelServiceImpl implements OgelService {
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
-  public OgelServiceImpl(WSClient wsClient,
-                         @Named("ogelServiceAddress") String ogelServiceAddress,
-                         @Named("ogelServiceTimeout") int ogelServiceTimeout,
-                         @Named("ogelServiceCredentials") String credentials,
-                         HttpExecutionContext httpExecutionContext) {
+  public OgelServiceClientImpl(WSClient wsClient,
+                               @Named("ogelServiceAddress") String ogelServiceAddress,
+                               @Named("ogelServiceTimeout") int ogelServiceTimeout,
+                               @Named("ogelServiceCredentials") String credentials,
+                               HttpExecutionContext httpExecutionContext) {
     this.wsClient = wsClient;
     this.ogelServiceAddress = ogelServiceAddress;
     this.ogelServiceTimeout = ogelServiceTimeout;

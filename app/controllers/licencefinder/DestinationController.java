@@ -7,7 +7,6 @@ import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
 import components.persistence.LicenceFinderDao;
-import components.services.LicenceFinderService;
 import controllers.guard.LicenceFinderAwaitGuardAction;
 import controllers.guard.LicenceFinderUserGuardAction;
 import exceptions.UnknownParameterException;
@@ -36,7 +35,6 @@ import javax.inject.Named;
 public class DestinationController extends Controller {
 
   private final FormFactory formFactory;
-  private final LicenceFinderService licenceFinderService;
   private final LicenceFinderDao licenceFinderDao;
   private final CountryProvider countryProvider;
   private final views.html.licencefinder.destination destination;
@@ -49,37 +47,29 @@ public class DestinationController extends Controller {
   public static final String MULTIPLE_COUNTRIES = "multipleCountries";
   private static final String UNITED_KINGDOM = "CTRY0";
 
-  private static final List<String> FIELD_ORDER = Arrays.asList(DESTINATION_COUNTRY, MULTIPLE_COUNTRIES, FIRST_CONSIGNEE_COUNTRY);
-
   @Inject
-  public DestinationController(FormFactory formFactory, LicenceFinderService licenceFinderService,
-                               LicenceFinderDao licenceFinderDao,
+  public DestinationController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
                                @Named("countryProviderExport") CountryProvider countryProvider,
                                views.html.licencefinder.destination destination) {
     this.formFactory = formFactory;
-    this.licenceFinderService = licenceFinderService;
     this.licenceFinderDao = licenceFinderDao;
     this.countryProvider = countryProvider;
     this.destination = destination;
   }
 
   public CompletionStage<Result> renderDestinationForm(String sessionId) {
-    if (licenceFinderService.canAccessDestinationController(sessionId)) {
-      DestinationForm form = new DestinationForm();
-      form.destinationCountry = licenceFinderDao.getDestinationCountry(sessionId).orElse(null);
-      form.firstConsigneeCountry = licenceFinderDao.getFirstConsigneeCountry(sessionId).orElse(null);
-      licenceFinderDao.getMultipleCountries(sessionId).ifPresent(multipleCountries -> form.multipleCountries = multipleCountries);
-      return completedFuture(ok(destination.render(formFactory.form(DestinationForm.class).fill(form), getCountries(), FIELD_ORDER, sessionId)));
-    } else {
-      throw UnknownParameterException.unknownOgelRegistrationOrder();
-    }
+    DestinationForm form = new DestinationForm();
+    form.destinationCountry = licenceFinderDao.getDestinationCountry(sessionId).orElse(null);
+    form.firstConsigneeCountry = licenceFinderDao.getFirstConsigneeCountry(sessionId).orElse(null);
+    licenceFinderDao.getMultipleCountries(sessionId).ifPresent(multipleCountries -> form.multipleCountries = multipleCountries);
+    return completedFuture(ok(destination.render(formFactory.form(DestinationForm.class).fill(form), getCountries(), sessionId)));
   }
 
   public CompletionStage<Result> handleDestinationSubmit(String sessionId) {
     Form<DestinationForm> destinationForm = formFactory.form(DestinationForm.class).bindFromRequest();
     List<CountryView> countries = getCountries();
     if (destinationForm.hasErrors()) {
-      return completedFuture(ok(destination.render(destinationForm, countries, FIELD_ORDER, sessionId)));
+      return completedFuture(ok(destination.render(destinationForm, countries, sessionId)));
     } else {
       DestinationForm form = destinationForm.get();
       boolean multipleCountries = form.multipleCountries;
@@ -88,13 +78,15 @@ public class DestinationController extends Controller {
 
       if (multipleCountries && StringUtils.isEmpty(firstConsigneeCountry)) {
         return completedFuture(ok(destination.render(destinationForm.withError(FIRST_CONSIGNEE_COUNTRY, "Enter a country or territory"),
-            countries, FIELD_ORDER, sessionId)));
+            countries, sessionId)));
       } else if (!isValidCountry(countries, destinationCountry)) {
-        throw UnknownParameterException.unknownDestinationCountry(destinationCountry);
+        throw UnknownParameterException.unknownCountry(destinationCountry);
       } else if (multipleCountries && !isValidCountry(countries, firstConsigneeCountry)) {
-        throw UnknownParameterException.unknownFirstConsigneeCountry(firstConsigneeCountry);
+        throw UnknownParameterException.unknownCountry(firstConsigneeCountry);
       } else {
-        licenceFinderService.saveDestinations(sessionId, destinationCountry, firstConsigneeCountry, multipleCountries);
+        licenceFinderDao.saveFirstConsigneeCountry(sessionId, firstConsigneeCountry);
+        licenceFinderDao.saveMultipleCountries(sessionId, multipleCountries);
+        licenceFinderDao.saveDestinationCountry(sessionId, destinationCountry);
         return CompletableFuture.completedFuture(redirect(routes.QuestionsController.renderQuestionsForm(sessionId)));
       }
     }

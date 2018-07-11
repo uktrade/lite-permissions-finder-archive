@@ -1,6 +1,7 @@
 package components.services;
 
 import com.google.inject.Inject;
+import components.client.CustomerServiceClient;
 import models.AccountData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +15,10 @@ public class AccountServiceImpl implements AccountService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AccountServiceImpl.class);
 
-  private final CustomerService customerService;
+  private final CustomerServiceClient customerService;
 
   @Inject
-  public AccountServiceImpl(CustomerService customerService) {
+  public AccountServiceImpl(CustomerServiceClient customerService) {
     this.customerService = customerService;
   }
 

@@ -46,16 +46,12 @@ public class UnknownParameterException extends RuntimeException {
     return new UnknownParameterException("Unknown tradeType " + tradeType);
   }
 
-  public static UnknownParameterException unknownDestinationCountry(String destinationCountry) {
-    return new UnknownParameterException("Unknown destinationCountry " + destinationCountry);
+  public static UnknownParameterException unknownCountry(String country) {
+    return new UnknownParameterException("Unknown country " + country);
   }
 
-  public static UnknownParameterException unknownFirstConsigneeCountry(String firstConsigneeCountry) {
-    return new UnknownParameterException("Unknown firstConsigneeCountry " + firstConsigneeCountry);
-  }
-
-  public static UnknownParameterException unknownOgelRegistrationOrder() {
-    return new UnknownParameterException("Unknown ogel registration order");
+  public static UnknownParameterException unknownLicenceFinderOrder() {
+    return new UnknownParameterException("Unknown licenceFinderOrder");
   }
 
 }

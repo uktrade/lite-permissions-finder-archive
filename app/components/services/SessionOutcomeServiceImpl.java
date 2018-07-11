@@ -34,7 +34,6 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d MMMM uuuu");
 
-  private final AccountService accountService;
   private final String permissionsFinderUrl;
   private final UserServiceClientJwt userService;
   private final BreadcrumbViewService breadcrumbViewService;
@@ -46,14 +45,12 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   private final views.html.triage.listedOutcomeJourney listedOutcomeJourney;
 
   @Inject
-  public SessionOutcomeServiceImpl(AccountService accountService,
-                                   @Named("permissionsFinderUrl") String permissionsFinderUrl,
+  public SessionOutcomeServiceImpl(@Named("permissionsFinderUrl") String permissionsFinderUrl,
                                    UserServiceClientJwt userService, BreadcrumbViewService breadcrumbViewService,
                                    AnswerViewService answerViewService, SessionOutcomeDao sessionOutcomeDao,
                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient,
                                    RenderService renderService, views.html.nlr.nlrLetter nlrLetter,
                                    views.html.triage.listedOutcomeJourney listedOutcomeJourney) {
-    this.accountService = accountService;
     this.permissionsFinderUrl = permissionsFinderUrl;
     this.userService = userService;
     this.breadcrumbViewService = breadcrumbViewService;

@@ -4,12 +4,12 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import com.spotify.futures.CompletableFutures;
+import components.client.CustomerServiceClient;
+import components.client.OgelServiceClient;
+import components.client.PermissionsServiceClient;
 import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
-import components.services.CustomerService;
-import components.services.OgelService;
-import components.services.PermissionsService;
 import exceptions.UnknownParameterException;
 import models.summary.LicenceInfo;
 import org.pac4j.play.java.Secure;
@@ -28,20 +28,20 @@ public class ViewOgelController {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ViewOgelController.class);
 
-  private final PermissionsService permissionsService;
-  private final OgelService ogelService;
-  private final CustomerService customerService;
+  private final PermissionsServiceClient permissionsServiceClient;
+  private final OgelServiceClient ogelServiceClient;
+  private final CustomerServiceClient customerService;
   private final HttpExecutionContext httpContext;
   private final SpireAuthManager authManager;
   private final views.html.licencefinder.viewOgel viewOgel;
 
   @Inject
-  public ViewOgelController(PermissionsService permissionsService,
-                            OgelService ogelService, CustomerService customerService,
+  public ViewOgelController(PermissionsServiceClient permissionsServiceClient,
+                            OgelServiceClient ogelServiceClient, CustomerServiceClient customerService,
                             HttpExecutionContext httpContext, SpireAuthManager authManager,
                             views.html.licencefinder.viewOgel viewOgel) {
-    this.permissionsService = permissionsService;
-    this.ogelService = ogelService;
+    this.permissionsServiceClient = permissionsServiceClient;
+    this.ogelServiceClient = ogelServiceClient;
     this.customerService = customerService;
     this.httpContext = httpContext;
     this.authManager = authManager;
@@ -53,7 +53,7 @@ public class ViewOgelController {
     return getOgelRegistration(userId, registrationReference).thenComposeAsync(view -> {
       CompletionStage<CustomerView> customerStage = customerService.getCustomer(view.getCustomerId());
       CompletionStage<SiteView> siteStage = customerService.getSite(view.getSiteId());
-      CompletionStage<OgelFullView> ogelStage = ogelService.getById(view.getOgelType());
+      CompletionStage<OgelFullView> ogelStage = ogelServiceClient.getById(view.getOgelType());
       return CompletableFutures.combine(customerStage, siteStage, ogelStage, (customerView, siteView, ogelFullView) -> {
         LicenceInfo info = new LicenceInfo();
         info.setLicenceNumber(view.getRegistrationReference());
@@ -73,7 +73,7 @@ public class ViewOgelController {
   }
 
   private CompletionStage<OgelRegistrationView> getOgelRegistration(String userId, String reference) {
-    return permissionsService.getOgelRegistration(userId, reference).exceptionally(error -> {
+    return permissionsServiceClient.getOgelRegistration(userId, reference).exceptionally(error -> {
       LOGGER.error("Unknown ogel reference {}", reference, error);
       throw UnknownParameterException.unknownOgelReference(reference);
     });

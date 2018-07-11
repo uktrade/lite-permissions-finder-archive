@@ -1,4 +1,4 @@
-package components.services;
+package components.client;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -6,7 +6,6 @@ import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
 import filters.common.JwtRequestFilter;
-import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
@@ -20,9 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public class CustomerServiceImpl implements CustomerService {
-
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(CustomerServiceImpl.class);
+public class CustomerServiceClientImpl implements CustomerServiceClient {
 
   private static final String SITE_PATH_TEMPLATE = "/user-sites/customer/%s/user/%s";
   private static final String USER_CUSTOMERS_PATH = "/user-customers/user/";
@@ -34,10 +31,10 @@ public class CustomerServiceImpl implements CustomerService {
   private final JwtRequestFilter jwtRequestFilter;
 
   @Inject
-  public CustomerServiceImpl(HttpExecutionContext httpContext, WSClient wsClient,
-                             @Named("customerServiceAddress") String customerServiceAddress,
-                             @Named("customerServiceTimeout") int timeout,
-                             JwtRequestFilter jwtRequestFilter) {
+  public CustomerServiceClientImpl(HttpExecutionContext httpContext, WSClient wsClient,
+                                   @Named("customerServiceAddress") String customerServiceAddress,
+                                   @Named("customerServiceTimeout") int timeout,
+                                   JwtRequestFilter jwtRequestFilter) {
     this.httpContext = httpContext;
     this.wsClient = wsClient;
     this.customerServiceAddress = customerServiceAddress;

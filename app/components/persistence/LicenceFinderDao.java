@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.EnumUtil;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -144,10 +143,8 @@ public class LicenceFinderDao {
     statelessRedisDao.writeObject(sessionId, USER_OGEL_ID_REF_MAP, ogelIdRefMap);
   }
 
-  public Map<String, String> getUserOgelIdReferenceMap(String sessionId) {
-    return statelessRedisDao.readObject(sessionId, USER_OGEL_ID_REF_MAP,
-        new TypeReference<Map<String, String>>() {
-        }).orElse(new HashMap<>());
+  public Optional<Map<String, String>> getUserOgelIdReferenceMap(String sessionId) {
+    return statelessRedisDao.readObject(sessionId, USER_OGEL_ID_REF_MAP, new TypeReference<Map<String, String>>() {});
   }
 
   public void saveRegisterLicence(String sessionId, RegisterLicence registerLicence) {

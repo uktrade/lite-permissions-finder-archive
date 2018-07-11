@@ -1,11 +1,11 @@
-package components.services;
+package components.client;
 
 import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public interface PermissionsService {
+public interface PermissionsServiceClient {
 
   CompletionStage<String> registerOgel(String userId, String customerId, String siteId, String ogelId,
                                        String callbackUrl);

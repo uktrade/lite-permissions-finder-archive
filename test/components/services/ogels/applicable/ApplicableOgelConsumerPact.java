@@ -10,6 +10,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
+import components.client.ApplicableOgelServiceClientImpl;
 import exceptions.ServiceException;
 import models.OgelActivityType;
 import org.junit.After;
@@ -28,7 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ApplicableOgelConsumerPact {
-  private ApplicableOgelServiceClient client;
+  private ApplicableOgelServiceClientImpl client;
   private WSClient ws;
 
   // service:password
@@ -49,7 +50,7 @@ public class ApplicableOgelConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WSTestClient.newClient(mockProvider.getPort());
-    client = new ApplicableOgelServiceClient(new HttpExecutionContext(Runnable::run),
+    client = new ApplicableOgelServiceClientImpl(new HttpExecutionContext(Runnable::run),
         ws,
         mockProvider.getUrl(),
         10000,
@@ -159,7 +160,7 @@ public class ApplicableOgelConsumerPact {
     List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.toString());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
           .toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
@@ -180,7 +181,7 @@ public class ApplicableOgelConsumerPact {
     List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.toString());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
           .toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
@@ -196,7 +197,7 @@ public class ApplicableOgelConsumerPact {
     List<String> activityTypes = Arrays.asList(ACTIVITY_TYPE_INVALID);
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
           .toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
       assertThat(e)
@@ -213,7 +214,7 @@ public class ApplicableOgelConsumerPact {
     List<String> activityTypes = Arrays.asList(OgelActivityType.MIL_GOV.toString(), OgelActivityType.MIL_ANY.toString());
     List<String> destinationCountries = Arrays.asList(DESTINATION_COUNTRY);
     try {
-      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes)
+      result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
           .toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);

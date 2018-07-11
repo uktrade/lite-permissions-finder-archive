@@ -6,10 +6,8 @@ import com.google.inject.Inject;
 import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.persistence.LicenceFinderDao;
-import components.services.LicenceFinderService;
 import controllers.guard.LicenceFinderAwaitGuardAction;
 import controllers.guard.LicenceFinderUserGuardAction;
-import exceptions.UnknownParameterException;
 import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
@@ -26,40 +24,30 @@ import java.util.concurrent.CompletionStage;
 public class QuestionsController extends Controller {
 
   private final FormFactory formFactory;
-  private final LicenceFinderService licenceFinderService;
   private final LicenceFinderDao licenceFinderDao;
   private final views.html.licencefinder.questions questions;
 
   @Inject
-  public QuestionsController(FormFactory formFactory, LicenceFinderService licenceFinderService,
-                             LicenceFinderDao licenceFinderDao,
+  public QuestionsController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
                              views.html.licencefinder.questions questions) {
     this.formFactory = formFactory;
-    this.licenceFinderService = licenceFinderService;
     this.licenceFinderDao = licenceFinderDao;
     this.questions = questions;
   }
 
   public CompletionStage<Result> renderQuestionsForm(String sessionId) {
-    if (licenceFinderService.canAccessQuestionController(sessionId)) {
-      QuestionsForm questionsForm = licenceFinderDao.getQuestionsForm(sessionId).orElseGet(QuestionsForm::new);
-      return completedFuture(ok(questions.render(formFactory.form(QuestionsForm.class).fill(questionsForm), sessionId)));
-    } else {
-      throw UnknownParameterException.unknownOgelRegistrationOrder();
-    }
+    QuestionsForm questionsForm = licenceFinderDao.getQuestionsForm(sessionId).orElseGet(QuestionsForm::new);
+    return completedFuture(ok(questions.render(formFactory.form(QuestionsForm.class).fill(questionsForm), sessionId)));
   }
 
+
   public CompletionStage<Result> handleQuestionsSubmit(String sessionId) {
-    if (licenceFinderService.canAccessQuestionController(sessionId)) {
-      Form<QuestionsForm> form = formFactory.form(QuestionsForm.class).bindFromRequest();
-      if (form.hasErrors()) {
-        return completedFuture(ok(questions.render(form, sessionId)));
-      } else {
-        licenceFinderDao.saveQuestionsForm(sessionId, form.get());
-        return CompletableFuture.completedFuture(redirect(routes.ChooseOgelController.renderResultsForm(sessionId)));
-      }
+    Form<QuestionsForm> form = formFactory.form(QuestionsForm.class).bindFromRequest();
+    if (form.hasErrors()) {
+      return completedFuture(ok(questions.render(form, sessionId)));
     } else {
-      throw UnknownParameterException.unknownOgelRegistrationOrder();
+      licenceFinderDao.saveQuestionsForm(sessionId, form.get());
+      return CompletableFuture.completedFuture(redirect(routes.ChooseOgelController.renderResultsForm(sessionId)));
     }
   }
 
