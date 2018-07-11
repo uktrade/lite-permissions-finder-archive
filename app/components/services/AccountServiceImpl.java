@@ -15,11 +15,11 @@ public class AccountServiceImpl implements AccountService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AccountServiceImpl.class);
 
-  private final CustomerServiceClient customerService;
+  private final CustomerServiceClient customerServiceClient;
 
   @Inject
-  public AccountServiceImpl(CustomerServiceClient customerService) {
-    this.customerService = customerService;
+  public AccountServiceImpl(CustomerServiceClient customerServiceClient) {
+    this.customerServiceClient = customerServiceClient;
   }
 
   @Override
@@ -42,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
   private Optional<SiteView> getSite(String customerId, String userId) {
     List<SiteView> sites;
     try {
-      sites = customerService.getSitesByCustomerIdUserId(customerId, userId).toCompletableFuture().get();
+      sites = customerServiceClient.getSitesByCustomerIdUserId(customerId, userId).toCompletableFuture().get();
     } catch (Exception exception) {
       LOGGER.error("No site associated with customerId {} and userId {}", customerId, userId, exception);
       return Optional.empty();
@@ -58,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
   private Optional<CustomerView> getCustomer(String userId) {
     List<CustomerView> customerViews;
     try {
-      customerViews = customerService.getCustomersByUserId(userId).toCompletableFuture().get();
+      customerViews = customerServiceClient.getCustomersByUserId(userId).toCompletableFuture().get();
     } catch (Exception exception) {
       LOGGER.error("No customer associated with userId {}", userId, exception);
       return Optional.empty();

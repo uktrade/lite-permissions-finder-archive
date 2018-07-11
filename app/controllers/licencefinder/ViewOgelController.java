@@ -30,19 +30,19 @@ public class ViewOgelController {
 
   private final PermissionsServiceClient permissionsServiceClient;
   private final OgelServiceClient ogelServiceClient;
-  private final CustomerServiceClient customerService;
+  private final CustomerServiceClient customerServiceClient;
   private final HttpExecutionContext httpContext;
   private final SpireAuthManager authManager;
   private final views.html.licencefinder.viewOgel viewOgel;
 
   @Inject
   public ViewOgelController(PermissionsServiceClient permissionsServiceClient,
-                            OgelServiceClient ogelServiceClient, CustomerServiceClient customerService,
+                            OgelServiceClient ogelServiceClient, CustomerServiceClient customerServiceClient,
                             HttpExecutionContext httpContext, SpireAuthManager authManager,
                             views.html.licencefinder.viewOgel viewOgel) {
     this.permissionsServiceClient = permissionsServiceClient;
     this.ogelServiceClient = ogelServiceClient;
-    this.customerService = customerService;
+    this.customerServiceClient = customerServiceClient;
     this.httpContext = httpContext;
     this.authManager = authManager;
     this.viewOgel = viewOgel;
@@ -51,8 +51,8 @@ public class ViewOgelController {
   public CompletionStage<Result> viewOgel(String registrationReference) {
     String userId = authManager.getAuthInfoFromContext().getId();
     return getOgelRegistration(userId, registrationReference).thenComposeAsync(view -> {
-      CompletionStage<CustomerView> customerStage = customerService.getCustomer(view.getCustomerId());
-      CompletionStage<SiteView> siteStage = customerService.getSite(view.getSiteId());
+      CompletionStage<CustomerView> customerStage = customerServiceClient.getCustomer(view.getCustomerId());
+      CompletionStage<SiteView> siteStage = customerServiceClient.getSite(view.getSiteId());
       CompletionStage<OgelFullView> ogelStage = ogelServiceClient.getById(view.getOgelType());
       return CompletableFutures.combine(customerStage, siteStage, ogelStage, (customerView, siteView, ogelFullView) -> {
         LicenceInfo info = new LicenceInfo();
