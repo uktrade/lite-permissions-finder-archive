@@ -8,14 +8,17 @@ import models.TradeType;
 import models.persistence.RegisterLicence;
 import models.view.licencefinder.Customer;
 import models.view.licencefinder.Site;
-import org.apache.commons.lang3.StringUtils;
 import org.redisson.client.RedisException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utils.EnumUtil;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class LicenceFinderDao {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LicenceFinderDao.class);
 
   private static final String CONTROL_CODE = "controlCode";
   private static final String RESUME_CODE = "resumeCode";
@@ -29,7 +32,6 @@ public class LicenceFinderDao {
   private static final String MULTIPLE_COUNTRIES = "multipleCountries";
   private static final String USER_OGEL_ID_REF_MAP = "userOgelIdRefMap";
   private static final String REGISTER_LICENCE = "registerLicence";
-
   private static final String CUSTOMER = "customer";
   private static final String SITE = "site";
 
@@ -60,56 +62,56 @@ public class LicenceFinderDao {
     statelessRedisDao.writeString(sessionId, CONTROL_CODE, controlCode);
   }
 
-  public String getControlCode(String sessionId) {
-    return statelessRedisDao.readString(sessionId, CONTROL_CODE);
+  public Optional<String> getControlCode(String sessionId) {
+    return Optional.ofNullable(statelessRedisDao.readString(sessionId, CONTROL_CODE));
   }
 
   public void saveResumeCode(String sessionId, String resumeCode) {
     statelessRedisDao.writeString(sessionId, RESUME_CODE, resumeCode);
   }
 
-  public String getResumeCode(String sessionId) {
-    return statelessRedisDao.readString(sessionId, RESUME_CODE);
+  public Optional<String> getResumeCode(String sessionId) {
+    return Optional.ofNullable(statelessRedisDao.readString(sessionId, RESUME_CODE));
   }
 
   public void saveUserId(String sessionId, String userId) {
     statelessRedisDao.writeString(sessionId, USER_ID, userId);
   }
 
-  public String getUserId(String sessionId) {
-    return statelessRedisDao.readString(sessionId, USER_ID);
+  public Optional<String> getUserId(String sessionId) {
+    return Optional.ofNullable(statelessRedisDao.readString(sessionId, USER_ID));
   }
 
   public void saveSourceCountry(String sessionId, String countryCode) {
     statelessRedisDao.writeString(sessionId, SOURCE_COUNTRY, countryCode);
   }
 
-  public String getSourceCountry(String sessionId) {
-    return statelessRedisDao.readString(sessionId, SOURCE_COUNTRY);
+  public Optional<String> getSourceCountry(String sessionId) {
+    return Optional.ofNullable(statelessRedisDao.readString(sessionId, SOURCE_COUNTRY));
   }
 
   public void saveOgelId(String sessionId, String ogelId) {
     statelessRedisDao.writeString(sessionId, OGEL_ID, ogelId);
   }
 
-  public String getOgelId(String sessionId) {
-    return statelessRedisDao.readString(sessionId, OGEL_ID);
+  public Optional<String> getOgelId(String sessionId) {
+    return Optional.ofNullable(statelessRedisDao.readString(sessionId, OGEL_ID));
   }
 
   public void saveDestinationCountry(String sessionId, String countryCode) {
     statelessRedisDao.writeString(sessionId, DESTINATION_COUNTRY, countryCode);
   }
 
-  public String getDestinationCountry(String sessionId) {
-    return statelessRedisDao.readString(sessionId, DESTINATION_COUNTRY);
+  public Optional<String> getDestinationCountry(String sessionId) {
+    return Optional.ofNullable(statelessRedisDao.readString(sessionId, DESTINATION_COUNTRY));
   }
 
   public void saveFirstConsigneeCountry(String sessionId, String countryCode) {
     statelessRedisDao.writeString(sessionId, FIRST_CONSIGNEE_COUNTRY, countryCode);
   }
 
-  public String getFirstConsigneeCountry(String sessionId) {
-    return statelessRedisDao.readString(sessionId, FIRST_CONSIGNEE_COUNTRY);
+  public Optional<String> getFirstConsigneeCountry(String sessionId) {
+    return Optional.ofNullable(statelessRedisDao.readString(sessionId, FIRST_CONSIGNEE_COUNTRY));
   }
 
   public void saveTradeType(String sessionId, TradeType tradeType) {
@@ -118,7 +120,7 @@ public class LicenceFinderDao {
 
   public Optional<TradeType> getTradeType(String sessionId) {
     String tradeType = statelessRedisDao.readString(sessionId, TRADE_TYPE);
-    return StringUtils.isBlank(tradeType) ? Optional.empty() : Optional.of(TradeType.valueOf(tradeType));
+    return Optional.ofNullable(EnumUtil.parse(tradeType, TradeType.class));
   }
 
   public void saveQuestionsForm(String sessionId, QuestionsController.QuestionsForm form) {
@@ -141,10 +143,8 @@ public class LicenceFinderDao {
     statelessRedisDao.writeObject(sessionId, USER_OGEL_ID_REF_MAP, ogelIdRefMap);
   }
 
-  public Map<String, String> getUserOgelIdRefMap(String sessionId) {
-    return statelessRedisDao.readObject(sessionId, USER_OGEL_ID_REF_MAP,
-        new TypeReference<Map<String, String>>() {
-    }).orElse(new HashMap<>());
+  public Optional<Map<String, String>> getUserOgelIdReferenceMap(String sessionId) {
+    return statelessRedisDao.readObject(sessionId, USER_OGEL_ID_REF_MAP, new TypeReference<Map<String, String>>() {});
   }
 
   public void saveRegisterLicence(String sessionId, RegisterLicence registerLicence) {
@@ -153,27 +153,19 @@ public class LicenceFinderDao {
 
   public Optional<RegisterLicence> getRegisterLicence(String sessionId) {
     try {
-      if(statelessRedisDao.transactionExists(sessionId, REGISTER_LICENCE)) {
-        return statelessRedisDao.readObject(sessionId, REGISTER_LICENCE, RegisterLicence.class);
-      }
-    } catch(RedisException e) {
-      // ignore
+      return statelessRedisDao.readObject(sessionId, REGISTER_LICENCE, RegisterLicence.class);
+    } catch (RedisException exception) {
+      LOGGER.error("Unable to get registerLicence", exception);
+      return Optional.empty();
     }
-    return Optional.empty();
   }
 
-  /**
-   * Private methods
-   **/
   private void writeBoolean(String sessionId, String fieldName, boolean value) {
     statelessRedisDao.writeString(sessionId, fieldName, Boolean.toString(value));
   }
 
   private Optional<Boolean> readBoolean(String sessionId, String fieldName) {
     String value = statelessRedisDao.readString(sessionId, fieldName);
-    if (value == null || value.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.of(value.equalsIgnoreCase("true"));
+    return Optional.of(Boolean.parseBoolean(value));
   }
 }

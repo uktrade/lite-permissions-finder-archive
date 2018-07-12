@@ -10,7 +10,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
-import components.services.OgelServiceImpl;
+import components.client.OgelServiceClientImpl;
 import exceptions.ServiceException;
 import org.junit.After;
 import org.junit.Before;
@@ -23,12 +23,11 @@ import play.test.WSTestClient;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView.OgelConditionSummary;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class OgelServiceConsumerPact {
-  private OgelServiceImpl client;
+  private OgelServiceClientImpl client;
   private WSClient ws;
 
   // service:password
@@ -49,7 +48,7 @@ public class OgelServiceConsumerPact {
   @Before
   public void setUp() throws Exception {
     ws = WSTestClient.newClient(mockProvider.getPort());
-    client = new OgelServiceImpl(
+    client = new OgelServiceClientImpl(
         ws,
         mockProvider.getUrl(),
         10000,
@@ -113,7 +112,7 @@ public class OgelServiceConsumerPact {
   public void ogelExistsTest() throws Exception {
     OgelFullView result;
     try {
-      result = client.get(OGEL_ID).toCompletableFuture().get();
+      result = client.getById(OGEL_ID).toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
@@ -139,7 +138,7 @@ public class OgelServiceConsumerPact {
   public void ogelDoesNotExistTest() throws Exception {
     OgelFullView result = null;
     try {
-      result = client.get(OGEL_ID).toCompletableFuture().get();
+      result = client.getById(OGEL_ID).toCompletableFuture().get();
     }
     catch (InterruptedException | ExecutionException e) {
       assertThat(e)

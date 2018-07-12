@@ -5,7 +5,8 @@ import static play.mvc.Results.ok;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import components.services.LicenceFinderService;
+import components.persistence.LicenceFinderDao;
+import models.persistence.RegisterLicence;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.Result;
@@ -14,11 +15,11 @@ public class LicenceFinderPollController {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(LicenceFinderPollController.class);
 
-  private final LicenceFinderService licenceFinderService;
+  private final LicenceFinderDao licenceFinderDao;
 
   @Inject
-  public LicenceFinderPollController(LicenceFinderService licenceFinderService) {
-    this.licenceFinderService = licenceFinderService;
+  public LicenceFinderPollController(LicenceFinderDao licenceFinderDao) {
+    this.licenceFinderDao = licenceFinderDao;
   }
 
   /***
@@ -27,7 +28,10 @@ public class LicenceFinderPollController {
   public Result pollStatus(String sessionId) {
     ObjectNode json = Json.newObject();
     try {
-      json.put("complete", licenceFinderService.getRegistrationReference(sessionId).isPresent());
+      boolean complete = licenceFinderDao.getRegisterLicence(sessionId)
+          .map(RegisterLicence::getRegistrationReference)
+          .isPresent();
+      json.put("complete", complete);
     } catch (Exception e) {
       LOGGER.error("Error reading registration submission status for " + sessionId, e);
       json.put("complete", false);

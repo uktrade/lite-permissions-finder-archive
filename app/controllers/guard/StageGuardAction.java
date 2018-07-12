@@ -1,11 +1,12 @@
-package controllers;
+package controllers.guard;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
 import components.cms.dao.SessionOutcomeDao;
 import components.services.FlashService;
-import org.apache.commons.lang3.StringUtils;
+import controllers.routes;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 import play.mvc.Action;
 import play.mvc.Http;

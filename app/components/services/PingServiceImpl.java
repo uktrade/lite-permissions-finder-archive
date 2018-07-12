@@ -2,6 +2,8 @@ package components.services;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.client.OgelServiceClient;
+import components.client.PermissionsServiceClient;
 import models.admin.PingAuditResult;
 import org.slf4j.LoggerFactory;
 import play.libs.ws.WSClient;
@@ -14,8 +16,9 @@ public class PingServiceImpl implements PingService {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PingServiceImpl.class);
 
-  private final PermissionsService permissionsService;
-  private final OgelService ogelService;
+  private final PermissionsServiceClient permissionsService;
+  private final OgelServiceClient ogelService;
+
 
   // For Country Service
   private static final String PING_PATH = "/admin/ping";
@@ -31,7 +34,7 @@ public class PingServiceImpl implements PingService {
   private final String userServiceCredentials;
 
   @Inject
-  public PingServiceImpl(PermissionsService permissionsService, OgelService ogelService,
+  public PingServiceImpl(PermissionsServiceClient permissionsService, OgelServiceClient ogelService,
                          @Named("countryServiceAddress") String countryServiceAddress,
                          @Named("countryServiceTimeout") int countryServiceTimeout,
                          @Named("countryServiceCredentials") String countryServiceCredentials,

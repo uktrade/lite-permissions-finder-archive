@@ -6,7 +6,8 @@ import components.cms.dao.SessionOutcomeDao;
 import components.common.client.userservice.UserServiceClientJwt;
 import components.services.notification.PermissionsFinderNotificationClient;
 import controllers.routes;
-import exceptions.InvalidUserAccountException;
+import exceptions.ServiceException;
+import models.AccountData;
 import models.enums.SessionOutcomeType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -14,7 +15,6 @@ import models.view.BreadcrumbView;
 import models.view.SubAnswerView;
 import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
-import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.session.SessionOutcome;
 import triage.text.HtmlRenderOption;
@@ -27,7 +27,6 @@ import views.html.triage.itemNotFoundBreadcrumb;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -37,10 +36,8 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   private final String permissionsFinderUrl;
   private final UserServiceClientJwt userService;
-  private final CustomerService customerService;
   private final BreadcrumbViewService breadcrumbViewService;
   private final AnswerViewService answerViewService;
-  private final JourneyConfigService journeyConfigService;
   private final SessionOutcomeDao sessionOutcomeDao;
   private final PermissionsFinderNotificationClient permissionsFinderNotificationClient;
   private final RenderService renderService;
@@ -49,19 +46,15 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
   @Inject
   public SessionOutcomeServiceImpl(@Named("permissionsFinderUrl") String permissionsFinderUrl,
-                                   UserServiceClientJwt userService,
-                                   CustomerService customerService, BreadcrumbViewService breadcrumbViewService,
-                                   AnswerViewService answerViewService, JourneyConfigService journeyConfigService,
-                                   SessionOutcomeDao sessionOutcomeDao,
+                                   UserServiceClientJwt userService, BreadcrumbViewService breadcrumbViewService,
+                                   AnswerViewService answerViewService, SessionOutcomeDao sessionOutcomeDao,
                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient,
                                    RenderService renderService, views.html.nlr.nlrLetter nlrLetter,
                                    views.html.triage.listedOutcomeJourney listedOutcomeJourney) {
     this.permissionsFinderUrl = permissionsFinderUrl;
     this.userService = userService;
-    this.customerService = customerService;
     this.breadcrumbViewService = breadcrumbViewService;
     this.answerViewService = answerViewService;
-    this.journeyConfigService = journeyConfigService;
     this.sessionOutcomeDao = sessionOutcomeDao;
     this.permissionsFinderNotificationClient = permissionsFinderNotificationClient;
     this.renderService = renderService;
@@ -70,54 +63,52 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   @Override
-  public void generateItemListedOutcome(String userId, String sessionId,
-                                        ControlEntryConfig controlEntryConfig) throws InvalidUserAccountException {
+  public void generateItemListedOutcome(String sessionId, String userId, AccountData accountData,
+                                        ControlEntryConfig controlEntryConfig) {
     List<BreadcrumbItemView> breadcrumbViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig, HtmlRenderOption.OMIT_LINKS);
     List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig, false);
     Html html = listedOutcomeJourney.render(breadcrumbViews, controlCode, description, subAnswerViews);
-
-    CustomerView customerView = getCustomerId(userId);
-    String customerId = customerView.getCustomerId();
-    SiteView siteView = getSite(customerId, userId);
     String id = createOutcomeId();
-    SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(),
+    SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId,
+        accountData.getCustomerView().getCustomerId(), accountData.getSiteView().getSiteId(),
         SessionOutcomeType.CONTROL_ENTRY_FOUND, html.toString());
     sessionOutcomeDao.insert(sessionOutcome);
   }
 
   @Override
-  public String generateNotFoundNlrLetter(String userId, String sessionId, ControlEntryConfig controlEntryConfig,
-                                          String resumeCode, Html description) throws InvalidUserAccountException {
+  public String generateNotFoundNlrLetter(String sessionId, String userId, AccountData accountData,
+                                          ControlEntryConfig controlEntryConfig, String resumeCode, Html description) {
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, null);
 
-    return generateLetter(userId, sessionId, resumeCode, SessionOutcomeType.NLR_NOT_FOUND, nlrBreadcrumb, description);
+    return generateLetter(sessionId, userId, accountData, resumeCode, SessionOutcomeType.NLR_NOT_FOUND, nlrBreadcrumb, description);
   }
 
   @Override
-  public String generateDecontrolNlrLetter(String userId, String sessionId, StageConfig stageConfig, String resumeCode,
-                                           Html description) throws InvalidUserAccountException {
+  public String generateDecontrolNlrLetter(String sessionId, String userId, AccountData accountData,
+                                           StageConfig stageConfig, String resumeCode, Html description) {
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = decontrolBreadcrumb.render(null, breadcrumbView, answerViews);
 
-    return generateLetter(userId, sessionId, resumeCode, SessionOutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
+    return generateLetter(sessionId, userId, accountData, resumeCode, SessionOutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
   }
 
-  private String generateLetter(String userId, String sessionId, String resumeCode, SessionOutcomeType outcomeType,
-                                Html nlrBreadcrumb, Html description) throws InvalidUserAccountException {
-    CustomerView customerView = getCustomerId(userId);
-    String customerId = customerView.getCustomerId();
-    SiteView siteView = getSite(customerId, userId);
+  private String generateLetter(String sessionId, String userId, AccountData accountData, String resumeCode,
+                                SessionOutcomeType outcomeType, Html nlrBreadcrumb, Html description) {
+    CustomerView customerView = accountData.getCustomerView();
+    SiteView siteView = accountData.getSiteView();
+
     UserDetailsView userDetailsView = getUserDetailsView(userId);
     SiteView.SiteViewAddress address = siteView.getAddress();
     String todayDate = DATE_TIME_FORMATTER.format(LocalDate.now());
 
     Html html = nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrBreadcrumb, description);
     String id = createOutcomeId();
-    SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerId, siteView.getSiteId(), outcomeType, html.toString());
+    SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerView.getCustomerId(),
+        siteView.getSiteId(), outcomeType, html.toString());
     sessionOutcomeDao.insert(sessionOutcome);
     String url = permissionsFinderUrl + routes.ViewOutcomeController.renderOutcome(id).toString();
     permissionsFinderNotificationClient.sendNlrDocumentToUserEmail(userDetailsView.getContactEmailAddress(),
@@ -135,34 +126,8 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     try {
       return userService.getUserDetailsView(userId).toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException exception) {
-      throw new RuntimeException("Unable to get userDetailsView for userId " + userId, exception);
+      throw new ServiceException("Unable to get userDetailsView for userId " + userId, exception);
     }
-  }
-
-  private SiteView getSite(String customerId, String userId) throws InvalidUserAccountException {
-    Optional<List<SiteView>> optSites = customerService.getSitesByCustomerIdUserId(customerId, userId);
-    if (optSites.isPresent()) {
-      List<SiteView> sites = optSites.get();
-      if (sites.size() == 1) {
-        return sites.get(0);
-      } else {
-        throw new InvalidUserAccountException("Expected user [" + userId + "] to only have 1 associated Site but found: " + sites.size());
-      }
-    }
-    throw new InvalidUserAccountException("Not a single Site associated with user/customer: " + userId + "/" + customerId);
-  }
-
-  private CustomerView getCustomerId(String userId) throws InvalidUserAccountException {
-    Optional<List<CustomerView>> optCustomers = customerService.getCustomersByUserId(userId);
-    if (optCustomers.isPresent()) {
-      List<CustomerView> customers = optCustomers.get();
-      if (customers.size() == 1) {
-        return customers.get(0);
-      } else {
-        throw new InvalidUserAccountException("Expected user [" + userId + "] to only have 1 associated Customer but found: " + customers.size());
-      }
-    }
-    throw new InvalidUserAccountException("Not a single Customer associated with user: " + userId);
   }
 
 }

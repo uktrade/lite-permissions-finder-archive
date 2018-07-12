@@ -17,6 +17,14 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import components.auth.SamlModule;
+import components.client.ApplicableOgelServiceClient;
+import components.client.ApplicableOgelServiceClientImpl;
+import components.client.CustomerServiceClient;
+import components.client.CustomerServiceClientImpl;
+import components.client.OgelServiceClient;
+import components.client.OgelServiceClientImpl;
+import components.client.PermissionsServiceClient;
+import components.client.PermissionsServiceClientImpl;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
@@ -46,22 +54,16 @@ import components.common.client.CountryServiceClient;
 import components.common.client.userservice.UserServiceClientBasicAuth;
 import components.common.persistence.RedisKeyConfig;
 import components.common.persistence.StatelessRedisDao;
+import components.services.AccountService;
+import components.services.AccountServiceImpl;
 import components.services.AnswerConfigService;
 import components.services.AnswerConfigServiceImpl;
 import components.services.AnswerViewService;
 import components.services.AnswerViewServiceImpl;
 import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
-import components.services.CustomerService;
-import components.services.CustomerServiceImpl;
 import components.services.FlashService;
 import components.services.FlashServiceImpl;
-import components.services.LicenceFinderService;
-import components.services.LicenceFinderServiceImpl;
-import components.services.OgelService;
-import components.services.OgelServiceImpl;
-import components.services.PermissionsService;
-import components.services.PermissionsServiceImpl;
 import components.services.PingService;
 import components.services.PingServiceImpl;
 import components.services.ProgressViewService;
@@ -124,6 +126,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Override
   protected void configure() {
+    bind(AccountService.class).to(AccountServiceImpl.class);
     bind(DefinitionConfigService.class).to(DefinitionConfigServiceImpl.class).asEagerSingleton();
     bind(ProgressViewService.class).to(ProgressViewServiceImpl.class);
     bind(RenderService.class).to(RenderServiceImpl.class);
@@ -140,10 +143,10 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(JourneyConfigFactory.class).to(JourneyConfigFactoryImpl.class);
     bind(CachePopulationService.class).to(CachePopulationServiceImpl.class);
     bind(StartupCachePopulationActor.class).asEagerSingleton();
-    bind(LicenceFinderService.class).to(LicenceFinderServiceImpl.class);
-    bind(PermissionsService.class).to(PermissionsServiceImpl.class);
-    bind(CustomerService.class).to(CustomerServiceImpl.class);
-    bind(OgelService.class).to(OgelServiceImpl.class);
+    bind(PermissionsServiceClient.class).to(PermissionsServiceClientImpl.class);
+    bind(ApplicableOgelServiceClient.class).to(ApplicableOgelServiceClientImpl.class);
+    bind(CustomerServiceClient.class).to(CustomerServiceClientImpl.class);
+    bind(OgelServiceClient.class).to(OgelServiceClientImpl.class);
     bind(SessionOutcomeService.class).to(SessionOutcomeServiceImpl.class);
     bind(UserPrivilegeService.class).to(UserPrivilegeServiceImpl.class);
     bind(FlashService.class).to(FlashServiceImpl.class);
@@ -316,7 +319,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Provides
   public AnalyticsConfig provideAnalyticsConfig(Config config) {
     if (!config.getIsNull("analytics.googleAnalyticsId")) {
-     return new AnalyticsConfig(config.getString("analytics.googleAnalyticsId"));
+      return new AnalyticsConfig(config.getString("analytics.googleAnalyticsId"));
     } else {
       return new AnalyticsConfig(null);
     }
