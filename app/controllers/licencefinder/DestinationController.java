@@ -22,7 +22,6 @@ import play.mvc.With;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import utils.CountryUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -84,9 +83,11 @@ public class DestinationController extends Controller {
       } else if (multipleCountries && !isValidCountry(countries, firstConsigneeCountry)) {
         throw UnknownParameterException.unknownCountry(firstConsigneeCountry);
       } else {
-        licenceFinderDao.saveFirstConsigneeCountry(sessionId, firstConsigneeCountry);
-        licenceFinderDao.saveMultipleCountries(sessionId, multipleCountries);
         licenceFinderDao.saveDestinationCountry(sessionId, destinationCountry);
+        licenceFinderDao.saveMultipleCountries(sessionId, multipleCountries);
+        if (multipleCountries) {
+          licenceFinderDao.saveFirstConsigneeCountry(sessionId, firstConsigneeCountry);
+        }
         return CompletableFuture.completedFuture(redirect(routes.QuestionsController.renderQuestionsForm(sessionId)));
       }
     }
