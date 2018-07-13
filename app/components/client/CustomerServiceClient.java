@@ -16,4 +16,6 @@ public interface CustomerServiceClient {
 
   CompletionStage<CustomerView> getCustomer(String customerId);
 
+  CompletionStage<Boolean> serviceReachable(String adminCheckPath);
+
 }

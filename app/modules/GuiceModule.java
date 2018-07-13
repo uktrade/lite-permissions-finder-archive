@@ -186,6 +186,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bindConstant().annotatedWith(Names.named("customerServiceAddress")).to(config.getString("customerService.address"));
     bindConstant().annotatedWith(Names.named("customerServiceTimeout")).to(config.getInt("customerService.timeout"));
+    bindConstant().annotatedWith(Names.named("customerServiceCredentials")).to(config.getString("customerService.credentials"));
 
     bindConstant().annotatedWith(Names.named("userServiceAddress")).to(config.getString("userService.address"));
     bindConstant().annotatedWith(Names.named("userServiceTimeout")).to(config.getString("userService.timeout"));

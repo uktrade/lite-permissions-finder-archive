@@ -2,9 +2,10 @@ package components.services;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import components.client.CustomerServiceClient;
 import components.client.OgelServiceClient;
 import components.client.PermissionsServiceClient;
-import models.admin.PingAuditResult;
+import models.admin.AdminCheckResult;
 import org.slf4j.LoggerFactory;
 import play.libs.ws.WSClient;
 
@@ -18,34 +19,35 @@ public class PingServiceImpl implements PingService {
 
   private final PermissionsServiceClient permissionsService;
   private final OgelServiceClient ogelService;
-
-
-  // For Country Service
-  private static final String PING_PATH = "/admin/ping";
+  private final CustomerServiceClient customerService;
 
   private final WSClient wsClient;
+
+  // Country service config
   private final String countryServiceAddress;
   private final int countryServiceTimeout;
   private final String countryServiceCredentials;
 
-  // For User Service
+  // User service config
   private final String userServiceAddress;
   private final int userServiceTimeout;
   private final String userServiceCredentials;
 
   @Inject
   public PingServiceImpl(PermissionsServiceClient permissionsService, OgelServiceClient ogelService,
+                         CustomerServiceClient customerService, WSClient wsClient,
                          @Named("countryServiceAddress") String countryServiceAddress,
                          @Named("countryServiceTimeout") int countryServiceTimeout,
                          @Named("countryServiceCredentials") String countryServiceCredentials,
-                         WSClient wsClient,
                          @Named("userServiceAddress") String userServiceAddress,
                          @Named("userServiceTimeout") int userServiceTimeout,
                          @Named("userServiceCredentials") String userServiceCredentials) {
     this.permissionsService = permissionsService;
     this.ogelService = ogelService;
+    this.customerService = customerService;
 
     this.wsClient = wsClient;
+
     this.countryServiceAddress = countryServiceAddress;
     this.countryServiceTimeout = countryServiceTimeout;
     this.countryServiceCredentials = countryServiceCredentials;
@@ -55,34 +57,32 @@ public class PingServiceImpl implements PingService {
     this.userServiceCredentials = userServiceCredentials;
   }
 
-  public PingAuditResult pingAudit() {
-    LOGGER.info("pingAudit started...");
+  public AdminCheckResult adminCheck(String adminCheckPath) {
+    LOGGER.info("adminCheck started...");
 
-    PingAuditResult result = new PingAuditResult();
+    AdminCheckResult result = new AdminCheckResult();
 
     try {
-      CompletionStage<Boolean> userServiceStage = userServicePing();
-      boolean userServiceOk = userServiceStage.toCompletableFuture().get();
-      result.addDetailPart("UserService", userServiceOk);
+      boolean userServiceReachable = userServiceReachable(adminCheckPath).toCompletableFuture().get();
+      boolean permissionsServiceReachable = permissionsService.serviceReachable(adminCheckPath).toCompletableFuture().get();
+      boolean ogelServiceReachable = ogelService.serviceReachable(adminCheckPath).toCompletableFuture().get();
+      boolean countryServiceReachable = countryServiceReachable(adminCheckPath).toCompletableFuture().get();
+      boolean customerServiceReachable = customerService.serviceReachable(adminCheckPath).toCompletableFuture().get();
 
-      CompletionStage<Boolean> permissionsServiceStage = permissionsService.ping();
-      boolean permissionsServiceOk = permissionsServiceStage.toCompletableFuture().get();
-      result.addDetailPart("PermissionsService", permissionsServiceOk);
+      result.addDetailPart("UserService", userServiceReachable);
+      result.addDetailPart("PermissionsService", permissionsServiceReachable);
+      result.addDetailPart("OgelService", ogelServiceReachable);
+      result.addDetailPart("CountryService", countryServiceReachable);
+      result.addDetailPart("CustomerService", customerServiceReachable);
 
-      CompletionStage<Boolean> ogelServiceStage = ogelService.ping();
-      boolean ogelServiceOk = ogelServiceStage.toCompletableFuture().get();
-      result.addDetailPart("OgelService", ogelServiceOk);
+      LOGGER.info("User service reachable: " + userServiceReachable);
+      LOGGER.info("Permissions service reachable: " + permissionsServiceReachable);
+      LOGGER.info("Ogel service reachable: " + ogelServiceReachable);
+      LOGGER.info("Country service reachable: " + countryServiceReachable);
+      LOGGER.info("Customer service reachable: " + customerServiceReachable);
 
-      CompletionStage<Boolean> countryServiceStage = countryServicePing();
-      boolean countryServiceOk = countryServiceStage.toCompletableFuture().get();
-      result.addDetailPart("CountryService", countryServiceOk);
-
-      LOGGER.info("User service ping acknowledged: " + userServiceOk);
-      LOGGER.info("Permissions service ping acknowledged: " + permissionsServiceOk);
-      LOGGER.info("Ogel service ping acknowledged: " + ogelServiceOk);
-      LOGGER.info("Country service ping acknowledged: " + countryServiceOk);
-
-      if(userServiceOk && permissionsServiceOk && ogelServiceOk && countryServiceOk) {
+      if(userServiceReachable && permissionsServiceReachable && ogelServiceReachable
+          && countryServiceReachable && customerServiceReachable) {
         result.setStatusOk();
       }
 
@@ -92,8 +92,8 @@ public class PingServiceImpl implements PingService {
     return result;
   }
 
-  private CompletionStage<Boolean> countryServicePing() {
-    String url = countryServiceAddress + PING_PATH;
+  private CompletionStage<Boolean> countryServiceReachable(String adminCheckPath) {
+    String url = countryServiceAddress + adminCheckPath;
     return wsClient.url(url)
         .setRequestTimeout(Duration.ofMillis(countryServiceTimeout))
         .setAuth(countryServiceCredentials)
@@ -101,8 +101,8 @@ public class PingServiceImpl implements PingService {
         .handleAsync((response, error) -> response.getStatus() == 200);
   }
 
-  private CompletionStage<Boolean> userServicePing() {
-    String url = userServiceAddress + PING_PATH;
+  private CompletionStage<Boolean> userServiceReachable(String adminCheckPath) {
+    String url = userServiceAddress + adminCheckPath;
     return wsClient.url(url)
         .setRequestTimeout(Duration.ofMillis(userServiceTimeout))
         .setAuth(userServiceCredentials)

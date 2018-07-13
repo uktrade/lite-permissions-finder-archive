@@ -14,6 +14,6 @@ public interface PermissionsServiceClient {
 
   CompletionStage<OgelRegistrationView> getOgelRegistration(String userId, String registrationReference);
 
-  CompletionStage<Boolean> ping();
+  CompletionStage<Boolean> serviceReachable(String adminCheckPath);
 
 }

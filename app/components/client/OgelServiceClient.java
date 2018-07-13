@@ -8,6 +8,6 @@ public interface OgelServiceClient {
 
   CompletionStage<OgelFullView> getById(String ogelId);
 
-  CompletionStage<Boolean> ping();
+  CompletionStage<Boolean> serviceReachable(String adminCheckPath);
 
 }

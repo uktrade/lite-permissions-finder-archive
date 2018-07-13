@@ -28,18 +28,32 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
   private final WSClient wsClient;
   private final String customerServiceAddress;
   private final int timeout;
+  private final String customerServiceCredentials;
   private final JwtRequestFilter jwtRequestFilter;
 
   @Inject
   public CustomerServiceClientImpl(HttpExecutionContext httpContext, WSClient wsClient,
                                    @Named("customerServiceAddress") String customerServiceAddress,
                                    @Named("customerServiceTimeout") int timeout,
+                                   @Named("customerServiceCredentials") String customerServiceCredentials,
                                    JwtRequestFilter jwtRequestFilter) {
     this.httpContext = httpContext;
     this.wsClient = wsClient;
     this.customerServiceAddress = customerServiceAddress;
     this.timeout = timeout;
     this.jwtRequestFilter = jwtRequestFilter;
+    this.customerServiceCredentials = customerServiceCredentials;
+  }
+
+  /**
+   * Attempts a GET to path provided, checks for http 200 response
+   */
+  public CompletionStage<Boolean> serviceReachable(String adminCheckPath) {
+    return wsClient.url(customerServiceAddress + adminCheckPath)
+        .setRequestTimeout(Duration.ofMillis(timeout))
+        .setAuth(customerServiceCredentials)
+        .get()
+        .handleAsync((response, error) -> response.getStatus() == 200);
   }
 
   @Override
@@ -48,7 +62,8 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
         .setRequestFilter(ServiceClientLogger.requestFilter("Customer", "GET", httpContext))
         .setRequestFilter(jwtRequestFilter)
         .setRequestFilter(CorrelationId.requestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout));
+        .setRequestTimeout(Duration.ofMillis(timeout))
+        .setAuth(customerServiceCredentials);
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
         String message = String.format("Unable to get sites with customerId %s and userId %s", customerId, userId);
