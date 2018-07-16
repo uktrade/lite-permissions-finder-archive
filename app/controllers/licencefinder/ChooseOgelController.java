@@ -32,6 +32,8 @@ import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -137,6 +139,10 @@ public class ChooseOgelController extends Controller {
       title = String.format("Open licences available for exporting goods described in control list entry %s to %s",
           controlCode, destinationCountryName);
     }
+
+    // Sort Ogels alphabetically by name
+    ogelViews.sort(Comparator.comparing(OgelView::getName));
+
     return completedFuture(ok(results.render(form, sessionId, title, ogelViews)));
   }
 
