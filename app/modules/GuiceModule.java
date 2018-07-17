@@ -315,7 +315,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   public AnalyticsConfig provideAnalyticsConfig(Config config) {
-    if (!config.getIsNull("analytics.googleAnalyticsId")) {
+    if (!config.getIsNull("analytics.googleAnalyticsId") && StringUtils.isNotEmpty(config.getString("analytics.googleAnalyticsId"))) {
       return new AnalyticsConfig(config.getString("analytics.googleAnalyticsId"));
     } else {
       return new AnalyticsConfig(null);
@@ -324,7 +324,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   public FeedbackConfig provideFeedbackConfig(Config config) {
-    if (!config.getIsNull("feedbackUrl")) {
+    if (!config.getIsNull("feedbackUrl") && StringUtils.isNotEmpty(config.getString("feedbackUrl"))) {
       return new FeedbackConfig(config.getString("feedbackUrl"));
     } else {
       return new FeedbackConfig(null);
