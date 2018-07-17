@@ -1,11 +1,12 @@
 @import util._
 @import controllers.routes.EntryPointController
+@import models.template.FeedbackConfig
 
-@this(govukTemplateDefaults: govukTemplateDefaults)
+@this(govukTemplateDefaults: govukTemplateDefaults, feedbackConfig: FeedbackConfig)
 @govukTemplateDefaults("Import / export licensing service") {
   <main id="content" role="main">
 
-    @phaseBanner()
+    @phaseBanner(feedbackConfig)
 
     <div class="breadcrumbs">
       <ol aria-label="Breadcrumbs">
