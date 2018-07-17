@@ -82,7 +82,8 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
         .setRequestFilter(ServiceClientLogger.requestFilter("Customer", "GET", httpContext))
         .setRequestFilter(jwtRequestFilter)
         .setRequestFilter(CorrelationId.requestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout));
+        .setRequestTimeout(Duration.ofMillis(timeout))
+        .setAuth(customerServiceCredentials);
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
         String message = "Unable to get customers with userId " + userId;
@@ -102,7 +103,8 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(ServiceClientLogger.requestFilter("Customer", "GET", httpContext))
         .setRequestFilter(jwtRequestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout));
+        .setRequestTimeout(Duration.ofMillis(timeout))
+        .setAuth(customerServiceCredentials);
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
         String message = "Unable to get customer with customerId " + customerId;
@@ -121,7 +123,8 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(ServiceClientLogger.requestFilter("Customer", "GET", httpContext))
         .setRequestFilter(jwtRequestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout));
+        .setRequestTimeout(Duration.ofMillis(timeout))
+        .setAuth(customerServiceCredentials);
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
         String message = "Unable to get site with siteId " + siteId;

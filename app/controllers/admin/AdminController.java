@@ -17,7 +17,7 @@ public class AdminController extends Controller {
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
   private final PingService pingService;
 
-  private static final String ADMIN_CHECK_PATH = "/admin/check";
+  private static final String ADMIN_CHECK_PATH = "/ping/check";
   private final String PING_XML_TEMPLATE = "<pingdom_http_custom_check><status>%s</status><detail>%s</detail></pingdom_http_custom_check>";
 
   @Inject
