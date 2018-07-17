@@ -32,6 +32,8 @@ import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +48,9 @@ import java.util.stream.Collectors;
 @With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
 public class ChooseOgelController extends Controller {
 
+  public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
+  private static final String NO_OPEN_LICENCES_AVAILABLE = "No open licences available";
+
   private final FormFactory formFactory;
   private final LicenceFinderDao licenceFinderDao;
   private final HttpExecutionContext httpContext;
@@ -57,8 +62,6 @@ public class ChooseOgelController extends Controller {
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
   private final PermissionsServiceClient permissionsServiceClient;
   private final String dashboardUrl;
-
-  public static final String NONE_ABOVE_KEY = "NONE_ABOVE_KEY";
 
   @Inject
   public ChooseOgelController(FormFactory formFactory, HttpExecutionContext httpContext,
@@ -97,9 +100,8 @@ public class ChooseOgelController extends Controller {
       if (NONE_ABOVE_KEY.equals(chosenOgelId)) {
         // Return No licences available when 'None of the above' chosen
         licenceFinderDao.saveOgelId(sessionId, chosenOgelId);
-        String title = "No open licences available";
         // TODO additional endpoint / template
-        return completedFuture(ok(results.render(form, sessionId, title, new ArrayList<>())));
+        return completedFuture(ok(results.render(form, sessionId, NO_OPEN_LICENCES_AVAILABLE, new ArrayList<>())));
       } else if (!isValidOgelId(sessionId, chosenOgelId)) {
         return renderWithForm(form, sessionId, userId);
       } else {
@@ -130,8 +132,16 @@ public class ChooseOgelController extends Controller {
     String destinationCountry = licenceFinderDao.getDestinationCountry(sessionId)
         .orElseThrow(UnknownParameterException::unknownLicenceFinderOrder);
     String destinationCountryName = countryProvider.getCountry(destinationCountry).getCountryName();
-    String title = String.format("Open licences available for exporting goods described in control list entry %s to %s",
-        controlCode, destinationCountryName);
+    String title;
+    if (ogelViews.isEmpty()) {
+      title = NO_OPEN_LICENCES_AVAILABLE;
+    } else {
+      title = String.format("Open licences available for exporting goods described in control list entry %s to %s",
+          controlCode, destinationCountryName);
+    }
+
+    // Sort Ogels alphabetically by name
+    ogelViews.sort(Comparator.comparing(OgelView::getName));
 
     return completedFuture(ok(results.render(form, sessionId, title, ogelViews)));
   }

@@ -210,7 +210,7 @@ public class ViewOutcomeController {
           Optional<AccountData> accountDataOptional = accountService.getAccountData(userId);
           if (accountDataOptional.isPresent()) {
             Html htmlDescription = HtmlUtil.newlinesToParagraphs(description);
-            sessionOutcomeService.generateDecontrolNlrLetter(userId, sessionId, accountDataOptional.get(), stageConfig,
+            sessionOutcomeService.generateDecontrolNlrLetter(sessionId, userId, accountDataOptional.get(), stageConfig,
                 resumeCode, htmlDescription);
             return redirect(routes.ViewOutcomeController.registerSuccess(sessionId));
           } else {
