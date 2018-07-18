@@ -30,6 +30,7 @@ public class AdminController extends Controller {
     return ok(buildinfo.BuildInfo$.MODULE$.toJson()).as("application/json");
   }
 
+  @With(BasicAuthAction.class)
   public Result adminCheck() {
     LOGGER.info("Admin check request received - getting results from dependent service...");
     AdminCheckResult result = pingService.adminCheck(ADMIN_CHECK_PATH);

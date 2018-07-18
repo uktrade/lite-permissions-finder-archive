@@ -57,6 +57,9 @@ public class PingServiceImpl implements PingService {
     this.userServiceCredentials = userServiceCredentials;
   }
 
+  /**
+   * We send a GET request to each of the dependent services and record the result
+   */
   public AdminCheckResult adminCheck(String adminCheckPath) {
     LOGGER.info("adminCheck started...");
 
@@ -93,8 +96,7 @@ public class PingServiceImpl implements PingService {
   }
 
   private CompletionStage<Boolean> countryServiceReachable(String adminCheckPath) {
-    String url = countryServiceAddress + adminCheckPath;
-    return wsClient.url(url)
+    return wsClient.url(countryServiceAddress + adminCheckPath)
         .setRequestTimeout(Duration.ofMillis(countryServiceTimeout))
         .setAuth(countryServiceCredentials)
         .get()
@@ -102,8 +104,7 @@ public class PingServiceImpl implements PingService {
   }
 
   private CompletionStage<Boolean> userServiceReachable(String adminCheckPath) {
-    String url = userServiceAddress + adminCheckPath;
-    return wsClient.url(url)
+    return wsClient.url(userServiceAddress + adminCheckPath)
         .setRequestTimeout(Duration.ofMillis(userServiceTimeout))
         .setAuth(userServiceCredentials)
         .get()
