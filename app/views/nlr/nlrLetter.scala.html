@@ -1,10 +1,11 @@
 @import uk.gov.bis.lite.user.api.view.UserDetailsView
 @import uk.gov.bis.lite.customer.api.view.SiteView
+@import uk.gov.bis.lite.customer.api.view.CustomerView
 @import util._
 @import utils.common.ViewUtil
 
 @this()
-@(resumeCode: String, userDetailsView: UserDetailsView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: Html)
+@(resumeCode: String, userDetailsView: UserDetailsView, customerView: CustomerView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: Html)
 
 <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
 
@@ -19,6 +20,7 @@
     </p>
     <p>
       @userDetailsView.getFullName<br>
+      @customerView.getCompanyName<br>
       @Html(address.getPlainText.replace("\n", "<br>"))
     </p>
     <p>
