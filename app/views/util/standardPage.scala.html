@@ -1,15 +1,16 @@
 @import util._
 @import views.html.common.page._
 @import play.mvc.Controller.ctx
+@import models.template.FeedbackConfig
 
-@this(govukTemplateDefaults: govukTemplateDefaults)
+@this(govukTemplateDefaults: govukTemplateDefaults, feedbackConfig: FeedbackConfig)
 @(htmlTitle: String, pageHeading: Option[Html], twoThirdsColumn: Boolean = true, resumeCode: String = "", showBackLink: Boolean = false)(beforeHeader: Html)(content: Html)
 
 @govukTemplateDefaults(htmlTitle + " - Import & Export Licensing") {
 
   <main id="content" role="main">
 
-    @phaseBanner()
+    @phaseBanner(feedbackConfig)
 
     <div class="nav-container">
       <div class="back-link-container">

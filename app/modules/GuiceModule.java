@@ -75,6 +75,7 @@ import components.services.UserPrivilegeServiceImpl;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
 import models.template.AnalyticsConfig;
+import models.template.FeedbackConfig;
 import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
@@ -314,10 +315,19 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Provides
   public AnalyticsConfig provideAnalyticsConfig(Config config) {
-    if (!config.getIsNull("analytics.googleAnalyticsId")) {
+    if (!config.getIsNull("analytics.googleAnalyticsId") && StringUtils.isNotEmpty(config.getString("analytics.googleAnalyticsId"))) {
       return new AnalyticsConfig(config.getString("analytics.googleAnalyticsId"));
     } else {
       return new AnalyticsConfig(null);
+    }
+  }
+
+  @Provides
+  public FeedbackConfig provideFeedbackConfig(Config config) {
+    if (!config.getIsNull("feedbackUrl") && StringUtils.isNotEmpty(config.getString("feedbackUrl"))) {
+      return new FeedbackConfig(config.getString("feedbackUrl"));
+    } else {
+      return new FeedbackConfig(null);
     }
   }
 }
