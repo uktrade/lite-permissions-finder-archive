@@ -105,7 +105,7 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
     SiteView.SiteViewAddress address = siteView.getAddress();
     String todayDate = DATE_TIME_FORMATTER.format(LocalDate.now());
 
-    Html html = nlrLetter.render(resumeCode, userDetailsView, todayDate, address, nlrBreadcrumb, description);
+    Html html = nlrLetter.render(resumeCode, userDetailsView, customerView, todayDate, address, nlrBreadcrumb, description);
     String id = createOutcomeId();
     SessionOutcome sessionOutcome = new SessionOutcome(id, sessionId, userId, customerView.getCustomerId(),
         siteView.getSiteId(), outcomeType, html.toString());

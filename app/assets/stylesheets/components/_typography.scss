@@ -41,6 +41,13 @@
   }
 }
 
+.print-link-right-aligned {
+  float: right;
+
+  @include media(mobile) {
+    float: none;
+  }
+}
 
 label {
   @extend .prose;
