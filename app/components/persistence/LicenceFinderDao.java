@@ -8,6 +8,7 @@ import models.TradeType;
 import models.persistence.RegisterLicence;
 import models.view.licencefinder.Customer;
 import models.view.licencefinder.Site;
+import org.apache.commons.lang.StringUtils;
 import org.redisson.client.RedisException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,6 +167,9 @@ public class LicenceFinderDao {
 
   private Optional<Boolean> readBoolean(String sessionId, String fieldName) {
     String value = statelessRedisDao.readString(sessionId, fieldName);
-    return Optional.of(Boolean.parseBoolean(value));
+    if (StringUtils.isBlank(value)) {
+      return Optional.empty();
+    }
+    return Optional.of(value.equalsIgnoreCase("true"));
   }
 }
