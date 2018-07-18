@@ -277,7 +277,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Named("countryCacheActorRefEu")
   ActorRef provideCountryCacheActorRefEu(final ActorSystem system,
                                          @Named("countryProviderEu") CountryProvider countryProvider) {
-    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider)));
+    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider, 10)));
   }
 
   @Provides
@@ -285,17 +285,17 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   @Named("countryCacheActorRefExport")
   ActorRef provideCountryCacheActorRefExport(final ActorSystem system,
                                              @Named("countryProviderExport") CountryProvider countryProvider) {
-    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider)));
+    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider, 10)));
   }
 
   @Inject
-  public void initActorScheduler(final ActorSystem actorSystem,
+  public void initActorScheduler(final ActorSystem system,
                                  @Named("countryCacheActorRefEu") ActorRef countryCacheActorRefEu,
                                  @Named("countryCacheActorRefExport") ActorRef countryCacheActorRefExport) {
     FiniteDuration delay = Duration.create(0, TimeUnit.MILLISECONDS);
     FiniteDuration frequency = Duration.create(1, TimeUnit.DAYS);
-    actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "EU country cache", actorSystem.dispatcher(), null);
-    actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefExport, "EXPORT country cache", actorSystem.dispatcher(), null);
+    system.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "load", system.dispatcher(), ActorRef.noSender());
+    system.scheduler().schedule(delay, frequency, countryCacheActorRefExport, "load", system.dispatcher(), ActorRef.noSender());
   }
 
   @Provides
