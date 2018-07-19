@@ -1,9 +1,10 @@
 @import util._
 @import controllers.routes.EntryPointController
 @import models.template.FeedbackConfig
+@import models.template.DashboardConfig
 
-@this(govukTemplateDefaults: govukTemplateDefaults, feedbackConfig: FeedbackConfig)
-@govukTemplateDefaults("Import / export licensing service") {
+@this(govukTemplateDefaults: govukTemplateDefaults, feedbackConfig: FeedbackConfig, dashboardConfig: DashboardConfig)
+@govukTemplateDefaults("Licence controlled items and services - GOV.UK") {
   <main id="content" role="main">
 
     @phaseBanner(feedbackConfig)
@@ -11,8 +12,6 @@
     <div class="breadcrumbs">
       <ol aria-label="Breadcrumbs">
         <li><a href="http://www.gov.uk">Home</a></li>
-        <li><a href="/">Import &amp; export</a></li>
-        <li aria-current="page">Import &amp; export licensing</li>
       </ol>
     </div>
 
@@ -20,43 +19,75 @@
       <div class="column-two-thirds">
 
         <header class="page-header">
-          <h1 class="heading-xlarge">Find out if you need an import or export licence</h1>
+          <h1 class="heading-xlarge">Licence controlled items and services</h1>
         </header>
 
         <p>Use this service to:</p>
         <ul class="list list-bullet">
-          <li>find out if you need a licence to move or send goods, software or technology between countries</li>
-          <li>apply and register for import and export licences and permissions</li>
-          <li>find the export control classification of an item</li>
+          <li>check if your item is controlled</li>
+          <li>find an open general export licence and register for one if needed</li>
+          <li>view your licensing information for licences you register for on this service</li>
         </ul>
 
-        <p>You will answer questions about:</p>
+        <p>You will need to tell us:</p>
         <ul class="list list-bullet">
-          <li>where the items are being sent to and from</li>
-          <li>what the items are</li>
+          <li>what your item is</li>
+          <li>where your item is being exported to</li>
         </ul>
 
         <form action="@EntryPointController.handleSubmit" method="POST">
-
           @views.html.helper.CSRF.formField
-
           <button type="submit" class="button button-start start-application" name="action" value="start">Start now</button>
-
           <button type="submit" class="button secondary button-resume" name="action" value="continue">Resume</button>
-
         </form>
+
+        <h2 class="heading-medium">Before you start</h2>
+        <p>
+          You can only self-assess one item at a time.
+        </p>
+        <p>
+          This service is currently in private beta. You can only use this service if you have been invited to take
+          part in testing and you should continue to use <a href="https://www.spire.trade.gov.uk" rel="external">SPIRE</a>.
+        </p>
 
       </div>
 
       <div class="column-third">
         <div class="govuk-related-items">
 
-          <h2 class="heading-medium">Need some help?</h2>
+          @if(dashboardConfig.getDashboardUrl() != null) {
+            <h2 id="go-to-title" class="heading-medium">Go to</h2>
 
-          <ul class="font-xsmall">
-            <li>Telephone helpline: 020 7215 4594</li>
-            <li><a href="mailto:eco.help@@trade.gsi.gov.uk">Email helpline</a></li>
-          </ul>
+            <nav role="navigation" aria-labelledby="go-to-title">
+              <ul class="list font-xsmall">
+                <li>
+                  <a href="@dashboardConfig.getDashboardUrl()">View your licensing information</a>
+                </li>
+              </ul>
+            </nav>
+          }
+
+          <h2 id="related-content-title" class="heading-medium">Related content</h2>
+
+          <nav role="navigation" aria-labelledby="related-content-title">
+            <ul class="list font-xsmall">
+              <li>
+                <a href="https://www.gov.uk/guidance/export-military-or-dual-use-goods-services-or-technology-special-rules">
+                  Export military or dual use goods, services or technology: special rules
+                </a>
+              </li>
+              <li>
+                <a href="https://www.gov.uk/guidance/uk-strategic-export-control-lists-the-consolidated-list-of-strategic-military-and-dual-use-items">
+                  UK Strategic Export Control Lists
+                </a>
+              </li>
+              <li>
+                <a href="https://www.gov.uk/government/collections/open-general-export-licences-ogels">
+                  Open general export licences (OGELs)
+                </a>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
 
