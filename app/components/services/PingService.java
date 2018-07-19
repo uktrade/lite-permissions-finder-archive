@@ -1,8 +1,8 @@
 package components.services;
 
-import models.admin.AdminCheckResult;
+import models.admin.PingResult;
 
 public interface PingService {
 
-  AdminCheckResult adminCheck(String adminCheckPath);
+  PingResult pingServices();
 }

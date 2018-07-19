@@ -5,7 +5,7 @@ import com.google.inject.name.Named;
 import components.client.CustomerServiceClient;
 import components.client.OgelServiceClient;
 import components.client.PermissionsServiceClient;
-import models.admin.AdminCheckResult;
+import models.admin.PingResult;
 import org.slf4j.LoggerFactory;
 import play.libs.ws.WSClient;
 
@@ -20,6 +20,8 @@ public class PingServiceImpl implements PingService {
   private final PermissionsServiceClient permissionsService;
   private final OgelServiceClient ogelService;
   private final CustomerServiceClient customerService;
+
+  private static final String SERVICE_ADMIN_SERVLET_PING_PATH = "/admin/ping";
 
   private final WSClient wsClient;
 
@@ -60,17 +62,17 @@ public class PingServiceImpl implements PingService {
   /**
    * We send a GET request to each of the dependent services and record the result
    */
-  public AdminCheckResult adminCheck(String adminCheckPath) {
+  public PingResult pingServices(         ) {
     LOGGER.info("adminCheck started...");
 
-    AdminCheckResult result = new AdminCheckResult();
+    PingResult result = new PingResult();
 
     try {
-      boolean userServiceReachable = userServiceReachable(adminCheckPath).toCompletableFuture().get();
-      boolean permissionsServiceReachable = permissionsService.serviceReachable(adminCheckPath).toCompletableFuture().get();
-      boolean ogelServiceReachable = ogelService.serviceReachable(adminCheckPath).toCompletableFuture().get();
-      boolean countryServiceReachable = countryServiceReachable(adminCheckPath).toCompletableFuture().get();
-      boolean customerServiceReachable = customerService.serviceReachable(adminCheckPath).toCompletableFuture().get();
+      boolean userServiceReachable = userServiceReachable().toCompletableFuture().get();
+      boolean permissionsServiceReachable = permissionsService.serviceReachable(SERVICE_ADMIN_SERVLET_PING_PATH).toCompletableFuture().get();
+      boolean ogelServiceReachable = ogelService.serviceReachable(SERVICE_ADMIN_SERVLET_PING_PATH).toCompletableFuture().get();
+      boolean countryServiceReachable = countryServiceReachable().toCompletableFuture().get();
+      boolean customerServiceReachable = customerService.serviceReachable(SERVICE_ADMIN_SERVLET_PING_PATH).toCompletableFuture().get();
 
       result.addDetailPart("UserService", userServiceReachable);
       result.addDetailPart("PermissionsService", permissionsServiceReachable);
@@ -95,16 +97,16 @@ public class PingServiceImpl implements PingService {
     return result;
   }
 
-  private CompletionStage<Boolean> countryServiceReachable(String adminCheckPath) {
-    return wsClient.url(countryServiceAddress + adminCheckPath)
+  private CompletionStage<Boolean> countryServiceReachable() {
+    return wsClient.url(countryServiceAddress + SERVICE_ADMIN_SERVLET_PING_PATH)
         .setRequestTimeout(Duration.ofMillis(countryServiceTimeout))
         .setAuth(countryServiceCredentials)
         .get()
         .handleAsync((response, error) -> response.getStatus() == 200);
   }
 
-  private CompletionStage<Boolean> userServiceReachable(String adminCheckPath) {
-    return wsClient.url(userServiceAddress + adminCheckPath)
+  private CompletionStage<Boolean> userServiceReachable() {
+    return wsClient.url(userServiceAddress + SERVICE_ADMIN_SERVLET_PING_PATH)
         .setRequestTimeout(Duration.ofMillis(userServiceTimeout))
         .setAuth(userServiceCredentials)
         .get()

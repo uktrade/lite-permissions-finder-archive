@@ -1,6 +1,6 @@
 package models.admin;
 
-public class AdminCheckResult {
+public class PingResult {
 
   private String status;
   private String detail;
@@ -8,7 +8,7 @@ public class AdminCheckResult {
   private final String OK = "OK";
   private final String NOT_OK = "NOT_OK";
 
-  public AdminCheckResult() {
+  public PingResult() {
     this.status = NOT_OK;
     this.detail = "";
   }
