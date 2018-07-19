@@ -76,6 +76,7 @@ import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
 import models.template.AnalyticsConfig;
 import models.template.FeedbackConfig;
+import models.template.DashboardConfig;
 import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
@@ -328,6 +329,15 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
       return new FeedbackConfig(config.getString("feedbackUrl"));
     } else {
       return new FeedbackConfig(null);
+    }
+  }
+
+  @Provides
+  public DashboardConfig provideDashboardConfig(Config config) {
+    if (!config.getIsNull("dashboard.url") && StringUtils.isNotEmpty(config.getString("dashboard.url"))) {
+      return new DashboardConfig(config.getString("dashboard.url"));
+    } else {
+      return new DashboardConfig(null);
     }
   }
 }
