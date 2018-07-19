@@ -21,7 +21,7 @@ public class PingServiceImpl implements PingService {
   private final OgelServiceClient ogelService;
   private final CustomerServiceClient customerService;
 
-  private static final String SERVICE_ADMIN_SERVLET_PING_PATH = "/admin/ping";
+  public static final String SERVICE_ADMIN_SERVLET_PING_PATH = "/admin/ping";
 
   private final WSClient wsClient;
 
@@ -72,7 +72,7 @@ public class PingServiceImpl implements PingService {
       boolean permissionsServiceReachable = permissionsService.serviceReachable(SERVICE_ADMIN_SERVLET_PING_PATH).toCompletableFuture().get();
       boolean ogelServiceReachable = ogelService.serviceReachable(SERVICE_ADMIN_SERVLET_PING_PATH).toCompletableFuture().get();
       boolean countryServiceReachable = countryServiceReachable().toCompletableFuture().get();
-      boolean customerServiceReachable = customerService.serviceReachable(SERVICE_ADMIN_SERVLET_PING_PATH).toCompletableFuture().get();
+      boolean customerServiceReachable = customerService.serviceReachable().toCompletableFuture().get();
 
       result.addDetailPart("UserService", userServiceReachable);
       result.addDetailPart("PermissionsService", permissionsServiceReachable);

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
+import components.services.PingServiceImpl;
 import exceptions.ServiceException;
 import filters.common.JwtRequestFilter;
 import play.libs.Json;
@@ -45,15 +46,18 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
     this.customerServiceCredentials = customerServiceCredentials;
   }
 
-  /**
-   * Attempts a GET to path provided, checks for http 200 response
-   */
-  public CompletionStage<Boolean> serviceReachable(String adminCheckPath) {
-    return wsClient.url(customerServiceAddress + adminCheckPath)
-        .setRequestTimeout(Duration.ofMillis(timeout))
+  public CompletionStage<Boolean> serviceReachable() {
+    WSRequest request = wsClient.url(customerServiceAddress + PingServiceImpl.SERVICE_ADMIN_SERVLET_PING_PATH)
         .setAuth(customerServiceCredentials)
-        .get()
-        .handleAsync((response, error) -> response.getStatus() == 200);
+        .setRequestTimeout(Duration.ofMillis(timeout));
+    return request.get().handleAsync((response, error) -> {
+      if (RequestUtil.hasError(response, error)) {
+        RequestUtil.logError(request, response,  error, "Customer service request failed");
+        return false;
+      } else {
+        return response.getStatus() == 200;
+      }
+    }, httpContext.current());
   }
 
   @Override
@@ -62,8 +66,7 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
         .setRequestFilter(ServiceClientLogger.requestFilter("Customer", "GET", httpContext))
         .setRequestFilter(jwtRequestFilter)
         .setRequestFilter(CorrelationId.requestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout))
-        .setAuth(customerServiceCredentials);
+        .setRequestTimeout(Duration.ofMillis(timeout));
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
         String message = String.format("Unable to get sites with customerId %s and userId %s", customerId, userId);
@@ -82,8 +85,7 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
         .setRequestFilter(ServiceClientLogger.requestFilter("Customer", "GET", httpContext))
         .setRequestFilter(jwtRequestFilter)
         .setRequestFilter(CorrelationId.requestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout))
-        .setAuth(customerServiceCredentials);
+        .setRequestTimeout(Duration.ofMillis(timeout));
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
         String message = "Unable to get customers with userId " + userId;
@@ -103,8 +105,7 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(ServiceClientLogger.requestFilter("Customer", "GET", httpContext))
         .setRequestFilter(jwtRequestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout))
-        .setAuth(customerServiceCredentials);
+        .setRequestTimeout(Duration.ofMillis(timeout));
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
         String message = "Unable to get customer with customerId " + customerId;
@@ -123,8 +124,7 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(ServiceClientLogger.requestFilter("Customer", "GET", httpContext))
         .setRequestFilter(jwtRequestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout))
-        .setAuth(customerServiceCredentials);
+        .setRequestTimeout(Duration.ofMillis(timeout));
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
         String message = "Unable to get site with siteId " + siteId;
