@@ -22,7 +22,7 @@
         }
 
         @if(!breadcrumbView.getNoteViews.isEmpty) {
-          @controlCodeBreadcrumbsNotes() {
+          @controlCodeBreadcrumbsNotes(isNotesLinkTarget = true) {
             @for(noteView <- breadcrumbView.getNoteViews) {
               <li>@Html(noteView.getText)</li>
             }

@@ -23,13 +23,22 @@
 }
 
 
-@countryDetailPanel = {
+@destinationDetailPanel = {
   @detailPanel("destination-help"){
     I can't find my destination
   } {
     <h2 class="heading-medium">Need some help?</h2>
-    If you can't find your destination country or territory you can get help from the government's Export Control organisation, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@trade.gsi.gov.uk">eco.help@@trade.gsi.gov.uk</a>.
+    If you can't find your destination country or territory you can get help from the government's Export Control Organisation, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>.
   }
+}
+
+@consigneeDetailPanel = {
+@detailPanel("consignee-help"){
+  I can't find the right country or territory
+} {
+  <h2 class="heading-medium">Need some help?</h2>
+  If you can't find the right country or territory you can get help from the government's Export Control Organisation, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>.
+}
 }
 
 @standardPage("Finding the right licence", Some(heading(DestinationController.DESTINATION_QUESTION))){
@@ -39,10 +48,10 @@
 
     @views.html.helper.CSRF.formField
 
-    @countrySelect(form(DestinationController.DESTINATION_COUNTRY), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(countryDetailPanel))
+    @countrySelect(form(DestinationController.DESTINATION_COUNTRY), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(destinationDetailPanel))
 
     @formRadioBooleanWithContent(form(DestinationController.MULTIPLE_COUNTRIES), multipleCountriesQuestion) {
-      @countrySelect(form(DestinationController.FIRST_CONSIGNEE_COUNTRY), countries, Some("Type the country or territory where the first consignee or other party will receive the items"), detailPanel = Some(countryDetailPanel))
+      @countrySelect(form(DestinationController.FIRST_CONSIGNEE_COUNTRY), countries, Some("Type the country or territory where the first consignee or other party will receive the items"), detailPanel = Some(consigneeDetailPanel))
     }(HtmlFormat.empty)
 
     <div class="form-group">
@@ -50,6 +59,6 @@
     </div>
   </form>
 
-  <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/destination-country.js")">
+  <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/destination-country.js")"></script>
 
 }
