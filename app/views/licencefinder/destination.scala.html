@@ -32,7 +32,7 @@
   }
 }
 
-@consigneeDetailpanel = {
+@consigneeDetailPanel = {
 @detailPanel("consignee-help"){
   I can't find the right country or territory
 } {
@@ -51,7 +51,7 @@
     @countrySelect(form(DestinationController.DESTINATION_COUNTRY), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(destinationDetailPanel))
 
     @formRadioBooleanWithContent(form(DestinationController.MULTIPLE_COUNTRIES), multipleCountriesQuestion) {
-      @countrySelect(form(DestinationController.FIRST_CONSIGNEE_COUNTRY), countries, Some("Type the country or territory where the first consignee or other party will receive the items"), detailPanel = Some(consigneeDetailpanel))
+      @countrySelect(form(DestinationController.FIRST_CONSIGNEE_COUNTRY), countries, Some("Type the country or territory where the first consignee or other party will receive the items"), detailPanel = Some(consigneeDetailPanel))
     }(HtmlFormat.empty)
 
     <div class="form-group">
