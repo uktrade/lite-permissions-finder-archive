@@ -4,12 +4,12 @@ import static play.mvc.Results.ok;
 
 import com.google.inject.Inject;
 import com.spotify.futures.CompletableFutures;
-import components.client.CustomerServiceClient;
-import components.client.OgelServiceClient;
-import components.client.PermissionsServiceClient;
 import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
+import components.common.client.CustomerServiceClient;
+import components.common.client.OgelServiceClient;
+import components.common.client.PermissionsServiceClient;
 import exceptions.UnknownParameterException;
 import models.summary.LicenceInfo;
 import org.pac4j.play.java.Secure;
