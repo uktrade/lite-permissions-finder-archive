@@ -1,8 +1,12 @@
-@()
+@import models.template.FeedbackConfig
+
+@(feedbackConfig: FeedbackConfig)
 <div class="phase-banner-alpha">
     <!--div class="banner-version-info">TODO</div-->
   <p>
     <strong class="phase-tag">ALPHA</strong>
-    <span>This is a new service &ndash; your <a href="https://www.surveymonkey.co.uk/r/JFGCC92" target="_blank" >feedback<span class="visually-hidden"> (opens in a new tab)</span></a> will help us to improve it.</span>
+    @if(feedbackConfig.getFeedbackUrl() != null) {
+      <span>This is a new service &ndash; your <a href="@feedbackConfig.getFeedbackUrl()" target="_blank" >feedback<span class="visually-hidden"> (opens in a new tab)</span></a> will help us to improve it.</span>
+    }
   </p>
 </div>

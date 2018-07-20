@@ -95,7 +95,7 @@ public class RegisterToUseController extends Controller {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
       Customer customer = licenceFinderDao.getCustomer(sessionId).orElseThrow(UnknownParameterException::unknownLicenceFinderOrder);
       Site site = licenceFinderDao.getSite(sessionId).orElseThrow(UnknownParameterException::unknownLicenceFinderOrder);
-      registerOgel(sessionId, userId, ogelId, customer.getId(), site.getId());
+      registerOgel(sessionId, userId, customer.getId(), site.getId(), ogelId);
       return CompletableFuture.completedFuture(redirect(routes.RegisterAwaitController.renderAwaitResult(sessionId)));
     }
   }

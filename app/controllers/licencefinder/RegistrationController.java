@@ -5,6 +5,7 @@ import static models.callback.RegistrationCallbackResponse.okResponse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import components.persistence.LicenceFinderDao;
 import components.services.notification.PermissionsFinderNotificationClient;
 import exceptions.UnknownParameterException;
@@ -29,7 +30,7 @@ public class RegistrationController extends Controller {
   @Inject
   public RegistrationController(LicenceFinderDao licenceFinderDao,
                                 PermissionsFinderNotificationClient permissionsFinderNotificationClient,
-                                String permissionsFinderUrl) {
+                                @Named("permissionsFinderUrl") String permissionsFinderUrl) {
     this.licenceFinderDao = licenceFinderDao;
     this.permissionsFinderNotificationClient = permissionsFinderNotificationClient;
     this.permissionsFinderUrl = permissionsFinderUrl;
@@ -73,7 +74,7 @@ public class RegistrationController extends Controller {
     licenceFinderDao.saveRegisterLicence(sessionId, registerLicence);
 
     // Send confirmation email to user
-    String ogelUrl = permissionsFinderUrl + controllers.licencefinder.routes.ViewOgelController.viewOgel(registrationReference);
+    String ogelUrl = permissionsFinderUrl + routes.ViewOgelController.viewOgel(registrationReference);
     String userEmailAddress = registerLicence.getUserEmailAddress();
     String applicantName = registerLicence.getUserFullName();
     permissionsFinderNotificationClient.sendRegisteredOgelToUserEmail(userEmailAddress, applicantName, ogelUrl);
