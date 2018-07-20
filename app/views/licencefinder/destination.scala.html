@@ -14,21 +14,12 @@
   Html(DestinationController.DESTINATION_MULTIPLE_QUESTION)
 }
 
-@legend = {
-  <div class="panel panel-border-wide">
-    <p>
-      You only need a Form 680 approval to export classified or sensitive materials. <a href="https://www.gov.uk/guidance/mod-f680-applications" rel="external" target="_blank">
-      Read more about MOD Form 680</a>.</p>
-  </div>
-}
-
-
 @destinationDetailPanel = {
   @detailPanel("destination-help"){
     I can't find my destination
   } {
     <h2 class="heading-medium">Need some help?</h2>
-    If you can't find your destination country or territory you can get help from the government's Export Control Organisation, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>.
+    If you can't find your destination country or territory you can get help by email at <a href="mailto:exportservicesteam@@digital.trade.gov.uk">exportservicesteam@@digital.trade.gov.uk</a>.
   }
 }
 
@@ -37,7 +28,7 @@
   I can't find the right country or territory
 } {
   <h2 class="heading-medium">Need some help?</h2>
-  If you can't find the right country or territory you can get help from the government's Export Control Organisation, by telephone on 020 7215 4594, or by email at <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>.
+  If you can't find the right destination country or territory you can get help by email at <a href="mailto:exportservicesteam@@digital.trade.gov.uk">exportservicesteam@@digital.trade.gov.uk</a>.
 }
 }
 
@@ -50,7 +41,7 @@
 
     @countrySelect(form(DestinationController.DESTINATION_COUNTRY), countries, Some("Type your destination country or territory"), Some("form-hint"), None, Some(destinationDetailPanel))
 
-    @formRadioBooleanWithContent(form(DestinationController.MULTIPLE_COUNTRIES), multipleCountriesQuestion) {
+    @formRadioBooleanWithContent(form(DestinationController.MULTIPLE_COUNTRIES), multipleCountriesQuestion, legendContent = Some(Html("<p class=\"form-hint\">This could be a consignee.</p>"))) {
       @countrySelect(form(DestinationController.FIRST_CONSIGNEE_COUNTRY), countries, Some("Type the country or territory where the first consignee or other party will receive the items"), detailPanel = Some(consigneeDetailPanel))
     }(HtmlFormat.empty)
 

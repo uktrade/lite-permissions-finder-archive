@@ -39,7 +39,7 @@ public class DestinationController extends Controller {
   private final views.html.licencefinder.destination destination;
 
   public static final String DESTINATION_QUESTION = "Where is the final destination of your items?";
-  public static final String DESTINATION_MULTIPLE_QUESTION = "Will your items be received by anyone in a different country or territory, such as a consignee, before reaching their final destination?";
+  public static final String DESTINATION_MULTIPLE_QUESTION = "Will your items be received by anyone in a different country or territory before reaching their final destination?";
 
   public static final String DESTINATION_COUNTRY = "destinationCountry";
   public static final String FIRST_CONSIGNEE_COUNTRY = "firstConsigneeCountry";
