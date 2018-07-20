@@ -19,8 +19,20 @@
   font-weight: 700;
 }
 
-a[href^="/"]:after, a[href^="http://"]:after, a[href^="https://"]:after {
-  content: none;
+a[data-definition-id],
+a[data-control-entry-id] {
+  text-decoration: none;
+
+  &:after {
+    content: none;
+  }
+}
+
+a[data-definition-id] {
+  &:before,
+  &:after {
+    content: "\""
+  };
 }
 
 hr.break-page {
