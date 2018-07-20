@@ -2,7 +2,7 @@
   @include bold-19;
   background: $govuk-blue;
   color: white;
-  padding: $gutter-two-thirds $gutter;
+  padding: $gutter-two-thirds;
   margin-bottom: $gutter;
   display: block;
   position: relative;
@@ -27,5 +27,9 @@
     text-align: center;
     border-radius: 50%;
     font-size: 27px;
+  }
+
+  .list:last-child {
+    margin-bottom: 0;
   }
 }
