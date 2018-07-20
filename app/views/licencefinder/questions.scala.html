@@ -4,7 +4,7 @@
 
 @this(standardPage: standardPage)
 @(form: Form[_], sessionId: String)
-@standardPage("Refine your licence results", Some(heading("Refine your licence results"))){
+@standardPage("Tell us more about your items", Some(heading("Tell us more about your items"))){
   @errorSummary(form, fieldOrder = scala.List("forRepair", "forExhibition", "beforeOrLess"))
 } {
 

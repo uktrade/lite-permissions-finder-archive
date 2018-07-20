@@ -88,6 +88,7 @@ import play.db.Database;
 import play.libs.akka.AkkaGuiceSupport;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
+import scala.concurrent.ExecutionContext;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
 import triage.cache.CachePopulationService;
@@ -279,29 +280,38 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   }
 
   @Provides
+  @Named("scheduledJobExecutionContext")
+  ExecutionContext provideScheduledJobExecutionContext(final ActorSystem system) {
+    return system.dispatchers().lookup("scheduled-job-context");
+  }
+
+  @Provides
   @Singleton
   @Named("countryCacheActorRefEu")
   ActorRef provideCountryCacheActorRefEu(final ActorSystem system,
-                                         @Named("countryProviderEu") CountryProvider countryProvider) {
-    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider)));
+                                         @Named("countryProviderEu") CountryProvider countryProvider,
+                                         @Named("scheduledJobExecutionContext") ExecutionContext executionContext) {
+    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider, 30, executionContext)));
   }
 
   @Provides
   @Singleton
   @Named("countryCacheActorRefExport")
   ActorRef provideCountryCacheActorRefExport(final ActorSystem system,
-                                             @Named("countryProviderExport") CountryProvider countryProvider) {
-    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider)));
+                                             @Named("countryProviderExport") CountryProvider countryProvider,
+                                             @Named("scheduledJobExecutionContext") ExecutionContext executionContext) {
+    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider, 30, executionContext)));
   }
 
   @Inject
-  public void initActorScheduler(final ActorSystem actorSystem,
+  public void initActorScheduler(final ActorSystem system,
                                  @Named("countryCacheActorRefEu") ActorRef countryCacheActorRefEu,
-                                 @Named("countryCacheActorRefExport") ActorRef countryCacheActorRefExport) {
+                                 @Named("countryCacheActorRefExport") ActorRef countryCacheActorRefExport,
+                                 @Named("scheduledJobExecutionContext") ExecutionContext executionContext) {
     FiniteDuration delay = Duration.create(0, TimeUnit.MILLISECONDS);
     FiniteDuration frequency = Duration.create(1, TimeUnit.DAYS);
-    actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "EU country cache", actorSystem.dispatcher(), null);
-    actorSystem.scheduler().schedule(delay, frequency, countryCacheActorRefExport, "EXPORT country cache", actorSystem.dispatcher(), null);
+    system.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "load", executionContext, ActorRef.noSender());
+    system.scheduler().schedule(delay, frequency, countryCacheActorRefExport, "load", executionContext, ActorRef.noSender());
   }
 
   @Provides

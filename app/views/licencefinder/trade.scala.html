@@ -13,7 +13,7 @@
 
   <div class="panel panel-border-wide">
     <p>
-      You should use this service once for each type of item you are moving. Multiple item searches will be added later.
+      You should use <a href="https://www.spire.trade.gov.uk" rel="external">SPIRE</a> unless you are helping test out the new service.
     </p>
   </div>
 
@@ -27,10 +27,10 @@
       @fieldContainer(form("tradeType")) {
 
         <p>
-          Finding results for moving goods described in control list entry <span class="bold">@controlCode</span>:
+          Your control list entry is <span class="bold">@controlCode</span>.
         </p>
 
-        @formRadio(form("tradeType"), "<span class=\"bold\">From the UK to another country</span><br>This is known as an export",
+        @formRadio(form("tradeType"), "<span class=\"bold\">From the UK to another country</span><br>This is also known as an export",
           TradeType.EXPORT.toString, true)
 
         @formRadio(form("tradeType"), "<span class=\"bold\">Between non-UK countries</span><br>This is known as trafficking or brokering",

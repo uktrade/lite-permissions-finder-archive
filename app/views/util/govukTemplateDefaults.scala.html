@@ -5,7 +5,7 @@
 @import org.apache.commons.lang3.StringUtils
 
 @this(spireAuthManager: SpireAuthManager, analyticsConfig: AnalyticsConfig)
-@(htmlTitle: String, propositionHeading: Option[Html] = None)(content: Html)
+@(htmlTitle: String, propositionHeading: Html = Html("License controlled items and services"))(content: Html)
 
 @head = {
   @if(StringUtils.isNotEmpty(analyticsConfig.getGoogleAnalyticsId)) {
@@ -29,10 +29,13 @@
   <div class="header-proposition">
     <div class="content">
       <nav id="proposition-menu">
-        <span id="proposition-name">@propositionHeading.getOrElse("Import / Export Licensing")</span>
-        <div class="account-header">
-        @if(spireAuthManager.getAuthInfoFromContext.isAuthenticated) {
-          @spireAuthManager.getAuthInfoFromContext.getFullName | <a href="@org.pac4j.play.routes.LogoutController.logout">Sign out</a>
+        <span id="proposition-name">@propositionHeading</span>
+        @if(spireAuthManager.getAuthInfoFromContext.isAuthenticated && propositionHeading.body.nonEmpty) {
+          <nav id="proposition-menu" aria-label="Top Level Navigation" class="lite-proposition-menu">
+            <p id="proposition-link">
+              <span class="visually-hidden">Signed in as </span>@spireAuthManager.getAuthInfoFromContext.getFullName  <a href="@org.pac4j.play.routes.LogoutController.logout">Sign out</a>
+            </p>
+          </nav>
         }
         </div>
       </nav>
