@@ -1,10 +1,9 @@
 @import models.template.FeedbackConfig
 
 @(feedbackConfig: FeedbackConfig)
-<div class="phase-banner-alpha">
-    <!--div class="banner-version-info">TODO</div-->
+<div class="phase-banner">
   <p>
-    <strong class="phase-tag">ALPHA</strong>
+    <strong class="phase-tag">BETA</strong>
     @if(feedbackConfig.getFeedbackUrl() != null) {
       <span>This is a new service &ndash; your <a href="@feedbackConfig.getFeedbackUrl()" target="_blank" >feedback<span class="visually-hidden"> (opens in a new tab)</span></a> will help us to improve it.</span>
     }
