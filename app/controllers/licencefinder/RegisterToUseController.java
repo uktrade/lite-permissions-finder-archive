@@ -39,8 +39,8 @@ import javax.inject.Named;
 @With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
 public class RegisterToUseController extends Controller {
 
-  private static final String CONTROL_CODE_QUESTION = "What control list entry describes your goods?";
-  private static final String GOODS_GOING_QUESTION = "Where are your goods going?";
+  private static final String CONTROL_CODE_QUESTION = "What control list entry describes your items?";
+  private static final String GOODS_GOING_QUESTION = "Where are your items going?";
   private static final String FIRST_COUNTRY = "First country or territory that will receive the items";
   private static final String REPAIR_QUESTION = "Are you exporting goods for or after repair or replacement?";
   private static final String EXHIBITION_QUESTION = "Are you exporting goods for or after exhibition or demonstration?";
