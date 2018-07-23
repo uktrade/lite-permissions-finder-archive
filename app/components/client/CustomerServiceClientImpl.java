@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
+import components.services.PingServiceImpl;
 import exceptions.ServiceException;
 import filters.common.JwtRequestFilter;
 import play.libs.Json;
@@ -28,18 +29,35 @@ public class CustomerServiceClientImpl implements CustomerServiceClient {
   private final WSClient wsClient;
   private final String customerServiceAddress;
   private final int timeout;
+  private final String customerServiceCredentials;
   private final JwtRequestFilter jwtRequestFilter;
 
   @Inject
   public CustomerServiceClientImpl(HttpExecutionContext httpContext, WSClient wsClient,
                                    @Named("customerServiceAddress") String customerServiceAddress,
                                    @Named("customerServiceTimeout") int timeout,
+                                   @Named("customerServiceCredentials") String customerServiceCredentials,
                                    JwtRequestFilter jwtRequestFilter) {
     this.httpContext = httpContext;
     this.wsClient = wsClient;
     this.customerServiceAddress = customerServiceAddress;
     this.timeout = timeout;
     this.jwtRequestFilter = jwtRequestFilter;
+    this.customerServiceCredentials = customerServiceCredentials;
+  }
+
+  public CompletionStage<Boolean> serviceReachable() {
+    WSRequest request = wsClient.url(customerServiceAddress + PingServiceImpl.SERVICE_ADMIN_SERVLET_PING_PATH)
+        .setAuth(customerServiceCredentials)
+        .setRequestTimeout(Duration.ofMillis(timeout));
+    return request.get().handleAsync((response, error) -> {
+      if (RequestUtil.hasError(response, error)) {
+        RequestUtil.logError(request, response,  error, "Customer service request failed");
+        return false;
+      } else {
+        return response.getStatus() == 200;
+      }
+    }, httpContext.current());
   }
 
   @Override

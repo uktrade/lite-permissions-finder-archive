@@ -26,16 +26,30 @@ public class PermissionsServiceClientImpl implements PermissionsServiceClient {
 
   private final WSClient wsClient;
   private final String permissionsServiceAddress;
-  private final int timeout;
+  private final int permissionsServiceTimeout;
   private final JwtRequestFilter jwtRequestFilter;
+  private final String permissionsServiceCredentials;
 
   @Inject
   public PermissionsServiceClientImpl(WSClient wsClient, @Named("permissionsServiceAddress") String permissionsServiceAddress,
-                                      @Named("permissionsServiceTimeout") int timeout, JwtRequestFilter jwtRequestFilter) {
+                                      @Named("permissionsServiceTimeout") int permissionsServiceTimeout, JwtRequestFilter jwtRequestFilter,
+                                      @Named("permissionsServiceCredentials") String permissionsServiceCredentials) {
     this.wsClient = wsClient;
     this.permissionsServiceAddress = permissionsServiceAddress;
-    this.timeout = timeout;
+    this.permissionsServiceTimeout = permissionsServiceTimeout;
     this.jwtRequestFilter = jwtRequestFilter;
+    this.permissionsServiceCredentials = permissionsServiceCredentials;
+  }
+
+  /**
+   * Attempts a GET to path provided, checks for http 200 response
+   */
+  public CompletionStage<Boolean> serviceReachable(String adminCheckPath) {
+    return wsClient.url(permissionsServiceAddress + adminCheckPath)
+        .setRequestTimeout(Duration.ofMillis(permissionsServiceTimeout))
+        .setAuth(permissionsServiceCredentials)
+        .get()
+        .handleAsync((response, error) -> response.getStatus() == 200);
   }
 
   @Override
@@ -51,7 +65,7 @@ public class PermissionsServiceClientImpl implements PermissionsServiceClient {
     WSRequest request = wsClient.url(permissionsServiceAddress + REGISTER_OGEL_PATH)
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(jwtRequestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout))
+        .setRequestTimeout(Duration.ofMillis(permissionsServiceTimeout))
         .addQueryParameter(QUERY_PARAM_CALLBACK_URL, callbackUrl);
 
     return request.post(Json.toJson(param)).handle((response, error) -> {
@@ -72,7 +86,7 @@ public class PermissionsServiceClientImpl implements PermissionsServiceClient {
     WSRequest request = wsClient.url(url)
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(jwtRequestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout));
+        .setRequestTimeout(Duration.ofMillis(permissionsServiceTimeout));
 
     return request.get().handle((response, error) -> {
       if (RequestUtil.hasError(response, error)) {
@@ -92,7 +106,7 @@ public class PermissionsServiceClientImpl implements PermissionsServiceClient {
     WSRequest request = wsClient.url(url)
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(jwtRequestFilter)
-        .setRequestTimeout(Duration.ofMillis(timeout))
+        .setRequestTimeout(Duration.ofMillis(permissionsServiceTimeout))
         .addQueryParameter("registrationReference", registrationReference);
 
     return request.get().handle((response, error) -> {

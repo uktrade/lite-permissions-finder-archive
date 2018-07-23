@@ -64,6 +64,8 @@ import components.services.BreadcrumbViewService;
 import components.services.BreadcrumbViewServiceImpl;
 import components.services.FlashService;
 import components.services.FlashServiceImpl;
+import components.services.PingService;
+import components.services.PingServiceImpl;
 import components.services.ProgressViewService;
 import components.services.ProgressViewServiceImpl;
 import components.services.RenderService;
@@ -151,6 +153,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(SessionOutcomeService.class).to(SessionOutcomeServiceImpl.class);
     bind(UserPrivilegeService.class).to(UserPrivilegeServiceImpl.class);
     bind(FlashService.class).to(FlashServiceImpl.class);
+    bind(PingService.class).to(PingServiceImpl.class);
 
     install(new SamlModule(config));
     install(new RedisSessionStoreModule(environment, config));
@@ -182,9 +185,11 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bindConstant().annotatedWith(Names.named("permissionsServiceAddress")).to(config.getString("permissionsService.address"));
     bindConstant().annotatedWith(Names.named("permissionsServiceTimeout")).to(config.getInt("permissionsService.timeout"));
+    bindConstant().annotatedWith(Names.named("permissionsServiceCredentials")).to(config.getString("permissionsService.credentials"));
 
     bindConstant().annotatedWith(Names.named("customerServiceAddress")).to(config.getString("customerService.address"));
     bindConstant().annotatedWith(Names.named("customerServiceTimeout")).to(config.getInt("customerService.timeout"));
+    bindConstant().annotatedWith(Names.named("customerServiceCredentials")).to(config.getString("customerService.credentials"));
 
     bindConstant().annotatedWith(Names.named("userServiceAddress")).to(config.getString("userService.address"));
     bindConstant().annotatedWith(Names.named("userServiceTimeout")).to(config.getString("userService.timeout"));

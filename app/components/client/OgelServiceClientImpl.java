@@ -3,7 +3,6 @@ package components.client;
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.client.OgelServiceClient;
 import components.common.logging.CorrelationId;
 import components.common.logging.ServiceClientLogger;
 import exceptions.ServiceException;
@@ -22,20 +21,31 @@ public class OgelServiceClientImpl implements OgelServiceClient {
   private final WSClient wsClient;
   private final String ogelServiceAddress;
   private final int ogelServiceTimeout;
-  private final String credentials;
+  private final String ogelServiceCredentials;
   private final HttpExecutionContext httpExecutionContext;
 
   @Inject
   public OgelServiceClientImpl(WSClient wsClient,
                                @Named("ogelServiceAddress") String ogelServiceAddress,
                                @Named("ogelServiceTimeout") int ogelServiceTimeout,
-                               @Named("ogelServiceCredentials") String credentials,
+                               @Named("ogelServiceCredentials") String ogelServiceCredentials,
                                HttpExecutionContext httpExecutionContext) {
     this.wsClient = wsClient;
     this.ogelServiceAddress = ogelServiceAddress;
     this.ogelServiceTimeout = ogelServiceTimeout;
-    this.credentials = credentials;
+    this.ogelServiceCredentials = ogelServiceCredentials;
     this.httpExecutionContext = httpExecutionContext;
+  }
+
+  /**
+   * Attempts a GET to path provided, checks for http 200 response
+   */
+  public CompletionStage<Boolean> serviceReachable(String adminCheckPath) {
+    return wsClient.url(ogelServiceAddress + adminCheckPath)
+        .setRequestTimeout(Duration.ofMillis(ogelServiceTimeout))
+        .setAuth(ogelServiceCredentials)
+        .get()
+        .handleAsync((response, error) -> response.getStatus() == 200);
   }
 
   @Override
@@ -43,7 +53,7 @@ public class OgelServiceClientImpl implements OgelServiceClient {
     String escapedId = UrlEscapers.urlFragmentEscaper().escape(ogelId);
     String url = ogelServiceAddress + "/ogels/" + escapedId;
     WSRequest request = wsClient.url(url)
-        .setAuth(credentials)
+        .setAuth(ogelServiceCredentials)
         .setRequestFilter(CorrelationId.requestFilter)
         .setRequestFilter(ServiceClientLogger.requestFilter("OGEL", "GET", httpExecutionContext))
         .setRequestTimeout(Duration.ofMillis(ogelServiceTimeout));
