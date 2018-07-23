@@ -6,7 +6,7 @@
 @import models.view.licencefinder.OgelView
 
 @this(standardPage: standardPage)
-@(form: Form[_], sessionId: String, title: String, ogelViews: List[OgelView])
+@(form: Form[_], sessionId: String, controlCode: String, countryName: String, ogelViews: List[OgelView])
 
 @chosenOgelFormField = @{"chosenOgel"}
 
@@ -14,10 +14,10 @@
   @if(alreadyRegistered) {
     <span class="bold">You have already registered for this OGEL:</span><br>
   }
-  OGEL (@ogelName)
+  Open General Export Licence (@ogelName)
 }
 
-@standardPage(title, Some(heading(title))){
+@standardPage("Open general export licences available", Some(heading("Open general export licences available"))){
   @errorSummary(form)
 }{
 
@@ -27,10 +27,11 @@
         @views.html.helper.CSRF.formField
 
         <p>
-          Open licences allow you to export certain goods without making a new application each time you export them.
+          These are the open general export licences (OGELs) for items described by <span class="bold">@controlCode</span> being exported to
+            <span class="bold">@countryName</span>.
         </p>
 
-        @formRadioGroupContainer(form(chosenOgelFormField))(Html("Select the option which best matches your requirements."), "p", "") {
+        @formRadioGroupContainer(form(chosenOgelFormField))(Html("Select the option which best matches your items and requirements."), "p", "") {
           @for(ogelView <- ogelViews) {
             @formRadioWithDetailPanel(form("chosenOgel"), ogelLabel(ogelView.getAlreadyRegistered, ogelView.getName).toString, ogelView.getId, true, detailPanelId = ogelView.getId + "detailPanel", detailPanelPrompt = "More information") {
               @ogelView.getUsageSummary().iterator().next()
