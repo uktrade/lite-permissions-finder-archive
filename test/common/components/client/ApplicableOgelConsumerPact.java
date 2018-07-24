@@ -10,8 +10,8 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
+import components.common.client.ClientException;
 import components.common.client.OgelServiceClient;
-import exceptions.ServiceException;
 import models.OgelActivityType;
 import org.junit.After;
 import org.junit.Before;
@@ -196,9 +196,7 @@ public class ApplicableOgelConsumerPact {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
           .toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
-      assertThat(e)
-          .isInstanceOf(ExecutionException.class)
-          .hasCauseInstanceOf(ServiceException.class);
+      assertThat(e).hasCauseInstanceOf(ClientException.class);
     }
     assertThat(result).isNull();
   }
