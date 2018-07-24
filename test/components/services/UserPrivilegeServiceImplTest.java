@@ -6,8 +6,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import components.common.client.userservice.UserServiceClientBasicAuth;
-import components.common.client.userservice.UserServiceClientJwt;
+import components.common.client.UserServiceClientBasicAuth;
+import components.common.client.UserServiceClientJwt;
 import models.enums.SessionOutcomeType;
 import org.junit.Test;
 import triage.session.SessionOutcome;

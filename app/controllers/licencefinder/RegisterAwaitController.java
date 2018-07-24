@@ -3,7 +3,7 @@ package controllers.licencefinder;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
-import components.client.OgelServiceClient;
+import components.common.client.OgelServiceClient;
 import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireSAML2Client;
 import components.persistence.LicenceFinderDao;

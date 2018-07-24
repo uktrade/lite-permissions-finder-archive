@@ -9,7 +9,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
@@ -17,14 +16,6 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import components.auth.SamlModule;
-import components.client.ApplicableOgelServiceClient;
-import components.client.ApplicableOgelServiceClientImpl;
-import components.client.CustomerServiceClient;
-import components.client.CustomerServiceClientImpl;
-import components.client.OgelServiceClient;
-import components.client.OgelServiceClientImpl;
-import components.client.PermissionsServiceClient;
-import components.client.PermissionsServiceClientImpl;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
 import components.cms.dao.JourneyDao;
@@ -51,7 +42,7 @@ import components.common.auth.SpireAuthManager;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
 import components.common.client.CountryServiceClient;
-import components.common.client.userservice.UserServiceClientBasicAuth;
+import components.common.client.UserServiceClientBasicAuth;
 import components.common.persistence.RedisKeyConfig;
 import components.common.persistence.StatelessRedisDao;
 import components.services.AccountService;
@@ -75,8 +66,8 @@ import components.services.UserPrivilegeServiceImpl;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
 import models.template.AnalyticsConfig;
-import models.template.FeedbackConfig;
 import models.template.DashboardConfig;
+import models.template.FeedbackConfig;
 import modules.common.RedisSessionStoreModule;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
@@ -144,10 +135,6 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(JourneyConfigFactory.class).to(JourneyConfigFactoryImpl.class);
     bind(CachePopulationService.class).to(CachePopulationServiceImpl.class);
     bind(StartupCachePopulationActor.class).asEagerSingleton();
-    bind(PermissionsServiceClient.class).to(PermissionsServiceClientImpl.class);
-    bind(ApplicableOgelServiceClient.class).to(ApplicableOgelServiceClientImpl.class);
-    bind(CustomerServiceClient.class).to(CustomerServiceClientImpl.class);
-    bind(OgelServiceClient.class).to(OgelServiceClientImpl.class);
     bind(SessionOutcomeService.class).to(SessionOutcomeServiceImpl.class);
     bind(UserPrivilegeService.class).to(UserPrivilegeServiceImpl.class);
     bind(FlashService.class).to(FlashServiceImpl.class);
@@ -256,9 +243,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   CountryProvider provideCountryServiceExportClient(HttpExecutionContext httpContext, WSClient wsClient,
                                                     @Named("countryServiceAddress") String address,
                                                     @Named("countryServiceTimeout") int timeout,
-                                                    @Named("countryServiceCredentials") String credentials,
-                                                    ObjectMapper mapper) {
-    CountryServiceClient client = CountryServiceClient.buildCountryServiceSetClient(httpContext, wsClient, timeout, address, credentials, "export-control", mapper);
+                                                    @Named("countryServiceCredentials") String credentials) {
+    CountryServiceClient client = CountryServiceClient.buildCountryServiceSetClient(address, timeout, credentials, wsClient, httpContext, "export-control");
     return new CountryProvider(client);
   }
 
@@ -268,9 +254,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   CountryProvider provideCountryServiceEuClient(HttpExecutionContext httpContext, WSClient wsClient,
                                                 @Named("countryServiceAddress") String address,
                                                 @Named("countryServiceTimeout") int timeout,
-                                                @Named("countryServiceCredentials") String credentials,
-                                                ObjectMapper mapper) {
-    CountryServiceClient client = CountryServiceClient.buildCountryServiceGroupClient(httpContext, wsClient, timeout, address, credentials, "eu", mapper);
+                                                @Named("countryServiceCredentials") String credentials) {
+    CountryServiceClient client = CountryServiceClient.buildCountryServiceGroupClient(address, timeout, credentials, wsClient, httpContext, "eu");
     return new CountryProvider(client);
   }
 

@@ -1,4 +1,4 @@
-package components.services.ogels.ogel;
+package common.components.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,7 +10,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
-import components.client.OgelServiceClientImpl;
+import components.common.client.OgelServiceClient;
 import exceptions.ServiceException;
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class OgelServiceConsumerPact {
-  private OgelServiceClientImpl client;
+  private OgelServiceClient client;
   private WSClient ws;
 
   // service:password
@@ -43,16 +43,16 @@ public class OgelServiceConsumerPact {
   private static final String OGEL_HOW_TO_USE = "how to use";
 
   @Rule
-  public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
+  public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE, this);
 
   @Before
   public void setUp() throws Exception {
     ws = WSTestClient.newClient(mockProvider.getPort());
-    client = new OgelServiceClientImpl(
-        ws,
-        mockProvider.getUrl(),
+    client = new OgelServiceClient(mockProvider.getUrl(),
         10000,
-        "service:password", new HttpExecutionContext(Runnable::run));
+        "service:password",
+        ws,
+        new HttpExecutionContext(Runnable::run));
   }
 
   @After
@@ -60,34 +60,34 @@ public class OgelServiceConsumerPact {
     ws.close();
   }
 
-  @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
+  @Pact(provider = PactConfig.OGEL_SERVICE, consumer = PactConfig.CONSUMER)
   public RequestResponsePact ogelExists(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .stringType("id", OGEL_ID)
         .stringType("name", OGEL_NAME)
         .stringType("link", OGEL_LINK)
         .object("summary")
-          .minArrayLike("canList", 0, PactDslJsonRootValue.stringType(OGEL_CAN),3)
-          .minArrayLike("cantList", 0, PactDslJsonRootValue.stringType(OGEL_CANT), 3)
-          .minArrayLike("mustList", 0, PactDslJsonRootValue.stringType(OGEL_MUST), 3)
-          .minArrayLike("howToUseList", 0, PactDslJsonRootValue.stringType(OGEL_HOW_TO_USE), 3)
+        .minArrayLike("canList", 0, PactDslJsonRootValue.stringType(OGEL_CAN), 3)
+        .minArrayLike("cantList", 0, PactDslJsonRootValue.stringType(OGEL_CANT), 3)
+        .minArrayLike("mustList", 0, PactDslJsonRootValue.stringType(OGEL_MUST), 3)
+        .minArrayLike("howToUseList", 0, PactDslJsonRootValue.stringType(OGEL_HOW_TO_USE), 3)
         .closeObject()
         .asBody();
 
     return builder
         .given("provided OGEL exists")
         .uponReceiving("a request for a given ogel id")
-          .headers(AUTH_HEADERS)
-          .path("/ogels/" + OGEL_ID)
-          .method("GET")
+        .headers(AUTH_HEADERS)
+        .path("/ogels/" + OGEL_ID)
+        .method("GET")
         .willRespondWith()
-          .status(200)
-          .headers(CONTENT_TYPE_HEADERS)
-          .body(body)
+        .status(200)
+        .headers(CONTENT_TYPE_HEADERS)
+        .body(body)
         .toPact();
   }
 
-  @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
+  @Pact(provider = PactConfig.OGEL_SERVICE, consumer = PactConfig.CONSUMER)
   public RequestResponsePact ogelDoesNotExist(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .integerType("code", 404)
@@ -97,24 +97,23 @@ public class OgelServiceConsumerPact {
     return builder
         .given("provided OGEL does not exist")
         .uponReceiving("a request for a given ogel id")
-          .headers(AUTH_HEADERS)
-          .path("/ogels/" + OGEL_ID)
-          .method("GET")
+        .headers(AUTH_HEADERS)
+        .path("/ogels/" + OGEL_ID)
+        .method("GET")
         .willRespondWith()
-          .status(404)
-          .headers(CONTENT_TYPE_HEADERS)
-          .body(body)
+        .status(404)
+        .headers(CONTENT_TYPE_HEADERS)
+        .body(body)
         .toPact();
   }
 
   @Test
-  @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "ogelExists")
+  @PactVerification(value = PactConfig.OGEL_SERVICE, fragment = "ogelExists")
   public void ogelExistsTest() throws Exception {
     OgelFullView result;
     try {
       result = client.getById(OGEL_ID).toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
     assertThat(result).isNotNull();
@@ -134,13 +133,12 @@ public class OgelServiceConsumerPact {
   }
 
   @Test
-  @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "ogelDoesNotExist")
+  @PactVerification(value = PactConfig.OGEL_SERVICE, fragment = "ogelDoesNotExist")
   public void ogelDoesNotExistTest() throws Exception {
     OgelFullView result = null;
     try {
       result = client.getById(OGEL_ID).toCompletableFuture().get();
-    }
-    catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       assertThat(e)
           .isInstanceOf(ExecutionException.class)
           .hasCauseInstanceOf(ServiceException.class);

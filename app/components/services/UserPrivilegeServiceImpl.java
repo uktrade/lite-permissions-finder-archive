@@ -1,8 +1,8 @@
 package components.services;
 
 import com.google.inject.Inject;
-import components.common.client.userservice.UserServiceClientBasicAuth;
-import components.common.client.userservice.UserServiceClientJwt;
+import components.common.client.UserServiceClientBasicAuth;
+import components.common.client.UserServiceClientJwt;
 import triage.session.SessionOutcome;
 import uk.gov.bis.lite.user.api.view.UserAccountTypeView;
 import uk.gov.bis.lite.user.api.view.UserPrivilegesView;
