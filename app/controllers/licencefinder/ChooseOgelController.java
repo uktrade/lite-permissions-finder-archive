@@ -56,6 +56,7 @@ public class ChooseOgelController extends Controller {
   private final views.html.licencefinder.noOgelResults noOgelResults;
   private final SpireAuthManager authManager;
   private final views.html.licencefinder.registerResult registerResult;
+  private final views.html.licencefinder.alreadyRegistered alreadyRegistered;
   private final OgelServiceClient ogelServiceClient;
   private final CountryProvider countryProvider;
   private final ApplicableOgelServiceClient applicableOgelServiceClient;
@@ -67,6 +68,7 @@ public class ChooseOgelController extends Controller {
                               LicenceFinderDao licenceFinderDao, views.html.licencefinder.ogelResults ogelResults,
                               views.html.licencefinder.noOgelResults noOgelResults, SpireAuthManager authManager,
                               views.html.licencefinder.registerResult registerResult,
+                              views.html.licencefinder.alreadyRegistered alreadyRegistered,
                               OgelServiceClient ogelServiceClient,
                               @javax.inject.Named("countryProviderExport") CountryProvider countryProvider,
                               ApplicableOgelServiceClientImpl applicableOgelServiceClient,
@@ -79,6 +81,7 @@ public class ChooseOgelController extends Controller {
     this.noOgelResults = noOgelResults;
     this.authManager = authManager;
     this.registerResult = registerResult;
+    this.alreadyRegistered = alreadyRegistered;
     this.ogelServiceClient = ogelServiceClient;
     this.countryProvider = countryProvider;
     this.applicableOgelServiceClient = applicableOgelServiceClient;
@@ -109,12 +112,8 @@ public class ChooseOgelController extends Controller {
         String reference = getUserOgelIdReferenceMap(sessionId, userId).get(chosenOgelId);
         if (reference != null) {
           // Check if we have a Ogel that is already registered - return registerResult view
-          return ogelServiceClient.getById(chosenOgelId).thenApplyAsync(ogelFullView -> {
-            String title = "You are already registered to use Open general export licence " + ogelFullView.getName();
-            RegisterResultView resultView = new RegisterResultView(title, reference);
-            // TODO additional endpoint / template
-            return ok(registerResult.render(resultView, ogelFullView, dashboardUrl));
-          }, httpContext.current());
+          return ogelServiceClient.getById(chosenOgelId).thenApplyAsync(ogelFullView ->
+              ok(alreadyRegistered.render(ogelFullView, dashboardUrl)), httpContext.current());
         } else {
           return completedFuture(redirect(routes.RegisterToUseController.renderRegisterToUseForm(sessionId)));
         }
