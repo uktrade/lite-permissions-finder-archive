@@ -4,19 +4,42 @@
 @this(standardPage: standardPage)
 @(outcomeId: String, resumeCode: String)
 
-  @nlrSuccess = {You have successfully registered a "No Licence Required" letter}
+  @nlrSuccess = {Your no licence required document has been generated}
 
   @standardPage(nlrSuccess.toString(), Some(heading(nlrSuccess.toString)), resumeCode = resumeCode) {
   } {
-      <p>
-        Some content about what you can, and can't, do with this NLR.
-        Lorem ipsum dolor sit amet consectetur adipiscing nam.
+
+      <p class="lede">
+        <a href="@routes.ViewOutcomeController.renderOutcome(outcomeId)" target="_blank" class="bold font-medium">
+          View your no licence required (NLR) document<span class="visually-hidden"> (opens in a new tab)</span>
+        </a>
       </p>
 
       <p>
-        <a href="@routes.ViewOutcomeController.renderOutcome(outcomeId)" target="_blank" class="bold font-medium">
-          View your "No Licence Required" letter<span class="visually-hidden"> (opens in a new tab)</span>
-        </a>
+        We have sent you an email with a link to the document.
+      </p>
+
+      <h2 class="heading-medium">What happens next</h2>
+
+      <p>
+        You can print this NLR document and include it with your export documentation to HM Revenue and Customs or Border Force at the time of export.
+      </p>
+
+      <div class="banner danger-banner">
+        <span class="visually-hidden">Warning:</span>
+        You should read the full NLR document to ensure no other controls apply to your item
+      </div>
+
+      <p>
+        Before using your NLR document you should:
+        <ul class="list list-bullet">
+          <li>verify no sanctions or embargoes apply to your export</li>
+          <li>consider if weapons of mass destruction or military end use controls apply</li>
+        </ul>
+      </p>
+
+      <p>
+        If you do have concerns you should contact the end user advisory service through <a href="https://www.spire.trade.gov.uk" target="_blank">SPIRE<span class="visually-hidden"> (opens in a new tab)</span></a>.
       </p>
 
   }
