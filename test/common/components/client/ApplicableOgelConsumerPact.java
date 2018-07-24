@@ -1,4 +1,4 @@
-package components.services.ogels.applicable;
+package common.components.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,8 +10,8 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.ImmutableMap;
-import components.client.ApplicableOgelServiceClientImpl;
-import exceptions.ServiceException;
+import components.common.client.ClientException;
+import components.common.client.OgelServiceClient;
 import models.OgelActivityType;
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ApplicableOgelConsumerPact {
-  private ApplicableOgelServiceClientImpl client;
+  private OgelServiceClient client;
   private WSClient ws;
 
   // service:password
@@ -45,16 +45,12 @@ public class ApplicableOgelConsumerPact {
   private static final String DESTINATION_COUNTRY = "CTRY3";
 
   @Rule
-  public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE_PROVIDER, this);
+  public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.OGEL_SERVICE, this);
 
   @Before
   public void setUp() throws Exception {
     ws = WSTestClient.newClient(mockProvider.getPort());
-    client = new ApplicableOgelServiceClientImpl(new HttpExecutionContext(Runnable::run),
-        ws,
-        mockProvider.getUrl(),
-        10000,
-        "service:password");
+    client = new OgelServiceClient(mockProvider.getUrl(), 10000, "service:password", ws, new HttpExecutionContext(Runnable::run));
   }
 
   @After
@@ -62,50 +58,50 @@ public class ApplicableOgelConsumerPact {
     ws.close();
   }
 
-  @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
+  @Pact(provider = PactConfig.OGEL_SERVICE, consumer = PactConfig.CONSUMER)
   public RequestResponsePact applicableOgelsExist(PactDslWithProvider builder) {
     PactDslJsonArray body = PactDslJsonArray.arrayMinLike(1, 3)
         .stringType("id", OGEL_ID)
         .stringType("name", OGEL_NAME)
         .array("usageSummary")
-          .string(OGEL_USAGE_SUMMARY)
-          .closeArray()
+        .string(OGEL_USAGE_SUMMARY)
+        .closeArray()
         .closeObject()
         .asArray();
 
     return builder
         .given("applicable ogels exist for given parameters")
         .uponReceiving("a request for applicable ogels")
-          .headers(AUTH_HEADERS)
-          .path("/applicable-ogels")
-          .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY + "&destinationCountry=" + DESTINATION_COUNTRY)
-          .method("GET")
+        .headers(AUTH_HEADERS)
+        .path("/applicable-ogels")
+        .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY + "&destinationCountry=" + DESTINATION_COUNTRY)
+        .method("GET")
         .willRespondWith()
-          .status(200)
-          .headers(CONTENT_TYPE_HEADERS)
-          .body(body)
+        .status(200)
+        .headers(CONTENT_TYPE_HEADERS)
+        .body(body)
         .toPact();
   }
 
-  @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
+  @Pact(provider = PactConfig.OGEL_SERVICE, consumer = PactConfig.CONSUMER)
   public RequestResponsePact applicableOgelsDoNotExist(PactDslWithProvider builder) {
     PactDslJsonArray body = new PactDslJsonArray();
 
     return builder
         .given("no applicable ogels exist for given parameters")
         .uponReceiving("a request for applicable ogels")
-          .headers(AUTH_HEADERS)
-          .path("/applicable-ogels")
-          .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY + "&destinationCountry=" + DESTINATION_COUNTRY)
-          .method("GET")
+        .headers(AUTH_HEADERS)
+        .path("/applicable-ogels")
+        .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + OgelActivityType.DU_ANY + "&destinationCountry=" + DESTINATION_COUNTRY)
+        .method("GET")
         .willRespondWith()
-          .status(200)
-          .headers(CONTENT_TYPE_HEADERS)
-          .body(body)
+        .status(200)
+        .headers(CONTENT_TYPE_HEADERS)
+        .body(body)
         .toPact();
   }
 
-  @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
+  @Pact(provider = PactConfig.OGEL_SERVICE, consumer = PactConfig.CONSUMER)
   public RequestResponsePact invalidActivityType(PactDslWithProvider builder) {
     PactDslJsonBody body = new PactDslJsonBody()
         .integerType("code", 400)
@@ -115,46 +111,46 @@ public class ApplicableOgelConsumerPact {
     return builder
         .given("activity type does not exist")
         .uponReceiving("a request for applicable ogels")
-          .headers(AUTH_HEADERS)
-          .path("/applicable-ogels")
-          .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + ACTIVITY_TYPE_INVALID + "&destinationCountry=" + DESTINATION_COUNTRY)
-          .method("GET")
+        .headers(AUTH_HEADERS)
+        .path("/applicable-ogels")
+        .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY + "&activityType=" + ACTIVITY_TYPE_INVALID + "&destinationCountry=" + DESTINATION_COUNTRY)
+        .method("GET")
         .willRespondWith()
-          .status(400)
-          .headers(CONTENT_TYPE_HEADERS)
-          .body(body)
+        .status(400)
+        .headers(CONTENT_TYPE_HEADERS)
+        .body(body)
         .toPact();
   }
 
-  @Pact(provider = PactConfig.OGEL_SERVICE_PROVIDER, consumer = PactConfig.CONSUMER)
+  @Pact(provider = PactConfig.OGEL_SERVICE, consumer = PactConfig.CONSUMER)
   public RequestResponsePact applicableOgelsExistForMultipleActivityTypes(PactDslWithProvider builder) {
     PactDslJsonArray body = PactDslJsonArray.arrayMinLike(1, 3)
         .stringType("id", OGEL_ID)
         .stringType("name", OGEL_NAME)
         .array("usageSummary")
-          .string(OGEL_USAGE_SUMMARY)
-          .closeArray()
+        .string(OGEL_USAGE_SUMMARY)
+        .closeArray()
         .closeObject()
         .asArray();
 
     return builder
         .given("applicable ogels exist for multiple activity types")
         .uponReceiving("a request for applicable ogels")
-          .headers(AUTH_HEADERS)
-          .path("/applicable-ogels")
-          .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY +
+        .headers(AUTH_HEADERS)
+        .path("/applicable-ogels")
+        .query("controlCode=" + CONTROL_CODE + "&sourceCountry=" + SOURCE_COUNTRY +
             "&activityType=" + OgelActivityType.MIL_GOV + "&activityType=" + OgelActivityType.MIL_ANY +
             "&destinationCountry=" + DESTINATION_COUNTRY)
-          .method("GET")
+        .method("GET")
         .willRespondWith()
-          .status(200)
-          .headers(CONTENT_TYPE_HEADERS)
-          .body(body)
+        .status(200)
+        .headers(CONTENT_TYPE_HEADERS)
+        .body(body)
         .toPact();
   }
 
   @Test
-  @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsExist")
+  @PactVerification(value = PactConfig.OGEL_SERVICE, fragment = "applicableOgelsExist")
   public void applicableOgelsExistTest() throws Exception {
     List<ApplicableOgelView> result;
     List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.toString());
@@ -175,7 +171,7 @@ public class ApplicableOgelConsumerPact {
   }
 
   @Test
-  @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsDoNotExist")
+  @PactVerification(value = PactConfig.OGEL_SERVICE, fragment = "applicableOgelsDoNotExist")
   public void applicableOgelsDoNotExistTest() throws Exception {
     List<ApplicableOgelView> result;
     List<String> activityTypes = Arrays.asList(OgelActivityType.DU_ANY.toString());
@@ -191,7 +187,7 @@ public class ApplicableOgelConsumerPact {
   }
 
   @Test
-  @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "invalidActivityType")
+  @PactVerification(value = PactConfig.OGEL_SERVICE, fragment = "invalidActivityType")
   public void invalidActivityTypeTest() throws Exception {
     List<ApplicableOgelView> result = null;
     List<String> activityTypes = Arrays.asList(ACTIVITY_TYPE_INVALID);
@@ -200,15 +196,13 @@ public class ApplicableOgelConsumerPact {
       result = client.get(CONTROL_CODE, SOURCE_COUNTRY, destinationCountries, activityTypes, true)
           .toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
-      assertThat(e)
-          .isInstanceOf(ExecutionException.class)
-          .hasCauseInstanceOf(ServiceException.class);
+      assertThat(e).hasCauseInstanceOf(ClientException.class);
     }
     assertThat(result).isNull();
   }
 
   @Test
-  @PactVerification(value = PactConfig.OGEL_SERVICE_PROVIDER, fragment = "applicableOgelsExistForMultipleActivityTypes")
+  @PactVerification(value = PactConfig.OGEL_SERVICE, fragment = "applicableOgelsExistForMultipleActivityTypes")
   public void applicableOgelsExistForMultipleActivityTypesTest() throws Exception {
     List<ApplicableOgelView> result;
     List<String> activityTypes = Arrays.asList(OgelActivityType.MIL_GOV.toString(), OgelActivityType.MIL_ANY.toString());

@@ -4,14 +4,12 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import components.client.ApplicableOgelServiceClient;
-import components.client.ApplicableOgelServiceClientImpl;
-import components.client.OgelServiceClient;
-import components.client.PermissionsServiceClient;
 import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
+import components.common.client.OgelServiceClient;
+import components.common.client.PermissionsServiceClient;
 import components.persistence.LicenceFinderDao;
 import controllers.guard.LicenceFinderAwaitGuardAction;
 import controllers.guard.LicenceFinderUserGuardAction;
@@ -52,41 +50,40 @@ public class ChooseOgelController extends Controller {
   private final FormFactory formFactory;
   private final LicenceFinderDao licenceFinderDao;
   private final HttpExecutionContext httpContext;
-  private final views.html.licencefinder.ogelResults ogelResults;
-  private final views.html.licencefinder.noOgelResults noOgelResults;
   private final SpireAuthManager authManager;
   private final views.html.licencefinder.registerResult registerResult;
   private final views.html.licencefinder.alreadyRegistered alreadyRegistered;
-  private final OgelServiceClient ogelServiceClient;
   private final CountryProvider countryProvider;
-  private final ApplicableOgelServiceClient applicableOgelServiceClient;
+  private final OgelServiceClient ogelServiceClient;
   private final PermissionsServiceClient permissionsServiceClient;
   private final String dashboardUrl;
+  private final views.html.licencefinder.ogelResults ogelResults;
+  private final views.html.licencefinder.noOgelResults noOgelResults;
 
   @Inject
-  public ChooseOgelController(FormFactory formFactory, HttpExecutionContext httpContext,
-                              LicenceFinderDao licenceFinderDao, views.html.licencefinder.ogelResults ogelResults,
-                              views.html.licencefinder.noOgelResults noOgelResults, SpireAuthManager authManager,
+  public ChooseOgelController(@Named("countryProviderExport") CountryProvider countryProvider,
+                              @Named("dashboardUrl") String dashboardUrl, FormFactory formFactory,
+                              HttpExecutionContext httpContext,
+                              LicenceFinderDao licenceFinderDao,
+                              SpireAuthManager authManager,
+                              OgelServiceClient ogelServiceClient,
+                              PermissionsServiceClient permissionsServiceClient,
                               views.html.licencefinder.registerResult registerResult,
                               views.html.licencefinder.alreadyRegistered alreadyRegistered,
-                              OgelServiceClient ogelServiceClient,
-                              @javax.inject.Named("countryProviderExport") CountryProvider countryProvider,
-                              ApplicableOgelServiceClientImpl applicableOgelServiceClient,
-                              PermissionsServiceClient permissionsServiceClient,
-                              @Named("dashboardUrl") String dashboardUrl) {
+                              views.html.licencefinder.ogelResults ogelResults,
+                              views.html.licencefinder.noOgelResults noOgelResults) {
     this.formFactory = formFactory;
     this.httpContext = httpContext;
     this.licenceFinderDao = licenceFinderDao;
-    this.ogelResults = ogelResults;
-    this.noOgelResults = noOgelResults;
     this.authManager = authManager;
     this.registerResult = registerResult;
     this.alreadyRegistered = alreadyRegistered;
     this.ogelServiceClient = ogelServiceClient;
     this.countryProvider = countryProvider;
-    this.applicableOgelServiceClient = applicableOgelServiceClient;
     this.permissionsServiceClient = permissionsServiceClient;
     this.dashboardUrl = dashboardUrl;
+    this.ogelResults = ogelResults;
+    this.noOgelResults = noOgelResults;
   }
 
   public CompletionStage<Result> renderResultsForm(String sessionId) {
@@ -165,7 +162,7 @@ public class ChooseOgelController extends Controller {
     List<String> activities = getActivityTypes(questionsForm);
     boolean showHistoricOgel = questionsForm.beforeOrLess;
 
-    CompletionStage<List<ApplicableOgelView>> stage = applicableOgelServiceClient.get(controlCode, sourceCountry, destinationCountries, activities, showHistoricOgel);
+    CompletionStage<List<ApplicableOgelView>> stage = ogelServiceClient.get(controlCode, sourceCountry, destinationCountries, activities, showHistoricOgel);
     try {
       return stage.toCompletableFuture().get();
     } catch (Exception exception) {

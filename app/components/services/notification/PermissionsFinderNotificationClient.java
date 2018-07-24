@@ -60,7 +60,7 @@ public class PermissionsFinderNotificationClient {
         .put("companyName", companyName)
         .build();
 
-    notificationServiceClient.sendEmail("permissionsFinder:registeredOgelToEcju", emailAddress, params);
+    notificationServiceClient.sendEmail("permissionsFinder:registeredOgelToEcju", ecjuEmailAddress, params);
   }
 
 }

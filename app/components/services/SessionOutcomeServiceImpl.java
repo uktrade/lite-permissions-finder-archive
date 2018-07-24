@@ -3,7 +3,7 @@ package components.services;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.cms.dao.SessionOutcomeDao;
-import components.common.client.userservice.UserServiceClientJwt;
+import components.common.client.UserServiceClientJwt;
 import components.services.notification.PermissionsFinderNotificationClient;
 import controllers.routes;
 import exceptions.ServiceException;

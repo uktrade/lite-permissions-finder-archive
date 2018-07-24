@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static play.mvc.Results.ok;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import components.client.ApplicableOgelServiceClientImpl;
+import components.common.client.OgelServiceClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 public class ApplicableOgelServiceClientImplTest {
-  private ApplicableOgelServiceClientImpl client;
+  private OgelServiceClient client;
   private WSClient ws;
   private Server server;
 
@@ -37,11 +37,7 @@ public class ApplicableOgelServiceClientImplTest {
         .build());
     int port = server.httpPort();
     ws = WSTestClient.newClient(port);
-    client = new ApplicableOgelServiceClientImpl(new HttpExecutionContext(Runnable::run),
-        ws,
-        "http://localhost:" + port,
-        10000,
-        "service:password");
+    client = new OgelServiceClient("http://localhost:" + port, 10000, "service:password", ws, new HttpExecutionContext(Runnable::run));
   }
 
   @Test

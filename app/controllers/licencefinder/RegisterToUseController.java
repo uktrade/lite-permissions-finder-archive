@@ -2,13 +2,13 @@ package controllers.licencefinder;
 
 import com.google.inject.Inject;
 import com.spotify.futures.CompletableFutures;
-import components.client.OgelServiceClient;
-import components.client.PermissionsServiceClient;
 import components.common.auth.SamlAuthorizer;
 import components.common.auth.SpireAuthManager;
 import components.common.auth.SpireSAML2Client;
 import components.common.cache.CountryProvider;
-import components.common.client.userservice.UserServiceClientJwt;
+import components.common.client.OgelServiceClient;
+import components.common.client.PermissionsServiceClient;
+import components.common.client.UserServiceClientJwt;
 import components.persistence.LicenceFinderDao;
 import controllers.guard.LicenceFinderAwaitGuardAction;
 import controllers.guard.LicenceFinderUserGuardAction;
@@ -26,6 +26,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
+import uk.gov.bis.lite.permissions.api.param.RegisterParam;
 import uk.gov.bis.lite.user.api.view.UserDetailsView;
 
 import java.util.ArrayList;
@@ -143,7 +144,13 @@ public class RegisterToUseController extends Controller {
 
   private void registerOgel(String sessionId, String userId, String customerId, String siteId, String ogelId) {
     String callbackUrl = permissionsFinderUrl + controllers.licencefinder.routes.RegistrationController.handleRegistrationCallback(sessionId);
-    CompletionStage<String> registrationResponseStage = permissionsServiceClient.registerOgel(userId, customerId, siteId, ogelId, callbackUrl);
+    RegisterParam registerParam = new RegisterParam();
+    registerParam.setUserId(userId);
+    registerParam.setExistingCustomer(customerId);
+    registerParam.setExistingSite(siteId);
+    registerParam.setOgelType(ogelId);
+
+    CompletionStage<String> registrationResponseStage = permissionsServiceClient.registerOgel(registerParam, callbackUrl);
     CompletionStage<UserDetailsView> userDetailsViewStage = userServiceClientJwt.getUserDetailsView(userId);
 
     CompletableFutures.combine(registrationResponseStage, userDetailsViewStage, (requestId, userDetailsView) -> {

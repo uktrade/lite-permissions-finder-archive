@@ -1,7 +1,7 @@
 package components.services;
 
 import com.google.inject.Inject;
-import components.client.CustomerServiceClient;
+import components.common.client.CustomerServiceClient;
 import models.AccountData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
