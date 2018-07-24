@@ -7,39 +7,30 @@
 @this()
 @(resumeCode: String, userDetailsView: UserDetailsView, customerView: CustomerView, date: String, address: SiteView.SiteViewAddress, nlrBreadcrumb: Html, description: Html)
 
+@ecoContactDetails = {
+  <p>
+    T<span class="visually-hidden">elephone</span> +44 (0)20 7215 4594<br>
+    E<span class="visually-hidden">mail</span> <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>
+  </p>
+}
 <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
 
 <p class="js-only">
   <a href="" id="print" class="print-link-right-aligned">Print this page</a>
 </p>
 
-<div class="grid-row">
-  <div class="column-two-thirds">
-    <p>
-      Reference Code: @resumeCode
-    </p>
-    <p>
-      @userDetailsView.getFullName<br>
-      @customerView.getCompanyName<br>
-      @Html(address.getPlainText.replace("\n", "<br>"))
-    </p>
-    <p>
-      <span class="bold">Tel<span class="visually-hidden">ephone</span></span> @userDetailsView.getContactPhoneNumber<br>
-      <span class="bold">Email</span> <a href="mailto:@userDetailsView.getContactEmailAddress">@userDetailsView.getContactEmailAddress</a>
-    </p>
-    <p>
-      <span class="bold">Date</span> @date
-    </p>
-  </div>
-  <div class="column-one-third">
+<div class="grid-row" id="letterhead">
+  <div class="column-half">
     <div class="dit-logo">
-      <img src="@controllers.routes.Assets.versioned("images/dit-crest-38px.png")" srcset="@controllers.routes.Assets.versioned("images/dit-crest-38px.png") 1x, @controllers.routes.Assets.versioned("images/dit-crest-38px-2x.png") 2x" alt="">
+      <img src="@controllers.routes.Assets.versioned("images/dit-crest-45px.png")" srcset="@controllers.routes.Assets.versioned("images/dit-crest-45px.png") 1x, @controllers.routes.Assets.versioned("images/dit-crest-45px-2x.png") 2x" alt="">
       <span>
         Department for<br>
         International Trade
       </span>
     </div>
+  </div>
 
+  <div class="column-one-quarter">
     <p>
       Export Control Organisation<br>
       2nd floor<br>
@@ -47,27 +38,45 @@
       London<br>
       SW1A 2AW
     </p>
-
-    <p>
-      <span class="bold">Tel<span class="visually-hidden">ephone</span></span> +44 (0)20 7215 4594<br>
-      <span class="bold">Email</span> <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>
-    </p>
   </div>
+  <div class="column-one-quarter">
+    @ecoContactDetails
+  </div>
+
+
 </div>
 
+<p>
+  @userDetailsView.getFullName<br>
+  @customerView.getCompanyName<br>
+@Html(address.getPlainText.replace("\n", "<br>"))
+</p>
+
+<p>
+  T<span class="visually-hidden">elephone</span> @userDetailsView.getContactPhoneNumber<br>
+  E<span class="visually-hidden">mail</span> <a href="mailto:@userDetailsView.getContactEmailAddress">@userDetailsView.getContactEmailAddress</a>
+</p>
+
+<p>
+  @date
+</p>
 
 <p>
   Dear @userDetailsView.getTitle @userDetailsView.getLastName
 </p>
 
-<p>
-  Based on the choices you made in the "Check if your item is controlled" service, the item does not currently require
-  an export licence.
+<p class="bold">
+  Reference Code: @resumeCode
 </p>
 
 <p>
-  This assessment is made taking into account the choices you made in the "Check if your item is controlled" service
-  and the legislation in force at the date of this letter.
+  Based on the choices you made in the online service - as shown in the Schedule of Goods below - the item does not
+  currently require an export licence.
+</p>
+
+<p>
+  This assessment is made taking into account the choices you made on the online tool and the legislation in force at
+  the date of this letter.
 </p>
 
 <p>
@@ -178,6 +187,8 @@
 <p>Yours sincerely,</p>
 
 <p class="bold">Export Control Organisation</p>
+
+@ecoContactDetails
 
 <hr class="break-page">
 
