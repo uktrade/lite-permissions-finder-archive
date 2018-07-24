@@ -17,19 +17,19 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
 
   private static final Set<Role> VIEW_OUTCOME_ROLES = EnumSet.of(Role.ADMIN, Role.SUBMITTER, Role.PREPARER);
 
-  private final UserServiceClientJwt userServiceClient;
+  private final UserServiceClientJwt userServiceClientJwt;
   private final UserServiceClientBasicAuth userServiceClientBasicAuth;
 
   @Inject
-  public UserPrivilegeServiceImpl(UserServiceClientJwt userServiceClient,
+  public UserPrivilegeServiceImpl(UserServiceClientJwt userServiceClientJwt,
                                   UserServiceClientBasicAuth userServiceClientBasicAuth) {
-    this.userServiceClient = userServiceClient;
+    this.userServiceClientJwt = userServiceClientJwt;
     this.userServiceClientBasicAuth = userServiceClientBasicAuth;
   }
 
   private UserPrivilegesView getUserPrivilegesView(String userId) {
     try {
-      return userServiceClient.getUserPrivilegeView(userId).toCompletableFuture().get();
+      return userServiceClientJwt.getUserPrivilegeView(userId).toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException("Unable to get userPrivilegesView for userId " + userId, e);
     }

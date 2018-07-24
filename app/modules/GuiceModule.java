@@ -254,29 +254,9 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
   }
 
   @Provides
-  @Singleton
-  @Named("countryProviderEu")
-  CountryProvider provideCountryServiceEuClient(HttpExecutionContext httpContext, WSClient wsClient,
-                                                @Named("countryServiceAddress") String address,
-                                                @Named("countryServiceTimeout") int timeout,
-                                                @Named("countryServiceCredentials") String credentials) {
-    CountryServiceClient client = CountryServiceClient.buildCountryServiceGroupClient(address, timeout, credentials, wsClient, httpContext, "eu");
-    return new CountryProvider(client);
-  }
-
-  @Provides
   @Named("scheduledJobExecutionContext")
   ExecutionContext provideScheduledJobExecutionContext(final ActorSystem system) {
     return system.dispatchers().lookup("scheduled-job-context");
-  }
-
-  @Provides
-  @Singleton
-  @Named("countryCacheActorRefEu")
-  ActorRef provideCountryCacheActorRefEu(final ActorSystem system,
-                                         @Named("countryProviderEu") CountryProvider countryProvider,
-                                         @Named("scheduledJobExecutionContext") ExecutionContext executionContext) {
-    return system.actorOf(Props.create(UpdateCountryCacheActor.class, () -> new UpdateCountryCacheActor(countryProvider, 30, executionContext)));
   }
 
   @Provides
@@ -290,12 +270,10 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
   @Inject
   public void initActorScheduler(final ActorSystem system,
-                                 @Named("countryCacheActorRefEu") ActorRef countryCacheActorRefEu,
                                  @Named("countryCacheActorRefExport") ActorRef countryCacheActorRefExport,
                                  @Named("scheduledJobExecutionContext") ExecutionContext executionContext) {
     FiniteDuration delay = Duration.create(0, TimeUnit.MILLISECONDS);
     FiniteDuration frequency = Duration.create(1, TimeUnit.DAYS);
-    system.scheduler().schedule(delay, frequency, countryCacheActorRefEu, "load", executionContext, ActorRef.noSender());
     system.scheduler().schedule(delay, frequency, countryCacheActorRefExport, "load", executionContext, ActorRef.noSender());
   }
 
