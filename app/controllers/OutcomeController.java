@@ -12,6 +12,7 @@ import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.ProgressView;
+import models.view.RelatedEntryView;
 import models.view.SubAnswerView;
 import models.view.form.RequestNlrForm;
 import models.view.form.RequestOgelForm;
@@ -172,9 +173,14 @@ public class OutcomeController extends Controller {
           return null;
         });
 
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, true);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId,
+        controlEntryConfig, true);
+    List<RelatedEntryView> relatedEntryViews = breadcrumbViewService.createRelatedEntryViews(sessionId,
+        controlEntryConfig, true);
+
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbItemViews, changeUrl));
+    return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode,
+        breadcrumbItemViews, relatedEntryViews, changeUrl));
   }
 
   private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig,

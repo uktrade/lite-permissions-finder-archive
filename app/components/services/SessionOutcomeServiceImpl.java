@@ -12,6 +12,7 @@ import models.enums.SessionOutcomeType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
+import models.view.RelatedEntryView;
 import models.view.SubAnswerView;
 import play.twirl.api.Html;
 import triage.config.ControlEntryConfig;
@@ -80,8 +81,12 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   @Override
   public String generateNotFoundNlrLetter(String sessionId, String userId, AccountData accountData,
                                           ControlEntryConfig controlEntryConfig, String resumeCode, Html description) {
-    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId, controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
-    Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, null);
+    List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId,
+        controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
+    List<RelatedEntryView> relatedEntryViews = breadcrumbViewService.createRelatedEntryViews(sessionId,
+        controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
+
+    Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, relatedEntryViews, null);
 
     return generateLetter(sessionId, userId, accountData, resumeCode, SessionOutcomeType.NLR_NOT_FOUND, nlrBreadcrumb, description);
   }

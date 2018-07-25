@@ -2,11 +2,14 @@ package components.services;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import components.comparator.AlphanumComparator;
 import controllers.routes;
 import models.cms.enums.QuestionType;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.NoteView;
+import models.view.RelatedEntryView;
+import models.view.SubAnswerView;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
@@ -15,6 +18,7 @@ import triage.text.HtmlRenderService;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,13 +28,15 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   private final JourneyConfigService journeyConfigService;
   private final RenderService renderService;
   private final HtmlRenderService htmlRenderService;
+  private final AnswerViewService answerViewService;
 
   @Inject
   public BreadcrumbViewServiceImpl(JourneyConfigService journeyConfigService, RenderService renderService,
-                                   HtmlRenderService htmlRenderService) {
+                                   HtmlRenderService htmlRenderService, AnswerViewService answerViewService) {
     this.journeyConfigService = journeyConfigService;
     this.renderService = renderService;
     this.htmlRenderService = htmlRenderService;
+    this.answerViewService = answerViewService;
   }
 
   @Override
@@ -143,6 +149,44 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     } else {
       return null;
     }
+  }
+
+  @Override
+  public List<RelatedEntryView> createRelatedEntryViews(String sessionId, ControlEntryConfig controlEntryConfig,
+                                                       boolean includeChangeLinks,
+                                                       HtmlRenderOption... htmlRenderOptions) {
+    List<ControlEntryConfig> controlEntryHierarchy = new ArrayList<>();
+    controlEntryHierarchy.add(controlEntryConfig);
+    ControlEntryConfig nextControlEntryConfig = controlEntryConfig;
+    while (nextControlEntryConfig.getParentControlEntry().isPresent()) {
+      nextControlEntryConfig = nextControlEntryConfig.getParentControlEntry().get();
+      controlEntryHierarchy.add(nextControlEntryConfig);
+    }
+
+    return controlEntryHierarchy.stream()
+        .flatMap(entry -> journeyConfigService.getRelatedControlEntries(entry).stream())
+        .collect(Collectors.toMap(ControlEntryConfig::getControlCode, e -> e, (a, b) -> a)) //Distinct by control code
+        .values()
+        .stream()
+        .map(entry -> createRelatedEntryView(sessionId, includeChangeLinks, entry, htmlRenderOptions))
+        .sorted(Comparator.comparing(RelatedEntryView::getControlCode, new AlphanumComparator()))
+        .collect(Collectors.toList());
+  }
+
+  private RelatedEntryView createRelatedEntryView(String sessionId, boolean includeChangeLinks,
+                                                  ControlEntryConfig controlEntryConfig,
+                                                  HtmlRenderOption... htmlRenderOptions) {
+    String fullDescription = renderService.getFullDescription(controlEntryConfig, htmlRenderOptions);
+    String changeUrl;
+    if (includeChangeLinks) {
+      changeUrl = createChangeUrl(sessionId, journeyConfigService.getStageIdsForControlEntry(controlEntryConfig));
+    } else {
+      changeUrl = null;
+    }
+    List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig, true,
+        htmlRenderOptions);
+
+    return new RelatedEntryView(controlEntryConfig.getControlCode(), fullDescription, changeUrl, subAnswerViews);
   }
 
   private List<NoteView> createNoteViews(List<String> stageIds, HtmlRenderOption... htmlRenderOptions) {
