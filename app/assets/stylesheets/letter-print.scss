@@ -9,8 +9,7 @@
 
 #global-cookie-message,
 #global-header,
-.phase-banner-alpha,
-.phase-banner-beta
+.phase-banner
 {
   display: none;
 }
@@ -46,6 +45,13 @@ h2 {
 
 .break-word {
   word-wrap: break-word;
+}
+
+#letterhead {
+  .column-one-quarter {
+    padding-top: 40px;
+    font-size: 9pt;
+  }
 }
 
 @include styled-blockquote;
