@@ -106,7 +106,7 @@ public class ChooseOgelController extends Controller {
         if (reference != null) {
           // Check if we have a Ogel that is already registered - return registerResult view
           return ogelServiceClient.getById(chosenOgelId).thenApplyAsync(ogelFullView ->
-              ok(alreadyRegistered.render(ogelFullView, dashboardUrl)), httpContext.current());
+              ok(alreadyRegistered.render(ogelFullView, reference, dashboardUrl)), httpContext.current());
         } else {
           return completedFuture(redirect(routes.RegisterToUseController.renderRegisterToUseForm(sessionId)));
         }

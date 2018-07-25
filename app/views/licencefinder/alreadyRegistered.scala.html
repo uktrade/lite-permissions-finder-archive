@@ -5,7 +5,7 @@
 @import views.html.ogel._
 
 @this(standardPage: standardPage)
-@(ogel: OgelFullView, dashboardUrl: String)
+@(ogel: OgelFullView, reference: String, dashboardUrl: String)
 @standardPage("Licence already registered", Some(heading("Licence already registered"))) {
 
 }{
@@ -14,11 +14,9 @@
     You have already registered to use Open General Export Licence (@ogel.getName())
   </p>
 
-  @if(StringUtils.isNoneBlank(ogel.getLink)) {
-    <p>
-      <a class="external" href="@ogel.getLink" rel="external" target="_blank">View this licence<span class="visually-hidden"> (opens in a new tab)</span></a>
-    </p>
-  }
+  <p>
+    <a id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(reference)" class="link underlined ogel-link" target="_blank">View this licence<span class="visually-hidden"> (opens in a new tab)</span></a>
+  </p>
 
   <p>
     <a href="@dashboardUrl" target="_blank">View all your licensing information</a>
