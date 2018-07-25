@@ -143,9 +143,10 @@ public class AnswerViewServiceImpl implements AnswerViewService {
   }
 
   @Override
-  public List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig, boolean html) {
+  public List<SubAnswerView> createSubAnswerViews(ControlEntryConfig controlEntryConfig, boolean html,
+                                                  HtmlRenderOption... htmlRenderOptions) {
     List<SubAnswer> subAnswers = createSubAnswers(controlEntryConfig);
-    return createSubAnswerViews(subAnswers, html);
+    return createSubAnswerViews(subAnswers, html, htmlRenderOptions);
   }
 
   @Override
@@ -153,9 +154,10 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     return subAnswerViewsToHtml(subAnswerViews);
   }
 
-  private List<SubAnswerView> createSubAnswerViews(List<SubAnswer> subAnswers, boolean html) {
+  private List<SubAnswerView> createSubAnswerViews(List<SubAnswer> subAnswers, boolean html,
+                                                   HtmlRenderOption... htmlRenderOptions) {
     return subAnswers.stream()
-        .map(subAnswer -> createSubAnswerView(subAnswer, html))
+        .map(subAnswer -> createSubAnswerView(subAnswer, html, htmlRenderOptions))
         .collect(Collectors.toList());
   }
 
@@ -254,10 +256,10 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     return new SubAnswer(controlEntryConfig.getFullDescription(), subAnswers);
   }
 
-  private SubAnswerView createSubAnswerView(SubAnswer subAnswer, boolean html) {
+  private SubAnswerView createSubAnswerView(SubAnswer subAnswer, boolean html, HtmlRenderOption... htmlRenderOptions) {
     String summaryDescription;
     if (html) {
-      summaryDescription = htmlRenderService.convertRichTextToHtml(subAnswer.getRichText());
+      summaryDescription = htmlRenderService.convertRichTextToHtml(subAnswer.getRichText(), htmlRenderOptions);
     } else {
       summaryDescription = htmlRenderService.convertRichTextToPlainText(subAnswer.getRichText());
     }

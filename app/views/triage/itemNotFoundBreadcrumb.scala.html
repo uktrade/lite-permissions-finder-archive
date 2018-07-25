@@ -1,8 +1,9 @@
 @import models.view.BreadcrumbItemView
+@import models.view.RelatedEntryView
 @import play.twirl.api.HtmlFormat
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 
-@(breadcrumbItemsViews: List[BreadcrumbItemView], changeUrl: String)
+@(breadcrumbItemsViews: List[BreadcrumbItemView], relatedEntryViews: List[RelatedEntryView], changeUrl: String)
 
 @controlCodeBreadcrumbs(isWide = true) {
   @for(breadcrumbItemView <- breadcrumbItemsViews) {
@@ -27,4 +28,20 @@
   @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = changeUrl) {
     <span class="outcome-detail-box-heading">Item has none of the controlled characteristics</span>
   }(HtmlFormat.empty)
+}
+
+@if(!relatedEntryViews.isEmpty) {
+  <div>
+    <p>Item is not described by the related control list entries below</p>
+    @for(relatedEntryView <- relatedEntryViews) {
+      <p><span class="bold">@relatedEntryView.getControlCode</span> @Html(relatedEntryView.getFullDescription)
+        @if(!relatedEntryView.getSubAnswerViews.isEmpty) {
+          @subAnswers(relatedEntryView.getSubAnswerViews)
+        }
+        @if(relatedEntryView.getChangeUrl() != null){
+          <a href="@relatedEntryView.getChangeUrl">Change</a>
+        }
+      </p>
+    }
+  </div>
 }
