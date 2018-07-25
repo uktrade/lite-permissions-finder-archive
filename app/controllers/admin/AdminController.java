@@ -34,7 +34,6 @@ public class AdminController extends Controller {
   public Result cascadePing() {
     LOGGER.info("Admin check request received - getting results from dependent service...");
     PingResult result = pingService.pingServices();
-    LOGGER.info("Responding with results 200 OK");
     return ok(String.format(PING_XML_TEMPLATE, result.getStatus(), result.getDetail())).as("application/xml");
   }
 }

@@ -38,8 +38,6 @@ public class PingServiceImpl implements PingService {
    * We send a GET request to each of the dependent services and record the result
    */
   public PingResult pingServices() {
-    LOGGER.info("Checking services...");
-
     PingResult result = new PingResult();
 
     try {
@@ -54,8 +52,6 @@ public class PingServiceImpl implements PingService {
       result.addDetailPart("PermissionsService", permissionsServiceReachable);
       result.addDetailPart("OgelService", ogelServiceReachable);
       result.addDetailPart("CountryService", countryServiceReachable);
-
-      LOGGER.info("Dependent services check: " + result.getDetail());
 
       if (userServiceReachable && customerServiceReachable && permissionsServiceReachable
           && ogelServiceReachable && countryServiceReachable) {
