@@ -1,0 +1,26 @@
+@import models.view.RegisterResultView
+@import uk.gov.bis.lite.ogel.api.view.OgelFullView
+@import org.apache.commons.lang3.StringUtils
+@import util._
+@import views.html.ogel._
+
+@this(standardPage: standardPage)
+@(ogel: OgelFullView, dashboardUrl: String)
+@standardPage("Licence already registered", Some(heading("Licence already registered"))) {
+
+}{
+
+  <p class="lede">
+    You have already registered to use Open General Export Licence (@ogel.getName())
+  </p>
+
+  @if(StringUtils.isNoneBlank(ogel.getLink)) {
+    <p>
+      <a class="external" href="@ogel.getLink" rel="external" target="_blank">View this licence<span class="visually-hidden"> (opens in a new tab)</span></a>
+    </p>
+  }
+
+  <p>
+    <a href="@dashboardUrl" target="_blank">View all your licensing information</a>
+  </p>
+}

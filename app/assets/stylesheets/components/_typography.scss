@@ -111,6 +111,15 @@ a[data-control-entry-id] {
   padding: 2em;
 }
 
+#letterhead {
+  clear: both;
+
+  .column-one-quarter {
+    padding-top: 50px;
+    @include core-16;
+  }
+}
+
 .break-word {
   word-wrap: break-word;
 }
