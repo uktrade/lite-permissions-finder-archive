@@ -7,6 +7,14 @@
   list-style-type: none;
   padding: 0;
 
+  @media print {
+    font-family: inherit;
+
+    .bold {
+      font-weight: bold;
+    }
+  }
+
   &>li {
     position: relative;
     padding: 4px $gutter-two-thirds $gutter-two-thirds $gutter-two-thirds;
@@ -156,6 +164,9 @@
 @include media(desktop) {
   .wide-breadcrumbs {
     @include core-19;
+    @media print {
+      font-family: inherit;
+    }
 
     & > li {
       margin-left: 17px;
@@ -187,6 +198,62 @@
 
         .detail-box-content {
           padding: $gutter-half;
+        }
+      }
+    }
+  }
+}
+
+.related-codes-box {
+  border: 2px solid $border-colour;
+  background: $grey-4;
+  padding: $gutter-half;
+  @include core-19;
+
+  @media print {
+    background: transparent;
+    border-color: $black;
+    font-family: inherit;
+
+    .bold {
+      font-weight: bold;
+    }
+  }
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: $gutter-two-thirds;
+  }
+
+  ul.related-codes {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+    &>li {
+      position: relative;
+      padding-bottom: $gutter-two-thirds;
+      @include ul-has-bullets;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+
+      ul {
+        margin-bottom: 0;
+      }
+
+      &.has-change-link {
+        padding-right: 4.5em;
+      }
+
+      a.related-code-change-link {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        @media print {
+          display: none;
         }
       }
     }

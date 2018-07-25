@@ -31,17 +31,21 @@
 }
 
 @if(!relatedEntryViews.isEmpty) {
-  <div>
-    <p>Item is not described by the related control list entries below</p>
+  <div class="related-codes-box">
+    <h2 class="heading-small">Item is not described by the related control list entries below</h2>
+    <ul class="related-codes">
     @for(relatedEntryView <- relatedEntryViews) {
-      <p><span class="bold">@relatedEntryView.getControlCode</span> @Html(relatedEntryView.getFullDescription)
+      <li @if(relatedEntryView.getChangeUrl() != null){class="has-change-link"}>
+        <span class="bold">@relatedEntryView.getControlCode</span>
+        @Html(relatedEntryView.getFullDescription)
         @if(!relatedEntryView.getSubAnswerViews.isEmpty) {
           @subAnswers(relatedEntryView.getSubAnswerViews)
         }
         @if(relatedEntryView.getChangeUrl() != null){
-          <a href="@relatedEntryView.getChangeUrl">Change</a>
+          <a class="related-code-change-link" href="@relatedEntryView.getChangeUrl">Change<span class="visually-hidden"> answer for @relatedEntryView.getControlCode</span></a>
         }
-      </p>
+      </li>
     }
+    </ul>
   </div>
 }
