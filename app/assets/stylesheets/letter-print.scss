@@ -52,6 +52,14 @@ h2 {
     padding-top: 40px;
     font-size: 9pt;
   }
+
+  a {
+    text-decoration: none;
+
+    &:after {
+      content: none;
+    }
+  }
 }
 
 @include styled-blockquote;

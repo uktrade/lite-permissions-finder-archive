@@ -12,61 +12,199 @@
 @(licenceInfo: LicenceInfo)
 
 
-@standardPage("OGEL Licence", None, twoThirdsColumn = false) {
+@standardPage("OGEL Licence", Some(heading("")), twoThirdsColumn = false) {
 } {
+  <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
 
-  <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/view-ogel-print.css")">
+  <p class="js-only">
+    <a href="" id="print" class="print-link-right-aligned">Print this page</a>
+  </p>
 
-  <div class="grid-row outcome-page-header">
-    <div class="column-two-thirds">
-      <div id="licence-header">
-        <div id="licence-number">
-          <div id="licence-crest">
-            <img src="@controllers.routes.Assets.versioned("images/gov-crest.png")" srcset="@controllers.routes.Assets.versioned("images/gov-crest.png") 1x, @controllers.routes.Assets.versioned("images/gov-crest-2x.png") 2x" alt="">
-          </div>
-          <h1 class="heading-xlarge">
-            <span class="font-weight-normal">Licence number</span><br>
-          @licenceInfo.getLicenceNumber
-          </h1>
-        </div>
+  <div class="grid-row" id="letterhead">
+    <div class="column-half">
+      <div class="dit-logo">
+        <img src="@controllers.routes.Assets.versioned("images/dit-crest-38px.png")" srcset="@controllers.routes.Assets.versioned("images/dit-crest-38px.png") 1x, @controllers.routes.Assets.versioned("images/dit-crest-38px-2x.png") 2x" alt="">
+        <span>
+          Department for<br>
+          International Trade
+        </span>
       </div>
     </div>
-    <div class="column-one-third">
-      <a href="" id="print" class="js-only print-link-right-aligned">Print this page</a>
+
+    <div class="column-one-quarter">
+      <p>
+        Export Control Organisation<br>
+        2nd floor<br>
+        3 Whitehall Place<br>
+        London<br>
+        SW1A 2AW
+      </p>
     </div>
+    <div class="column-one-quarter">
+      <p>
+        T<span class="visually-hidden">elephone</span> +44 (0)20 7215 4594<br>
+        E<span class="visually-hidden">mail</span> <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>
+      </p>
+    </div>
+
+
   </div>
 
-  @twoThirdsColumn {
-    <dl class="govuk-check-your-answers form-group">
-      <div>
-        <dt class="cya-question no-wrap">Licence type</dt>
-        <dd class="cya-answer">@licenceInfo.getLicenceType</dd>
-      </div>
-      <div>
-        <dt class="cya-question no-wrap">Registration date</dt>
-        <dd class="cya-answer">@licenceInfo.getFormattedRegistrationDate</dd>
-      </div>
-    </dl>
+  <p>
+    @licenceInfo.getCompanyName<br>
+    @Html(licenceInfo.getSiteAddress.replace("\n", "<br>"))
+  </p>
 
-    <p>You may now export an unlimited quantity of goods, technology or services against this licence provided that:</p>
+  <p>
+    @licenceInfo.getFormattedRegistrationDate
+  </p>
 
-    <ol class="list list-number">
-      <li>The terms and conditions of the licence can be met in full.</li>
-      <li>
-        Your licence reference number @licenceInfo.getLicenceNumber must be referenced on supporting documentation accompanying
-        the goods and in the records you keep.</li>
-    </ol>
+  <p>
+    Dear exporter
+  </p>
 
-    <h2 class="heading-medium">Exporter details</h2>
-    <p>
-      @licenceInfo.getCompanyName <br>
-      Company registration: @licenceInfo.getCompanyNumber
-    </p>
-    @HtmlUtil.newlinesToParagraphs(licenceInfo.getSiteAddress)
+  <p class="bold">
+    Our Ref: @licenceInfo.getLicenceNumber
+  </p>
 
-    <p>
-      <a href="@licenceInfo.getLicenceUrl" class="no-print not-visited" target="_blank" rel="external">View the full terms and conditions of this licence<span class="visually-hidden"> (opens in a new tab)</span></a>
-      <span class="print-only">View the full terms and conditions of this licence at @licenceInfo.getLicenceUrl</span>
-    </p>
-  }
+  <p>
+    Based on the choices you made on the online tool, you have registered to use the following Open General Licence (OGEL):
+  </p>
+
+  <p>
+    <span class="bold">Licence number:</span><br>@licenceInfo.getLicenceNumber
+  </p>
+  <p>
+    <span class="bold">OGEL type:</span><br>Open General Export Licence (@licenceInfo.getLicenceType)
+  </p>
+  <p>
+    <span class="bold">Site:</span><br>@licenceInfo.getSiteAddress
+  </p>
+
+  <p>
+    Please note you will not receive a hardcopy licence from the Export Control Organisation (ECO).
+  </p>
+
+  <p>
+    Using SPIRE, you may now export goods and/or software/technology against this OGEL, provided that you:
+  </p>
+
+  <ul class="list list-bullet">
+    <li>
+      have downloaded and read carefully, a copy of the relevant licence and all the terms and conditions set out
+      within the licence, and have met these in full. See our website for
+      <a href="https://www.gov.uk/government/collections/open-general-export-licences-ogels" target="_blank">all OGELs<span class="visually-hidden"> (opens in a new tab)</span></a>
+    </li>
+    <li>
+      include your licence number or OGEL type on supporting documentation accompanying the items you're exporting
+      against this OGEL and in the records you keep
+    </li>
+  </ul>
+
+  <h2 class="heading-medium">Keep your business information up to date</h2>
+  <p>
+    You must update SPIRE if any of the business information you have registered on SPIRE changes.
+  </p>
+
+  <p>
+    This means it's your responsibility on SPIRE to:
+  </p>
+
+  <ul class="list list-bullet">
+    <li>
+      upload new business information, such as business name, VAT registration number, or address at which records are
+      kept
+    </li>
+    <li>
+      register your OGEL under a new business
+    </li>
+    <li>
+      de-register the OGEL under a previous business
+    </li>
+  </ul>
+
+  <p>
+    Find out how to
+      <a href="https://www.spire.trade.gov.uk/docs/RegisterOGLs.pdf" target="_blank">
+        update your business information (PDF)<span class="visually-hidden"> (opens in a new tab)</span>
+      </a>.
+  </p>
+
+  <p>
+    You must upload your new business information onto SPIRE within 30 days of any changes to your business. Failure to
+    do this will make your licence void.
+  </p>
+
+  <h2 class="heading-medium">How to stay compliant</h2>
+  <p>
+    You can find guidance on best practice for effective compliance procedures and advice on strategic export controls
+    in our
+      <a href="https://www.gov.uk//government/publications/compliance-code-of-practice" target="_blank">
+      'Compliance Code of Practice' document<span class="visually-hidden"> (opens in a new tab)</span>
+    </a>.
+  </p>
+  <p>
+    Compliance Inspectors may audit your records within 3-6 months of your registration to ensure your business
+    complies with the terms and conditions of the licence you've used. You'll be notified if a visit is needed.
+    Find out more about
+    <a href="https://www.gov.uk/guidance/export-military-or-dual-use-goods-services-or-technology-special-rules#compliance-visits" target="_blank">
+      compliance visits<span class="visually-hidden"> (opens in a new tab)</span>
+    </a>.
+  </p>
+
+  <h2 class="heading-medium">Restrictions not operated by the Export Control Organisation</h2>
+  <p>
+    Your application to register for an OGEL was not assessed against other restrictions on exports
+    (for example on antique goods or pharmaceutical products) not administered by ECO. Learn more about these
+    <a href="https://www.gov.uk/starting-to-export" rel="noopener" target="_blank">
+      restrictions that are not operated by the Export Control Organisation<span class="visually-hidden"> (opens in a new tab)</span>
+    </a>.
+  </p>
+
+  <p>
+    Find out
+    <a href="https://www.gov.uk/government/publications/financial-sanctions-consolidated-list-of-targets" rel="noopener" target="_blank">
+      who is subject to financial sanctions in the UK<span class="visually-hidden"> (opens in a new tab)</span>
+    </a>.
+  </p>
+
+  <h2 class="heading-medium">Make sure your licence is current</h2>
+  <p>
+    OGELs are subject to change and you must ensure that the licence you're using is current. You can ask to receive
+    <a href="https://www.gov.uk/government/collections/notices-to-exporters" target="_blank">
+      email notifications of any amendments to OGELs<span class="visually-hidden"> (opens in a new tab)</span>
+    </a>.
+  </p>
+
+  <h2 class="heading-medium">Where to find further information</h2>
+  <p>
+    It is the responsibility of exporters to consult the current export control legislation, familiarise themselves with
+    export controls and make their own evaluation of the need for export licences.
+  </p>
+
+  <p>
+    Learn more about
+    <a href="https://www.gov.uk/beginners-guide-to-export-controls" rel="noopener" target="_blank">
+      strategic export controls<span class="visually-hidden"> (opens in a new tab)</span>
+    </a>.
+  </p>
+
+  <h2 class="heading-medium">How to access training</h2>
+  <p>
+    If you're unsure whether your goods, software or technology require a licence, you can receive training from the
+    ECO. We run a number of training courses, seminars and workshops to help exporters understand their obligations
+    under export control legislation. A charge is applied for this service. Find out about
+    <a href="https://www.gov.uk/government/publications/export-control-training-bulletin" target="_blank">
+      dates and details for forthcoming ECO training courses<span class="visually-hidden"> (opens in a new tab)</span>
+    </a>.
+  </p>
+
+  <p>
+    Finally, if you require further advice regarding the information in this letter, including how any relevant export
+    control legislation may apply to your particular case, we recommend that you seek independent legal advice.
+  </p>
+
+  <p>Yours sincerely,</p>
+
+  <p class="bold">Export Control Organisation</p>
 }
