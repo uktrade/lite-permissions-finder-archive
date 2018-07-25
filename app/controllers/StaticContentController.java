@@ -40,7 +40,8 @@ public class StaticContentController extends Controller {
     OTHER_CONTROL_LIST("otherControlList.html", "Check your item against another control list", true),
     TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites", false),
     TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment", false),
-    UNKNOWN_OUTCOME("unknownOutcome.html", "Unknown outcome", false);
+    UNKNOWN_OUTCOME("unknownOutcome.html", "Unknown outcome", false),
+    FAIR_PROCESSING_NOTE("fairProcessingNote.html", "Fair processing note", false);
 
     private final String filename;
     private final String title;
@@ -116,6 +117,8 @@ public class StaticContentController extends Controller {
   public Result renderUnknownOutcome() {
     return renderStaticHtml(StaticHtml.UNKNOWN_OUTCOME, null);
   }
+
+  public Result renderFairProcessingNote() { return renderStaticHtml(StaticHtml.FAIR_PROCESSING_NOTE, null); }
 
   private Result unknownSession(String sessionId) {
     flashService.flashInvalidSession();

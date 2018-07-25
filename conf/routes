@@ -20,6 +20,7 @@ GET     /trade-type/brokering          controllers.StaticContentController.rende
 GET     /trade-type/transhipment       controllers.StaticContentController.renderTranshipment
 GET     /invalid-user-account          controllers.StaticContentController.renderInvalidUserAccount
 GET     /unknown-outcome               controllers.StaticContentController.renderUnknownOutcome
+GET     /fair-processing-note          controllers.StaticContentController.renderFairProcessingNote
 
 # Licence finder
 GET     /licencefinder/entry/:controlCode       controllers.licencefinder.EntryController.entry(controlCode, resumeCode ?= null)
