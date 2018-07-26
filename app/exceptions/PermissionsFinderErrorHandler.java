@@ -1,9 +1,9 @@
 package exceptions;
 
-import static play.mvc.Results.badRequest;
 import static play.mvc.Results.notFound;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.typesafe.config.Config;
 import controllers.common.ErrorHandler;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -24,8 +24,9 @@ public class PermissionsFinderErrorHandler extends ErrorHandler {
 
   @Inject
   public PermissionsFinderErrorHandler(Environment environment, OptionalSourceMapper sourceMapper,
-                                       Config config, views.html.licencefinder.notFound notFound) {
-    super(environment, sourceMapper, config);
+                                       Config config, views.html.licencefinder.notFound notFound,
+                                       @Named("ecjuEmailAddress") String errorContactEmail) {
+    super(environment, sourceMapper, config, errorContactEmail);
     this.notFound = notFound;
   }
 
