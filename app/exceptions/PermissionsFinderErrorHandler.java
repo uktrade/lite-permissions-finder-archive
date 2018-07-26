@@ -20,20 +20,20 @@ public class PermissionsFinderErrorHandler extends ErrorHandler {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PermissionsFinderErrorHandler.class);
 
-  private final views.html.licencefinder.errorPage errorPage;
+  private final views.html.licencefinder.notFound notFound;
 
   @Inject
   public PermissionsFinderErrorHandler(Environment environment, OptionalSourceMapper sourceMapper,
-                                       Config config, views.html.licencefinder.errorPage errorPage) {
+                                       Config config, views.html.licencefinder.notFound notFound) {
     super(environment, sourceMapper, config);
-    this.errorPage = errorPage;
+    this.notFound = notFound;
   }
 
   @Override
   public CompletionStage<Result> onClientError(Http.RequestHeader request, int statusCode, String message) {
     if (statusCode == Http.Status.NOT_FOUND || statusCode == Http.Status.BAD_REQUEST) {
       LOGGER.warn(statusCode + " " + message);
-      return CompletableFuture.completedFuture(notFound(errorPage.render("This page could not be found")));
+      return CompletableFuture.completedFuture(notFound(notFound.render()));
     } else {
       return super.onClientError(request, statusCode, message);
     }
@@ -43,7 +43,7 @@ public class PermissionsFinderErrorHandler extends ErrorHandler {
   public CompletionStage<Result> onServerError(Http.RequestHeader request, Throwable exception) {
     if (ExceptionUtils.indexOfThrowable(exception, UnknownParameterException.class) != -1) {
       LOGGER.warn("Unknown parameter", exception);
-      return CompletableFuture.completedFuture(badRequest(errorPage.render("This page could not be found")));
+      return CompletableFuture.completedFuture(notFound(notFound.render()));
     } else {
       return super.onServerError(request, exception);
     }

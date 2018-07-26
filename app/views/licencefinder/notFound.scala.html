@@ -1,0 +1,27 @@
+@import com.google.inject.name.Named
+@import util._
+
+@this(standardPage: standardPage, @Named("permissionsFinderUrl") permissionsFinderUrl: String)
+@()
+
+@standardPage("Page not found", Some(heading("Page not found"))) {
+
+}{
+
+  <p>
+    If you typed the web address, check it is correct.
+  </p>
+
+  <p>
+    If you pasted the web address, check you copied the entire address.
+  </p>
+
+  <p>
+    <a href="@permissionsFinderUrl">Return to the start of this service</a>
+  </p>
+
+  <p>
+    If you have not been invited to private beta you will not be able to access this service. You should continue to <a href="https://www.spire.trade.gov.uk/" rel="external" target="_blank">use SPIRE<span class="visually-hidden"> (opens in a new tab)</span></a> instead.
+  </p>
+
+}
