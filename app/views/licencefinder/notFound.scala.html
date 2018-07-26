@@ -1,7 +1,7 @@
+@import com.google.inject.name.Named
 @import util._
-@import models.view.licencefinder.NotFound;
 
-@this(standardPage: standardPage, notFound: NotFound)
+@this(standardPage: standardPage, @Named("permissionsFinderUrl") permissionsFinderUrl: String)
 @()
 
 @standardPage("Page not found", Some(heading("Page not found"))) {
@@ -17,7 +17,7 @@
   </p>
 
   <p>
-    <a href="@notFound.getPermissionsFinderUrl()">Return to the start of this service</a>
+    <a href="@permissionsFinderUrl">Return to the start of this service</a>
   </p>
 
   <p>
