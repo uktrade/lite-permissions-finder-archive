@@ -11,7 +11,7 @@ import au.com.dius.pact.provider.junit.target.Target;
 import au.com.dius.pact.provider.junit.target.TestTarget;
 import com.amazonaws.services.sqs.AmazonSQS;
 import org.junit.runner.RunWith;
-import pact.provider.components.common.client.NotificationServiceClientProviderPact;
+import pact.provider.components.common.client.CommonNotificationServiceProviderPact;
 
 import java.util.Collections;
 
@@ -27,7 +27,7 @@ public class NotificationServiceProviderPact {
 
   @PactVerifyProvider("a valid email notification")
   public String validEmailNotification() {
-    return NotificationServiceClientProviderPact.validEmailNotification(amazonSQS);
+    return CommonNotificationServiceProviderPact.validEmailNotification(amazonSQS);
   }
 
 }

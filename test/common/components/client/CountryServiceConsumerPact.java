@@ -10,74 +10,49 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import pact.PactConfig;
-import pact.consumer.components.common.client.CountryServiceGroupConsumerPact;
-import pact.consumer.components.common.client.CountryServiceSetConsumerPact;
+import pact.consumer.components.common.client.CommonCountryServiceSetConsumerPact;
 import play.libs.ws.WSClient;
 import play.test.WSTestClient;
 
 public class CountryServiceConsumerPact {
-  private WSClient ws;
 
   @Rule
   public final PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PactConfig.COUNTRY_SERVICE, this);
 
+  private WSClient wsClient;
+
   @Before
   public void setUp() throws Exception {
-    ws = WSTestClient.newClient(mockProvider.getPort());
+    wsClient = WSTestClient.newClient(mockProvider.getPort());
   }
 
   @After
   public void tearDown() throws Exception {
-    ws.close();
-  }
-
-  @Pact(provider = PactConfig.COUNTRY_SERVICE, consumer = PactConfig.CONSUMER)
-  public RequestResponsePact countryGroupExists(PactDslWithProvider builder) {
-    return CountryServiceGroupConsumerPact.countryGroupExists(builder);
-  }
-
-  @Pact(provider = PactConfig.COUNTRY_SERVICE, consumer = PactConfig.CONSUMER)
-  public RequestResponsePact countryGroupDoesNotExist(PactDslWithProvider builder) {
-    return CountryServiceGroupConsumerPact.countryGroupDoesNotExist(builder);
+    wsClient.close();
   }
 
   @Pact(provider = PactConfig.COUNTRY_SERVICE, consumer = PactConfig.CONSUMER)
   public RequestResponsePact countrySetExists(PactDslWithProvider builder) {
-    return CountryServiceSetConsumerPact.countrySetExists(builder);
+    return CommonCountryServiceSetConsumerPact.countrySetExists(builder);
   }
 
   @Pact(provider = PactConfig.COUNTRY_SERVICE, consumer = PactConfig.CONSUMER)
   public RequestResponsePact countrySetDoesNotExist(PactDslWithProvider builder) {
-    return CountryServiceSetConsumerPact.countrySetDoesNotExist(builder);
-  }
-
-  @Test
-  @PactVerification(value = PactConfig.COUNTRY_SERVICE, fragment = "countryGroupExists")
-  public void countryGroupExistsTest() {
-    CountryServiceClient client = CountryServiceGroupConsumerPact.buildCountryGroupExistsClient(mockProvider, ws);
-    CountryServiceGroupConsumerPact.doCountryGroupExistsTest(client);
-  }
-
-  @Test
-  @PactVerification(value = PactConfig.COUNTRY_SERVICE, fragment = "countryGroupDoesNotExist")
-  public void countryGroupDoesNotExistTest() {
-    CountryServiceClient client = CountryServiceGroupConsumerPact.buildCountryGroupDoesNotExistClient(mockProvider, ws);
-    CountryServiceGroupConsumerPact.doCountryGroupDoesNotExistTest(client);
+    return CommonCountryServiceSetConsumerPact.countrySetDoesNotExist(builder);
   }
 
   @Test
   @PactVerification(value = PactConfig.COUNTRY_SERVICE, fragment = "countrySetExists")
-  public void countrySetExistsTest() {
-    CountryServiceClient client = CountryServiceSetConsumerPact.buildCountrySetExistsClient(mockProvider, ws);
-    CountryServiceSetConsumerPact.doCountrySetExistsTest(client);
+  public void countrySetExists() throws Exception {
+    CountryServiceClient client = CommonCountryServiceSetConsumerPact.buildCountryServiceSetExistsClient(mockProvider, wsClient);
+    CommonCountryServiceSetConsumerPact.countrySetExists(client);
   }
 
   @Test
   @PactVerification(value = PactConfig.COUNTRY_SERVICE, fragment = "countrySetDoesNotExist")
-  public void countrySetDoesNotExistTest() {
-    CountryServiceClient client = CountryServiceSetConsumerPact.buildCountrySetDoesNotExistClient(mockProvider, ws);
-    CountryServiceSetConsumerPact.doCountrySetDoesNotExistTest(client);
+  public void countrySetDoesNotExistPact() throws Exception {
+    CountryServiceClient client = CommonCountryServiceSetConsumerPact.buildCountryServiceSetDoesNotExistClient(mockProvider, wsClient);
+    CommonCountryServiceSetConsumerPact.countrySetDoesNotExist(client);
   }
 
 }

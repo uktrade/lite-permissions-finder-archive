@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import pact.PactConfig;
 import pact.consumer.components.common.client.CommonPermissionsServiceConsumerPact;
 import play.libs.ws.WSClient;
 import play.test.WSTestClient;
