@@ -134,6 +134,10 @@ a[data-control-entry-id] {
 
 @include styled-blockquote;
 
+legend {
+  overflow: auto;  //Makes notice exclamation mark icon not overflow container in Safari
+}
+
 .media-desktop,
 .media-tablet,
 .media-mobile {
@@ -142,18 +146,18 @@ a[data-control-entry-id] {
 
 .media-desktop {
   @include media(desktop) {
-    display: unset;
+    display: inline;
   }
 }
 
 .media-tablet {
   @include media(tablet) {
-    display: unset;
+    display: inline;
   }
 }
 
 .media-mobile {
   @include media(mobile) {
-    display: unset;
+    display: inline;
   }
 }
