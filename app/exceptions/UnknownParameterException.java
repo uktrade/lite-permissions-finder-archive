@@ -23,7 +23,7 @@ public class UnknownParameterException extends RuntimeException {
   }
 
   public static UnknownParameterException unknownModalContentId(String modalContentId) {
-    return new UnknownParameterException("Unknown modalContentId: " + modalContentId);
+    return new UnknownParameterException("Unknown modalContentId " + modalContentId);
   }
 
   public static UnknownParameterException unknownGlobalDefinitionId(String globalDefinitionId) {
@@ -52,6 +52,14 @@ public class UnknownParameterException extends RuntimeException {
 
   public static UnknownParameterException unknownLicenceFinderOrder() {
     return new UnknownParameterException("Unknown licenceFinderOrder");
+  }
+
+  public static UnknownParameterException unknownOutcomeId(String outcomeId) {
+    return new UnknownParameterException("Unknown outcomeId " + outcomeId);
+  }
+
+  public static UnknownParameterException unknownOutcomeForSessionId(String sessionId) {
+    return new UnknownParameterException("Unknown outcome for sessionId " + sessionId);
   }
 
 }
