@@ -359,14 +359,14 @@ public class StageController extends Controller {
         sessionService.updateLastStageId(sessionId, stageId);
         return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
       } else {
-        LOGGER.error("Unknown answer " + answer);
+        LOGGER.error("Unknown answer {}", answer);
         return renderSelectOne(answerForm, stageConfig, sessionId, resumeCode);
       }
     } else if (action == Action.NONE) {
       sessionService.updateLastStageId(sessionId, stageId);
       return resultForNoMatch(sessionId, stageConfig);
     } else {
-      LOGGER.error("Unknown action " + actionParam);
+      LOGGER.error("Unknown action {}", actionParam);
       return redirectToStage(stageId, sessionId);
     }
   }
@@ -398,7 +398,7 @@ public class StageController extends Controller {
                 answerConfig.getAnswerId()));
         return redirect(routes.OutcomeController.outcomeNoResult(controlEntryId, sessionId));
       } else {
-        LOGGER.error("Unexpected outcome type %s on answer %s", outcomeType, answerConfig.getAnswerId());
+        LOGGER.error("Unexpected outcome type {} on answer {}", outcomeType, answerConfig.getAnswerId());
         return redirectToStage(stageId, sessionId);
       }
     } else {

@@ -41,11 +41,6 @@ public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
   }
 
   @Override
-  public void deleteGlobalDefinition(long id) {
-    globalDefinitionJDBIDao.delete(id);
-  }
-
-  @Override
   public void deleteAllGlobalDefinitions() {
     globalDefinitionJDBIDao.truncate();
   }

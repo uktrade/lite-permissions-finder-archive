@@ -18,11 +18,6 @@ public class StageAnswerDaoImpl implements StageAnswerDao {
   }
 
   @Override
-  public StageAnswer getStageAnswer(long id) {
-    return stageAnswerJDBIDao.get(id);
-  }
-
-  @Override
   public StageAnswer getStageAnswerByGoToStageId(long goToStageId) {
     return stageAnswerJDBIDao.getStageAnswerByGoToStageId(goToStageId);
   }
@@ -45,11 +40,6 @@ public class StageAnswerDaoImpl implements StageAnswerDao {
         stageAnswer.isDividerAbove(),
         stageAnswer.getNestedContent(),
         stageAnswer.getMoreInfoContent());
-  }
-
-  @Override
-  public void deleteStageAnswer(long id) {
-    stageAnswerJDBIDao.delete(id);
   }
 
   @Override

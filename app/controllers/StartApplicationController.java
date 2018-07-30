@@ -47,7 +47,7 @@ public class StartApplicationController {
   public Result renderStartApplication(String sessionId) {
     TriageSession triageSession = sessionService.getSessionById(sessionId);
     if (triageSession == null) {
-      LOGGER.error("Unknown sessionId " + sessionId);
+      LOGGER.error("Unknown sessionId {}", sessionId);
       return redirect(routes.StartApplicationController.createApplication());
     } else {
       return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getId(),
@@ -58,7 +58,7 @@ public class StartApplicationController {
   public Result handleSubmit(String sessionId) {
     TriageSession triageSession = sessionService.getSessionById(sessionId);
     if (triageSession == null) {
-      LOGGER.error("Unknown sessionId " + sessionId);
+      LOGGER.error("Unknown sessionId {}", sessionId);
       return redirect(routes.StartApplicationController.createApplication());
     } else {
       Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();

@@ -15,9 +15,10 @@ import play.mvc.With;
 public class AdminController extends Controller {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
-  private final PingService pingService;
 
-  private final String PING_XML_TEMPLATE = "<pingdom_http_custom_check><status>%s</status><detail>%s</detail></pingdom_http_custom_check>";
+  private static final String PING_XML_TEMPLATE = "<pingdom_http_custom_check><status>%s</status><detail>%s</detail></pingdom_http_custom_check>";
+
+  private final PingService pingService;
 
   @Inject
   public AdminController(PingService pingService) {

@@ -23,21 +23,6 @@ public class AnswerConfig {
 
   private final boolean dividerAbove;
 
-  public AnswerConfig(String answerId, String nextStageId, OutcomeType outcomeType,
-                      ControlEntryConfig associatedControlEntryConfig, int displayOrder, boolean dividerAbove) {
-    this.answerId = answerId;
-    this.nextStageId = nextStageId;
-    this.outcomeType = outcomeType;
-    this.labelText = null;
-    this.nestedContent = null;
-    this.moreInfoContent = null;
-    this.associatedControlEntryConfig = associatedControlEntryConfig;
-    this.displayOrder = displayOrder;
-    this.answerPrecedence = displayOrder;
-    this.dividerAbove = dividerAbove;
-  }
-
-
   public AnswerConfig(String answerId, String nextStageId, OutcomeType outcomeType, RichText labelText,
                       RichText nestedContent, RichText moreInfoContent,
                       ControlEntryConfig associatedControlEntryConfig, int displayOrder, int answerPrecedence,

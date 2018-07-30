@@ -18,11 +18,6 @@ public class NoteDaoImpl implements NoteDao {
   }
 
   @Override
-  public Note getNote(long id) {
-    return noteJDBIDao.get(id);
-  }
-
-  @Override
   public List<Note> getNotesForStageId(long stageId) {
     return noteJDBIDao.getForStageId(stageId);
   }
@@ -33,11 +28,6 @@ public class NoteDaoImpl implements NoteDao {
         note.getStageId(),
         note.getNoteText(),
         note.getNoteType());
-  }
-
-  @Override
-  public void deleteNote(long id) {
-    noteJDBIDao.delete(id);
   }
 
   @Override

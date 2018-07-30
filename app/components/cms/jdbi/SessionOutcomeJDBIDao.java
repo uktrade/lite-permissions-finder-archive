@@ -27,7 +27,4 @@ public interface SessionOutcomeJDBIDao {
   @SqlQuery("SELECT * FROM SESSION_OUTCOME WHERE ID = :id")
   SessionOutcome getSessionOutcomeById(@Bind("id") String id);
 
-  @SqlUpdate("DELETE FROM SESSION_OUTCOME")
-  void truncate();
-
 }

@@ -169,13 +169,13 @@ public class ChooseOgelController extends Controller {
   private List<OgelView> getOgelViews(List<ApplicableOgelView> applicableViews, Set<String> existingOgels) {
     return applicableViews.stream()
         .map(applicableOgelView -> {
-          boolean alreadyRegistered = existingOgels.contains(applicableOgelView.getId());
+          boolean ogelAlreadyRegistered = existingOgels.contains(applicableOgelView.getId());
 
           OgelView view = new OgelView();
           view.setId(applicableOgelView.getId());
           view.setName(applicableOgelView.getName());
           view.setUsageSummary(applicableOgelView.getUsageSummary());
-          view.setAlreadyRegistered(alreadyRegistered);
+          view.setAlreadyRegistered(ogelAlreadyRegistered);
           return view;
         }).collect(Collectors.toList());
   }

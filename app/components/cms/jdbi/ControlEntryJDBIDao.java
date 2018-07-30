@@ -46,9 +46,6 @@ public interface ControlEntryJDBIDao {
       @Bind("journeyId") Long journeyId
   );
 
-  @SqlUpdate("DELETE FROM control_entry WHERE id = :id")
-  void delete(@Bind("id") long id);
-
   @SqlUpdate("DELETE FROM control_entry")
   void truncate();
 

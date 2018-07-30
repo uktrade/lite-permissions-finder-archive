@@ -1,5 +1,6 @@
 package components.cms.parser.util;
 
+import exceptions.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -38,7 +39,7 @@ public class Utils {
 
   public static int columnToIndex(String column) {
     if (column == null || column.length() > 2 || column.length() == 0) {
-      throw new RuntimeException(String.format("Column %s is invalid", column));
+      throw new ServiceException(String.format("Column %s is invalid", column));
     }
     int index;
     String upperColumn = column.toUpperCase();

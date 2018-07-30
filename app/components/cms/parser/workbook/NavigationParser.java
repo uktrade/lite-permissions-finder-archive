@@ -23,20 +23,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
 public class NavigationParser {
-  
+
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(NavigationParser.class);
-  
+
   private static class SheetIndices {
     static final int UK_MILITARY_LIST = 6; // Sheet 7
   }
+
   private static class RowIndices {
     static final int NAVIGATION_START = 3; // 4
   }
+
   private static class ColumnIndices {
     static class NavigationExtras {
       static final int DIV_LINE = Utils.columnToIndex("A");
@@ -105,7 +107,7 @@ public class NavigationParser {
     List<NavigationLevel> navigationLevels = new ArrayList<>();
 
     // Expected to parse multiple sheets
-    for (int sheetIdx: Arrays.asList(SheetIndices.UK_MILITARY_LIST)) {
+    for (int sheetIdx : Collections.singletonList(SheetIndices.UK_MILITARY_LIST)) {
       Deque<NavigationLevel> navLevelStack = new ArrayDeque<>();
 
       NavigationLevel rootNavigationLevel = new NavigationLevel("ROOT", "ROOT", -1);
@@ -193,7 +195,7 @@ public class NavigationParser {
   private static NavigationExtras getNavigationExtras(Row row) {
     String divLineStr = Utils.getCellStringValue(row, ColumnIndices.NavigationExtras.DIV_LINE);
     boolean divLine = "X".equalsIgnoreCase(divLineStr);
-    return  new NavigationExtras(divLine);
+    return new NavigationExtras(divLine);
   }
 
   private static OnPageContent getOnPageContent(Row row) {

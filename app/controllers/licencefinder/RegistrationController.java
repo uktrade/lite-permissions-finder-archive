@@ -46,7 +46,7 @@ public class RegistrationController extends Controller {
     try {
       JsonNode json = request().body().asJson();
       callbackView = Json.fromJson(json, CallbackView.class);
-      LOGGER.info("Registration callback received {transactionId={}, callbackView={}}", sessionId, json.toString());
+      LOGGER.info("Registration callback received {transactionId={}, callbackView={}}", sessionId, json);
     } catch (RuntimeException e) {
       String errorMessage = String.format("Registration callback error - Invalid callback registration request for sessionId %s, callbackBody=\"%s\"", sessionId, request().body().asText());
       LOGGER.error(errorMessage, e);

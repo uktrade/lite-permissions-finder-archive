@@ -46,11 +46,6 @@ public class StageDaoImpl implements StageDao {
   }
 
   @Override
-  public void deleteStage(long id) {
-    stageJDBIDao.delete(id);
-  }
-
-  @Override
   public void deleteAllStages() {
     stageJDBIDao.truncate();
   }

@@ -128,7 +128,7 @@ public class RichTextParserImpl implements RichTextParser {
 
   private List<RichTextNode> flattenConsecutiveSimpleTextNodes(List<RichTextNode> inputNodes) {
     List<RichTextNode> resultNodes = new ArrayList<>();
-    StringBuffer simpleText = new StringBuffer();
+    StringBuilder simpleText = new StringBuilder();
 
     for (RichTextNode inputNode : inputNodes) {
       if (inputNode instanceof SimpleTextNode) {
@@ -136,7 +136,7 @@ public class RichTextParserImpl implements RichTextParser {
       } else {
         if (simpleText.length() > 0) {
           resultNodes.add(new SimpleTextNode(simpleText.toString()));
-          simpleText = new StringBuffer();
+          simpleText = new StringBuilder();
         }
 
         resultNodes.add(inputNode);

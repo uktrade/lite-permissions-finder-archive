@@ -55,11 +55,6 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
   }
 
   @Override
-  public void deleteControlEntry(long id) {
-    controlEntryJDBIDao.delete(id);
-  }
-
-  @Override
   public void deleteAllControlEntries() {
     controlEntryJDBIDao.truncate();
   }

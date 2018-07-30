@@ -3,6 +3,7 @@ package utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import exceptions.ServiceException;
 import org.apache.commons.collections4.ListUtils;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class JsonUtils {
     try {
       return OBJECT_MAPPER.readValue(json, STRING_LIST_TYPE_REFERENCE);
     } catch (IOException ioe) {
-      throw new RuntimeException("Failed to convert json to list", ioe);
+      throw new ServiceException("Failed to convert json to list", ioe);
     }
   }
 
@@ -29,7 +30,7 @@ public class JsonUtils {
     try {
       return OBJECT_MAPPER.writeValueAsString(object);
     } catch (JsonProcessingException jpe) {
-      throw new RuntimeException("Failed to convert object to json", jpe);
+      throw new ServiceException("Failed to convert object to json", jpe);
     }
   }
 

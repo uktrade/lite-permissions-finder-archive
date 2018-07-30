@@ -14,8 +14,6 @@ public interface LocalDefinitionDao {
 
   Long insertLocalDefinition(LocalDefinition localDefinition);
 
-  void deleteLocalDefinition(long id);
-
   void deleteAllLocalDefinitions();
 
 }

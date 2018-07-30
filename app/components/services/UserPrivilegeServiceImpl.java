@@ -3,6 +3,7 @@ package components.services;
 import com.google.inject.Inject;
 import components.common.client.UserServiceClientBasicAuth;
 import components.common.client.UserServiceClientJwt;
+import exceptions.ServiceException;
 import triage.session.SessionOutcome;
 import uk.gov.bis.lite.user.api.view.UserAccountTypeView;
 import uk.gov.bis.lite.user.api.view.UserPrivilegesView;
@@ -31,7 +32,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
     try {
       return userServiceClientJwt.getUserPrivilegeView(userId).toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException("Unable to get userPrivilegesView for userId " + userId, e);
+      throw new ServiceException("Unable to get userPrivilegesView for userId " + userId, e);
     }
   }
 
@@ -39,7 +40,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
     try {
       return userServiceClientBasicAuth.getUserAccountTypeView(userId).toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException("Unable to get userAccountTypeView for userId " + userId, e);
+      throw new ServiceException("Unable to get userAccountTypeView for userId " + userId, e);
     }
   }
 

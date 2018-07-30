@@ -18,8 +18,6 @@ public interface ControlEntryDao {
 
   Long insertControlEntry(ControlEntry controlEntry);
 
-  void deleteControlEntry(long id);
-
   void deleteAllControlEntries();
 
 }

@@ -13,18 +13,8 @@ import java.util.List;
 public interface StageAnswerJDBIDao {
 
   @Mapper(StageAnswerRSMapper.class)
-  @SqlQuery("SELECT * FROM stage_answer WHERE id = :id")
-  StageAnswer get(@Bind("id") long id);
-
-  @Mapper(StageAnswerRSMapper.class)
   @SqlQuery("SELECT * FROM stage_answer WHERE go_to_stage_id = :goToStageId")
   StageAnswer getStageAnswerByGoToStageId(@Bind("goToStageId") long goToStageId);
-
-  @Mapper(StageAnswerRSMapper.class)
-  @SqlQuery("SELECT * FROM stage_answer WHERE control_entry_id = :controlEntryId AND go_to_stage_answer_outcome_type = :goToStageAnswerOutcomeType")
-  List<StageAnswer> getStageAnswersByControlEntryIdAndOutcomeType(
-      @Bind("controlEntryId") long controlEntryId,
-      @Bind("goToStageAnswerOutcomeType") String stageAnswerOutcomeType);
 
   @Mapper(StageAnswerRSMapper.class)
   @SqlQuery("SELECT * FROM stage_answer WHERE stage_id = :stageId")
@@ -45,9 +35,6 @@ public interface StageAnswerJDBIDao {
       @Bind("dividerAbove") Boolean dividerAbove,
       @Bind("nestedContent") String nestedContent,
       @Bind("moreInfoContent") String moreInfoContent);
-
-  @SqlUpdate("DELETE FROM stage_answer WHERE id = :id")
-  void delete(@Bind("id") long id);
 
   @SqlUpdate("DELETE FROM stage_answer")
   void truncate();
