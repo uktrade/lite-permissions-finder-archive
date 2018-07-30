@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.google.inject.Inject;
+import exceptions.ServiceException;
 import exceptions.UnknownParameterException;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -43,12 +44,12 @@ public class ModalContentController extends Controller {
     try {
       URL resource = ModalContentController.class.getClassLoader().getResource(name);
       if (resource == null) {
-        throw new RuntimeException("Not a file: " + name);
+        throw new ServiceException("Not a file: " + name);
       } else {
         return new Html(Resources.toString(resource, Charsets.UTF_8));
       }
     } catch (IOException ioe) {
-      throw new RuntimeException("Failed to read " + name, ioe);
+      throw new ServiceException("Failed to read: " + name, ioe);
     }
   }
 

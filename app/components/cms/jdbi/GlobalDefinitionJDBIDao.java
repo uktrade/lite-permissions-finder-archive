@@ -29,9 +29,6 @@ public interface GlobalDefinitionJDBIDao {
   @SqlQuery("SELECT id FROM global_definition")
   List<Long> getAllIds();
 
-  @SqlUpdate("DELETE FROM global_definition WHERE id = :id")
-  void delete(@Bind("id") long id);
-
   @SqlUpdate("DELETE FROM global_definition")
   void truncate();
 

@@ -41,11 +41,6 @@ public class LocalDefinitionDaoImpl implements LocalDefinitionDao {
   }
 
   @Override
-  public void deleteLocalDefinition(long id) {
-    localDefinitionJDBIDao.delete(id);
-  }
-
-  @Override
   public void deleteAllLocalDefinitions() {
     localDefinitionJDBIDao.truncate();
   }

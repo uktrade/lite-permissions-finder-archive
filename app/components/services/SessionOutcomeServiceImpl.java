@@ -79,8 +79,8 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   }
 
   @Override
-  public String generateNotFoundNlrLetter(String sessionId, String userId, AccountData accountData,
-                                          ControlEntryConfig controlEntryConfig, String resumeCode, Html description) {
+  public void generateNotFoundNlrLetter(String sessionId, String userId, AccountData accountData,
+                                        ControlEntryConfig controlEntryConfig, String resumeCode, Html description) {
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(sessionId,
         controlEntryConfig, false, HtmlRenderOption.OMIT_LINKS);
     List<RelatedEntryView> relatedEntryViews = breadcrumbViewService.createRelatedEntryViews(sessionId,
@@ -88,21 +88,21 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
 
     Html nlrBreadcrumb = itemNotFoundBreadcrumb.render(breadcrumbItemViews, relatedEntryViews, null);
 
-    return generateLetter(sessionId, userId, accountData, resumeCode, SessionOutcomeType.NLR_NOT_FOUND, nlrBreadcrumb, description);
+    generateLetter(sessionId, userId, accountData, resumeCode, SessionOutcomeType.NLR_NOT_FOUND, nlrBreadcrumb, description);
   }
 
   @Override
-  public String generateDecontrolNlrLetter(String sessionId, String userId, AccountData accountData,
-                                           StageConfig stageConfig, String resumeCode, Html description) {
+  public void generateDecontrolNlrLetter(String sessionId, String userId, AccountData accountData,
+                                         StageConfig stageConfig, String resumeCode, Html description) {
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, false, HtmlRenderOption.OMIT_LINKS);
     Html nlrBreadcrumb = decontrolBreadcrumb.render(null, breadcrumbView, answerViews);
 
-    return generateLetter(sessionId, userId, accountData, resumeCode, SessionOutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
+    generateLetter(sessionId, userId, accountData, resumeCode, SessionOutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
   }
 
-  private String generateLetter(String sessionId, String userId, AccountData accountData, String resumeCode,
-                                SessionOutcomeType outcomeType, Html nlrBreadcrumb, Html description) {
+  private void generateLetter(String sessionId, String userId, AccountData accountData, String resumeCode,
+                              SessionOutcomeType outcomeType, Html nlrBreadcrumb, Html description) {
     CustomerView customerView = accountData.getCustomerView();
     SiteView siteView = accountData.getSiteView();
 
@@ -120,7 +120,6 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
         userDetailsView.getFullName(), url);
     permissionsFinderNotificationClient.sendNlrDocumentToEcjuEmail(userDetailsView.getContactEmailAddress(),
         userDetailsView.getFullName(), url, resumeCode, customerView.getCompanyName(), address.getPlainText());
-    return id;
   }
 
   private String createOutcomeId() {

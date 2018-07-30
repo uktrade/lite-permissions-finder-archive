@@ -65,6 +65,7 @@ import components.services.SessionOutcomeService;
 import components.services.SessionOutcomeServiceImpl;
 import components.services.UserPrivilegeService;
 import components.services.UserPrivilegeServiceImpl;
+import exceptions.ServiceException;
 import filters.common.JwtRequestFilter;
 import filters.common.JwtRequestFilterConfig;
 import models.template.AnalyticsConfig;
@@ -229,7 +230,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     if (StringUtils.isNoneBlank(profileName)) {
       return new ProfileCredentialsProvider(profileName);
     } else if (StringUtils.isBlank(accessKey) || StringUtils.isBlank(secretKey)) {
-      throw new RuntimeException("accessKey and secretKey must both be specified if no profile name is specified");
+      throw new ServiceException("accessKey and secretKey must both be specified if no profile name is specified");
     } else {
       return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
     }

@@ -31,7 +31,7 @@ public class PermissionsFinderErrorHandler extends ErrorHandler {
   @Override
   public CompletionStage<Result> onClientError(Http.RequestHeader request, int statusCode, String message) {
     if (statusCode == Http.Status.NOT_FOUND || statusCode == Http.Status.BAD_REQUEST) {
-      LOGGER.warn(statusCode + " " + message);
+      LOGGER.warn("{} {}", statusCode, message);
       return CompletableFuture.completedFuture(notFound(notFound.render()));
     } else {
       return super.onClientError(request, statusCode, message);

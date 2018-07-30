@@ -23,11 +23,6 @@ public class JourneyDaoImpl implements JourneyDao {
   }
 
   @Override
-  public List<Journey> getAllJourneys() {
-    return journeyJDBIDao.getAll();
-  }
-
-  @Override
   public List<Journey> getJourneysByJourneyName(String journeyName) {
     return journeyJDBIDao.getByJourneyName(journeyName);
   }
@@ -40,11 +35,6 @@ public class JourneyDaoImpl implements JourneyDao {
   @Override
   public void updateJourney(long id, Journey journey) {
     journeyJDBIDao.update(id, journey.getJourneyName(), journey.getInitialStageId());
-  }
-
-  @Override
-  public void deleteJourney(long id) {
-    journeyJDBIDao.delete(id);
   }
 
   @Override

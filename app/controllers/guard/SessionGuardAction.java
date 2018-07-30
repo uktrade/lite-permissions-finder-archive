@@ -45,7 +45,7 @@ public class SessionGuardAction extends Action.Simple {
 
   private CompletionStage<Result> unknownSession(String sessionId) {
     flashService.flashInvalidSession();
-    LOGGER.error("Unknown or blank sessionId " + sessionId);
+    LOGGER.error("Unknown or blank sessionId {}", sessionId);
     return completedFuture(redirect(routes.StartApplicationController.createApplication()));
   }
 

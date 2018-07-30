@@ -84,7 +84,7 @@ public class ModalControlEntryController extends Controller {
     return journeyConfigService.getPrincipleStageConfigForControlEntry(controlEntryConfig)
         .map(stageConfig -> controllers.routes.StageController.render(stageConfig.getStageId(), sessionId).toString())
         .orElseGet(() -> {
-          LOGGER.info("Cannot create \"Go to this control entry\" link for invalid controlEntryId " + controlEntryConfig.getId());
+          LOGGER.info("Cannot create \"Go to this control entry\" link for invalid controlEntryId {}", controlEntryConfig.getId());
           return null;
         });
   }

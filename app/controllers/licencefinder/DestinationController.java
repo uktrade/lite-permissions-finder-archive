@@ -20,12 +20,12 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
 import uk.gov.bis.lite.countryservice.api.CountryView;
-import utils.CountryUtils;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -94,8 +94,10 @@ public class DestinationController extends Controller {
   }
 
   private List<CountryView> getCountries() {
-    return CountryUtils.getFilteredCountries(CountryUtils.getSortedCountries(countryProvider.getCountries()),
-        Collections.singletonList(UNITED_KINGDOM), true);
+    return countryProvider.getCountries().stream()
+        .sorted(Comparator.comparing(CountryView::getCountryName))
+        .filter(countryView -> !countryView.getCountryRef().equals(UNITED_KINGDOM))
+        .collect(Collectors.toList());
   }
 
   private boolean isValidCountry(List<CountryView> countries, String countryRef) {
@@ -116,7 +118,7 @@ public class DestinationController extends Controller {
 
     public ValidationError validate() {
       if (multipleCountries != null && multipleCountries && StringUtils.isEmpty(firstConsigneeCountry)) {
-        return new ValidationError("firstConsigneeCountry", "Enter the first consignee's country or territory");
+        return new ValidationError(FIRST_CONSIGNEE_COUNTRY, "Enter the first consignee's country or territory");
       } else {
         return null;
       }

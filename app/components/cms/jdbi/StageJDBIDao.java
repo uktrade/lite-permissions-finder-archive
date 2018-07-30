@@ -40,9 +40,6 @@ public interface StageJDBIDao {
       @Bind("nextStageId") Long nextStageId,
       @Bind("goToOutcomeType") OutcomeType outcomeType);
 
-  @SqlUpdate("DELETE FROM stage WHERE id = :id")
-  void delete(@Bind("id") long id);
-
   @SqlUpdate("DELETE FROM stage")
   void truncate();
 

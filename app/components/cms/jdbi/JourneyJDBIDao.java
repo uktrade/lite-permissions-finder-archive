@@ -16,10 +16,6 @@ public interface JourneyJDBIDao {
   Journey get(@Bind("id") long id);
 
   @Mapper(JourneyRSMapper.class)
-  @SqlQuery("SELECT * FROM journey ORDER BY id DESC")
-  List<Journey> getAll();
-
-  @Mapper(JourneyRSMapper.class)
   @SqlQuery("SELECT * FROM journey WHERE journey_name = :journeyName ORDER BY id DESC")
   List<Journey> getByJourneyName(@Bind("journeyName") String journeyName);
 
@@ -35,10 +31,8 @@ public interface JourneyJDBIDao {
           "journey_name = :journeyName, " +
           "initial_stage_id = :initialStageId " +
           "WHERE id = :id")
-  void update(@Bind("id") long id, @Bind("journeyName") String journeyName, @Bind("initialStageId") Long initialStageId);
-
-  @SqlUpdate("DELETE FROM journey WHERE id = :id")
-  void delete(@Bind("id") long id);
+  void update(@Bind("id") long id, @Bind("journeyName") String journeyName,
+              @Bind("initialStageId") Long initialStageId);
 
   @SqlUpdate("DELETE FROM journey")
   void truncate();

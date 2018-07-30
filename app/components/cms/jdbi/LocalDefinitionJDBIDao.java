@@ -29,9 +29,6 @@ public interface LocalDefinitionJDBIDao {
   @SqlQuery("SELECT id FROM local_definition")
   List<Long> getAllIds();
 
-  @SqlUpdate("DELETE FROM local_definition WHERE id = :id")
-  void delete(@Bind("id") long id);
-
   @SqlUpdate("DELETE FROM local_definition")
   void truncate();
 

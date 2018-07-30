@@ -13,8 +13,6 @@ public interface StageDao {
 
   Long insertStage(Stage stage);
 
-  void deleteStage(long id);
-
   void deleteAllStages();
 
 }

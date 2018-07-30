@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import components.services.FlashService;
+import exceptions.ServiceException;
 import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -12,7 +13,6 @@ import scala.Option;
 import triage.session.SessionService;
 import triage.session.TriageSession;
 import views.html.util.heading;
-import views.html.util.headingBanner;
 
 import java.io.IOException;
 import java.net.URL;
@@ -63,7 +63,6 @@ public class StaticContentController extends Controller {
   }
 
   private static final Function<String, Html> HEADING_STANDARD_FUNC = title -> heading.render(title, "heading-large", false);
-  private static final Function<String, Html> HEADING_BANNER_FUNC = headingBanner::render;
 
   public Result renderStaticHtml(StaticHtml staticHtml, String sessionId) {
     String resumeCode;
@@ -81,7 +80,7 @@ public class StaticContentController extends Controller {
     try {
       URL resource = getClass().getClassLoader().getResource("static/html/" + staticHtml.filename);
       if (resource == null) {
-        throw new RuntimeException("Not a file: " + staticHtml.filename);
+        throw new ServiceException("Not a file: " + staticHtml.filename);
       } else {
         return ok(staticContent.render(staticHtml.title,
             Option.apply(staticHtml.pageHeading),
@@ -90,7 +89,7 @@ public class StaticContentController extends Controller {
             resumeCode));
       }
     } catch (IOException e) {
-      throw new RuntimeException("Failed to read", e);
+      throw new ServiceException("Failed to read", e);
     }
   }
 
@@ -118,11 +117,13 @@ public class StaticContentController extends Controller {
     return renderStaticHtml(StaticHtml.UNKNOWN_OUTCOME, null);
   }
 
-  public Result renderFairProcessingNote() { return renderStaticHtml(StaticHtml.FAIR_PROCESSING_NOTE, null); }
+  public Result renderFairProcessingNote() {
+    return renderStaticHtml(StaticHtml.FAIR_PROCESSING_NOTE, null);
+  }
 
   private Result unknownSession(String sessionId) {
     flashService.flashInvalidSession();
-    LOGGER.error("Unknown or blank sessionId " + sessionId);
+    LOGGER.error("Unknown or blank sessionId {}", sessionId);
     return redirect(routes.StartApplicationController.createApplication());
   }
 
