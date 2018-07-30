@@ -42,25 +42,25 @@ public class RegistrationController extends Controller {
    */
   @BodyParser.Of(BodyParser.Json.class)
   public Result handleRegistrationCallback(String sessionId) {
-
     CallbackView callbackView;
     try {
       JsonNode json = request().body().asJson();
       callbackView = Json.fromJson(json, CallbackView.class);
-      LOGGER.info("Registration callback received {transactionId={}, callbackView={}}", sessionId, json);
-    } catch (RuntimeException e) {
-      String errorMessage = String.format("Registration callback error - Invalid callback registration request for sessionId %s, callbackBody=\"%s\"", sessionId, request().body().asText());
-      LOGGER.error(errorMessage, e);
+      LOGGER.info("Received registration callback for sessionId {} with json {}", sessionId, json);
+    } catch (Exception exception) {
+      String errorMessage = String.format("Unable to parse registration callback for sessionId %s with body %s",
+          sessionId, request().body().asText());
+      LOGGER.error(errorMessage, exception);
       return badRequest(Json.toJson(errorResponse(errorMessage)));
     }
-
     try {
       handleCallback(sessionId, callbackView);
       return ok(Json.toJson(okResponse()));
-    } catch (Exception e) {
-      String errorMessage = String.format("Registration callback handling error for sessionId %s", sessionId);
-      LOGGER.error(errorMessage, e);
-      return badRequest(Json.toJson(errorResponse(errorMessage + " - " + e.getMessage())));
+    } catch (Exception exception) {
+      String errorMessage = String.format("Invalid registration callback for sessionId %s with json %s",
+          sessionId, request().body().asJson());
+      LOGGER.error(errorMessage, exception);
+      return badRequest(Json.toJson(errorResponse(errorMessage + " " + exception.getMessage())));
     }
   }
 
@@ -88,7 +88,7 @@ public class RegistrationController extends Controller {
       permissionsFinderNotificationClient.sendRegisteredOgelEmailToEcju(userEmailAddress, applicantName, resumeCode,
           companyName, siteAddress, ogelUrl);
     } else {
-      LOGGER.error("CallbackView for session {}, request id {} is missing registrationReference (result: {})",
+      LOGGER.error("CallbackView for sessionId {} with requestId {} and result {} is missing registrationReference",
           sessionId, callbackView.getRequestId(), callbackView.getResult());
       throw UnknownParameterException.unknownCallbackViewResult(callbackView.getResult());
     }
