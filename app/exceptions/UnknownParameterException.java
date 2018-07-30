@@ -1,5 +1,7 @@
 package exceptions;
 
+import uk.gov.bis.lite.permissions.api.view.CallbackView;
+
 public class UnknownParameterException extends RuntimeException {
 
   private UnknownParameterException(String message) {
@@ -60,6 +62,10 @@ public class UnknownParameterException extends RuntimeException {
 
   public static UnknownParameterException unknownOutcomeForSessionId(String sessionId) {
     return new UnknownParameterException("Unknown outcome for sessionId " + sessionId);
+  }
+
+  public static UnknownParameterException unknownCallbackViewResult(CallbackView.Result result) {
+    return new UnknownParameterException("Unknown CallbackView Result " + result);
   }
 
 }

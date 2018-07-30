@@ -12,6 +12,7 @@ import exceptions.UnknownParameterException;
 import models.persistence.RegisterLicence;
 import models.view.licencefinder.Customer;
 import models.view.licencefinder.Site;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -70,19 +71,27 @@ public class RegistrationController extends Controller {
     String resumeCode = licenceFinderDao.getResumeCode(sessionId).orElseThrow(UnknownParameterException::unknownLicenceFinderOrder);
 
     String registrationReference = callbackView.getRegistrationReference();
-    registerLicence.setRegistrationReference(registrationReference);
-    licenceFinderDao.saveRegisterLicence(sessionId, registerLicence);
 
-    // Send confirmation email to user
-    String ogelUrl = permissionsFinderUrl + routes.ViewOgelController.viewOgel(registrationReference);
-    String userEmailAddress = registerLicence.getUserEmailAddress();
-    String applicantName = registerLicence.getUserFullName();
-    permissionsFinderNotificationClient.sendRegisteredOgelToUserEmail(userEmailAddress, applicantName, ogelUrl);
+    if (StringUtils.isNoneBlank(registrationReference)) {
+      registerLicence.setRegistrationReference(registrationReference);
+      licenceFinderDao.saveRegisterLicence(sessionId, registerLicence);
 
-    // Send confirmation email to Ecju
-    String companyName = customer.getCompanyName();
-    String siteAddress = site.getAddress();
-    permissionsFinderNotificationClient.sendRegisteredOgelEmailToEcju(userEmailAddress, applicantName, resumeCode, companyName, siteAddress, ogelUrl);
+      // Send confirmation email to user
+      String ogelUrl = permissionsFinderUrl + routes.ViewOgelController.viewOgel(registrationReference);
+      String userEmailAddress = registerLicence.getUserEmailAddress();
+      String applicantName = registerLicence.getUserFullName();
+      permissionsFinderNotificationClient.sendRegisteredOgelToUserEmail(userEmailAddress, applicantName, ogelUrl);
+
+      // Send confirmation email to Ecju
+      String companyName = customer.getCompanyName();
+      String siteAddress = site.getAddress();
+      permissionsFinderNotificationClient.sendRegisteredOgelEmailToEcju(userEmailAddress, applicantName, resumeCode,
+          companyName, siteAddress, ogelUrl);
+    } else {
+      LOGGER.error("CallbackView for session {}, request id {} is missing registrationReference (result: {})",
+          sessionId, callbackView.getRequestId(), callbackView.getResult());
+      throw UnknownParameterException.unknownCallbackViewResult(callbackView.getResult());
+    }
   }
 
 }
