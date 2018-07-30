@@ -1,32 +1,26 @@
 package models.callback;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import play.mvc.Http;
 
 public class RegistrationCallbackResponse {
 
-  @JsonIgnore
-  private static final String STATUS_OK = "ok";
-
-  @JsonIgnore
-  private static final String STATUS_ERROR = "error";
-
-  private String status;
+  private int status;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String errorMessage;
 
-  public RegistrationCallbackResponse status(String status) {
+  public RegistrationCallbackResponse setStatus(int status) {
     this.status = status;
     return this;
   }
 
-  public RegistrationCallbackResponse errorMessage(String errorMessage) {
+  public RegistrationCallbackResponse setErrorMessage(String errorMessage) {
     this.errorMessage = errorMessage;
     return this;
   }
 
-  public String getStatus() {
+  public int getStatus() {
     return status;
   }
 
@@ -35,11 +29,11 @@ public class RegistrationCallbackResponse {
   }
 
   public static RegistrationCallbackResponse okResponse() {
-    return new RegistrationCallbackResponse().status(STATUS_OK);
+    return new RegistrationCallbackResponse().setStatus(Http.Status.OK);
   }
 
   public static RegistrationCallbackResponse errorResponse(String errorMessage) {
-    return new RegistrationCallbackResponse().status(STATUS_ERROR)
-        .errorMessage(errorMessage);
+    return new RegistrationCallbackResponse().setStatus(Http.Status.BAD_REQUEST)
+        .setErrorMessage(errorMessage);
   }
 }
