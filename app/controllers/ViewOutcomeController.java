@@ -12,6 +12,7 @@ import components.services.AccountService;
 import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
 import controllers.guard.SessionGuardAction;
+import exceptions.UnknownParameterException;
 import models.AccountData;
 import models.enums.SessionOutcomeType;
 import models.view.form.ItemDescriptionForm;
@@ -78,7 +79,7 @@ public class ViewOutcomeController {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeById(outcomeId);
     if (sessionOutcome == null) {
       LOGGER.warn("Unknown outcomeId {}", outcomeId);
-      return redirect(routes.StaticContentController.renderUnknownOutcome());
+      throw UnknownParameterException.unknownOutcomeId(outcomeId);
     } else {
       String userId = spireAuthManager.getAuthInfoFromContext().getId();
       if (userPrivilegeService.canViewOutcome(userId, sessionOutcome)) {
@@ -91,7 +92,7 @@ public class ViewOutcomeController {
       } else {
         LOGGER.error("User with userId {} doesn't have privilege to view outcome with outcomeId {} ",
             userId, sessionOutcome.getId());
-        return redirect(routes.StaticContentController.renderUnknownOutcome());
+        throw UnknownParameterException.unknownOutcomeId(outcomeId);
       }
     }
   }
@@ -104,7 +105,7 @@ public class ViewOutcomeController {
       return ok(nlrRegisterSuccess.render(sessionOutcome.getId(), resumeCode));
     } else {
       LOGGER.warn("Unknown sessionId or no outcome for sessionId {}", sessionId);
-      return redirect(routes.StaticContentController.renderUnknownOutcome());
+      throw UnknownParameterException.unknownOutcomeForSessionId(sessionId);
     }
   }
 
