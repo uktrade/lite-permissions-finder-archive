@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   filters
 )
 
-libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.1"
+libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.0"
 
 libraryDependencies += "org.flywaydb" %% "flyway-play" % "5.0.0"
 libraryDependencies += "org.postgresql" % "postgresql" % "42.2.2"
