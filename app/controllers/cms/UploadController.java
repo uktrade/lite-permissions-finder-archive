@@ -70,7 +70,7 @@ public class UploadController extends Controller {
             ParserResult parserResult = parser.parse(file);
             loader.load(parserResult);
             // Caching takes ages, means that this method never finishes!
-            //cachePopulationService.populateCache();
+            cachePopulationService.populateCache();
 
             System.out.println("File parsed successfully");
 
