@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   filters
 )
 
-libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.7",
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.7"
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.2"
 
 libraryDependencies += "org.flywaydb" %% "flyway-play" % "5.0.0"
