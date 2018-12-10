@@ -74,7 +74,7 @@ GET     /stage/related/:controlEntryId              controllers.StageController.
 POST    /stage/related/:controlEntryId              controllers.StageController.handleRelatedEntriesSubmit(controlEntryId, sessionId)
 
 + nocsrf
-GET     /cms/spreadsheet                            controllers.cms.UploadController.spreadsheetUpload
+PUT     /cms/spreadsheet                            controllers.cms.UploadController.spreadsheetUpload
 
 GET     /view-outcome/:outcomeId                    controllers.ViewOutcomeController.renderOutcome(outcomeId)
 GET     /save-listed-outcome/:controlEntryId        controllers.ViewOutcomeController.saveListedOutcome(sessionId, controlEntryId)
