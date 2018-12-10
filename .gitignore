@@ -10,3 +10,5 @@ target
 /conf/application.conf
 /conf/logback.xml
 /.scannerwork
+/app/assets/spreadsheet/..
+.DS_Store
