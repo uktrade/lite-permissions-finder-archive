@@ -5,7 +5,7 @@
 
 @this(standardPage: standardPage)
 @(form: Form[_], sessionId: String, resumeCode: String)
-@standardPage("Before you begin", Some(heading("Before you begin"))) {
+@standardPage("Before you begin", Some(heading("Before you begin")), showBackLink = true) {
   @errorSummary(form)
 } {
 
