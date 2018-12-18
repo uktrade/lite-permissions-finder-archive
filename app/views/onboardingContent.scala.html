@@ -8,7 +8,7 @@
 @(form: Form[_], options: List[SelectOption], sessionId: String, resumeCode: String)
 @question = { Has your item been specially designed or modified for military use? }
 
-@standardPage(question.toString, Some(heading(question.toString)), resumeCode = resumeCode) {
+@standardPage(question.toString, Some(heading(question.toString)), resumeCode = resumeCode, showBackLink = true) {
   @errorSummary(form)
 } {
 
