@@ -1,3 +1,10 @@
 .below-button-label {
   padding-top: 5px;
 }
+
+blockquote p {
+	padding-left: 25px;
+	:before {
+		margin-left: -10px;
+	}
+}
