@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DefinitionParser {
   private static class SheetIndices {
-    static final int DEFINITIONS = 3; // Sheet 4
+    static final int DEFINITIONS = 0; // Sheet 1
   }
 
   private static class RowIndices {

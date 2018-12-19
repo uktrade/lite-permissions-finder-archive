@@ -32,7 +32,7 @@ public class NavigationParser {
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(NavigationParser.class);
 
   private static class SheetIndices {
-    static final int UK_MILITARY_LIST = 6; // Sheet 7
+    static final int UK_MILITARY_LIST = 1; // Sheet 2
   }
 
   private static class RowIndices {
