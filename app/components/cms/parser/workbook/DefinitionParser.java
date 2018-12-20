@@ -15,7 +15,7 @@ public class DefinitionParser {
   }
 
   private static class RowIndices {
-    static final int START = 1; // 2
+    static final int START = 1; // Row 2
   }
 
   private static class ColumnIndices {

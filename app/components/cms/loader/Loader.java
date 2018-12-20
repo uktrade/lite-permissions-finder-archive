@@ -21,6 +21,7 @@ import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Notes;
+import components.cms.parser.workbook.NavigationParser;
 import models.cms.ControlEntry;
 import models.cms.GlobalDefinition;
 import models.cms.Journey;
@@ -35,10 +36,11 @@ import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
-import triage.config.JourneyConfigServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Loader {
@@ -59,15 +61,15 @@ public class Loader {
 
   @Inject
   public Loader(
-      ControlEntryDao controlEntryDao,
-      GlobalDefinitionDao globalDefinitionDao,
-      JourneyDao journeyDao,
-      LocalDefinitionDao localDefinitionDao,
-      NoteDao noteDao,
-      StageAnswerDao stageAnswerDao,
-      StageDao stageDao,
-      SessionStageDao sessionStageDao,
-      RelatedControlEntryDao relatedControlEntryDao) {
+          ControlEntryDao controlEntryDao,
+          GlobalDefinitionDao globalDefinitionDao,
+          JourneyDao journeyDao,
+          LocalDefinitionDao localDefinitionDao,
+          NoteDao noteDao,
+          StageAnswerDao stageAnswerDao,
+          StageDao stageDao,
+          SessionStageDao sessionStageDao,
+          RelatedControlEntryDao relatedControlEntryDao) {
     this.controlEntryDao = controlEntryDao;
     this.globalDefinitionDao = globalDefinitionDao;
     this.journeyDao = journeyDao;
@@ -80,24 +82,47 @@ public class Loader {
   }
 
   public void load(ParserResult parserResult) {
-    clearDown();
-    NavigationLevel rootNavigationLevel = new NavigationLevel("ROOT", "ROOT", -1);
-    rootNavigationLevel.addAllSubNavigationlevels(parserResult.getNavigationLevels());
-    Journey journey = new Journey().setJourneyName(JourneyConfigServiceImpl.DEFAULT_JOURNEY_NAME);
-    Long journeyId = journeyDao.insertJourney(journey);
-    generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
-    createControlEntries(null, 1, rootNavigationLevel, journeyId);
-    createStages(journeyId, rootNavigationLevel);
-    createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
-    createLocalDefinitions(rootNavigationLevel);
-    createGlobalDefinitions(parserResult.getDefinitions(), journeyId);
-    createRelatedControlEntries(true, rootNavigationLevel);
+    // Empty the database before insertion
+    clearDatabase();
 
-    // Resolve initial stage id from stage associated with first sub-level of navigation levels
-    Long initialStageId = rootNavigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
-    journey = journeyDao.getJourney(journeyId);
-    journey.setInitialStageId(initialStageId);
-    journeyDao.updateJourney(journeyId, journey);
+    // Get list of sheets (eg Military, Dual Use)
+    List<NavigationLevel> initialLevels = parserResult.getNavigationLevels();
+
+    // Loop through available sheets
+    for (Map.Entry<Integer, String> entry : NavigationParser.sheetIndices.entrySet()) {
+      NavigationLevel rootNavigationLevel = new NavigationLevel("ROOT", "ROOT", -1);
+
+      // Generate a new journey for each sheet
+      Journey journey = new Journey().setJourneyName(entry.getValue());
+      Long journeyId = journeyDao.insertJourney(journey);
+
+      // Get navigation level associated with the correct list
+      Optional<NavigationLevel> subNavigationLevel = initialLevels.stream()
+              .filter(a -> a.getList().equalsIgnoreCase(entry.getValue())).findFirst();
+
+      // Ensure that subNavigationLevel is present
+      if (!subNavigationLevel.isPresent()) {
+        continue;
+      }
+
+      // Add navigation level to root
+      rootNavigationLevel.addSubNavigationLevel(subNavigationLevel.get());
+
+      // Populate
+      generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
+      createControlEntries(null, 1, rootNavigationLevel, journeyId);
+      createStages(journeyId, rootNavigationLevel);
+      createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
+      createLocalDefinitions(rootNavigationLevel);
+      createGlobalDefinitions(parserResult.getDefinitions(), journeyId, entry.getValue());
+      createRelatedControlEntries(true, rootNavigationLevel);
+
+      // Resolve initial stage id from stage associated with first sub-level of navigation levels
+      Long initialStageId = rootNavigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
+      journey = journeyDao.getJourney(journeyId);
+      journey.setInitialStageId(initialStageId);
+      journeyDao.updateJourney(journeyId, journey);
+    }
   }
 
   public void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel, String parentId, int index) {
@@ -133,9 +158,9 @@ public class Loader {
     ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
     if (controlListEntries != null && controlListEntries.getRating() != null) {
       ControlEntry controlEntry = new ControlEntry()
-          .setParentControlEntryId(parentControlEntryId)
-          .setFullDescription(navigationLevel.getContent())
-          .setControlCode(controlListEntries.getRating());
+              .setParentControlEntryId(parentControlEntryId)
+              .setFullDescription(navigationLevel.getContent())
+              .setControlCode(controlListEntries.getRating());
       if (navigationLevel.getBreadcrumbs() != null) {
         Breadcrumbs breadcrumbs = navigationLevel.getBreadcrumbs();
         controlEntry.setSummaryDescription(breadcrumbs.getBreadcrumbText());
@@ -318,17 +343,17 @@ public class Loader {
     LOGGER.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
 
     List<String> decontrolEntries =
-        Arrays.stream(decontrols.getContent().split("\\r?\\n(?!\\*)"))
-            .filter(StringUtils::isNotBlank)
-            .collect(Collectors.toList());
+            Arrays.stream(decontrols.getContent().split("\\r?\\n(?!\\*)"))
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.toList());
 
     for (int i = 0; i < decontrolEntries.size(); i++) {
       StageAnswer decontrolStageAnswer = new StageAnswer();
 
       List<String> tokens =
-          Arrays.stream(decontrolEntries.get(i).split(REGEX_NEW_LINE))
-              .filter(StringUtils::isNotBlank)
-              .collect(Collectors.toList());
+              Arrays.stream(decontrolEntries.get(i).split(REGEX_NEW_LINE))
+                      .filter(StringUtils::isNotBlank)
+                      .collect(Collectors.toList());
 
       if (!tokens.isEmpty()) {
         decontrolStageAnswer.setAnswerText(tokens.get(0));
@@ -358,9 +383,9 @@ public class Loader {
 
     if (definitions != null && definitions.getLocal() != null) {
       List<String> localDefinitionStrs = Arrays.stream(definitions.getLocal().split(REGEX_NEW_LINE))
-          .filter(StringUtils::isNotBlank)
-          .map(String::trim)
-          .collect(Collectors.toList());
+              .filter(StringUtils::isNotBlank)
+              .map(String::trim)
+              .collect(Collectors.toList());
 
       for (String localDefinitionStr : localDefinitionStrs) {
         int firstIdx = localDefinitionStr.indexOf('\'');
@@ -406,15 +431,15 @@ public class Loader {
 
   private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
     List<String> noteTexts = Arrays.stream(noteText.split(REGEX_NEW_LINE))
-        .map(String::trim)
-        .filter(StringUtils::isNotBlank)
-        .collect(Collectors.toList());
+            .map(String::trim)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
 
     for (String nt : noteTexts) {
       Note note = new Note()
-          .setStageId(stageId)
-          .setNoteType(noteType)
-          .setNoteText(nt);
+              .setStageId(stageId)
+              .setNoteType(noteType)
+              .setNoteText(nt);
 
       Long noteId = noteDao.insertNote(note);
 
@@ -422,19 +447,20 @@ public class Loader {
     }
   }
 
-  private void createGlobalDefinitions(List<Definition> definitions, long journeyId) {
+  private void createGlobalDefinitions(List<Definition> definitions, long journeyId, String sheetName) {
     for (Definition definition : definitions) {
-      if ("UK Military List".equalsIgnoreCase(definition.getList())) {
+      if (sheetName.equalsIgnoreCase(definition.getList())) {
         String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"");
         String definitionText = definition.getNewContent();
+
         if (StringUtils.isAnyEmpty(term, definitionText)) {
           LOGGER.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,
-              definitionText);
+                  definitionText);
         } else {
           GlobalDefinition globalDefinition = new GlobalDefinition()
-              .setJourneyId(journeyId)
-              .setTerm(term)
-              .setDefinitionText(definitionText);
+                  .setJourneyId(journeyId)
+                  .setTerm(term)
+                  .setDefinitionText(definitionText);
 
           Long globalDefinitionId = globalDefinitionDao.insertGlobalDefinition(globalDefinition);
 
@@ -450,23 +476,23 @@ public class Loader {
       LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
       if (loadingMetadata.getControlEntryId() != null && StringUtils.isNotBlank(relatedCodes)) {
         List<String> relatedCodeList = Arrays.stream(relatedCodes.split(REGEX_NEW_LINE))
-            .map(String::trim)
-            .filter(StringUtils::isNotBlank)
-            .collect(Collectors.toList());
+                .map(String::trim)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
 
         for (String relatedCode : relatedCodeList) {
           ControlEntry controlEntry = controlEntryDao.getControlEntryByControlCode(relatedCode);
 
           if (controlEntry == null) {
-            LOGGER.error("No control entry record found for related code {}", relatedCode);
+            LOGGER.error("No control entry record found for related code {} in list {}", relatedCode, navigationLevel.getList());
           } else {
             RelatedControlEntry relatedControlEntry = new RelatedControlEntry()
-                .setControlEntryId(loadingMetadata.getControlEntryId())
-                .setRelatedControlEntryId(controlEntry.getId());
+                    .setControlEntryId(loadingMetadata.getControlEntryId())
+                    .setRelatedControlEntryId(controlEntry.getId());
             relatedControlEntryDao.insertRelatedControlEntry(relatedControlEntry);
 
             LOGGER.debug("Inserted related control entry: control entry id {}, related control entry id {}",
-                relatedControlEntry.getControlEntryId(), relatedControlEntry.getRelatedControlEntryId());
+                    relatedControlEntry.getControlEntryId(), relatedControlEntry.getRelatedControlEntryId());
           }
         }
       }
@@ -477,7 +503,7 @@ public class Loader {
     }
   }
 
-  private void clearDown() {
+  private void clearDatabase() {
     relatedControlEntryDao.deleteAllRelatedControlEntries();
     sessionStageDao.deleteAllSessionStages();
     localDefinitionDao.deleteAllLocalDefinitions();
