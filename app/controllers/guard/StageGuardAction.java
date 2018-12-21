@@ -56,10 +56,9 @@ public class StageGuardAction extends Action.Simple {
           if (sessionJourneyId != currentJourneyId) {
             LOGGER.warn("SessionId {} has journeyId {} which doesn't match current journeyId {}",
                 sessionId, sessionJourneyId, currentJourneyId);
-            return unknownSession(sessionId);
-          } else {
-            return delegate.call(ctx);
+            //return unknownSession(sessionId);
           }
+          return delegate.call(ctx);
         }
       }
     }

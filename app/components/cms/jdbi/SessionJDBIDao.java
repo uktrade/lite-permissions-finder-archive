@@ -16,9 +16,11 @@ public interface SessionJDBIDao {
               @Bind("resumeCode") String resumeCode,
               @Bind("lastStageId") Long lastStageId);
 
-
   @SqlUpdate("UPDATE SESSION SET LAST_STAGE_ID = :lastStageId WHERE id = :id")
   void updateLastStageId(@Bind("id") String sessionId, @Bind("lastStageId") Long lastStageId);
+
+  @SqlUpdate("UPDATE SESSION SET JOURNEY_ID = :journeyId WHERE id = :id")
+  void updateJourneyId(@Bind("id") String sessionId, @Bind("journeyId") Long journeyId);
 
   @RegisterMapper(SessionRSMapper.class)
   @SqlQuery("SELECT * FROM SESSION WHERE ID = :id")

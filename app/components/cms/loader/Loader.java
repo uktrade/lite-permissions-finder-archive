@@ -22,6 +22,7 @@ import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.workbook.NavigationParser;
+import io.jsonwebtoken.lang.Collections;
 import models.cms.ControlEntry;
 import models.cms.GlobalDefinition;
 import models.cms.Journey;
@@ -90,23 +91,14 @@ public class Loader {
 
     // Loop through available sheets
     for (Map.Entry<Integer, String> entry : NavigationParser.sheetIndices.entrySet()) {
-      NavigationLevel rootNavigationLevel = new NavigationLevel("ROOT", "ROOT", -1);
+      NavigationLevel rootNavigationLevel = initialLevels.stream().filter(a -> a.getList().equalsIgnoreCase(entry.getValue())).findFirst().get();
 
       // Generate a new journey for each sheet
       Journey journey = new Journey().setJourneyName(entry.getValue());
       Long journeyId = journeyDao.insertJourney(journey);
 
-      // Get navigation level associated with the correct list
-      Optional<NavigationLevel> subNavigationLevel = initialLevels.stream()
-              .filter(a -> a.getList().equalsIgnoreCase(entry.getValue())).findFirst();
-
-      // Ensure that subNavigationLevel is present
-      if (!subNavigationLevel.isPresent()) {
-        continue;
-      }
-
-      // Add navigation level to root
-      rootNavigationLevel.addSubNavigationLevel(subNavigationLevel.get());
+      // Create global definitions
+      createGlobalDefinitions(parserResult.getDefinitions(), journeyId, entry.getValue());
 
       // Populate
       generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
@@ -114,7 +106,6 @@ public class Loader {
       createStages(journeyId, rootNavigationLevel);
       createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
       createLocalDefinitions(rootNavigationLevel);
-      createGlobalDefinitions(parserResult.getDefinitions(), journeyId, entry.getValue());
       createRelatedControlEntries(true, rootNavigationLevel);
 
       // Resolve initial stage id from stage associated with first sub-level of navigation levels
@@ -125,7 +116,7 @@ public class Loader {
     }
   }
 
-  public void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel, String parentId, int index) {
+  private void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel, String parentId, int index) {
     String id;
     if (parentId.length() == 0) {
       if (isRoot) {
@@ -189,6 +180,7 @@ public class Loader {
     if (navigationLevel.getSubNavigationLevels().isEmpty() || navigationLevel.getSubNavigationLevels().get(0).getButtons() == null) {
       return;
     }
+
     NavigationLevel topSubNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
     Stage stage = new Stage();
     stage.setJourneyId(journeyId);

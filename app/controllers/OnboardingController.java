@@ -5,13 +5,18 @@ import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
+import components.cms.dao.JourneyDao;
+import components.cms.parser.workbook.NavigationParser;
 import controllers.guard.SessionGuardAction;
+import models.cms.Journey;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.Constraints;
 import play.mvc.Result;
 import play.mvc.With;
 import triage.session.SessionService;
+import triage.session.TriageSession;
+import utils.ListNameToFriendlyNameUtil;
 import utils.common.SelectOption;
 
 import java.util.ArrayList;
@@ -24,13 +29,15 @@ public class OnboardingController {
   private final FormFactory formFactory;
   private final SessionService sessionService;
   private final views.html.onboardingContent onboardingContent;
+  private final JourneyDao journeyDao;
 
   @Inject
   public OnboardingController(FormFactory formFactory, SessionService sessionService,
-                              views.html.onboardingContent onboardingContent) {
+                              views.html.onboardingContent onboardingContent, JourneyDao journeyDao) {
     this.formFactory = formFactory;
     this.sessionService = sessionService;
     this.onboardingContent = onboardingContent;
+    this.journeyDao = journeyDao;
   }
 
   public CompletionStage<Result> renderForm(String sessionId) {
@@ -41,19 +48,28 @@ public class OnboardingController {
 
   public Result handleSubmit(String sessionId) {
     Form<OnboardingForm> form = formFactory.form(OnboardingForm.class).bindFromRequest();
-    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    TriageSession triageSession = sessionService.getSessionById(sessionId);
+    String resumeCode = triageSession.getResumeCode();
 
     if (form.hasErrors()) {
       return ok(onboardingContent.render(form, getSelectOptions(), sessionId, resumeCode));
     }
 
     SpeciallyDesigned isSpecialParam = form.get().speciallyDesigned;
+    Journey journey;
 
     switch (isSpecialParam) {
-      case YES:
-        return redirect(routes.StageController.index(sessionId));
-      case NO:
-        return redirect(routes.StaticContentController.renderOtherControlList(sessionId));
+      case UK_MILITARY_LIST:
+        journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(1)).get(0);
+        sessionService.updateJourneyId(sessionId, journey.getId().toString());
+        return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
+        //return redirect(routes.StageController.index(sessionId));
+      case DUAL_USE_LIST:
+        journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(2)).get(0);
+        sessionService.updateJourneyId(sessionId, journey.getId().toString());
+        return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
+        //return redirect(routes.StageController.index(sessionId));
+        //return redirect(routes.StaticContentController.renderOtherControlList(sessionId));
       default:
         return redirect(routes.StaticContentController.renderMoreInformationRequired(sessionId));
     }
@@ -61,15 +77,17 @@ public class OnboardingController {
 
   private List<SelectOption> getSelectOptions() {
     List<SelectOption> optionList = new ArrayList<>();
-    optionList.add(new SelectOption(SpeciallyDesigned.YES.toString(), "Yes"));
-    optionList.add(new SelectOption(SpeciallyDesigned.NO.toString(), "No"));
+    optionList.add(new SelectOption(SpeciallyDesigned.UK_MILITARY_LIST.toString(),
+            ListNameToFriendlyNameUtil.GetFriendlyNameFromListName(SpeciallyDesigned.UK_MILITARY_LIST.toString())));
+    optionList.add(new SelectOption(SpeciallyDesigned.DUAL_USE_LIST.toString(),
+            ListNameToFriendlyNameUtil.GetFriendlyNameFromListName(SpeciallyDesigned.DUAL_USE_LIST.toString())));
     optionList.add(new SelectOption(SpeciallyDesigned.DONT_KNOW.toString(), "I don't know"));
     return optionList;
   }
 
   public enum SpeciallyDesigned {
-    YES,
-    NO,
+    UK_MILITARY_LIST,
+    DUAL_USE_LIST,
     DONT_KNOW
   }
 

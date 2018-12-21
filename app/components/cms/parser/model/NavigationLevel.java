@@ -35,8 +35,8 @@ public class NavigationLevel {
   private final Redirect redirect;
   private final LoadingMetadata loadingMetadata;
 
-  public NavigationLevel(String cellAddress, String content, int level) {
-    this(cellAddress, content, level, "", null, null, null, null, null, null, null, null, null, null, null);
+  public NavigationLevel(String cellAddress, String content, int level, String list) {
+    this(cellAddress, content, level, list, null, null, null, null, null, null, null, null, null, null, null);
   }
 
   public NavigationLevel(
@@ -169,6 +169,8 @@ public class NavigationLevel {
   public String getList() {
     return list;
   }
+
+
 
   public void addSubNavigationLevel(NavigationLevel navigationLevel) {
     subNavigationLevels.add(navigationLevel);

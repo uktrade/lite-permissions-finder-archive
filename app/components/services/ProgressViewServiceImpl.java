@@ -1,6 +1,11 @@
 package components.services;
 
 import com.google.inject.Inject;
+import components.cms.dao.JourneyDao;
+import components.cms.dao.StageDao;
+import jodd.typeconverter.Convert;
+import models.cms.Journey;
+import models.cms.Stage;
 import models.view.ProgressView;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
@@ -8,6 +13,7 @@ import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.text.HtmlRenderService;
 import triage.text.RichText;
+import utils.ListNameToFriendlyNameUtil;
 
 import java.util.Optional;
 
@@ -17,15 +23,20 @@ public class ProgressViewServiceImpl implements ProgressViewService {
   private final RenderService renderService;
   private final HtmlRenderService htmlRenderService;
   private final JourneyConfigService journeyConfigService;
+  private final StageDao stageDao;
+  private final JourneyDao journeyDao;
 
   @Inject
   public ProgressViewServiceImpl(BreadcrumbViewService breadcrumbViewService,
                                  RenderService renderService, HtmlRenderService htmlRenderService,
-                                 JourneyConfigService journeyConfigService) {
+                                 JourneyConfigService journeyConfigService, StageDao stageDao,
+                                 JourneyDao journeyDao) {
     this.breadcrumbViewService = breadcrumbViewService;
     this.renderService = renderService;
     this.htmlRenderService = htmlRenderService;
     this.journeyConfigService = journeyConfigService;
+    this.stageDao = stageDao;
+    this.journeyDao = journeyDao;
   }
 
   @Override
@@ -40,6 +51,10 @@ public class ProgressViewServiceImpl implements ProgressViewService {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     String code;
     String description;
+
+    Stage stage = stageDao.getStage(Convert.toInteger(stageConfig.getStageId()));
+    Journey journey = journeyDao.getJourney(stage.getJourneyId());
+
     if (controlEntryConfig != null) {
       code = controlEntryConfig.getControlCode();
       description = renderService.getSummaryDescription(controlEntryConfig);
@@ -52,11 +67,11 @@ public class ProgressViewServiceImpl implements ProgressViewService {
           description = htmlRenderService.convertRichTextToPlainText(labelTextOptional.get());
         } else {
           code = null;
-          description = "UK Military List";
+          description = ListNameToFriendlyNameUtil.GetFriendlyNameFromListName(journey.getJourneyName());
         }
       } else {
         code = null;
-        description = "UK Military List";
+        description = ListNameToFriendlyNameUtil.GetFriendlyNameFromListName(journey.getJourneyName());
       }
     }
     return new ProgressView(code, description);

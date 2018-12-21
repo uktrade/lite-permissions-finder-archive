@@ -105,14 +105,17 @@ public class NavigationParser {
     public static List<NavigationLevel> parse(Workbook workbook) {
         List<NavigationLevel> navigationLevels = new ArrayList<>();
 
+        // Loop through sheets
         for (Map.Entry<Integer, String> entry : sheetIndices.entrySet()) {
             Deque<NavigationLevel> navLevelStack = new ArrayDeque<>();
 
-            NavigationLevel rootNavigationLevel = new NavigationLevel("ROOT", "ROOT", -1);
+            // Create a base NavigationLevel that can hold all parsed in
+            NavigationLevel rootNavigationLevel = new NavigationLevel("ROOT", "ROOT", -1, entry.getValue());
 
             navLevelStack.push(rootNavigationLevel);
 
             Sheet sheet = workbook.getSheetAt(entry.getKey());
+
             for (int rowIdx = RowIndices.NAVIGATION_START; rowIdx <= sheet.getLastRowNum(); rowIdx++) {
                 Row row = sheet.getRow(rowIdx);
                 if (row == null) {
@@ -130,7 +133,7 @@ public class NavigationParser {
                     int currIndentLevel = navColIdx - ColumnIndices.Navigation.START;
                     int prevIndentLevel = navLevelStack.peek().getLevel();
 
-                    NavigationLevel navigationLevel = new NavigationLevel(navCellAddress, navCellValue, currIndentLevel);
+                    NavigationLevel navigationLevel = new NavigationLevel(navCellAddress, navCellValue, currIndentLevel, entry.getValue());
 
                     try {
                         NavigationExtras navigationExtras = getNavigationExtras(row);
@@ -186,8 +189,10 @@ public class NavigationParser {
                     break;
                 }
             }
-            navigationLevels.addAll(rootNavigationLevel.getSubNavigationLevels());
+
+            navigationLevels.add(rootNavigationLevel);
         }
+
         return navigationLevels;
     }
 
