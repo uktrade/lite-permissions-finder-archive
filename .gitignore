@@ -1,6 +1,7 @@
 logs
 target
 .DS_Store
+/subprojects
 /.idea
 /.sbtopts
 /.idea_modules

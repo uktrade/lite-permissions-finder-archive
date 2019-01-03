@@ -19,9 +19,7 @@ public class AnswerConfigServiceImpl implements AnswerConfigService {
 
   @Override
   public AnswerConfig getAnswerConfigWithLowestPrecedence(List<AnswerConfig> answerConfigs) {
-    return answerConfigs.stream()
-        .sorted(Comparator.comparing(AnswerConfig::getAnswerPrecedence))
-        .findFirst()
+    return answerConfigs.stream().min(Comparator.comparing(AnswerConfig::getAnswerPrecedence))
         .orElse(null);
   }
 }
