@@ -9,7 +9,7 @@ A frontend application containing the following functionality:
 ## Getting started
 
 * Download everything:
-  * `git clone git@github.com:uktrade/lite-permissions-finder.git`
+  * `git clone https://github.com/uktrade/lite-permissions-finder.git`
   * `cd lite-permissions-finder` 
   * `git submodule init`
   * `git submodule update`
