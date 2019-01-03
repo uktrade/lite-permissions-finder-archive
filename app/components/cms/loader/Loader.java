@@ -1,36 +1,13 @@
 package components.cms.loader;
 
 import com.google.inject.Inject;
-import components.cms.dao.ControlEntryDao;
-import components.cms.dao.GlobalDefinitionDao;
-import components.cms.dao.JourneyDao;
-import components.cms.dao.LocalDefinitionDao;
-import components.cms.dao.NoteDao;
-import components.cms.dao.RelatedControlEntryDao;
-import components.cms.dao.SessionStageDao;
-import components.cms.dao.StageAnswerDao;
-import components.cms.dao.StageDao;
+import components.cms.dao.*;
 import components.cms.parser.ParserResult;
 import components.cms.parser.model.LoadingMetadata;
 import components.cms.parser.model.NavigationLevel;
 import components.cms.parser.model.definition.Definition;
-import components.cms.parser.model.navigation.column.Breadcrumbs;
-import components.cms.parser.model.navigation.column.Buttons;
-import components.cms.parser.model.navigation.column.ControlListEntries;
-import components.cms.parser.model.navigation.column.Decontrols;
-import components.cms.parser.model.navigation.column.Definitions;
-import components.cms.parser.model.navigation.column.NavigationExtras;
-import components.cms.parser.model.navigation.column.Notes;
-import components.cms.parser.workbook.NavigationParser;
-import io.jsonwebtoken.lang.Collections;
-import models.cms.ControlEntry;
-import models.cms.GlobalDefinition;
-import models.cms.Journey;
-import models.cms.LocalDefinition;
-import models.cms.Note;
-import models.cms.RelatedControlEntry;
-import models.cms.Stage;
-import models.cms.StageAnswer;
+import components.cms.parser.model.navigation.column.*;
+import models.cms.*;
 import models.cms.enums.AnswerType;
 import models.cms.enums.NoteType;
 import models.cms.enums.OutcomeType;
@@ -40,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Loader {
@@ -82,25 +57,22 @@ public class Loader {
     this.relatedControlEntryDao = relatedControlEntryDao;
   }
 
+  /**
+   * Populates the database
+   * @param parserResult contains definitions and navigation levels
+   */
   public void load(ParserResult parserResult) {
     // Empty the database before insertion
     clearDatabase();
 
-    // Get list of sheets (eg Military, Dual Use)
-    List<NavigationLevel> initialLevels = parserResult.getNavigationLevels();
-
-    // Loop through available sheets
-    for (Map.Entry<Integer, String> entry : NavigationParser.sheetIndices.entrySet()) {
-      NavigationLevel rootNavigationLevel = initialLevels.stream().filter(a -> a.getList().equalsIgnoreCase(entry.getValue())).findFirst().get();
-
+    // Loop through available sheets (eg Military, Dual Use)
+    for (NavigationLevel rootNavigationLevel : parserResult.getNavigationLevels()) {
       // Generate a new journey for each sheet
-      Journey journey = new Journey().setJourneyName(entry.getValue());
+      Journey journey = new Journey().setJourneyName(rootNavigationLevel.getList());
       Long journeyId = journeyDao.insertJourney(journey);
 
-      // Create global definitions
-      createGlobalDefinitions(parserResult.getDefinitions(), journeyId, entry.getValue());
-
-      // Populate
+      // Populate the database
+      createGlobalDefinitions(parserResult.getDefinitions(), journeyId, rootNavigationLevel.getList());
       generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
       createControlEntries(null, 1, rootNavigationLevel, journeyId);
       createStages(journeyId, rootNavigationLevel);
