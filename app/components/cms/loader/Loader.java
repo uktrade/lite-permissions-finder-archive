@@ -154,19 +154,21 @@ public class Loader {
             return;
         }
 
+        // Create stage and push it to database
         NavigationLevel topSubNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
-        Stage stage = new Stage();
-        stage.setJourneyId(journeyId);
-        stage.setQuestionType(QuestionType.STANDARD);
-        stage.setTitle(topSubNavigationLevel.getOnPageContent().getTitle());
-        stage.setExplanatoryNotes(topSubNavigationLevel.getOnPageContent().getExplanatoryNotes());
-        stage.setAnswerType(mapButtonsToAnswerType(topSubNavigationLevel.getButtons()));
-        stage.setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
+        Stage stage = new Stage()
+                .setJourneyId(journeyId)
+                .setQuestionType(QuestionType.STANDARD)
+                .setTitle(topSubNavigationLevel.getOnPageContent().getTitle())
+                .setExplanatoryNotes(topSubNavigationLevel.getOnPageContent().getExplanatoryNotes())
+                .setAnswerType(mapButtonsToAnswerType(topSubNavigationLevel.getButtons()))
+                .setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
 
         Long stageId = stageDao.insertStage(stage);
 
         LOGGER.debug("Inserted stage id {}", stageId);
 
+        // Create stages for sub navigation levels
         for (NavigationLevel subNavigationLevel : navigationLevel.getSubNavigationLevels()) {
             subNavigationLevel.getLoadingMetadata().setStageId(stageId);
             createStages(journeyId, subNavigationLevel);

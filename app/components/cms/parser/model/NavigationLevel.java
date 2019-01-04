@@ -75,35 +75,13 @@ public class NavigationLevel {
     subNavigationLevels = new ArrayList<>();
   }
 
-  /*@Override
+  @Override
   public String toString() {
     return "NavigationLevel{" +
         "cellAddress='" + cellAddress + '\'' +
         ",\n content='" + content + '\'' +
         ",\n level=" + level +
         '}';
-  }*/
-
-  @Override
-  public String toString() {
-    return "NavigationLevel{" +
-            "cellAddress='" + cellAddress + '\'' +
-            ",\n content='" + content + '\'' +
-            ",\n level=" + level +
-            ",\n list=" + list +
-            ",\n navigationExtras=" + navigationExtras +
-            ",\n onPageContent=" + onPageContent +
-            ",\n controlListEntries=" + controlListEntries +
-            ",\n buttons=" + buttons +
-            ",\n nesting=" + nesting +
-            ",\n loops=" + loops +
-            ",\n breadcrumbs=" + breadcrumbs +
-            ",\n decontrols=" + decontrols +
-            ",\n definitions=" + definitions +
-            ",\n notes=" + notes +
-            ",\n redirect=" + redirect +
-            ",\n loadingMetadata=" + loadingMetadata +
-            '}';
   }
 
   public String getCellAddress() {
@@ -169,8 +147,6 @@ public class NavigationLevel {
   public String getList() {
     return list;
   }
-
-
 
   public void addSubNavigationLevel(NavigationLevel navigationLevel) {
     subNavigationLevels.add(navigationLevel);
