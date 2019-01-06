@@ -256,11 +256,11 @@ public class Loader {
     }
 
     private long createItemStage(long journeyId, long controlEntryId, Notes notes) {
-        Stage stage = new Stage();
-        stage.setJourneyId(journeyId);
-        stage.setQuestionType(QuestionType.ITEM);
-        stage.setAnswerType(AnswerType.SELECT_ONE);
-        stage.setControlEntryId(controlEntryId);
+        Stage stage = new Stage()
+                .setJourneyId(journeyId)
+                .setQuestionType(QuestionType.ITEM)
+                .setAnswerType(AnswerType.SELECT_ONE)
+                .setControlEntryId(controlEntryId);
 
         Long stageId = stageDao.insertStage(stage);
 
@@ -275,17 +275,17 @@ public class Loader {
         Decontrols decontrols = navigationLevel.getDecontrols();
         LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
 
-        Stage decontrolStage = new Stage();
-        decontrolStage.setJourneyId(journeyId);
-        decontrolStage.setAnswerType(AnswerType.SELECT_MANY);
-        decontrolStage.setQuestionType(QuestionType.DECONTROL);
-        decontrolStage.setControlEntryId(loadingMetadata.getControlEntryId());
-        decontrolStage.setTitle(decontrols.getTitle());
-        decontrolStage.setExplanatoryNotes(decontrols.getExplanatoryNotes());
+        Stage decontrolStage = new Stage()
+                .setJourneyId(journeyId)
+                .setAnswerType(AnswerType.SELECT_MANY)
+                .setQuestionType(QuestionType.DECONTROL)
+                .setControlEntryId(loadingMetadata.getControlEntryId())
+                .setTitle(decontrols.getTitle())
+                .setExplanatoryNotes(decontrols.getExplanatoryNotes());
 
         if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
             Long nextStageId = navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
-            //This can happen if the current row has "nested content" child rows which are not actual stages
+            // This can happen if the current row has "nested content" child rows which are not actual stages
             if (nextStageId == null) {
                 LOGGER.error("Next stage ID null for decontrol stage {}, assuming outcome", navigationLevel.getCellAddress());
                 if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
