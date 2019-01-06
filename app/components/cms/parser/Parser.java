@@ -13,11 +13,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class Parser {
-
-
   public ParserResult parse(File file) throws IOException {
     try (FileInputStream excelFile = new FileInputStream(file)) {
-
       Workbook workbook = new XSSFWorkbook(excelFile);
 
       List<NavigationLevel> navigationLevels = NavigationParser.parse(workbook);
@@ -26,6 +23,4 @@ public class Parser {
       return new ParserResult(navigationLevels,definitions);
     }
   }
-
-
 }

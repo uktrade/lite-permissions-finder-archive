@@ -8,14 +8,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.LoggerFactory;
 
 public class Utils {
-  
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-  
-  private Utils() {
-  }
 
-  public static String getCellStringValue(Row row, int index) {
-    Cell cell = row.getCell(index);
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+
+  public static String getCellValue(Cell cell) {
     String cellValue;
 
     if (cell == null) {
@@ -35,6 +31,11 @@ public class Utils {
     } else {
       return null;
     }
+  }
+
+  public static String getCellValueByRowAndIndex(Row row, int index) {
+    Cell cell = row.getCell(index);
+    return getCellValue(cell);
   }
 
   public static int columnToIndex(String column) {
