@@ -31,7 +31,7 @@ The permissions finder integrates with several other LITE services at various st
 
 * [lite-country-service](https://github.com/uktrade/lite-country-service) - country data for typeahead
 * [lite-customer-service](https://github.com/uktrade/lite-customer-service) - company and site address information
-* [lite-notification-service](https://github.com/uktrade/lite-ogel-service) (via SQS - see below) - sending emails
+* [lite-notification-service](https://github.com/uktrade/lite-notification-service) (via SQS - see below) - sending emails
 * [lite-ogel-service](https://github.com/uktrade/lite-ogel-service) - applicable OGEL search and OGEL details
 * [lite-permissions-service](https://github.com/uktrade/lite-permissions-service) - OGEL registration submission and OGEL licence details
 * [lite-user-service](https://github.com/uktrade/lite-user-service) - user account and permission data
