@@ -105,6 +105,8 @@ public class NavigationParser {
     public static List<NavigationLevel> parse(Workbook workbook) {
         List<NavigationLevel> navigationLevels = new ArrayList<>();
 
+        // TODO see if this can be done with streams (unlikely!)
+
         // Loop through sheets
         for (Map.Entry<Integer, String> entry : sheetIndices.entrySet()) {
             Deque<NavigationLevel> navLevelStack = new ArrayDeque<>();
@@ -116,21 +118,21 @@ public class NavigationParser {
 
             Sheet sheet = workbook.getSheetAt(entry.getKey());
 
-            for (int rowIdx = RowIndices.NAVIGATION_START; rowIdx <= sheet.getLastRowNum(); rowIdx++) {
-                Row row = sheet.getRow(rowIdx);
+            for (int rowIndex = RowIndices.NAVIGATION_START; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+                Row row = sheet.getRow(rowIndex);
                 if (row == null) {
                     continue;
                 }
 
-                for (int navColIdx = ColumnIndices.Navigation.START; navColIdx <= ColumnIndices.Navigation.END; navColIdx++) {
-                    String navCellValue = Utils.getCellValueByRowAndIndex(row, navColIdx);
+                for (int navColIndex = ColumnIndices.Navigation.START; navColIndex <= ColumnIndices.Navigation.END; navColIndex++) {
+                    String navCellValue = Utils.getCellValueAsString(row.getCell(navColIndex));
                     if (navCellValue == null) {
                         continue;
                     }
 
-                    String navCellAddress = row.getCell(navColIdx).getAddress().formatAsString();
+                    String navCellAddress = row.getCell(navColIndex).getAddress().formatAsString();
 
-                    int currIndentLevel = navColIdx - ColumnIndices.Navigation.START;
+                    int currIndentLevel = navColIndex - ColumnIndices.Navigation.START;
                     int prevIndentLevel = navLevelStack.peek().getLevel();
 
                     NavigationLevel navigationLevel = new NavigationLevel(navCellAddress, navCellValue, currIndentLevel, entry.getValue());
@@ -197,27 +199,27 @@ public class NavigationParser {
     }
 
     private static NavigationExtras getNavigationExtras(Row row) {
-        String divLineStr = Utils.getCellValueByRowAndIndex(row, ColumnIndices.NavigationExtras.DIV_LINE);
+        String divLineStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.NavigationExtras.DIV_LINE));
         boolean divLine = "X".equalsIgnoreCase(divLineStr);
         return new NavigationExtras(divLine);
     }
 
     private static OnPageContent getOnPageContent(Row row) {
-        String title = Utils.getCellValueByRowAndIndex(row, ColumnIndices.OnPageContent.TITLE);
-        String explanatoryNotes = Utils.getCellValueByRowAndIndex(row, ColumnIndices.OnPageContent.EXPLANATORY_NOTES);
+        String title = Utils.getCellValueAsString(row.getCell(ColumnIndices.OnPageContent.TITLE));
+        String explanatoryNotes = Utils.getCellValueAsString(row.getCell(ColumnIndices.OnPageContent.EXPLANATORY_NOTES));
         return new OnPageContent(title, explanatoryNotes);
     }
 
     private static ControlListEntries getControlListEntries(Row row) {
-        String rating = Utils.getCellValueByRowAndIndex(row, ColumnIndices.ControlListEntries.RATING);
-        String priorityStr = Utils.getCellValueByRowAndIndex(row, ColumnIndices.ControlListEntries.PRIORITY);
+        String rating = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.RATING));
+        String priorityStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.PRIORITY));
         Integer priority = priorityStr == null ? null : Integer.parseInt(priorityStr);
         return new ControlListEntries(rating, priority);
     }
 
     private static Buttons getButtons(Row row) {
-        String selectOne = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Buttons.SELECT_ONE);
-        String selectMany = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Buttons.SELECT_MANY);
+        String selectOne = Utils.getCellValueAsString(row.getCell(ColumnIndices.Buttons.SELECT_ONE));
+        String selectMany = Utils.getCellValueAsString(row.getCell(ColumnIndices.Buttons.SELECT_MANY));
         if (StringUtils.isNoneBlank(selectOne, selectMany)) {
             throw new ParserException(String.format("Invalid button column state, select one: %s select many: %s", selectOne, selectMany));
         } else {
@@ -232,8 +234,8 @@ public class NavigationParser {
     }
 
     private static Nesting getNesting(Row row) {
-        String anyOf = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Nesting.ANY_OF);
-        String allOf = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Nesting.ALL_OF);
+        String anyOf = Utils.getCellValueAsString(row.getCell(ColumnIndices.Nesting.ANY_OF));
+        String allOf = Utils.getCellValueAsString(row.getCell(ColumnIndices.Nesting.ALL_OF));
         if (StringUtils.isNoneBlank(anyOf, allOf)) {
             throw new ParserException(String.format("Invalid nesting column state, any of: %s all of: %s", anyOf, allOf));
         } else {
@@ -248,41 +250,41 @@ public class NavigationParser {
     }
 
     private static Loops getLoops(Row row) {
-        String relatedCodes = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Loops.RELATED_CODES);
-        String jumpTo = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Loops.JUMP_TO);
-        String defining = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Loops.DEFINING);
-        String deferred = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Loops.DEFERRED);
+        String relatedCodes = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.RELATED_CODES));
+        String jumpTo = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.JUMP_TO));
+        String defining = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.DEFINING));
+        String deferred = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.DEFERRED));
         return new Loops(relatedCodes, jumpTo, defining, deferred);
     }
 
     private static Breadcrumbs getBreadcrumbs(Row row) {
-        String breadcrumbText = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Breadcrumbs.BREADCRUMB_TEXT);
+        String breadcrumbText = Utils.getCellValueAsString(row.getCell(ColumnIndices.Breadcrumbs.BREADCRUMB_TEXT));
         return new Breadcrumbs(breadcrumbText);
     }
 
     private static Decontrols getDecontrols(Row row) {
-        String content = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Decontrols.CONTENT);
-        String note = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Decontrols.NOTE);
-        String title = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Decontrols.TITLE);
-        String explanatoryNotes = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Decontrols.EXPLANATORY_NOTES);
+        String content = Utils.getCellValueAsString(row.getCell(ColumnIndices.Decontrols.CONTENT));
+        String note = Utils.getCellValueAsString(row.getCell(ColumnIndices.Decontrols.NOTE));
+        String title = Utils.getCellValueAsString(row.getCell(ColumnIndices.Decontrols.TITLE));
+        String explanatoryNotes = Utils.getCellValueAsString(row.getCell(ColumnIndices.Decontrols.EXPLANATORY_NOTES));
         return new Decontrols(content, note, title, explanatoryNotes);
     }
 
     private static Definitions getDefinitions(Row row) {
-        String local = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Definitions.LOCAL);
+        String local = Utils.getCellValueAsString(row.getCell(ColumnIndices.Definitions.LOCAL));
         return new Definitions(local);
     }
 
     private static Notes getNotes(Row row) {
-        String nb = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Notes.NB);
-        String note = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Notes.NOTE);
-        String seeAlso = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Notes.SEE_ALSO);
-        String techNote = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Notes.TECHNICAL_NOTE);
+        String nb = Utils.getCellValueAsString(row.getCell(ColumnIndices.Notes.NB));
+        String note = Utils.getCellValueAsString(row.getCell(ColumnIndices.Notes.NOTE));
+        String seeAlso = Utils.getCellValueAsString(row.getCell(ColumnIndices.Notes.SEE_ALSO));
+        String techNote = Utils.getCellValueAsString(row.getCell(ColumnIndices.Notes.TECHNICAL_NOTE));
         return new Notes(nb, note, seeAlso, techNote);
     }
 
     private static Redirect getRedirect(Row row) {
-        String tcfcf = Utils.getCellValueByRowAndIndex(row, ColumnIndices.Redirect.TCFCF);
+        String tcfcf = Utils.getCellValueAsString(row.getCell(ColumnIndices.Redirect.TCFCF));
         return new Redirect("X".equalsIgnoreCase(tcfcf));
     }
 }

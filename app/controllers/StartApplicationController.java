@@ -1,8 +1,7 @@
 package controllers;
 
 import static play.mvc.Controller.flash;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 
 import com.google.inject.Inject;
 import components.services.notification.PermissionsFinderNotificationClient;
@@ -66,6 +65,11 @@ public class StartApplicationController {
         return ok(startApplication.render(form, triageSession.getId(), triageSession.getResumeCode()));
       } else {
         String emailAddress = form.get().emailAddress;
+
+        System.out.println(emailAddress);
+
+        // TODO fix email sending
+
         if (StringUtils.isNoneBlank(emailAddress)) {
           String resumeCode = triageSession.getResumeCode();
           permissionsFinderNotificationClient.sendApplicationReferenceEmail(emailAddress.trim(), resumeCode);

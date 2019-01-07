@@ -20,7 +20,7 @@ public class Parser {
       List<NavigationLevel> navigationLevels = NavigationParser.parse(workbook);
       List<Definition> definitions = DefinitionParser.parse(workbook);
 
-      return new ParserResult(navigationLevels,definitions);
+      return new ParserResult(navigationLevels, definitions);
     }
   }
 }

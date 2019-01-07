@@ -421,7 +421,7 @@ public class Loader {
                 String definitionText = definition.getNewContent();
 
                 if (StringUtils.isAnyEmpty(term, definitionText)) {
-                    LOGGER.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNum(), term,
+                    LOGGER.error("Invalid global definition, row num {}, term {}, definition text {}", definition.getRowNumber(), term,
                             definitionText);
                 } else {
                     GlobalDefinition globalDefinition = new GlobalDefinition()

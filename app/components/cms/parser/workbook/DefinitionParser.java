@@ -34,9 +34,9 @@ public class DefinitionParser {
             .filter(Objects::nonNull) // Filter out null rows
             .map(row -> new Definition(
                     row.getRowNum(),
-                    Utils.getCellValue(row.getCell(ColumnIndices.NAME)),
-                    Utils.getCellValue(row.getCell(ColumnIndices.LIST)),
-                    Utils.getCellValue(row.getCell(ColumnIndices.NEW_CONTENT))))
+                    Utils.getCellValueAsString(row.getCell(ColumnIndices.NAME)),
+                    Utils.getCellValueAsString(row.getCell(ColumnIndices.LIST)),
+                    Utils.getCellValueAsString(row.getCell(ColumnIndices.NEW_CONTENT))))
          .collect(Collectors.toList());
   }
 }
