@@ -105,8 +105,6 @@ public class NavigationParser {
     public static List<NavigationLevel> parse(Workbook workbook) {
         List<NavigationLevel> navigationLevels = new ArrayList<>();
 
-        // TODO see if this can be done with streams (unlikely!)
-
         // Loop through sheets
         for (Map.Entry<Integer, String> entry : sheetIndices.entrySet()) {
             Deque<NavigationLevel> navLevelStack = new ArrayDeque<>();
