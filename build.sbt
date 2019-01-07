@@ -27,7 +27,6 @@ libraryDependencies += "org.flywaydb" %% "flyway-play" % "5.0.0"
 libraryDependencies += "org.postgresql" % "postgresql" % "42.2.2"
 libraryDependencies += "org.jdbi" % "jdbi" % "2.78"
 
-// TODO Update POI
 libraryDependencies += "org.apache.poi" % "poi" % "4.0.1"
 libraryDependencies += "org.apache.poi" % "poi-ooxml" % "4.0.1"
 libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.8.1"
