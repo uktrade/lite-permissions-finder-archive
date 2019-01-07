@@ -213,7 +213,7 @@ public class NavigationParser {
     private static ControlListEntries getControlListEntries(Row row) {
         String rating = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.RATING));
         String priorityStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.PRIORITY));
-        Integer priority = priorityStr == null ? null : Integer.parseInt(priorityStr);
+        Integer priority = priorityStr == null ? null : (int)Double.parseDouble(priorityStr);
         return new ControlListEntries(rating, priority);
     }
 

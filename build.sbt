@@ -28,9 +28,9 @@ libraryDependencies += "org.postgresql" % "postgresql" % "42.2.2"
 libraryDependencies += "org.jdbi" % "jdbi" % "2.78"
 
 // TODO Update POI
-libraryDependencies += "org.apache.poi" % "poi" % "3.17"
-libraryDependencies += "org.apache.poi" % "poi-ooxml" % "3.17"
-libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.7"
+libraryDependencies += "org.apache.poi" % "poi" % "4.0.1"
+libraryDependencies += "org.apache.poi" % "poi-ooxml" % "4.0.1"
+libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.8.1"
 
 libraryDependencies += "uk.gov.bis.lite" % "lite-search-management-api" % "1.1"
 libraryDependencies += "uk.gov.bis.lite" % "lite-control-code-service-api" % "1.3"
