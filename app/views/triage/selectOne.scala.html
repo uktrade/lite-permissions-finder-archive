@@ -10,9 +10,7 @@
 @(form: Form[_], stageId: String, sessionId: String, resumeCode: String, progressView: ProgressView, title: String, explanatoryText: String, answerViews: List[AnswerView], breadcrumbView: BreadcrumbView)
 
 @legend = {
-  <p class="form-hint">
-    Select the control list entry which best describes your item.
-  </p>
+  <p class="govuk-hint">Select the control list entry which best describes your item.</p>
   @noteMessage(!breadcrumbView.getNoteViews.isEmpty)
   @if(StringUtils.isNotBlank(explanatoryText)) {
     <p>@Html(explanatoryText)</p>
@@ -30,7 +28,7 @@
   @formRadioGroupContainer(form("answer"))(null, legendContent = Some(legend)) {
     @for(answerView <- answerViews) {
       @if(answerView.isDividerAbove) {
-        <p class="form-block">or</p>
+        <div class="govuk-radios__divider">or</div>
       }
       @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
         @answerMoreInformation(answerView)

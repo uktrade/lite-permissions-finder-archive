@@ -61,7 +61,7 @@ public class StaticContentController extends Controller {
 
   }
 
-  private static final Function<String, Html> HEADING_STANDARD_FUNC = title -> heading.render(title, "heading-large", false);
+  private static final Function<String, Html> HEADING_STANDARD_FUNC = title -> heading.render(title, "govuk-heading-l", false);
 
   public Result renderStaticHtml(StaticHtml staticHtml, String sessionId) {
     String resumeCode;

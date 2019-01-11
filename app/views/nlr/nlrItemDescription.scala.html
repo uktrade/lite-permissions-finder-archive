@@ -13,7 +13,7 @@
   <p>
     Once you have determined your item is not controlled by the UK Military List you can generate a no licence required
     document (NLR). You can do this unless any of the following apply:
-    <ul class="list list-bullet">
+    <ul class="govuk-list govuk-list--bullet">
       <li>sanctions</li>
       <li>embargoes</li>
       <li>military end-use controls</li>
@@ -25,7 +25,7 @@
 
     @views.html.helper.CSRF.formField
 
-    @formTextarea(form("description"), rows = "4", labelClass = "form-label-bold", cssClass = "form-control-wide") {
+    @formTextarea(form("description"), rows = "4", labelClass = "govuk-label-bold", cssClass = "form-control-wide") {
       Describe the item being exported in the field below
     }
 
@@ -36,11 +36,11 @@
 
     <div class="notice">
       <i class="icon icon-important">
-        <span class="visually-hidden">Warning</span>
+        <span class="govuk-visually-hidden">Warning</span>
       </i>
       <strong class="bold">Always double-check if your items are controlled. If you export controlled items without the correct export
         licence you could:
-        <ul class="list list-bullet">
+        <ul class="govuk-list govuk-list--bullet">
           <li>have your items seized</li>
           <li>face a fine</li>
           <li>serve up to 10 years in prison</li>
@@ -48,7 +48,7 @@
       </strong>
     </div>
 
-    <button type="submit" class="button" name="action" value="continue">Generate an NLR document</button>
+    <button type="submit" class="govuk-button" name="action" value="continue">Generate an NLR document</button>
 
   </form>
 

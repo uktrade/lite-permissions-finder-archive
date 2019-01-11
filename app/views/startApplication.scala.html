@@ -21,16 +21,16 @@
     </p>
   }
 
-  <p>
+  <p class="govuk-body">
     You don't have to complete everything in one go.
     If you want to return to this service later, you can use this code to recover your previous answers:
   </p>
 
-  <div class="panel panel-border-wide">
-    <span class="bold-xlarge">@resumeCode</span>
+  <div class="govuk-inset-text">
+    <span class="govuk-heading-xl">@resumeCode</span>
   </div>
 
-  <p>
+  <p class="govuk-body">
     This code will remain at the top of the screen as you use the service.
   </p>
 
@@ -39,20 +39,22 @@
     @views.html.helper.CSRF.formField
 
     <p>
-    @detailPanel("email-me-code") {Email me this code} {
-      @formInput(form("emailAddress")) {
-        Your email address (optional)
+    @detailPanel("email-me-code") {Email me this code (optional)} {
+      @formInput(form("emailAddress"), Some(Html("")), "govuk-input--width-20") {
+        Your email address
       }
     }
     </p>
 
-    <div class="form-group">
-      <button type="submit" class="button">Continue</button>
+    <div class="govuk-form-group">
+      <button type="submit" class="govuk-button">Continue</button>
     </div>
 
-    <p class="js-only">
-      <a href="" id="print">Print this page</a>
-    </p>
+    <div class="govuk-form-group js-only">
+		<p class="govuk-label">
+	      <a href="" class="govuk-link" id="print">Print this page</a>
+	    </p>
+    </div>
 
   </form>
 

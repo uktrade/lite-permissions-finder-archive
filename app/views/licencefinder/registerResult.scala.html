@@ -13,22 +13,22 @@
   @if(view.hasRegistrationRef) {
     <p>
       <a id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(view.getRegistrationRef)"
-      class="link underlined ogel-link" target="_blank">View your licence<span class="visually-hidden"> (opens in a new tab)</span></a>
+      class="link underlined ogel-link" target="_blank">View your licence<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
     </p>
   } else {
     @if(StringUtils.isNoneBlank(ogel.getLink)) {
       <p class="bold-small">
         <a class="external" href="@ogel.getLink" rel="external" target="_blank">
-          View your licence<span class="visually-hidden"> (opens in a new tab)</span></a>
+          View your licence<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
       </p>
     } else {
-      <p class="bold-small">Please <a href="@dashboardUrl">view your licensing information<span class="visually-hidden"> (opens in a new tab)</span></a>
+      <p class="bold-small">Please <a href="@dashboardUrl">view your licensing information<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
         to confirm that your OGEL registration has completed successfully.
       </p>
     }
   }
 
   <p>
-    <a href="@dashboardUrl" target="_blank">View your licensing information<span class="visually-hidden"> (opens in a new tab)</span></a>
+    <a href="@dashboardUrl" target="_blank">View your licensing information<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
   </p>
 }

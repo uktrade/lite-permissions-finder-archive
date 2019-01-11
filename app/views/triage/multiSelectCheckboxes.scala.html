@@ -6,17 +6,17 @@
 @(field: Form.Field, answerViews: Map[AnswerView, Boolean])
 
 
-<div id="@field.getName.get" class="form-group">
+<div id="@field.getName.get" class="govuk-form-group">
 
   @* Iterator required to preserve ordering *@
   @for((answerView, index) <- answerViews.iterator.zipWithIndex) {
     @if(answerView._1.isDividerAbove) {
-      <p class="form-block">or</p>
+      <p class="govuk-label or-label">or</p>
     }
 
-    <div class="multiple-choice">
-      <input id="@field.getName.get@index" type="checkbox" name="@{field.getName.get}[@index]" value="@answerView._1.getValue" @if(answerView._2) { checked="checked" }>
-      <label for="@field.getName.get@index">
+    <div class="govuk-checkboxes__item">
+      <input class="govuk-checkboxes__input" id="@field.getName.get@index" type="checkbox" name="@{field.getName.get}[@index]" value="@answerView._1.getValue" @if(answerView._2) { checked="checked" }>
+      <label class="govuk-label govuk-checkboxes__label" for="@field.getName.get@index">
       @Html(answerView._1.getPrompt + subAnswers(answerView._1.getSubAnswerViews) + answerView._1.getNestedContent)
       </label>
 

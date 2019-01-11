@@ -13,6 +13,7 @@
     <script async type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=@analyticsConfig.getGoogleAnalyticsId"></script>
     <script type="text/javascript" src="@controllers.routes.AnalyticsController.getAnalyticsJs()"></script>
   }
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src data;" />
   <!--[if gt IE 8]><!-->
   <link href="@controllers.routes.Assets.versioned("stylesheets/permissions-finder.css")" media="screen" rel="stylesheet" type="text/css" />
   <!--<![endif]-->
@@ -26,21 +27,16 @@
 }
 
 @propositionHeadingHtml = {
-  <div class="header-proposition">
-    <div class="content">
-      <nav id="proposition-menu">
-        <span id="proposition-name">@propositionHeading</span>
+		  <a href="/" class="govuk-header__link govuk-header__link--service-name">
+	      	@propositionHeading
+	      </a>
         @if(spireAuthManager.getAuthInfoFromContext.isAuthenticated && propositionHeading.body.nonEmpty) {
           <nav id="proposition-menu" aria-label="Top Level Navigation" class="lite-proposition-menu">
             <p id="proposition-link">
-              <span class="visually-hidden">Signed in as </span>@spireAuthManager.getAuthInfoFromContext.getFullName  <a href="@org.pac4j.play.routes.LogoutController.logout">Sign out</a>
+              <span class="govuk-visually-hidden">Signed in as </span>@spireAuthManager.getAuthInfoFromContext.getFullName  <a href="@org.pac4j.play.routes.LogoutController.logout">Sign out</a>
             </p>
           </nav>
         }
-        </div>
-      </nav>
-    </div>
-  </div>
 }
 
 
@@ -55,7 +51,7 @@
   insideHeader = HtmlFormat.empty,
   afterHeader = HtmlFormat.empty,
   footerTop = HtmlFormat.empty,
-  footerLinks = Html("<ul><li><a href=\"/fair-processing-note\" target=\"_blank\">Fair processing note</a></li></ul>"),
+  footerLinks = Html("<li class=\"govuk-footer__inline-list-item\"><a class=\"govuk-footer__link\" href=\"/fair-processing-note\">Fair processing note</a></li>"),
   headerClass = Html("with-proposition"),
   propositionHeader = propositionHeadingHtml,
   homepageUrl = None,

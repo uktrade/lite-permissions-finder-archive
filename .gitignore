@@ -1,5 +1,6 @@
 logs
 target
+.DS_Store
 /.idea
 /.sbtopts
 /.idea_modules

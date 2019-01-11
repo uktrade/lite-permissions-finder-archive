@@ -1,19 +1,20 @@
-.nav-container {
-
-}
-
 .nav-container-end {
-  clear: both;
+	clear: both;
 }
 
 .back-link-container {
-  float: left;
+	float: left;
 }
 
 .resume-code-container {
-  float: right;
-}
+	float: right;
 
-.resume-code {
-  margin-top: 14px;
+	.resume-code {
+		margin-top: 14px;
+
+		p {
+			@include govuk-font($size: 16);
+			@include govuk-text-colour;
+		}
+	}
 }

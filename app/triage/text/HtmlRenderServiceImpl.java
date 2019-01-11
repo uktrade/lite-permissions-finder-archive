@@ -26,10 +26,10 @@ import java.util.stream.Collectors;
 public class HtmlRenderServiceImpl implements HtmlRenderService {
 
   private static final String DEFINITION_TEXT = unescape(
-      "<a href='/view-definition/%s/%s' data-definition-id='%s' data-definition-type='%s' " +
+      "<a href='/view-definition/%s/%s' class='govuk-link dotted-link' data-definition-id='%s' data-definition-type='%s' " +
           "title='View definition of &quot;%s&quot;'%s>%s</a>");
   private static final String CONTROL_ENTRY_TEXT = unescape(
-      "<a href='/view-control-entry/%s' data-control-entry-id='%s' title='View %s'%s>%s</a>");
+      "<a href='/view-control-entry/%s' class='govuk-link dotted-link' data-control-entry-id='%s' title='View %s'%s>%s</a>");
   private static final String TARGET_ATTR_BLANK = unescape(" target='_blank'");
   private static final String MODAL_CONTENT_LINK_TEXT = unescape(
       "<a href='/view-modal-content/%s' data-modal-content-id='%s' title='View %s'>%s</a>");

@@ -5,26 +5,24 @@
 
 @this(standardPage: standardPage)
 @(form: Form[_])
-@standardPage("Returning to this service", Some(heading("Returning to this service"))){
-  @errorSummary(form)
+@standardPage("Returning to this service", Some(heading("")), showBackLink = true) {
+@errorSummary(form)
 }{
 
-  <form action="@ContinueApplicationController.handleSubmit" method="POST">
+<form action="@ContinueApplicationController.handleSubmit" method="POST">
 
-    @views.html.helper.CSRF.formField
+	@views.html.helper.CSRF.formField
 
-    @formInput(form("resumeCode"), Some(Html(""))) {
-      Enter the code you received when you saved your progress
-    }
+	@formInput(form("resumeCode"), Some(Html("<h2 class='govuk-heading-l'>Returning to this service</h2><div class='govuk-form-group'><p class='govuk-label'>Enter the code you received when you saved your progress</p></div>")), "govuk-input--width-10") { }
 
-    <div class="form-group">
-      <button type="submit" class="button">Find and resume</button>
-    </div>
+	<button type="submit" class="govuk-button">Find and resume</button>
 
-    <p>
-      Don't have these details? <a href="@routes.StartApplicationController.createApplication()">Start again</a>.
-    </p>
+	<div class="govuk-form-group">
+		<p class="govuk-label">
+			Don't have these details? <a href="@routes.StartApplicationController.createApplication()" class="govuk-link">Start again</a>.
+		</p>
+	</div>
 
-  </form>
+</form>
 
 }

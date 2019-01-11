@@ -22,9 +22,9 @@
   @formRadioGroupContainer(form("answer"))(null) {
     @for(answerView <- answerViews) {
       @if(answerView.isDividerAbove) {
-        <p class="form-block">or</p>
+        <p class="govuk-label or-label">or</p>
       }
-      <div class="form-group">
+      <div class="govuk-form-group">
         <h2 class="heading-small">
           @answerView.getHtmlAbove
         </h2>

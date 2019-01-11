@@ -7,7 +7,7 @@
 @this()
 @(breadcrumbItemViews: List[BreadcrumbItemView], controlCode: String, description: String, subAnswerViews: List[SubAnswerView])
 
-<p class="lede">
+<p class="govuk-caption-l">
   Based on the choices you've made, the control list entry for your item is @controlCode.
 </p>
 
@@ -32,7 +32,7 @@
     }
   }
   @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
-    <h2 class="outcome-detail-box-heading">@controlCode</h2>
+    <h2 class="govuk-heading-m">@controlCode</h2>
     <div>
       @Html(description)
     </div>

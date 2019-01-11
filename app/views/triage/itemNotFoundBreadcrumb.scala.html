@@ -26,7 +26,7 @@
     }
   }
   @controlCodeBreadcrumbsDetailBox(isPathStep = true, changeUrl = changeUrl) {
-    <span class="outcome-detail-box-heading">Item has none of the controlled characteristics</span>
+    <span class="govuk-heading-m">Item has none of the controlled characteristics</span>
   }(HtmlFormat.empty)
 }
 
@@ -42,7 +42,7 @@
           @subAnswers(relatedEntryView.getSubAnswerViews)
         }
         @if(relatedEntryView.getChangeUrl() != null){
-          <a class="related-code-change-link" href="@relatedEntryView.getChangeUrl">Change<span class="visually-hidden"> answer for @relatedEntryView.getControlCode</span></a>
+          <a class="related-code-change-link" href="@relatedEntryView.getChangeUrl">Change<span class="govuk-visually-hidden"> answer for @relatedEntryView.getControlCode</span></a>
         }
       </li>
     }

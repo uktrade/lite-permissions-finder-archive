@@ -16,13 +16,13 @@
   <p>You have selected: Open General Export Licence (@ogel.getName)</p>
 
   <div class="banner danger-banner">
-    <span class="visually-hidden">Warning:</span>
+    <span class="govuk-visually-hidden">Warning:</span>
     You should read the licence in full and confirm you can comply with the conditions before registering for an open general export licence (OGEL).
   </div>
 
   @if(StringUtils.isNoneBlank(ogel.getLink)) {
     <p class="bold-small">
-      <a class="external" href="@ogel.getLink" rel="external" target="_blank">View the full text of the OGEL<span class="visually-hidden"> (opens in a new tab)</span></a>
+      <a class="external" href="@ogel.getLink" rel="external" target="_blank">View the full text of the OGEL<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
     </p>
   }
 
@@ -39,7 +39,7 @@
 
     @views.html.helper.CSRF.formField
 
-    <div class="form-group">
+    <div class="govuk-form-group">
       @formCheckbox(form("confirmRead"), "I confirm that I have read the OGEL's conditions in full.")
 
       @formCheckbox(form("confirmComplies"), "I confirm that my export complies with the OGEL's conditions.")

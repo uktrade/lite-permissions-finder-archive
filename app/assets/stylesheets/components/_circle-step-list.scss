@@ -1,33 +1,37 @@
-ol.circle-step-list {
-  counter-reset: circle-step-list-counter;
+.circle-step-list {
+	counter-reset: circle-step-list-counter;
+    list-style-type: none;
+	padding-left: 0;
+	margin-left: 0;
 
-  &>li {
-    position: relative;
-    padding-left: 55px;
-    padding-top: 8px;
-    margin-bottom: $gutter-two-thirds;
+	p {
+		margin-top: 0;
+	}
 
-    &:before {
-      display: inline-block;
-      @include border-radius(50%);
+	& > li {
+		position: relative;
+		padding-left: 55px;
+		padding-top: 8px;
+		margin-bottom: 0;
+		@include govuk-font($size: 19);
+		@include govuk-text-colour;
 
-      content: counter(circle-step-list-counter);
-      counter-increment: circle-step-list-counter;
-
-      position: absolute;
-      top: 0;
-      left: 0;
-
-      background: $black;
-      color: $white;
-
-      font-family: $toolkit-font-stack-tabular;
-      font-size: 19px;
-      width: 38px;
-      height: 38px;
-      line-height: 41px;
-      font-weight: bold;
-      text-align: center;
-    }
-  }
+		&:before {
+			display: inline-block;
+			border-radius: 50%;
+			content: counter(circle-step-list-counter);
+			counter-increment: circle-step-list-counter;
+			position: absolute;
+			top: 0;
+			left: 0;
+			background: black;
+			color: white;
+			@include govuk-font($size: 19, $weight: bold);
+			width: 38px;
+			height: 38px;
+			line-height: 41px!important;
+			font-weight: bold;
+			text-align: center;
+		}
+	}
 }

@@ -9,8 +9,8 @@
 
 @ecoContactDetails = {
   <p>
-    T<span class="visually-hidden">elephone</span> +44 (0)20 7215 4594<br>
-    E<span class="visually-hidden">mail</span> <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>
+    T<span class="govuk-visually-hidden">elephone</span> +44 (0)20 7215 4594<br>
+    E<span class="govuk-visually-hidden">mail</span> <a href="mailto:eco.help@@trade.gov.uk">eco.help@@trade.gov.uk</a>
   </p>
 }
 <link rel="stylesheet" type="text/css" media="print" href="@controllers.routes.Assets.versioned("stylesheets/letter-print.css")">
@@ -53,8 +53,8 @@
 </p>
 
 <p>
-  T<span class="visually-hidden">elephone</span> @userDetailsView.getContactPhoneNumber<br>
-  E<span class="visually-hidden">mail</span> <a href="mailto:@userDetailsView.getContactEmailAddress">@userDetailsView.getContactEmailAddress</a>
+  T<span class="govuk-visually-hidden">elephone</span> @userDetailsView.getContactPhoneNumber<br>
+  E<span class="govuk-visually-hidden">mail</span> <a href="mailto:@userDetailsView.getContactEmailAddress">@userDetailsView.getContactEmailAddress</a>
 </p>
 
 <p>
@@ -65,7 +65,7 @@
   Dear @userDetailsView.getTitle @userDetailsView.getLastName
 </p>
 
-<p class="bold">
+<p>
   Reference Code: @resumeCode
 </p>
 

@@ -13,14 +13,18 @@
 @standardPage("Is this your item?", Some(heading("Is this your item?")), true, resumeCode, true){
   @errorSummary(form)
 }{
+
+<div class="govuk-inset-text">
+	<p>"@Html(description)"</p>
+	@if(!subAnswerViews.isEmpty) {
+		@subAnswers(subAnswerViews)
+	}
+</div>
+
   <blockquote>
-    <p>@Html(description)</p>
-    @if(!subAnswerViews.isEmpty) {
-      @subAnswers(subAnswerViews)
-    }
   </blockquote>
 
-  <p>
+  <p class="govuk-label">
     This is the control list classification hierarchy for this item.
     It does not necessarily reflect your journey through this service.
   </p>
@@ -37,10 +41,10 @@
       }
     }
     @controlCodeBreadcrumbsDetailBox(isPathStep = true) {
-      <h2 class="outcome-detail-box-heading">@controlCode</h2>
-      <div>
+      <h3 class="govuk-heading-m">@controlCode</h3>
+      <p class="govuk-label">
         @Html(description)
-      </div>
+	</p>
       @if(!subAnswerViews.isEmpty) {
         @subAnswers(subAnswerViews)
       }
@@ -58,7 +62,7 @@
   <form action="@routes.StageController.handleSubmit(stageId, sessionId).toString" method="POST">
     @views.html.helper.CSRF.formField
     @formRadioBoolean(form("answer"), Html("Does this describe your item?"))
-    <button type="submit" class="button" name="action" value="continue">Save and continue</button>
+    <button type="submit" class="govuk-button" name="action" value="continue">Save and continue</button>
   </form>
 
   <input type="hidden" id="sessionId" value="@sessionId"/>
