@@ -2,7 +2,9 @@ package controllers.modal;
 
 import static play.mvc.Results.ok;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import play.libs.Json;
 import play.mvc.Result;
 import triage.config.ControllerConfigService;
 import triage.config.DefinitionConfig;
@@ -28,8 +30,12 @@ public class ModalDefinitionController {
   public Result renderGlobalDefinition(String globalDefinitionId) {
     DefinitionConfig globalDefinition = controllerConfigService.getGlobalDefinitionConfig(globalDefinitionId);
 
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(globalDefinition.getDefinitionText());
-    return ok(modalDefinition.render(globalDefinition.getTerm(), definitionTextHtml));
+    ObjectNode result = Json.newObject();
+    result.put("term", globalDefinition.getTerm());
+    result.put("definition", htmlRenderService.convertRichTextToHtml(globalDefinition.getDefinitionText(),
+            HtmlRenderOption.OMIT_LINK_TARGET_ATTR));
+
+    return ok(Json.prettyPrint(result));
   }
 
   public Result renderGlobalDefinitionView(String globalDefinitionId) {
@@ -43,8 +49,12 @@ public class ModalDefinitionController {
   public Result renderLocalDefinition(String localDefinitionId) {
     DefinitionConfig localDefinition = controllerConfigService.getLocalDefinitionConfig(localDefinitionId);
 
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(localDefinition.getDefinitionText());
-    return ok(modalDefinition.render(localDefinition.getTerm(), definitionTextHtml));
+    ObjectNode result = Json.newObject();
+    result.put("term", localDefinition.getTerm());
+    result.put("definition", htmlRenderService.convertRichTextToHtml(localDefinition.getDefinitionText(),
+            HtmlRenderOption.OMIT_LINK_TARGET_ATTR));
+
+    return ok(Json.prettyPrint(result));
   }
 
   public Result renderLocalDefinitionView(String localDefinitionId) {

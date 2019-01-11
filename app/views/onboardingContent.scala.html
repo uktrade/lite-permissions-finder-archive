@@ -22,7 +22,7 @@
 <form action="@routes.OnboardingController.handleSubmit(sessionId)" method="POST">
 
 	@views.html.helper.CSRF.formField
-	@formRadioGroup(form("speciallyDesigned"), options, promptCssClass = "visually-hidden")(question)
+	@formRadioGroup(form("speciallyDesigned"), options, promptCssClass = "govuk-visually-hidden")(question)
 
 	<button type="submit" class="govuk-button">Continue</button>
 </form>
