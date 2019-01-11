@@ -11,28 +11,27 @@ import java.util.List;
 
 public class JsonUtils {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final TypeReference<List<String>> STRING_LIST_TYPE_REFERENCE = new TypeReference<List<String>>() {
-    };
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final TypeReference<List<String>> STRING_LIST_TYPE_REFERENCE = new TypeReference<List<String>>() {
+  };
 
-    public static List<String> convertJsonToList(String json) {
-        try {
-            return OBJECT_MAPPER.readValue(json, STRING_LIST_TYPE_REFERENCE);
-        } catch (IOException ioe) {
-            throw new ServiceException("Failed to convert json to list", ioe);
-        }
+  public static List<String> convertJsonToList(String json) {
+    try {
+      return OBJECT_MAPPER.readValue(json, STRING_LIST_TYPE_REFERENCE);
+    } catch (IOException ioe) {
+      throw new ServiceException("Failed to convert json to list", ioe);
     }
+  }
 
-    public static <E> String convertListToJson(List<? extends E> list) {
-        return toJson(ListUtils.emptyIfNull(list));
+  public static <E> String convertListToJson(List<? extends E> list) {
+    return toJson(ListUtils.emptyIfNull(list));
+  }
+
+  private static String toJson(Object object) {
+    try {
+      return OBJECT_MAPPER.writeValueAsString(object);
+    } catch (JsonProcessingException jpe) {
+      throw new ServiceException("Failed to convert object to json", jpe);
     }
-
-    private static String toJson(Object object) {
-        try {
-            return OBJECT_MAPPER.writeValueAsString(object);
-        } catch (JsonProcessingException jpe) {
-            throw new ServiceException("Failed to convert object to json", jpe);
-        }
-    }
-
+  }
 }
