@@ -188,7 +188,7 @@ public class AnswerViewServiceImpl implements AnswerViewService {
         new BusinessRuleException("Unknown stageId " + stageId));
     if (stageConfig.getQuestionType() == QuestionType.STANDARD) {
       StringBuilder stringBuilder = new StringBuilder();
-      stringBuilder.append("<ul>");
+      stringBuilder.append("<ul class='govuk-list govuk-list--bullet'>");
       List<AnswerConfig> answerConfigs = stageConfig.getAnswerConfigs().stream()
           .sorted(Comparator.comparing(AnswerConfig::getDisplayOrder))
           .collect(Collectors.toList());
@@ -225,7 +225,7 @@ public class AnswerViewServiceImpl implements AnswerViewService {
   private String subAnswerViewsToHtml(List<SubAnswerView> subAnswerViews) {
     StringBuilder stringBuilder = new StringBuilder();
     if (!subAnswerViews.isEmpty()) {
-      stringBuilder.append("<ul>");
+      stringBuilder.append("<ul class='govuk-list govuk-list--bullet'>");
       for (SubAnswerView subAnswerView : subAnswerViews) {
         stringBuilder.append("<li>");
         stringBuilder.append(subAnswerView.getText());

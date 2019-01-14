@@ -86,8 +86,7 @@ GET     /register-nlr/success                       controllers.ViewOutcomeContr
 
 #Modals
 GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId, sessionId)
-GET     /modal-content/definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinition(globalDefinitionId)
-GET     /modal-content/definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinition(localDefinitionId)
+GET     /modal-content/definition/:type/:definitionId      controllers.modal.ModalDefinitionController.renderDefinition(type, definitionId)
 GET     /modal-content/content/:modalContentId                    controllers.modal.ModalContentController.renderModalContent(modalContentId)
 
 GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)

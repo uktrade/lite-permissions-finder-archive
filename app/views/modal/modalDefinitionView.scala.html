@@ -2,7 +2,7 @@
 
 @this(standardPage: standardPage)
 
-@(term : String, definitionTextHtml: String)
+@(term: String, definitionTextHtml: String)
 @standardPage(term, Some(heading(term))) { } {
   <div class="govuk-label">
     @Html(definitionTextHtml)

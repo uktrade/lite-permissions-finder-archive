@@ -5,20 +5,19 @@
 @(sessionId: String, resumeCode: String)
 
 @outcomePage("Item not found", sessionId, resumeCode, false) {
-<p class="govuk-caption-l">
+<p class="govuk-body">
 	You have not found your item in the UK Military List. This does not mean that your item is not controlled.
 </p>
 
-<!-- TODO make red -->
 <div class="banner danger-banner">
-	<span class="govuk-visually-hidden">Warning:</span>
-	<p class="govuk-label">Always double-check if your items are controlled. If you export controlled items without the correct export licence
-	you could:</p>
-	<ul class="govuk-list govuk-list--bullet">
-		<li>have your items seized</li>
-		<li>face a fine</li>
-		<li>serve up to 10 years in prison</li>
-	</ul>
+  <span class="govuk-visually-hidden">Warning:</span>
+  Always double-check if your items are controlled. If you export controlled items without the correct export licence
+  you could:
+  <ul class="govuk-list govuk-list--bullet">
+	<li>have your items seized</li>
+	<li>face a fine</li>
+	<li>serve up to 10 years in prison</li>
+  </ul>
 </div>
 
 <h2 class="govuk-heading-l">What you should do next</h2>

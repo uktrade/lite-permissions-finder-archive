@@ -1,20 +1,17 @@
-.govuk-back-link {
-	margin-bottom: govuk-spacing(9);
-}
 // TODO move to own folder
-
 $border-color: govuk-colour("grey-2");
 
 legend .govuk-hint {
 	display: block;
-	padding-bottom: govuk-spacing(6);
+	padding-bottom: govuk-spacing(2);
 }
 
 .breadcrumb-notes {
 	list-style-type: none;
-	padding: 0!important;
+	padding: 0!important !important;
+
 	li {
-		padding: 0!important;
+		padding: 0!important !important;
 		height: auto!important;
 	}
 }
@@ -28,13 +25,11 @@ legend .govuk-hint {
 	-webkit-padding-start: 0;
 	margin-bottom: govuk-spacing(6);
 
-	li {
+	& > li {
 		@include govuk-font($size: 19);
 		@include govuk-text-colour;
 		position: relative;
-		height: 60px;
-		padding: 0 govuk-spacing(4);
-		padding-left: govuk-spacing(8) + 1px;
+		padding: 0 govuk-spacing(4) 0 govuk-spacing(8) + 1px;
 
 		.breadcrumb-change-link {
 			float: right;
@@ -44,8 +39,25 @@ legend .govuk-hint {
 			font-weight: 600;
 		}
 
+		&:last-of-type {
+			position: relative;
+			margin-top: 10px;
+			background: govuk-colour("white");
+			height: auto!important;
+			z-index: 1;
+			border: 2px solid $border-color;
+			padding: govuk-spacing(4);
+
+			.detail-box-content {
+				* {
+					padding-bottom: 0;
+					margin-bottom: 0;
+				}
+			}
+		}
+
 		&:not(:last-of-type) {
-			line-height: 60px!important;
+			padding-top: 20px;
 
 			&:before {
 				content: "";
@@ -69,6 +81,7 @@ legend .govuk-hint {
 				border: 2px solid $border-color;
 			}
 		}
+
 		&:last-of-type {
 			.breadcrumb-change-link {
 				position: absolute;
@@ -79,22 +92,15 @@ legend .govuk-hint {
 	}
 }
 
-.detail-box {
-	position: relative;
-	margin-top: 10px;
-	background: govuk-colour("white");
-	height: auto!important;
-	padding: 0!important;
-	z-index: 1;
-
-	.detail-box-content {
-		border: 2px solid $border-color;
-		padding: govuk-spacing(4);
-
-		* {
-			padding-bottom: 0;
-			margin-bottom: 0;
-		}
+.control-code-breadcrumbs-notes {
+	background-color: govuk-colour("grey-4");
+	border-left: 2px solid $border-color;
+	border-right: 2px solid $border-color;
+	border-bottom: 2px solid $border-color;
+	padding: govuk-spacing(4);
+	& > *:last-child {
+		margin-bottom: 0!important;
+		padding-bottom: 0!important;
 	}
 }
 
@@ -104,6 +110,10 @@ legend .govuk-hint {
 	border-right: 2px solid $border-color;
 	border-bottom: 2px solid $border-color;
 	padding: govuk-spacing(4);
+	& > *:last-child {
+		margin-bottom: 0!important;
+		padding-bottom: 0!important;
+	}
 }
 
 main {

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class RichText {
 
-  private final List<RichTextNode> richTextNodes;
+  private List<RichTextNode> richTextNodes;
 
   public RichText(String text) {
     richTextNodes = Collections.singletonList(new SimpleTextNode(text));
@@ -19,5 +19,7 @@ public class RichText {
     return richTextNodes;
   }
 
-
+  public void setRichTextNodes(List<RichTextNode> richTextNodes) {
+    this.richTextNodes = richTextNodes;
+  }
 }

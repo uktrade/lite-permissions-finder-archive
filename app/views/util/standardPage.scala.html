@@ -8,7 +8,7 @@
 
 @govukTemplateDefaults(htmlTitle + " - License controlled items and services") {
 
-<main id="content" role="main" class="govuk-width-container">
+<div class="govuk-width-container">
 
 	@phaseBanner(feedbackConfig)
 
@@ -27,30 +27,29 @@
 		</div>
 		}
 
-		<div class="nav-container-end"></div>
 	</div>
 
-	@if(twoThirdsColumn) {
-	<div class="govuk-grid-row">
-		<div class="govuk-grid-column-two-thirds">
-			}
-
-			<a id="contentStart"></a>
-
-			@beforeHeader
-
-			<header>
-				@if(pageHeading.isDefined) {
-				@pageHeading
+	<main class="govuk-main-wrapper app-main-class" id="main-content" role="main">
+		@if(twoThirdsColumn) {
+		<div class="govuk-grid-row">
+			<div class="govuk-grid-column-two-thirds">
 				}
-			</header>
 
-			@content
+				<a id="contentStart"></a>
 
-			@if(twoThirdsColumn) {
+				@beforeHeader
+
+				@if(pageHeading.isDefined) {
+					@pageHeading
+				}
+
+				@content
+
+				@if(twoThirdsColumn) {
+			</div>
 		</div>
-	</div>
-	}
+		}
 
-</main>
+	</main>
+</div>
 }

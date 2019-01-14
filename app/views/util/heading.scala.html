@@ -1,10 +1,8 @@
 @(headingText: String, headingClass: String = "govuk-heading-l", visuallyHidden : Boolean = false)
-<div>
-  <h1 class="@headingClass">
+<h1 class="@headingClass">
     @if(visuallyHidden) {
       <span class="govuk-visually-hidden">@headingText</span>
     } else {
       @headingText
     }
   </h1>
-</div>

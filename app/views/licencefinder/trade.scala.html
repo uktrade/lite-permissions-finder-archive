@@ -11,10 +11,8 @@
   @errorSummary(form)
 }{
 
-  <div class="panel panel-border-wide">
-    <p>
-      You should use <a href="https://www.spire.trade.gov.uk" rel="external">SPIRE</a> unless you are helping test out the new service.
-    </p>
+  <div class="govuk-inset-text">
+      You should use <a class="govuk-link" href="https://www.spire.trade.gov.uk" rel="external">SPIRE</a> unless you are helping test out the new service.
   </div>
 
   <form action="@controllers.licencefinder.routes.TradeController.handleTradeSubmit(sessionId)" method="POST">
@@ -26,7 +24,7 @@
 
       @fieldContainer(form("tradeType")) {
 
-        <p>
+        <p class="govuk-label">
           Your control list entry is <span class="bold">@controlCode</span>.
         </p>
 
@@ -43,15 +41,6 @@
     </fieldset>
 
     <button type="submit" class="govuk-button">Continue</button>
-
-@**
-    <br>
-    <div class="panel panel-border-wide">
-      <p>
-        <a href="@org.pac4j.play.routes.LogoutController.logout()">Temp Sign out</a>
-      </p>
-    </div>
-    **@
 
   </form>
 

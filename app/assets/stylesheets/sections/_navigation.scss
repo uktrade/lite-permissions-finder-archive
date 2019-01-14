@@ -1,17 +1,13 @@
-.nav-container-end {
-	clear: both;
-}
-
-.back-link-container {
-	float: left;
+.nav-container {
+	position: relative;
 }
 
 .resume-code-container {
-	float: right;
+	position: absolute;
+	top: 14px;
+	right: 0;
 
 	.resume-code {
-		margin-top: 14px;
-
 		p {
 			@include govuk-font($size: 16);
 			@include govuk-text-colour;
