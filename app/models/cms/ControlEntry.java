@@ -81,4 +81,13 @@ public class ControlEntry {
     this.journeyId = journeyId;
     return this;
   }
+
+  public String getJumpToControlCodes() {
+    return jumpToControlCodes;
+  }
+
+  public JumpToControlCodes setJumpToControlCodes(String jumpToControlCodes) {
+    this.jumpToControlCodes = jumpToControlCodes;
+    return this;
+  }
 }
