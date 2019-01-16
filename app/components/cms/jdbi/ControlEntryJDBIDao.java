@@ -44,7 +44,7 @@ public interface ControlEntryJDBIDao {
       @Bind("nested") Boolean nested,
       @Bind("displayOrder") Integer displayOrder,
       @Bind("journeyId") Long journeyId,
-      @bind("jumpToControlCodes") String jumpToControlCodes
+      @Bind("jumpToControlCodes") String jumpToControlCodes
   );
 
   @SqlUpdate("DELETE FROM control_entry")

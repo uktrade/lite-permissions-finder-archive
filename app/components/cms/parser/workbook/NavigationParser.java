@@ -73,6 +73,7 @@ public class NavigationParser {
             static final int JUMP_TO = Utils.columnToIndex("U");
             static final int DEFINING = Utils.columnToIndex("V");
             static final int DEFERRED = Utils.columnToIndex("W");
+            static final int JUMP_TO_CONTROL_CODES = Utils.columnToIndex("ZZ");
         }
 
         static class Breadcrumbs {
@@ -252,7 +253,8 @@ public class NavigationParser {
         String jumpTo = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.JUMP_TO));
         String defining = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.DEFINING));
         String deferred = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.DEFERRED));
-        return new Loops(relatedCodes, jumpTo, defining, deferred);
+        String jumpToControlCodes = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.JUMP_TO_CONTROL_CODES));
+        return new Loops(relatedCodes, jumpTo, defining, deferred, jumpToControlCodes);
     }
 
     private static Breadcrumbs getBreadcrumbs(Row row) {

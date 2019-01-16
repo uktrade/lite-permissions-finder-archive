@@ -9,6 +9,7 @@ public class ControlEntry {
   private boolean nested;
   private Integer displayOrder;
   private Long journeyId;
+  private String jumpToControlCodes;
 
   public Long getId() {
     return id;
@@ -86,7 +87,7 @@ public class ControlEntry {
     return jumpToControlCodes;
   }
 
-  public JumpToControlCodes setJumpToControlCodes(String jumpToControlCodes) {
+  public ControlEntry setJumpToControlCodes(String jumpToControlCodes) {
     this.jumpToControlCodes = jumpToControlCodes;
     return this;
   }
