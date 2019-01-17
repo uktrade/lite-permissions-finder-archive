@@ -12,7 +12,7 @@
       @if(index == breadcrumbItemsViews.size - 1) {
         @controlCodeBreadcrumbsDetailBox(isPathStep = true){
           @if(breadcrumbItemView.getText!=null) {
-            <span class="bold">@breadcrumbItemView.getText</span>
+            <span class="govuk-!-font-weight-bold">@breadcrumbItemView.getText</span>
           }
           @if(breadcrumbItemView.getDescription!=null) {
             @Html(breadcrumbItemView.getDescription)
@@ -25,7 +25,7 @@
       } else {
         @controlCodeBreadcrumbsStep(){
           @if(breadcrumbItemView.getText!=null) {
-            <span class="bold">@breadcrumbItemView.getText</span>
+            <span class="govuk-!-font-weight-bold">@breadcrumbItemView.getText</span>
           }
           @if(breadcrumbItemView.getDescription!=null) {
             @Html(breadcrumbItemView.getDescription)

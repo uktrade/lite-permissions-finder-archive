@@ -9,44 +9,96 @@
 @this(standardPage: standardPage)
 @(form: Form[RegisterToUseForm], ogel: OgelFullView, questionViews: List[QuestionView], sessionId: String)
 
-@standardPage("Register to use this Open General Export Licence", Some(heading("Register to use this Open General Export Licence"))){
-  @errorSummary(form)
+@standardPage("Register to use this Open General Export Licence", Some(heading("")), showBackLink = true){
+@errorSummary(form)
 }{
 
-  <p>You have selected: Open General Export Licence (@ogel.getName)</p>
+		<span class="govuk-caption-m">Register to use this OGEL:</span>
+		<h2 class="govuk-heading-l">@ogel.getName</h2>
 
-  <div class="banner danger-banner">
-    <span class="govuk-visually-hidden">Warning:</span>
-    You should read the licence in full and confirm you can comply with the conditions before registering for an open general export licence (OGEL).
-  </div>
+		@for(value <- ogel.getSummary.getCanList){
+			<p class="govuk-caption-m">@value</p>
+		}
 
-  @if(StringUtils.isNoneBlank(ogel.getLink)) {
-    <p class="bold-small">
-      <a class="external" href="@ogel.getLink" rel="external" target="_blank">View the full text of the OGEL<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
-    </p>
-  }
+		<br/>
 
-  <dl class="govuk-check-your-answers form-group">
-    @for((questionView, index) <- questionViews.iterator.zipWithIndex) {
-      <div>
-        <dt class="cya-question">@questionView.getQuestion</dt>
-        <dd class="cya-answer">@questionView.getAnswer</dd>
-      </div>
-    }
-  </dl>
+		<p class="govuk-label">Before your register this OGEL:</p>
+		<ol class="step-by-step">
+			<li>
+				<div class="step-by-step-title">Review your answers<a class="govuk-link">Hide</a></div>
+				<div class="step-by-step-content">
+					<table class="govuk-table">
+						<tbody class="govuk-table__body">
+							@for((questionView, index) <- questionViews.iterator.zipWithIndex) { <tr class="govuk-table__row">
+								<th class="govuk-table__header" scope="row">@questionView.getQuestion</th>
+								<td class="govuk-table__cell">@questionView.getAnswer</td>
+								</tr>
+								}
+						</tbody>
+					</table>
+				</div>
+			</li>
+			@if(StringUtils.isNoneBlank(ogel.getLink)) {
+				<li>
+					<div class="step-by-step-title">Read the full text of the OGEL<a class="govuk-link">Hide</a></div>
+					<div class="step-by-step-content">
+						<a class="govuk-link" href="@ogel.getLink" rel="external" target="_blank">Open General Export Licence (@ogel.getName)<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+					</div>
+				</li>
+			}
+			<li>
+				<div class="step-by-step-title">Check what you must do before using this licence<a class="govuk-link">Hide</a></div>
+				<div class="step-by-step-content">
+					<ul class="govuk-list govuk-list--bullet">
+						@for(value <- ogel.getSummary.getMustList){
+							<li>@Html(value)</li>
+						}
+					</ul>
+				</div>
+			</li>
+			<li>
+				<div class="step-by-step-title">Check what this licence can't be used for<a class="govuk-link">Hide</a></div>
+				<div class="step-by-step-content">
+					<ul class="govuk-list govuk-list--bullet">
+						@for(value <- ogel.getSummary.getHowToUseList){
+							<li>@Html(value)</li>
+						}
+					</ul>
+				</div>
+			</li>
+			<li>
+				<div class="step-by-step-title">Check what this licence can't be used for<a class="govuk-link">Hide</a></div>
+				<div class="step-by-step-content">
+					<ul class="govuk-list govuk-list--bullet">
+						@for(value <- ogel.getSummary.getCantList){
+							<li>@Html(value)</li>
+						}
+					</ul>
+				</div>
+			</li>
+		</ol>
 
-  <form action="@controllers.licencefinder.routes.RegisterToUseController.handleRegisterToUseSubmit(sessionId)" method="POST">
+		<div class="banner danger-banner">
+			<span class="govuk-visually-hidden">Warning:</span>
+			You should read the licence in full and confirm you can comply with the conditions before registering for an open general export licence (OGEL).
+		</div>
 
-    @views.html.helper.CSRF.formField
+		<form action="@controllers.licencefinder.routes.RegisterToUseController.handleRegisterToUseSubmit(sessionId)" method="POST">
 
-    <div class="govuk-form-group">
-      @formCheckbox(form("confirmRead"), "I confirm that I have read the OGEL's conditions in full.")
+			@views.html.helper.CSRF.formField
 
-      @formCheckbox(form("confirmComplies"), "I confirm that my export complies with the OGEL's conditions.")
-    </div>
+			<div class="govuk-form-group">
+				@formCheckbox(form("confirmRead"), "I confirm that I have read the OGEL's conditions in full.")
 
-    <button type="submit" class="button button-start start-application">Register</button>
+				@formCheckbox(form("confirmComplies"), "I confirm that my export complies with the OGEL's conditions.")
+			</div>
 
-  </form>
+			<button type="submit" class="govuk-button govuk-button--start">Register</button>
 
+		</form>
+
+
+
+  <input type="hidden" id="sessionId" value="@sessionId"/>
+  <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/register-to-use.js")"></script>
 }

@@ -85,13 +85,15 @@ POST    /register-nlr/decontrol/:stageId            controllers.ViewOutcomeContr
 GET     /register-nlr/success                       controllers.ViewOutcomeController.registerSuccess(sessionId)
 
 #Modals
-GET     /modal-content/control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId, sessionId)
-GET     /modal-content/definition/:type/:definitionId      controllers.modal.ModalDefinitionController.renderDefinition(type, definitionId)
-GET     /modal-content/content/:modalContentId                    controllers.modal.ModalContentController.renderModalContent(modalContentId)
+GET     /modal-content/past-selections		                    controllers.modal.ModalSelectionController.renderPastSelections(sessionId)
+GET     /modal-content/control-entry/:controlEntryId       		controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId, sessionId)
+GET     /modal-content/definition/:type/:definitionId      		controllers.modal.ModalDefinitionController.renderDefinition(type, definitionId)
+GET     /modal-content/content/:modalContentId             		controllers.modal.ModalContentController.renderModalContent(modalContentId)
 
+
+#GET     /view-past-selections		                     controllers.modal.ModalSelectionController.renderPastSelectionsView(sessionId)
 GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)
-GET     /view-definition/global/:globalDefinitionId      controllers.modal.ModalDefinitionController.renderGlobalDefinitionView(globalDefinitionId)
-GET     /view-definition/local/:localDefinitionId        controllers.modal.ModalDefinitionController.renderLocalDefinitionView(localDefinitionId)
+GET     /view-definition/:type/:definitionId             controllers.modal.ModalDefinitionController.renderDefinitionView(type, definitionId)
 GET     /view-modal-content/:modalContentId              controllers.modal.ModalContentController.renderModalContentView(modalContentId)
 
 GET     /analytics.js                               controllers.AnalyticsController.getAnalyticsJs

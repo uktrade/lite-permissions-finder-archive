@@ -1,9 +1,24 @@
 // TODO move to own folder
 $border-color: govuk-colour("grey-2");
 
-legend .govuk-hint {
-	display: block;
-	padding-bottom: govuk-spacing(2);
+.govuk-inset-text--warning {
+	border-left: 10px solid rgba( govuk-colour("red"), .4 );
+}
+
+.govuk-fieldset__legend {
+	.govuk-hint {
+		margin-top: 0;
+	}
+}
+
+#auth-banner {
+	color: govuk-colour("white");
+	font-weight: 600;
+	margin-top: govuk-spacing(1);
+	a {
+		color: govuk-colour("white");
+		margin-left: govuk-spacing(2);
+	}
 }
 
 .breadcrumb-notes {
@@ -33,10 +48,6 @@ legend .govuk-hint {
 
 		.breadcrumb-change-link {
 			float: right;
-		}
-
-		.bold {
-			font-weight: 600;
 		}
 
 		&:last-of-type {
@@ -125,6 +136,13 @@ main {
 	text-decoration: none;
 	border-bottom: 1.2px dotted currentColor;
 	cursor: help;
+	// Hide external link icon 
+	&:before {
+		display: none;
+	}
+	&:after {
+		display: none;
+	}
 }
 
 .govuk-radios__item {

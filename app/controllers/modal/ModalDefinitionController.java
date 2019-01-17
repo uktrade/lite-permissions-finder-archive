@@ -1,8 +1,6 @@
 package controllers.modal;
 
-import static play.mvc.Results.ok;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
@@ -11,8 +9,11 @@ import triage.config.ControllerConfigService;
 import triage.config.DefinitionConfig;
 import triage.text.*;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+
+import static play.mvc.Results.ok;
 
 public class ModalDefinitionController {
 
@@ -30,6 +31,17 @@ public class ModalDefinitionController {
   }
 
   public Result renderDefinition(String type, String definitionId) {
+    Map<String, String> definition = getDefinition(type, definitionId);
+    return ok(Json.prettyPrint(new ObjectMapper().valueToTree(definition)));
+  }
+
+  public Result renderDefinitionView(String type, String definitionId) {
+    Map<String, String> definition = getDefinition(type, definitionId);
+    return ok(modalDefinitionView.render(definition.get("term"), definition.get("definition")));
+  }
+
+  private Map<String, String> getDefinition(String type, String definitionId) {
+    Map<String, String> result = new HashMap<>();
     String term = "Unknown term";
     String definition = "Unknown definition";
     DefinitionConfig definitionConfig = null;
@@ -63,30 +75,12 @@ public class ModalDefinitionController {
       definitionConfig.getDefinitionText().setRichTextNodes(nodes);
 
       definition = htmlRenderService.convertRichTextToHtml(definitionConfig.getDefinitionText(),
-              HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
+        HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
     }
 
-    // Return JSON
-    ObjectNode result = Json.newObject();
     result.put("term", StringUtils.capitalize(term));
     result.put("definition", "<p class='govuk-label'>" + definition + "</p>");
-    return ok(Json.prettyPrint(result));
+
+    return result;
   }
-
-  public Result renderGlobalDefinitionView(String globalDefinitionId) {
-    DefinitionConfig globalDefinition = controllerConfigService.getGlobalDefinitionConfig(globalDefinitionId);
-
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(globalDefinition.getDefinitionText(),
-        HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
-    return ok(modalDefinitionView.render(StringUtils.capitalize(globalDefinition.getTerm()), definitionTextHtml));
-  }
-
-  public Result renderLocalDefinitionView(String localDefinitionId) {
-    DefinitionConfig localDefinition = controllerConfigService.getLocalDefinitionConfig(localDefinitionId);
-
-    String definitionTextHtml = htmlRenderService.convertRichTextToHtml(localDefinition.getDefinitionText(),
-        HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
-    return ok(modalDefinitionView.render(StringUtils.capitalize(localDefinition.getTerm()), definitionTextHtml));
-  }
-
 }

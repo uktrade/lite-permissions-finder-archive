@@ -30,7 +30,7 @@
     @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
       @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
         @if(breadcrumbItemView.getText!=null) {
-          <span class="bold">@breadcrumbItemView.getText</span>
+          <span class="govuk-!-font-weight-bold">@breadcrumbItemView.getText</span>
         }
         @if(breadcrumbItemView.getDescription!=null) {
           @Html(breadcrumbItemView.getDescription)

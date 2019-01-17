@@ -8,40 +8,42 @@
 @question = {Where are your items going?}
 
 @standardPage(question.toString, Some(heading(question.toString))) {
-  @errorSummary(form)
+@errorSummary(form)
 }{
 
-  <div class="govuk-inset-text">
-      You should use <a class="govuk-link" href="https://www.spire.trade.gov.uk" rel="external">SPIRE</a> unless you are helping test out the new service.
-  </div>
+<div class="govuk-inset-text">
+	You should use <a class="govuk-link" href="https://www.spire.trade.gov.uk" rel="external">SPIRE</a> unless you are helping test out the new service.
+</div>
 
-  <form action="@controllers.licencefinder.routes.TradeController.handleTradeSubmit(sessionId)" method="POST">
+<form action="@controllers.licencefinder.routes.TradeController.handleTradeSubmit(sessionId)" method="POST">
 
-    @views.html.helper.CSRF.formField
+	@views.html.helper.CSRF.formField
 
-    <fieldset>
-      <legend class="govuk-visually-hidden">@question</legend>
+	<p class="govuk-body">
+		Your control list entry is <span class="govuk-!-font-weight-bold">@controlCode</span>.
+	</p>
 
-      @fieldContainer(form("tradeType")) {
+	<div class="govuk-form-group">
+		<fieldset class="govuk-fieldset">
+			<legend class="govuk-visually-hidden">@question</legend>
 
-        <p class="govuk-label">
-          Your control list entry is <span class="bold">@controlCode</span>.
-        </p>
+			@fieldContainer(form("tradeType")) {
 
-        @formRadio(form("tradeType"), "<span class=\"bold\">From the UK to another country</span><br>This is also known as an export",
-          TradeType.EXPORT.toString, true)
+			@formRadio(form("tradeType"), "<span class='govuk-label govuk-radios__label govuk-label--s'>From the UK to another country</span><span class='govuk-hint govuk-radios__hint'>This is also known as an export</span>",
+			TradeType.EXPORT.toString, true)
 
-        @formRadio(form("tradeType"), "<span class=\"bold\">Between non-UK countries</span><br>This is known as trafficking or brokering",
-          TradeType.BROKERING.toString, true)
+			@formRadio(form("tradeType"), "<span class='govuk-label govuk-radios__label govuk-label--s'>Between non-UK countries</span><span class='govuk-hint govuk-radios__hint'>This is known as trafficking or brokering</span>",
+			TradeType.BROKERING.toString, true)
 
-        @formRadio(form("tradeType"), "<span class=\"bold\">Through the UK, from one non-UK country to another</span><br>This is known as transhipment",
-          TradeType.TRANSSHIPMENT.toString, true)
-      }
+			@formRadio(form("tradeType"), "<span class='govuk-label govuk-radios__label govuk-label--s'>Through the UK, from one non-UK country to another</span><span class='govuk-hint govuk-radios__hint'>This is known as transhipment</span>",
+			TradeType.TRANSSHIPMENT.toString, true)
+			}
 
-    </fieldset>
+		</fieldset>
+	</div>
 
-    <button type="submit" class="govuk-button">Continue</button>
+	<button type="submit" class="govuk-button">Continue</button>
 
-  </form>
+</form>
 
 }

@@ -13,7 +13,7 @@
 
 	@views.html.helper.CSRF.formField
 
-	@formInput(form("resumeCode"), Some(Html("<h2 class='govuk-heading-l'>Returning to this service</h2><div class='govuk-form-group'><p class='govuk-label'>Enter the code you received when you saved your progress</p></div>")), "govuk-input--width-10") { }
+	@formInput(form("resumeCode"), Some(Html("<h2 class='govuk-heading-l'>Returning to this service</h2><div class='govuk-form-group'><p class='govuk-label'>Reference code</p><p class='govuk-hint'>It's the code you received when you started the application process. For example, '1234-5678'.</p></div>")), "govuk-input--width-10") { }
 
 	<button type="submit" class="govuk-button">Find and resume</button>
 

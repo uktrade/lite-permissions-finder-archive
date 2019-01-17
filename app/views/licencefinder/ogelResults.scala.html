@@ -12,12 +12,12 @@
 
 @ogelLabel(alreadyRegistered: Boolean, ogelName: String) = {
   @if(alreadyRegistered) {
-    <span class="bold">You have already registered for this OGEL:</span><br>
+    <span class="govuk-!-font-weight-bold">You have already registered for this OGEL:</span><br>
   }
   Open General Export Licence (@ogelName)
 }
 
-@standardPage("Open general export licences available", Some(heading("Open general export licences available"))){
+@standardPage("Open general export licences available", Some(heading("Open general export licences available")), showBackLink=true){
   @errorSummary(form)
 }{
 
@@ -26,19 +26,19 @@
 
         @views.html.helper.CSRF.formField
 
-        <p>
-          These are the open general export licences (OGELs) for items described by <span class="bold">@controlCode</span> being exported to
-            <span class="bold">@countryName</span>.
+        <p class="govuk-body">
+          These are the open general export licences (OGELs) for items described by <span class="govuk-!-font-weight-bold">@controlCode</span> being exported to
+            <span class="govuk-!-font-weight-bold">@countryName</span>.
         </p>
 
-        @formRadioGroupContainer(form(chosenOgelFormField))(Html("Select the option which best matches your items and requirements."), "p", "") {
+        @formRadioGroupContainer(form(chosenOgelFormField))(Html("Select the option which best matches your items and requirements."), "p", "govuk-body") {
           @for(ogelView <- ogelViews) {
             @formRadioWithDetailPanel(form("chosenOgel"), ogelLabel(ogelView.getAlreadyRegistered, ogelView.getName).toString, ogelView.getId, true, detailPanelId = ogelView.getId + "detailPanel", detailPanelPrompt = "More information") {
               @ogelView.getUsageSummary().iterator().next()
             }
           }
 
-          <p class="govuk-label or-label">or</p>
+          <div class="govuk-radios__divider">or</div>
           @formRadio(form("chosenOgel"), "None of the above applies fully to my situation", ChooseOgelController.NONE_ABOVE_KEY, true)
         }
 

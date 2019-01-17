@@ -13,11 +13,11 @@
   <div class="govuk-form-group @if(form("answers").error.isDefined) { form-group-error }">
     <div class="fieldset">
       <div class="legend">
-        <p class="govuk-label">
+        <p class="govuk-hint">
           Decontrols describe items not controlled under the UK Strategic Export Control Lists. Select all that apply.
         </p>
         @noteMessage(!breadcrumbView.getNoteViews.isEmpty)
-        <p class="govuk-label">
+        <p class="govuk-body">
           @if(StringUtils.isNotBlank(explanatoryText)) {
             @Html(explanatoryText)
           } else {

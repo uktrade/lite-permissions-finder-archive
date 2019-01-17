@@ -9,7 +9,7 @@
   @for(breadcrumbItemView <- breadcrumbItemsViews) {
     @controlCodeBreadcrumbsStep(breadcrumbItemView.getUrl) {
       @if(breadcrumbItemView.getText!=null) {
-        <span class="bold">@breadcrumbItemView.getText</span>
+        <span class="govuk-!-font-weight-bold">@breadcrumbItemView.getText</span>
       }
       @if(breadcrumbItemView.getDescription!=null) {
         @Html(breadcrumbItemView.getDescription)
@@ -36,7 +36,7 @@
     <ul class="related-codes">
     @for(relatedEntryView <- relatedEntryViews) {
       <li @if(relatedEntryView.getChangeUrl() != null){class="has-change-link"}>
-        <span class="bold">@relatedEntryView.getControlCode</span>
+        <span class="govuk-!-font-weight-bold">@relatedEntryView.getControlCode</span>
         @Html(relatedEntryView.getFullDescription)
         @if(!relatedEntryView.getSubAnswerViews.isEmpty) {
           @subAnswers(relatedEntryView.getSubAnswerViews)

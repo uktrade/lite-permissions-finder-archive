@@ -29,7 +29,7 @@ $(document).on("click", "a[href^='/view-control-entry']", function(e) {
 			data.items.forEach(function(obj) {
 				var text = (obj.text || "");
 				if (text.length) {
-					text = "<span class='bold'>" + text + " </span>";
+					text = "<span class='govuk-!-font-weight-bold'>" + text + " </span>";
 				}
 				breadcrumbs = breadcrumbs + "<li>" + text + obj.description + "</li>";
 			});

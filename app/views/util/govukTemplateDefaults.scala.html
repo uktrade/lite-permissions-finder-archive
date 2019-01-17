@@ -31,11 +31,9 @@
 	      	@propositionHeading
 	      </a>
         @if(spireAuthManager.getAuthInfoFromContext.isAuthenticated && propositionHeading.body.nonEmpty) {
-          <nav id="proposition-menu" aria-label="Top Level Navigation" class="lite-proposition-menu">
-            <p id="proposition-link">
+            <p id="auth-banner">
               <span class="govuk-visually-hidden">Signed in as </span>@spireAuthManager.getAuthInfoFromContext.getFullName  <a href="@org.pac4j.play.routes.LogoutController.logout">Sign out</a>
             </p>
-          </nav>
         }
 }
 
