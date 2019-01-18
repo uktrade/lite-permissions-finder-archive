@@ -67,6 +67,10 @@ public class ModalControlEntryController extends Controller {
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, true,
         HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
     String description = createDescription(controlEntryConfig);
+
+    // Add showBackLink to all URLs
+    description = description.replace("\" class=\"govuk-link dotted-link", "?showBackLink=true\" class=\"govuk-link dotted-link");
+
     return ok(modalControlEntryView.render(controlEntryConfig.getControlCode(), breadcrumbItemViews, description));
   }
 

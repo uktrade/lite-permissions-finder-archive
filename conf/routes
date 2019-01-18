@@ -93,7 +93,7 @@ GET     /modal-content/content/:modalContentId             		controllers.modal.M
 
 #GET     /view-past-selections		                     controllers.modal.ModalSelectionController.renderPastSelectionsView(sessionId)
 GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)
-GET     /view-definition/:type/:definitionId             controllers.modal.ModalDefinitionController.renderDefinitionView(type, definitionId)
+GET     /view-definition/:type/:definitionId             controllers.modal.ModalDefinitionController.renderDefinitionView(type, definitionId, showBackLink: Boolean ?= false)
 GET     /view-modal-content/:modalContentId              controllers.modal.ModalContentController.renderModalContentView(modalContentId)
 
 GET     /analytics.js                               controllers.AnalyticsController.getAnalyticsJs

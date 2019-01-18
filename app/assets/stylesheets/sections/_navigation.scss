@@ -11,6 +11,7 @@
 		p {
 			@include govuk-font($size: 16);
 			@include govuk-text-colour;
+			margin: 0;
 		}
 	}
 }

@@ -31,9 +31,9 @@
 }
 
 @if(!relatedEntryViews.isEmpty) {
-  <div class="related-codes-box">
-    <h2 class="heading-small">Item is not described by the related control list entries below</h2>
-    <ul class="related-codes">
+  <div class="control-code-breadcrumbs-notes control-code-breadcrumbs-notes--standalone">
+    <h2 class="govuk-heading-m">Item is not described by the related control list entries below</h2>
+    <ul class="related-codes govuk-list">
     @for(relatedEntryView <- relatedEntryViews) {
       <li @if(relatedEntryView.getChangeUrl() != null){class="has-change-link"}>
         <span class="govuk-!-font-weight-bold">@relatedEntryView.getControlCode</span>
@@ -42,7 +42,7 @@
           @subAnswers(relatedEntryView.getSubAnswerViews)
         }
         @if(relatedEntryView.getChangeUrl() != null){
-          <a class="related-code-change-link" href="@relatedEntryView.getChangeUrl">Change<span class="govuk-visually-hidden"> answer for @relatedEntryView.getControlCode</span></a>
+          <a class="breadcrumb-change-link govuk-link" href="@relatedEntryView.getChangeUrl">Change<span class="govuk-visually-hidden"> answer for @relatedEntryView.getControlCode</span></a>
         }
       </li>
     }

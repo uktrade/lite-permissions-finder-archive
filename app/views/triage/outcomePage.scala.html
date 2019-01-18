@@ -4,15 +4,23 @@
 @this(standardPage: standardPage)
 @(title: String, sessionId: String, resumeCode: String, showSharingOptions: Boolean = true)(content: Html)
 
+@sidebarPanel = {
+	@if(showSharingOptions) {
+		<h2 class="govuk-visually-hidden">Sharing options</h2>
+		<ul class="govuk-list" style="text-align: right;">
+		  <li><a href="" class="govuk-link" id="print">Print this page</a></li>
+		</ul>
+	}
+}
+
 @standardPage(title.toString, None, twoThirdsColumn = false, resumeCode = resumeCode, showBackLink = true) {
 
 } {
 	<h1 class="govuk-heading-l">
 		@title
 	</h1>
-  @twoThirdsColumn {
-    @content
-  }
+
+  	@twoThirdsColumn(content, sidebarPanel)
 
   <input type="hidden" id="sessionId" value="@sessionId"/>
   <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/triage.js")"></script>

@@ -35,9 +35,15 @@ public class ModalDefinitionController {
     return ok(Json.prettyPrint(new ObjectMapper().valueToTree(definition)));
   }
 
-  public Result renderDefinitionView(String type, String definitionId) {
+  public Result renderDefinitionView(String type, String definitionId, Boolean showBackLink) {
     Map<String, String> definition = getDefinition(type, definitionId);
-    return ok(modalDefinitionView.render(definition.get("term"), definition.get("definition")));
+
+    // Add showBackLink to all URLs
+    String definitionText = definition.get("definition");
+    definitionText = definitionText.replace("\" class=\"govuk-link dotted-link", "?showBackLink=true\" class=\"govuk-link dotted-link");
+
+    return ok(modalDefinitionView.render(definition.get("term"), definitionText,
+      showBackLink));
   }
 
   private Map<String, String> getDefinition(String type, String definitionId) {

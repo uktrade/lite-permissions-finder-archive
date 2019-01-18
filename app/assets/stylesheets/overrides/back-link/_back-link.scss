@@ -11,6 +11,21 @@ $border-color: govuk-colour("grey-2");
 	}
 }
 
+.has-change-link {
+	padding-right: 4.5em!important;
+	& > .detail-box {
+		width: calc(100% + 4.5em);
+	}
+	& > *:last-child {
+		margin-bottom: 0!important;
+		padding-bottom: 0!important;
+	}
+}
+
+#tradeType > .govuk-radios__item > .govuk-label {
+	padding: 0!important;
+}
+
 #auth-banner {
 	color: govuk-colour("white");
 	font-weight: 600;
@@ -31,6 +46,10 @@ $border-color: govuk-colour("grey-2");
 	}
 }
 
+.detail-box .control-code-breadcrumbs-notes {
+	border-top: 2px solid $border-color;
+}
+
 .govuk-radios__item .govuk-details {
 	margin-bottom: govuk-spacing(3)!important;
 }
@@ -47,7 +66,14 @@ $border-color: govuk-colour("grey-2");
 		padding: 0 govuk-spacing(4) 0 govuk-spacing(8) + 1px;
 
 		.breadcrumb-change-link {
-			float: right;
+			position: absolute;
+			top: 18px;
+			right: 10px;
+		}
+
+		& > *:last-child {
+			margin-bottom: 0!important;
+			padding-bottom: 0!important;
 		}
 
 		&:last-of-type {
@@ -115,16 +141,19 @@ $border-color: govuk-colour("grey-2");
 	}
 }
 
-.detail-box-secondary-content {
-	background-color: govuk-colour("grey-4");
-	border-left: 2px solid $border-color;
-	border-right: 2px solid $border-color;
-	border-bottom: 2px solid $border-color;
-	padding: govuk-spacing(4);
-	& > *:last-child {
-		margin-bottom: 0!important;
-		padding-bottom: 0!important;
-	}
+.control-code-breadcrumbs-notes--standalone {
+	border-top: 2px solid $border-color;
+	margin-bottom: govuk-spacing(6);
+}
+
+li:last-of-type > .control-code-breadcrumbs-notes {
+	margin: - govuk-spacing(4);
+	border: none;
+}
+
+li > .control-code-breadcrumbs-notes {
+	margin-top: govuk-spacing(4)!important;
+	border-top: 2px solid $border-color!important;
 }
 
 main {
@@ -136,7 +165,7 @@ main {
 	text-decoration: none;
 	border-bottom: 1.2px dotted currentColor;
 	cursor: help;
-	// Hide external link icon 
+	// Hide external link icon
 	&:before {
 		display: none;
 	}
@@ -175,5 +204,19 @@ main {
 		@include govuk-media-query($from: tablet) {
 			right: $govuk-gutter-half;
 		}
+	}
+}
+
+.media-tablet {
+	display: none;
+	@include govuk-media-query($from: tablet) {
+		display: initial;
+	}
+}
+
+.media-mobile {
+	display: none;
+	@include govuk-media-query($until: tablet) {
+		display: initial;
 	}
 }

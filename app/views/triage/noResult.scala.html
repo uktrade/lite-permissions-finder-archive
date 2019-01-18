@@ -12,70 +12,67 @@
 
 @standardPage("We cannot find your item", None, twoThirdsColumn = false, resumeCode = resumeCode, showBackLink = true){
 }{
-  <div class="grid-row">
-    <div class="column-two-thirds">
+<div class="govuk-grid-row">
+	<div class="govuk-grid-column-two-thirds">
 
-      <header class="page-header">
-        <h1 class="heading-xlarge">
-          <span class="heading-secondary">
-            @if(progressView.getCode != null) {
-              @progressView.getCode&nbsp;
-            }
-            @if(progressView.getDescription != null) {
-              @Html(progressView.getDescription)
-            }
-          </span>
-          We cannot find your item
-        </h1>
-      </header>
-      <p class="govuk-caption-m">
-        Based on the choices you've made, we cannot help you find the control list entry for your item here.
-      </p>
-      <p>
-        To find out if your item is controlled and has a control list entry,
-        <a href="https://www.spire.trade.gov.uk" rel="external" target="_blank">log in to SPIRE and submit a request
-        using the Control List Classification Advice Service (CLCAS)<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
-      </p>
-      <div class="banner danger-banner">
-        <span class="govuk-visually-hidden">Warning:</span>
-        Always double-check if your items are controlled. If you export controlled items without the correct export
-        licence you could:
-        <ul class="govuk-list govuk-list--bullet">
-          <li>have your items seized</li>
-          <li>face a fine</li>
-          <li>serve up to 10 years in prison</li>
-        </ul>
-      </div>
-      <h2 class="govuk-heading-l">
-        What you should do next
-      </h2>
-      <p>
-        When you log in to SPIRE to submit your request through the CLCAS, you'll be asked to:
-      </p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>
-          describe your item and how it will be used
-        </li>
-        <li>
-          outline your item's original design intent – for example, if it was specially designed or modified for military
-          use
-        </li>
-        <li>
-          upload your item's technical details – for example, data sheets, product brochures and technical summaries
-        </li>
-      </ul>
-      <div class="call-to-action">
-        <a href="https://www.spire.trade.gov.uk/" rel="external" target="_blank">
-          Log in to SPIRE and submit a request using the Control List Classification Advice Service (CLCAS)<span class="govuk-visually-hidden"> (opens in a new tab)</span>
-        </a>
-      </div>
-    </div>
-    <div class="column-one-third">
-      @triageBreadcrumb(breadcrumbView, "")
-    </div>
-  </div>
+		<h1 class="govuk-caption-m">
+			@if(progressView.getCode != null) {
+				@progressView.getCode&nbsp;
+			}
+			@if(progressView.getDescription != null) {
+				@Html(progressView.getDescription)
+			}
+		</h1>
+		<h1 class="govuk-heading-l">We cannot find your item</h1>
 
-  <input type="hidden" id="sessionId" value="@sessionId"/>
-  <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/triage.js")"></script>
+		<p class="govuk-caption-l">
+			Based on the choices you've made, we cannot help you find the control list entry for your item here.
+		</p>
+		<div class="govuk-form-group">
+			<p class="govuk-label">
+				To find out if your item is controlled and has a control list entry,
+				<a href="https://www.spire.trade.gov.uk" class="govuk-link" rel="external" target="_blank">log in to SPIRE and submit a request
+					using the Control List Classification Advice Service (CLCAS)<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+			</p>
+		</div>
+		<div class="banner danger-banner">
+			<span class="govuk-visually-hidden">Warning:</span>
+			Always double-check if your items are controlled. If you export controlled items without the correct export
+			licence you could:
+			<ul class="govuk-list govuk-list--bullet">
+				<li>have your items seized</li>
+				<li>face a fine</li>
+				<li>serve up to 10 years in prison</li>
+			</ul>
+		</div>
+		<h2 class="govuk-heading-l">
+			What you should do next
+		</h2>
+		<p class="govuk-label">
+			When you log in to SPIRE to submit your request through the CLCAS, you'll be asked to:
+		</p>
+		<ul class="govuk-list govuk-list--bullet">
+			<li>
+				describe your item and how it will be used
+			</li>
+			<li>
+				outline your item's original design intent – for example, if it was specially designed or modified for military
+				use
+			</li>
+			<li>
+				upload your item's technical details – for example, data sheets, product brochures and technical summaries
+			</li>
+		</ul>
+		<div class="govuk-inset-text">
+			<a href="https://www.spire.trade.gov.uk/" class="govuk-link" rel="external" target="_blank">
+				Log in to SPIRE and submit a request using the Control List Classification Advice Service (CLCAS)<span class="govuk-visually-hidden"> (opens in a new tab)</span>
+			</a>
+		</div>
+	</div>
+	<div class="govuk-grid-column-one-third">
+		@triageBreadcrumb(breadcrumbView, "")
+	</div>
+</div>
 
-}
+<input type="hidden" id="sessionId" value="@sessionId" />
+<script type="text/javascript" src="@controllers.routes.Assets.versioned(" javascripts/triage.js")"> </script> }
