@@ -56,7 +56,7 @@ public class NavigationParser {
         static class ControlListEntries {
             static final int RATING = Utils.columnToIndex("N");
             static final int PRIORITY = Utils.columnToIndex("O");
-            static final int DECONTROL = Utils.columnToIndex("AK");
+            static final int DECONTROL = Utils.columnToIndex("AJ");
         }
 
         static class Buttons {
@@ -215,7 +215,8 @@ public class NavigationParser {
         String priorityStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.PRIORITY));
         Integer priority = priorityStr == null ? null : (int)Double.parseDouble(priorityStr);
         String decontrolStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.DECONTROL));
-        Boolean isDecontrolled = "X".equalsIgnoreCase(decontrolStr);
+        Boolean isDecontrolled = decontrolStr != null ? "X".equalsIgnoreCase(decontrolStr) : false;
+        System.out.println(isDecontrolled);
         return new ControlListEntries(rating, priority, isDecontrolled);
     }
 

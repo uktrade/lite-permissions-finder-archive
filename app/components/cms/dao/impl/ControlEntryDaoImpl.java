@@ -52,6 +52,7 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
         controlEntry.isNested(),
         controlEntry.getDisplayOrder(),
         controlEntry.getJourneyId(),
+        controlEntry.getIsDecontrolled(),
         controlEntry.getJumpToControlCodes());
   }
 

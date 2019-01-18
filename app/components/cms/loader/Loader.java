@@ -150,6 +150,7 @@ public class Loader {
           .setParentControlEntryId(parentControlEntryId)
           .setFullDescription(navigationLevel.getContent())
           .setControlCode(controlListEntries.getRating())
+          .setIsDecontrolled(controlListEntries.getIsDecontrolled())
           .setJumpToControlCodes(navigationLevel.getLoops().getJumpToControlCodes());
       if (navigationLevel.getBreadcrumbs() != null) {
         Breadcrumbs breadcrumbs = navigationLevel.getBreadcrumbs();
