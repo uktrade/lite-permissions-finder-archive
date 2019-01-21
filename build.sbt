@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.7"
 libraryDependencies += "net.logstash.logback" % "logstash-logback-encoder" % "5.2"
+libraryDependencies += "org.projectlombok" % "lombok" % "1.16.16"
 
 libraryDependencies += "org.flywaydb" %% "flyway-play" % "5.0.0"
 libraryDependencies += "org.postgresql" % "postgresql" % "42.2.2"

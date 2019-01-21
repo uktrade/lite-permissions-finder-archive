@@ -11,6 +11,7 @@ import components.common.client.CustomerServiceClient;
 import components.common.client.OgelServiceClient;
 import components.common.client.PermissionsServiceClient;
 import exceptions.UnknownParameterException;
+import lombok.AllArgsConstructor;
 import models.summary.LicenceInfo;
 import org.pac4j.play.java.Secure;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import uk.gov.bis.lite.permissions.api.view.OgelRegistrationView;
 import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class ViewOgelController {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ViewOgelController.class);
@@ -34,19 +36,6 @@ public class ViewOgelController {
   private final HttpExecutionContext httpContext;
   private final SpireAuthManager authManager;
   private final views.html.licencefinder.viewOgel viewOgel;
-
-  @Inject
-  public ViewOgelController(PermissionsServiceClient permissionsServiceClient,
-                            OgelServiceClient ogelServiceClient, CustomerServiceClient customerServiceClient,
-                            HttpExecutionContext httpContext, SpireAuthManager authManager,
-                            views.html.licencefinder.viewOgel viewOgel) {
-    this.permissionsServiceClient = permissionsServiceClient;
-    this.ogelServiceClient = ogelServiceClient;
-    this.customerServiceClient = customerServiceClient;
-    this.httpContext = httpContext;
-    this.authManager = authManager;
-    this.viewOgel = viewOgel;
-  }
 
   public CompletionStage<Result> viewOgel(String registrationReference) {
     String userId = authManager.getAuthInfoFromContext().getId();

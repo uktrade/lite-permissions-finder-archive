@@ -9,6 +9,7 @@ import components.services.RenderService;
 import controllers.guard.StageGuardAction;
 import exceptions.BusinessRuleException;
 import exceptions.UnknownParameterException;
+import lombok.AllArgsConstructor;
 import models.cms.enums.OutcomeType;
 import models.enums.Action;
 import models.enums.PageType;
@@ -43,6 +44,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @With(StageGuardAction.class)
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class StageController extends Controller {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StageController.class);
@@ -64,30 +66,6 @@ public class StageController extends Controller {
   private final views.html.triage.relatedEntries relatedEntries;
   private final views.html.triage.item item;
 
-  @Inject
-  public StageController(BreadcrumbViewService breadcrumbViewService, AnswerConfigService answerConfigService,
-                         AnswerViewService answerViewService, SessionService sessionService, FormFactory formFactory,
-                         JourneyConfigService journeyConfigService,
-                         ControllerConfigService controllerConfigService, RenderService renderService,
-                         ProgressViewService progressViewService, views.html.triage.selectOne selectOne,
-                         views.html.triage.selectMany selectMany, views.html.triage.decontrol decontrol,
-                         views.html.triage.relatedEntries relatedEntries, views.html.triage.item item) {
-    this.breadcrumbViewService = breadcrumbViewService;
-    this.answerConfigService = answerConfigService;
-    this.answerViewService = answerViewService;
-    this.sessionService = sessionService;
-    this.formFactory = formFactory;
-    this.journeyConfigService = journeyConfigService;
-    this.controllerConfigService = controllerConfigService;
-    this.renderService = renderService;
-    this.progressViewService = progressViewService;
-    this.selectOne = selectOne;
-    this.selectMany = selectMany;
-    this.decontrol = decontrol;
-    this.relatedEntries = relatedEntries;
-    this.item = item;
-  }
-
   public Result index(String sessionId) {
     return redirectToIndex(sessionId);
   }
@@ -105,12 +83,12 @@ public class StageController extends Controller {
         return renderSelectOne(filledAnswerForm, stageConfig, sessionId, resumeCode);
       case SELECT_MANY:
         MultiAnswerForm multiAnswerForm = new MultiAnswerForm();
-        multiAnswerForm.answers = new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId));
+        multiAnswerForm.setAnswers(new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId)));
         Form<MultiAnswerForm> filledMultiAnswerFormForm = formFactory.form(MultiAnswerForm.class).fill(multiAnswerForm);
         return renderSelectMany(filledMultiAnswerFormForm, stageConfig, sessionId, resumeCode);
       case DECONTROL:
         MultiAnswerForm form = new MultiAnswerForm();
-        form.answers = new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId));
+        form.setAnswers(new ArrayList<>(sessionService.getAnswerIdsForStageId(sessionId, stageId)));
         Form<MultiAnswerForm> filledForm = formFactory.form(MultiAnswerForm.class).fill(form);
         return renderDecontrol(filledForm, stageConfig, sessionId, resumeCode);
       case ITEM:
@@ -238,7 +216,7 @@ public class StageController extends Controller {
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, true);
 
-    List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
+    List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.getAnswers()).orElse(Collections.emptyList());
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
@@ -261,7 +239,7 @@ public class StageController extends Controller {
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
 
-    List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.answers).orElse(Collections.emptyList());
+    List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.getAnswers()).orElse(Collections.emptyList());
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
@@ -278,7 +256,7 @@ public class StageController extends Controller {
       return redirectToStage(stageId, sessionId);
     } else {
       if (action == Action.CONTINUE) {
-        List<String> actualAnswers = ListUtils.emptyIfNull(multiAnswerFormForm.get().answers);
+        List<String> actualAnswers = ListUtils.emptyIfNull(multiAnswerFormForm.get().getAnswers());
         List<AnswerConfig> matchingAnswers = answerConfigService.getMatchingAnswerConfigs(actualAnswers, stageConfig);
         if (matchingAnswers.isEmpty()) {
           return renderDecontrol(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
@@ -318,7 +296,7 @@ public class StageController extends Controller {
       return redirectToStage(stageId, sessionId);
     } else {
       if (action == Action.CONTINUE) {
-        List<String> actualAnswers = ListUtils.emptyIfNull(multiAnswerFormForm.get().answers);
+        List<String> actualAnswers = ListUtils.emptyIfNull(multiAnswerFormForm.get().getAnswers());
         List<AnswerConfig> matchingAnswers = answerConfigService.getMatchingAnswerConfigs(actualAnswers, stageConfig);
         if (matchingAnswers.isEmpty()) {
           return renderSelectMany(multiAnswerFormForm.withError("answers", "Please select at least one answer"),

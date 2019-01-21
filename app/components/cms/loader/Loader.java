@@ -21,6 +21,7 @@ import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Notes;
+import lombok.AllArgsConstructor;
 import models.cms.ControlEntry;
 import models.cms.GlobalDefinition;
 import models.cms.Journey;
@@ -40,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class Loader {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Loader.class);
@@ -55,28 +57,6 @@ public class Loader {
   private final StageDao stageDao;
   private final SessionStageDao sessionStageDao;
   private final RelatedControlEntryDao relatedControlEntryDao;
-
-  @Inject
-  public Loader(
-      ControlEntryDao controlEntryDao,
-      GlobalDefinitionDao globalDefinitionDao,
-      JourneyDao journeyDao,
-      LocalDefinitionDao localDefinitionDao,
-      NoteDao noteDao,
-      StageAnswerDao stageAnswerDao,
-      StageDao stageDao,
-      SessionStageDao sessionStageDao,
-      RelatedControlEntryDao relatedControlEntryDao) {
-    this.controlEntryDao = controlEntryDao;
-    this.globalDefinitionDao = globalDefinitionDao;
-    this.journeyDao = journeyDao;
-    this.localDefinitionDao = localDefinitionDao;
-    this.noteDao = noteDao;
-    this.stageAnswerDao = stageAnswerDao;
-    this.stageDao = stageDao;
-    this.sessionStageDao = sessionStageDao;
-    this.relatedControlEntryDao = relatedControlEntryDao;
-  }
 
   /**
    * Populates the database
@@ -154,11 +134,7 @@ public class Loader {
         Breadcrumbs breadcrumbs = navigationLevel.getBreadcrumbs();
         controlEntry.setSummaryDescription(breadcrumbs.getBreadcrumbText());
       }
-      if (navigationLevel.getNesting() != null) {
-        controlEntry.setNested(true);
-      } else {
-        controlEntry.setNested(false);
-      }
+      controlEntry.setNested(navigationLevel.getNesting() != null);
       controlEntry.setDisplayOrder(displayOrder);
       controlEntry.setJourneyId(journeyId);
       controlEntryId = controlEntryDao.insertControlEntry(controlEntry);
@@ -260,11 +236,7 @@ public class Loader {
       }
       stageAnswer.setDisplayOrder(displayOrder);
       NavigationExtras navigationExtras = navigationLevel.getNavigationExtras();
-      if (navigationExtras != null && navigationExtras.isDivLine()) {
-        stageAnswer.setDividerAbove(true);
-      } else {
-        stageAnswer.setDividerAbove(false);
-      }
+      stageAnswer.setDividerAbove(navigationExtras != null && navigationExtras.isDivLine());
 
       Long stageAnswerId = stageAnswerDao.insertStageAnswer(stageAnswer);
 
@@ -470,10 +442,7 @@ public class Loader {
               definition.getRowNumber(), term,
               definitionText);
         } else {
-          GlobalDefinition globalDefinition = new GlobalDefinition()
-              .setJourneyId(journeyId)
-              .setTerm(term)
-              .setDefinitionText(definitionText);
+          GlobalDefinition globalDefinition = new GlobalDefinition(journeyId, term, definitionText);
 
           Long globalDefinitionId = globalDefinitionDao.insertGlobalDefinition(globalDefinition);
 

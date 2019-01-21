@@ -4,6 +4,7 @@ import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
 import com.google.inject.Inject;
+import lombok.AllArgsConstructor;
 import models.view.form.ContinueApplicationForm;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
@@ -12,19 +13,12 @@ import play.mvc.Result;
 import triage.session.SessionService;
 import triage.session.TriageSession;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class ContinueApplicationController {
 
   private final FormFactory formFactory;
   private final SessionService sessionService;
   private final views.html.continueApplication continueApplication;
-
-  @Inject
-  public ContinueApplicationController(FormFactory formFactory, SessionService sessionService,
-                                       views.html.continueApplication continueApplication) {
-    this.formFactory = formFactory;
-    this.sessionService = sessionService;
-    this.continueApplication = continueApplication;
-  }
 
   public Result renderForm() {
     return ok(continueApplication.render(formFactory.form(ContinueApplicationForm.class)));

@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import components.cms.dao.JourneyDao;
 import components.cms.parser.workbook.NavigationParser;
 import controllers.guard.SessionGuardAction;
+import lombok.AllArgsConstructor;
 import models.cms.Journey;
 import play.data.Form;
 import play.data.FormFactory;
@@ -24,21 +25,13 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 @With(SessionGuardAction.class)
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class OnboardingController {
 
   private final FormFactory formFactory;
   private final SessionService sessionService;
   private final views.html.onboardingContent onboardingContent;
   private final JourneyDao journeyDao;
-
-  @Inject
-  public OnboardingController(FormFactory formFactory, SessionService sessionService,
-                              views.html.onboardingContent onboardingContent, JourneyDao journeyDao) {
-    this.formFactory = formFactory;
-    this.sessionService = sessionService;
-    this.onboardingContent = onboardingContent;
-    this.journeyDao = journeyDao;
-  }
 
   public CompletionStage<Result> renderForm(String sessionId) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();

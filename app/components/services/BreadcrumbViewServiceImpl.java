@@ -171,8 +171,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     controlEntryHierarchy.add(controlEntryConfig);
     ControlEntryConfig nextControlEntryConfig = controlEntryConfig;
     while (nextControlEntryConfig.getParentControlEntry().isPresent()) {
-      nextControlEntryConfig = nextControlEntryConfig.getParentControlEntry().get();
-      controlEntryHierarchy.add(nextControlEntryConfig);
+        nextControlEntryConfig = nextControlEntryConfig.getParentControlEntry().get();
+        controlEntryHierarchy.add(nextControlEntryConfig);
     }
 
     return controlEntryHierarchy.stream()
