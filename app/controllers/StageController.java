@@ -120,6 +120,13 @@ public class StageController extends Controller {
             answerViews = answerViewService.createAnswerViewsFromControlEntryConfigs(controlEntryConfigs);
           }
 
+          List<SubAnswerView> subs = new ArrayList<>();
+
+          answerViews.add(new AnswerView("None of the above",
+            "none", true, subs, "",
+            "You may generate a no licence required (NLR) document if, following the points above, you believe that your item is still not subject to controls.",
+            "","", false, null));
+
           return ok(decontrolOutcome2.render(formFactory.form(AnswerForm.class), stageConfig.getStageId(), controlEntry.getFullDescription(), sessionId, answerViews, resumeCode));
         }
 
@@ -135,6 +142,9 @@ public class StageController extends Controller {
 
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     PageType pageType = PageTypeUtil.getPageType(stageConfig);
+
+    System.out.println(pageType);
+
     switch (pageType) {
       case SELECT_ONE:
         return handleSelectOneSubmit(stageId, sessionId, stageConfig, resumeCode);
@@ -144,11 +154,8 @@ public class StageController extends Controller {
         return handleDecontrolSubmit(stageId, sessionId, stageConfig, resumeCode);
       case ITEM:
 
-
         Stage stage = stageDao.getStage(Long.valueOf(stageConfig.getStageId()));
         ControlEntry controlEntry = controlEntryDao.getControlEntry(stage.getControlEntryId());
-
-        System.out.println(controlEntry);
 
         // Temporary
         if (controlEntry.isDecontrolled()) {
@@ -168,6 +175,12 @@ public class StageController extends Controller {
       return renderItem(answerForm, stageConfig, sessionId, resumeCode);
     } else {
       String answer = answerForm.get().answer;
+
+      // If none of the above is selected, go to decontrol outcome
+      if (answer.equalsIgnoreCase("none")) {
+        return redirect(routes.OutcomeController.outcomeDecontrol(stageConfig.getStageId(), sessionId));
+      }
+
       return render(answer, sessionId);
     }
   }
@@ -269,7 +282,7 @@ public class StageController extends Controller {
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, true);
 
-    List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.getAnswers()).orElse(Collections.emptyList());
+    List<String> selectedAnswers = multiAnswerForm.value().map(MultiAnswerForm::getAnswers).orElse(Collections.emptyList());
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 

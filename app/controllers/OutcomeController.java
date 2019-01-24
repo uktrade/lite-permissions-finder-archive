@@ -30,6 +30,8 @@ import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.PageTypeUtil;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -100,6 +102,19 @@ public class OutcomeController extends Controller {
   }
 
   public Result outcomeDecontrol(String stageId, String sessionId) {
+    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
+
+    Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
+   /* if (answers.isEmpty()) {
+      LOGGER.error("Answers cannot be empty on outcome decontrol page.");
+      return redirectToIndex(sessionId);
+    } else {*/
+      Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class);
+      return renderOutcomeDecontrol(form, stageConfig, sessionId, answers);
+    //}
+  }
+
+  public Result outcomeDecontrol2(String stageId, String sessionId) {
     StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
     if (PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
