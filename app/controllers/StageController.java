@@ -120,12 +120,13 @@ public class StageController extends Controller {
             answerViews = answerViewService.createAnswerViewsFromControlEntryConfigs(controlEntryConfigs);
           }
 
-          List<SubAnswerView> subs = new ArrayList<>();
-
-          answerViews.add(new AnswerView("None of the above",
-            "none", true, subs, "",
-            "You may generate a no licence required (NLR) document if, following the points above, you believe that your item is still not subject to controls.",
-            "","", false, null));
+          // Add a 'None of the above' option if there are any items in the list
+          if (answerViews.size() > 0) {
+            answerViews.add(new AnswerView("None of the above",
+              "none", true, new ArrayList<>(), "",
+              "You may generate a no licence required (NLR) document if, following the points above, you believe that your item is still not subject to controls.",
+              "","", false, null));
+          }
 
           return ok(decontrolOutcome2.render(formFactory.form(AnswerForm.class), stageConfig.getStageId(), controlEntry.getFullDescription(), sessionId, answerViews, resumeCode));
         }
@@ -142,8 +143,6 @@ public class StageController extends Controller {
 
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
     PageType pageType = PageTypeUtil.getPageType(stageConfig);
-
-    System.out.println(pageType);
 
     switch (pageType) {
       case SELECT_ONE:

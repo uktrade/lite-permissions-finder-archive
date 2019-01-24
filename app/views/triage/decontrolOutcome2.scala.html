@@ -21,16 +21,16 @@
 
 <br/>
 
-<p class="form-hint">
-	Select the control list entry which best describes your item:
-</p>
-
-<!-- If there's a possibility it's in another list, show them -->
-<p class="form-hint"></p>
 <form action="@routes.StageController.handleSubmit(stageId, sessionId).toString" method="POST">
   @views.html.helper.CSRF.formField
 
   @if(answerViews.size != 0) {
+
+    <!-- If there's a possibility it's in another list, show them -->
+    <p class="form-hint">
+  	  Select the control list entry which best describes your item:
+    </p>
+
     <div class="form-group clientside-form-group-error-target">
 	  @for(answerView <- answerViews) {
 		@if(answerView.isDividerAbove) {
@@ -44,7 +44,7 @@
 
   <button type="submit" class="button" name="action" value="continue">Save and continue</button>
 } else {
-  <button type="submit" class="button" name="action" value="continue">Save and continue</button>
+  <button type="submit" class="button" name="value" value="none">Save and continue</button>
   }
 </form>
 
