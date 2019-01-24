@@ -3,12 +3,12 @@ package components.cms.parser.model.navigation.column;
 public class ControlListEntries {
   private final String rating;
   private final Integer priority;
-  private final Boolean isDecontrolled;
+  private final Boolean decontrolled;
 
-  public ControlListEntries(String rating, Integer priority, Boolean isDecontrolled) {
+  public ControlListEntries(String rating, Integer priority, Boolean decontrolled) {
     this.rating = rating;
     this.priority = priority;
-    this.isDecontrolled = isDecontrolled;
+    this.decontrolled = decontrolled;
   }
 
   public String getRating() {
@@ -19,7 +19,7 @@ public class ControlListEntries {
     return priority;
   }
 
-  public Boolean getIsDecontrolled() {
-    return isDecontrolled;
+  public Boolean isDecontrolled() {
+    return decontrolled;
   }
 }

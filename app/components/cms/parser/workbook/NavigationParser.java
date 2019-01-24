@@ -215,9 +215,9 @@ public class NavigationParser {
         String priorityStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.PRIORITY));
         Integer priority = priorityStr == null ? null : (int)Double.parseDouble(priorityStr);
         String decontrolStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.DECONTROL));
-        Boolean isDecontrolled = decontrolStr != null ? "X".equalsIgnoreCase(decontrolStr) : false;
-        System.out.println(isDecontrolled);
-        return new ControlListEntries(rating, priority, isDecontrolled);
+        Boolean decontrolled = "X".equalsIgnoreCase(decontrolStr);
+
+        return new ControlListEntries(rating, priority, decontrolled);
     }
 
     private static Buttons getButtons(Row row) {
