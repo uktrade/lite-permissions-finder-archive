@@ -28,10 +28,10 @@
 <!-- If there's a possibility it's in another list, show them -->
 @if(answerViews.size != 0) {
 	<p class="heading-medium">Your item may be in:</p>
-	<form action="GOOGLE.COM" method="POST">
+	<form action="@routes.StageController.handleSubmit(stageId, sessionId).toString" method="POST">
 	  @views.html.helper.CSRF.formField
 
-	    <div class="form-group clientside-form-group-error-target ">
+	    <div class="form-group clientside-form-group-error-target">
 		  @for(answerView <- answerViews) {
 			@if(answerView.isDividerAbove) {
 			  <p class="form-block">or</p>

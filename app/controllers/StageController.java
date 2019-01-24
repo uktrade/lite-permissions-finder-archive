@@ -143,10 +143,32 @@ public class StageController extends Controller {
       case DECONTROL:
         return handleDecontrolSubmit(stageId, sessionId, stageConfig, resumeCode);
       case ITEM:
+
+
+        Stage stage = stageDao.getStage(Long.valueOf(stageConfig.getStageId()));
+        ControlEntry controlEntry = controlEntryDao.getControlEntry(stage.getControlEntryId());
+
+        System.out.println(controlEntry);
+
+        // Temporary
+        if (controlEntry.isDecontrolled()) {
+          return decontrolTest(sessionId, stageConfig, resumeCode);
+        }
+
         return handleItemSubmit(stageId, sessionId, stageConfig, resumeCode);
       case UNKNOWN:
       default:
         throw UnknownParameterException.unknownStageId(stageId);
+    }
+  }
+
+  private Result decontrolTest(String sessionId, StageConfig stageConfig, String resumeCode) {
+    Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class).bindFromRequest();
+    if (answerForm.hasErrors()) {
+      return renderItem(answerForm, stageConfig, sessionId, resumeCode);
+    } else {
+      String answer = answerForm.get().answer;
+      return render(answer, sessionId);
     }
   }
 
