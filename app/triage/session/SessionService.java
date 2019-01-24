@@ -16,4 +16,6 @@ public interface SessionService {
   void saveAnswerIdsForStageId(String sessionId, String stageId, Set<String> answerIds);
 
   void updateLastStageId(String sessionId, String lastStageId);
+
+  void updateJourneyId(String sessionId, String journeyId);
 }

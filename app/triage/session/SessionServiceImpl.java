@@ -73,6 +73,11 @@ public class SessionServiceImpl implements SessionService {
     sessionDao.updateLastStageId(sessionId, Long.parseLong(lastStageId));
   }
 
+  @Override
+  public void updateJourneyId(String sessionId, String journeyId) {
+    sessionDao.updateJourneyId(sessionId, Long.parseLong(journeyId));
+  }
+
   private String generateResumeCode() {
     StringBuilder sb = new StringBuilder();
     IntStream.range(0, 8).forEach(i -> sb.append(CODE_DIGITS.get(ThreadLocalRandom.current().nextInt(0, CODE_DIGITS.size()))));

@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import components.cms.dao.SessionOutcomeDao;
 import components.services.FlashService;
 import controllers.routes;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 import play.mvc.Action;
@@ -18,6 +19,7 @@ import triage.session.TriageSession;
 
 import java.util.concurrent.CompletionStage;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class StageGuardAction extends Action.Simple {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StageGuardAction.class);
@@ -26,16 +28,6 @@ public class StageGuardAction extends Action.Simple {
   private final SessionService sessionService;
   private final JourneyConfigService journeyConfigService;
   private final SessionOutcomeDao sessionOutcomeDao;
-
-  @Inject
-  public StageGuardAction(FlashService flashService, SessionService sessionService,
-                          JourneyConfigService journeyConfigService,
-                          SessionOutcomeDao sessionOutcomeDao) {
-    this.flashService = flashService;
-    this.sessionService = sessionService;
-    this.journeyConfigService = journeyConfigService;
-    this.sessionOutcomeDao = sessionOutcomeDao;
-  }
 
   @Override
   public CompletionStage<Result> call(Http.Context ctx) {
@@ -56,10 +48,9 @@ public class StageGuardAction extends Action.Simple {
           if (sessionJourneyId != currentJourneyId) {
             LOGGER.warn("SessionId {} has journeyId {} which doesn't match current journeyId {}",
                 sessionId, sessionJourneyId, currentJourneyId);
-            return unknownSession(sessionId);
-          } else {
-            return delegate.call(ctx);
+            //return unknownSession(sessionId);
           }
+          return delegate.call(ctx);
         }
       }
     }

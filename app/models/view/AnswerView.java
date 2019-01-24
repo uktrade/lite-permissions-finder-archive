@@ -5,7 +5,6 @@ import play.twirl.api.Html;
 import java.util.List;
 
 public class AnswerView {
-
   private final String prompt;
   private final String value;
   private final boolean dividerAbove;
@@ -17,8 +16,9 @@ public class AnswerView {
   private final boolean detailPanel;
   private final Html htmlAbove;
 
-  public AnswerView(String prompt, String value, boolean dividerAbove, List<SubAnswerView> subAnswerViews,
-                    String nestedContent, String moreInformation, String definitions, String relatedItems,
+  public AnswerView(String prompt, String value, boolean dividerAbove,
+                    List<SubAnswerView> subAnswerViews, String nestedContent,
+                    String moreInformation, String definitions, String relatedItems,
                     boolean detailPanel, Html htmlAbove) {
     this.prompt = prompt;
     this.value = value;
@@ -71,5 +71,4 @@ public class AnswerView {
   public Html getHtmlAbove() {
     return htmlAbove;
   }
-
 }

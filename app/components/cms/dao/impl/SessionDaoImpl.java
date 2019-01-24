@@ -29,6 +29,11 @@ public class SessionDaoImpl implements SessionDao {
   }
 
   @Override
+  public void updateJourneyId(String sessionId, Long journeyId) {
+    sessionJDBIDao.updateJourneyId(sessionId, journeyId);
+  }
+
+  @Override
   public TriageSession getSessionById(String id) {
     return sessionJDBIDao.getSessionById(id);
   }

@@ -3,38 +3,34 @@ package components.cms.parser.util;
 import exceptions.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.LoggerFactory;
 
 public class Utils {
-  
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-  
-  private Utils() {
-  }
 
-  public static String getCellStringValue(Row row, int index) {
-    Cell cell = row.getCell(index);
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+
+  public static String getCellValueAsString(Cell cell) {
     String cellValue;
 
     if (cell == null) {
       return null;
-    } else if (cell.getCellTypeEnum() == CellType.STRING) {
-      cellValue = cell.getStringCellValue();
-    } else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-      cellValue = Integer.toString((int) cell.getNumericCellValue());
-    } else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
-      cellValue = Boolean.toString(cell.getBooleanCellValue());
-    } else {
-      return null;
     }
 
-    if (StringUtils.isNotBlank(cellValue)) {
-      return cellValue;
-    } else {
-      return null;
+    switch (cell.getCellTypeEnum()) {
+      case STRING:
+        cellValue = cell.getStringCellValue();
+        break;
+      case NUMERIC:
+        cellValue = Double.toString(cell.getNumericCellValue());
+        break;
+      case BOOLEAN:
+        cellValue = Boolean.toString(cell.getBooleanCellValue());
+        break;
+      default:
+        return null;
     }
+
+    return (StringUtils.isNotBlank(cellValue)) ? cellValue : null;
   }
 
   public static int columnToIndex(String column) {

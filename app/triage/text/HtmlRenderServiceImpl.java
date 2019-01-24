@@ -259,7 +259,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       lastEndIndex = matcher.end();
     }
     if (text.length() > lastEndIndex) {
-      String trailingText = text.substring(lastEndIndex, text.length());
+      String trailingText = text.substring(lastEndIndex);
       htmlParts.add(new HtmlPart(HtmlType.TEXT, trailingText));
     }
     return htmlParts;

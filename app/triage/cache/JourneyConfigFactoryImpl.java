@@ -97,7 +97,7 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         .collect(Collectors.toList());
 
     return new StageConfig(Long.toString(stage.getId()), stage.getTitle(), explanatoryNote, stage.getQuestionType(),
-        stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), controlEntryConfig, answerConfigs);
+        stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), stage.isDecontrolled(), controlEntryConfig, answerConfigs);
   }
 
   private AnswerConfig createAnswerConfig(StageAnswer stageAnswer, String journeyId) {
@@ -124,7 +124,7 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         stageAnswer.isDividerAbove());
   }
 
-  private ControlEntryConfig createControlEntryConfig(ControlEntry controlEntry) {
+  public ControlEntryConfig createControlEntryConfig(ControlEntry controlEntry) {
     String controlEntryId = controlEntry.getId().toString();
     RichText fullDescription = richTextParser.parseForControlEntry(controlEntry.getFullDescription(), controlEntryId,
         Long.toString(controlEntry.getJourneyId()));

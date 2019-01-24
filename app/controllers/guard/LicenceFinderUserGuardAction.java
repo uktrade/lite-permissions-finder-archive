@@ -7,6 +7,7 @@ import components.common.auth.SpireAuthManager;
 import components.persistence.LicenceFinderDao;
 import components.services.FlashService;
 import controllers.routes;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import java.util.concurrent.CompletionStage;
 /**
  * Checks for session id and current user against user stored against session
  */
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class LicenceFinderUserGuardAction extends Action.Simple {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LicenceFinderUserGuardAction.class);
@@ -26,14 +28,6 @@ public class LicenceFinderUserGuardAction extends Action.Simple {
   private final LicenceFinderDao licenceFinderDao;
   private final SpireAuthManager authManager;
   private final FlashService flashService;
-
-  @Inject
-  public LicenceFinderUserGuardAction(LicenceFinderDao licenceFinderDao, SpireAuthManager authManager,
-                                      FlashService flashService) {
-    this.licenceFinderDao = licenceFinderDao;
-    this.authManager = authManager;
-    this.flashService = flashService;
-  }
 
   @Override
   public CompletionStage<Result> call(Http.Context ctx) {

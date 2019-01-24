@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class JourneyConfigServiceImpl implements JourneyConfigService {
 
-  public static final String DEFAULT_JOURNEY_NAME = "MILITARY";
+  private static final String DEFAULT_JOURNEY_NAME = "UK_MILITARY_LIST";
 
   private final JourneyDao journeyDao;
   private final StageDao stageDao;
@@ -74,16 +74,12 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
     StageAnswer stageAnswer = stageAnswerDao.getStageAnswerByGoToStageId(Long.parseLong(stageId));
     if (stageAnswer != null) {
       Optional<StageConfig> stageConfigOptional = stageConfigCache.getUnchecked(stageAnswer.getStageId().toString());
-      if (stageConfigOptional.isPresent()) {
-        return stageConfigOptional.get()
-            .getAnswerConfigs()
-            .stream()
-            .filter(e -> e.getAnswerId().equals(stageAnswer.getId().toString()))
-            .findFirst()
-            .orElse(null);
-      } else {
-        return null;
-      }
+      return stageConfigOptional.map(stageConfig -> stageConfig
+              .getAnswerConfigs()
+              .stream()
+              .filter(e -> e.getAnswerId().equals(stageAnswer.getId().toString()))
+              .findFirst()
+              .orElse(null)).orElse(null);
     } else {
       return null;
     }
