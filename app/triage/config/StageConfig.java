@@ -20,13 +20,15 @@ public class StageConfig {
   private final String nextStageId;
   private final OutcomeType outcomeType;
 
+  private final boolean decontrolled;
+
   private final ControlEntryConfig relatedControlEntry;
 
   private final List<AnswerConfig> answerConfigs;
 
   public StageConfig(String stageId, String questionTitle, RichText explanatoryNote,
                      QuestionType questionType, AnswerType answerType, String nextStageId,
-                     OutcomeType outcomeType, ControlEntryConfig relatedControlEntry,
+                     OutcomeType outcomeType, boolean decontrolled, ControlEntryConfig relatedControlEntry,
                      List<AnswerConfig> answerConfigs) {
     this.stageId = stageId;
     this.questionTitle = questionTitle;
@@ -35,8 +37,29 @@ public class StageConfig {
     this.answerType = answerType;
     this.nextStageId = nextStageId;
     this.outcomeType = outcomeType;
+    this.decontrolled = decontrolled;
     this.relatedControlEntry = relatedControlEntry;
     this.answerConfigs = answerConfigs;
+  }
+
+  @Override
+  public String toString() {
+    return "StageConfig{" +
+            "stageId='" + stageId + '\'' +
+            ", questionTitle='" + questionTitle + '\'' +
+            ", explanatoryNote=" + explanatoryNote +
+            ", questionType=" + questionType +
+            ", answerType=" + answerType +
+            ", nextStageId='" + nextStageId + '\'' +
+            ", outcomeType=" + outcomeType +
+            ", decontrolled=" + decontrolled +
+            ", relatedControlEntry=" + relatedControlEntry +
+            ", answerConfigs=" + answerConfigs +
+            '}';
+  }
+
+  public boolean isDecontrolled() {
+    return decontrolled;
   }
 
   public String getStageId() {

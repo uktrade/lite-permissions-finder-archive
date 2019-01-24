@@ -129,7 +129,9 @@ public class Loader {
       ControlEntry controlEntry = new ControlEntry()
           .setParentControlEntryId(parentControlEntryId)
           .setFullDescription(navigationLevel.getContent())
-          .setControlCode(controlListEntries.getRating());
+          .setControlCode(controlListEntries.getRating())
+          .setDecontrolled(controlListEntries.isDecontrolled())
+          .setJumpToControlCodes(navigationLevel.getLoops().getJumpToControlCodes());
       if (navigationLevel.getBreadcrumbs() != null) {
         Breadcrumbs breadcrumbs = navigationLevel.getBreadcrumbs();
         controlEntry.setSummaryDescription(breadcrumbs.getBreadcrumbText());
@@ -157,14 +159,24 @@ public class Loader {
       return;
     }
 
+    //System.out.println(navigationLevel.getControlListEntries().isDecontrolled());
+
+
     // Create stage and push it to database
     NavigationLevel topSubNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
+
+    boolean decontrolled = false;
+    if (topSubNavigationLevel.getControlListEntries() != null) {
+      decontrolled = topSubNavigationLevel.getControlListEntries().isDecontrolled();
+    }
+
     Stage stage = new Stage()
         .setJourneyId(journeyId)
         .setQuestionType(QuestionType.STANDARD)
         .setTitle(topSubNavigationLevel.getOnPageContent().getTitle())
         .setExplanatoryNotes(topSubNavigationLevel.getOnPageContent().getExplanatoryNotes())
         .setAnswerType(mapButtonsToAnswerType(topSubNavigationLevel.getButtons()))
+        .setDecontrolled(decontrolled)
         .setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
 
     Long stageId = stageDao.insertStage(stage);

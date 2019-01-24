@@ -66,6 +66,7 @@ public class NavigationParser {
         static class ControlListEntries {
             static final int RATING = Utils.columnToIndex("N");
             static final int PRIORITY = Utils.columnToIndex("O");
+            static final int DECONTROL = Utils.columnToIndex("AJ");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -86,6 +87,7 @@ public class NavigationParser {
             static final int JUMP_TO = Utils.columnToIndex("U");
             static final int DEFINING = Utils.columnToIndex("V");
             static final int DEFERRED = Utils.columnToIndex("W");
+            static final int JUMP_TO_CONTROL_CODES = Utils.columnToIndex("AI");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -230,7 +232,10 @@ public class NavigationParser {
         String rating = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.RATING));
         String priorityStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.PRIORITY));
         Integer priority = priorityStr == null ? null : (int)Double.parseDouble(priorityStr);
-        return new ControlListEntries(rating, priority);
+        String decontrolStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.ControlListEntries.DECONTROL));
+        Boolean decontrolled = "X".equalsIgnoreCase(decontrolStr);
+
+        return new ControlListEntries(rating, priority, decontrolled);
     }
 
     private static Buttons getButtons(Row row) {
@@ -270,7 +275,8 @@ public class NavigationParser {
         String jumpTo = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.JUMP_TO));
         String defining = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.DEFINING));
         String deferred = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.DEFERRED));
-        return new Loops(relatedCodes, jumpTo, defining, deferred);
+        String jumpToControlCodes = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.JUMP_TO_CONTROL_CODES));
+        return new Loops(relatedCodes, jumpTo, defining, deferred, jumpToControlCodes);
     }
 
     private static Breadcrumbs getBreadcrumbs(Row row) {

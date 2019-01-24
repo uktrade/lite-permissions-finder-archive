@@ -1,6 +1,8 @@
 package controllers;
 
 import com.google.inject.Inject;
+import components.cms.dao.ControlEntryDao;
+import components.cms.dao.StageDao;
 import components.services.AnswerConfigService;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
@@ -10,6 +12,8 @@ import controllers.guard.StageGuardAction;
 import exceptions.BusinessRuleException;
 import exceptions.UnknownParameterException;
 import lombok.AllArgsConstructor;
+import models.cms.ControlEntry;
+import models.cms.Stage;
 import models.cms.enums.OutcomeType;
 import models.enums.Action;
 import models.enums.PageType;
@@ -26,21 +30,19 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
+import triage.cache.JourneyConfigFactoryImpl;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.ControllerConfigService;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.session.SessionService;
+import triage.text.SubAnswer;
 import utils.EnumUtil;
 import utils.PageTypeUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import javax.naming.ldap.Control;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @With(StageGuardAction.class)
@@ -65,6 +67,10 @@ public class StageController extends Controller {
   private final views.html.triage.selectMany selectMany;
   private final views.html.triage.relatedEntries relatedEntries;
   private final views.html.triage.item item;
+  private final StageDao stageDao;
+  private final ControlEntryDao controlEntryDao;
+  private final views.html.triage.decontrolOutcome2 decontrolOutcome2;
+  private final JourneyConfigFactoryImpl journeyConfigFactory;
 
   public Result index(String sessionId) {
     return redirectToIndex(sessionId);
@@ -92,6 +98,38 @@ public class StageController extends Controller {
         Form<MultiAnswerForm> filledForm = formFactory.form(MultiAnswerForm.class).fill(form);
         return renderDecontrol(filledForm, stageConfig, sessionId, resumeCode);
       case ITEM:
+
+        Stage stage = stageDao.getStage(Long.valueOf(stageConfig.getStageId()));
+        ControlEntry controlEntry = controlEntryDao.getControlEntry(stage.getControlEntryId());
+
+        // Temporary
+        if (controlEntry.isDecontrolled()) {
+          System.out.println("IT'S DECONTROLLED");
+          System.out.println(stageConfig.toString());
+
+          AnswerForm answerForm2 = new AnswerForm();
+          answerForm2.answer = sessionService.getAnswerIdsForStageId(sessionId, stageId).stream().findFirst().orElse(null);
+          Form<AnswerForm> filledAnswerForm2 = formFactory.form(AnswerForm.class).fill(answerForm2);
+
+          List<AnswerView> answerViews = new ArrayList<>();
+
+          // Pull the potential control codes and convert them to AnswerView
+          if (controlEntry.getJumpToControlCodes() != null) {
+            // Split the control codes field
+            String[] jumpToControlCodes = controlEntry.getJumpToControlCodes().replace(" ", "").split(",");
+
+            // Convert control code to control entry config
+            List<ControlEntryConfig> controlEntryConfigs = Arrays.stream(jumpToControlCodes)
+                    .map(controlEntryDao::getControlEntryByControlCode)
+                    .map(journeyConfigFactory::createControlEntryConfig)
+                    .collect(Collectors.toList());
+
+            answerViews = answerViewService.createAnswerViewsFromControlEntryConfigs(controlEntryConfigs);
+          }
+
+          return ok(decontrolOutcome2.render(filledAnswerForm2, stageConfig.getStageId(), controlEntry.getFullDescription(), sessionId, answerViews, resumeCode));
+        }
+
         return renderItem(formFactory.form(AnswerForm.class), stageConfig, sessionId, resumeCode);
       case UNKNOWN:
       default:
