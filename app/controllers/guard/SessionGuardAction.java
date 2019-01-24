@@ -5,6 +5,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import com.google.inject.Inject;
 import components.services.FlashService;
 import controllers.routes;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import play.mvc.Action;
@@ -15,18 +16,13 @@ import triage.session.TriageSession;
 
 import java.util.concurrent.CompletionStage;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class SessionGuardAction extends Action.Simple {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(SessionGuardAction.class);
 
   private final FlashService flashService;
   private final SessionService sessionService;
-
-  @Inject
-  public SessionGuardAction(FlashService flashService, SessionService sessionService) {
-    this.flashService = flashService;
-    this.sessionService = sessionService;
-  }
 
   @Override
   public CompletionStage<Result> call(Http.Context ctx) {

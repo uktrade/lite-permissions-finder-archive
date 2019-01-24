@@ -14,6 +14,8 @@ import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.OnPageContent;
 import components.cms.parser.model.navigation.column.Redirect;
 import components.cms.parser.util.Utils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NavigationParser {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(NavigationParser.class);
@@ -34,41 +37,51 @@ public class NavigationParser {
         sheetIndices.put(2, "DUAL_USE_LIST"); // Column 3
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private static class RowIndices {
         static final int NAVIGATION_START = 3; // Row 4
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private static class ColumnIndices {
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class NavigationExtras {
             static final int DIV_LINE = Utils.columnToIndex("A");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Navigation {
             static final int START = Utils.columnToIndex("B");
             static final int END = Utils.columnToIndex("K");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class OnPageContent {
             static final int TITLE = Utils.columnToIndex("L");
             static final int EXPLANATORY_NOTES = Utils.columnToIndex("M");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class ControlListEntries {
             static final int RATING = Utils.columnToIndex("N");
             static final int PRIORITY = Utils.columnToIndex("O");
             static final int DECONTROL = Utils.columnToIndex("AJ");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Buttons {
             static final int SELECT_ONE = Utils.columnToIndex("P");
             static final int SELECT_MANY = Utils.columnToIndex("Q");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Nesting {
             static final int ANY_OF = Utils.columnToIndex("R");
             static final int ALL_OF = Utils.columnToIndex("S");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Loops {
             static final int RELATED_CODES = Utils.columnToIndex("T");
             static final int JUMP_TO = Utils.columnToIndex("U");
@@ -77,10 +90,12 @@ public class NavigationParser {
             static final int JUMP_TO_CONTROL_CODES = Utils.columnToIndex("AI");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Breadcrumbs {
             static final int BREADCRUMB_TEXT = Utils.columnToIndex("X");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Decontrols {
             static final int CONTENT = Utils.columnToIndex("Y");
             static final int NOTE = Utils.columnToIndex("Z");
@@ -88,10 +103,12 @@ public class NavigationParser {
             static final int EXPLANATORY_NOTES = Utils.columnToIndex("AB");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Definitions {
             static final int LOCAL = Utils.columnToIndex("AC");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Notes {
             static final int NB = Utils.columnToIndex("AD");
             static final int NOTE = Utils.columnToIndex("AE");
@@ -99,8 +116,9 @@ public class NavigationParser {
             static final int TECHNICAL_NOTE = Utils.columnToIndex("AG");
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Redirect {
-            static final int TCFCF = Utils.columnToIndex("AH");
+            static final int TCFCF = Utils.columnToIndex("AH"); // Too complicated for Codefinder
         }
     }
 

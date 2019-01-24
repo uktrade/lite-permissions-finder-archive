@@ -5,15 +5,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import exceptions.ServiceException;
 import org.apache.commons.collections4.ListUtils;
+import play.libs.Json;
 
 import java.io.IOException;
 import java.util.List;
 
 public class JsonUtils {
 
+  private JsonUtils() {}
+
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  private static final TypeReference<List<String>> STRING_LIST_TYPE_REFERENCE = new TypeReference<List<String>>() {
-  };
+  private static final TypeReference<List<String>> STRING_LIST_TYPE_REFERENCE = new TypeReference<List<String>>() {};
 
   public static List<String> convertJsonToList(String json) {
     try {

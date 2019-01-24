@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import components.persistence.LicenceFinderDao;
 import components.services.FlashService;
 import controllers.routes;
+import lombok.AllArgsConstructor;
 import models.persistence.RegisterLicence;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,18 +21,13 @@ import java.util.concurrent.CompletionStage;
 /**
  * Checks for a Registration reference associated with session and redirects to RegisterAwaitController controller if found
  */
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class LicenceFinderAwaitGuardAction extends Action.Simple {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LicenceFinderAwaitGuardAction.class);
 
   private final LicenceFinderDao licenceFinderDao;
   private final FlashService flashService;
-
-  @Inject
-  public LicenceFinderAwaitGuardAction(LicenceFinderDao licenceFinderDao, FlashService flashService) {
-    this.licenceFinderDao = licenceFinderDao;
-    this.flashService = flashService;
-  }
 
   @Override
   public CompletionStage<Result> call(Http.Context ctx) {
