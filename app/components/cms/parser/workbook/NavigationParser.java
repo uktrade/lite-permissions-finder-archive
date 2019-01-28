@@ -33,8 +33,8 @@ public class NavigationParser {
     static
     {
         sheetIndices = new HashMap<>();
-        sheetIndices.put(1, "UK_MILITARY_LIST"); // Column 2
-        sheetIndices.put(2, "DUAL_USE_LIST"); // Column 3
+        sheetIndices.put(2, "UK_MILITARY_LIST"); // Column 2
+        sheetIndices.put(3, "DUAL_USE_LIST"); // Column 3
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

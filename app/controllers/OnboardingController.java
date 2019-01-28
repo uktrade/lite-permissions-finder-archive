@@ -53,16 +53,13 @@ public class OnboardingController {
 
     switch (isSpecialParam) {
       case UK_MILITARY_LIST:
-        journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(1)).get(0);
-        sessionService.updateJourneyId(sessionId, journey.getId().toString());
-        return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
-        //return redirect(routes.StageController.index(sessionId));
-      case DUAL_USE_LIST:
         journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(2)).get(0);
         sessionService.updateJourneyId(sessionId, journey.getId().toString());
         return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
-        //return redirect(routes.StageController.index(sessionId));
-        //return redirect(routes.StaticContentController.renderOtherControlList(sessionId));
+      case DUAL_USE_LIST:
+        journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(3)).get(0);
+        sessionService.updateJourneyId(sessionId, journey.getId().toString());
+        return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
       default:
         return redirect(routes.StaticContentController.renderMoreInformationRequired(sessionId));
     }

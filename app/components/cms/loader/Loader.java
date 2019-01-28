@@ -1,15 +1,7 @@
 package components.cms.loader;
 
 import com.google.inject.Inject;
-import components.cms.dao.ControlEntryDao;
-import components.cms.dao.GlobalDefinitionDao;
-import components.cms.dao.JourneyDao;
-import components.cms.dao.LocalDefinitionDao;
-import components.cms.dao.NoteDao;
-import components.cms.dao.RelatedControlEntryDao;
-import components.cms.dao.SessionStageDao;
-import components.cms.dao.StageAnswerDao;
-import components.cms.dao.StageDao;
+import components.cms.dao.*;
 import components.cms.parser.ParserResult;
 import components.cms.parser.model.LoadingMetadata;
 import components.cms.parser.model.NavigationLevel;
@@ -37,8 +29,11 @@ import models.cms.enums.QuestionType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
@@ -57,6 +52,7 @@ public class Loader {
   private final StageDao stageDao;
   private final SessionStageDao sessionStageDao;
   private final RelatedControlEntryDao relatedControlEntryDao;
+  private final SpreadsheetVersionDao spreadsheetVersionDao;
 
   /**
    * Populates the database
@@ -90,6 +86,9 @@ public class Loader {
       journey.setInitialStageId(initialStageId);
       journeyDao.updateJourney(journeyId, journey);
     }
+
+    // Insert version database
+    spreadsheetVersionDao.insert(parserResult.getSpreadsheetVersion().getVersion());
   }
 
   private void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel,

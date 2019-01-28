@@ -53,7 +53,7 @@ public class StageGuardActionTest {
 
   @Test
   public void sessionIdWithOutcomeShouldReturnOutcomeRedirect() throws Exception {
-    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1L);
+    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L);
     when(sessionService.getSessionById(SESSION_ID)).thenReturn(triageSession);
     SessionOutcome sessionOutcome = new SessionOutcome("session-outcome-id", SESSION_ID, "userId",
         "customerId", "siteId", SessionOutcomeType.CONTROL_ENTRY_FOUND, "outcomeHtml");
@@ -68,7 +68,7 @@ public class StageGuardActionTest {
 
   @Test
   public void sessionIdWithOutdatedJourneyIdShouldReturnCreateApplicationRedirect() throws Exception {
-    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1L);
+    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L);
     when(sessionService.getSessionById(SESSION_ID)).thenReturn(triageSession);
     when(journeyConfigService.getDefaultJourneyId()).thenReturn(2L);
 
@@ -83,7 +83,7 @@ public class StageGuardActionTest {
 
   @Test
   public void validSessionIdShouldCallDelegate() throws Exception {
-    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1L);
+    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L);
     when(sessionService.getSessionById(SESSION_ID)).thenReturn(triageSession);
     when(journeyConfigService.getDefaultJourneyId()).thenReturn(1L);
     Action action = mock(Action.class);

@@ -293,7 +293,7 @@ public class StageController extends Controller {
     String title = stageConfig.getQuestionTitle().orElse("Check if your item is listed");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
 
-    //Only render the related control entry description as a default when no explanatory text is provided by the CMS
+    // Only render the related control entry description as a default when no explanatory text is provided by the CMS
     String relatedEntryDescription = null;
     Optional<ControlEntryConfig> relatedControlEntry = stageConfig.getRelatedControlEntry();
     if (stageConfig.getExplanatoryNote().isPresent() && relatedControlEntry.isPresent()) {
@@ -456,7 +456,7 @@ public class StageController extends Controller {
   }
 
   private boolean isHighLevelDropout(ControlEntryConfig controlEntryConfig) {
-    //Business rule: "top level" control entries (e.g. ML1, ML2) are considered too high level for an NLR outcome
+    // Business rule: "top level" control entries (e.g. ML1, ML2) are considered too high level for an NLR outcome
     return !controlEntryConfig.getParentControlEntry().isPresent();
   }
 

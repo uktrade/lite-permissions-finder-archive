@@ -85,12 +85,20 @@ CREATE TABLE stage_answer (
     (control_entry_id IS NULL AND answer_text IS NOT NULL) OR control_entry_id IS NOT NULL)
 );
 
-CREATE TABLE session (
-  id            TEXT      NOT NULL UNIQUE,
+CREATE TABLE spreadsheet_version (
+  id 			BIGSERIAL PRIMARY KEY,
   timestamp     TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  journey_id    BIGINT    NOT NULL,
-  resume_code   TEXT      NOT NULL UNIQUE,
-  last_stage_id BIGINT
+  version		TEXT      NOT NULL
+);
+
+CREATE TABLE session (
+  id                       TEXT      NOT NULL UNIQUE,
+  timestamp                TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  journey_id               BIGINT    NOT NULL,
+  resume_code              TEXT      NOT NULL UNIQUE,
+  last_stage_id 		   BIGINT,
+  spreadsheet_version_id   BIGSERIAL NOT NULL,
+  FOREIGN KEY (spreadsheet_version_id) REFERENCES spreadsheet_version(id)
 );
 
 CREATE TABLE session_stage (

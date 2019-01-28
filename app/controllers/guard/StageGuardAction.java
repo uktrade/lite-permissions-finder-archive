@@ -4,6 +4,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import com.google.inject.Inject;
 import components.cms.dao.SessionOutcomeDao;
+import components.cms.dao.SpreadsheetVersionDao;
 import components.services.FlashService;
 import controllers.routes;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
-import triage.config.JourneyConfigService;
 import triage.session.SessionOutcome;
 import triage.session.SessionService;
 import triage.session.TriageSession;
@@ -26,8 +26,8 @@ public class StageGuardAction extends Action.Simple {
 
   private final FlashService flashService;
   private final SessionService sessionService;
-  private final JourneyConfigService journeyConfigService;
   private final SessionOutcomeDao sessionOutcomeDao;
+  private final SpreadsheetVersionDao spreadsheetVersionDao;
 
   @Override
   public CompletionStage<Result> call(Http.Context ctx) {
@@ -43,20 +43,22 @@ public class StageGuardAction extends Action.Simple {
         if (sessionOutcome != null) {
           return completedFuture(redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId())));
         } else {
-          long sessionJourneyId = triageSession.getJourneyId();
-          long currentJourneyId = journeyConfigService.getDefaultJourneyId();
-          if (sessionJourneyId != currentJourneyId) {
-            LOGGER.warn("SessionId {} has journeyId {} which doesn't match current journeyId {}",
-                sessionId, sessionJourneyId, currentJourneyId);
-            //return unknownSession(sessionId);
+          long spreadsheetVersionId = spreadsheetVersionDao.getLatestSpreadsheetVersion().getId();
+          long latestSpreadsheetVersionId = triageSession.getSpreadsheetVersionId();
+
+          if (spreadsheetVersionId != latestSpreadsheetVersionId) {
+            LOGGER.warn("SessionId {} has spreadsheetVersionId {} which doesn't match latest spreadsheetVersionId {}",
+              sessionId, spreadsheetVersionId, latestSpreadsheetVersionId);
+            return unknownSession(sessionId);
           }
+
           return delegate.call(ctx);
         }
       }
     }
   }
 
-  private CompletionStage<Result> unknownSession(String sessionId) {
+  public CompletionStage<Result> unknownSession(String sessionId) {
     flashService.flashInvalidSession();
     LOGGER.error("Unknown or blank sessionId {}", sessionId);
     return completedFuture(redirect(routes.StartApplicationController.createApplication()));
