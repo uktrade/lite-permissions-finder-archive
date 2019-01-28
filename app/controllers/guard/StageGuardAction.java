@@ -58,7 +58,7 @@ public class StageGuardAction extends Action.Simple {
     }
   }
 
-  public CompletionStage<Result> unknownSession(String sessionId) {
+  private CompletionStage<Result> unknownSession(String sessionId) {
     flashService.flashInvalidSession();
     LOGGER.error("Unknown or blank sessionId {}", sessionId);
     return completedFuture(redirect(routes.StartApplicationController.createApplication()));
