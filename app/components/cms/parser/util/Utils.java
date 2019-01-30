@@ -16,7 +16,7 @@ public class Utils {
       return null;
     }
 
-    switch (cell.getCellTypeEnum()) {
+    switch (cell.getCellType()) {
       case STRING:
         cellValue = cell.getStringCellValue();
         break;
