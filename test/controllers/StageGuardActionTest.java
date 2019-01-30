@@ -9,6 +9,7 @@ import components.cms.dao.SessionOutcomeDao;
 import components.cms.dao.SpreadsheetVersionDao;
 import components.services.FlashService;
 import controllers.guard.StageGuardAction;
+import models.cms.SpreadsheetVersion;
 import models.enums.SessionOutcomeType;
 import org.junit.Test;
 import play.mvc.Action;
@@ -18,6 +19,8 @@ import triage.config.JourneyConfigService;
 import triage.session.SessionOutcome;
 import triage.session.SessionService;
 import triage.session.TriageSession;
+
+import java.util.concurrent.ExecutionException;
 
 public class StageGuardActionTest {
 
@@ -69,10 +72,12 @@ public class StageGuardActionTest {
   }
 
   @Test
-  public void sessionIdWithOutdatedJourneyIdShouldReturnCreateApplicationRedirect() throws Exception {
+  public void sessionIdWithOutdatedSpreadsheetVersionIdShouldReturnCreateApplicationRedirect() throws ExecutionException, InterruptedException {
     TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L);
     when(sessionService.getSessionById(SESSION_ID)).thenReturn(triageSession);
-    when(journeyConfigService.getDefaultJourneyId()).thenReturn(2L);
+    when(journeyConfigService.getDefaultJourneyId()).thenReturn(1L);
+    when(spreadsheetVersionDao.getLatestSpreadsheetVersion()).thenReturn(new SpreadsheetVersion(2L,"", "", ""));
+    sessionGuardAction.delegate = mock(Action.class);
 
     Http.Context context = mockContext(SESSION_ID);
     Result result = sessionGuardAction.call(context).toCompletableFuture().get();
@@ -84,10 +89,11 @@ public class StageGuardActionTest {
   }
 
   @Test
-  public void validSessionIdShouldCallDelegate() throws Exception {
+  public void validSessionIdShouldCallDelegate() {
     TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L);
     when(sessionService.getSessionById(SESSION_ID)).thenReturn(triageSession);
     when(journeyConfigService.getDefaultJourneyId()).thenReturn(1L);
+    when(spreadsheetVersionDao.getLatestSpreadsheetVersion()).thenReturn(new SpreadsheetVersion(1L,"", "", ""));
     Action action = mock(Action.class);
     sessionGuardAction.delegate = action;
 
