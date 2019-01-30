@@ -8,6 +8,8 @@ public class GlobalDefinition {
   private Long journeyId;
   private String term;
   private String definitionText;
+  
+  public GlobalDefinition() {}
 
   public GlobalDefinition(Long journeyId, String term, String definitionText) {
     this.journeyId = journeyId;
