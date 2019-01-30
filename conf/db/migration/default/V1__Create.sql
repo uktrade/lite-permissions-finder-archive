@@ -88,7 +88,9 @@ CREATE TABLE stage_answer (
 CREATE TABLE spreadsheet_version (
   id 			BIGSERIAL PRIMARY KEY,
   timestamp     TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  version		TEXT      NOT NULL
+  filename      TEXT      NOT NULL,
+  version		TEXT      NOT NULL,
+  sha1		    TEXT      NOT NULL
 );
 
 CREATE TABLE session (

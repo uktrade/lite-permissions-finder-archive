@@ -16,8 +16,8 @@ public class SpreadsheetVersionDaoImpl implements SpreadsheetVersionDao {
   }
 
   @Override
-  public void insert(String version) {
-    spreadsheetVersionJDBIDao.insert(version);
+  public void insert(String filename, String version, String sha1) {
+    spreadsheetVersionJDBIDao.insert(filename, version, sha1);
   }
 
   @Override

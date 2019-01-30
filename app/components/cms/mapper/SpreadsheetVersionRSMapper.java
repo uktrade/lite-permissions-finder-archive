@@ -12,8 +12,10 @@ public class SpreadsheetVersionRSMapper implements ResultSetMapper<SpreadsheetVe
   @Override
   public SpreadsheetVersion map(int index, ResultSet r, StatementContext ctx) throws SQLException {
     long id = r.getLong("id");
+    String filename = r.getString("filename");
     String version = r.getString("version");
-    return new SpreadsheetVersion(id, version);
+    String sha1 = r.getString("sha1");
+    return new SpreadsheetVersion(id, filename, version, sha1);
   }
 
 }

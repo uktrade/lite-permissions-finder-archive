@@ -14,14 +14,7 @@ import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Notes;
 import lombok.AllArgsConstructor;
-import models.cms.ControlEntry;
-import models.cms.GlobalDefinition;
-import models.cms.Journey;
-import models.cms.LocalDefinition;
-import models.cms.Note;
-import models.cms.RelatedControlEntry;
-import models.cms.Stage;
-import models.cms.StageAnswer;
+import models.cms.*;
 import models.cms.enums.AnswerType;
 import models.cms.enums.NoteType;
 import models.cms.enums.OutcomeType;
@@ -88,7 +81,8 @@ public class Loader {
     }
 
     // Insert version database
-    spreadsheetVersionDao.insert(parserResult.getSpreadsheetVersion().getVersion());
+    SpreadsheetVersion spreadsheetVersion = parserResult.getSpreadsheetVersion();
+    spreadsheetVersionDao.insert(spreadsheetVersion.getFilename(), spreadsheetVersion.getVersion(), spreadsheetVersion.getSha1());
   }
 
   private void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel,
@@ -157,9 +151,6 @@ public class Loader {
         || navigationLevel.getSubNavigationLevels().get(0).getButtons() == null) {
       return;
     }
-
-    //System.out.println(navigationLevel.getControlListEntries().isDecontrolled());
-
 
     // Create stage and push it to database
     NavigationLevel topSubNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
