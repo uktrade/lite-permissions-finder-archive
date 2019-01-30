@@ -8,5 +8,3 @@ An intermediate "config" layer sits between the database and the controller laye
 the pre-parsing and local caching of "complex" fields such as `RichText`, which may contain references to other entities.
 Cache loading is triggered by `CachePopulationService`. This also attempts to validate the loaded data and report on any
 missing links between parsed entities.
-
-### Pushing changes
