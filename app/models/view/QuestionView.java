@@ -1,7 +1,6 @@
 package models.view;
 
 public class QuestionView {
-
   private final String question;
   private final String answer;
 

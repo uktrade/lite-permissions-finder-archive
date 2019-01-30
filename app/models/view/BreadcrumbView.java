@@ -3,7 +3,6 @@ package models.view;
 import java.util.List;
 
 public class BreadcrumbView {
-
   private final List<BreadcrumbItemView> breadcrumbItemViews;
   private final List<NoteView> noteViews;
 
@@ -19,5 +18,4 @@ public class BreadcrumbView {
   public List<NoteView> getNoteViews() {
     return noteViews;
   }
-
 }

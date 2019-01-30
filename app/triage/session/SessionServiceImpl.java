@@ -3,6 +3,8 @@ package triage.session;
 import com.google.inject.Inject;
 import components.cms.dao.SessionDao;
 import components.cms.dao.SessionStageDao;
+import components.cms.dao.SpreadsheetVersionDao;
+import lombok.AllArgsConstructor;
 import triage.config.JourneyConfigService;
 
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class SessionServiceImpl implements SessionService {
 
   private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList(
@@ -24,21 +27,15 @@ public class SessionServiceImpl implements SessionService {
   private final SessionDao sessionDao;
   private final SessionStageDao sessionStageDao;
   private final JourneyConfigService journeyConfigService;
-
-  @Inject
-  public SessionServiceImpl(SessionDao sessionDao, SessionStageDao sessionStageDao,
-                            JourneyConfigService journeyConfigService) {
-    this.sessionDao = sessionDao;
-    this.sessionStageDao = sessionStageDao;
-    this.journeyConfigService = journeyConfigService;
-  }
+  private final SpreadsheetVersionDao spreadsheetVersionDao;
 
   @Override
   public TriageSession createNewSession() {
     String sessionId = UUID.randomUUID().toString();
     long journeyId = journeyConfigService.getDefaultJourneyId();
     String resumeCode = generateResumeCode();
-    TriageSession triageSession = new TriageSession(sessionId, journeyId, resumeCode, null);
+    long spreadsheetVersionId = spreadsheetVersionDao.getLatestSpreadsheetVersion().getId();
+    TriageSession triageSession = new TriageSession(sessionId, journeyId, resumeCode, spreadsheetVersionId,null);
     sessionDao.insert(triageSession);
     return triageSession;
   }
@@ -71,6 +68,11 @@ public class SessionServiceImpl implements SessionService {
   @Override
   public void updateLastStageId(String sessionId, String lastStageId) {
     sessionDao.updateLastStageId(sessionId, Long.parseLong(lastStageId));
+  }
+
+  @Override
+  public void updateJourneyId(String sessionId, String journeyId) {
+    sessionDao.updateJourneyId(sessionId, Long.parseLong(journeyId));
   }
 
   private String generateResumeCode() {

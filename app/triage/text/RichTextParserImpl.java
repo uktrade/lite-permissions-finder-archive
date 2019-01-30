@@ -113,7 +113,7 @@ public class RichTextParserImpl implements RichTextParser {
         }
 
         //Append remaining text
-        String trailingText = textContent.substring(lastEndIndex, textContent.length());
+        String trailingText = textContent.substring(lastEndIndex);
         if (trailingText.length() > 0) {
           resultNodes.add(new SimpleTextNode(trailingText));
         }

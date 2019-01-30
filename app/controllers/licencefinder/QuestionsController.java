@@ -8,6 +8,7 @@ import components.common.auth.SpireSAML2Client;
 import components.persistence.LicenceFinderDao;
 import controllers.guard.LicenceFinderAwaitGuardAction;
 import controllers.guard.LicenceFinderUserGuardAction;
+import lombok.AllArgsConstructor;
 import org.pac4j.play.java.Secure;
 import play.data.Form;
 import play.data.FormFactory;
@@ -21,25 +22,17 @@ import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 @With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class QuestionsController extends Controller {
 
   private final FormFactory formFactory;
   private final LicenceFinderDao licenceFinderDao;
   private final views.html.licencefinder.questions questions;
 
-  @Inject
-  public QuestionsController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
-                             views.html.licencefinder.questions questions) {
-    this.formFactory = formFactory;
-    this.licenceFinderDao = licenceFinderDao;
-    this.questions = questions;
-  }
-
   public CompletionStage<Result> renderQuestionsForm(String sessionId) {
     QuestionsForm questionsForm = licenceFinderDao.getQuestionsForm(sessionId).orElseGet(QuestionsForm::new);
     return completedFuture(ok(questions.render(formFactory.form(QuestionsForm.class).fill(questionsForm), sessionId)));
   }
-
 
   public CompletionStage<Result> handleQuestionsSubmit(String sessionId) {
     Form<QuestionsForm> form = formFactory.form(QuestionsForm.class).bindFromRequest();

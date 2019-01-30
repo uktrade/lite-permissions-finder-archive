@@ -16,5 +16,4 @@ public class EnumUtil {
     }
     return fallback;
   }
-
 }

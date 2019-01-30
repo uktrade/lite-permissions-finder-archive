@@ -1,10 +1,13 @@
 package models.view.form;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
 public class MultiAnswerForm {
 
-  public List<String> answers;
-  public String action;
+  private @Getter @Setter List<String> answers;
+  private @Getter @Setter String action;
 
 }

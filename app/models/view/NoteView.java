@@ -1,7 +1,6 @@
 package models.view;
 
 public class NoteView {
-
   private final String text;
 
   public NoteView(String text) {
@@ -11,5 +10,4 @@ public class NoteView {
   public String getText() {
     return text;
   }
-
 }

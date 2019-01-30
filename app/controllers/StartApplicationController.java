@@ -1,11 +1,8 @@
 package controllers;
 
-import static play.mvc.Controller.flash;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
-
 import com.google.inject.Inject;
 import components.services.notification.PermissionsFinderNotificationClient;
+import lombok.AllArgsConstructor;
 import models.view.form.StartApplicationForm;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -15,6 +12,11 @@ import play.mvc.Result;
 import triage.session.SessionService;
 import triage.session.TriageSession;
 
+import static play.mvc.Controller.flash;
+import static play.mvc.Results.ok;
+import static play.mvc.Results.redirect;
+
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class StartApplicationController {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StartApplicationController.class);
@@ -24,16 +26,6 @@ public class StartApplicationController {
   private final PermissionsFinderNotificationClient permissionsFinderNotificationClient;
   private final views.html.startApplication startApplication;
 
-  @Inject
-  public StartApplicationController(FormFactory formFactory, SessionService sessionService,
-                                    PermissionsFinderNotificationClient permissionsFinderNotificationClient,
-                                    views.html.startApplication startApplication) {
-    this.formFactory = formFactory;
-    this.sessionService = sessionService;
-    this.permissionsFinderNotificationClient = permissionsFinderNotificationClient;
-    this.startApplication = startApplication;
-  }
-
   public Result createApplication() {
     if (StringUtils.isNoneBlank(flash("error"))) {
       flash("error", flash("error"));
@@ -41,38 +33,49 @@ public class StartApplicationController {
     }
 
     TriageSession triageSession = sessionService.createNewSession();
-    return redirect(routes.StartApplicationController.renderStartApplication(triageSession.getId()));
+    return redirect(
+        routes.StartApplicationController.renderStartApplication(triageSession.getId()));
   }
 
   public Result renderStartApplication(String sessionId) {
     TriageSession triageSession = sessionService.getSessionById(sessionId);
+
+    // If the session isn't valid, log and redirect to new application
     if (triageSession == null) {
       LOGGER.error("Unknown sessionId {}", sessionId);
       return redirect(routes.StartApplicationController.createApplication());
-    } else {
-      return ok(startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getId(),
-          triageSession.getResumeCode()));
     }
+
+    return ok(
+        startApplication.render(formFactory.form(StartApplicationForm.class), triageSession.getId(),
+            triageSession.getResumeCode()));
   }
 
   public Result handleSubmit(String sessionId) {
     TriageSession triageSession = sessionService.getSessionById(sessionId);
+    Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class)
+        .bindFromRequest();
+    String emailAddress = form.get().emailAddress;
+
+    // If the session isn't valid, log and redirect to new application
     if (triageSession == null) {
       LOGGER.error("Unknown sessionId {}", sessionId);
       return redirect(routes.StartApplicationController.createApplication());
-    } else {
-      Form<StartApplicationForm> form = formFactory.form(StartApplicationForm.class).bindFromRequest();
-      if (form.hasErrors()) {
-        return ok(startApplication.render(form, triageSession.getId(), triageSession.getResumeCode()));
-      } else {
-        String emailAddress = form.get().emailAddress;
-        if (StringUtils.isNoneBlank(emailAddress)) {
-          String resumeCode = triageSession.getResumeCode();
-          permissionsFinderNotificationClient.sendApplicationReferenceEmail(emailAddress.trim(), resumeCode);
-        }
-        return redirect(routes.OnboardingController.renderForm(sessionId));
-      }
     }
-  }
 
+    // If the form has errors, return to form and show error
+    if (form.hasErrors()) {
+      return ok(
+          startApplication.render(form, triageSession.getId(), triageSession.getResumeCode()));
+    }
+
+    // If the user has entered an email address, send them the application reference
+    if (StringUtils.isNoneBlank(emailAddress)) {
+      String resumeCode = triageSession.getResumeCode();
+      permissionsFinderNotificationClient
+          .sendApplicationReferenceEmail(emailAddress.trim(), resumeCode);
+    }
+
+    return redirect(routes.OnboardingController.renderForm(sessionId));
+  }
 }
