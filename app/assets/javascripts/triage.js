@@ -1,4 +1,6 @@
-// Definitions
+var sessionId = document.getElementById('sessionId').value;
+
+ // Definitions
 $(document).on("click", "a[href^='/view-definition']", function(e) {
 	var link = $(this).attr("href");
 	var type = link.substring(link.indexOf("/", 1) + 1, link.lastIndexOf("/"));
@@ -19,7 +21,7 @@ $(document).on("click", "a[href^='/view-control-entry']", function(e) {
 	var controlEntryId = link.substring(link.lastIndexOf("/") + 1);
 
 	$.getJSON("/modal-content/control-entry/" + controlEntryId, {
-			sessionId: "dbdead36-4b46-4f6b-a0bf-d47a228ac740"
+			sessionId: sessionId
 		})
 		.done(function(data) {
 			var controlEntryUrl = "<a class='govuk-label govuk-link govuk-link--arrow' href='" + data.controlEntryUrl + "'>Go to this control entry</a>";

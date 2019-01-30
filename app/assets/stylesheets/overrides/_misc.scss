@@ -1,4 +1,3 @@
-// TODO move to own folder
 $border-color: govuk-colour("grey-2");
 
 .govuk-inset-text--warning {
@@ -160,19 +159,6 @@ main {
 	padding-bottom: govuk-spacing(9);
 }
 
-.dotted-link {
-	line-height: 0.7em!important;
-	text-decoration: none;
-	border-bottom: 1.2px dotted currentColor;
-	cursor: help;
-	// Hide external link icon
-	&:before {
-		display: none;
-	}
-	&:after {
-		display: none;
-	}
-}
 
 .govuk-radios__item {
 	.govuk-details {
