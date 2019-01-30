@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import components.cms.dao.JourneyDao;
 import components.cms.dao.StageDao;
 import jodd.typeconverter.Convert;
+import lombok.AllArgsConstructor;
 import models.cms.Journey;
 import models.cms.Stage;
 import models.view.ProgressView;
@@ -17,6 +18,7 @@ import utils.ListNameToFriendlyNameUtil;
 
 import java.util.Optional;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class ProgressViewServiceImpl implements ProgressViewService {
 
   private final BreadcrumbViewService breadcrumbViewService;
@@ -25,19 +27,6 @@ public class ProgressViewServiceImpl implements ProgressViewService {
   private final JourneyConfigService journeyConfigService;
   private final StageDao stageDao;
   private final JourneyDao journeyDao;
-
-  @Inject
-  public ProgressViewServiceImpl(BreadcrumbViewService breadcrumbViewService,
-                                 RenderService renderService, HtmlRenderService htmlRenderService,
-                                 JourneyConfigService journeyConfigService, StageDao stageDao,
-                                 JourneyDao journeyDao) {
-    this.breadcrumbViewService = breadcrumbViewService;
-    this.renderService = renderService;
-    this.htmlRenderService = htmlRenderService;
-    this.journeyConfigService = journeyConfigService;
-    this.stageDao = stageDao;
-    this.journeyDao = journeyDao;
-  }
 
   @Override
   public ProgressView createProgressView(ControlEntryConfig controlEntryConfig) {
