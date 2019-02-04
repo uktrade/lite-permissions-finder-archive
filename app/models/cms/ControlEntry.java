@@ -12,22 +12,6 @@ public class ControlEntry {
   private Boolean decontrolled;
   private String jumpToControlCodes;
 
-  @Override
-  public String toString() {
-    return "ControlEntry{" +
-      "id=" + id +
-      ", parentControlEntryId=" + parentControlEntryId +
-      ", controlCode='" + controlCode + '\'' +
-      ", fullDescription='" + fullDescription + '\'' +
-      ", summaryDescription='" + summaryDescription + '\'' +
-      ", nested=" + nested +
-      ", displayOrder=" + displayOrder +
-      ", journeyId=" + journeyId +
-      ", decontrolled=" + decontrolled +
-      ", jumpToControlCodes='" + jumpToControlCodes + '\'' +
-      '}';
-  }
-
   public Long getId() {
     return id;
   }
