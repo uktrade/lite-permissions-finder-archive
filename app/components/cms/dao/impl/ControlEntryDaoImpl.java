@@ -38,6 +38,11 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
   }
 
   @Override
+  public List<ControlEntry> findControlEntriesByControlCode(String value) {
+    return controlEntryJDBIDao.findControlEntriesByControlCode(value);
+  }
+
+  @Override
   public List<ControlEntry> getRelatedControlCodeEntries(long controlEntryId) {
     return controlEntryJDBIDao.getRelatedControlCodeEntries(controlEntryId);
   }
@@ -51,7 +56,9 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
         controlEntry.getSummaryDescription(),
         controlEntry.isNested(),
         controlEntry.getDisplayOrder(),
-        controlEntry.getJourneyId());
+        controlEntry.getJourneyId(),
+        controlEntry.isDecontrolled(),
+        controlEntry.getJumpToControlCodes());
   }
 
   @Override

@@ -13,6 +13,7 @@ import components.services.SessionOutcomeService;
 import components.services.UserPrivilegeService;
 import controllers.guard.SessionGuardAction;
 import exceptions.UnknownParameterException;
+import lombok.AllArgsConstructor;
 import models.AccountData;
 import models.enums.SessionOutcomeType;
 import models.view.form.ItemDescriptionForm;
@@ -34,6 +35,7 @@ import utils.HtmlUtil;
 import java.util.Optional;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class ViewOutcomeController {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ViewOutcomeController.class);
@@ -50,30 +52,6 @@ public class ViewOutcomeController {
   private final views.html.nlr.nlrOutcome nlrOutcome;
   private final views.html.triage.listedOutcomeSaved listedOutcomeSaved;
   private final views.html.nlr.nlrItemDescription nlrItemDescription;
-
-  @Inject
-  public ViewOutcomeController(AccountService accountService, SessionService sessionService,
-                               SessionOutcomeService sessionOutcomeService,
-                               SessionOutcomeDao sessionOutcomeDao, UserPrivilegeService userPrivilegeService,
-                               SpireAuthManager spireAuthManager,
-                               ControllerConfigService controllerConfigService,
-                               FormFactory formFactory, views.html.nlr.nlrRegisterSuccess nlrRegisterSuccess,
-                               views.html.nlr.nlrOutcome nlrOutcome,
-                               views.html.triage.listedOutcomeSaved listedOutcomeSaved,
-                               views.html.nlr.nlrItemDescription nlrItemDescription) {
-    this.accountService = accountService;
-    this.sessionService = sessionService;
-    this.sessionOutcomeService = sessionOutcomeService;
-    this.sessionOutcomeDao = sessionOutcomeDao;
-    this.userPrivilegeService = userPrivilegeService;
-    this.spireAuthManager = spireAuthManager;
-    this.controllerConfigService = controllerConfigService;
-    this.formFactory = formFactory;
-    this.nlrRegisterSuccess = nlrRegisterSuccess;
-    this.nlrOutcome = nlrOutcome;
-    this.listedOutcomeSaved = listedOutcomeSaved;
-    this.nlrItemDescription = nlrItemDescription;
-  }
 
   public Result renderOutcome(String outcomeId) {
     SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeById(outcomeId);

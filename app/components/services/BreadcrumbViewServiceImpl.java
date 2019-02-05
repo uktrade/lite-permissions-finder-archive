@@ -2,8 +2,11 @@ package components.services;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import components.cms.dao.JourneyDao;
+import components.cms.dao.SessionDao;
 import components.comparator.AlphanumComparator;
 import controllers.routes;
+import models.cms.Journey;
 import models.cms.enums.QuestionType;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
@@ -13,8 +16,10 @@ import models.view.SubAnswerView;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
+import triage.session.TriageSession;
 import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
+import utils.ListNameToFriendlyNameUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,14 +34,19 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   private final RenderService renderService;
   private final HtmlRenderService htmlRenderService;
   private final AnswerViewService answerViewService;
+  private final SessionDao sessionDao;
+  private final JourneyDao journeyDao;
 
   @Inject
   public BreadcrumbViewServiceImpl(JourneyConfigService journeyConfigService, RenderService renderService,
-                                   HtmlRenderService htmlRenderService, AnswerViewService answerViewService) {
+                                   HtmlRenderService htmlRenderService, AnswerViewService answerViewService,
+                                   SessionDao sessionDao, JourneyDao journeyDao) {
     this.journeyConfigService = journeyConfigService;
     this.renderService = renderService;
     this.htmlRenderService = htmlRenderService;
     this.answerViewService = answerViewService;
+    this.sessionDao = sessionDao;
+    this.journeyDao = journeyDao;
   }
 
   @Override
@@ -75,11 +85,13 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
                                                             boolean includeChangeLinks,
                                                             HtmlRenderOption... htmlRenderOptions) {
+    TriageSession triageSession = sessionDao.getSessionById(sessionId);
+    Journey journey = journeyDao.getJourney(triageSession.getJourneyId());
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
       breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig, includeChangeLinks, htmlRenderOptions));
     }
-    breadcrumbItemViews.add(new BreadcrumbItemView(null, "UK Military List", null, new ArrayList<>()));
+    breadcrumbItemViews.add(new BreadcrumbItemView(null, ListNameToFriendlyNameUtil.GetFriendlyNameFromListName(journey.getJourneyName()), null, new ArrayList<>()));
     return Lists.reverse(breadcrumbItemViews);
   }
 
@@ -159,8 +171,8 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     controlEntryHierarchy.add(controlEntryConfig);
     ControlEntryConfig nextControlEntryConfig = controlEntryConfig;
     while (nextControlEntryConfig.getParentControlEntry().isPresent()) {
-      nextControlEntryConfig = nextControlEntryConfig.getParentControlEntry().get();
-      controlEntryHierarchy.add(nextControlEntryConfig);
+        nextControlEntryConfig = nextControlEntryConfig.getParentControlEntry().get();
+        controlEntryHierarchy.add(nextControlEntryConfig);
     }
 
     return controlEntryHierarchy.stream()

@@ -1,10 +1,10 @@
 package controllers;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import components.services.FlashService;
 import exceptions.ServiceException;
+import lombok.AllArgsConstructor;
 import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -16,8 +16,10 @@ import views.html.util.heading;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class StaticContentController extends Controller {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StaticContentController.class);
@@ -25,14 +27,6 @@ public class StaticContentController extends Controller {
   private final FlashService flashService;
   private final SessionService sessionService;
   private final views.html.staticContent staticContent;
-
-  @Inject
-  public StaticContentController(FlashService flashService, SessionService sessionService,
-                                 views.html.staticContent staticContent) {
-    this.flashService = flashService;
-    this.sessionService = sessionService;
-    this.staticContent = staticContent;
-  }
 
   public enum StaticHtml {
     BROKERING("tradetypes/brokering.html", "Trade controls, trafficking and brokering", false),
@@ -83,7 +77,7 @@ public class StaticContentController extends Controller {
       } else {
         return ok(staticContent.render(staticHtml.title,
             Option.apply(staticHtml.pageHeading),
-            new Html(Resources.toString(resource, Charsets.UTF_8)),
+            new Html(Resources.toString(resource, StandardCharsets.UTF_8)),
             staticHtml.showBackLink,
             resumeCode));
       }

@@ -7,6 +7,7 @@ import components.services.ProgressViewService;
 import components.services.RenderService;
 import controllers.guard.SessionGuardAction;
 import exceptions.UnknownParameterException;
+import lombok.AllArgsConstructor;
 import models.enums.PageType;
 import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
@@ -29,11 +30,14 @@ import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.PageTypeUtil;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @With(SessionGuardAction.class)
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class OutcomeController extends Controller {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(OutcomeController.class);
@@ -51,30 +55,6 @@ public class OutcomeController extends Controller {
   private final views.html.triage.listedOutcome listedOutcome;
   private final views.html.triage.itemNotFound itemNotFound;
   private final views.html.triage.noResult noResult;
-
-  @Inject
-  public OutcomeController(JourneyConfigService journeyConfigService,
-                           ControllerConfigService controllerConfigService, SessionService sessionService,
-                           FormFactory formFactory, AnswerViewService answerViewService,
-                           BreadcrumbViewService breadcrumbViewService, RenderService renderService,
-                           ProgressViewService progressViewService,
-                           views.html.triage.dropout dropout, views.html.triage.decontrolOutcome decontrolOutcome,
-                           views.html.triage.listedOutcome listedOutcome, views.html.triage.itemNotFound itemNotFound,
-                           views.html.triage.noResult noResult) {
-    this.journeyConfigService = journeyConfigService;
-    this.controllerConfigService = controllerConfigService;
-    this.sessionService = sessionService;
-    this.formFactory = formFactory;
-    this.answerViewService = answerViewService;
-    this.breadcrumbViewService = breadcrumbViewService;
-    this.renderService = renderService;
-    this.progressViewService = progressViewService;
-    this.dropout = dropout;
-    this.decontrolOutcome = decontrolOutcome;
-    this.listedOutcome = listedOutcome;
-    this.itemNotFound = itemNotFound;
-    this.noResult = noResult;
-  }
 
   public Result outcomeNoResult(String controlEntryId, String sessionId) {
     ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
@@ -122,6 +102,19 @@ public class OutcomeController extends Controller {
   }
 
   public Result outcomeDecontrol(String stageId, String sessionId) {
+    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
+
+    Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
+   /* if (answers.isEmpty()) {
+      LOGGER.error("Answers cannot be empty on outcome decontrol page.");
+      return redirectToIndex(sessionId);
+    } else {*/
+      Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class);
+      return renderOutcomeDecontrol(form, stageConfig, sessionId, answers);
+    //}
+  }
+
+  public Result outcomeDecontrol2(String stageId, String sessionId) {
     StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
     if (PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {

@@ -2,6 +2,8 @@ package controllers;
 
 import com.google.inject.Inject;
 import exceptions.UnknownParameterException;
+import lombok.Getter;
+import lombok.Setter;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -36,7 +38,7 @@ public class EntryPointController extends Controller {
 
   public static class EntryPointForm {
 
-    public String action;
+    private @Getter @Setter String action;
 
   }
 

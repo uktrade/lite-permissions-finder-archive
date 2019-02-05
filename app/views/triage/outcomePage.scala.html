@@ -2,7 +2,7 @@
 @import views.html.common.page.twoThirdsColumn
 
 @this(standardPage: standardPage)
-@(title: String, sessionId: String, resumeCode: String, showSharingOptions: Boolean = true)(content: Html)
+@(title: String, sessionId: String, resumeCode: String, showSharingOptions: Boolean = true, subtitle: String = "")(content: Html)
 
 @sidebarPanel = {
 	@if(showSharingOptions) {

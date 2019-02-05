@@ -20,6 +20,7 @@ public class NavigationLevel {
   private final String cellAddress;
   private final String content;
   private final int level;
+  private final String list;
   private final ArrayList<NavigationLevel> subNavigationLevels;
   private final NavigationExtras navigationExtras;
   private final OnPageContent onPageContent;
@@ -34,14 +35,15 @@ public class NavigationLevel {
   private final Redirect redirect;
   private final LoadingMetadata loadingMetadata;
 
-  public NavigationLevel(String cellAddress, String content, int level) {
-    this(cellAddress, content, level, null, null, null, null, null, null, null, null, null, null, null);
+  public NavigationLevel(String cellAddress, String content, int level, String list) {
+    this(cellAddress, content, level, list, null, null, null, null, null, null, null, null, null, null, null);
   }
 
   public NavigationLevel(
       String cellAddress,
       String content,
       int level,
+      String list,
       NavigationExtras navigationExtras,
       OnPageContent onPageContent,
       ControlListEntries controlListEntries,
@@ -57,6 +59,7 @@ public class NavigationLevel {
     this.cellAddress = cellAddress;
     this.content = content;
     this.level = level;
+    this.list = list;
     this.navigationExtras = navigationExtras;
     this.onPageContent = onPageContent;
     this.controlListEntries = controlListEntries;
@@ -76,8 +79,8 @@ public class NavigationLevel {
   public String toString() {
     return "NavigationLevel{" +
         "cellAddress='" + cellAddress + '\'' +
-        ", content='" + content + '\'' +
-        ", level=" + level +
+        ",\n content='" + content + '\'' +
+        ",\n level=" + level +
         '}';
   }
 
@@ -141,11 +144,15 @@ public class NavigationLevel {
     return redirect;
   }
 
+  public String getList() {
+    return list;
+  }
+
   public void addSubNavigationLevel(NavigationLevel navigationLevel) {
     subNavigationLevels.add(navigationLevel);
   }
 
-  public void addAllSubNavigationlevels(Collection<NavigationLevel> navigationLevels) {
+  public void addAllSubNavigationLevels(Collection<NavigationLevel> navigationLevels) {
     subNavigationLevels.addAll(navigationLevels);
   }
 

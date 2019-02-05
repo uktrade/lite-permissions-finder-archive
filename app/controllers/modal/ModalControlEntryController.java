@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
+import lombok.AllArgsConstructor;
 import models.view.BreadcrumbItemView;
 import models.view.SubAnswerView;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import views.html.modal.modalControlEntry;
 
 import java.util.List;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class ModalControlEntryController extends Controller {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ModalControlEntryController.class);
@@ -31,21 +33,6 @@ public class ModalControlEntryController extends Controller {
   private final AnswerViewService answerViewService;
   private final HtmlRenderService htmlRenderService;
   private final views.html.modal.modalControlEntryView modalControlEntryView;
-
-  @Inject
-  public ModalControlEntryController(JourneyConfigService journeyConfigService,
-                                     ControllerConfigService controllerConfigService,
-                                     BreadcrumbViewService breadcrumbViewService,
-                                     AnswerViewService answerViewService,
-                                     HtmlRenderService htmlRenderService,
-                                     views.html.modal.modalControlEntryView modalControlEntryView) {
-    this.journeyConfigService = journeyConfigService;
-    this.controllerConfigService = controllerConfigService;
-    this.breadcrumbViewService = breadcrumbViewService;
-    this.answerViewService = answerViewService;
-    this.htmlRenderService = htmlRenderService;
-    this.modalControlEntryView = modalControlEntryView;
-  }
 
   public Result renderControlEntryModal(String controlEntryId, String sessionId) {
     ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);

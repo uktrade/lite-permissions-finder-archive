@@ -16,6 +16,11 @@ public class LicenceInfo {
   private String ogelType;
   private String licenceUrl;
 
+  public String getFormattedRegistrationDate() {
+    LocalDate date = LocalDate.parse(registrationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    return date.format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
+  }
+
   public String getLicenceNumber() {
     return licenceNumber;
   }
@@ -32,9 +37,8 @@ public class LicenceInfo {
     this.licenceType = licenceType;
   }
 
-  public String getFormattedRegistrationDate() {
-    LocalDate date = LocalDate.parse(registrationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    return date.format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
+  public String getRegistrationDate() {
+    return registrationDate;
   }
 
   public void setRegistrationDate(String registrationDate) {
@@ -89,12 +93,12 @@ public class LicenceInfo {
     this.siteId = siteId;
   }
 
-  public void setOgelType(String ogelType) {
-    this.ogelType = ogelType;
-  }
-
   public String getOgelType() {
     return ogelType;
+  }
+
+  public void setOgelType(String ogelType) {
+    this.ogelType = ogelType;
   }
 
   public String getLicenceUrl() {
@@ -104,5 +108,4 @@ public class LicenceInfo {
   public void setLicenceUrl(String licenceUrl) {
     this.licenceUrl = licenceUrl;
   }
-
 }

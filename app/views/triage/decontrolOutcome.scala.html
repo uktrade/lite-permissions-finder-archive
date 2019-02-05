@@ -7,19 +7,19 @@
 @this(outcomePage: outcomePage)
 @(form: Form[_], stageId: String, sessionId: String, resumeCode: String, decontrolUrl: String, breadcrumbView: BreadcrumbView, answerViews: List[AnswerView])
 
-@outcomePage("Item not listed", sessionId, resumeCode) {
+@outcomePage("Generate an NLR Document", sessionId, resumeCode, subtitle = "stageDescriptor") {
 
   @twoThirdsColumn{
     @errorSummary(form)
   }
 
   <p class="govuk-label">
-    Based on the choices you've made, your item is not controlled on the UK Military List.
+  	Based on the choices you’ve made, you may generate a no licence required (NLR) document.
   </p>
 
-  @decontrolBreadcrumb(decontrolUrl, breadcrumbView, answerViews)
+  <!--@decontrolBreadcrumb(decontrolUrl, breadcrumbView, answerViews)-->
 
-  <h2 class="govuk-heading-l">What you should do next</h2>
+  <h2 class="govuk-heading-l">Before generating your document</h2>
 
   <ol class="circle-step-list">
     <li>
@@ -27,7 +27,7 @@
       technical specifications of your item.
     </li>
     <li>
-      Even if if your item is not controlled it may still be affected by
+      Even if your item is not controlled it may still be affected by
       <a href="https://www.gov.uk/guidance/supplementary-wmd-end-use-controls" rel="external" target="_blank">
         WMD<span class="govuk-visually-hidden"> (opens in a new tab)</span>
       </a> and

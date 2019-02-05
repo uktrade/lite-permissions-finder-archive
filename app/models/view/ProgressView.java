@@ -1,7 +1,6 @@
 package models.view;
 
 public class ProgressView {
-
   private final String code;
   private final String description;
 
@@ -17,5 +16,4 @@ public class ProgressView {
   public String getDescription() {
     return description;
   }
-
 }

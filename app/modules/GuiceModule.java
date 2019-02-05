@@ -16,28 +16,8 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import components.auth.SamlModule;
-import components.cms.dao.ControlEntryDao;
-import components.cms.dao.GlobalDefinitionDao;
-import components.cms.dao.JourneyDao;
-import components.cms.dao.LocalDefinitionDao;
-import components.cms.dao.NoteDao;
-import components.cms.dao.RelatedControlEntryDao;
-import components.cms.dao.SessionDao;
-import components.cms.dao.SessionOutcomeDao;
-import components.cms.dao.SessionStageDao;
-import components.cms.dao.StageAnswerDao;
-import components.cms.dao.StageDao;
-import components.cms.dao.impl.ControlEntryDaoImpl;
-import components.cms.dao.impl.GlobalDefinitionDaoImpl;
-import components.cms.dao.impl.JourneyDaoImpl;
-import components.cms.dao.impl.LocalDefinitionDaoImpl;
-import components.cms.dao.impl.NoteDaoImpl;
-import components.cms.dao.impl.RelatedControlEntryDaoImpl;
-import components.cms.dao.impl.SessionDaoImpl;
-import components.cms.dao.impl.SessionOutcomeDaoImpl;
-import components.cms.dao.impl.SessionStageDaoImpl;
-import components.cms.dao.impl.StageAnswerDaoImpl;
-import components.cms.dao.impl.StageDaoImpl;
+import components.cms.dao.*;
+import components.cms.dao.impl.*;
 import components.common.auth.SpireAuthManager;
 import components.common.cache.CountryProvider;
 import components.common.cache.UpdateCountryCacheActor;
@@ -190,7 +170,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
 
     bindConstant().annotatedWith(Names.named("ecjuEmailAddress")).to(config.getString("ecjuEmailAddress"));
 
-    // CMS dao's
+    // CMS daos
     bind(ControlEntryDao.class).to(ControlEntryDaoImpl.class);
     bind(GlobalDefinitionDao.class).to(GlobalDefinitionDaoImpl.class);
     bind(JourneyDao.class).to(JourneyDaoImpl.class);
@@ -203,6 +183,8 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(SessionDao.class).to(SessionDaoImpl.class);
     bind(SessionStageDao.class).to(SessionStageDaoImpl.class);
     bind(SessionOutcomeDao.class).to(SessionOutcomeDaoImpl.class);
+
+    bind(SpreadsheetVersionDao.class).to(SpreadsheetVersionDaoImpl.class);
 
     requestInjection(this);
   }

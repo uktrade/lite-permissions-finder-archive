@@ -9,6 +9,7 @@ import components.persistence.LicenceFinderDao;
 import controllers.guard.LicenceFinderAwaitGuardAction;
 import controllers.guard.LicenceFinderUserGuardAction;
 import exceptions.UnknownParameterException;
+import lombok.AllArgsConstructor;
 import models.TradeType;
 import org.pac4j.play.java.Secure;
 import play.data.Form;
@@ -23,6 +24,7 @@ import java.util.concurrent.CompletionStage;
 
 @Secure(clients = SpireSAML2Client.CLIENT_NAME, authorizers = SamlAuthorizer.AUTHORIZER_NAME)
 @With({LicenceFinderUserGuardAction.class, LicenceFinderAwaitGuardAction.class})
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class TradeController extends Controller {
 
   private final FormFactory formFactory;
@@ -30,14 +32,6 @@ public class TradeController extends Controller {
   private final views.html.licencefinder.trade trade;
 
   private static final String UNITED_KINGDOM = "CTRY0";
-
-  @Inject
-  public TradeController(FormFactory formFactory, LicenceFinderDao licenceFinderDao,
-                         views.html.licencefinder.trade trade) {
-    this.formFactory = formFactory;
-    this.licenceFinderDao = licenceFinderDao;
-    this.trade = trade;
-  }
 
   /**
    * renderTradeForm

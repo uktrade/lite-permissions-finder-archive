@@ -9,6 +9,8 @@ public class ControlEntry {
   private boolean nested;
   private Integer displayOrder;
   private Long journeyId;
+  private Boolean decontrolled;
+  private String jumpToControlCodes;
 
   public Long getId() {
     return id;
@@ -79,6 +81,24 @@ public class ControlEntry {
 
   public ControlEntry setJourneyId(Long journeyId) {
     this.journeyId = journeyId;
+    return this;
+  }
+
+  public String getJumpToControlCodes() {
+    return jumpToControlCodes;
+  }
+
+  public ControlEntry setJumpToControlCodes(String jumpToControlCodes) {
+    this.jumpToControlCodes = jumpToControlCodes;
+    return this;
+  }
+
+  public Boolean isDecontrolled() {
+    return decontrolled;
+  }
+
+  public ControlEntry setDecontrolled(Boolean decontrolled) {
+    this.decontrolled = decontrolled;
     return this;
   }
 }

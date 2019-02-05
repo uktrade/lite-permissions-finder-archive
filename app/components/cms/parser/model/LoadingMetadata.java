@@ -6,9 +6,6 @@ public class LoadingMetadata {
   private Long controlEntryId;
   private String id;
 
-  public LoadingMetadata() {
-  }
-
   public Long getStageId() {
     return stageId;
   }
@@ -43,5 +40,15 @@ public class LoadingMetadata {
   public LoadingMetadata setId(String id) {
     this.id = id;
     return this;
+  }
+
+  @Override
+  public String toString() {
+    return "LoadingMetadata{" +
+            "stageId=" + stageId +
+            ", stageAnswerId=" + stageAnswerId +
+            ", controlEntryId=" + controlEntryId +
+            ", id='" + id + '\'' +
+            '}';
   }
 }

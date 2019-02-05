@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
+import lombok.AllArgsConstructor;
 import play.mvc.Result;
 import triage.config.ControllerConfigService;
 import triage.config.DefinitionConfig;
@@ -15,20 +16,13 @@ import java.util.Map;
 
 import static play.mvc.Results.ok;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class ModalDefinitionController {
 
   private final HtmlRenderService htmlRenderService;
   private final ControllerConfigService controllerConfigService;
   private final views.html.modal.modalDefinitionView modalDefinitionView;
 
-  @Inject
-  public ModalDefinitionController(HtmlRenderService htmlRenderService,
-                                   ControllerConfigService controllerConfigService,
-                                   views.html.modal.modalDefinitionView modalDefinitionView) {
-    this.htmlRenderService = htmlRenderService;
-    this.controllerConfigService = controllerConfigService;
-    this.modalDefinitionView = modalDefinitionView;
-  }
 
   public Result renderDefinition(String type, String definitionId) {
     Map<String, String> definition = getDefinition(type, definitionId);

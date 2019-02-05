@@ -1,6 +1,5 @@
 package controllers.modal;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.google.inject.Inject;
@@ -12,6 +11,7 @@ import play.twirl.api.Html;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,7 +46,7 @@ public class ModalContentController extends Controller {
       if (resource == null) {
         throw new ServiceException("Not a file: " + name);
       } else {
-        return new Html(Resources.toString(resource, Charsets.UTF_8));
+        return new Html(Resources.toString(resource, StandardCharsets.UTF_8));
       }
     } catch (IOException ioe) {
       throw new ServiceException("Failed to read: " + name, ioe);

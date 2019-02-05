@@ -9,16 +9,19 @@ import triage.session.TriageSession;
 
 public interface SessionJDBIDao {
 
-  @SqlUpdate("INSERT INTO SESSION (ID,  JOURNEY_ID, RESUME_CODE, LAST_STAGE_ID) VALUES " +
-      "                          (:id, :journeyId, :resumeCode, :lastStageId)")
+  @SqlUpdate("INSERT INTO SESSION (ID,  JOURNEY_ID, RESUME_CODE, LAST_STAGE_ID, SPREADSHEET_VERSION_ID) VALUES " +
+      "                          (:id, :journeyId, :resumeCode, :lastStageId, :spreadsheetVersionId)")
   void insert(@Bind("id") String id,
               @Bind("journeyId") long journeyId,
               @Bind("resumeCode") String resumeCode,
-              @Bind("lastStageId") Long lastStageId);
-
+              @Bind("lastStageId") Long lastStageId,
+              @Bind("spreadsheetVersionId") long spreadsheetVersionId);
 
   @SqlUpdate("UPDATE SESSION SET LAST_STAGE_ID = :lastStageId WHERE id = :id")
   void updateLastStageId(@Bind("id") String sessionId, @Bind("lastStageId") Long lastStageId);
+
+  @SqlUpdate("UPDATE SESSION SET JOURNEY_ID = :journeyId WHERE id = :id")
+  void updateJourneyId(@Bind("id") String sessionId, @Bind("journeyId") Long journeyId);
 
   @RegisterMapper(SessionRSMapper.class)
   @SqlQuery("SELECT * FROM SESSION WHERE ID = :id")

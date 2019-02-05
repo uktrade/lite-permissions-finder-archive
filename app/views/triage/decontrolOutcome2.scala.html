@@ -1,0 +1,52 @@
+@import models.view.BreadcrumbView
+@import models.view.AnswerView
+@import views.html.triage.outcomePage
+@import views.html.common.form.formCheckbox
+@import views.html.common.page._
+@import views.html.frontendComponents.formRadioWithDetailPanel
+@import views.html.common.form._
+
+@this(outcomePage: outcomePage)
+@(form: Form[_], stageId: String, stageDescriptor: String, sessionId: String, answerViews: List[AnswerView], resumeCode: String)
+
+@outcomePage("Item not listed on the UK Military List", sessionId, resumeCode, subtitle = stageDescriptor) {
+
+@twoThirdsColumn{
+	@errorSummary(form)
+}
+
+<p class="lede">
+	Based on the choices you’ve made, your item is not controlled on the UK Military List. However, it may still be controlled on another UK Strategic Export Control list.
+</p>
+
+<br/>
+
+<form action="@routes.StageController.handleSubmit(stageId, sessionId).toString" method="POST">
+  @views.html.helper.CSRF.formField
+
+  @if(answerViews.size != 0) {
+
+    <!-- If there's a possibility it's in another list, show them -->
+    <p class="form-hint">
+  	  Select the control list entry which best describes your item:
+    </p>
+
+    <div class="form-group clientside-form-group-error-target">
+	  @for(answerView <- answerViews) {
+		@if(answerView.isDividerAbove) {
+		  <p class="form-block">or</p>
+		}
+		@formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
+		  @answerMoreInformation(answerView)
+		}
+	  }
+  </div>
+
+  <button type="submit" class="button" name="action" value="continue">Save and continue</button>
+} else {
+  <button type="submit" class="button" name="value" value="none">Save and continue</button>
+  }
+</form>
+
+
+}

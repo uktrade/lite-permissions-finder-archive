@@ -28,13 +28,26 @@ public interface ControlEntryJDBIDao {
   ControlEntry getByControlCode(@Bind("controlCode") String controlCode);
 
   @Mapper(ControlEntryRSMapper.class)
+  @SqlQuery("SELECT stage.id, control_entry.control_code, control_entry.full_description, control_entry.parent_control_entry_id, " +
+    "control_entry.summary_description, control_entry.nested, control_entry.display_order, control_entry.journey_id, " +
+    "control_entry.jump_to_control_codes, control_entry.is_decontrolled" +
+			" FROM control_entry" +
+            " INNER JOIN stage" +
+            " ON control_entry.id = stage.control_entry_id" +
+            " WHERE UPPER(control_entry.control_code)" +
+            " LIKE '%' || UPPER(:value) || '%'" +
+			" ORDER BY control_entry.control_code" +
+			" LIMIT 6")
+  List<ControlEntry> findControlEntriesByControlCode(@Bind("value") String value);
+
+  @Mapper(ControlEntryRSMapper.class)
   @SqlQuery("SELECT ce.* FROM related_control_entry rce JOIN control_entry ce ON rce.related_control_entry_id = ce.id" +
       "      WHERE rce.control_entry_id = :controlEntryId")
   List<ControlEntry> getRelatedControlCodeEntries(@Bind("controlEntryId") long controlEntryId);
 
   @SqlQuery(
-      "INSERT INTO control_entry (parent_control_entry_id, control_code, full_description, summary_description, nested, display_order, journey_id) "
-          + "VALUES (:parentControlEntryId, :controlCode, :fullDescription, :summaryDescription, :nested, :displayOrder, :journeyId) "
+      "INSERT INTO control_entry (parent_control_entry_id, control_code, full_description, summary_description, nested, display_order, journey_id, is_decontrolled, jump_to_control_codes) "
+          + "VALUES (:parentControlEntryId, :controlCode, :fullDescription, :summaryDescription, :nested, :displayOrder, :journeyId, :isDecontrolled, :jumpToControlCodes) "
           + "RETURNING id")
   Long insert(
       @Bind("parentControlEntryId") Long parentControlEntryId,
@@ -43,7 +56,9 @@ public interface ControlEntryJDBIDao {
       @Bind("summaryDescription") String summaryDescription,
       @Bind("nested") Boolean nested,
       @Bind("displayOrder") Integer displayOrder,
-      @Bind("journeyId") Long journeyId
+      @Bind("journeyId") Long journeyId,
+      @Bind("isDecontrolled") Boolean isDecontrolled,
+      @Bind("jumpToControlCodes") String jumpToControlCodes
   );
 
   @SqlUpdate("DELETE FROM control_entry")

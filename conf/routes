@@ -2,7 +2,7 @@
 # ~~~~
 ->      /common                     common.Routes
 
-#Start pages
+# Start pages
 GET     /                           controllers.EntryPointController.index
 POST    /                           controllers.EntryPointController.handleSubmit
 GET     /continue-application       controllers.ContinueApplicationController.renderForm
@@ -13,7 +13,7 @@ POST    /start-application          controllers.StartApplicationController.handl
 GET     /onboarding                 controllers.OnboardingController.renderForm(sessionId)
 POST    /onboarding                 controllers.OnboardingController.handleSubmit(sessionId)
 
-#Static content
+# Static content
 GET     /more-information-required     controllers.StaticContentController.renderMoreInformationRequired(sessionId)
 GET     /other-control-list            controllers.StaticContentController.renderOtherControlList(sessionId)
 GET     /trade-type/brokering          controllers.StaticContentController.renderBrokering
@@ -37,28 +37,27 @@ GET     /licencefinder/await-registration       controllers.licencefinder.Regist
 POST    /licencefinder/new-registration         controllers.licencefinder.RegisterAwaitController.handleRegistrationProcessed(sessionId)
 GET     /licencefinder/registration-success     controllers.licencefinder.RegisterAwaitController.registrationSuccess(sessionId, registrationRef)
 GET     /licencefinder/poll-status              controllers.LicenceFinderPollController.pollStatus(sessionId)
-
 GET     /licencefinder/view-ogel                controllers.licencefinder.ViewOgelController.viewOgel(registrationRef)
 
 + nocsrf
 POST    /licencefinder/registration-callback     controllers.licencefinder.RegistrationController.handleRegistrationCallback(sessionId)
 
-# JavaScript routes
+# Public
 GET     /assets/javascripts/routes             controllers.JavaScriptRoutesController.javascriptRoutes()
 GET     /assets/*file                          controllers.Assets.versioned(path="/public", file: Asset)
 
-#Build info
+# Build info
 GET     /admin/build                          controllers.admin.AdminController.buildInfo
 GET     /admin/cascade-ping/check             controllers.admin.AdminController.cascadePing
 
-#Pac4j
+# Pac4j
 + nocsrf
 POST    /samlResponse       org.pac4j.play.CallbackController.callback()
 GET     /logout             org.pac4j.play.LogoutController.logout()
 GET     /logged-out         controllers.AuthorisationController.loggedOut()
 GET     /unauthorised       controllers.AuthorisationController.unauthorised()
 
-#Code finder
+# Codefinder
 GET     /outcome/no-result/:controlEntryId          controllers.OutcomeController.outcomeNoResult(controlEntryId, sessionId)
 GET     /outcome/not-found/:controlEntryId          controllers.OutcomeController.outcomeItemNotFound(controlEntryId, sessionId)
 POST    /outcome/not-found/:controlEntryId          controllers.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)
@@ -84,12 +83,16 @@ GET     /register-nlr/decontrol/:stageId            controllers.ViewOutcomeContr
 POST    /register-nlr/decontrol/:stageId            controllers.ViewOutcomeController.handleRegisterDecontrolNlrSubmit(sessionId, stageId)
 GET     /register-nlr/success                       controllers.ViewOutcomeController.registerSuccess(sessionId)
 
-#Modals
+# Jump To
+GET     /jump-to                 					controllers.JumpToController.finder(query ?= null)
+GET     /jump-to/search          					controllers.JumpToController.controlCodeSearch(query)
+GET     /jump-to/jump/:controlEntryId         		controllers.JumpToController.jump(controlEntryId)
+
+# Modals
 GET     /modal-content/past-selections		                    controllers.modal.ModalSelectionController.renderPastSelections(sessionId)
 GET     /modal-content/control-entry/:controlEntryId       		controllers.modal.ModalControlEntryController.renderControlEntryModal(controlEntryId, sessionId)
 GET     /modal-content/definition/:type/:definitionId      		controllers.modal.ModalDefinitionController.renderDefinition(type, definitionId)
 GET     /modal-content/content/:modalContentId             		controllers.modal.ModalContentController.renderModalContent(modalContentId)
-
 
 #GET     /view-past-selections		                     controllers.modal.ModalSelectionController.renderPastSelectionsView(sessionId)
 GET     /view-control-entry/:controlEntryId              controllers.modal.ModalControlEntryController.renderControlEntryView(controlEntryId)
