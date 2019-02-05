@@ -1,4 +1,4 @@
-$("#search-box").on('change keyup paste', function() {
+$("#search-box").on('input', function() {
 	var value = $(this).val();
 	if (!isEmptyOrSpaces(value)) {
 		$.getJSON("/jump-to/search", {"query" : value}).done(function(data) {
