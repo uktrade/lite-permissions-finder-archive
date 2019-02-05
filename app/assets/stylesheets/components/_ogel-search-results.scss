@@ -17,25 +17,27 @@
 		display: inline-block;
 		height: 36px;
 		line-height: 40px;
-		width: calc(100% - 40px);
+		width: 100%;
 		border: 2px solid black;
 		outline-offset: 0; // TODO Remove this
 		-webkit-appearance: textfield;
 		-moz-appearance: textfield;
 		appearance: textfield;
 		padding: 0 5px;
+		padding-right: 40px;
 	}
 
 	.search-button {
 		display: inline-block;
 		width: 40px;
 		height: 40px;
-		background-color: black;
 		background-size: contain;
 		background-image: url("/assets/images/search.png");
 		background-size: 16px;
 		background-position: 12px;
 		background-repeat: no-repeat;
+		transform: translateX(-40px);
+		pointer-events: none;
 	}
 
 	button {
@@ -46,11 +48,6 @@
 }
 
 .js-enabled {
-	.search-wrapper {
-		input[type="search"] {
-			border-right: 0;
-		}
-	}
 	.js-hidden {
 		display: none;
 	}
