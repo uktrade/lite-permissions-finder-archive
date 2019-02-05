@@ -10,7 +10,7 @@
 	position: relative;
 	display: flex;
 	width: 100%;
-	max-width: 500px;
+	max-width: 450px;
 	height: 40px;
 
 	input[type="search"] {
@@ -24,10 +24,10 @@
 		-moz-appearance: textfield;
 		appearance: textfield;
 		padding: 0 5px;
-		padding-right: 40px;
 	}
 
 	.search-button {
+		position: absolute;
 		display: inline-block;
 		width: 40px;
 		height: 40px;
@@ -36,7 +36,6 @@
 		background-size: 16px;
 		background-position: 12px;
 		background-repeat: no-repeat;
-		transform: translateX(-40px);
 		pointer-events: none;
 	}
 
@@ -48,6 +47,9 @@
 }
 
 .js-enabled {
+	input[type="search"] {
+		padding-left: 35px;
+	}
 	.js-hidden {
 		display: none;
 	}
