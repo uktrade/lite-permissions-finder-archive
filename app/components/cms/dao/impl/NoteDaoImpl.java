@@ -31,6 +31,11 @@ public class NoteDaoImpl implements NoteDao {
   }
 
   @Override
+  public void insertMultiple(List<Note> notes) {
+    noteJDBIDao.insertMultiple(notes);
+  }
+
+  @Override
   public void deleteAllNotes() {
     noteJDBIDao.truncate();
   }

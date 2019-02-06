@@ -38,7 +38,7 @@ public class JourneyDaoImpl implements JourneyDao {
   }
 
   @Override
-  public void deleteAllJournies() {
+  public void deleteAllJourneys() {
     journeyJDBIDao.truncate();
   }
 }

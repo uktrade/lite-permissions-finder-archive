@@ -13,6 +13,7 @@ import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Notes;
+import jdk.nashorn.internal.objects.Global;
 import lombok.AllArgsConstructor;
 import models.cms.*;
 import models.cms.enums.AnswerType;
@@ -63,8 +64,7 @@ public class Loader {
       Long journeyId = journeyDao.insertJourney(journey);
 
       // Populate the database
-      createGlobalDefinitions(parserResult.getDefinitions(), journeyId,
-          rootNavigationLevel.getList());
+      createGlobalDefinitions(parserResult.getDefinitions(), journeyId, rootNavigationLevel.getList());
       generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
       createControlEntries(null, 1, rootNavigationLevel, journeyId);
       createStages(journeyId, rootNavigationLevel);
@@ -82,7 +82,8 @@ public class Loader {
 
     // Insert version database
     SpreadsheetVersion spreadsheetVersion = parserResult.getSpreadsheetVersion();
-    spreadsheetVersionDao.insert(spreadsheetVersion.getFilename(), spreadsheetVersion.getVersion(), spreadsheetVersion.getSha1());
+    spreadsheetVersionDao.insert(spreadsheetVersion.getFilename(), spreadsheetVersion.getVersion(),
+      spreadsheetVersion.getSha1());
   }
 
   private void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel,
@@ -415,43 +416,26 @@ public class Loader {
   }
 
   private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
-    List<String> noteTexts = Arrays.stream(noteText.split(REGEX_NEW_LINE))
-        .map(String::trim)
+    List<Note> notes = Arrays.stream(noteText.split(REGEX_NEW_LINE))
         .filter(StringUtils::isNotBlank)
+        .map(a -> new Note(stageId, a.trim(), noteType))
         .collect(Collectors.toList());
 
-    for (String nt : noteTexts) {
-      Note note = new Note()
-          .setStageId(stageId)
-          .setNoteType(noteType)
-          .setNoteText(nt);
+    noteDao.insertMultiple(notes);
 
-      Long noteId = noteDao.insertNote(note);
-
-      LOGGER.debug("Inserted note with id {}", noteId);
-    }
+    LOGGER.debug("Successfully inserted notes");
   }
 
-  private void createGlobalDefinitions(List<Definition> definitions, long journeyId,
-      String sheetName) {
-    for (Definition definition : definitions) {
-      if (sheetName.equalsIgnoreCase(definition.getList())) {
-        String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"");
-        String definitionText = definition.getNewContent();
+  private void createGlobalDefinitions(List<Definition> definitions, long journeyId, String sheetName) {
+    List<GlobalDefinition> globalDefinitions = definitions.parallelStream()
+      .filter(a -> a.getList().equalsIgnoreCase(sheetName))
+      .peek(a -> a.setName(StringUtils.strip(StringUtils.trimToEmpty(a.getName()), "\"")))
+      .map(a -> new GlobalDefinition(journeyId, a.getName(), a.getNewContent()))
+      .collect(Collectors.toList());
 
-        if (StringUtils.isAnyEmpty(term, definitionText)) {
-          LOGGER.error("Invalid global definition, row num {}, term {}, definition text {}",
-              definition.getRowNumber(), term,
-              definitionText);
-        } else {
-          GlobalDefinition globalDefinition = new GlobalDefinition(journeyId, term, definitionText);
+    globalDefinitionDao.insertMultiple(globalDefinitions);
 
-          Long globalDefinitionId = globalDefinitionDao.insertGlobalDefinition(globalDefinition);
-
-          LOGGER.debug("Inserted global definition with id {}", globalDefinitionId);
-        }
-      }
-    }
+    LOGGER.debug("Successfully inserted global definitions");
   }
 
   private void createRelatedControlEntries(boolean isRoot, NavigationLevel navigationLevel) {
@@ -500,7 +484,7 @@ public class Loader {
     stageAnswerDao.deleteAllStageAnswers();
     stageDao.deleteAllStages();
     controlEntryDao.deleteAllControlEntries();
-    journeyDao.deleteAllJournies();
+    journeyDao.deleteAllJourneys();
   }
 
   private AnswerType mapButtonsToAnswerType(Buttons buttons) {

@@ -10,6 +10,8 @@ public interface NoteDao {
 
   Long insertNote(Note note);
 
+  void insertMultiple(List<Note> notes);
+
   void deleteAllNotes();
 
 }
