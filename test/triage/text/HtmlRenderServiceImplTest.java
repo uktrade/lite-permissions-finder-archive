@@ -19,7 +19,8 @@ public class HtmlRenderServiceImplTest {
     String text = "*Item 1\n*Item 2\n*Item 3\n";
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(text));
 
-    assertThat(html).isEqualTo("<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>");
+    assertThat(html).isEqualTo("<ul class='govuk-list govuk-list--bullet'><li>Item 1</li>" +
+      "<li>Item 2</li><li>Item 3</li></ul>");
   }
 
   @Test
@@ -27,7 +28,8 @@ public class HtmlRenderServiceImplTest {
     String text = "*Item 1\n**Part A\n**Part B\n**Part C\n";
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(text));
 
-    assertThat(html).isEqualTo("<ul><li>Item 1</li><ul><li>Part A</li><li>Part B</li><li>Part C</li></ul></ul>");
+    assertThat(html).isEqualTo("<ul class='govuk-list govuk-list--bullet'><li>Item 1</li>" +
+      "<ul class='govuk-list govuk-list--bullet'><li>Part A</li><li>Part B</li><li>Part C</li></ul></ul>");
   }
 
   @Test
@@ -36,7 +38,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(text));
 
     assertThat(html).isEqualTo(
-        "<ul><li>Item 1</li><ul><li>Part A</li><ul><li>Info (i)</li><li> Info (ii)</li><li>Info (iii)</li></ul></ul></ul>");
+        "<ul class='govuk-list govuk-list--bullet'><li>Item 1</li><ul class='govuk-list govuk-list--bullet'><li>Part A</li><ul class='govuk-list govuk-list--bullet'><li>Info (i)</li><li> Info (ii)</li><li>Info (iii)</li></ul></ul></ul>");
   }
 
   @Test
@@ -45,7 +47,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(text));
 
     assertThat(html).isEqualTo(
-        "<p>text before</p><ul><li>Item1</li><ul><li>Part A</li><ul><li>Info (i)</li></ul></ul></ul><p>text after</p>");
+        "<p>text before</p><ul class='govuk-list govuk-list--bullet'><li>Item1</li><ul class='govuk-list govuk-list--bullet'><li>Part A</li><ul class='govuk-list govuk-list--bullet'><li>Info (i)</li></ul></ul></ul><p>text after</p>");
   }
 
   @Test
@@ -54,7 +56,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(text));
 
     assertThat(html).isEqualTo(
-        "<ul><li>1</li><ul><li>A</li><ul><li>(i)</li><li>(ii)</li></ul><li>B</li><li>C</li><ul><li>(iv)</li></ul></ul><li>2</li></ul>");
+        "<ul class='govuk-list govuk-list--bullet'><li>1</li><ul class='govuk-list govuk-list--bullet'><li>A</li><ul class='govuk-list govuk-list--bullet'><li>(i)</li><li>(ii)</li></ul><li>B</li><li>C</li><ul class='govuk-list govuk-list--bullet'><li>(iv)</li></ul></ul><li>2</li></ul>");
   }
 
   @Test
@@ -63,7 +65,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(controlEntryReferenceNode)));
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-control-entry/ML1' data-control-entry-id='ML1' title='View This is control code ML1' target='_blank'>This is control code ML1</a>"));
+        "<a href=\"/view-control-entry/ML1\" class=\"govuk-link dotted-link\" data-control-entry-id=\"ML1\" title=\"View This is control code ML1\" target=\"_blank\">This is control code ML1</a>"));
   }
 
   @Test
@@ -72,7 +74,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(definitionReferenceNode)));
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-definition/global/123' data-definition-id='123' data-definition-type='global' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"));
+        "<a href=\"/view-definition/global/123\" class=\"govuk-link dotted-link\" title=\"View definition of &quot;laser&quot;\" target=\"_blank\">Laser</a>"));
   }
 
   @Test
@@ -81,7 +83,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(new RichText(Collections.singletonList(definitionReferenceNode)));
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-definition/local/123' data-definition-id='123' data-definition-type='local' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"));
+        "<a href=\"/view-definition/local/123\" class=\"govuk-link dotted-link\" title=\"View definition of &quot;laser&quot;\" target=\"_blank\">Laser</a>"));
   }
 
   @Test
@@ -91,7 +93,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-definition/local/123' data-definition-id='123' data-definition-type='local' title='View definition of &quot;laser&quot;'>laser</a>"));
+        "<a href=\"/view-definition/local/123\" class=\"govuk-link dotted-link\" title=\"View definition of &quot;laser&quot;\">Laser</a>"));
   }
 
   @Test
@@ -110,7 +112,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(richText);
 
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1' target='_blank'>Code ML1</a>"));
+        "<a href=\"/view-control-entry/ML1\" class=\"govuk-link dotted-link\" data-control-entry-id=\"ML1\" title=\"View Code ML1\" target=\"_blank\">Code ML1</a>"));
   }
 
   @Test
@@ -120,7 +122,7 @@ public class HtmlRenderServiceImplTest {
     String html = htmlRenderServiceImpl.convertRichTextToHtml(richText, HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
 
     assertThat(html).isEqualTo(unescape(
-                "<a href='/view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1'>Code ML1</a>"));
+                "<a href=\"/view-control-entry/ML1\" class=\"govuk-link dotted-link\" data-control-entry-id=\"ML1\" title=\"View Code ML1\">Code ML1</a>"));
   }
 
   @Test
@@ -160,7 +162,7 @@ public class HtmlRenderServiceImplTest {
     RichText richText = new RichText(Collections.singletonList(modalContentLinkNode));
     String html = htmlRenderServiceImpl.convertRichTextToHtml(richText);
     assertThat(html).isEqualTo(unescape(
-        "<a href='/view-modal-content/exampleId' data-modal-content-id='exampleId' title='View example'>example</a>"));
+        "<a href=\"/view-modal-content/exampleId\" data-modal-content-id=\"exampleId\" title=\"View example\">Example</a>"));
   }
 
   @Test
@@ -179,16 +181,19 @@ public class HtmlRenderServiceImplTest {
 
     assertThat(html)
         .isEqualTo(
-            unescape(
-                "<p><a href='/view-control-entry/ML1' data-control-entry-id='ML1' title='View Code ML1' target='_blank'>Code ML1</a>"
-                    + "<a href='/view-definition/global/123' data-definition-id='123' data-definition-type='global' title='View definition of &quot;laser&quot;' target='_blank'>laser</a>"
-                    + "This is text 1</p>"
-                    + "<ul><li>1</li><ul><li>A</li><li>B</li><ul><li>(i)</li><li>(ii)</li></ul></ul></ul>"
-                    + "<p><a href='/view-control-entry/ML2' data-control-entry-id='ML2' title='View Code ML2' target='_blank'>Code ML2</a>"
-                    + "<a href='/view-definition/global/abc' data-definition-id='abc' data-definition-type='global' title='View definition of &quot;radio&quot;' target='_blank'>radio</a>"
-                    + "This is text 2 <br>with newline</p>"
-                    + "<ul><li>a</li><li>b</li><li>c</li></ul>"
-                    + "<p><a href='/view-modal-content/exampleId' data-modal-content-id='exampleId' title='View example'>example</a></p>"));
+                "<p><a href=\"/view-control-entry/ML1\" class=\"govuk-link dotted-link\" " +
+                  "data-control-entry-id=\"ML1\" title=\"View Code ML1\" target=\"_blank\">" +
+                  "Code ML1</a><a href=\"/view-definition/global/123\" class=\"govuk-link dotted-link\" " +
+                  "title=\"View definition of &quot;laser&quot;\" target=\"_blank\">laser</a>This is " +
+                  "text 1</p><ul class='govuk-list govuk-list--bullet'><li>1</li><ul class='govuk-list " +
+                  "govuk-list--bullet'><li>A</li><li>B</li><ul class='govuk-list govuk-list--bullet'>" +
+                  "<li>(i)</li><li>(ii)</li></ul></ul></ul><p><a href=\"/view-control-entry/ML2\" " +
+                  "class=\"govuk-link dotted-link\" data-control-entry-id=\"ML2\" title=\"View Code ML2\" " +
+                  "target=\"_blank\">Code ML2</a><a href=\"/view-definition/global/abc\" " +
+                  "class=\"govuk-link dotted-link\" title=\"View definition of &quot;radio&quot;\" " +
+                  "target=\"_blank\">radio</a>This is text 2 <br>with newline</p><ul class='govuk-list " +
+                  "govuk-list--bullet'><li>a</li><li>b</li><li>c</li></ul><p><a href=\"/view-modal-content/exampleId\" " +
+                  "data-modal-content-id=\"exampleId\" title=\"View example\">example</a></p>");
   }
 
   private String unescape(String str) {
