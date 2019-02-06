@@ -10,14 +10,14 @@
 	position: relative;
 	display: flex;
 	width: 100%;
-	max-width: 500px;
+	max-width: 450px;
 	height: 40px;
 
 	input[type="search"] {
 		display: inline-block;
 		height: 36px;
 		line-height: 40px;
-		width: calc(100% - 40px);
+		width: 100%;
 		border: 2px solid black;
 		outline-offset: 0; // TODO Remove this
 		-webkit-appearance: textfield;
@@ -27,15 +27,16 @@
 	}
 
 	.search-button {
+		position: absolute;
 		display: inline-block;
 		width: 40px;
 		height: 40px;
-		background-color: black;
 		background-size: contain;
-		background-image: url("/assets/images/search.png");
+		background-image: url("/assets/images/search.svg");
 		background-size: 16px;
 		background-position: 12px;
 		background-repeat: no-repeat;
+		pointer-events: none;
 	}
 
 	button {
@@ -46,10 +47,8 @@
 }
 
 .js-enabled {
-	.search-wrapper {
-		input[type="search"] {
-			border-right: 0;
-		}
+	input[type="search"] {
+		padding-left: 35px;
 	}
 	.js-hidden {
 		display: none;

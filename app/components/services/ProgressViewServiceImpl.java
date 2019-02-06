@@ -56,11 +56,11 @@ public class ProgressViewServiceImpl implements ProgressViewService {
           description = htmlRenderService.convertRichTextToPlainText(labelTextOptional.get());
         } else {
           code = null;
-          description = ListNameToFriendlyNameUtil.GetFriendlyNameFromListName(journey.getJourneyName());
+          description = ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName());
         }
       } else {
         code = null;
-        description = ListNameToFriendlyNameUtil.GetFriendlyNameFromListName(journey.getJourneyName());
+        description = ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName());
       }
     }
     return new ProgressView(code, description);

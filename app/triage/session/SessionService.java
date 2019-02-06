@@ -1,5 +1,6 @@
 package triage.session;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface SessionService {
@@ -17,5 +18,9 @@ public interface SessionService {
 
   void updateLastStageId(String sessionId, String lastStageId);
 
-  void updateJourneyId(String sessionId, String journeyId);
+  void addDecontrolledCodeFound(String sessionId, String controlCode);
+
+  void addControlEntryIdsToVerifyDecontrolledStatus(String sessionId, Set<String> controlEntryIds);
+
+  Optional<String> getAndRemoveControlEntryIdForDecontrolledStatusVerification(String sessionId);
 }

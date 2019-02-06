@@ -1,6 +1,8 @@
 package components.cms.mapper;
 
 import components.cms.mapper.util.ResultSetWrapper;
+import components.cms.parser.util.Utils;
+import java.util.List;
 import models.cms.ControlEntry;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
@@ -19,8 +21,8 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
     String summaryDescription = r.getString("summary_description");
     boolean nested = r.getBoolean("nested");
     Integer displayOrder = rsw.getInt("display_order");
-    Boolean decontrolled = r.getBoolean("is_decontrolled");
-    String jumpToControlCodes = r.getString("jump_to_control_codes");
+    Boolean decontrolled = r.getBoolean("decontrolled");
+    List<String> jumpToControlCodes = Utils.splitStringIntoList(r.getString("jump_to_control_codes"), ",");
     Long journeyId = rsw.getLong("journey_id");
     return new ControlEntry()
         .setId(id)

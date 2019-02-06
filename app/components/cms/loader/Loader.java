@@ -1,5 +1,8 @@
 package components.cms.loader;
 
+import static components.cms.parser.model.navigation.column.Buttons.SELECT_MANY;
+import static components.cms.parser.model.navigation.column.Buttons.SELECT_ONE;
+
 import com.google.inject.Inject;
 import components.cms.dao.*;
 import components.cms.parser.ParserResult;
@@ -13,6 +16,7 @@ import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Notes;
+import components.cms.parser.model.navigation.column.Redirect;
 import lombok.AllArgsConstructor;
 import models.cms.*;
 import models.cms.enums.AnswerType;
@@ -112,9 +116,8 @@ public class Loader {
   }
 
 
-  private void createControlEntries(Long parentControlEntryId, int displayOrder,
-      NavigationLevel navigationLevel,
-      long journeyId) {
+  private void createControlEntries(Long parentControlEntryId, int displayOrder, NavigationLevel navigationLevel,
+    long journeyId) {
     Long controlEntryId = null;
 
     ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
@@ -157,7 +160,7 @@ public class Loader {
 
     boolean decontrolled = false;
     if (topSubNavigationLevel.getControlListEntries() != null) {
-      decontrolled = topSubNavigationLevel.getControlListEntries().isDecontrolled();
+      decontrolled = topSubNavigationLevel.getControlListEntries().isDecontrolled() == Boolean.TRUE;
     }
 
     Stage stage = new Stage()
@@ -180,9 +183,8 @@ public class Loader {
     }
   }
 
-  private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId,
-      int displayOrder,
-      NavigationLevel navigationLevel) {
+  private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId, int displayOrder,
+    NavigationLevel navigationLevel) {
     if (!isRoot) {
       StageAnswer stageAnswer = new StageAnswer();
       stageAnswer.setStageId(navigationLevel.getLoadingMetadata().getStageId());
@@ -194,33 +196,22 @@ public class Loader {
         Stage decontrolStage = createDecontrolStage(journeyId, navigationLevel);
         stageAnswer.setGoToStageId(decontrolStage.getId());
         attachNotesToStageId = decontrolStage.getNextStageId();
-      } else {
-        if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
-          NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(0);
-          if (subNavigationLevel.getButtons() == null) {
-            //Child entries without buttons are not a stage, we are actually on a leaf now
-            if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-              stageAnswer.setGoToOutcomeType(OutcomeType.TOO_COMPLEX);
-            } else {
-              stageAnswer.setGoToStageId(createItemStage(journeyId,
-                  navigationLevel.getLoadingMetadata().getControlEntryId(),
-                  navigationLevel.getNotes()));
-            }
-          } else {
-            Long goToStageId = subNavigationLevel.getLoadingMetadata().getStageId();
-            stageAnswer.setGoToStageId(goToStageId);
-            attachNotesToStageId = goToStageId;
-          }
+      } else if (navigationLevel.getSubNavigationLevels().isEmpty() || navigationLevel.getSubNavigationLevels().get(0).getButtons() == null) {
+        //Child entries without buttons are not a stage, we are actually on a leaf now
+        if (navigationLevel.getRedirect() == Redirect.TOO_COMPLEX_FOR_CODE_FINDER) {
+          stageAnswer.setGoToOutcomeType(OutcomeType.TOO_COMPLEX);
+        } else if(isDecontrolledWithFurtherChecks(navigationLevel)) {
+          stageAnswer.setGoToStageId(
+            createDecontrolWithFurtherChecksStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId()));
         } else {
-          //Child entries without buttons are not a stage, we are actually on a leaf now
-          if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
-            stageAnswer.setGoToOutcomeType(OutcomeType.TOO_COMPLEX);
-          } else {
-            stageAnswer.setGoToStageId(
-                createItemStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId(),
-                    navigationLevel.getNotes()));
-          }
+          stageAnswer.setGoToStageId(createItemStage(journeyId,
+            navigationLevel.getLoadingMetadata().getControlEntryId(),
+            navigationLevel.getNotes()));
         }
+      } else {
+        Long goToStageId = navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
+        stageAnswer.setGoToStageId(goToStageId);
+        attachNotesToStageId = goToStageId;
       }
 
       ControlListEntries controlListEntries = navigationLevel.getControlListEntries();
@@ -262,6 +253,11 @@ public class Loader {
     }
   }
 
+  private boolean isDecontrolledWithFurtherChecks(NavigationLevel navigationLevel) {
+    return navigationLevel.getControlListEntries().isDecontrolled() == Boolean.TRUE
+      && !navigationLevel.getLoops().getJumpToControlCodes().isEmpty();
+  }
+
   private long createItemStage(long journeyId, long controlEntryId, Notes notes) {
     Stage stage = new Stage()
         .setJourneyId(journeyId)
@@ -276,6 +272,16 @@ public class Loader {
     createNotes(notes, stageId);
 
     return stageId;
+  }
+
+  private long createDecontrolWithFurtherChecksStage(long journeyId, long controlEntryId) {
+    Stage stage = new Stage()
+      .setJourneyId(journeyId)
+      .setQuestionType(QuestionType.FURTHER_DECONTROL_CHECKS)
+      .setAnswerType(AnswerType.PASS_THROUGH)
+      .setControlEntryId(controlEntryId);
+
+    return stageDao.insertStage(stage);
   }
 
   private Stage createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
@@ -297,7 +303,7 @@ public class Loader {
       if (nextStageId == null) {
         LOGGER.error("Next stage ID null for decontrol stage {}, assuming outcome",
             navigationLevel.getCellAddress());
-        if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+        if (navigationLevel.getRedirect() == Redirect.TOO_COMPLEX_FOR_CODE_FINDER) {
           decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
         } else {
           decontrolStage.setNextStageId(
@@ -308,7 +314,7 @@ public class Loader {
         decontrolStage.setNextStageId(nextStageId);
       }
     } else {
-      if (navigationLevel.getRedirect().isTooComplexForCodeFinder()) {
+      if (navigationLevel.getRedirect() == Redirect.TOO_COMPLEX_FOR_CODE_FINDER) {
         decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
       } else {
         decontrolStage.setNextStageId(
@@ -468,19 +474,16 @@ public class Loader {
           ControlEntry controlEntry = controlEntryDao.getControlEntryByControlCode(relatedCode);
 
           if (controlEntry == null) {
-            LOGGER
-                .error("No control entry record found for related code {} in list {}", relatedCode,
-                    navigationLevel.getList());
+            LOGGER.error("No control entry record found for related code {} in list {}", relatedCode,
+              navigationLevel.getList());
           } else {
             RelatedControlEntry relatedControlEntry = new RelatedControlEntry()
                 .setControlEntryId(loadingMetadata.getControlEntryId())
                 .setRelatedControlEntryId(controlEntry.getId());
             relatedControlEntryDao.insertRelatedControlEntry(relatedControlEntry);
 
-            LOGGER.debug(
-                "Inserted related control entry: control entry id {}, related control entry id {}",
-                relatedControlEntry.getControlEntryId(),
-                relatedControlEntry.getRelatedControlEntryId());
+            LOGGER.debug("Inserted related control entry: control entry id {}, related control entry id {}",
+              relatedControlEntry.getControlEntryId(), relatedControlEntry.getRelatedControlEntryId());
           }
         }
       }
@@ -504,13 +507,8 @@ public class Loader {
   }
 
   private AnswerType mapButtonsToAnswerType(Buttons buttons) {
-    switch (buttons) {
-      case SELECT_ONE:
-        return AnswerType.SELECT_ONE;
-      case SELECT_MANY:
-        return AnswerType.SELECT_MANY;
-      default:
-        return null;
-    }
+    return buttons == SELECT_ONE ? AnswerType.SELECT_ONE
+      : buttons == SELECT_MANY ? AnswerType.SELECT_MANY
+      : null;
   }
 }

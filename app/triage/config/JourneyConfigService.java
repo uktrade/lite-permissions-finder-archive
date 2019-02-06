@@ -5,11 +5,13 @@ import java.util.Optional;
 
 public interface JourneyConfigService {
 
-  long getDefaultJourneyId();
-
-  String getInitialStageId();
-
   Optional<StageConfig> getStageConfigById(String stageId);
+
+  String getJourneyNameByJourneyId(long journeyId);
+
+  StageConfig getStageConfigForInitialJourneyStage(long journeyId);
+
+  List<String> getInitialStagesForAllJourneys();
 
   List<NoteConfig> getNoteConfigsByStageId(String stageId);
 
@@ -18,7 +20,7 @@ public interface JourneyConfigService {
   //List of an entry's immediate children
   List<ControlEntryConfig> getChildRatings(ControlEntryConfig controlEntryConfig);
 
-  List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig);
+  List<String> getStageIdsForControlEntryId(String controlEntryId);
 
   AnswerConfig getStageAnswerForPreviousStage(String stageId);
 
@@ -29,5 +31,4 @@ public interface JourneyConfigService {
   List<ControlEntryConfig> getRelatedControlEntries(ControlEntryConfig controlEntryConfig);
 
   void flushCache();
-
 }

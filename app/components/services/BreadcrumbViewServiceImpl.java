@@ -3,9 +3,14 @@ package components.services;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import components.cms.dao.JourneyDao;
-import components.cms.dao.SessionDao;
 import components.comparator.AlphanumComparator;
 import controllers.routes;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import models.cms.Journey;
 import models.cms.enums.QuestionType;
 import models.view.BreadcrumbItemView;
@@ -16,17 +21,9 @@ import models.view.SubAnswerView;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
-import triage.session.TriageSession;
 import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
 import utils.ListNameToFriendlyNameUtil;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
@@ -34,18 +31,16 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   private final RenderService renderService;
   private final HtmlRenderService htmlRenderService;
   private final AnswerViewService answerViewService;
-  private final SessionDao sessionDao;
   private final JourneyDao journeyDao;
 
   @Inject
   public BreadcrumbViewServiceImpl(JourneyConfigService journeyConfigService, RenderService renderService,
                                    HtmlRenderService htmlRenderService, AnswerViewService answerViewService,
-                                   SessionDao sessionDao, JourneyDao journeyDao) {
+                                   JourneyDao journeyDao) {
     this.journeyConfigService = journeyConfigService;
     this.renderService = renderService;
     this.htmlRenderService = htmlRenderService;
     this.answerViewService = answerViewService;
-    this.sessionDao = sessionDao;
     this.journeyDao = journeyDao;
   }
 
@@ -85,13 +80,12 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
   public List<BreadcrumbItemView> createBreadcrumbItemViews(String sessionId, ControlEntryConfig controlEntryConfig,
                                                             boolean includeChangeLinks,
                                                             HtmlRenderOption... htmlRenderOptions) {
-    TriageSession triageSession = sessionDao.getSessionById(sessionId);
-    Journey journey = journeyDao.getJourney(triageSession.getJourneyId());
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
+      Journey journey = journeyDao.getJourney(controlEntryConfig.getJourneyId());
       breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig, includeChangeLinks, htmlRenderOptions));
+      breadcrumbItemViews.add(new BreadcrumbItemView(null, ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName()), null, new ArrayList<>()));
     }
-    breadcrumbItemViews.add(new BreadcrumbItemView(null, ListNameToFriendlyNameUtil.GetFriendlyNameFromListName(journey.getJourneyName()), null, new ArrayList<>()));
     return Lists.reverse(breadcrumbItemViews);
   }
 
@@ -100,7 +94,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
                                                                         boolean includeChangeLinks,
                                                                         HtmlRenderOption... htmlRenderOptions) {
     String controlCode = controlEntryConfig.getControlCode();
-    List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
+    List<String> stageIds = journeyConfigService.getStageIdsForControlEntryId(controlEntryConfig.getId());
     List<NoteView> noteViews = createNoteViews(stageIds, htmlRenderOptions);
     String description = renderService.getSummaryDescription(controlEntryConfig, htmlRenderOptions);
     String url = null;
@@ -148,7 +142,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
   @Override
   public String createDecontrolUrl(String sessionId, ControlEntryConfig controlEntryConfig) {
-    List<String> stageIds = journeyConfigService.getStageIdsForControlEntry(controlEntryConfig);
+    List<String> stageIds = journeyConfigService.getStageIdsForControlEntryId(controlEntryConfig.getId());
     StageConfig stageConfig = stageIds.stream()
         .map(journeyConfigService::getStageConfigById)
         .filter(Optional::isPresent)
@@ -191,7 +185,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     String fullDescription = renderService.getFullDescription(controlEntryConfig, htmlRenderOptions);
     String changeUrl;
     if (includeChangeLinks) {
-      changeUrl = createChangeUrl(sessionId, journeyConfigService.getStageIdsForControlEntry(controlEntryConfig));
+      changeUrl = createChangeUrl(sessionId, journeyConfigService.getStageIdsForControlEntryId(controlEntryConfig.getId()));
     } else {
       changeUrl = null;
     }
@@ -213,5 +207,4 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
         .map(noteConfig -> new NoteView(htmlRenderService.convertRichTextToHtml(noteConfig.getNoteText(), htmlRenderOptions)))
         .collect(Collectors.toList());
   }
-
 }

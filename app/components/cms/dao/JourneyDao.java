@@ -8,6 +8,8 @@ public interface JourneyDao {
 
   Journey getJourney(long id);
 
+  List<Journey> getAllJourneys();
+
   List<Journey> getJourneysByJourneyName(String journeyName);
 
   Long insertJourney(Journey journey);

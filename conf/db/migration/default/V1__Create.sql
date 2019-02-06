@@ -45,8 +45,8 @@ CREATE TABLE stage (
   FOREIGN KEY (journey_id)       REFERENCES journey(id),
   FOREIGN KEY (control_entry_id) REFERENCES control_entry(id),
   FOREIGN KEY (next_stage_id)    REFERENCES stage(id),
-  CONSTRAINT question_type_value CHECK (question_type IN ('STANDARD', 'DECONTROL', 'ITEM')),
-  CONSTRAINT answer_type_value CHECK (answer_type IN ('SELECT_ONE', 'SELECT_MANY')),
+  CONSTRAINT question_type_value CHECK (question_type IN ('STANDARD', 'DECONTROL', 'ITEM', 'FURTHER_DECONTROL_CHECKS')),
+  CONSTRAINT answer_type_value CHECK (answer_type IN ('SELECT_ONE', 'SELECT_MANY', 'PASS_THROUGH')),
   CONSTRAINT go_to_outcome_type_value CHECK (go_to_outcome_type IN ('TOO_COMPLEX')),
   CONSTRAINT stage_ck_1 CHECK (
     (question_type = 'DECONTROL' AND (next_stage_id IS NOT NULL OR go_to_outcome_type = 'TOO_COMPLEX')) OR

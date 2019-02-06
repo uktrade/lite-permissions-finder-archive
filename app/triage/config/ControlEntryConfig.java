@@ -1,31 +1,39 @@
 package triage.config;
 
-import triage.text.RichText;
-
 import java.util.Optional;
+import java.util.Set;
+import triage.text.RichText;
 
 public class ControlEntryConfig {
 
   private final String id;
+  private final long journeyId;
   private final String controlCode;
   private final RichText fullDescription;
   private final RichText summaryDescription;
   private final ControlEntryConfig parentControlEntry;
   private final boolean nestedChildren;
+  private final Set<String> jumpToControlEntryIds;
 
-  public ControlEntryConfig(String id, String controlCode, RichText fullDescription,
+  public ControlEntryConfig(String id, long journeyId, String controlCode, RichText fullDescription,
                             RichText summaryDescription, ControlEntryConfig parentControlEntry,
-                            boolean nestedChildren) {
+                            boolean nestedChildren, Set<String> jumpToControlEntryIds) {
     this.id = id;
+    this.journeyId = journeyId;
     this.controlCode = controlCode;
     this.fullDescription = fullDescription;
     this.summaryDescription = summaryDescription;
     this.parentControlEntry = parentControlEntry;
     this.nestedChildren = nestedChildren;
+    this.jumpToControlEntryIds = jumpToControlEntryIds;
   }
 
   public String getId() {
     return id;
+  }
+
+  public long getJourneyId() {
+    return journeyId;
   }
 
   public String getControlCode() {
@@ -49,4 +57,7 @@ public class ControlEntryConfig {
     return nestedChildren;
   }
 
+  public Set<String> getJumpToControlEntryIds() {
+    return jumpToControlEntryIds;
+  }
 }

@@ -2,8 +2,13 @@ package components.cms.mapper.util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ResultSetWrapper {
+
   private final ResultSet resultSet;
 
   public ResultSetWrapper(ResultSet resultSet) {
@@ -12,20 +17,20 @@ public class ResultSetWrapper {
 
   public Integer getInt(String columnLabel) throws SQLException {
     int resultInt = resultSet.getInt(columnLabel);
-    if (resultSet.wasNull()) {
-      return null;
-    } else {
-      return resultInt;
-    }
+    return !resultSet.wasNull() ? resultInt : null;
   }
 
   public Long getLong(String columnLabel) throws SQLException {
     long resultLong = resultSet.getLong(columnLabel);
-    if (resultSet.wasNull()) {
-      return null;
-    } else {
-      return resultLong;
-    }
+    return !resultSet.wasNull() ? resultLong : null;
   }
 
+  public List<String> getStrings(String columnLabel) throws SQLException {
+    String commaSeparatedStringList = resultSet.getString(columnLabel);
+    return !resultSet.wasNull() ? Arrays
+      .stream(commaSeparatedStringList.split(","))
+      .map(String::trim)
+      .collect(Collectors.toList())
+      : Collections.EMPTY_LIST;
+  }
 }

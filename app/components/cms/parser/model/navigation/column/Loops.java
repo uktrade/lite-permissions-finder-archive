@@ -1,13 +1,15 @@
 package components.cms.parser.model.navigation.column;
 
+import java.util.List;
+
 public class Loops {
   private final String relatedCodes;
   private final String jumpTo;
   private final String defining;
   private final String deferred;
-  private final String jumpToControlCodes;
+  private final List<String> jumpToControlCodes;
 
-  public Loops(String relatedCodes, String jumpTo, String defining, String deferred, String jumpToControlCodes) {
+  public Loops(String relatedCodes, String jumpTo, String defining, String deferred, List<String> jumpToControlCodes) {
     this.relatedCodes = relatedCodes;
     this.jumpTo = jumpTo;
     this.defining = defining;
@@ -31,7 +33,7 @@ public class Loops {
     return deferred;
   }
 
-  public String getJumpToControlCodes() {
+  public List<String> getJumpToControlCodes() {
     return jumpToControlCodes;
   }
 }

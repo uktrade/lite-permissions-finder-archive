@@ -53,8 +53,9 @@ public class CachePopulationServiceImpl implements CachePopulationService {
 
     populateCachesForControlEntries();
 
-    String initialStageId = journeyConfigService.getInitialStageId();
-    populateCachesForStage(initialStageId);
+    journeyConfigService.getInitialStagesForAllJourneys()
+      .stream()
+      .forEach(this::populateCachesForStage);
 
     String result = String.format("Config cache successfully populated\n" +
             "Bad control entries: %s\n" +

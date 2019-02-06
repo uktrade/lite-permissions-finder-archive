@@ -7,6 +7,9 @@ import components.services.ProgressViewService;
 import components.services.RenderService;
 import controllers.guard.SessionGuardAction;
 import exceptions.UnknownParameterException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import models.enums.PageType;
 import models.view.AnswerView;
@@ -29,12 +32,6 @@ import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.PageTypeUtil;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @With(SessionGuardAction.class)
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
@@ -198,7 +195,9 @@ public class OutcomeController extends Controller {
   }
 
   private Result redirectToIndex(String sessionId) {
-    String initialStageId = journeyConfigService.getInitialStageId();
+    String initialStageId = journeyConfigService.getStageConfigForInitialJourneyStage(
+      controllerConfigService.getStageConfig(Long.toString(sessionService.getSessionById(sessionId).getLastStageId()))
+        .getJourneyId()).getStageId();
     return redirect(routes.StageController.render(initialStageId, sessionId));
   }
 

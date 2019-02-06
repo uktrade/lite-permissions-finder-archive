@@ -1,6 +1,10 @@
 package components.cms.parser.util;
 
 import exceptions.ServiceException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.slf4j.LoggerFactory;
@@ -46,5 +50,21 @@ public class Utils {
     }
     LOGGER.info("Column {} produced index {}", column, index);
     return index;
+  }
+
+  public static boolean isCellMarkedWithX(Cell cell) {
+    String cellContents = getCellValueAsString(cell);
+    return "X".equalsIgnoreCase(cellContents);
+  }
+
+  public static List<String> getCellValuesAsListOfStrings(Cell cell, String separator) {
+    return splitStringIntoList(Optional.ofNullable(getCellValueAsString(cell)).orElse(""), separator);
+  }
+
+  public static List<String> splitStringIntoList(String str, String separator) {
+    return Arrays.stream(str.trim().split(separator))
+      .map(String::trim)
+      .filter(StringUtils::isNotEmpty)
+      .collect(Collectors.toList());
   }
 }
