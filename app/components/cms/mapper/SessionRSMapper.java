@@ -18,6 +18,7 @@ public class SessionRSMapper implements ResultSetMapper<TriageSession> {
       r.getString("id"),
       rsw.getLong("journey_id"),
       r.getString("resume_code"),
+      rsw.getLong("spreadsheet_version_id"),
       rsw.getLong("last_stage_id"),
       new HashSet<>(rsw.getStrings("decontrol_codes_found")),
       new HashSet<>(rsw.getStrings("control_entry_ids_to_verify_decontrolled_status"))

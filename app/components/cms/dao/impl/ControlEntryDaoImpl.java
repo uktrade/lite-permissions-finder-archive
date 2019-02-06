@@ -39,6 +39,11 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
   }
 
   @Override
+  public List<ControlEntry> findControlEntriesByControlCode(String value) {
+    return controlEntryJDBIDao.findControlEntriesByControlCode(value);
+  }
+
+  @Override
   public List<ControlEntry> getRelatedControlCodeEntries(long controlEntryId) {
     return controlEntryJDBIDao.getRelatedControlCodeEntries(controlEntryId);
   }

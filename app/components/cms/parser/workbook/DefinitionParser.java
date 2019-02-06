@@ -17,7 +17,7 @@ public class DefinitionParser {
 
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   private static class SheetIndices {
-    static final int DEFINITIONS = 0; // Sheet 1
+    static final int DEFINITIONS = 1; // Sheet 1
   }
 
   @NoArgsConstructor(access = AccessLevel.PRIVATE)

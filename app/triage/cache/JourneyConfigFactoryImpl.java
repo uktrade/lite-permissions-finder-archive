@@ -99,9 +99,9 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         .sorted(Comparator.comparing(AnswerConfig::getDisplayOrder))
         .collect(Collectors.toList());
 
-    return new StageConfig(Long.toString(stage.getId()), stage.getTitle(), explanatoryNote, stage.getQuestionType(),
-      stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), stage.isDecontrolled(), controlEntryConfig,
-      answerConfigs, stage.getJourneyId());
+    return new StageConfig(Long.toString(stage.getId()), stage.getJourneyId(), stage.getTitle(), explanatoryNote,
+      stage.getQuestionType(), stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), stage.isDecontrolled(),
+      controlEntryConfig, answerConfigs);
   }
 
   private AnswerConfig createAnswerConfig(StageAnswer stageAnswer, Long journeyId) {

@@ -18,7 +18,8 @@ public class SessionDaoImpl implements SessionDao {
 
   @Override
   public void insert(TriageSession triageSession) {
-    sessionJDBIDao.insert(triageSession.getId(), triageSession.getResumeCode(), triageSession.getLastStageId());
+    sessionJDBIDao.insert(triageSession.getId(), triageSession.getResumeCode(), triageSession.getLastStageId(),
+        triageSession.getSpreadsheetVersionId());
   }
 
   @Override

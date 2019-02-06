@@ -32,7 +32,11 @@ public class RichTextParserImplTest {
   }
 
   private static Optional<GlobalDefinition> createGlobalDefinition(String id, String term) {
-    return Optional.of(new GlobalDefinition().setId(Long.parseLong(id)).setTerm(term));
+    GlobalDefinition globalDefinition = new GlobalDefinition();
+    globalDefinition.setId(Long.parseLong(id));
+    globalDefinition.setTerm(term);
+
+    return Optional.of(globalDefinition);
   }
 
   private static Optional<LocalDefinition> createLocalDefinition(String id, String term) {

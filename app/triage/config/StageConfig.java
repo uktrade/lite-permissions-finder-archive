@@ -1,5 +1,7 @@
 package triage.config;
 
+import com.google.inject.Inject;
+import lombok.AllArgsConstructor;
 import models.cms.enums.AnswerType;
 import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
@@ -8,6 +10,7 @@ import triage.text.RichText;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject}))
 public class StageConfig {
 
   private final String stageId;
@@ -26,23 +29,6 @@ public class StageConfig {
   private final ControlEntryConfig relatedControlEntry;
 
   private final List<AnswerConfig> answerConfigs;
-
-  public StageConfig(String stageId, String questionTitle, RichText explanatoryNote,
-                     QuestionType questionType, AnswerType answerType, String nextStageId,
-                     OutcomeType outcomeType, boolean decontrolled, ControlEntryConfig relatedControlEntry,
-                     List<AnswerConfig> answerConfigs, Long journeyId) {
-    this.stageId = stageId;
-    this.questionTitle = questionTitle;
-    this.explanatoryNote = explanatoryNote;
-    this.questionType = questionType;
-    this.answerType = answerType;
-    this.nextStageId = nextStageId;
-    this.outcomeType = outcomeType;
-    this.decontrolled = decontrolled;
-    this.relatedControlEntry = relatedControlEntry;
-    this.answerConfigs = answerConfigs;
-    this.journeyId = journeyId;
-  }
 
   @Override
   public String toString() {

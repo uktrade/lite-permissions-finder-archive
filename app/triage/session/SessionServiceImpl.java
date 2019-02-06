@@ -3,6 +3,9 @@ package triage.session;
 import com.google.inject.Inject;
 import components.cms.dao.SessionDao;
 import components.cms.dao.SessionStageDao;
+import components.cms.dao.SpreadsheetVersionDao;
+import lombok.AllArgsConstructor;
+import triage.config.JourneyConfigService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,6 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
+@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class SessionServiceImpl implements SessionService {
 
   private static final List<Character> CODE_DIGITS = Collections.unmodifiableList(Arrays.asList(
@@ -23,18 +27,15 @@ public class SessionServiceImpl implements SessionService {
 
   private final SessionDao sessionDao;
   private final SessionStageDao sessionStageDao;
-
-  @Inject
-  public SessionServiceImpl(SessionDao sessionDao, SessionStageDao sessionStageDao) {
-    this.sessionDao = sessionDao;
-    this.sessionStageDao = sessionStageDao;
-  }
+  private final SpreadsheetVersionDao spreadsheetVersionDao;
 
   @Override
   public TriageSession createNewSession() {
     String sessionId = UUID.randomUUID().toString();
     String resumeCode = generateResumeCode();
-    TriageSession triageSession = new TriageSession(sessionId, resumeCode);
+    long spreadsheetVersionId = spreadsheetVersionDao.getLatestSpreadsheetVersion().getId();
+    TriageSession triageSession = new TriageSession(sessionId, null, resumeCode, spreadsheetVersionId, null,
+      Collections.EMPTY_SET, Collections.EMPTY_SET);
     sessionDao.insert(triageSession);
     return triageSession;
   }

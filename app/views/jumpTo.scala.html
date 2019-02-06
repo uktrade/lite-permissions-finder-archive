@@ -1,0 +1,34 @@
+@import util._
+@import models.callback.ControlEntryResponse
+
+@this(standardPage: standardPage)
+@(query: String, results: List[ControlEntryResponse])
+@standardPage("Jump to a control code", Some(heading("Jump to a control code")), showBackLink = true) { } {
+
+  <p class="form-hint">Already know your control code? Type it below.</p>
+
+  <div class="sticky-search-wrapper">
+	<form action="/jump-to">
+	  <div class="search-wrapper">
+	    <input id="search-box" type="search" autocomplete="false" value="@query" name="query">
+  	    <div class="search-button js-only"></div>
+	    <button type="submit" class="button js-hidden">Search</button>
+	  </div>
+	</form>
+  </div>
+
+  <div id="results">
+	@if(results.size == 0 && query != null && query.length != 0) {
+	  <p class="no-results">No results for '@query'</p>
+	}
+    @for(value <- results){
+	  <div class="search-result">
+	    <a href="/jump-to/jump/@value.getId">@value.getControlCode</a>
+		<p>@value.getDescription</p>
+	  </div>
+    }
+  </div>
+
+  <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/control-code-search.js")"></script>
+
+}
