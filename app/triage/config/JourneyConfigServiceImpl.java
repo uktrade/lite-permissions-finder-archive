@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 
 public class JourneyConfigServiceImpl implements JourneyConfigService {
 
-  private static final String DEFAULT_JOURNEY_NAME = "UK_MILITARY_LIST";
-
   private final JourneyDao journeyDao;
   private final StageDao stageDao;
   private final StageAnswerDao stageAnswerDao;
@@ -31,6 +29,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   private final LoadingCache<String, Optional<ControlEntryConfig>> controlEntryCache;
   private final LoadingCache<String, List<ControlEntryConfig>> relatedControlEntryCache;
   private final LoadingCache<String, List<NoteConfig>> noteCache;
+  private final LoadingCache<Long, Journey> journeyCache;
 
   @Inject
   public JourneyConfigServiceImpl(JourneyDao journeyDao, StageDao stageDao, StageAnswerDao stageAnswerDao,
@@ -43,30 +42,31 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
     this.controlEntryCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createControlEntryConfigForId));
     this.relatedControlEntryCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createRelatedControlEntryConfigsForId));
     this.noteCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyConfigFactory::createNoteConfigsForStageId));
-  }
-
-  @Override
-  public long getDefaultJourneyId() {
-    return getDefaultJourney()
-        .map(Journey::getId)
-        .orElseThrow(() -> new IllegalStateException("No default journey is defined"));
-  }
-
-  @Override
-  public String getInitialStageId() {
-    return getDefaultJourney()
-        .map(Journey::getInitialStageId)
-        .map(Object::toString)
-        .orElseThrow(() -> new IllegalStateException("No default journey is defined"));
-  }
-
-  private Optional<Journey> getDefaultJourney() {
-    return journeyDao.getJourneysByJourneyName(DEFAULT_JOURNEY_NAME).stream().findAny();
+    this.journeyCache = CacheBuilder.newBuilder().build(CacheLoader.from(journeyId -> journeyDao.getJourney(journeyId)));
   }
 
   @Override
   public Optional<StageConfig> getStageConfigById(String stageId) {
     return stageConfigCache.getUnchecked(stageId);
+  }
+
+  @Override
+  public String getJourneyNameByJourneyId(long journeyId) {
+    return journeyCache.getUnchecked(journeyId).getJourneyName();
+  }
+
+  @Override
+  public StageConfig getStageConfigForInitialJourneyStage(long journeyId) {
+    return stageConfigCache.getUnchecked(Long.toString(journeyCache.getUnchecked(journeyId).getInitialStageId())).get();
+  }
+
+  @Override
+  public List<String> getInitialStagesForAllJourneys() {
+    return journeyDao.getAllJourneys()
+      .stream()
+      .map(Journey::getInitialStageId)
+      .map(stageId -> stageId.toString())
+      .collect(Collectors.toList());
   }
 
   @Override
@@ -111,10 +111,11 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
   }
 
   @Override
-  public List<String> getStageIdsForControlEntry(ControlEntryConfig controlEntryConfig) {
-    return stageDao.getStagesForControlEntryId(Long.parseLong(controlEntryConfig.getId()))
+  public List<String> getStageIdsForControlEntryId(String controlEntryId) {
+    return stageDao.getStagesForControlEntryId(Long.valueOf(controlEntryId))
         .stream()
-        .map(e -> e.getId().toString())
+        .map(Stage::getId)
+        .map(id -> id.toString())
         .collect(Collectors.toList());
   }
 
@@ -132,7 +133,7 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
 
   @Override
   public Optional<StageConfig> getPrincipleStageConfigForControlEntry(ControlEntryConfig controlEntryConfig) {
-    return getStageIdsForControlEntry(controlEntryConfig).stream()
+    return getStageIdsForControlEntryId(controlEntryConfig.getId()).stream()
         .map(this::getStageConfigById)
         .filter(Optional::isPresent)
         .map(Optional::get)
@@ -157,5 +158,4 @@ public class JourneyConfigServiceImpl implements JourneyConfigService {
     controlEntryCache.cleanUp();
     noteCache.cleanUp();
   }
-
 }

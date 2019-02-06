@@ -9,6 +9,7 @@ import components.cms.dao.SessionOutcomeDao;
 import components.cms.dao.SpreadsheetVersionDao;
 import components.services.FlashService;
 import controllers.guard.StageGuardAction;
+import java.util.Collections;
 import models.cms.SpreadsheetVersion;
 import models.enums.SessionOutcomeType;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class StageGuardActionTest {
 
   @Test
   public void sessionIdWithOutcomeShouldReturnOutcomeRedirect() throws Exception {
-    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L);
+    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L, Collections.EMPTY_SET, Collections.EMPTY_SET);
     when(sessionService.getSessionById(SESSION_ID)).thenReturn(triageSession);
     SessionOutcome sessionOutcome = new SessionOutcome("session-outcome-id", SESSION_ID, "userId",
         "customerId", "siteId", SessionOutcomeType.CONTROL_ENTRY_FOUND, "outcomeHtml");
@@ -73,9 +74,8 @@ public class StageGuardActionTest {
 
   @Test
   public void sessionIdWithOutdatedSpreadsheetVersionIdShouldReturnCreateApplicationRedirect() throws ExecutionException, InterruptedException {
-    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L);
+    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L, Collections.EMPTY_SET, Collections.EMPTY_SET);
     when(sessionService.getSessionById(SESSION_ID)).thenReturn(triageSession);
-    when(journeyConfigService.getDefaultJourneyId()).thenReturn(1L);
     when(spreadsheetVersionDao.getLatestSpreadsheetVersion()).thenReturn(new SpreadsheetVersion(2L,"", "", ""));
     sessionGuardAction.delegate = mock(Action.class);
 
@@ -90,9 +90,8 @@ public class StageGuardActionTest {
 
   @Test
   public void validSessionIdShouldCallDelegate() {
-    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L);
+    TriageSession triageSession = new TriageSession(SESSION_ID, 1L, "resumeCode", 1,1L, Collections.EMPTY_SET, Collections.EMPTY_SET);
     when(sessionService.getSessionById(SESSION_ID)).thenReturn(triageSession);
-    when(journeyConfigService.getDefaultJourneyId()).thenReturn(1L);
     when(spreadsheetVersionDao.getLatestSpreadsheetVersion()).thenReturn(new SpreadsheetVersion(1L,"", "", ""));
     Action action = mock(Action.class);
     sessionGuardAction.delegate = action;
@@ -110,5 +109,4 @@ public class StageGuardActionTest {
     when(context.request()).thenReturn(request);
     return context;
   }
-
 }

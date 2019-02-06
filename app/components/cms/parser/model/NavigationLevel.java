@@ -36,7 +36,7 @@ public class NavigationLevel {
   private final LoadingMetadata loadingMetadata;
 
   public NavigationLevel(String cellAddress, String content, int level, String list) {
-    this(cellAddress, content, level, list, null, null, null, null, null, null, null, null, null, null, null);
+    this(cellAddress, content, level, list, null, null, null, null, null, null, null, null, null, null, Redirect.NONE);
   }
 
   public NavigationLevel(

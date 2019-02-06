@@ -1,5 +1,6 @@
 package components.cms.dao;
 
+import java.util.List;
 import triage.session.TriageSession;
 
 public interface SessionDao {
@@ -8,7 +9,9 @@ public interface SessionDao {
 
   void updateLastStageId(String sessionId, Long lastStageId);
 
-  void updateJourneyId(String sessionId, Long journeyId);
+  void updateDecontrolCodesFound(String sessionId, List<String> decontrolCodesFound);
+
+  void updateControlEntryIdsToVerifyDecontrolledStatus(String sessionId, List<String> controlEntryIdsToVerifyDecontrolledStatus);
 
   TriageSession getSessionById(String id);
 

@@ -14,6 +14,7 @@ import java.util.Optional;
 public class StageConfig {
 
   private final String stageId;
+  private final Long journeyId;
   private final String questionTitle;
   private final RichText explanatoryNote;
 
@@ -33,6 +34,7 @@ public class StageConfig {
   public String toString() {
     return "StageConfig{" +
             "stageId='" + stageId + '\'' +
+            "journeyId='" + journeyId + '\'' +
             ", questionTitle='" + questionTitle + '\'' +
             ", explanatoryNote=" + explanatoryNote +
             ", questionType=" + questionType +
@@ -51,6 +53,10 @@ public class StageConfig {
 
   public String getStageId() {
     return stageId;
+  }
+
+  public Long getJourneyId() {
+    return journeyId;
   }
 
   public Optional<String> getQuestionTitle() {

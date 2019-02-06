@@ -3,10 +3,9 @@ package components.cms.dao.impl;
 import com.google.inject.Inject;
 import components.cms.dao.JourneyDao;
 import components.cms.jdbi.JourneyJDBIDao;
+import java.util.List;
 import models.cms.Journey;
 import org.skife.jdbi.v2.DBI;
-
-import java.util.List;
 
 public class JourneyDaoImpl implements JourneyDao {
 
@@ -20,6 +19,11 @@ public class JourneyDaoImpl implements JourneyDao {
   @Override
   public Journey getJourney(long id) {
     return journeyJDBIDao.get(id);
+  }
+
+  @Override
+  public List<Journey> getAllJourneys() {
+    return journeyJDBIDao.getAll();
   }
 
   @Override

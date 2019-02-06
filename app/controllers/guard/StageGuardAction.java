@@ -34,28 +34,28 @@ public class StageGuardAction extends Action.Simple {
     String sessionId = ctx.request().getQueryString("sessionId");
     if (StringUtils.isBlank(sessionId)) {
       return unknownSession(sessionId);
-    } else {
-      TriageSession triageSession = sessionService.getSessionById(sessionId);
-      if (triageSession == null) {
-        return unknownSession(sessionId);
-      } else {
-        SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
-        if (sessionOutcome != null) {
-          return completedFuture(redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId())));
-        } else {
-          long spreadsheetVersionId = spreadsheetVersionDao.getLatestSpreadsheetVersion().getId();
-          long latestSpreadsheetVersionId = triageSession.getSpreadsheetVersionId();
-
-          if (spreadsheetVersionId != latestSpreadsheetVersionId) {
-            LOGGER.warn("SessionId {} has spreadsheetVersionId {} which doesn't match latest spreadsheetVersionId {}",
-              sessionId, spreadsheetVersionId, latestSpreadsheetVersionId);
-            return unknownSession(sessionId);
-          }
-
-          return delegate.call(ctx);
-        }
-      }
     }
+
+    TriageSession triageSession = sessionService.getSessionById(sessionId);
+    if (triageSession == null) {
+      return unknownSession(sessionId);
+    }
+
+    SessionOutcome sessionOutcome = sessionOutcomeDao.getSessionOutcomeBySessionId(sessionId);
+    if (sessionOutcome != null) {
+      return completedFuture(redirect(routes.ViewOutcomeController.renderOutcome(sessionOutcome.getId())));
+    }
+
+    long spreadsheetVersionId = spreadsheetVersionDao.getLatestSpreadsheetVersion().getId();
+    long latestSpreadsheetVersionId = triageSession.getSpreadsheetVersionId();
+
+    if (spreadsheetVersionId != latestSpreadsheetVersionId) {
+      LOGGER.warn("SessionId {} has spreadsheetVersionId {} which doesn't match latest spreadsheetVersionId {}",
+        sessionId, spreadsheetVersionId, latestSpreadsheetVersionId);
+      return unknownSession(sessionId);
+    }
+
+    return delegate.call(ctx);
   }
 
   private CompletionStage<Result> unknownSession(String sessionId) {

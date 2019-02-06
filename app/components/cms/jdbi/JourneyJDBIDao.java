@@ -16,6 +16,10 @@ public interface JourneyJDBIDao {
   Journey get(@Bind("id") long id);
 
   @Mapper(JourneyRSMapper.class)
+  @SqlQuery("SELECT * FROM journey")
+  List<Journey> getAll();
+
+  @Mapper(JourneyRSMapper.class)
   @SqlQuery("SELECT * FROM journey WHERE journey_name = :journeyName ORDER BY id DESC")
   List<Journey> getByJourneyName(@Bind("journeyName") String journeyName);
 

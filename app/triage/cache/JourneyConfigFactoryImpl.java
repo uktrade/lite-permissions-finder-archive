@@ -5,6 +5,10 @@ import components.cms.dao.ControlEntryDao;
 import components.cms.dao.NoteDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import models.cms.ControlEntry;
 import models.cms.Note;
 import models.cms.Stage;
@@ -16,11 +20,6 @@ import triage.config.NoteConfig;
 import triage.config.StageConfig;
 import triage.text.RichText;
 import triage.text.RichTextParser;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
@@ -81,9 +80,13 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public String getJourneyNameByJourneyId(long journeyId) {
+    return null;
+  }
+
   private StageConfig createStageConfig(Stage stage) {
-    String journeyId = Long.toString(stage.getJourneyId());
-    RichText explanatoryNote = richTextParser.parseForStage(StringUtils.defaultString(stage.getExplanatoryNotes()), journeyId);
+    RichText explanatoryNote = richTextParser.parseForStage(StringUtils.defaultString(stage.getExplanatoryNotes()), Long.toString(stage.getJourneyId()));
     String nextStageId = Optional.ofNullable(stage.getNextStageId()).map(Object::toString).orElse(null);
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stage.getControlEntryId())
         .map(controlEntryDao::getControlEntry)
@@ -92,24 +95,26 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
     List<AnswerConfig> answerConfigs = stageAnswerDao.getStageAnswersForStageId(stage.getId())
         .stream()
-        .map(stageAnswer -> createAnswerConfig(stageAnswer, journeyId))
+        .map(stageAnswer -> createAnswerConfig(stageAnswer, stage.getJourneyId()))
         .sorted(Comparator.comparing(AnswerConfig::getDisplayOrder))
         .collect(Collectors.toList());
 
-    return new StageConfig(Long.toString(stage.getId()), stage.getTitle(), explanatoryNote, stage.getQuestionType(),
-        stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), stage.isDecontrolled(), controlEntryConfig, answerConfigs);
+    return new StageConfig(Long.toString(stage.getId()), stage.getJourneyId(), stage.getTitle(), explanatoryNote,
+      stage.getQuestionType(), stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), stage.isDecontrolled(),
+      controlEntryConfig, answerConfigs);
   }
 
-  private AnswerConfig createAnswerConfig(StageAnswer stageAnswer, String journeyId) {
+  private AnswerConfig createAnswerConfig(StageAnswer stageAnswer, Long journeyId) {
 
     String nextStageId = Optional.ofNullable(stageAnswer.getGoToStageId()).map(Object::toString).orElse(null);
+    String journeyIdAsString = Long.toString(journeyId);
 
     RichText labelText = Optional.ofNullable(stageAnswer.getAnswerText())
-        .map(e -> richTextParser.parseForStage(e, journeyId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, journeyIdAsString)).orElse(null);
     RichText nestedContent = Optional.ofNullable(stageAnswer.getNestedContent())
-        .map(e -> richTextParser.parseForStage(e, journeyId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, journeyIdAsString)).orElse(null);
     RichText moreInfoContent = Optional.ofNullable(stageAnswer.getMoreInfoContent())
-        .map(e -> richTextParser.parseForStage(e, journeyId)).orElse(null);
+        .map(e -> richTextParser.parseForStage(e, journeyIdAsString)).orElse(null);
 
     ControlEntryConfig controlEntryConfig = Optional.ofNullable(stageAnswer.getControlEntryId())
         .map(controlEntryDao::getControlEntry)
@@ -142,8 +147,15 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         .stream()
         .anyMatch(ControlEntry::isNested);
 
-    return new ControlEntryConfig(Long.toString(controlEntry.getId()), controlEntry.getControlCode(), fullDescription,
-        summaryDescription, parentControlEntryConfig, hasNestedChildren);
+    return new ControlEntryConfig(Long.toString(controlEntry.getId()), controlEntry.getJourneyId(),
+      controlEntry.getControlCode(), fullDescription, summaryDescription, parentControlEntryConfig, hasNestedChildren,
+      controlEntry.getJumpToControlCodes()
+        .stream()
+        .map(controlEntryDao::getControlEntryByControlCode)
+        .map(ControlEntry::getId)
+        .map(id -> id.toString())
+        .collect(Collectors.toSet())
+    );
   }
 
   private NoteConfig createNoteConfig(Note note) {
@@ -161,5 +173,4 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
     return new NoteConfig(note.getId().toString(), stageId, noteText, note.getNoteType());
   }
-
 }
