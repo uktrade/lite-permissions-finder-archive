@@ -11,6 +11,7 @@ import java.util.Optional;
 public class StageConfig {
 
   private final String stageId;
+  private final Long journeyId;
   private final String questionTitle;
   private final RichText explanatoryNote;
 
@@ -29,7 +30,7 @@ public class StageConfig {
   public StageConfig(String stageId, String questionTitle, RichText explanatoryNote,
                      QuestionType questionType, AnswerType answerType, String nextStageId,
                      OutcomeType outcomeType, boolean decontrolled, ControlEntryConfig relatedControlEntry,
-                     List<AnswerConfig> answerConfigs) {
+                     List<AnswerConfig> answerConfigs, Long journeyId) {
     this.stageId = stageId;
     this.questionTitle = questionTitle;
     this.explanatoryNote = explanatoryNote;
@@ -40,12 +41,14 @@ public class StageConfig {
     this.decontrolled = decontrolled;
     this.relatedControlEntry = relatedControlEntry;
     this.answerConfigs = answerConfigs;
+    this.journeyId = journeyId;
   }
 
   @Override
   public String toString() {
     return "StageConfig{" +
             "stageId='" + stageId + '\'' +
+            "journeyId='" + journeyId + '\'' +
             ", questionTitle='" + questionTitle + '\'' +
             ", explanatoryNote=" + explanatoryNote +
             ", questionType=" + questionType +
@@ -64,6 +67,10 @@ public class StageConfig {
 
   public String getStageId() {
     return stageId;
+  }
+
+  public Long getJourneyId() {
+    return journeyId;
   }
 
   public Optional<String> getQuestionTitle() {

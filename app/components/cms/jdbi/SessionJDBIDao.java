@@ -9,18 +9,20 @@ import triage.session.TriageSession;
 
 public interface SessionJDBIDao {
 
-  @SqlUpdate("INSERT INTO SESSION (ID,  JOURNEY_ID, RESUME_CODE, LAST_STAGE_ID) VALUES " +
-      "                          (:id, :journeyId, :resumeCode, :lastStageId)")
+  @SqlUpdate("INSERT INTO SESSION (ID, RESUME_CODE, LAST_STAGE_ID) VALUES " +
+      "                          (:id, :resumeCode, :lastStageId)")
   void insert(@Bind("id") String id,
-              @Bind("journeyId") long journeyId,
               @Bind("resumeCode") String resumeCode,
               @Bind("lastStageId") Long lastStageId);
 
   @SqlUpdate("UPDATE SESSION SET LAST_STAGE_ID = :lastStageId WHERE id = :id")
   void updateLastStageId(@Bind("id") String sessionId, @Bind("lastStageId") Long lastStageId);
 
-  @SqlUpdate("UPDATE SESSION SET JOURNEY_ID = :journeyId WHERE id = :id")
-  void updateJourneyId(@Bind("id") String sessionId, @Bind("journeyId") Long journeyId);
+  @SqlUpdate("UPDATE SESSION SET DECONTROL_CODES_FOUND = :decontrolCodesFound WHERE id = :id")
+  void updateDecontrolCodesFound(@Bind("id") String sessionId, @Bind("decontrolCodesFound") String decontrolCodesFound);
+
+  @SqlUpdate("UPDATE SESSION SET CONTROL_ENTRY_IDS_TO_VERIFY_DECONTROLLED_STATUS = :controlEntryIdsToVerifyDecontrolledStatus WHERE id = :id")
+  void updateControlEntryIdsToVerifyDecontrolledStatus(@Bind("id") String sessionId, @Bind("controlEntryIdsToVerifyDecontrolledStatus") String controlEntryIdsToVerifyDecontrolledStatus);
 
   @RegisterMapper(SessionRSMapper.class)
   @SqlQuery("SELECT * FROM SESSION WHERE ID = :id")
@@ -29,5 +31,4 @@ public interface SessionJDBIDao {
   @RegisterMapper(SessionRSMapper.class)
   @SqlQuery("SELECT * FROM SESSION WHERE REPLACE(RESUME_CODE, '-', '') = :resumeCode")
   TriageSession getSessionByResumeCode(@Bind("resumeCode") String resumeCode);
-
 }

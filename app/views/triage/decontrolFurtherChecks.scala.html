@@ -1,0 +1,21 @@
+@import models.view.BreadcrumbView
+@import models.view.AnswerView
+@import views.html.triage.outcomePage
+@import views.html.common.form.formCheckbox
+@import views.html.common.page._
+@import views.html.common.form._
+
+@this(outcomePage: outcomePage)
+@(stageId: String, sessionId: String,  resumeCode: String, currentListName: String, listsToCheck: Set[String])
+
+@outcomePage("Item not listed on " + currentListName, sessionId, resumeCode) {
+
+  <p class="lede">
+    Based on the choices you’ve made, your item is not controlled on @currentListName. However, it may still be controlled on: @listsToCheck.mkString(", ").
+  </p>
+
+  <form action="@routes.StageController.handleSubmit(stageId, sessionId).toString" method="POST">
+    @views.html.helper.CSRF.formField
+    <button type="submit" class="button" name="action" value="continue">Continue</button>
+  </form>
+}

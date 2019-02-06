@@ -1,6 +1,7 @@
 package components.cms.mapper;
 
 import components.cms.mapper.util.ResultSetWrapper;
+import java.util.HashSet;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import triage.session.TriageSession;
@@ -13,11 +14,13 @@ public class SessionRSMapper implements ResultSetMapper<TriageSession> {
   @Override
   public TriageSession map(int index, ResultSet r, StatementContext ctx) throws SQLException {
     ResultSetWrapper rsw = new ResultSetWrapper(r);
-    String id = r.getString("id");
-    long journeyId = rsw.getLong("journey_id");
-    String resumeCode = r.getString("resume_code");
-    Long lastStageId = rsw.getLong("last_stage_id");
-    return new TriageSession(id, journeyId, resumeCode, lastStageId);
+    return new TriageSession(
+      r.getString("id"),
+      rsw.getLong("journey_id"),
+      r.getString("resume_code"),
+      rsw.getLong("last_stage_id"),
+      new HashSet<>(rsw.getStrings("decontrol_codes_found")),
+      new HashSet<>(rsw.getStrings("control_entry_ids_to_verify_decontrolled_status"))
+    );
   }
-
 }

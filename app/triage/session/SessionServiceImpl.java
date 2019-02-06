@@ -3,13 +3,13 @@ package triage.session;
 import com.google.inject.Inject;
 import components.cms.dao.SessionDao;
 import components.cms.dao.SessionStageDao;
-import triage.config.JourneyConfigService;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,22 +23,18 @@ public class SessionServiceImpl implements SessionService {
 
   private final SessionDao sessionDao;
   private final SessionStageDao sessionStageDao;
-  private final JourneyConfigService journeyConfigService;
 
   @Inject
-  public SessionServiceImpl(SessionDao sessionDao, SessionStageDao sessionStageDao,
-                            JourneyConfigService journeyConfigService) {
+  public SessionServiceImpl(SessionDao sessionDao, SessionStageDao sessionStageDao) {
     this.sessionDao = sessionDao;
     this.sessionStageDao = sessionStageDao;
-    this.journeyConfigService = journeyConfigService;
   }
 
   @Override
   public TriageSession createNewSession() {
     String sessionId = UUID.randomUUID().toString();
-    long journeyId = journeyConfigService.getDefaultJourneyId();
     String resumeCode = generateResumeCode();
-    TriageSession triageSession = new TriageSession(sessionId, journeyId, resumeCode, null);
+    TriageSession triageSession = new TriageSession(sessionId, resumeCode);
     sessionDao.insert(triageSession);
     return triageSession;
   }
@@ -74,8 +70,36 @@ public class SessionServiceImpl implements SessionService {
   }
 
   @Override
-  public void updateJourneyId(String sessionId, String journeyId) {
-    sessionDao.updateJourneyId(sessionId, Long.parseLong(journeyId));
+  public void addDecontrolledCodeFound(String sessionId, String controlCode) {
+    TriageSession session = sessionDao.getSessionById(sessionId);
+    Set<String> decontrolCodesFound =  session.getDecontrolledCodesFound();
+    if (decontrolCodesFound.add(controlCode)) {
+      sessionDao.updateDecontrolCodesFound(sessionId, new ArrayList<>(decontrolCodesFound));
+    }
+  }
+
+  @Override
+  public void addControlEntryIdsToVerifyDecontrolledStatus(String sessionId, Set<String> controlEntryIds) {
+    TriageSession session = sessionDao.getSessionById(sessionId);
+    Set<String> controlEntryIdsToVeryifyDecontrolledStatus = session.getControlEntryIdsToVerifyDecontrolledStatus();
+    if (controlEntryIdsToVeryifyDecontrolledStatus.addAll(controlEntryIds)) {
+      sessionDao.updateControlEntryIdsToVerifyDecontrolledStatus(sessionId, new ArrayList<>(controlEntryIdsToVeryifyDecontrolledStatus));
+    }
+  }
+
+  @Override
+  public Optional<String> getAndRemoveControlEntryIdForDecontrolledStatusVerification(String sessionId) {
+    TriageSession session = sessionDao.getSessionById(sessionId);
+    Set<String> controlEntryIdsToVeryifyDecontrolledStatus = session.getControlEntryIdsToVerifyDecontrolledStatus();
+    if (controlEntryIdsToVeryifyDecontrolledStatus.isEmpty()) {
+      return Optional.empty();
+    } else {
+      Iterator<String> it = controlEntryIdsToVeryifyDecontrolledStatus.iterator();
+      String controlEntryId = it.next();
+      it.remove();
+      sessionDao.updateControlEntryIdsToVerifyDecontrolledStatus(sessionId, new ArrayList<>(controlEntryIdsToVeryifyDecontrolledStatus));
+      return Optional.of(controlEntryId);
+    }
   }
 
   private String generateResumeCode() {

@@ -1,5 +1,7 @@
 package models.cms;
 
+import java.util.List;
+
 public class ControlEntry {
   private Long id;
   private Long parentControlEntryId;
@@ -8,9 +10,9 @@ public class ControlEntry {
   private String summaryDescription;
   private boolean nested;
   private Integer displayOrder;
-  private Long journeyId;
+  private long journeyId;
   private Boolean decontrolled;
-  private String jumpToControlCodes;
+  private List<String> jumpToControlCodes;
 
   @Override
   public String toString() {
@@ -91,20 +93,20 @@ public class ControlEntry {
     return this;
   }
 
-  public Long getJourneyId() {
+  public long getJourneyId() {
     return journeyId;
   }
 
-  public ControlEntry setJourneyId(Long journeyId) {
+  public ControlEntry setJourneyId(long journeyId) {
     this.journeyId = journeyId;
     return this;
   }
 
-  public String getJumpToControlCodes() {
+  public List<String> getJumpToControlCodes() {
     return jumpToControlCodes;
   }
 
-  public ControlEntry setJumpToControlCodes(String jumpToControlCodes) {
+  public ControlEntry setJumpToControlCodes(List<String> jumpToControlCodes) {
     this.jumpToControlCodes = jumpToControlCodes;
     return this;
   }

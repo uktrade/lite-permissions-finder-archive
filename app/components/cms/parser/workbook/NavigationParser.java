@@ -275,7 +275,7 @@ public class NavigationParser {
         String jumpTo = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.JUMP_TO));
         String defining = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.DEFINING));
         String deferred = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.DEFERRED));
-        String jumpToControlCodes = Utils.getCellValueAsString(row.getCell(ColumnIndices.Loops.JUMP_TO_CONTROL_CODES));
+        List<String> jumpToControlCodes = Utils.getCellValuesAsListOfStrings(row.getCell(ColumnIndices.Loops.JUMP_TO_CONTROL_CODES), ",");
         return new Loops(relatedCodes, jumpTo, defining, deferred, jumpToControlCodes);
     }
 
@@ -306,7 +306,7 @@ public class NavigationParser {
     }
 
     private static Redirect getRedirect(Row row) {
-        String tcfcf = Utils.getCellValueAsString(row.getCell(ColumnIndices.Redirect.TCFCF));
-        return new Redirect("X".equalsIgnoreCase(tcfcf));
+      return Utils.isCellMarkedWithX(row.getCell(ColumnIndices.Redirect.TCFCF)) ? Redirect.TOO_COMPLEX_FOR_CODE_FINDER
+        : Redirect.NONE;
     }
 }

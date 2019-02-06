@@ -3,6 +3,7 @@ package components.cms.dao.impl;
 import com.google.inject.Inject;
 import components.cms.dao.SessionDao;
 import components.cms.jdbi.SessionJDBIDao;
+import java.util.List;
 import org.skife.jdbi.v2.DBI;
 import triage.session.TriageSession;
 
@@ -17,10 +18,7 @@ public class SessionDaoImpl implements SessionDao {
 
   @Override
   public void insert(TriageSession triageSession) {
-    sessionJDBIDao.insert(triageSession.getId(),
-        triageSession.getJourneyId(),
-        triageSession.getResumeCode(),
-        triageSession.getLastStageId());
+    sessionJDBIDao.insert(triageSession.getId(), triageSession.getResumeCode(), triageSession.getLastStageId());
   }
 
   @Override
@@ -29,8 +27,14 @@ public class SessionDaoImpl implements SessionDao {
   }
 
   @Override
-  public void updateJourneyId(String sessionId, Long journeyId) {
-    sessionJDBIDao.updateJourneyId(sessionId, journeyId);
+  public void updateDecontrolCodesFound(String sessionId, List<String> decontrolCodesFound) {
+    sessionJDBIDao.updateDecontrolCodesFound(sessionId, String.join(",", decontrolCodesFound));
+  }
+
+  @Override
+  public void updateControlEntryIdsToVerifyDecontrolledStatus(String sessionId, List<String> controlEntryIdsToVerifyDecontrolledStatus) {
+    sessionJDBIDao.updateControlEntryIdsToVerifyDecontrolledStatus(sessionId, String.join(",",
+      controlEntryIdsToVerifyDecontrolledStatus));
   }
 
   @Override
@@ -42,5 +46,4 @@ public class SessionDaoImpl implements SessionDao {
   public TriageSession getSessionByResumeCode(String resumeCode) {
     return sessionJDBIDao.getSessionByResumeCode(resumeCode);
   }
-
 }

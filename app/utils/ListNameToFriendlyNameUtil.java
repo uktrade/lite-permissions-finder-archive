@@ -8,7 +8,7 @@ public class ListNameToFriendlyNameUtil {
      * @param listName (eg UK_MILITARY_LIST)
      * @return the friendly name of the list (eg UK Military List)
      */
-    public static String GetFriendlyNameFromListName(String listName) {
+    public static String getFriendlyNameFromListName(String listName) {
         switch (listName) {
             case "UK_MILITARY_LIST":
                 return "UK Military List";

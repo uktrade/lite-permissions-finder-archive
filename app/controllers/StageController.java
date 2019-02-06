@@ -1,8 +1,6 @@
 package controllers;
 
 import com.google.inject.Inject;
-import components.cms.dao.ControlEntryDao;
-import components.cms.dao.StageDao;
 import components.services.AnswerConfigService;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
@@ -11,9 +9,14 @@ import components.services.RenderService;
 import controllers.guard.StageGuardAction;
 import exceptions.BusinessRuleException;
 import exceptions.UnknownParameterException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import models.cms.ControlEntry;
-import models.cms.Stage;
 import models.cms.enums.OutcomeType;
 import models.enums.Action;
 import models.enums.PageType;
@@ -30,20 +33,15 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
-import triage.cache.JourneyConfigFactoryImpl;
 import triage.config.AnswerConfig;
 import triage.config.ControlEntryConfig;
 import triage.config.ControllerConfigService;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.session.SessionService;
-import triage.text.SubAnswer;
 import utils.EnumUtil;
+import utils.ListNameToFriendlyNameUtil;
 import utils.PageTypeUtil;
-
-import javax.naming.ldap.Control;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @With(StageGuardAction.class)
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
@@ -63,14 +61,11 @@ public class StageController extends Controller {
   private final RenderService renderService;
   private final ProgressViewService progressViewService;
   private final views.html.triage.decontrol decontrol;
+  private final views.html.triage.decontrolFurtherChecks decontrolFurtherChecks;
   private final views.html.triage.selectOne selectOne;
   private final views.html.triage.selectMany selectMany;
   private final views.html.triage.relatedEntries relatedEntries;
   private final views.html.triage.item item;
-  private final StageDao stageDao;
-  private final ControlEntryDao controlEntryDao;
-  private final views.html.triage.decontrolOutcome2 decontrolOutcome2;
-  private final JourneyConfigFactoryImpl journeyConfigFactory;
 
   public Result index(String sessionId) {
     return redirectToIndex(sessionId);
@@ -98,44 +93,27 @@ public class StageController extends Controller {
         Form<MultiAnswerForm> filledForm = formFactory.form(MultiAnswerForm.class).fill(form);
         return renderDecontrol(filledForm, stageConfig, sessionId, resumeCode);
       case ITEM:
-
-        Stage stage = stageDao.getStage(Long.valueOf(stageConfig.getStageId()));
-        ControlEntry controlEntry = controlEntryDao.getControlEntry(stage.getControlEntryId());
-
-        // Temporary
-        if (controlEntry.isDecontrolled()) {
-          List<AnswerView> answerViews = new ArrayList<>();
-
-          // Pull the potential control codes and convert them to AnswerView
-          if (controlEntry.getJumpToControlCodes() != null) {
-            // Split the control codes field
-            String[] jumpToControlCodes = controlEntry.getJumpToControlCodes().replace(" ", "").split(",");
-
-            // Convert control code to control entry config
-            List<ControlEntryConfig> controlEntryConfigs = Arrays.stream(jumpToControlCodes)
-                    .map(controlEntryDao::getControlEntryByControlCode)
-                    .map(journeyConfigFactory::createControlEntryConfig)
-                    .collect(Collectors.toList());
-
-            answerViews = answerViewService.createAnswerViewsFromControlEntryConfigs(controlEntryConfigs);
-          }
-
-          // Add a 'None of the above' option if there are any items in the list
-          if (answerViews.size() > 0) {
-            answerViews.add(new AnswerView("None of the above",
-              "none", true, new ArrayList<>(), "",
-              "You may generate a no licence required (NLR) document if, following the points above, you believe that your item is still not subject to controls.",
-              "","", false, null));
-          }
-
-          return ok(decontrolOutcome2.render(formFactory.form(AnswerForm.class), stageConfig.getStageId(), controlEntry.getFullDescription(), sessionId, answerViews, resumeCode));
-        }
-
         return renderItem(formFactory.form(AnswerForm.class), stageConfig, sessionId, resumeCode);
+      case FURTHER_DECONTROL_CHECKS:
+        return makeFurtherDecontrolChecksResult(sessionId, stageConfig);
       case UNKNOWN:
       default:
         throw UnknownParameterException.unknownStageId(stageId);
     }
+  }
+
+  private Result makeFurtherDecontrolChecksResult(String sessionId, StageConfig stageConfig) {
+    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    String currentListName = ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journeyConfigService.getJourneyNameByJourneyId(stageConfig.getJourneyId()));
+    Set<String> listsToCheck = stageConfig.getRelatedControlEntry().get().getJumpToControlEntryIds()
+      .stream()
+      .map(controllerConfigService::getControlEntryConfig)
+      .map(ControlEntryConfig::getJourneyId)
+      .map(journeyConfigService::getJourneyNameByJourneyId)
+      .map(ListNameToFriendlyNameUtil::getFriendlyNameFromListName)
+      .collect(Collectors.toSet());
+
+    return ok(decontrolFurtherChecks.render(stageConfig.getStageId(), sessionId, resumeCode, currentListName, listsToCheck));
   }
 
   public Result handleSubmit(String stageId, String sessionId) {
@@ -152,35 +130,12 @@ public class StageController extends Controller {
       case DECONTROL:
         return handleDecontrolSubmit(stageId, sessionId, stageConfig, resumeCode);
       case ITEM:
-
-        Stage stage = stageDao.getStage(Long.valueOf(stageConfig.getStageId()));
-        ControlEntry controlEntry = controlEntryDao.getControlEntry(stage.getControlEntryId());
-
-        // Temporary
-        if (controlEntry.isDecontrolled()) {
-          return decontrolTest(sessionId, stageConfig, resumeCode);
-        }
-
         return handleItemSubmit(stageId, sessionId, stageConfig, resumeCode);
+      case FURTHER_DECONTROL_CHECKS:
+        return handleFurtherDecontrolChecksSubmit(stageId, sessionId, stageConfig, resumeCode);
       case UNKNOWN:
       default:
         throw UnknownParameterException.unknownStageId(stageId);
-    }
-  }
-
-  private Result decontrolTest(String sessionId, StageConfig stageConfig, String resumeCode) {
-    Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class).bindFromRequest();
-    if (answerForm.hasErrors()) {
-      return renderItem(answerForm, stageConfig, sessionId, resumeCode);
-    } else {
-      String answer = answerForm.get().answer;
-
-      // If none of the above is selected, go to decontrol outcome
-      if (answer.equalsIgnoreCase("none")) {
-        return redirect(routes.OutcomeController.outcomeDecontrol(stageConfig.getStageId(), sessionId));
-      }
-
-      return render(answer, sessionId);
     }
   }
 
@@ -242,8 +197,7 @@ public class StageController extends Controller {
     }
   }
 
-  private Result renderRelatedEntries(Form<AnswerForm> answerForm, ControlEntryConfig controlEntryConfig,
-                                      String sessionId) {
+  private Result renderRelatedEntries(Form<AnswerForm> answerForm, ControlEntryConfig controlEntryConfig, String sessionId) {
     String controlCode = controlEntryConfig.getControlCode();
     List<ControlEntryConfig> controlEntryConfigs = journeyConfigService.getRelatedControlEntries(controlEntryConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViewsFromControlEntryConfigs(controlEntryConfigs);
@@ -252,8 +206,7 @@ public class StageController extends Controller {
     return ok(relatedEntries.render(answerForm, controlEntryConfig.getId(), sessionId, resumeCode, controlCode, answerViews, breadcrumbView));
   }
 
-  private Result renderSelectOne(Form<AnswerForm> answerForm, StageConfig stageConfig, String sessionId,
-                                 String resumeCode) {
+  private Result renderSelectOne(Form<AnswerForm> answerForm, StageConfig stageConfig, String sessionId, String resumeCode) {
     String title = stageConfig.getQuestionTitle().orElse("Check if your item is listed");
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
@@ -304,7 +257,7 @@ public class StageController extends Controller {
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, true);
     ProgressView progressView = progressViewService.createProgressView(stageConfig);
 
-    List<String> selectedAnswers = multiAnswerForm.value().map(e -> e.getAnswers()).orElse(Collections.emptyList());
+    List<String> selectedAnswers = multiAnswerForm.value().map(MultiAnswerForm::getAnswers).orElse(Collections.emptyList());
     LinkedHashMap<AnswerView, Boolean> answers = new LinkedHashMap<>();
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
@@ -387,6 +340,15 @@ public class StageController extends Controller {
         .collect(Collectors.toSet());
   }
 
+  private Result handleFurtherDecontrolChecksSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
+    sessionService.updateLastStageId(sessionId, stageId);
+    sessionService.addDecontrolledCodeFound(sessionId, stageConfig.getRelatedControlEntry().get().getControlCode());
+    sessionService.addControlEntryIdsToVerifyDecontrolledStatus(sessionId, stageConfig.getRelatedControlEntry().get().getJumpToControlEntryIds());
+    Optional<String> controlEntryId = sessionService.getAndRemoveControlEntryIdForDecontrolledStatusVerification(sessionId);
+    String nextStageId = journeyConfigService.getStageIdsForControlEntryId(controlEntryId.get()).get(0);
+    return redirectToStage(nextStageId, sessionId);
+  }
+
   private Result handleSelectOneSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
     Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class).bindFromRequest();
     String actionParam = answerForm.rawData().get(ACTION);
@@ -461,12 +423,13 @@ public class StageController extends Controller {
   }
 
   private Result redirectToIndex(String sessionId) {
-    String initialStageId = journeyConfigService.getInitialStageId();
+    String initialStageId = journeyConfigService.getStageConfigForInitialJourneyStage(
+      controllerConfigService.getStageConfig(Long.toString(sessionService.getSessionById(sessionId).getLastStageId()))
+        .getJourneyId()).getStageId();
     return redirect(routes.StageController.render(initialStageId, sessionId));
   }
 
   private Result redirectToStage(String stageId, String sessionId) {
     return redirect(routes.StageController.render(stageId, sessionId));
   }
-
 }
