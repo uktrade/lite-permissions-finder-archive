@@ -10,25 +10,37 @@
 
 }{
 
-  @if(view.hasRegistrationRef) {
-    <p>
-      <a id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(view.getRegistrationRef)"
-      class="link underlined ogel-link" target="_blank">View your licence<span class="visually-hidden"> (opens in a new tab)</span></a>
-    </p>
-  } else {
-    @if(StringUtils.isNoneBlank(ogel.getLink)) {
-      <p class="bold-small">
-        <a class="external" href="@ogel.getLink" rel="external" target="_blank">
-          View your licence<span class="visually-hidden"> (opens in a new tab)</span></a>
-      </p>
-    } else {
-      <p class="bold-small">Please <a href="@dashboardUrl">view your licensing information<span class="visually-hidden"> (opens in a new tab)</span></a>
-        to confirm that your OGEL registration has completed successfully.
-      </p>
-    }
-  }
+	<div class="govuk-panel govuk-panel--confirmation">
+		<h1 class="govuk-panel__title">
+			Registration complete
+		</h1>
+		<div class="govuk-panel__body">
+			You have successfully registered to use the Open General Export Licence
+			<br><strong>Military and dual-use goods: UK forces deployed in non-embargoed destinations</strong>
+		</div>
+	</div>
 
-  <p>
-    <a href="@dashboardUrl" target="_blank">View your licensing information<span class="visually-hidden"> (opens in a new tab)</span></a>
-  </p>
+	<p class="govuk-body">We have sent you a confirmation email.</p>
+
+	@if(view.hasRegistrationRef) {
+		<p>
+			<a id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(view.getRegistrationRef)" class="link underlined ogel-link" target="_blank">View your licence<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+		</p>
+	} else {
+		@if(StringUtils.isNoneBlank(ogel.getLink)) {
+			<p class="bold-small">
+				<a class="external" href="@ogel.getLink" rel="external" target="_blank">
+					View your licence<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+			</p>
+		} else {
+			<p class="bold-small">Please <a href="@dashboardUrl">view your licensing information<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+				to confirm that your OGEL registration has completed successfully.
+			</p>
+		}
+	}
+
+	<p>
+		<a href="@dashboardUrl" target="_blank">View your licensing information<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+	</p>
+
 }

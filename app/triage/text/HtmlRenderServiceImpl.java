@@ -26,10 +26,9 @@ import java.util.stream.Collectors;
 public class HtmlRenderServiceImpl implements HtmlRenderService {
 
   private static final String DEFINITION_TEXT = unescape(
-      "<a href='/view-definition/%s/%s' data-definition-id='%s' data-definition-type='%s' " +
-          "title='View definition of &quot;%s&quot;'%s>%s</a>");
+      "<a href='/view-definition/%s/%s' class='govuk-link dotted-link' title='View definition of &quot;%s&quot;'%s>%s</a>");
   private static final String CONTROL_ENTRY_TEXT = unescape(
-      "<a href='/view-control-entry/%s' data-control-entry-id='%s' title='View %s'%s>%s</a>");
+      "<a href='/view-control-entry/%s' class='govuk-link dotted-link' data-control-entry-id='%s' title='View %s'%s>%s</a>");
   private static final String TARGET_ATTR_BLANK = unescape(" target='_blank'");
   private static final String MODAL_CONTENT_LINK_TEXT = unescape(
       "<a href='/view-modal-content/%s' data-modal-content-id='%s' title='View %s'>%s</a>");
@@ -37,7 +36,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
   private static final Pattern PATTERN_LEVEL_1 = Pattern.compile("\\*(?!\\*)(.*?)(\\n|$)");
   private static final Pattern PATTERN_LEVEL_2 = Pattern.compile("\\*\\*(.*?)(\\n|$)");
   private static final Pattern PATTERN_LEVEL_3 = Pattern.compile("\\*\\*\\*(.*?)(\\n|$)");
-  private static final Pattern PATTERN_UL_IN_P = Pattern.compile("<p>\\s*?(<ul>.*?<\\/ul>)\\s*?<\\/p>", Pattern.MULTILINE);
+  private static final Pattern PATTERN_UL_IN_P = Pattern.compile("<p>\\s*?(<ul class='govuk-list govuk-list--bullet'>.*?<\\/ul>)\\s*?<\\/p>", Pattern.MULTILINE);
 
   private final DefinitionConfigService definitionConfigService;
 
@@ -57,7 +56,17 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
       return convertToParagraphs(renderLists(convertRichTextToPlainText(richText)));
     } else {
       boolean omitLinkTargetAttr = getOption(HtmlRenderOption.OMIT_LINK_TARGET_ATTR, htmlRenderOptions);
-      return convertToParagraphs(renderLists(addLinks(richText, omitLinkTargetAttr)));
+      String returnValue = convertToParagraphs(renderLists(addLinks(richText, omitLinkTargetAttr)));
+
+      // Fix first letter not being capitalized in links
+      if (returnValue.startsWith("<a")) {
+        int charIndex = returnValue.indexOf(">") + 1;
+        StringBuilder uppercaseFirstLetter = new StringBuilder(returnValue);
+        uppercaseFirstLetter.setCharAt(charIndex, Character.toUpperCase(returnValue.charAt(charIndex)));
+        return uppercaseFirstLetter.toString();
+      }
+
+      return returnValue;
     }
   }
 
@@ -126,9 +135,9 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
         String type = definitionReferenceNode.isGlobal() ? "global" : "local";
         String html;
         if (omitLinkTargetAttr) {
-          html = String.format(DEFINITION_TEXT, type, definitionId, definitionId, type, textContent, "", textContent);
+          html = String.format(DEFINITION_TEXT, type, definitionId, textContent, "", textContent);
         } else {
-          html = String.format(DEFINITION_TEXT, type, definitionId, definitionId, type, textContent, TARGET_ATTR_BLANK, textContent);
+          html = String.format(DEFINITION_TEXT, type, definitionId, textContent, TARGET_ATTR_BLANK, textContent);
         }
         stringBuilder.append(html);
       } else if (richTextNode instanceof ControlEntryReferenceNode) {
@@ -223,7 +232,7 @@ public class HtmlRenderServiceImpl implements HtmlRenderService {
     for (AtomicBoolean atomicBoolean : atomicBooleans) {
       if (!atomicBoolean.get()) {
         atomicBoolean.set(true);
-        stringBuilder.append("<ul>");
+        stringBuilder.append("<ul class='govuk-list govuk-list--bullet'>");
       }
     }
   }

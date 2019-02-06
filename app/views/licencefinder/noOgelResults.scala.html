@@ -3,12 +3,12 @@
 @this(standardPage: standardPage)
 @()
 
-@standardPage("No open general export licences available", Some(heading("No open general export licences available"))){
+@standardPage("No open general export licences available", Some(heading("No open general export licences available")), showBackLink=true){
 } {
-  <p>
+  <p class="govuk-label">
     Your item cannot be exported using an open general export licence.
   </p>
-  <p>
-    Please <a href="http://www.spire.trade.gov.uk/" rel="external" target="_blank">log in to SPIRE<span class="visually-hidden"> (opens in a new tab)</span></a> to continue.
+  <p class="govuk-label">
+    Please <a href="http://www.spire.trade.gov.uk/" class="govuk-link" rel="external" target="_blank">log in to SPIRE<span class="govuk-visually-hidden"> (opens in a new tab)</span></a> to continue.
   </p>
 }

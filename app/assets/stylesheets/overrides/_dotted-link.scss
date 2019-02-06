@@ -1,0 +1,14 @@
+.dotted-link {
+	line-height: 0.7em!important;
+	text-decoration: none;
+	border-bottom: 1.2px dotted currentColor;
+	cursor: help;
+	// Hide external link icon
+	&:before {
+		display: none;
+	}
+
+	&:after {
+		display: none;
+	}
+}

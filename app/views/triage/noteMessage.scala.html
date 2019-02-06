@@ -1,14 +1,11 @@
 @(show: Boolean)
 
 @if(show) {
-  <div class="notice">
-    <i class="icon icon-important"></i>
-    <strong class="bold-small">
-      <span class="media-tablet">Read the notes on the right</span>
-      <span class="media-mobile">
-        <a href="#notes" class="not-visited">Read the notes below</a>
-      </span>
-      before making your selection.
-    </strong>
-  </div>
+  <div class="govuk-warning-text">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    Read the notes <span class="media-tablet">on the right </span><span class="media-mobile"><a href="#notes" class="govuk-link govuk-link--no-visited-state">below </a></span>before making your selection.
+  </strong>
+</div>
 }

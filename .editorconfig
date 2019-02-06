@@ -7,11 +7,35 @@ root = true
 [*]
 end_of_line = lf
 insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
 
 [*.java]
-indent_style = space
 indent_size = 2
+indent_style = space
 
 [*.xml]
-indent_style = space
 indent_size = 2
+indent_style = space
+
+[*.scss]
+indent_size = 2
+indent_style = space
+
+[*.html]
+indent_size = 2
+indent_style = space
+
+[*.css]
+indent_size = 2
+indent_style = space
+
+[*.js]
+indent_size = 2
+indent_style = space
+
+[**vendor**]
+indent_size =
+indent_style =
+charset =
+max_line_length =

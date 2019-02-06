@@ -9,18 +9,20 @@
 @question = { What list would you like to look through? }
 
 @standardPage(question.toString, Some(heading(question.toString)), resumeCode = resumeCode, showBackLink = true) {
-  @errorSummary(form)
+@errorSummary(form)
 } {
 
-  <div class="form-hint form-group">
+<div class="govuk-form-group">
+	<p class="govuk-caption-m">
     This is a test description! Content designer would write something here
-  </div>
+	</p>
+</div>
 
-  <form action="@routes.OnboardingController.handleSubmit(sessionId)" method="POST">
+<form action="@routes.OnboardingController.handleSubmit(sessionId)" method="POST">
 
-    @views.html.helper.CSRF.formField
-    @formRadioGroup(form("speciallyDesigned"), options, promptCssClass = "visually-hidden")(question)
+	@views.html.helper.CSRF.formField
+	@formRadioGroup(form("speciallyDesigned"), options, promptCssClass = "govuk-visually-hidden")(question)
 
-    <button type="submit" class="button">Continue</button>
-  </form>
+	<button type="submit" class="govuk-button">Continue</button>
+</form>
 }

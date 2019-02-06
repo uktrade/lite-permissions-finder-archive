@@ -13,13 +13,13 @@
     @errorSummary(form)
   }
 
-  <div class="grid-row">
-    <div class="column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <header class="page-header">
-        <h1 class="heading-large">
+        <h1 class="govuk-heading-l">
           @if(secondaryHeading.body.trim.nonEmpty) {
-            <span class="heading-secondary">
+            <span class="govuk-caption-m">
             @secondaryHeading
             </span>
           }
@@ -31,12 +31,12 @@
         @views.html.helper.CSRF.formField
         @formContent
 
-        <button type="submit" class="button" name="action" value="continue">Save and continue</button>
-        <button type="submit" class="button secondary" name="action" value="none" data-skip-validation>None of the above</button>
+        <button type="submit" class="govuk-button" name="action" value="continue">Save and continue</button>
+        <button type="submit" class="govuk-button govuk-button--secondary" name="action" value="none" data-skip-validation>None of the above</button>
 
       </form>
     </div>
-    <div class="column-one-third">
+    <div class="govuk-grid-column-one-third">
       @triageBreadcrumb(breadcrumbView, breadcrumbTitle)
     </div>
   </div>

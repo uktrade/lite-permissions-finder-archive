@@ -4,32 +4,23 @@
 @this(standardPage: standardPage)
 @(title: String, sessionId: String, resumeCode: String, showSharingOptions: Boolean = true, subtitle: String = "")(content: Html)
 
-@standardPage(title, None, twoThirdsColumn = false, resumeCode = resumeCode, showBackLink = true) {
+@sidebarPanel = {
+	@if(showSharingOptions) {
+		<h2 class="govuk-visually-hidden">Sharing options</h2>
+		<ul class="govuk-list" style="text-align: right;">
+		  <li><a href="" class="govuk-link" id="print">Print this page</a></li>
+		</ul>
+	}
+}
+
+@standardPage(title.toString, None, twoThirdsColumn = false, resumeCode = resumeCode, showBackLink = true) {
 
 } {
-  <div class="grid-row">
-    <div class="column-two-thirds">
-      <header class="page-header">
-        <h1 class="heading-large">
-		  <span class="heading-secondary">
-	        @subtitle
-		  </span>
-          @title
-        </h1>
-      </header>
-    </div>
-    @if(showSharingOptions) {
-      <div class="column-one-third js-only">
-        <h2 class="visually-hidden">Sharing options</h2>
-        <ul class="outcome-sharing-options">
-          <li><a href="" id="print">Print this page</a></li>
-        </ul>
-      </div>
-    }
-  </div>
-  @twoThirdsColumn {
-    @content
-  }
+	<h1 class="govuk-heading-l">
+		@title
+	</h1>
+
+  	@twoThirdsColumn(content, sidebarPanel)
 
   <input type="hidden" id="sessionId" value="@sessionId"/>
   <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/triage.js")"></script>

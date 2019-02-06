@@ -1,6 +1,6 @@
 @(heading: String = "Notes", isNotesLinkTarget: Boolean = false)(notes: Html)
 
-<h3 class="heading-small" @if(isNotesLinkTarget) { id="notes" }>@heading</h3>
-<ul class="breadcrumb-notes">
+<h3 class="govuk-heading-s" @if(isNotesLinkTarget) { id="notes" }>@heading</h3>
+<ul class="govuk-list govuk-list--bullet">
   @notes
 </ul>

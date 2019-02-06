@@ -8,49 +8,48 @@
 
 @govukTemplateDefaults(htmlTitle + " - License controlled items and services") {
 
-  <main id="content" role="main">
+<div class="govuk-width-container">
 
-    @phaseBanner(feedbackConfig)
+	@phaseBanner(feedbackConfig)
 
-    <div class="nav-container">
-      <div class="back-link-container">
-        @if(showBackLink) {
-          <button class="link-back js-only" id="back-button">Back</button>
-        }
-      </div>
+	<div class="nav-container">
+		<div class="back-link-container">
+			@if(showBackLink) {
+			<a href="#" class="govuk-back-link" id="back-button">Back</a>
+			}
+		</div>
 
-      @if(resumeCode != "") {
-        <div class="resume-code-container">
-          <div class="resume-code">
-            <span class="bold-xsmall">Reference code: @resumeCode</span>
-          </div>
-        </div>
-      }
+		@if(resumeCode != "") {
+		<div class="resume-code-container">
+			<div class="resume-code">
+				<p>Reference code: @resumeCode</p>
+			</div>
+		</div>
+		}
 
-      <div class="nav-container-end"></div>
-    </div>
+	</div>
 
-    @if(twoThirdsColumn) {
-      <div class="grid-row">
-        <div class="column-two-thirds">
-    }
+	<main class="govuk-main-wrapper app-main-class" id="main-content" role="main">
+		@if(twoThirdsColumn) {
+		<div class="govuk-grid-row">
+			<div class="govuk-grid-column-two-thirds">
+				}
 
-    <a id="contentStart"></a>
+				<a id="contentStart"></a>
 
-    @beforeHeader
+				@beforeHeader
 
-    <header class="page-header">
-    @if(pageHeading.isDefined) {
-      @pageHeading
-    }
-    </header>
+				@if(pageHeading.isDefined) {
+					@pageHeading
+				}
 
-    @content
+				@content
 
-    @if(twoThirdsColumn) {
-        </div>
-      </div>
-    }
+				@if(twoThirdsColumn) {
+			</div>
+		</div>
+		}
 
-  </main>
+	</main>
+</div>
 }

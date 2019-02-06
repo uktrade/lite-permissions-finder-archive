@@ -1,5 +1,8 @@
 package controllers.modal;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
@@ -7,6 +10,7 @@ import lombok.AllArgsConstructor;
 import models.view.BreadcrumbItemView;
 import models.view.SubAnswerView;
 import org.slf4j.LoggerFactory;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import triage.config.ControlEntryConfig;
@@ -32,11 +36,16 @@ public class ModalControlEntryController extends Controller {
 
   public Result renderControlEntryModal(String controlEntryId, String sessionId) {
     ControlEntryConfig controlEntryConfig = controllerConfigService.getControlEntryConfig(controlEntryId);
-
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, true);
-    String controlEntryUrl = createGoToControlEntryUrl(controlEntryConfig, sessionId);
-    String description = createDescription(controlEntryConfig);
-    return ok(modalControlEntry.render(controlEntryConfig.getControlCode(), breadcrumbItemViews, controlEntryUrl, description));
+
+    // Convert object to JSON
+    ObjectNode result = Json.newObject();
+    ArrayNode array = new ObjectMapper().valueToTree(breadcrumbItemViews);
+    result.put("items", array);
+    result.put("controlEntryUrl", createGoToControlEntryUrl(controlEntryConfig, sessionId));
+    result.put("description", createDescription(controlEntryConfig));
+
+    return ok(Json.prettyPrint(result));
   }
 
   public Result renderControlEntryView(String controlEntryId) {
@@ -44,8 +53,8 @@ public class ModalControlEntryController extends Controller {
 
     List<BreadcrumbItemView> breadcrumbItemViews = breadcrumbViewService.createBreadcrumbItemViews(null, controlEntryConfig, true,
         HtmlRenderOption.OMIT_LINK_TARGET_ATTR);
-    String description = createDescription(controlEntryConfig);
-    return ok(modalControlEntryView.render(controlEntryConfig.getControlCode(), breadcrumbItemViews, description));
+
+    return ok(modalControlEntryView.render(controlEntryConfig.getControlCode(), breadcrumbItemViews, createDescription(controlEntryConfig)));
   }
 
   private String createDescription(ControlEntryConfig controlEntryConfig) {
@@ -54,7 +63,7 @@ public class ModalControlEntryController extends Controller {
       return "";
     } else {
       StringBuilder builder = new StringBuilder();
-      builder.append("<ul>");
+      builder.append("<ul class='govuk-list govuk-list--bullet'>");
       controlEntryConfigs.forEach(controlEntryConfigIterate -> {
         builder.append("<li>");
         builder.append(htmlRenderService.convertRichTextToHtml(controlEntryConfigIterate.getFullDescription()));

@@ -22,12 +22,12 @@
   @formRadioGroupContainer(form("answer"))(null) {
     @for(answerView <- answerViews) {
       @if(answerView.isDividerAbove) {
-        <p class="form-block">or</p>
+        <p class="govuk-label or-label">or</p>
       }
-      <div class="form-group">
-        <h2 class="heading-small">
+      <div class="govuk-form-group">
+        <h4 class="govuk-heading-s">
           @answerView.getHtmlAbove
-        </h2>
+	  	</h4>
         @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
           @answerMoreInformation(answerView)
         }

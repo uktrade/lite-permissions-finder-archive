@@ -6,54 +6,56 @@
 @this(standardPage: standardPage)
 @(form: Form[_], sessionId: String, resumeCode: String)
 @standardPage("Before you begin", Some(heading("Before you begin")), showBackLink = true) {
-  @errorSummary(form)
+@errorSummary(form)
 } {
 
-  @if(flash.containsKey("error")) {
-    <p>
-    @flashBanner("error") {
-      @Html(flash.get("error"))
-    } {
-      @if(flash.containsKey("detail")) {
-        @Html(flash.get("detail"))
-      }
-    }
-    </p>
-  }
+	@if(flash.containsKey("error")) {
+		<p>
+			@flashBanner("error") {
+			@Html(flash.get("error"))
+			} {
+			@if(flash.containsKey("detail")) {
+			@Html(flash.get("detail"))
+			}
+			}
+		</p>
+	}
 
-  <p>
-    You don't have to complete everything in one go.
-    If you want to return to this service later, you can use this code to recover your previous answers:
-  </p>
+	<p class="govuk-body">
+		You don't have to complete everything in one go.
+		If you want to return to this service later, you can use this code to recover your previous answers:
+	</p>
 
-  <div class="panel panel-border-wide">
-    <span class="bold-xlarge">@resumeCode</span>
-  </div>
+	<div class="govuk-inset-text">
+		<span class="govuk-heading-xl">@resumeCode</span>
+	</div>
 
-  <p>
-    This code will remain at the top of the screen as you use the service.
-  </p>
+	<p class="govuk-body">
+		This code will remain at the top of the screen as you use the service.
+	</p>
 
-  <form action="@StartApplicationController.handleSubmit(sessionId)" method="POST">
+	<form action="@StartApplicationController.handleSubmit(sessionId)" method="POST">
 
-    @views.html.helper.CSRF.formField
+		@views.html.helper.CSRF.formField
 
-    <p>
-    @detailPanel("email-me-code") {Email me this code} {
-      @formInput(form("emailAddress")) {
-        Your email address (optional)
-      }
-    }
-    </p>
+		<p>
+			@detailPanel("email-me-code") {Email me this code (optional)} {
+				@formInput(form("emailAddress"), Some(Html("")), "govuk-input--width-20") {
+					Your email address
+				}
+			}
+		</p>
 
-    <div class="form-group">
-      <button type="submit" class="button">Continue</button>
-    </div>
+		<div class="govuk-form-group">
+			<button type="submit" class="govuk-button">Continue</button>
+		</div>
 
-    <p class="js-only">
-      <a href="" id="print">Print this page</a>
-    </p>
+		<div class="govuk-form-group js-only">
+			<p class="govuk-label">
+				<a href="" class="govuk-link" id="print">Print this page</a>
+			</p>
+		</div>
 
-  </form>
+	</form>
 
 }

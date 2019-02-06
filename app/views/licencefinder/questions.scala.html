@@ -4,7 +4,7 @@
 
 @this(standardPage: standardPage)
 @(form: Form[_], sessionId: String)
-@standardPage("Tell us more about your items", Some(heading("Tell us more about your items"))){
+@standardPage("Tell us more about your items", Some(heading("Tell us more about your items")), showBackLink = true){
   @errorSummary(form, fieldOrder = scala.List("forRepair", "forExhibition", "beforeOrLess"))
 } {
 
@@ -18,9 +18,7 @@
 
     @formRadioBoolean(form("beforeOrLess"), Html("Were your goods manufactured before 1897 and are they worth less than £35,000?"))
 
-    <div class="form-group">
-      <button type="submit" class="button">Continue</button>
-    </div>
+    <button type="submit" class="govuk-button">Continue</button>
 
   </form>
 

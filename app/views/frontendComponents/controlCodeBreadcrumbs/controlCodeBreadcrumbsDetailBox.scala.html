@@ -4,7 +4,7 @@
 
 <@if(isPathStep){li}else{div} class="detail-box">
   @if(content.body.trim.nonEmpty) {
-    <div class="detail-box-content @if(!StringUtils.isBlank(changeUrl)){ has-change-link }">
+    <div class="@if(!StringUtils.isBlank(changeUrl)){ has-change-link }">
       @content
     </div>
     @if(!StringUtils.isBlank(changeUrl)) {
@@ -12,6 +12,6 @@
     }
   }
   @if(secondaryContent.body.trim.nonEmpty) {
-    <div class="detail-box-secondary-content">@secondaryContent</div>
+    <div class="control-code-breadcrumbs-notes">@secondaryContent</div>
   }
 </@if(isPathStep){li}else{div}>

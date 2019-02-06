@@ -5,94 +5,90 @@
 
 @this(govukTemplateDefaults: govukTemplateDefaults, feedbackConfig: FeedbackConfig, dashboardConfig: DashboardConfig)
 @govukTemplateDefaults("License controlled items and services - GOV.UK", Html("")) {
-  <main id="content" role="main">
 
-    @phaseBanner(feedbackConfig)
+<div class="govuk-width-container">
+	@phaseBanner(feedbackConfig)
 
-    <div class="breadcrumbs">
-      <ol aria-label="Breadcrumbs">
-        <li><a href="http://www.gov.uk">Home</a></li>
-      </ol>
-    </div>
+	<div class="govuk-breadcrumbs">
+		<ol class="govuk-breadcrumbs__list" aria-label="Breadcrumbs">
+			<li class="govuk-breadcrumbs__list-item">
+				<a class="govuk-breadcrumbs__link" href="#">Home</a>
+			</li>
+		</ol>
+	</div>
 
-    <div class="grid-row" id="contentStart">
-      <div class="column-two-thirds">
+	<main class="govuk-main-wrapper">
 
-        <header class="page-header">
-          <h1 class="heading-xlarge">License controlled items and services</h1>
-        </header>
+		<div class="govuk-grid-row">
+			<div class="govuk-grid-column-two-thirds">
+				<h1 class="govuk-heading-xl">License controlled items and services</h1>
+				<p class="govuk-body">Use this service to:</p>
+				<ul class="govuk-list govuk-list--bullet">
+					<li>check if your item is controlled</li>
+					<li>find an open general export licence and register for one if needed</li>
+					<li>view your licensing information for licences you register for on this service</li>
+				</ul>
 
-        <p>Use this service to:</p>
-        <ul class="list list-bullet">
-          <li>check if your item is controlled</li>
-          <li>find an open general export licence and register for one if needed</li>
-          <li>view your licensing information for licences you register for on this service</li>
-        </ul>
+				<div class="govuk-form-group">
+					<p class="govuk-body">You will need to tell us:</p>
+					<ul class="govuk-list govuk-list--bullet">
+						<li>what your item is</li>
+						<li>where your item is being exported to</li>
+					</ul>
+				</div>
 
-        <p>You will need to tell us:</p>
-        <ul class="list list-bullet">
-          <li>what your item is</li>
-          <li>where your item is being exported to</li>
-        </ul>
+				<form action="@EntryPointController.handleSubmit" method="POST">
+					@views.html.helper.CSRF.formField
+					<button type="submit" class="govuk-button govuk-button--start" name="action" value="start">Start now</button>
+					<button type="submit" class="govuk-button govuk-button--start govuk-button--secondary" name="action" value="continue">Resume</button>
+				</form>
 
-        <form action="@EntryPointController.handleSubmit" method="POST">
-          @views.html.helper.CSRF.formField
-          <button type="submit" class="button button-start start-application" name="action" value="start">Start now</button>
-          <button type="submit" class="button secondary button-resume" name="action" value="continue">Resume</button>
-        </form>
+				<h2 class="govuk-heading-m">Before you start</h2>
+				<p class="govuk-body">
+					You can only self-assess one item at a time.
+				</p>
+				<p class="govuk-body">
+					This service is currently in private beta. If you have not been invited to take part in testing you
+					should continue using <a href="https://www.spire.trade.gov.uk" class="govuk-link" rel="external">SPIRE</a>.
+				</p>
+			</div>
 
-        <h2 class="heading-medium">Before you start</h2>
-        <p>
-          You can only self-assess one item at a time.
-        </p>
-        <p>
-          This service is currently in private beta. If you have not been invited to take part in testing you
-          should continue using <a href="https://www.spire.trade.gov.uk" rel="external">SPIRE</a>.
-        </p>
+			<div class="govuk-grid-column-one-third related-content">
+				@if(dashboardConfig.getDashboardUrl() != null) {
+				<h2 class="govuk-heading-m">Go to</h2>
 
-        <a href="/jump-to">Already know your control code? Click here</a>
+				<nav role="navigation" aria-labelledby="go-to-title">
+					<ul class="govuk-list">
+						<li>
+							<a class="govuk-link" href="@dashboardConfig.getDashboardUrl()">View your licensing information</a>
+						</li>
+					</ul>
+				</nav>
+				}
 
-      </div>
+				<h2 class="govuk-heading-m">Related content</h2>
 
-      <div class="column-third">
-        <div class="govuk-related-items">
+				<ul class="govuk-list">
+					<li>
+						<a class="govuk-link" href="https://www.gov.uk/guidance/export-military-or-dual-use-goods-services-or-technology-special-rules">
+							Export military or dual use goods, services or technology: special rules
+						</a>
+					</li>
+					<li>
+						<a class="govuk-link" href="https://www.gov.uk/guidance/uk-strategic-export-control-lists-the-consolidated-list-of-strategic-military-and-dual-use-items">
+							UK Strategic Export Control Lists
+						</a>
+					</li>
+					<li>
+						<a class="govuk-link" href="https://www.gov.uk/government/collections/open-general-export-licences-ogels">
+							Open general export licences (OGELs)
+						</a>
+					</li>
+				</ul>
 
-          @if(dashboardConfig.getDashboardUrl() != null) {
-            <h2 id="go-to-title" class="heading-medium">Go to</h2>
+			</div>
+		</div>
 
-            <nav role="navigation" aria-labelledby="go-to-title">
-              <ul class="list font-xsmall">
-                <li>
-                  <a href="@dashboardConfig.getDashboardUrl()">View your licensing information</a>
-                </li>
-              </ul>
-            </nav>
-          }
-
-          <h2 id="related-content-title" class="heading-medium">Related content</h2>
-
-          <nav role="navigation" aria-labelledby="related-content-title">
-            <ul class="list font-xsmall">
-              <li>
-                <a href="https://www.gov.uk/guidance/export-military-or-dual-use-goods-services-or-technology-special-rules">
-                  Export military or dual use goods, services or technology: special rules
-                </a>
-              </li>
-              <li>
-                <a href="https://www.gov.uk/guidance/uk-strategic-export-control-lists-the-consolidated-list-of-strategic-military-and-dual-use-items">
-                  UK Strategic Export Control Lists
-                </a>
-              </li>
-              <li>
-                <a href="https://www.gov.uk/government/collections/open-general-export-licences-ogels">
-                  Open general export licences (OGELs)
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-
-    </div>
-  </main>
+	</main>
+</div>
 }

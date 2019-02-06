@@ -4,10 +4,10 @@
 
 @Html(answerView.getMoreInformation)
 @if(!answerView.getDefinitions.isEmpty) {
-  <h2 class="heading-small">Definitions</h2>
+  <h4 class="govuk-heading-s">Definitions</h4>
   <p>@Html(answerView.getDefinitions)</p>
 }
 @if(!answerView.getRelatedItems.isEmpty) {
-  <h2 class="heading-small">Related categories and items</h2>
+  <h4 class="govuk-heading-s">Related categories and items</h4>
   <p>@Html(answerView.getRelatedItems)</p>
 }

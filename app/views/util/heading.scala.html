@@ -1,10 +1,10 @@
-@(headingText: String, headingClass: String = "heading-large", visuallyHidden : Boolean = false)
-<div>
-  <h1 class="@headingClass">
-    @if(visuallyHidden) {
-      <span class="visually-hidden">@headingText</span>
-    } else {
-      @headingText
-    }
-  </h1>
-</div>
+@(headingText: String, headingClass: String = "govuk-heading-l", visuallyHidden : Boolean = false)
+@if(headingText.length != 0) {
+	<h1 class="@headingClass">
+	    @if(visuallyHidden) {
+	      <span class="govuk-visually-hidden">@headingText</span>
+	    } else {
+	      @headingText
+	    }
+	  </h1>
+}

@@ -1,0 +1,105 @@
+.step-by-step {
+	list-style-type: none;
+	counter-reset: step-by-step-counter;
+	padding-left: 0;
+
+	& > li {
+		position: relative;
+		min-height: 40px;
+		padding-bottom: 30px;
+		padding-left: 60px;
+
+		&:before {
+			position: absolute;
+			top: 0;
+			left: 0;
+			font-family: "NTA";
+			font-weight: 600;
+			font-size: 20px;
+			display: inline-block;
+			counter-increment: step-by-step-counter;
+			content: counter(step-by-step-counter);
+			width: 40px;
+			height: 40px;
+			border-radius: 100%;
+			border: solid 2px govuk-colour("grey-2");
+			text-align: center;
+			line-height: 43px;
+		}
+
+		&:after {
+			position: absolute;
+			content: "";
+			top: 42px;
+			left: 21px;
+			bottom: 0;
+			width: 2px;
+			background-color: govuk-colour("grey-2");
+		}
+
+		&:last-of-type:after {
+			bottom: 30px;
+		}
+	}
+}
+
+.hide-line:last-of-type:after {
+	display: none;
+}
+
+.step-by-step-title {
+	font-family: "NTA";
+	font-size: 20px;
+	font-weight: 600;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	flex-direction: column;
+	user-select: none;
+	-webkit-user-select: none;
+	padding-top: 9px;
+	a {
+		display: none;
+		font-size: 14px;
+		pointer-events: none;
+		font-weight: 500;
+		color: $govuk-brand-colour;
+	}
+}
+
+.js-enabled {
+	.step-by-step-title {
+		cursor: pointer;
+		&:hover {
+			a {
+				text-decoration: underline;
+			}
+		}
+		a {
+			display: block;
+		}
+	}
+}
+
+.step-by-step-content {
+	font-family: "NTA";
+	font-size: 18px;
+	border-left: 2px solid govuk-colour("grey-3");
+	margin-top: 10px;
+	padding: 10px 18px;
+	padding-right: 0;
+	& > * {
+		margin-bottom: 0;
+	}
+	.govuk-list {
+		li {
+			margin-bottom: 10px;
+			&:last-of-type {
+				margin-bottom: 0px;
+			}
+		}
+		a {
+	  		@extend .govuk-link;
+		}
+	}
+}

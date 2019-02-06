@@ -1,34 +1,44 @@
 .banner {
-  @include bold-19;
-  background: $govuk-blue;
-  color: white;
-  padding: $gutter-two-thirds;
-  margin-bottom: $gutter;
-  display: block;
-  position: relative;
-  box-sizing: border-box;
-  width: 100%;
+	@include govuk-font($size: 19);
+	background: govuk-colour("blue");
+	color: govuk-colour("white")!important;
+	padding: govuk-spacing(3);
+	padding-right: 50px;
+	font-weight: 600;
+	display: block;
+	position: relative;
+	box-sizing: border-box;
+	width: 100%;
+    margin-bottom: govuk-spacing(6);
 }
 
 .danger-banner {
-  background: $red;
-  padding-left: $gutter + 40px;
+	background: govuk-colour("red");
+	padding-left: govuk-spacing(6) + 40px;
 
-  &:before {
-    content: "!";
-    background: white;
-    width: 30px;
-    height: 30px;
-    line-height: 35px;
-    position: absolute;
-    top: 17px;
-    left: 25px;
-    color: $red;
-    text-align: center;
-    border-radius: 50%;
-    font-size: 27px;
-  }
+	&:after {
+		content: "!";
+		background: govuk-colour("white");
+		width: 40px;
+		height: 40px;
+		line-height: 45px;
+		position: absolute;
+		top: govuk-spacing(3);
+		left: govuk-spacing(3);
+		color: govuk-colour("red");
+		text-align: center;
+		border-radius: 50%;
+		font-size: 28px;
+	}
 
+	.govuk-list {
+		color: white;
+		margin-top: govuk-spacing(2);
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
   .list:last-child {
     margin-bottom: 0;
   }

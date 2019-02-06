@@ -1,0 +1,34 @@
+$govuk-button-colour: $govuk-brand-colour;
+$govuk-button-hover-colour: darken($govuk-button-colour, 5%);
+$govuk-button-shadow-colour: darken($govuk-button-colour, 15%);
+$govuk-button-text-colour: govuk-colour("white");
+$button-shadow-size: $govuk-border-width-form-element;
+
+.govuk-button {
+	padding-left: govuk-spacing(3);
+	padding-right: govuk-spacing(3);
+}
+
+.govuk-button--start {
+	padding-right: govuk-spacing(7);
+}
+
+.govuk-button--secondary {
+	background-color: $govuk-button-colour;
+	box-shadow: 0 $button-shadow-size 0 $govuk-button-shadow-colour;
+	padding-right: govuk-spacing(3)!important;
+	background-image: none!important;
+	@include govuk-if-ie8 {
+		border-bottom: $button-shadow-size solid $govuk-button-shadow-colour;
+	}
+	@include govuk-compatibility(govuk_template) {
+		&:link:focus {
+			color: $govuk-button-text-colour;
+		}
+	}
+
+	&:focus,
+	&:hover {
+		background-color: $govuk-button-hover-colour;
+	}
+}

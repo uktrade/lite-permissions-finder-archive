@@ -10,17 +10,15 @@
 
 @outcomePage("Item not found", sessionId, resumeCode) {
 
-  @twoThirdsColumn{
-    @errorSummary(form)
-  }
+  @errorSummary(form)
 
-  <p class="lede">
+  <p class="govuk-caption-l">
     Based on the choices you've made, your item cannot be found on the UK Military List.
   </p>
 
   @itemNotFoundBreadcrumb(breadcrumbItemsViews, relatedEntryViews, changeUrl)
 
-  <h2 class="heading-large">What you should do next</h2>
+  <h2 class="govuk-heading-l">What you should do next</h2>
 
   <ol class="circle-step-list">
     <li>
@@ -30,17 +28,17 @@
     <li>
       Even if if your item is not controlled it may still be affected by
       <a href="https://www.gov.uk/guidance/supplementary-wmd-end-use-controls" rel="external" target="_blank">
-        WMD<span class="visually-hidden"> (opens in a new tab)</span>
+        WMD<span class="govuk-visually-hidden"> (opens in a new tab)</span>
       </a> and
       <a href="https://www.gov.uk/guidance/military-end-use-control-guidance-notes" rel="external" target="_blank">
-        military<span class="visually-hidden"> (opens in a new tab)</span>
+        military<span class="govuk-visually-hidden"> (opens in a new tab)</span>
       </a> end use controls and any
       <a href="https://www.gov.uk/guidance/current-arms-embargoes-and-other-restrictions" rel="external" target="_blank">
-        sanctions and embargoes<span class="visually-hidden"> (opens in a new tab)</span>
+        sanctions and embargoes<span class="govuk-visually-hidden"> (opens in a new tab)</span>
       </a>.
        To find out if your item needs a licence, log in to SPIRE and refer to the
       <a href="https://www.spire.trade.gov.uk" rel="external" target="_blank">
-        End User Advisory Service (EUAS)<span class="visually-hidden"> (opens in a new tab)</span></a> or use the links above.
+        End User Advisory Service (EUAS)<span class="govuk-visually-hidden"> (opens in a new tab)</span></a> or use the links above.
     </li>
     <li>
       You may generate a no licence required (NLR) document if, following the points above, you believe that your item
@@ -49,10 +47,10 @@
   </ol>
 
   <div class="banner danger-banner">
-    <span class="visually-hidden">Warning:</span>
+    <span class="govuk-visually-hidden">Warning:</span>
     Always double-check if your items are controlled. If you export controlled items without the correct export licence
     you could:
-    <ul class="list list-bullet">
+    <ul class="govuk-list govuk-list--bullet">
       <li>have your items seized</li>
       <li>face a fine</li>
       <li>serve up to 10 years in prison</li>
@@ -62,11 +60,11 @@
   <form action="@routes.OutcomeController.handleOutcomeItemNotFoundSubmit(controlEntryId, sessionId)" method="POST">
     @views.html.helper.CSRF.formField
 
-    <div class="form-group">
+    <div class="govuk-form-group">
       @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")
     </div>
 
-    <button type="submit" class="button" name="action" value="continue">Generate an NLR document</button>
+    <button type="submit" class="govuk-button" name="action" value="continue">Generate an NLR document</button>
   </form>
 
 }

@@ -2,9 +2,9 @@
 
 @this(standardPage: standardPage)
 
-@(term : String, definitionTextHtml: String)
-@standardPage(term, Some(heading(term))) { } {
-  <div class="prose">
+@(term: String, definitionTextHtml: String, showBackLink: Boolean)
+@standardPage(term, Some(heading(term)), showBackLink = showBackLink) { } {
+  <div class="govuk-label">
     @Html(definitionTextHtml)
   </div>
 }
