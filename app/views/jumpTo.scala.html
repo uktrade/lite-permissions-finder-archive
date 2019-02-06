@@ -5,14 +5,14 @@
 @(query: String, results: List[ControlEntryResponse])
 @standardPage("Jump to a control code", Some(heading("Jump to a control code")), showBackLink = true) { } {
 
-  <p class="form-hint">Already know your control code? Type it below.</p>
+  <p class="govuk-hint">Already know your control code? Type it below.</p>
 
   <div class="sticky-search-wrapper">
 	<form action="/jump-to" autocomplete="off">
 	  <div class="search-wrapper">
-	    <input id="search-box" type="search" autocomplete="off" autocorrect="off" value="@query" name="query">
-  	    <div class="search-button js-only"></div>
-	    <button type="submit" class="button js-hidden">Search</button>
+	    <input id="search-box" class="govuk-input" type="search" autocomplete="off" autocorrect="off" value="@query" name="query">
+  	    <div class="search-button"></div>
+	    <button type="submit" class="govuk-button js-hidden">Search</button>
 	  </div>
 	</form>
   </div>
@@ -23,8 +23,8 @@
 	}
     @for(value <- results){
 	  <div class="search-result">
-	    <a href="/jump-to/jump/@value.getId">@value.getControlCode</a>
-		<p>@value.getDescription</p>
+	    <a class="govuk-link" href="/jump-to/jump/@value.getId">@value.getControlCode</a>
+		<p class="govuk-label">@value.getDescription</p>
 	  </div>
     }
   </div>

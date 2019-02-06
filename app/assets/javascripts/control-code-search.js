@@ -6,8 +6,8 @@ $("#search-box").on('input', function() {
 			if (data.length) {
 				data.forEach(function(obj) {
 					$("#results").append("<div class='search-result'>" +
-											"<a href='/jump-to/jump/" + obj.id + "'>" + obj.controlCode + "</a>" +
-											"<p>" + obj.description + "</p>" +
+											"<a class='govuk-link' href='/jump-to/jump/" + obj.id + "'>" + obj.controlCode + "</a>" +
+											"<p class='govuk-label'>" + obj.description + "</p>" +
 										 "</div>");
 				});
 			} else {

@@ -15,15 +15,13 @@
 
 	input[type="search"] {
 		display: inline-block;
-		height: 36px;
-		line-height: 40px;
 		width: 100%;
 		border: 2px solid black;
-		outline-offset: 0; // TODO Remove this
 		-webkit-appearance: textfield;
 		-moz-appearance: textfield;
 		appearance: textfield;
 		padding: 0 5px;
+		padding-left: 25px;
 	}
 
 	.search-button {
@@ -43,15 +41,6 @@
 		margin: 0;
 		height: 38px;
 		margin-left: 10px;
-	}
-}
-
-.js-enabled {
-	input[type="search"] {
-		padding-left: 35px;
-	}
-	.js-hidden {
-		display: none;
 	}
 }
 
@@ -84,5 +73,12 @@
 		&:last-of-type {
 			border-bottom: none;
 		}
+	}
+}
+
+.js-enabled {
+	.js-hidden {
+		visibility: hidden;
+		display: none;
 	}
 }
