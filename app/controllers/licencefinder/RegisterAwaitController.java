@@ -68,8 +68,7 @@ public class RegisterAwaitController extends Controller {
       String ogelId = licenceFinderDao.getOgelId(sessionId).orElseThrow(UnknownParameterException::unknownLicenceFinderOrder);
       return ogelServiceClient.getById(ogelId)
           .thenApplyAsync(ogelFullView -> {
-            String title = String.format("You have successfully registered to use Open general export licence (%s)",
-                ogelFullView.getName());
+            String title = ogelFullView.getName();
             RegisterResultView view = new RegisterResultView(title, registrationRef);
             return ok(registerResult.render(view, ogelFullView, dashboardUrl));
           }, httpContext.current());

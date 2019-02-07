@@ -6,41 +6,44 @@
 
 @this(standardPage: standardPage)
 @(view: RegisterResultView, ogel: OgelFullView, dashboardUrl: String)
-@standardPage(view.getTitle, Some(heading(view.getTitle))) {
+@standardPage(view.getTitle, Some(heading(""))) {
 
 }{
 
-	<div class="govuk-panel govuk-panel--confirmation">
-		<h1 class="govuk-panel__title">
-			Registration complete
-		</h1>
-		<div class="govuk-panel__body">
-			You have successfully registered to use the Open General Export Licence
-			<br><strong>Military and dual-use goods: UK forces deployed in non-embargoed destinations</strong>
-		</div>
-	</div>
+  <div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+      Registration complete
+    </h1>
+    <div class="govuk-panel__body">
+      You have successfully registered to use the Open General Export Licence
+	  <br>
+	  <strong>@view.getTitle</strong>
+    </div>
+  </div>
 
-	<p class="govuk-body">We have sent you a confirmation email.</p>
+  <p class="govuk-body">We have sent you a confirmation email.</p>
 
-	@if(view.hasRegistrationRef) {
-		<p>
-			<a id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(view.getRegistrationRef)" class="link underlined ogel-link" target="_blank">View your licence<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
-		</p>
+  <h2 class="govuk-heading-m">What happens next</h2>
+
+  @if(view.hasRegistrationRef) {
+    <p>
+      <a class="govuk-label govuk-link" id="viewOgel" href="@controllers.licencefinder.routes.ViewOgelController.viewOgel(view.getRegistrationRef)" class="link underlined ogel-link" target="_blank">View your licence<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+    </p>
 	} else {
-		@if(StringUtils.isNoneBlank(ogel.getLink)) {
-			<p class="bold-small">
-				<a class="external" href="@ogel.getLink" rel="external" target="_blank">
-					View your licence<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
-			</p>
-		} else {
-			<p class="bold-small">Please <a href="@dashboardUrl">view your licensing information<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
-				to confirm that your OGEL registration has completed successfully.
-			</p>
-		}
-	}
+	  @if(StringUtils.isNoneBlank(ogel.getLink)) {
+	    <p class="bold-small">
+	      <a class="govuk-label govuk-link" href="@ogel.getLink" rel="external" target="_blank">
+		    View your licence<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+		  </p>
+      } else {
+        <p class="bold-small">Please <a class="govuk-label govuk-link" href="@dashboardUrl">view your licensing information<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+          to confirm that your OGEL registration has completed successfully.
+        </p>
+      }
+  }
 
-	<p>
-		<a href="@dashboardUrl" target="_blank">View your licensing information<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
-	</p>
+  <p>
+    <a href="@dashboardUrl" class="govuk-label govuk-link" target="_blank">View your licensing information<span class="govuk-visually-hidden"> (opens in a new tab)</span></a>
+  </p>
 
 }
