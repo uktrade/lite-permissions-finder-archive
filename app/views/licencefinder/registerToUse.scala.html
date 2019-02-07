@@ -60,16 +60,6 @@
 				<div class="step-by-step-title">Check what this licence can't be used for<a class="govuk-link">Hide</a></div>
 				<div class="step-by-step-content">
 					<ul class="govuk-list govuk-list--bullet">
-						@for(value <- ogel.getSummary.getHowToUseList){
-							<li>@Html(value)</li>
-						}
-					</ul>
-				</div>
-			</li>
-			<li>
-				<div class="step-by-step-title">Check what this licence can't be used for<a class="govuk-link">Hide</a></div>
-				<div class="step-by-step-content">
-					<ul class="govuk-list govuk-list--bullet">
 						@for(value <- ogel.getSummary.getCantList){
 							<li>@Html(value)</li>
 						}
