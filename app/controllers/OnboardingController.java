@@ -66,10 +66,10 @@ public class OnboardingController {
   private List<SelectOption> getSelectOptions() {
     List<SelectOption> optionList = new ArrayList<>();
     optionList.add(new SelectOption(SpeciallyDesigned.UK_MILITARY_LIST.toString(),
-            ListNameToFriendlyNameUtil.getFriendlyNameFromListName(SpeciallyDesigned.UK_MILITARY_LIST.toString())));
+            ListNameToFriendlyNameUtil.getFriendlyNameFromListName(SpeciallyDesigned.UK_MILITARY_LIST.toString()), false));
     optionList.add(new SelectOption(SpeciallyDesigned.DUAL_USE_LIST.toString(),
-            ListNameToFriendlyNameUtil.getFriendlyNameFromListName(SpeciallyDesigned.DUAL_USE_LIST.toString())));
-    optionList.add(new SelectOption(SpeciallyDesigned.DONT_KNOW.toString(), "I don't know"));
+            ListNameToFriendlyNameUtil.getFriendlyNameFromListName(SpeciallyDesigned.DUAL_USE_LIST.toString()), false));
+    optionList.add(new SelectOption(SpeciallyDesigned.DONT_KNOW.toString(), "I don't know", true));
     return optionList;
   }
 

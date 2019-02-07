@@ -6,7 +6,6 @@ import components.cms.parser.model.navigation.column.ControlListEntries;
 import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.Loops;
-import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Nesting;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.OnPageContent;
@@ -22,7 +21,6 @@ public class NavigationLevel {
   private final int level;
   private final String list;
   private final ArrayList<NavigationLevel> subNavigationLevels;
-  private final NavigationExtras navigationExtras;
   private final OnPageContent onPageContent;
   private final ControlListEntries controlListEntries;
   private final Buttons buttons;
@@ -36,7 +34,7 @@ public class NavigationLevel {
   private final LoadingMetadata loadingMetadata;
 
   public NavigationLevel(String cellAddress, String content, int level, String list) {
-    this(cellAddress, content, level, list, null, null, null, null, null, null, null, null, null, null, Redirect.NONE);
+    this(cellAddress, content, level, list, null, null, null, null, null, null, null, null, null, Redirect.NONE);
   }
 
   public NavigationLevel(
@@ -44,7 +42,6 @@ public class NavigationLevel {
       String content,
       int level,
       String list,
-      NavigationExtras navigationExtras,
       OnPageContent onPageContent,
       ControlListEntries controlListEntries,
       Buttons buttons,
@@ -60,7 +57,6 @@ public class NavigationLevel {
     this.content = content;
     this.level = level;
     this.list = list;
-    this.navigationExtras = navigationExtras;
     this.onPageContent = onPageContent;
     this.controlListEntries = controlListEntries;
     this.buttons = buttons;
@@ -98,10 +94,6 @@ public class NavigationLevel {
 
   public List<NavigationLevel> getSubNavigationLevels() {
     return subNavigationLevels;
-  }
-
-  public NavigationExtras getNavigationExtras() {
-    return navigationExtras;
   }
 
   public OnPageContent getOnPageContent() {

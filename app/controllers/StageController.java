@@ -1,21 +1,10 @@
 package controllers;
 
 import com.google.inject.Inject;
-import components.services.AnswerConfigService;
-import components.services.AnswerViewService;
-import components.services.BreadcrumbViewService;
-import components.services.ProgressViewService;
-import components.services.RenderService;
+import components.services.*;
 import controllers.guard.StageGuardAction;
 import exceptions.BusinessRuleException;
 import exceptions.UnknownParameterException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import models.cms.enums.OutcomeType;
 import models.enums.Action;
@@ -33,18 +22,17 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
-import triage.config.AnswerConfig;
-import triage.config.ControlEntryConfig;
-import triage.config.ControllerConfigService;
-import triage.config.JourneyConfigService;
-import triage.config.StageConfig;
+import triage.config.*;
 import triage.session.SessionService;
 import utils.EnumUtil;
 import utils.ListNameToFriendlyNameUtil;
 import utils.PageTypeUtil;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @With(StageGuardAction.class)
-@AllArgsConstructor(onConstructor = @__({ @Inject }))
+@AllArgsConstructor(onConstructor = @__({@Inject}))
 public class StageController extends Controller {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StageController.class);
@@ -183,8 +171,8 @@ public class StageController extends Controller {
       return renderItem(answerForm, stageConfig, sessionId, resumeCode);
     } else {
       String controlEntryId = stageConfig.getRelatedControlEntry()
-          .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for item stage " + stageId))
-          .getId();
+        .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for item stage " + stageId))
+        .getId();
       String answer = answerForm.get().answer;
       if ("true".equals(answer)) {
         return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
@@ -230,7 +218,7 @@ public class StageController extends Controller {
     String explanatoryText = renderService.getExplanatoryText(stageConfig);
     List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, false);
     ControlEntryConfig controlEntryConfig = stageConfig.getRelatedControlEntry()
-        .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageConfig.getStageId()));
+      .orElseThrow(() -> new BusinessRuleException("Missing relatedControlEntry for decontrol stage " + stageConfig.getStageId()));
     String controlCode = controlEntryConfig.getControlCode();
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, true);
 
@@ -262,7 +250,7 @@ public class StageController extends Controller {
     answerViews.forEach(answerView -> answers.put(answerView, selectedAnswers.contains(answerView.getValue())));
 
     return ok(selectMany.render(multiAnswerForm, stageConfig.getStageId(), sessionId, resumeCode, progressView, title, explanatoryText,
-        relatedEntryDescription, answers, breadcrumbView));
+      relatedEntryDescription, answers, breadcrumbView));
   }
 
   private Result handleDecontrolSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
@@ -278,7 +266,7 @@ public class StageController extends Controller {
         List<AnswerConfig> matchingAnswers = answerConfigService.getMatchingAnswerConfigs(actualAnswers, stageConfig);
         if (matchingAnswers.isEmpty()) {
           return renderDecontrol(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
-              stageConfig, sessionId, resumeCode);
+            stageConfig, sessionId, resumeCode);
         } else {
           sessionService.saveAnswerIdsForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
           sessionService.updateLastStageId(sessionId, stageId);
@@ -291,9 +279,9 @@ public class StageController extends Controller {
           return redirectToStage(nextStageId.get(), sessionId);
         } else if (stageConfig.getOutcomeType().orElse(null) == OutcomeType.TOO_COMPLEX) {
           String controlEntryId = stageConfig.getRelatedControlEntry()
-              .map(ControlEntryConfig::getId)
-              .orElseThrow(() -> new BusinessRuleException(String.format(
-                  "Decontrol stage %s must have an associated control entry if it has a TOO_COMPLEX outcome type", stageId)));
+            .map(ControlEntryConfig::getId)
+            .orElseThrow(() -> new BusinessRuleException(String.format(
+              "Decontrol stage %s must have an associated control entry if it has a TOO_COMPLEX outcome type", stageId)));
           return redirect(routes.OutcomeController.outcomeNoResult(controlEntryId, sessionId));
         } else {
           LOGGER.error("Decontrol stageConfig doesn't have nextStageId or applicable outcomeType");
@@ -318,7 +306,7 @@ public class StageController extends Controller {
         List<AnswerConfig> matchingAnswers = answerConfigService.getMatchingAnswerConfigs(actualAnswers, stageConfig);
         if (matchingAnswers.isEmpty()) {
           return renderSelectMany(multiAnswerFormForm.withError("answers", "Please select at least one answer"),
-              stageConfig, sessionId, resumeCode);
+            stageConfig, sessionId, resumeCode);
         } else {
           AnswerConfig answerConfig = answerConfigService.getAnswerConfigWithLowestPrecedence(matchingAnswers);
           sessionService.saveAnswerIdsForStageId(sessionId, stageId, getAnswerIds(matchingAnswers));
@@ -336,8 +324,8 @@ public class StageController extends Controller {
 
   private Set<String> getAnswerIds(List<AnswerConfig> answers) {
     return answers.stream()
-        .map(AnswerConfig::getAnswerId)
-        .collect(Collectors.toSet());
+      .map(AnswerConfig::getAnswerId)
+      .collect(Collectors.toSet());
   }
 
   private Result handleFurtherDecontrolChecksSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
@@ -351,28 +339,26 @@ public class StageController extends Controller {
 
   private Result handleSelectOneSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
     Form<AnswerForm> answerForm = formFactory.form(AnswerForm.class).bindFromRequest();
-    String actionParam = answerForm.rawData().get(ACTION);
     String answer = answerForm.rawData().get("answer");
-    Action action = EnumUtil.parse(actionParam, Action.class);
-    if (action == Action.CONTINUE) {
-      Optional<AnswerConfig> answerConfigOptional = stageConfig.getAnswerConfigs().stream()
-          .filter(answerConfigIterate -> answerConfigIterate.getAnswerId().equals(answer))
-          .findAny();
-      if (answerConfigOptional.isPresent()) {
-        AnswerConfig answerConfig = answerConfigOptional.get();
-        sessionService.saveAnswerIdsForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
-        sessionService.updateLastStageId(sessionId, stageId);
-        return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
-      } else {
-        LOGGER.error("Unknown answer {}", answer);
-        return renderSelectOne(answerForm, stageConfig, sessionId, resumeCode);
-      }
-    } else if (action == Action.NONE) {
+
+    // Redirect to none of the above
+    if (answer.equals("none")) {
       sessionService.updateLastStageId(sessionId, stageId);
       return resultForNoMatch(sessionId, stageConfig);
+    }
+
+    Optional<AnswerConfig> answerConfigOptional = stageConfig.getAnswerConfigs().stream()
+      .filter(answerConfigIterate -> answerConfigIterate.getAnswerId().equals(answer))
+      .findAny();
+
+    if (answerConfigOptional.isPresent()) {
+      AnswerConfig answerConfig = answerConfigOptional.get();
+      sessionService.saveAnswerIdsForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
+      sessionService.updateLastStageId(sessionId, stageId);
+      return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
     } else {
-      LOGGER.error("Unknown action {}", actionParam);
-      return redirectToStage(stageId, sessionId);
+      LOGGER.error("Unknown answer {}", answer);
+      return renderSelectOne(answerForm, stageConfig, sessionId, resumeCode);
     }
   }
 
@@ -398,9 +384,9 @@ public class StageController extends Controller {
       OutcomeType outcomeType = outcomeTypeOptional.get();
       if (outcomeType == OutcomeType.TOO_COMPLEX) {
         String controlEntryId = answerConfig.getAssociatedControlEntryConfig()
-            .map(ControlEntryConfig::getId)
-            .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +
-                answerConfig.getAnswerId()));
+          .map(ControlEntryConfig::getId)
+          .orElseThrow(() -> new BusinessRuleException("Expected a control code to be associated with answer " +
+            answerConfig.getAnswerId()));
         return redirect(routes.OutcomeController.outcomeNoResult(controlEntryId, sessionId));
       } else {
         LOGGER.error("Unexpected outcome type {} on answer {}", outcomeType, answerConfig.getAnswerId());

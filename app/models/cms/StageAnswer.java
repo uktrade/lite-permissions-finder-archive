@@ -11,7 +11,6 @@ public class StageAnswer {
   private String answerText;
   private Integer displayOrder;
   private Integer answerPrecedence;
-  private boolean dividerAbove;
   private String nestedContent;
   private String moreInfoContent;
 
@@ -84,15 +83,6 @@ public class StageAnswer {
 
   public StageAnswer setAnswerPrecedence(Integer answerPrecedence) {
     this.answerPrecedence = answerPrecedence;
-    return this;
-  }
-
-  public boolean isDividerAbove() {
-    return dividerAbove;
-  }
-
-  public StageAnswer setDividerAbove(boolean dividerAbove) {
-    this.dividerAbove = dividerAbove;
     return this;
   }
 

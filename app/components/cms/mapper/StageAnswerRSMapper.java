@@ -23,7 +23,6 @@ public class StageAnswerRSMapper implements ResultSetMapper<StageAnswer> {
     String answerText = r.getString("answer_text");
     Integer displayOrder = rsw.getInt("display_order");
     Integer answerPrecedence = rsw.getInt("answer_precedence");
-    boolean dividerAbove = r.getBoolean("divider_above");
     String nestedContent = r.getString("nested_content");
     String moreInfoContent = r.getString("more_info_content");
     return new StageAnswer()
@@ -35,7 +34,6 @@ public class StageAnswerRSMapper implements ResultSetMapper<StageAnswer> {
         .setAnswerText(answerText)
         .setDisplayOrder(displayOrder)
         .setAnswerPrecedence(answerPrecedence)
-        .setDividerAbove(dividerAbove)
         .setNestedContent(nestedContent)
         .setMoreInfoContent(moreInfoContent);
   }

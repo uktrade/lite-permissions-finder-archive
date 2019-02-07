@@ -37,7 +37,6 @@ public class StageAnswerDaoImpl implements StageAnswerDao {
         stageAnswer.getAnswerText(),
         stageAnswer.getDisplayOrder(),
         stageAnswer.getAnswerPrecedence(),
-        stageAnswer.isDividerAbove(),
         stageAnswer.getNestedContent(),
         stageAnswer.getMoreInfoContent());
   }

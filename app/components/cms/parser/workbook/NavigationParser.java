@@ -8,7 +8,6 @@ import components.cms.parser.model.navigation.column.ControlListEntries;
 import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.Loops;
-import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Nesting;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.OnPageContent;
@@ -46,79 +45,74 @@ public class NavigationParser {
     private static class ColumnIndices {
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
-        static class NavigationExtras {
-            static final int DIV_LINE = Utils.columnToIndex("A");
-        }
-
-        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Navigation {
-            static final int START = Utils.columnToIndex("B");
-            static final int END = Utils.columnToIndex("K");
+            static final int START = Utils.columnToIndex("A");
+            static final int END = Utils.columnToIndex("J");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class OnPageContent {
-            static final int TITLE = Utils.columnToIndex("L");
-            static final int EXPLANATORY_NOTES = Utils.columnToIndex("M");
+            static final int TITLE = Utils.columnToIndex("K");
+            static final int EXPLANATORY_NOTES = Utils.columnToIndex("L");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class ControlListEntries {
-            static final int RATING = Utils.columnToIndex("N");
-            static final int PRIORITY = Utils.columnToIndex("O");
-            static final int DECONTROL = Utils.columnToIndex("AJ");
+            static final int RATING = Utils.columnToIndex("M");
+            static final int PRIORITY = Utils.columnToIndex("N");
+            static final int DECONTROL = Utils.columnToIndex("AI");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Buttons {
-            static final int SELECT_ONE = Utils.columnToIndex("P");
-            static final int SELECT_MANY = Utils.columnToIndex("Q");
+            static final int SELECT_ONE = Utils.columnToIndex("O");
+            static final int SELECT_MANY = Utils.columnToIndex("P");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Nesting {
-            static final int ANY_OF = Utils.columnToIndex("R");
-            static final int ALL_OF = Utils.columnToIndex("S");
+            static final int ANY_OF = Utils.columnToIndex("Q");
+            static final int ALL_OF = Utils.columnToIndex("R");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Loops {
-            static final int RELATED_CODES = Utils.columnToIndex("T");
-            static final int JUMP_TO = Utils.columnToIndex("U");
-            static final int DEFINING = Utils.columnToIndex("V");
-            static final int DEFERRED = Utils.columnToIndex("W");
-            static final int JUMP_TO_CONTROL_CODES = Utils.columnToIndex("AI");
+            static final int RELATED_CODES = Utils.columnToIndex("S");
+            static final int JUMP_TO = Utils.columnToIndex("T");
+            static final int DEFINING = Utils.columnToIndex("U");
+            static final int DEFERRED = Utils.columnToIndex("V");
+            static final int JUMP_TO_CONTROL_CODES = Utils.columnToIndex("AH");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Breadcrumbs {
-            static final int BREADCRUMB_TEXT = Utils.columnToIndex("X");
+            static final int BREADCRUMB_TEXT = Utils.columnToIndex("W");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Decontrols {
-            static final int CONTENT = Utils.columnToIndex("Y");
-            static final int NOTE = Utils.columnToIndex("Z");
-            static final int TITLE = Utils.columnToIndex("AA");
-            static final int EXPLANATORY_NOTES = Utils.columnToIndex("AB");
+            static final int CONTENT = Utils.columnToIndex("X");
+            static final int NOTE = Utils.columnToIndex("Y");
+            static final int TITLE = Utils.columnToIndex("Z");
+            static final int EXPLANATORY_NOTES = Utils.columnToIndex("AA");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Definitions {
-            static final int LOCAL = Utils.columnToIndex("AC");
+            static final int LOCAL = Utils.columnToIndex("AB");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Notes {
-            static final int NB = Utils.columnToIndex("AD");
-            static final int NOTE = Utils.columnToIndex("AE");
-            static final int SEE_ALSO = Utils.columnToIndex("AF");
-            static final int TECHNICAL_NOTE = Utils.columnToIndex("AG");
+            static final int NB = Utils.columnToIndex("AC");
+            static final int NOTE = Utils.columnToIndex("AD");
+            static final int SEE_ALSO = Utils.columnToIndex("AE");
+            static final int TECHNICAL_NOTE = Utils.columnToIndex("AF");
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         static class Redirect {
-            static final int TCFCF = Utils.columnToIndex("AH"); // Too complicated for Codefinder
+            static final int TCFCF = Utils.columnToIndex("AG"); // Too complicated for Codefinder
         }
     }
 
@@ -156,7 +150,6 @@ public class NavigationParser {
                     NavigationLevel navigationLevel = new NavigationLevel(navCellAddress, navCellValue, currIndentLevel, entry.getValue());
 
                     try {
-                        NavigationExtras navigationExtras = getNavigationExtras(row);
                         OnPageContent onPageContent = getOnPageContent(row);
                         ControlListEntries controlListEntries = getControlListEntries(row);
                         Buttons buttons = getButtons(row);
@@ -173,7 +166,6 @@ public class NavigationParser {
                                         navCellValue,
                                         currIndentLevel,
                                         entry.getValue(),
-                                        navigationExtras,
                                         onPageContent,
                                         controlListEntries,
                                         buttons,
@@ -214,12 +206,6 @@ public class NavigationParser {
         }
 
         return navigationLevels;
-    }
-
-    private static NavigationExtras getNavigationExtras(Row row) {
-        String divLineStr = Utils.getCellValueAsString(row.getCell(ColumnIndices.NavigationExtras.DIV_LINE));
-        boolean divLine = "X".equalsIgnoreCase(divLineStr);
-        return new NavigationExtras(divLine);
     }
 
     private static OnPageContent getOnPageContent(Row row) {
