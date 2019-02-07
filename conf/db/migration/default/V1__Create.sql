@@ -71,7 +71,6 @@ CREATE TABLE stage_answer (
   answer_text        TEXT,
   display_order      INT       NOT NULL,
   answer_precedence  INT,
-  divider_above      BOOLEAN   NOT NULL,
   nested_content     TEXT,
   more_info_content  TEXT,
   FOREIGN KEY (stage_id)         REFERENCES stage(id),

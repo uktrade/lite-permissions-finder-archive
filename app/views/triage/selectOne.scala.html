@@ -27,12 +27,11 @@
 }{
   @formRadioGroupContainer(form("answer"))(null, legendContent = Some(legend)) {
     @for(answerView <- answerViews) {
-      @if(answerView.isDividerAbove) {
-        <div class="govuk-radios__divider">or</div>
-      }
       @formRadioWithDetailPanel(form("answer"), answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent, answerView.getValue, true, promptNewlineToBr = false, detailPanelId = answerView.getValue + "detailPanel", detailPanelPrompt = "More information"){
         @answerMoreInformation(answerView)
       }
     }
+    <div class="govuk-radios__divider" style="margin-bottom: 20px;">or</div>
+	@formRadio(form("answer"), "My item is not listed here", "none")
   }
 }

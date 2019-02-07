@@ -21,8 +21,8 @@ public interface StageAnswerJDBIDao {
   List<StageAnswer> getForStageId(@Bind("stageId") long stageId);
 
   @SqlQuery(
-      "INSERT INTO stage_answer (stage_id, go_to_stage_id, go_to_outcome_type, control_entry_id, answer_text, display_order, answer_precedence, divider_above, nested_content, more_info_content) "
-          + "VALUES(:stageId, :goToStageId, :goToOutcomeType, :controlEntryId, :answerText, :displayOrder, :answerPrecedence, :dividerAbove, :nestedContent, :moreInfoContent) "
+      "INSERT INTO stage_answer (stage_id, go_to_stage_id, go_to_outcome_type, control_entry_id, answer_text, display_order, answer_precedence, nested_content, more_info_content) "
+          + "VALUES(:stageId, :goToStageId, :goToOutcomeType, :controlEntryId, :answerText, :displayOrder, :answerPrecedence, :nestedContent, :moreInfoContent) "
           + "RETURNING id")
   Long insert(
       @Bind("stageId") Long stageId,
@@ -32,7 +32,6 @@ public interface StageAnswerJDBIDao {
       @Bind("answerText") String answerText,
       @Bind("displayOrder") Integer displayOrder,
       @Bind("answerPrecedence") Integer answerPrecedence,
-      @Bind("dividerAbove") Boolean dividerAbove,
       @Bind("nestedContent") String nestedContent,
       @Bind("moreInfoContent") String moreInfoContent);
 

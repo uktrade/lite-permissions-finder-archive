@@ -7,7 +7,6 @@ import java.util.List;
 public class AnswerView {
   private final String prompt;
   private final String value;
-  private final boolean dividerAbove;
   private final List<SubAnswerView> subAnswerViews;
   private final String nestedContent;
   private final String moreInformation;
@@ -16,13 +15,12 @@ public class AnswerView {
   private final boolean detailPanel;
   private final Html htmlAbove;
 
-  public AnswerView(String prompt, String value, boolean dividerAbove,
+  public AnswerView(String prompt, String value,
                     List<SubAnswerView> subAnswerViews, String nestedContent,
                     String moreInformation, String definitions, String relatedItems,
                     boolean detailPanel, Html htmlAbove) {
     this.prompt = prompt;
     this.value = value;
-    this.dividerAbove = dividerAbove;
     this.subAnswerViews = subAnswerViews;
     this.nestedContent = nestedContent;
     this.moreInformation = moreInformation;
@@ -38,10 +36,6 @@ public class AnswerView {
 
   public String getValue() {
     return value;
-  }
-
-  public boolean isDividerAbove() {
-    return dividerAbove;
   }
 
   public List<SubAnswerView> getSubAnswerViews() {

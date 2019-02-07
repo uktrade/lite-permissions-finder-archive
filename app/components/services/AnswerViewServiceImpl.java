@@ -107,9 +107,8 @@ public class AnswerViewServiceImpl implements AnswerViewService {
     boolean detailPanel = hasDetailPanel(moreInformation, definitions, relatedItems);
     String value = answerConfig != null ? answerConfig.getAnswerId() : nextStageId.orElseThrow(() ->
         new BusinessRuleException(String.format("Expected controlEntryConfig %s to have principalStageConfig", controlEntryConfig.getId())));
-    boolean dividerAbove = answerConfig != null && answerConfig.isDividerAbove();
     Html htmlAbove = htmlRenderService.createControlEntryLinkHtml(controlEntryConfig);
-    return new AnswerView(prompt, value, dividerAbove, subAnswerViews, nestedContent, moreInformation, definitions,
+    return new AnswerView(prompt, value, subAnswerViews, nestedContent, moreInformation, definitions,
         relatedItems, detailPanel, htmlAbove);
   }
 
@@ -138,7 +137,7 @@ public class AnswerViewServiceImpl implements AnswerViewService {
       moreInformation = "";
     }
     boolean detailPanel = hasDetailPanel(moreInformation, definitions, relatedItems);
-    return new AnswerView(prompt, answerConfig.getAnswerId(), answerConfig.isDividerAbove(), new ArrayList<>(),
+    return new AnswerView(prompt, answerConfig.getAnswerId(), new ArrayList<>(),
         nestedContent, moreInformation, definitions, relatedItems, detailPanel, HtmlFormat.empty());
   }
 

@@ -125,8 +125,7 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         stageAnswer.getDisplayOrder());
 
     return new AnswerConfig(stageAnswer.getId().toString(), nextStageId, stageAnswer.getGoToOutcomeType(), labelText, nestedContent,
-        moreInfoContent, controlEntryConfig, stageAnswer.getDisplayOrder(), answerPrecedence,
-        stageAnswer.isDividerAbove());
+        moreInfoContent, controlEntryConfig, stageAnswer.getDisplayOrder(), answerPrecedence);
   }
 
   public ControlEntryConfig createControlEntryConfig(ControlEntry controlEntry) {

@@ -14,7 +14,6 @@ import components.cms.parser.model.navigation.column.Buttons;
 import components.cms.parser.model.navigation.column.ControlListEntries;
 import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
-import components.cms.parser.model.navigation.column.NavigationExtras;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.Redirect;
 import lombok.AllArgsConstructor;
@@ -26,11 +25,8 @@ import models.cms.enums.QuestionType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
@@ -228,8 +224,6 @@ public class Loader {
         stageAnswer.setAnswerText(navigationLevel.getContent());
       }
       stageAnswer.setDisplayOrder(displayOrder);
-      NavigationExtras navigationExtras = navigationLevel.getNavigationExtras();
-      stageAnswer.setDividerAbove(navigationExtras != null && navigationExtras.isDivLine());
 
       Long stageAnswerId = stageAnswerDao.insertStageAnswer(stageAnswer);
 
@@ -357,7 +351,6 @@ public class Loader {
       decontrolStageAnswer.setStageId(decontrolStageId);
       decontrolStageAnswer.setGoToOutcomeType(OutcomeType.DECONTROL);
       decontrolStageAnswer.setDisplayOrder(i + 1);
-      decontrolStageAnswer.setDividerAbove(false);
 
       Long decontrolStageAnswerId = stageAnswerDao.insertStageAnswer(decontrolStageAnswer);
 

@@ -21,12 +21,9 @@ public class AnswerConfig {
   private final int displayOrder;
   private final int answerPrecedence;
 
-  private final boolean dividerAbove;
-
   public AnswerConfig(String answerId, String nextStageId, OutcomeType outcomeType, RichText labelText,
                       RichText nestedContent, RichText moreInfoContent,
-                      ControlEntryConfig associatedControlEntryConfig, int displayOrder, int answerPrecedence,
-                      boolean dividerAbove) {
+                      ControlEntryConfig associatedControlEntryConfig, int displayOrder, int answerPrecedence) {
     this.answerId = answerId;
     this.nextStageId = nextStageId;
     this.outcomeType = outcomeType;
@@ -36,7 +33,6 @@ public class AnswerConfig {
     this.associatedControlEntryConfig = associatedControlEntryConfig;
     this.displayOrder = displayOrder;
     this.answerPrecedence = answerPrecedence;
-    this.dividerAbove = dividerAbove;
   }
 
   public String getAnswerId() {
@@ -76,9 +72,5 @@ public class AnswerConfig {
 
   public int getAnswerPrecedence() {
     return answerPrecedence;
-  }
-
-  public boolean isDividerAbove() {
-    return dividerAbove;
   }
 }
