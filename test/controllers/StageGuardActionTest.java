@@ -29,7 +29,6 @@ public class StageGuardActionTest {
 
   private final FlashService flashService = mock(FlashService.class);
   private final SessionService sessionService = mock(SessionService.class);
-  private final JourneyConfigService journeyConfigService = mock(JourneyConfigService.class);
   private final SessionOutcomeDao sessionOutcomeDao = mock(SessionOutcomeDao.class);
   private final SpreadsheetVersionDao spreadsheetVersionDao = mock(SpreadsheetVersionDao.class);
   private final StageGuardAction sessionGuardAction = new StageGuardAction(flashService, sessionService,

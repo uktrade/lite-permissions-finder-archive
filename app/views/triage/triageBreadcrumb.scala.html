@@ -5,7 +5,7 @@
 @this()
 @(breadcrumbView: BreadcrumbView, breadcrumbTitle: String)
 
-<h2 class="govuk-heading-m">You are here</h2>
+@if(breadcrumbView.getBreadcrumbItemViews.size > 0){<h2 class="govuk-heading-m">You are here</h2>}
 @controlCodeBreadcrumbs(){
   @for((breadcrumbItemView, index) <- breadcrumbView.getBreadcrumbItemViews.zipWithIndex) {
     @if(index == breadcrumbView.getBreadcrumbItemViews.size - 1) {
