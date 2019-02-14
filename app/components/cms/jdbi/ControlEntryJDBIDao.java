@@ -34,7 +34,8 @@ public interface ControlEntryJDBIDao {
 			" FROM control_entry" +
             " INNER JOIN stage" +
             " ON control_entry.id = stage.control_entry_id" +
-            " WHERE UPPER(control_entry.control_code)" +
+            " WHERE control_entry.decontrolled = false" +
+            " AND UPPER(control_entry.control_code)" +
             " LIKE '%' || UPPER(:value) || '%'" +
 			" ORDER BY control_entry.control_code" +
 			" LIMIT 6")

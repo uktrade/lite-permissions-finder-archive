@@ -9,6 +9,12 @@ public class ControlEntryResponse {
   private String controlCode;
   private String description;
 
+  public ControlEntryResponse(Long id, String controlCode, String description) {
+    this.id = id;
+    this.controlCode = controlCode;
+    this.description = description;
+  }
+
   public ControlEntryResponse(ControlEntry controlEntry) {
     this.id = controlEntry.getId();
     this.controlCode = controlEntry.getControlCode();

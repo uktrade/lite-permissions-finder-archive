@@ -11,7 +11,7 @@ $("#search-box").on('input', function() {
 										 "</div>");
 				});
 			} else {
-				$("#results").append("<p class='no-results'>No results for '" + value + "'</p>");
+				$("#results").append("<p class='govuk-hint'>No results for '" + value + "'</p>");
 			}
 		});
 	} else {
