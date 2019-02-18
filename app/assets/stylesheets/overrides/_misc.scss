@@ -49,8 +49,11 @@ $border-color: govuk-colour("grey-2");
 	border-top: 2px solid $border-color;
 }
 
-.govuk-radios__item .govuk-details {
-	margin-bottom: govuk-spacing(3)!important;
+.govuk-radios__item, .govuk-checkboxes__item {
+	.govuk-details {
+		margin-bottom: govuk-spacing(3)!important;
+		margin-left: 15px;
+	}
 }
 
 .control-code-breadcrumbs {
@@ -157,13 +160,6 @@ li > .control-code-breadcrumbs-notes {
 
 main {
 	padding-bottom: govuk-spacing(9);
-}
-
-
-.govuk-radios__item {
-	.govuk-details {
-		margin-left: 15px;
-	}
 }
 
 .govuk-label + .govuk-list {

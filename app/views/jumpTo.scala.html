@@ -19,7 +19,7 @@
 
   <div id="results">
 	@if(results.size == 0 && query != null && query.length != 0) {
-	  <p class="no-results">No results for '@query'</p>
+	  <p class="govuk-hint">No results for '@query'</p>
 	}
     @for(value <- results){
 	  <div class="search-result">

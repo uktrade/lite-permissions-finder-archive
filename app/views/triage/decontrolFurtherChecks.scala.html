@@ -10,12 +10,12 @@
 
 @outcomePage("Item not listed on " + currentListName, sessionId, resumeCode) {
 
-  <p class="lede">
+  <p class="govuk-body">
     Based on the choices you’ve made, your item is not controlled on @currentListName. However, it may still be controlled on: @listsToCheck.mkString(", ").
   </p>
 
   <form action="@routes.StageController.handleSubmit(stageId, sessionId).toString" method="POST">
     @views.html.helper.CSRF.formField
-    <button type="submit" class="button" name="action" value="continue">Continue</button>
+    <button type="submit" class="govuk-button" name="action" value="continue">Save and continue</button>
   </form>
 }
