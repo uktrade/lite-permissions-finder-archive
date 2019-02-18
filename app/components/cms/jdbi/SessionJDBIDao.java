@@ -25,6 +25,9 @@ public interface SessionJDBIDao {
   @SqlUpdate("UPDATE SESSION SET CONTROL_ENTRY_IDS_TO_VERIFY_DECONTROLLED_STATUS = :controlEntryIdsToVerifyDecontrolledStatus WHERE id = :id")
   void updateControlEntryIdsToVerifyDecontrolledStatus(@Bind("id") String sessionId, @Bind("controlEntryIdsToVerifyDecontrolledStatus") String controlEntryIdsToVerifyDecontrolledStatus);
 
+  @SqlUpdate("UPDATE SESSION SET JOURNEY_ID = :journeyId WHERE id = :id")
+  void updateJourneyId(@Bind("id") String sessionId, @Bind("journeyId") Long journeyId);
+
   @RegisterMapper(SessionRSMapper.class)
   @SqlQuery("SELECT * FROM SESSION WHERE ID = :id")
   TriageSession getSessionById(@Bind("id") String id);

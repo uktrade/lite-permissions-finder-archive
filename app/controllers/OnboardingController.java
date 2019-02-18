@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import components.cms.dao.JourneyDao;
 import components.cms.parser.workbook.NavigationParser;
 import controllers.guard.SessionGuardAction;
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import models.cms.Journey;
 import play.data.Form;
@@ -48,18 +49,17 @@ public class OnboardingController {
       return ok(onboardingContent.render(form, getSelectOptions(), sessionId, resumeCode));
     }
 
-    SpeciallyDesigned isSpecialParam = form.get().speciallyDesigned;
-    Journey journey;
+    SpeciallyDesigned speciallyDesigned = form.get().speciallyDesigned;
+    if (Arrays.asList(SpeciallyDesigned.UK_MILITARY_LIST, SpeciallyDesigned.DUAL_USE_LIST).contains(speciallyDesigned)) {
+      Journey journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(
+        speciallyDesigned == SpeciallyDesigned.UK_MILITARY_LIST ? 2 : 3
+      )).get(0);
 
-    switch (isSpecialParam) {
-      case UK_MILITARY_LIST:
-        journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(2)).get(0);
-        return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
-      case DUAL_USE_LIST:
-        journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(3)).get(0);
-        return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
-      default:
-        return redirect(routes.StaticContentController.renderMoreInformationRequired(sessionId));
+      sessionService.bindSessionToJourney(sessionId, journey);
+
+      return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
+    } else {
+      return redirect(routes.StaticContentController.renderMoreInformationRequired(sessionId));
     }
   }
 

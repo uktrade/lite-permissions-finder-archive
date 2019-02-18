@@ -2,6 +2,7 @@ package triage.session;
 
 import java.util.Optional;
 import java.util.Set;
+import models.cms.Journey;
 
 public interface SessionService {
 
@@ -23,4 +24,6 @@ public interface SessionService {
   void addControlEntryIdsToVerifyDecontrolledStatus(String sessionId, Set<String> controlEntryIds);
 
   Optional<String> getAndRemoveControlEntryIdForDecontrolledStatusVerification(String sessionId);
+
+  void bindSessionToJourney(String sessionId, Journey journey);
 }

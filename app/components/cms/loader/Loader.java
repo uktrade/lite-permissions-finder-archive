@@ -431,8 +431,7 @@ public class Loader {
     }
   }
 
-  private void createGlobalDefinitions(List<Definition> definitions, long journeyId,
-      String sheetName) {
+  private void createGlobalDefinitions(List<Definition> definitions, long journeyId, String sheetName) {
     for (Definition definition : definitions) {
       if (sheetName.equalsIgnoreCase(definition.getList())) {
         String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"");

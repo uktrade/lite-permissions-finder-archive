@@ -5,7 +5,6 @@ import components.cms.dao.SessionDao;
 import components.cms.dao.SessionStageDao;
 import components.cms.dao.SpreadsheetVersionDao;
 import lombok.AllArgsConstructor;
-import triage.config.JourneyConfigService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
+import models.cms.Journey;
 
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class SessionServiceImpl implements SessionService {
@@ -101,6 +101,11 @@ public class SessionServiceImpl implements SessionService {
       sessionDao.updateControlEntryIdsToVerifyDecontrolledStatus(sessionId, new ArrayList<>(controlEntryIdsToVeryifyDecontrolledStatus));
       return Optional.of(controlEntryId);
     }
+  }
+
+  @Override
+  public void bindSessionToJourney(String sessionId, Journey journey) {
+    sessionDao.updateJourneyId(sessionId, journey.getId());
   }
 
   private String generateResumeCode() {

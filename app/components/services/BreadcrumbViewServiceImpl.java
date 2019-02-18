@@ -21,27 +21,31 @@ import models.view.SubAnswerView;
 import triage.config.ControlEntryConfig;
 import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
+import triage.session.SessionService;
+import triage.session.TriageSession;
 import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
 import utils.ListNameToFriendlyNameUtil;
 
 public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
-  private final JourneyConfigService journeyConfigService;
-  private final RenderService renderService;
-  private final HtmlRenderService htmlRenderService;
   private final AnswerViewService answerViewService;
+  private final HtmlRenderService htmlRenderService;
+  private final JourneyConfigService journeyConfigService;
   private final JourneyDao journeyDao;
+  private final RenderService renderService;
+  private final SessionService sessionService;
 
   @Inject
   public BreadcrumbViewServiceImpl(JourneyConfigService journeyConfigService, RenderService renderService,
                                    HtmlRenderService htmlRenderService, AnswerViewService answerViewService,
-                                   JourneyDao journeyDao) {
+                                   JourneyDao journeyDao, SessionService sessionService) {
     this.journeyConfigService = journeyConfigService;
     this.renderService = renderService;
     this.htmlRenderService = htmlRenderService;
     this.answerViewService = answerViewService;
     this.journeyDao = journeyDao;
+    this.sessionService = sessionService;
   }
 
   @Override
@@ -82,9 +86,17 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
                                                             HtmlRenderOption... htmlRenderOptions) {
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
     if (controlEntryConfig != null) {
-      Journey journey = journeyDao.getJourney(controlEntryConfig.getJourneyId());
       breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig, includeChangeLinks, htmlRenderOptions));
-      breadcrumbItemViews.add(new BreadcrumbItemView(null, ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName()), null, new ArrayList<>()));
+    }
+    Journey journey = Optional.ofNullable(
+      controlEntryConfig != null ? controlEntryConfig.getJourneyId()
+        : Optional.ofNullable(sessionService.getSessionById(sessionId))
+          .map(TriageSession::getJourneyId).orElse(null))
+      .map(journeyId -> journeyDao.getJourney(journeyId)).orElse(null);
+    if (journey != null) {
+      breadcrumbItemViews.add(
+        new BreadcrumbItemView(null, ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName()),
+          null, new ArrayList<>()));
     }
     return Lists.reverse(breadcrumbItemViews);
   }
