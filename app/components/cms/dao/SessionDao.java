@@ -13,6 +13,8 @@ public interface SessionDao {
 
   void updateControlEntryIdsToVerifyDecontrolledStatus(String sessionId, List<String> controlEntryIdsToVerifyDecontrolledStatus);
 
+  void updateJourneyId(String sessionId, Long journeyId);
+
   TriageSession getSessionById(String id);
 
   TriageSession getSessionByResumeCode(String resumeCode);

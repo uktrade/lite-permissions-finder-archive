@@ -28,17 +28,17 @@ public interface ControlEntryJDBIDao {
   ControlEntry getByControlCode(@Bind("controlCode") String controlCode);
 
   @Mapper(ControlEntryRSMapper.class)
-  @SqlQuery("SELECT stage.id, control_entry.control_code, control_entry.description, control_entry.parent_control_entry_id," +
-            " control_entry.nested, control_entry.display_order, control_entry.journey_id," +
-            " control_entry.jump_to_control_codes, control_entry.decontrolled" +
-            " FROM control_entry" +
-            " INNER JOIN stage" +
-            " ON control_entry.id = stage.control_entry_id" +
-            " WHERE control_entry.decontrolled = false" +
-            " AND UPPER(control_entry.control_code)" +
-            " LIKE '%' || UPPER(:value) || '%'" +
-            " ORDER BY control_entry.control_code" +
-            " LIMIT 6")
+  @SqlQuery("SELECT stage.id, control_entry.control_code, control_entry.full_description, control_entry.parent_control_entry_id," +
+    " control_entry.summary_description, control_entry.nested, control_entry.display_order, control_entry.journey_id," +
+    " control_entry.jump_to_control_codes, control_entry.decontrolled" +
+    " FROM control_entry" +
+    " INNER JOIN stage" +
+    " ON control_entry.id = stage.control_entry_id" +
+    " WHERE control_entry.decontrolled = false" +
+    " AND UPPER(control_entry.control_code)" +
+    " LIKE '%' || UPPER(:value) || '%'" +
+    " ORDER BY control_entry.control_code" +
+    " LIMIT 6")
   List<ControlEntry> findControlEntriesByControlCode(@Bind("value") String value);
 
   @Mapper(ControlEntryRSMapper.class)

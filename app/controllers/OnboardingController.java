@@ -3,6 +3,7 @@ package controllers;
 import com.google.inject.Inject;
 import components.services.JourneyService;
 import controllers.guard.SessionGuardAction;
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import models.cms.Journey;
 import play.data.Form;
@@ -55,6 +56,7 @@ public class OnboardingController {
       return redirect(routes.StaticContentController.renderMoreInformationRequired(sessionId));
     }
 
+	      sessionService.bindSessionToJourney(sessionId, journey);
     return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
   }
 
