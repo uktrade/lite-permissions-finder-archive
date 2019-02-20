@@ -1,10 +1,16 @@
 package components.cms.loader;
 
-import static components.cms.parser.model.navigation.column.Buttons.SELECT_MANY;
-import static components.cms.parser.model.navigation.column.Buttons.SELECT_ONE;
-
 import com.google.inject.Inject;
-import components.cms.dao.*;
+import components.cms.dao.ControlEntryDao;
+import components.cms.dao.GlobalDefinitionDao;
+import components.cms.dao.JourneyDao;
+import components.cms.dao.LocalDefinitionDao;
+import components.cms.dao.NoteDao;
+import components.cms.dao.RelatedControlEntryDao;
+import components.cms.dao.SessionStageDao;
+import components.cms.dao.SpreadsheetVersionDao;
+import components.cms.dao.StageAnswerDao;
+import components.cms.dao.StageDao;
 import components.cms.parser.ParserResult;
 import components.cms.parser.model.LoadingMetadata;
 import components.cms.parser.model.NavigationLevel;
@@ -14,7 +20,7 @@ import components.cms.parser.model.navigation.column.ControlListEntries;
 import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.Notes;
-import jdk.nashorn.internal.objects.Global;
+import components.cms.parser.model.navigation.column.Redirect;
 import lombok.AllArgsConstructor;
 import models.cms.*;
 import models.cms.enums.AnswerType;
@@ -27,6 +33,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static components.cms.parser.model.navigation.column.Buttons.SELECT_MANY;
+import static components.cms.parser.model.navigation.column.Buttons.SELECT_ONE;
 
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class Loader {
