@@ -130,9 +130,9 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
   public ControlEntryConfig createControlEntryConfig(ControlEntry controlEntry) {
     String controlEntryId = controlEntry.getId().toString();
-    RichText fullDescription = richTextParser.parseForControlEntry(controlEntry.getFullDescription(), controlEntryId,
+    RichText fullDescription = richTextParser.parseForControlEntry(controlEntry.getDescription(), controlEntryId,
         Long.toString(controlEntry.getJourneyId()));
-    String summaryDescriptionString = StringUtils.defaultString(controlEntry.getSummaryDescription());
+    String summaryDescriptionString = StringUtils.defaultString(controlEntry.getDescription());
     RichText summaryDescription = richTextParser.parseForControlEntry(summaryDescriptionString, controlEntryId,
         Long.toString(controlEntry.getJourneyId()));
 
@@ -152,7 +152,7 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         .stream()
         .map(controlEntryDao::getControlEntryByControlCode)
         .map(ControlEntry::getId)
-        .map(id -> id.toString())
+        .map(Object::toString)
         .collect(Collectors.toSet())
     );
   }

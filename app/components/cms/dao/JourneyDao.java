@@ -10,7 +10,7 @@ public interface JourneyDao {
 
   List<Journey> getAllJourneys();
 
-  List<Journey> getJourneysByJourneyName(String journeyName);
+  Journey getByJourneyName(String journeyName);
 
   Long insertJourney(Journey journey);
 

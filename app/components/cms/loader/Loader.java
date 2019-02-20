@@ -9,7 +9,6 @@ import components.cms.parser.ParserResult;
 import components.cms.parser.model.LoadingMetadata;
 import components.cms.parser.model.NavigationLevel;
 import components.cms.parser.model.definition.Definition;
-import components.cms.parser.model.navigation.column.Breadcrumbs;
 import components.cms.parser.model.navigation.column.Buttons;
 import components.cms.parser.model.navigation.column.ControlListEntries;
 import components.cms.parser.model.navigation.column.Decontrols;
@@ -59,7 +58,7 @@ public class Loader {
     // Loop through available sheets (eg Military, Dual Use)
     for (NavigationLevel rootNavigationLevel : parserResult.getNavigationLevels()) {
       // Generate a new journey for each sheet
-      Journey journey = new Journey().setJourneyName(rootNavigationLevel.getList());
+      Journey journey = new Journey().setJourneyName(rootNavigationLevel.getList()).setFriendlyJourneyName(rootNavigationLevel.getFriendlyName());
       Long journeyId = journeyDao.insertJourney(journey);
 
       // Populate the database
@@ -120,14 +119,10 @@ public class Loader {
     if (controlListEntries != null && controlListEntries.getRating() != null) {
       ControlEntry controlEntry = new ControlEntry()
           .setParentControlEntryId(parentControlEntryId)
-          .setFullDescription(navigationLevel.getContent())
+          .setDescription(navigationLevel.getContent())
           .setControlCode(controlListEntries.getRating())
           .setDecontrolled(controlListEntries.isDecontrolled())
           .setJumpToControlCodes(navigationLevel.getLoops().getJumpToControlCodes());
-      if (navigationLevel.getBreadcrumbs() != null) {
-        Breadcrumbs breadcrumbs = navigationLevel.getBreadcrumbs();
-        controlEntry.setSummaryDescription(breadcrumbs.getBreadcrumbText());
-      }
       controlEntry.setNested(navigationLevel.getNesting() != null);
       controlEntry.setDisplayOrder(displayOrder);
       controlEntry.setJourneyId(journeyId);

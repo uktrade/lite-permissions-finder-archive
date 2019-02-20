@@ -14,7 +14,6 @@ import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.text.HtmlRenderService;
 import triage.text.RichText;
-import utils.ListNameToFriendlyNameUtil;
 
 import java.util.Optional;
 
@@ -56,11 +55,11 @@ public class ProgressViewServiceImpl implements ProgressViewService {
           description = htmlRenderService.convertRichTextToPlainText(labelTextOptional.get());
         } else {
           code = null;
-          description = ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName());
+          description = journey.getFriendlyJourneyName();
         }
       } else {
         code = null;
-        description = ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName());
+        description = journey.getFriendlyJourneyName();
       }
     }
     return new ProgressView(code, description);

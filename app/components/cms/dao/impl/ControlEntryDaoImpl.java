@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
 import components.cms.jdbi.ControlEntryJDBIDao;
 import models.cms.ControlEntry;
-import org.apache.commons.lang3.StringUtils;
 import org.skife.jdbi.v2.DBI;
 
 import java.util.List;
@@ -53,8 +52,7 @@ public class ControlEntryDaoImpl implements ControlEntryDao {
     return controlEntryJDBIDao.insert(
       controlEntry.getParentControlEntryId(),
       controlEntry.getControlCode(),
-      controlEntry.getFullDescription(),
-      controlEntry.getSummaryDescription(),
+      controlEntry.getDescription(),
       controlEntry.isNested(),
       controlEntry.getDisplayOrder(),
       controlEntry.getJourneyId(),

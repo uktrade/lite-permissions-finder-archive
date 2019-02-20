@@ -6,6 +6,7 @@ import controllers.guard.StageGuardAction;
 import exceptions.BusinessRuleException;
 import exceptions.UnknownParameterException;
 import lombok.AllArgsConstructor;
+import models.cms.Journey;
 import models.cms.enums.OutcomeType;
 import models.enums.Action;
 import models.enums.PageType;
@@ -25,7 +26,6 @@ import play.mvc.With;
 import triage.config.*;
 import triage.session.SessionService;
 import utils.EnumUtil;
-import utils.ListNameToFriendlyNameUtil;
 import utils.PageTypeUtil;
 
 import java.util.*;
@@ -47,6 +47,7 @@ public class StageController extends Controller {
   private final JourneyConfigService journeyConfigService;
   private final ControllerConfigService controllerConfigService;
   private final RenderService renderService;
+  private final JourneyService journeyService;
   private final ProgressViewService progressViewService;
   private final views.html.triage.decontrol decontrol;
   private final views.html.triage.decontrolFurtherChecks decontrolFurtherChecks;
@@ -92,13 +93,13 @@ public class StageController extends Controller {
 
   private Result makeFurtherDecontrolChecksResult(String sessionId, StageConfig stageConfig) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    String currentListName = ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journeyConfigService.getJourneyNameByJourneyId(stageConfig.getJourneyId()));
+    String currentListName = journeyService.getById(stageConfig.getJourneyId()).getFriendlyJourneyName();
     Set<String> listsToCheck = stageConfig.getRelatedControlEntry().get().getJumpToControlEntryIds()
       .stream()
       .map(controllerConfigService::getControlEntryConfig)
       .map(ControlEntryConfig::getJourneyId)
-      .map(journeyConfigService::getJourneyNameByJourneyId)
-      .map(ListNameToFriendlyNameUtil::getFriendlyNameFromListName)
+      .map(journeyService::getById)
+      .map(Journey::getFriendlyJourneyName)
       .collect(Collectors.toSet());
 
     return ok(decontrolFurtherChecks.render(stageConfig.getStageId(), sessionId, resumeCode, currentListName, listsToCheck));

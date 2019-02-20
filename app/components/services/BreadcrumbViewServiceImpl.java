@@ -23,7 +23,6 @@ import triage.config.JourneyConfigService;
 import triage.config.StageConfig;
 import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
-import utils.ListNameToFriendlyNameUtil;
 
 public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
@@ -84,7 +83,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     if (controlEntryConfig != null) {
       Journey journey = journeyDao.getJourney(controlEntryConfig.getJourneyId());
       breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, controlEntryConfig, includeChangeLinks, htmlRenderOptions));
-      breadcrumbItemViews.add(new BreadcrumbItemView(null, ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName()), null, new ArrayList<>()));
+      breadcrumbItemViews.add(new BreadcrumbItemView(null, journey.getFriendlyJourneyName(), null, new ArrayList<>()));
     }
     return Lists.reverse(breadcrumbItemViews);
   }

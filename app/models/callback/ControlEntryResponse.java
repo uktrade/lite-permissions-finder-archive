@@ -18,7 +18,7 @@ public class ControlEntryResponse {
   public ControlEntryResponse(ControlEntry controlEntry) {
     this.id = controlEntry.getId();
     this.controlCode = controlEntry.getControlCode();
-    this.description = controlEntry.getFullDescription();
+    this.description = controlEntry.getDescription();
   }
 
   public Long getId() {

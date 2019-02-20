@@ -17,8 +17,7 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
     Long id = rsw.getLong("id");
     Long parentControlEntryId = rsw.getLong("parent_control_entry_id");
     String controlCode = r.getString("control_code");
-    String fullDescription = r.getString("full_description");
-    String summaryDescription = r.getString("summary_description");
+    String fullDescription = r.getString("description");
     boolean nested = r.getBoolean("nested");
     Integer displayOrder = rsw.getInt("display_order");
     Boolean decontrolled = r.getBoolean("decontrolled");
@@ -28,8 +27,7 @@ public class ControlEntryRSMapper implements ResultSetMapper<ControlEntry> {
         .setId(id)
         .setParentControlEntryId(parentControlEntryId)
         .setControlCode(controlCode)
-        .setFullDescription(fullDescription)
-        .setSummaryDescription(summaryDescription)
+        .setDescription(fullDescription)
         .setNested(nested)
         .setDisplayOrder(displayOrder)
         .setDecontrolled(decontrolled)

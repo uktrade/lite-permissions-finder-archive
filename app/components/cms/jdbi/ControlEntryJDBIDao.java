@@ -28,8 +28,8 @@ public interface ControlEntryJDBIDao {
   ControlEntry getByControlCode(@Bind("controlCode") String controlCode);
 
   @Mapper(ControlEntryRSMapper.class)
-  @SqlQuery("SELECT stage.id, control_entry.control_code, control_entry.full_description, control_entry.parent_control_entry_id," +
-            " control_entry.summary_description, control_entry.nested, control_entry.display_order, control_entry.journey_id," +
+  @SqlQuery("SELECT stage.id, control_entry.control_code, control_entry.description, control_entry.parent_control_entry_id," +
+            " control_entry.nested, control_entry.display_order, control_entry.journey_id," +
             " control_entry.jump_to_control_codes, control_entry.decontrolled" +
             " FROM control_entry" +
             " INNER JOIN stage" +
@@ -47,14 +47,13 @@ public interface ControlEntryJDBIDao {
   List<ControlEntry> getRelatedControlCodeEntries(@Bind("controlEntryId") long controlEntryId);
 
   @SqlQuery(
-      "INSERT INTO control_entry (parent_control_entry_id, control_code, full_description, summary_description, nested, display_order, journey_id, decontrolled, jump_to_control_codes) "
-          + "VALUES (:parentControlEntryId, :controlCode, :fullDescription, :summaryDescription, :nested, :displayOrder, :journeyId, :decontrolled, :jumpToControlCodes) "
+      "INSERT INTO control_entry (parent_control_entry_id, control_code, description, nested, display_order, journey_id, decontrolled, jump_to_control_codes) "
+          + "VALUES (:parentControlEntryId, :controlCode, :description, :nested, :displayOrder, :journeyId, :decontrolled, :jumpToControlCodes) "
           + "RETURNING id")
   Long insert(
       @Bind("parentControlEntryId") Long parentControlEntryId,
       @Bind("controlCode") String controlCode,
-      @Bind("fullDescription") String fullDescription,
-      @Bind("summaryDescription") String summaryDescription,
+      @Bind("description") String description,
       @Bind("nested") Boolean nested,
       @Bind("displayOrder") Integer displayOrder,
       @Bind("journeyId") Long journeyId,
