@@ -9,11 +9,12 @@ import components.cms.parser.model.navigation.column.Nesting;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.OnPageContent;
 import components.cms.parser.model.navigation.column.Redirect;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
+@Data
 public class NavigationLevel {
   private final String cellAddress;
   private final String content;
@@ -70,84 +71,11 @@ public class NavigationLevel {
     subNavigationLevels = new ArrayList<>();
   }
 
-  @Override
-  public String toString() {
-    return "NavigationLevel{" +
-        "cellAddress='" + cellAddress + '\'' +
-        ",\n content='" + content + '\'' +
-        ",\n level=" + level +
-        '}';
-  }
-
-  public String getCellAddress() {
-    return cellAddress;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
-  public int getLevel() {
-    return level;
-  }
-
-  public List<NavigationLevel> getSubNavigationLevels() {
-    return subNavigationLevels;
-  }
-
-  public OnPageContent getOnPageContent() {
-    return onPageContent;
-  }
-
-  public ControlListEntries getControlListEntries() {
-    return controlListEntries;
-  }
-
-  public Buttons getButtons() {
-    return buttons;
-  }
-
-  public Nesting getNesting() {
-    return nesting;
-  }
-
-  public Loops getLoops() {
-    return loops;
-  }
-
-  public Decontrols getDecontrols() {
-    return decontrols;
-  }
-
-  public Definitions getDefinitions() {
-    return definitions;
-  }
-
-  public Notes getNotes() {
-    return notes;
-  }
-
-  public Redirect getRedirect() {
-    return redirect;
-  }
-
-  public String getList() {
-    return list;
-  }
-
-  public String getFriendlyName() {
-    return friendlyName;
-  }
-
   public void addSubNavigationLevel(NavigationLevel navigationLevel) {
     subNavigationLevels.add(navigationLevel);
   }
 
   public void addAllSubNavigationLevels(Collection<NavigationLevel> navigationLevels) {
     subNavigationLevels.addAll(navigationLevels);
-  }
-
-  public LoadingMetadata getLoadingMetadata() {
-    return loadingMetadata;
   }
 }
