@@ -8,6 +8,14 @@ public class Note {
   private String noteText;
   private NoteType noteType;
 
+  public Note() {}
+
+  public Note(Long stageId, String noteText, NoteType noteType) {
+    this.stageId = stageId;
+    this.noteText = noteText;
+    this.noteType = noteType;
+  }
+
   public Long getId() {
     return id;
   }

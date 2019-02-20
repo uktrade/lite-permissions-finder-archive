@@ -41,6 +41,11 @@ public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
   }
 
   @Override
+  public void insertMultiple(List<GlobalDefinition> globalDefinitions) {
+    globalDefinitionJDBIDao.insertMultiple(globalDefinitions);
+  }
+
+  @Override
   public void deleteAllGlobalDefinitions() {
     globalDefinitionJDBIDao.truncate();
   }

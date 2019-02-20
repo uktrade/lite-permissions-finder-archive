@@ -16,6 +16,6 @@ public interface JourneyDao {
 
   void updateJourney(long id, Journey journey);
 
-  void deleteAllJournies();
+  void deleteAllJourneys();
 
 }

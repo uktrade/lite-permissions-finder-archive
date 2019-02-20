@@ -14,6 +14,8 @@ public interface GlobalDefinitionDao {
 
   Long insertGlobalDefinition(GlobalDefinition globalDefinition);
 
+  void insertMultiple(List<GlobalDefinition> globalDefinitions);
+
   void deleteAllGlobalDefinitions();
 
 }
