@@ -1,7 +1,12 @@
 package controllers;
 
 import com.google.inject.Inject;
-import components.services.*;
+import components.services.AnswerConfigService;
+import components.services.AnswerViewService;
+import components.services.BreadcrumbViewService;
+import components.services.JourneyService;
+import components.services.ProgressViewService;
+import components.services.RenderService;
 import controllers.guard.StageGuardAction;
 import exceptions.BusinessRuleException;
 import exceptions.UnknownParameterException;
@@ -23,12 +28,21 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
-import triage.config.*;
+import triage.config.AnswerConfig;
+import triage.config.ControlEntryConfig;
+import triage.config.ControllerConfigService;
+import triage.config.JourneyConfigService;
+import triage.config.StageConfig;
 import triage.session.SessionService;
 import utils.EnumUtil;
 import utils.PageTypeUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @With(StageGuardAction.class)

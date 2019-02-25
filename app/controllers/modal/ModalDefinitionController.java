@@ -8,7 +8,11 @@ import lombok.AllArgsConstructor;
 import play.mvc.Result;
 import triage.config.ControllerConfigService;
 import triage.config.DefinitionConfig;
-import triage.text.*;
+import triage.text.DefinitionReferenceNode;
+import triage.text.HtmlRenderOption;
+import triage.text.HtmlRenderService;
+import triage.text.RichTextNode;
+import triage.text.SimpleTextNode;
 
 import java.util.HashMap;
 import java.util.List;

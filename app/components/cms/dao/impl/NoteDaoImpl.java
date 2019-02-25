@@ -23,7 +23,7 @@ public class NoteDaoImpl implements NoteDao {
   }
 
   @Override
-  public Long insertNote(Note note) {
+  public Long insert(Note note) {
     return noteJDBIDao.insert(
         note.getStageId(),
         note.getNoteText(),
@@ -31,8 +31,8 @@ public class NoteDaoImpl implements NoteDao {
   }
 
   @Override
-  public void insertMultiple(List<Note> notes) {
-    noteJDBIDao.insertMultiple(notes);
+  public void insert(List<Note> notes) {
+    noteJDBIDao.insert(notes);
   }
 
   @Override

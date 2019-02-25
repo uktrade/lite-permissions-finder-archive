@@ -8,9 +8,9 @@ public interface NoteDao {
 
   List<Note> getNotesForStageId(long stageId);
 
-  Long insertNote(Note note);
+  Long insert(Note note);
 
-  void insertMultiple(List<Note> notes);
+  void insert(List<Note> notes);
 
   void deleteAllNotes();
 

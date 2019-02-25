@@ -33,7 +33,7 @@ public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
   }
 
   @Override
-  public Long insertGlobalDefinition(GlobalDefinition globalDefinition) {
+  public Long insert(GlobalDefinition globalDefinition) {
     return globalDefinitionJDBIDao.insert(
         globalDefinition.getJourneyId(),
         globalDefinition.getTerm(),
@@ -41,8 +41,8 @@ public class GlobalDefinitionDaoImpl implements GlobalDefinitionDao {
   }
 
   @Override
-  public void insertMultiple(List<GlobalDefinition> globalDefinitions) {
-    globalDefinitionJDBIDao.insertMultiple(globalDefinitions);
+  public void insert(List<GlobalDefinition> globalDefinitions) {
+    globalDefinitionJDBIDao.insert(globalDefinitions);
   }
 
   @Override

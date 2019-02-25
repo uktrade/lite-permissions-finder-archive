@@ -12,9 +12,9 @@ public interface GlobalDefinitionDao {
 
   List<Long> getAllIds();
 
-  Long insertGlobalDefinition(GlobalDefinition globalDefinition);
+  Long insert(GlobalDefinition globalDefinition);
 
-  void insertMultiple(List<GlobalDefinition> globalDefinitions);
+  void insert(List<GlobalDefinition> globalDefinitions);
 
   void deleteAllGlobalDefinitions();
 

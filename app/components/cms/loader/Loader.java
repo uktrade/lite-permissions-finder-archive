@@ -22,7 +22,15 @@ import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.Redirect;
 import lombok.AllArgsConstructor;
-import models.cms.*;
+import models.cms.ControlEntry;
+import models.cms.GlobalDefinition;
+import models.cms.Journey;
+import models.cms.LocalDefinition;
+import models.cms.Note;
+import models.cms.RelatedControlEntry;
+import models.cms.SpreadsheetVersion;
+import models.cms.Stage;
+import models.cms.StageAnswer;
 import models.cms.enums.AnswerType;
 import models.cms.enums.NoteType;
 import models.cms.enums.OutcomeType;
@@ -420,22 +428,22 @@ public class Loader {
   private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
     List<Note> notes = Arrays.stream(noteText.split(REGEX_NEW_LINE))
         .filter(StringUtils::isNotBlank)
-        .map(a -> new Note(stageId, a.trim(), noteType))
+        .map(note -> new Note(stageId, note.trim(), noteType))
         .collect(Collectors.toList());
 
-    noteDao.insertMultiple(notes);
+    noteDao.insert(notes);
 
     LOGGER.debug("Successfully inserted notes");
   }
 
   private void createGlobalDefinitions(List<Definition> definitions, long journeyId, String sheetName) {
     List<GlobalDefinition> globalDefinitions = definitions.parallelStream()
-      .filter(a -> a.getList().equalsIgnoreCase(sheetName))
-      .peek(a -> a.setName(StringUtils.strip(StringUtils.trimToEmpty(a.getName()), "\"")))
-      .map(a -> new GlobalDefinition(journeyId, a.getName(), a.getNewContent()))
+      .filter(globalDefinition -> globalDefinition.getList().equalsIgnoreCase(sheetName))
+      .peek(globalDefinition -> globalDefinition.setName(StringUtils.strip(StringUtils.trimToEmpty(globalDefinition.getName()), "\"")))
+      .map(globalDefinition -> new GlobalDefinition(journeyId, globalDefinition.getName(), globalDefinition.getNewContent()))
       .collect(Collectors.toList());
 
-    globalDefinitionDao.insertMultiple(globalDefinitions);
+    globalDefinitionDao.insert(globalDefinitions);
 
     LOGGER.debug("Successfully inserted global definitions");
   }
