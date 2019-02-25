@@ -1,5 +1,6 @@
 package components.services;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import components.common.cache.CountryProvider;
@@ -7,14 +8,13 @@ import components.common.client.CustomerServiceClient;
 import components.common.client.OgelServiceClient;
 import components.common.client.PermissionsServiceClient;
 import components.common.client.UserServiceClientBasicAuth;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import models.admin.PingResult;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutionException;
 
 public class PingServiceImpl implements PingService {
-
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PingServiceImpl.class);
 
   private final PermissionsServiceClient permissionsClient;
   private final OgelServiceClient ogelClient;
@@ -34,33 +34,46 @@ public class PingServiceImpl implements PingService {
     this.userClient = userClient;
   }
 
+  private static boolean allServicesHealthy(boolean service1Healthy, boolean service2Healthy) {
+    return service1Healthy && service2Healthy;
+  }
+
   /**
    * We send a GET request to each of the dependent services and record the result
    */
   public PingResult pingServices() {
     PingResult result = new PingResult();
 
-    try {
-      boolean customerServiceReachable = customerClient.serviceReachable().toCompletableFuture().get();
-      boolean permissionsServiceReachable = permissionsClient.serviceReachable().toCompletableFuture().get();
-      boolean ogelServiceReachable = ogelClient.serviceReachable().toCompletableFuture().get();
-      boolean countryServiceReachable = countryProvider.serviceReachable().toCompletableFuture().get();
-      boolean userServiceReachable = userClient.serviceReachable().toCompletableFuture().get();
+    Map<String, CompletableFuture<Boolean>> serviceNameToCheckResultFuture = ImmutableMap.of(
+      "UserService", userClient.serviceReachable().toCompletableFuture(),
+      "CustomerService", customerClient.serviceReachable().toCompletableFuture(),
+      "PermissionsService", permissionsClient.serviceReachable().toCompletableFuture(),
+      "OgelService", ogelClient.serviceReachable().toCompletableFuture(),
+      "CountryService", countryProvider.serviceReachable().toCompletableFuture()
+    );
 
-      result.addDetailPart("UserService", userServiceReachable);
-      result.addDetailPart("CustomerService", customerServiceReachable);
-      result.addDetailPart("PermissionsService", permissionsServiceReachable);
-      result.addDetailPart("OgelService", ogelServiceReachable);
-      result.addDetailPart("CountryService", countryServiceReachable);
+    CompletableFuture.allOf(serviceNameToCheckResultFuture.values().toArray(new CompletableFuture[0])).join();
 
-      if (userServiceReachable && customerServiceReachable && permissionsServiceReachable
-          && ogelServiceReachable && countryServiceReachable) {
-        result.setStatusOk();
-      }
+    serviceNameToCheckResultFuture.forEach(
+      (serviceName, serviceCheckResultFuture) -> result.addDetailPart(serviceName, serviceCheckResultFuture.join()));
 
-    } catch (InterruptedException | ExecutionException e) {
-      LOGGER.error("doPingAudit", e);
+    boolean allServicesHealthy = serviceNameToCheckResultFuture.values()
+      .stream()
+      .map(CompletableFuture::join)
+      .reduce(true, PingServiceImpl::allServicesHealthy);
+
+    if (allServicesHealthy) {
+      result.setStatusOk();
+    } else {
+      String statusMessage = "Services not responding: " + String.join(", ",
+        serviceNameToCheckResultFuture.entrySet()
+          .stream()
+          .filter(entry -> entry.getValue().join().booleanValue() == false)
+          .map(Entry::getKey)
+          .collect(Collectors.toList()));
+      result.setStatus(statusMessage);
     }
+
     return result;
   }
 }

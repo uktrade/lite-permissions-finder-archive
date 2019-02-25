@@ -1,8 +1,10 @@
 package controllers.admin;
 
 import actions.BasicAuthAction;
+import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import components.services.PingService;
+import java.util.concurrent.TimeUnit;
 import models.admin.PingResult;
 import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
@@ -16,7 +18,7 @@ public class AdminController extends Controller {
 
   private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
 
-  private static final String PING_XML_TEMPLATE = "<pingdom_http_custom_check><status>%s</status><detail>%s</detail></pingdom_http_custom_check>";
+  private static final String PING_XML_TEMPLATE = "<pingdom_http_custom_check><status>%s</status><response_time>%d</response_time><detail>%s</detail></pingdom_http_custom_check>";
 
   private final PingService pingService;
 
@@ -33,8 +35,10 @@ public class AdminController extends Controller {
 
   @With(BasicAuthAction.class)
   public Result cascadePing() {
+    Stopwatch timer = Stopwatch.createStarted();
     LOGGER.info("Admin check request received - getting results from dependent service...");
     PingResult result = pingService.pingServices();
-    return ok(String.format(PING_XML_TEMPLATE, result.getStatus(), result.getDetail())).as("application/xml");
+    long responseTimeMillis = timer.stop().elapsed(TimeUnit.MILLISECONDS);
+    return ok(String.format(PING_XML_TEMPLATE, result.getStatus(), responseTimeMillis, result.getDetail())).as("application/xml");
   }
 }
