@@ -10,12 +10,12 @@ public interface JourneyDao {
 
   List<Journey> getAllJourneys();
 
-  List<Journey> getJourneysByJourneyName(String journeyName);
+  Journey getByJourneyName(String journeyName);
 
   Long insertJourney(Journey journey);
 
   void updateJourney(long id, Journey journey);
 
-  void deleteAllJournies();
+  void deleteAllJourneys();
 
 }

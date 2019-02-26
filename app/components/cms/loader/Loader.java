@@ -1,15 +1,20 @@
 package components.cms.loader;
 
-import static components.cms.parser.model.navigation.column.Buttons.SELECT_MANY;
-import static components.cms.parser.model.navigation.column.Buttons.SELECT_ONE;
-
 import com.google.inject.Inject;
-import components.cms.dao.*;
+import components.cms.dao.ControlEntryDao;
+import components.cms.dao.GlobalDefinitionDao;
+import components.cms.dao.JourneyDao;
+import components.cms.dao.LocalDefinitionDao;
+import components.cms.dao.NoteDao;
+import components.cms.dao.RelatedControlEntryDao;
+import components.cms.dao.SessionStageDao;
+import components.cms.dao.SpreadsheetVersionDao;
+import components.cms.dao.StageAnswerDao;
+import components.cms.dao.StageDao;
 import components.cms.parser.ParserResult;
 import components.cms.parser.model.LoadingMetadata;
 import components.cms.parser.model.NavigationLevel;
 import components.cms.parser.model.definition.Definition;
-import components.cms.parser.model.navigation.column.Breadcrumbs;
 import components.cms.parser.model.navigation.column.Buttons;
 import components.cms.parser.model.navigation.column.ControlListEntries;
 import components.cms.parser.model.navigation.column.Decontrols;
@@ -17,7 +22,15 @@ import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.Redirect;
 import lombok.AllArgsConstructor;
-import models.cms.*;
+import models.cms.ControlEntry;
+import models.cms.GlobalDefinition;
+import models.cms.Journey;
+import models.cms.LocalDefinition;
+import models.cms.Note;
+import models.cms.RelatedControlEntry;
+import models.cms.SpreadsheetVersion;
+import models.cms.Stage;
+import models.cms.StageAnswer;
 import models.cms.enums.AnswerType;
 import models.cms.enums.NoteType;
 import models.cms.enums.OutcomeType;
@@ -28,6 +41,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static components.cms.parser.model.navigation.column.Buttons.SELECT_MANY;
+import static components.cms.parser.model.navigation.column.Buttons.SELECT_ONE;
 
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class Loader {
@@ -59,12 +75,11 @@ public class Loader {
     // Loop through available sheets (eg Military, Dual Use)
     for (NavigationLevel rootNavigationLevel : parserResult.getNavigationLevels()) {
       // Generate a new journey for each sheet
-      Journey journey = new Journey().setJourneyName(rootNavigationLevel.getList());
+      Journey journey = new Journey().setJourneyName(rootNavigationLevel.getList()).setFriendlyJourneyName(rootNavigationLevel.getFriendlyName());
       Long journeyId = journeyDao.insertJourney(journey);
 
       // Populate the database
-      createGlobalDefinitions(parserResult.getDefinitions(), journeyId,
-          rootNavigationLevel.getList());
+      createGlobalDefinitions(parserResult.getDefinitions(), journeyId, rootNavigationLevel.getList());
       generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
       createControlEntries(null, 1, rootNavigationLevel, journeyId);
       createStages(journeyId, rootNavigationLevel);
@@ -82,7 +97,8 @@ public class Loader {
 
     // Insert version database
     SpreadsheetVersion spreadsheetVersion = parserResult.getSpreadsheetVersion();
-    spreadsheetVersionDao.insert(spreadsheetVersion.getFilename(), spreadsheetVersion.getVersion(), spreadsheetVersion.getSha1());
+    spreadsheetVersionDao.insert(spreadsheetVersion.getFilename(), spreadsheetVersion.getVersion(),
+      spreadsheetVersion.getSha1());
   }
 
   private void generateLoadingMetadataId(boolean isRoot, NavigationLevel navigationLevel,
@@ -120,14 +136,10 @@ public class Loader {
     if (controlListEntries != null && controlListEntries.getRating() != null) {
       ControlEntry controlEntry = new ControlEntry()
           .setParentControlEntryId(parentControlEntryId)
-          .setFullDescription(navigationLevel.getContent())
+          .setDescription(navigationLevel.getContent())
           .setControlCode(controlListEntries.getRating())
           .setDecontrolled(controlListEntries.isDecontrolled())
           .setJumpToControlCodes(navigationLevel.getLoops().getJumpToControlCodes());
-      if (navigationLevel.getBreadcrumbs() != null) {
-        Breadcrumbs breadcrumbs = navigationLevel.getBreadcrumbs();
-        controlEntry.setSummaryDescription(breadcrumbs.getBreadcrumbText());
-      }
       controlEntry.setNested(navigationLevel.getNesting() != null);
       controlEntry.setDisplayOrder(displayOrder);
       controlEntry.setJourneyId(journeyId);
@@ -414,42 +426,26 @@ public class Loader {
   }
 
   private void splitAndInsertNote(String noteText, NoteType noteType, long stageId) {
-    List<String> noteTexts = Arrays.stream(noteText.split(REGEX_NEW_LINE))
-        .map(String::trim)
+    List<Note> notes = Arrays.stream(noteText.split(REGEX_NEW_LINE))
         .filter(StringUtils::isNotBlank)
+        .map(note -> new Note(stageId, note.trim(), noteType))
         .collect(Collectors.toList());
 
-    for (String nt : noteTexts) {
-      Note note = new Note()
-          .setStageId(stageId)
-          .setNoteType(noteType)
-          .setNoteText(nt);
+    noteDao.insert(notes);
 
-      Long noteId = noteDao.insertNote(note);
-
-      LOGGER.debug("Inserted note with id {}", noteId);
-    }
+    LOGGER.debug("Successfully inserted notes");
   }
 
   private void createGlobalDefinitions(List<Definition> definitions, long journeyId, String sheetName) {
-    for (Definition definition : definitions) {
-      if (sheetName.equalsIgnoreCase(definition.getList())) {
-        String term = StringUtils.strip(StringUtils.trimToEmpty(definition.getName()), "\"");
-        String definitionText = definition.getNewContent();
+    List<GlobalDefinition> globalDefinitions = definitions.parallelStream()
+      .filter(globalDefinition -> globalDefinition.getList().equalsIgnoreCase(sheetName))
+      .peek(globalDefinition -> globalDefinition.setName(StringUtils.strip(StringUtils.trimToEmpty(globalDefinition.getName()), "\"")))
+      .map(globalDefinition -> new GlobalDefinition(journeyId, globalDefinition.getName(), globalDefinition.getNewContent()))
+      .collect(Collectors.toList());
 
-        if (StringUtils.isAnyEmpty(term, definitionText)) {
-          LOGGER.error("Invalid global definition, row num {}, term {}, definition text {}",
-              definition.getRowNumber(), term,
-              definitionText);
-        } else {
-          GlobalDefinition globalDefinition = new GlobalDefinition(journeyId, term, definitionText);
+    globalDefinitionDao.insert(globalDefinitions);
 
-          Long globalDefinitionId = globalDefinitionDao.insertGlobalDefinition(globalDefinition);
-
-          LOGGER.debug("Inserted global definition with id {}", globalDefinitionId);
-        }
-      }
-    }
+    LOGGER.debug("Successfully inserted global definitions");
   }
 
   private void createRelatedControlEntries(boolean isRoot, NavigationLevel navigationLevel) {
@@ -495,7 +491,7 @@ public class Loader {
     stageAnswerDao.deleteAllStageAnswers();
     stageDao.deleteAllStages();
     controlEntryDao.deleteAllControlEntries();
-    journeyDao.deleteAllJournies();
+    journeyDao.deleteAllJourneys();
   }
 
   private AnswerType mapButtonsToAnswerType(Buttons buttons) {

@@ -10,19 +10,14 @@ import controllers.licencefinder.QuestionsController;
 import exceptions.UnknownParameterException;
 import models.TradeType;
 import models.view.QuestionView;
-import org.apache.commons.lang3.StringUtils;
 import play.libs.Json;
 import play.mvc.Result;
 import triage.config.ControllerConfigService;
-import triage.config.DefinitionConfig;
-import triage.text.*;
+import triage.text.HtmlRenderService;
 
 import javax.inject.Named;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletionStage;
 
 import static play.mvc.Results.ok;
 
@@ -38,24 +33,12 @@ public class ModalSelectionController {
   private static final String YES = "Yes";
   private static final String NO = "No";
 
-  private final HtmlRenderService htmlRenderService;
-  private final ControllerConfigService controllerConfigService;
-  private final views.html.modal.modalDefinitionView modalDefinitionView;
-  private final OgelServiceClient ogelServiceClient;
   private final LicenceFinderDao licenceFinderDao;
   private final CountryProvider countryProvider;
 
   @Inject
-  public ModalSelectionController(HtmlRenderService htmlRenderService,
-                                  ControllerConfigService controllerConfigService,
-                                  views.html.modal.modalDefinitionView modalDefinitionView,
-                                  OgelServiceClient ogelServiceClient,
-                                  LicenceFinderDao licenceFinderDao,
+  public ModalSelectionController(LicenceFinderDao licenceFinderDao,
                                   @Named("countryProviderExport") CountryProvider countryProvider) {
-    this.htmlRenderService = htmlRenderService;
-    this.controllerConfigService = controllerConfigService;
-    this.modalDefinitionView = modalDefinitionView;
-    this.ogelServiceClient = ogelServiceClient;
     this.licenceFinderDao = licenceFinderDao;
     this.countryProvider = countryProvider;
   }
@@ -63,10 +46,6 @@ public class ModalSelectionController {
   public Result renderPastSelections(String sessionId) {
     return ok(Json.prettyPrint(new ObjectMapper().valueToTree(getLicenceFinderAnswers(sessionId))));
   }
-
-  /*public Result renderPastSelectionsView(String sessionId) {
-    return ok(modalDefinitionView.render(getLicenceFinderAnswers(sessionId));
-  }*/
 
   private List<QuestionView> getLicenceFinderAnswers(String sessionId) {
     List<QuestionView> views = new ArrayList<>();

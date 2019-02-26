@@ -3,6 +3,7 @@ package models.cms;
 public class Journey {
   private Long id;
   private String journeyName;
+  private String friendlyJourneyName;
   private Long initialStageId;
 
   public Long getId() {
@@ -20,6 +21,15 @@ public class Journey {
 
   public Journey setJourneyName(String journeyName) {
     this.journeyName = journeyName;
+    return this;
+  }
+
+  public String getFriendlyJourneyName() {
+    return friendlyJourneyName;
+  }
+
+  public Journey setFriendlyJourneyName(String friendlyJourneyName) {
+    this.friendlyJourneyName = friendlyJourneyName;
     return this;
   }
 

@@ -59,6 +59,8 @@ import components.services.ControlEntryService;
 import components.services.ControlEntryServiceImpl;
 import components.services.FlashService;
 import components.services.FlashServiceImpl;
+import components.services.JourneyService;
+import components.services.JourneyServiceImpl;
 import components.services.PingService;
 import components.services.PingServiceImpl;
 import components.services.ProgressViewService;
@@ -135,6 +137,7 @@ public class GuiceModule extends AbstractModule implements AkkaGuiceSupport {
     bind(ControlEntryService.class).to(ControlEntryServiceImpl.class);
     bind(HtmlRenderService.class).to(HtmlRenderServiceImpl.class);
     bind(JourneyConfigService.class).to(JourneyConfigServiceImpl.class).asEagerSingleton();
+    bind(JourneyService.class).to(JourneyServiceImpl.class);
     bind(ControllerConfigService.class).to(ControllerConfigServiceImpl.class);
     bind(RichTextParser.class).to(RichTextParserImpl.class);
     bind(ParserLookupService.class).to(ParserLookupServiceDaoImpl.class);

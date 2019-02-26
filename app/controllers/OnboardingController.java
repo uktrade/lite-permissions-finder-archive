@@ -1,12 +1,7 @@
 package controllers;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
-
 import com.google.inject.Inject;
-import components.cms.dao.JourneyDao;
-import components.cms.parser.workbook.NavigationParser;
+import components.services.JourneyService;
 import controllers.guard.SessionGuardAction;
 import java.util.Arrays;
 import lombok.AllArgsConstructor;
@@ -18,12 +13,15 @@ import play.mvc.Result;
 import play.mvc.With;
 import triage.session.SessionService;
 import triage.session.TriageSession;
-import utils.ListNameToFriendlyNameUtil;
 import utils.common.SelectOption;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static play.mvc.Results.ok;
+import static play.mvc.Results.redirect;
 
 @With(SessionGuardAction.class)
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
@@ -32,7 +30,9 @@ public class OnboardingController {
   private final FormFactory formFactory;
   private final SessionService sessionService;
   private final views.html.onboardingContent onboardingContent;
-  private final JourneyDao journeyDao;
+  private final JourneyService journeyService;
+
+  private final String DONT_KNOW = "DONT_KNOW";
 
   public CompletionStage<Result> renderForm(String sessionId) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
@@ -49,38 +49,30 @@ public class OnboardingController {
       return ok(onboardingContent.render(form, getSelectOptions(), sessionId, resumeCode));
     }
 
-    SpeciallyDesigned speciallyDesigned = form.get().speciallyDesigned;
-    if (Arrays.asList(SpeciallyDesigned.UK_MILITARY_LIST, SpeciallyDesigned.DUAL_USE_LIST).contains(speciallyDesigned)) {
-      Journey journey = journeyDao.getJourneysByJourneyName(NavigationParser.sheetIndices.get(
-        speciallyDesigned == SpeciallyDesigned.UK_MILITARY_LIST ? 2 : 3
-      )).get(0);
+    String isSpecialParam = form.get().speciallyDesigned;
+    Journey journey = journeyService.getByJourneyName(isSpecialParam);
 
-      sessionService.bindSessionToJourney(sessionId, journey);
-
-      return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
-    } else {
+    if (journey == null) {
       return redirect(routes.StaticContentController.renderMoreInformationRequired(sessionId));
     }
+
+	      sessionService.bindSessionToJourney(sessionId, journey);
+    return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
   }
 
   private List<SelectOption> getSelectOptions() {
     List<SelectOption> optionList = new ArrayList<>();
-    optionList.add(new SelectOption(SpeciallyDesigned.UK_MILITARY_LIST.toString(),
-            ListNameToFriendlyNameUtil.getFriendlyNameFromListName(SpeciallyDesigned.UK_MILITARY_LIST.toString()), false));
-    optionList.add(new SelectOption(SpeciallyDesigned.DUAL_USE_LIST.toString(),
-            ListNameToFriendlyNameUtil.getFriendlyNameFromListName(SpeciallyDesigned.DUAL_USE_LIST.toString()), false));
-    optionList.add(new SelectOption(SpeciallyDesigned.DONT_KNOW.toString(), "I don't know", true));
-    return optionList;
-  }
 
-  public enum SpeciallyDesigned {
-    UK_MILITARY_LIST,
-    DUAL_USE_LIST,
-    DONT_KNOW
+    for (Journey journey : journeyService.getAllJourneys()) {
+      optionList.add(new SelectOption(journey.getJourneyName(), journey.getFriendlyJourneyName(), false));
+    }
+
+    optionList.add(new SelectOption(DONT_KNOW, "I don't know", true));
+    return optionList;
   }
 
   public static class OnboardingForm {
     @Constraints.Required(message = "Select one option")
-    public SpeciallyDesigned speciallyDesigned;
+    public String speciallyDesigned;
   }
 }

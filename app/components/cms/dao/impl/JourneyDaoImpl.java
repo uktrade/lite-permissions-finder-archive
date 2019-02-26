@@ -27,22 +27,22 @@ public class JourneyDaoImpl implements JourneyDao {
   }
 
   @Override
-  public List<Journey> getJourneysByJourneyName(String journeyName) {
+  public Journey getByJourneyName(String journeyName) {
     return journeyJDBIDao.getByJourneyName(journeyName);
   }
 
   @Override
   public Long insertJourney(Journey journey) {
-    return journeyJDBIDao.insert(journey.getJourneyName(), journey.getInitialStageId());
+    return journeyJDBIDao.insert(journey.getJourneyName(), journey.getFriendlyJourneyName(), journey.getInitialStageId());
   }
 
   @Override
   public void updateJourney(long id, Journey journey) {
-    journeyJDBIDao.update(id, journey.getJourneyName(), journey.getInitialStageId());
+    journeyJDBIDao.update(id, journey.getJourneyName(), journey.getFriendlyJourneyName(), journey.getInitialStageId());
   }
 
   @Override
-  public void deleteAllJournies() {
+  public void deleteAllJourneys() {
     journeyJDBIDao.truncate();
   }
 }

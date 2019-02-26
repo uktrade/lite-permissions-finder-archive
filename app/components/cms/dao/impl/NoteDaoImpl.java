@@ -23,11 +23,16 @@ public class NoteDaoImpl implements NoteDao {
   }
 
   @Override
-  public Long insertNote(Note note) {
+  public Long insert(Note note) {
     return noteJDBIDao.insert(
         note.getStageId(),
         note.getNoteText(),
         note.getNoteType());
+  }
+
+  @Override
+  public void insert(List<Note> notes) {
+    noteJDBIDao.insert(notes);
   }
 
   @Override

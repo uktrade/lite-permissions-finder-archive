@@ -6,8 +6,7 @@ public class ControlEntry {
   private Long id;
   private Long parentControlEntryId;
   private String controlCode;
-  private String fullDescription;
-  private String summaryDescription;
+  private String description;
   private boolean nested;
   private Integer displayOrder;
   private long journeyId;
@@ -41,21 +40,12 @@ public class ControlEntry {
     return this;
   }
 
-  public String getFullDescription() {
-    return fullDescription;
+  public String getDescription() {
+    return description;
   }
 
-  public ControlEntry setFullDescription(String fullDescription) {
-    this.fullDescription = fullDescription;
-    return this;
-  }
-
-  public String getSummaryDescription() {
-    return summaryDescription;
-  }
-
-  public ControlEntry setSummaryDescription(String summaryDescription) {
-    this.summaryDescription = summaryDescription;
+  public ControlEntry setDescription(String description) {
+    this.description = description;
     return this;
   }
 

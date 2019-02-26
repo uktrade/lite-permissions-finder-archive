@@ -25,7 +25,6 @@ import triage.session.SessionService;
 import triage.session.TriageSession;
 import triage.text.HtmlRenderOption;
 import triage.text.HtmlRenderService;
-import utils.ListNameToFriendlyNameUtil;
 
 public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
 
@@ -94,9 +93,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
           .map(TriageSession::getJourneyId).orElse(null))
       .map(journeyId -> journeyDao.getJourney(journeyId)).orElse(null);
     if (journey != null) {
-      breadcrumbItemViews.add(
-        new BreadcrumbItemView(null, ListNameToFriendlyNameUtil.getFriendlyNameFromListName(journey.getJourneyName()),
-          null, new ArrayList<>()));
+		breadcrumbItemViews.add(new BreadcrumbItemView(null, journey.getFriendlyJourneyName(), null, new ArrayList<>()));
     }
     return Lists.reverse(breadcrumbItemViews);
   }
