@@ -357,7 +357,7 @@ public class StageController extends Controller {
     String answer = answerForm.rawData().get("answer");
 
     // Redirect to none of the above
-    if (answer.equals("none")) {
+    if (answer != null && answer.equals("none")) {
       sessionService.updateLastStageId(sessionId, stageId);
       return resultForNoMatch(sessionId, stageConfig);
     }
