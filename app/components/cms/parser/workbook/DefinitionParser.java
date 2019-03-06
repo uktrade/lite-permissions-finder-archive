@@ -4,11 +4,11 @@ import components.cms.parser.model.definition.Definition;
 import components.cms.parser.util.Utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -38,7 +38,11 @@ public class DefinitionParser {
     // For each row in the sheet, map to a definition and then return as list
     return StreamSupport.stream(sheet.spliterator(), true)
             .skip(RowIndices.START) // Skip first row (header)
-            .filter(Objects::nonNull) // Filter out null rows
+            .filter(row -> // Filter out null rows
+              !StringUtils.isAnyEmpty(
+                Utils.getCellValueAsString(row.getCell(ColumnIndices.NAME)),
+                Utils.getCellValueAsString(row.getCell(ColumnIndices.LIST)),
+                Utils.getCellValueAsString(row.getCell(ColumnIndices.NEW_CONTENT))))
             .map(row -> new Definition(
                     row.getRowNum(),
                     Utils.getCellValueAsString(row.getCell(ColumnIndices.NAME)),
