@@ -6,6 +6,7 @@ import components.cms.dao.NoteDao;
 import components.cms.dao.StageAnswerDao;
 import components.cms.dao.StageDao;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -100,8 +101,8 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
         .collect(Collectors.toList());
 
     return new StageConfig(Long.toString(stage.getId()), stage.getJourneyId(), stage.getTitle(), explanatoryNote,
-      stage.getQuestionType(), stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), stage.isDecontrolled(),
-      controlEntryConfig, answerConfigs);
+      stage.getQuestionType(), stage.getAnswerType(), nextStageId, stage.getStageOutcomeType(), controlEntryConfig,
+      answerConfigs);
   }
 
   private AnswerConfig createAnswerConfig(StageAnswer stageAnswer, Long journeyId) {
@@ -148,12 +149,7 @@ public class JourneyConfigFactoryImpl implements JourneyConfigFactory {
 
     return new ControlEntryConfig(Long.toString(controlEntry.getId()), controlEntry.getJourneyId(),
       controlEntry.getControlCode(), fullDescription, summaryDescription, parentControlEntryConfig, hasNestedChildren,
-      controlEntry.getJumpToControlCodes()
-        .stream()
-        .map(controlEntryDao::getControlEntryByControlCode)
-        .map(ControlEntry::getId)
-        .map(Object::toString)
-        .collect(Collectors.toSet())
+      new HashSet<>(controlEntry.getJumpToControlCodes()), controlEntry.isDecontrolled()
     );
   }
 

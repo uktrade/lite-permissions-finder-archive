@@ -61,10 +61,8 @@ public class StageController extends Controller {
   private final JourneyConfigService journeyConfigService;
   private final ControllerConfigService controllerConfigService;
   private final RenderService renderService;
-  private final JourneyService journeyService;
   private final ProgressViewService progressViewService;
   private final views.html.triage.decontrol decontrol;
-  private final views.html.triage.decontrolFurtherChecks decontrolFurtherChecks;
   private final views.html.triage.selectOne selectOne;
   private final views.html.triage.selectMany selectMany;
   private final views.html.triage.relatedEntries relatedEntries;
@@ -97,26 +95,10 @@ public class StageController extends Controller {
         return renderDecontrol(filledForm, stageConfig, sessionId, resumeCode);
       case ITEM:
         return renderItem(formFactory.form(AnswerForm.class), stageConfig, sessionId, resumeCode);
-      case FURTHER_DECONTROL_CHECKS:
-        return makeFurtherDecontrolChecksResult(sessionId, stageConfig);
       case UNKNOWN:
       default:
         throw UnknownParameterException.unknownStageId(stageId);
     }
-  }
-
-  private Result makeFurtherDecontrolChecksResult(String sessionId, StageConfig stageConfig) {
-    String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    String currentListName = journeyService.getById(stageConfig.getJourneyId()).getFriendlyJourneyName();
-    Set<String> listsToCheck = stageConfig.getRelatedControlEntry().get().getJumpToControlEntryIds()
-      .stream()
-      .map(controllerConfigService::getControlEntryConfig)
-      .map(ControlEntryConfig::getJourneyId)
-      .map(journeyService::getById)
-      .map(Journey::getFriendlyJourneyName)
-      .collect(Collectors.toSet());
-
-    return ok(decontrolFurtherChecks.render(stageConfig.getStageId(), sessionId, resumeCode, currentListName, listsToCheck));
   }
 
   public Result handleSubmit(String stageId, String sessionId) {
@@ -134,8 +116,6 @@ public class StageController extends Controller {
         return handleDecontrolSubmit(stageId, sessionId, stageConfig, resumeCode);
       case ITEM:
         return handleItemSubmit(stageId, sessionId, stageConfig, resumeCode);
-      case FURTHER_DECONTROL_CHECKS:
-        return handleFurtherDecontrolChecksSubmit(stageId, sessionId, stageConfig, resumeCode);
       case UNKNOWN:
       default:
         throw UnknownParameterException.unknownStageId(stageId);
@@ -190,7 +170,14 @@ public class StageController extends Controller {
         .getId();
       String answer = answerForm.get().answer;
       if ("true".equals(answer)) {
-        return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
+        boolean itemDecontrolled = stageConfig.getRelatedControlEntry().map(ControlEntryConfig::isDecontrolled).orElse(false);
+        if (itemDecontrolled) {
+          stageConfig.getRelatedControlEntry().ifPresent(controlEntryConfig -> sessionService.addDecontrolledCodeFound(
+            sessionId, controlEntryConfig.getControlCode(), controlEntryConfig.getJumpToControlCodes()));
+          return redirect(routes.OutcomeController.outcomeDecontrol(stageId, sessionId));
+        } else {
+          return redirect(routes.OutcomeController.outcomeListed(controlEntryId, sessionId));
+        }
       } else if ("false".equals(answer)) {
         return resultForNoMatch(sessionId, stageConfig);
       } else {
@@ -341,15 +328,6 @@ public class StageController extends Controller {
     return answers.stream()
       .map(AnswerConfig::getAnswerId)
       .collect(Collectors.toSet());
-  }
-
-  private Result handleFurtherDecontrolChecksSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {
-    sessionService.updateLastStageId(sessionId, stageId);
-    sessionService.addDecontrolledCodeFound(sessionId, stageConfig.getRelatedControlEntry().get().getControlCode());
-    sessionService.addControlEntryIdsToVerifyDecontrolledStatus(sessionId, stageConfig.getRelatedControlEntry().get().getJumpToControlEntryIds());
-    Optional<String> controlEntryId = sessionService.getAndRemoveControlEntryIdForDecontrolledStatusVerification(sessionId);
-    String nextStageId = journeyConfigService.getStageIdsForControlEntryId(controlEntryId.get()).get(0);
-    return redirectToStage(nextStageId, sessionId);
   }
 
   private Result handleSelectOneSubmit(String stageId, String sessionId, StageConfig stageConfig, String resumeCode) {

@@ -12,5 +12,5 @@ public class TriageSession {
   private final long spreadsheetVersionId;
   private final Long lastStageId;
   private final Set<String> decontrolledCodesFound;
-  private final Set<String> controlEntryIdsToVerifyDecontrolledStatus;
+  private final Set<String> controlCodesToConfirmDecontrolledStatus;
 }

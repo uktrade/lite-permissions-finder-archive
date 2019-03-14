@@ -5,8 +5,14 @@
 @import views.html.common.page._
 
 @this(outcomePage: outcomePage)
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, decontrolUrl: String, breadcrumbView: BreadcrumbView, answerViews: List[AnswerView])
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, furtherChecksRequired: Boolean)
 
+@if(furtherChecksRequired) {
+  @outcomePage("Further checks required", sessionId, resumeCode, subtitle = "stageDescriptor") {
+    @decontrolVerification(sessionId)
+
+  }
+} else {
 @outcomePage("Generate an NLR Document", sessionId, resumeCode, subtitle = "stageDescriptor") {
 
   @twoThirdsColumn{
@@ -16,8 +22,6 @@
   <p class="govuk-label">
   	Based on the choices you’ve made, you may generate a no licence required (NLR) document.
   </p>
-
-  <!--@decontrolBreadcrumb(decontrolUrl, breadcrumbView, answerViews)-->
 
   <h2 class="govuk-heading-l">Before generating your document</h2>
 
@@ -68,4 +72,5 @@
     <button type="submit" class="govuk-button" name="action" value="continue">Generate an NLR document</button>
   </form>
 
+}
 }

@@ -1,5 +1,8 @@
 package components.cms.loader;
 
+import static components.cms.parser.model.navigation.column.Buttons.SELECT_MANY;
+import static components.cms.parser.model.navigation.column.Buttons.SELECT_ONE;
+
 import com.google.inject.Inject;
 import components.cms.dao.ControlEntryDao;
 import components.cms.dao.GlobalDefinitionDao;
@@ -17,10 +20,12 @@ import components.cms.parser.model.NavigationLevel;
 import components.cms.parser.model.definition.Definition;
 import components.cms.parser.model.navigation.column.Buttons;
 import components.cms.parser.model.navigation.column.ControlListEntries;
-import components.cms.parser.model.navigation.column.Decontrols;
 import components.cms.parser.model.navigation.column.Definitions;
 import components.cms.parser.model.navigation.column.Notes;
 import components.cms.parser.model.navigation.column.Redirect;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import models.cms.ControlEntry;
 import models.cms.GlobalDefinition;
@@ -37,13 +42,6 @@ import models.cms.enums.OutcomeType;
 import models.cms.enums.QuestionType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static components.cms.parser.model.navigation.column.Buttons.SELECT_MANY;
-import static components.cms.parser.model.navigation.column.Buttons.SELECT_ONE;
 
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class Loader {
@@ -83,7 +81,7 @@ public class Loader {
       generateLoadingMetadataId(true, rootNavigationLevel, "", 0);
       createControlEntries(null, 1, rootNavigationLevel, journeyId);
       createStages(journeyId, rootNavigationLevel);
-      createStageAnswersAndDecontrolStages(true, journeyId, 1, rootNavigationLevel);
+      createStageAnswers(true, journeyId, 1, rootNavigationLevel);
       createLocalDefinitions(rootNavigationLevel);
       createRelatedControlEntries(true, rootNavigationLevel);
 
@@ -177,7 +175,6 @@ public class Loader {
         .setTitle(topSubNavigationLevel.getOnPageContent().getTitle())
         .setExplanatoryNotes(topSubNavigationLevel.getOnPageContent().getExplanatoryNotes())
         .setAnswerType(mapButtonsToAnswerType(topSubNavigationLevel.getButtons()))
-        .setDecontrolled(decontrolled)
         .setControlEntryId(navigationLevel.getLoadingMetadata().getControlEntryId());
 
     Long stageId = stageDao.insertStage(stage);
@@ -191,7 +188,7 @@ public class Loader {
     }
   }
 
-  private void createStageAnswersAndDecontrolStages(boolean isRoot, long journeyId, int displayOrder,
+  private void createStageAnswers(boolean isRoot, long journeyId, int displayOrder,
     NavigationLevel navigationLevel) {
     if (!isRoot) {
       StageAnswer stageAnswer = new StageAnswer();
@@ -199,22 +196,16 @@ public class Loader {
 
       Long attachNotesToStageId = null;
 
-      Decontrols decontrols = navigationLevel.getDecontrols();
-      if (decontrols != null && decontrols.getContent() != null) {
-        Stage decontrolStage = createDecontrolStage(journeyId, navigationLevel);
-        stageAnswer.setGoToStageId(decontrolStage.getId());
-        attachNotesToStageId = decontrolStage.getNextStageId();
-      } else if (navigationLevel.getSubNavigationLevels().isEmpty() || navigationLevel.getSubNavigationLevels().get(0).getButtons() == null) {
+      if (navigationLevel.getSubNavigationLevels().isEmpty() || navigationLevel.getSubNavigationLevels().get(0).getButtons() == null) {
         //Child entries without buttons are not a stage, we are actually on a leaf now
         if (navigationLevel.getRedirect() == Redirect.TOO_COMPLEX_FOR_CODE_FINDER) {
           stageAnswer.setGoToOutcomeType(OutcomeType.TOO_COMPLEX);
-        } else if(isDecontrolledWithFurtherChecks(navigationLevel)) {
-          stageAnswer.setGoToStageId(
-            createDecontrolWithFurtherChecksStage(journeyId, navigationLevel.getLoadingMetadata().getControlEntryId()));
         } else {
-          stageAnswer.setGoToStageId(createItemStage(journeyId,
+          stageAnswer.setGoToStageId(createItemStage(
+            journeyId,
             navigationLevel.getLoadingMetadata().getControlEntryId(),
-            navigationLevel.getNotes()));
+            navigationLevel.getNotes()
+          ));
         }
       } else {
         Long goToStageId = navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata().getStageId();
@@ -254,14 +245,9 @@ public class Loader {
       NavigationLevel subNavigationLevel = navigationLevel.getSubNavigationLevels().get(i);
       //Don't make StageAnswers for rating-only rows without buttons
       if (subNavigationLevel.getButtons() != null) {
-        createStageAnswersAndDecontrolStages(false, journeyId, i + 1, subNavigationLevel);
+        createStageAnswers(false, journeyId, i + 1, subNavigationLevel);
       }
     }
-  }
-
-  private boolean isDecontrolledWithFurtherChecks(NavigationLevel navigationLevel) {
-    return navigationLevel.getControlListEntries().isDecontrolled() == Boolean.TRUE
-      && !navigationLevel.getLoops().getJumpToControlCodes().isEmpty();
   }
 
   private long createItemStage(long journeyId, long controlEntryId, Notes notes) {
@@ -278,98 +264,6 @@ public class Loader {
     createNotes(notes, stageId);
 
     return stageId;
-  }
-
-  private long createDecontrolWithFurtherChecksStage(long journeyId, long controlEntryId) {
-    Stage stage = new Stage()
-      .setJourneyId(journeyId)
-      .setQuestionType(QuestionType.FURTHER_DECONTROL_CHECKS)
-      .setAnswerType(AnswerType.PASS_THROUGH)
-      .setControlEntryId(controlEntryId);
-
-    return stageDao.insertStage(stage);
-  }
-
-  private Stage createDecontrolStage(long journeyId, NavigationLevel navigationLevel) {
-    Decontrols decontrols = navigationLevel.getDecontrols();
-    LoadingMetadata loadingMetadata = navigationLevel.getLoadingMetadata();
-
-    Stage decontrolStage = new Stage()
-        .setJourneyId(journeyId)
-        .setAnswerType(AnswerType.SELECT_MANY)
-        .setQuestionType(QuestionType.DECONTROL)
-        .setControlEntryId(loadingMetadata.getControlEntryId())
-        .setTitle(decontrols.getTitle())
-        .setExplanatoryNotes(decontrols.getExplanatoryNotes());
-
-    if (!navigationLevel.getSubNavigationLevels().isEmpty()) {
-      Long nextStageId = navigationLevel.getSubNavigationLevels().get(0).getLoadingMetadata()
-          .getStageId();
-      // This can happen if the current row has "nested content" child rows which are not actual stages
-      if (nextStageId == null) {
-        LOGGER.error("Next stage ID null for decontrol stage {}, assuming outcome",
-            navigationLevel.getCellAddress());
-        if (navigationLevel.getRedirect() == Redirect.TOO_COMPLEX_FOR_CODE_FINDER) {
-          decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
-        } else {
-          decontrolStage.setNextStageId(
-              createItemStage(journeyId, loadingMetadata.getControlEntryId(),
-                  navigationLevel.getNotes()));
-        }
-      } else {
-        decontrolStage.setNextStageId(nextStageId);
-      }
-    } else {
-      if (navigationLevel.getRedirect() == Redirect.TOO_COMPLEX_FOR_CODE_FINDER) {
-        decontrolStage.setStageOutcomeType(OutcomeType.TOO_COMPLEX);
-      } else {
-        decontrolStage.setNextStageId(
-            createItemStage(journeyId, loadingMetadata.getControlEntryId(),
-                navigationLevel.getNotes()));
-      }
-    }
-
-    Long decontrolStageId = stageDao.insertStage(decontrolStage);
-    decontrolStage.setId(decontrolStageId);
-
-    LOGGER.debug("Inserted stage id {} (DECONTROL)", decontrolStageId);
-
-    List<String> decontrolEntries =
-        Arrays.stream(decontrols.getContent().split("\\r?\\n(?!\\*)"))
-            .filter(StringUtils::isNotBlank)
-            .collect(Collectors.toList());
-
-    for (int i = 0; i < decontrolEntries.size(); i++) {
-      StageAnswer decontrolStageAnswer = new StageAnswer();
-
-      List<String> tokens =
-          Arrays.stream(decontrolEntries.get(i).split(REGEX_NEW_LINE))
-              .filter(StringUtils::isNotBlank)
-              .collect(Collectors.toList());
-
-      if (!tokens.isEmpty()) {
-        decontrolStageAnswer.setAnswerText(tokens.get(0));
-        if (tokens.size() > 1) {
-          String nestedContent = tokens.subList(1, tokens.size()).stream()
-              .collect(Collectors.joining("\n", "", "\n"));
-          decontrolStageAnswer.setNestedContent(nestedContent);
-        }
-      } else {
-        LOGGER.error(
-            "Unable to derive answer text for decontrol stage answer, stage id {}, cell id {}",
-            decontrolStageId, navigationLevel.getCellAddress());
-      }
-
-      decontrolStageAnswer.setStageId(decontrolStageId);
-      decontrolStageAnswer.setGoToOutcomeType(OutcomeType.DECONTROL);
-      decontrolStageAnswer.setDisplayOrder(i + 1);
-
-      Long decontrolStageAnswerId = stageAnswerDao.insertStageAnswer(decontrolStageAnswer);
-
-      LOGGER.debug("Inserted stage answer id {} DECONTROL", decontrolStageAnswerId);
-    }
-
-    return decontrolStage;
   }
 
   private void createLocalDefinitions(NavigationLevel navigationLevel) {

@@ -71,34 +71,36 @@ public class SessionServiceImpl implements SessionService {
   }
 
   @Override
-  public void addDecontrolledCodeFound(String sessionId, String controlCode) {
+  public void addDecontrolledCodeFound(String sessionId, String controlCode, Set<String> jumpToControlCodes) {
     TriageSession session = sessionDao.getSessionById(sessionId);
     Set<String> decontrolCodesFound =  session.getDecontrolledCodesFound();
     if (decontrolCodesFound.add(controlCode)) {
       sessionDao.updateDecontrolCodesFound(sessionId, new ArrayList<>(decontrolCodesFound));
     }
-  }
-
-  @Override
-  public void addControlEntryIdsToVerifyDecontrolledStatus(String sessionId, Set<String> controlEntryIds) {
-    TriageSession session = sessionDao.getSessionById(sessionId);
-    Set<String> controlEntryIdsToVeryifyDecontrolledStatus = session.getControlEntryIdsToVerifyDecontrolledStatus();
-    if (controlEntryIdsToVeryifyDecontrolledStatus.addAll(controlEntryIds)) {
-      sessionDao.updateControlEntryIdsToVerifyDecontrolledStatus(sessionId, new ArrayList<>(controlEntryIdsToVeryifyDecontrolledStatus));
+    jumpToControlCodes.removeAll(decontrolCodesFound);
+    Set<String> controlCodesToConfirmDecontrolledStatus = session.getControlCodesToConfirmDecontrolledStatus();
+    if (controlCodesToConfirmDecontrolledStatus.addAll(jumpToControlCodes)) {
+      sessionDao.updateControlCodesToConfirmDecontrolledStatus(sessionId, controlCodesToConfirmDecontrolledStatus);
     }
   }
 
   @Override
-  public Optional<String> getAndRemoveControlEntryIdForDecontrolledStatusVerification(String sessionId) {
+  public boolean furtherChecksRequired(String sessionId) {
+    return !sessionDao.getSessionById(sessionId).getControlCodesToConfirmDecontrolledStatus().isEmpty();
+  }
+
+  @Override
+  public Optional<String> getAndRemoveControlCodeToConfirmDecontrolledStatus(String sessionId) {
     TriageSession session = sessionDao.getSessionById(sessionId);
-    Set<String> controlEntryIdsToVeryifyDecontrolledStatus = session.getControlEntryIdsToVerifyDecontrolledStatus();
-    if (controlEntryIdsToVeryifyDecontrolledStatus.isEmpty()) {
+    Set<String> controlCodesToConfirmDecontrolledStatus = session.getControlCodesToConfirmDecontrolledStatus();
+    if (controlCodesToConfirmDecontrolledStatus.isEmpty()) {
       return Optional.empty();
     } else {
-      Iterator<String> it = controlEntryIdsToVeryifyDecontrolledStatus.iterator();
+      Iterator<String> it = controlCodesToConfirmDecontrolledStatus.iterator();
       String controlEntryId = it.next();
       it.remove();
-      sessionDao.updateControlEntryIdsToVerifyDecontrolledStatus(sessionId, new ArrayList<>(controlEntryIdsToVeryifyDecontrolledStatus));
+      System.out.println("Updating DB with " + controlCodesToConfirmDecontrolledStatus.size() + " length list");
+      sessionDao.updateControlCodesToConfirmDecontrolledStatus(sessionId, controlCodesToConfirmDecontrolledStatus);
       return Optional.of(controlEntryId);
     }
   }
@@ -113,5 +115,4 @@ public class SessionServiceImpl implements SessionService {
     IntStream.range(0, 8).forEach(i -> sb.append(CODE_DIGITS.get(ThreadLocalRandom.current().nextInt(0, CODE_DIGITS.size()))));
     return sb.insert(4, "-").toString();
   }
-
 }

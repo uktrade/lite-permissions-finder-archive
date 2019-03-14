@@ -13,11 +13,12 @@ public class ControlEntryConfig {
   private final RichText summaryDescription;
   private final ControlEntryConfig parentControlEntry;
   private final boolean nestedChildren;
-  private final Set<String> jumpToControlEntryIds;
+  private final Set<String> jumpToControlCodes;
+  private final boolean decontrolled;
 
   public ControlEntryConfig(String id, long journeyId, String controlCode, RichText fullDescription,
                             RichText summaryDescription, ControlEntryConfig parentControlEntry,
-                            boolean nestedChildren, Set<String> jumpToControlEntryIds) {
+                            boolean nestedChildren, Set<String> jumpToControlCodes, boolean decontrolled) {
     this.id = id;
     this.journeyId = journeyId;
     this.controlCode = controlCode;
@@ -25,7 +26,8 @@ public class ControlEntryConfig {
     this.summaryDescription = summaryDescription;
     this.parentControlEntry = parentControlEntry;
     this.nestedChildren = nestedChildren;
-    this.jumpToControlEntryIds = jumpToControlEntryIds;
+    this.jumpToControlCodes = jumpToControlCodes;
+    this.decontrolled = decontrolled;
   }
 
   public String getId() {
@@ -57,7 +59,11 @@ public class ControlEntryConfig {
     return nestedChildren;
   }
 
-  public Set<String> getJumpToControlEntryIds() {
-    return jumpToControlEntryIds;
+  public Set<String> getJumpToControlCodes() {
+    return jumpToControlCodes;
+  }
+
+  public boolean isDecontrolled() {
+    return decontrolled;
   }
 }

@@ -5,4 +5,4 @@ ALTER TABLE control_entry
 ALTER TABLE session
   ALTER COLUMN journey_id DROP NOT NULL,
   ADD COLUMN decontrol_codes_found TEXT,
-  ADD COLUMN control_entry_ids_to_verify_decontrolled_status TEXT;
+  ADD COLUMN control_codes_to_confirm_decontrolled_status TEXT;

@@ -1,0 +1,11 @@
+@(sessionId: String)
+
+<p class="govuk-label">
+  Further checks are required to confirm your item is not listed in other sections.
+</p>
+
+<form action="@routes.OutcomeController.handleOutcomeFurtherChecksSubmit(sessionId)" method="POST">
+  @views.html.helper.CSRF.formField
+
+  <button type="submit" class="govuk-button" name="action" value="continue">Continue</button>
+</form>
