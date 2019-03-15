@@ -21,7 +21,7 @@ public interface SessionService {
 
   void addDecontrolledCodeFound(String sessionId, String controlCode, Set<String> jumpToControlCodes);
 
-  boolean furtherChecksRequired(String sessionId);
+  Set<String> getControlCodesToConfirmDecontrolledStatus(String sessionId);
 
   Optional<String> getAndRemoveControlCodeToConfirmDecontrolledStatus(String sessionId);
 

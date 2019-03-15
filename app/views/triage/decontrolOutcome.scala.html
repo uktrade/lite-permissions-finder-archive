@@ -5,72 +5,70 @@
 @import views.html.common.page._
 
 @this(outcomePage: outcomePage)
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, furtherChecksRequired: Boolean)
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, decontrolUrl: String, breadcrumbView: BreadcrumbView, controlCodesToConfirmDecontrolledStatus: Set[String])
 
-@if(furtherChecksRequired) {
-  @outcomePage("Further checks required", sessionId, resumeCode, subtitle = "stageDescriptor") {
-    @decontrolVerification(sessionId)
-
-  }
-} else {
-@outcomePage("Generate an NLR Document", sessionId, resumeCode, subtitle = "stageDescriptor") {
+@outcomePage("Item is decontrolled", sessionId, resumeCode, subtitle = "stageDescriptor") {
 
   @twoThirdsColumn{
     @errorSummary(form)
   }
 
-  <p class="govuk-label">
-  	Based on the choices you’ve made, you may generate a no licence required (NLR) document.
-  </p>
+  @decontrolBreadcrumb(decontrolUrl, breadcrumbView)
 
-  <h2 class="govuk-heading-l">Before generating your document</h2>
+  @if(!controlCodesToConfirmDecontrolledStatus.isEmpty) {
+    @decontrolVerification(sessionId, controlCodesToConfirmDecontrolledStatus)
+  } else {
+    <p class="govuk-label">
+      Based on the choices you’ve made, you may generate a no licence required (NLR) document.
+    </p>
 
-  <ol class="circle-step-list">
-    <li>
-      Get someone who knows the technical details of your item to help you check the choices you've made against the
-      technical specifications of your item.
-    </li>
-    <li>
-      Even if your item is not controlled it may still be affected by
-      <a href="https://www.gov.uk/guidance/supplementary-wmd-end-use-controls" rel="external" target="_blank">
-        WMD<span class="govuk-visually-hidden"> (opens in a new tab)</span>
-      </a> and
-      <a href="https://www.gov.uk/guidance/military-end-use-control-guidance-notes" rel="external" target="_blank">
-        military<span class="govuk-visually-hidden"> (opens in a new tab)</span>
-      </a> end use controls and any
-      <a href="https://www.gov.uk/guidance/current-arms-embargoes-and-other-restrictions" rel="external" target="_blank">
-        sanctions and embargoes<span class="govuk-visually-hidden"> (opens in a new tab)</span>
-      </a>.
-      To find out if your item needs a licence, log in to SPIRE and refer to the
-      <a href="https://www.spire.trade.gov.uk" rel="external" target="_blank">
-        End User Advisory Service (EUAS)<span class="govuk-visually-hidden"> (opens in a new tab)</span></a> or use the links above.
-    </li>
-    <li>
-      You may generate a no licence required (NLR) document if, following the points above, you believe that your item
-      is still not subject to controls.
-    </li>
-  </ol>
+    <h2 class="govuk-heading-l">Before generating your document</h2>
 
-  <div class="banner danger-banner">
-    <span class="govuk-visually-hidden">Warning:</span>
-    Always double-check if your items are controlled. If you export controlled items without the correct export licence
-    you could:
-    <ul class="govuk-list govuk-list--bullet">
-      <li>have your items seized</li>
-      <li>face a fine</li>
-      <li>serve up to 10 years in prison</li>
-    </ul>
-  </div>
+    <ol class="circle-step-list">
+      <li>
+        Get someone who knows the technical details of your item to help you check the choices you've made against the
+        technical specifications of your item.
+      </li>
+      <li>
+        Even if your item is not controlled it may still be affected by
+        <a href="https://www.gov.uk/guidance/supplementary-wmd-end-use-controls" rel="external" target="_blank">
+          WMD<span class="govuk-visually-hidden"> (opens in a new tab)</span>
+        </a> and
+        <a href="https://www.gov.uk/guidance/military-end-use-control-guidance-notes" rel="external" target="_blank">
+          military<span class="govuk-visually-hidden"> (opens in a new tab)</span>
+        </a> end use controls and any
+        <a href="https://www.gov.uk/guidance/current-arms-embargoes-and-other-restrictions" rel="external" target="_blank">
+          sanctions and embargoes<span class="govuk-visually-hidden"> (opens in a new tab)</span>
+        </a>.
+        To find out if your item needs a licence, log in to SPIRE and refer to the
+        <a href="https://www.spire.trade.gov.uk" rel="external" target="_blank">
+          End User Advisory Service (EUAS)<span class="govuk-visually-hidden"> (opens in a new tab)</span></a> or use the links above.
+      </li>
+      <li>
+        You may generate a no licence required (NLR) document if, following the points above, you believe that your item
+        is still not subject to controls.
+      </li>
+    </ol>
 
-  <form action="@routes.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)" method="POST">
-    @views.html.helper.CSRF.formField
-
-    <div class="govuk-form-group">
-      @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")
+    <div class="banner danger-banner">
+      <span class="govuk-visually-hidden">Warning:</span>
+      Always double-check if your items are controlled. If you export controlled items without the correct export licence
+      you could:
+      <ul class="govuk-list govuk-list--bullet">
+        <li>have your items seized</li>
+        <li>face a fine</li>
+        <li>serve up to 10 years in prison</li>
+      </ul>
     </div>
 
-    <button type="submit" class="govuk-button" name="action" value="continue">Generate an NLR document</button>
-  </form>
+    <form action="@routes.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)" method="POST">
+      @views.html.helper.CSRF.formField
 
-}
+      <div class="govuk-form-group">
+        @formCheckbox(form("answer"), "I confirm that I have read and understood all the information detailed above.")
+      </div>
+
+      <button type="submit" class="govuk-button" name="action" value="continue">Generate an NLR document</button>
+    </form>
+  }
 }

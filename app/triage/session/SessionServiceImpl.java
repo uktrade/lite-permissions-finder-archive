@@ -85,8 +85,8 @@ public class SessionServiceImpl implements SessionService {
   }
 
   @Override
-  public boolean furtherChecksRequired(String sessionId) {
-    return !sessionDao.getSessionById(sessionId).getControlCodesToConfirmDecontrolledStatus().isEmpty();
+  public Set<String> getControlCodesToConfirmDecontrolledStatus(String sessionId) {
+    return sessionDao.getSessionById(sessionId).getControlCodesToConfirmDecontrolledStatus();
   }
 
   @Override
@@ -99,7 +99,6 @@ public class SessionServiceImpl implements SessionService {
       Iterator<String> it = controlCodesToConfirmDecontrolledStatus.iterator();
       String controlEntryId = it.next();
       it.remove();
-      System.out.println("Updating DB with " + controlCodesToConfirmDecontrolledStatus.size() + " length list");
       sessionDao.updateControlCodesToConfirmDecontrolledStatus(sessionId, controlCodesToConfirmDecontrolledStatus);
       return Optional.of(controlEntryId);
     }

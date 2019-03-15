@@ -6,7 +6,7 @@
 
 @this(outcomePage: outcomePage)
 @(form: Form[_], controlEntryId: String, sessionId: String, resumeCode: String, breadcrumbItemsViews: List[BreadcrumbItemView],
-  relatedEntryViews: List[RelatedEntryView], changeUrl: String, furtherChecksRequired: Boolean)
+  relatedEntryViews: List[RelatedEntryView], changeUrl: String, controlCodesToConfirmDecontrolledStatus: Set[String])
 
 @outcomePage("Item not found", sessionId, resumeCode) {
 
@@ -18,9 +18,8 @@
 
   @itemNotFoundBreadcrumb(breadcrumbItemsViews, relatedEntryViews, changeUrl)
 
-  oh oh @furtherChecksRequired la la la
-  @if(furtherChecksRequired) {
-    @decontrolVerification(sessionId)
+  @if(!controlCodesToConfirmDecontrolledStatus.isEmpty) {
+    @decontrolVerification(sessionId, controlCodesToConfirmDecontrolledStatus)
   } else {
     <h2 class="govuk-heading-l">What you should do next</h2>
 

@@ -132,18 +132,9 @@ public class OutcomeController extends Controller {
 
   public Result handleOutcomeFurtherChecksSubmit(String sessionId) {
     long stageId = sessionService.getAndRemoveControlCodeToConfirmDecontrolledStatus(sessionId)
-      .map(controlCode -> {
-        System.out.println("Control code: " + controlCode);
-        return controlCode;
-      })
       .map(controlCode -> controlEntryDao.getControlEntryByControlCode(controlCode).getId())
-      .map(controlEntryId -> {
-        System.out.println("Control entry id: " + controlEntryId);
-        return controlEntryId;
-      })
       .map(controlEntryId -> stageDao.getStagesForControlEntryId(controlEntryId).get(0).getId())
       .get();
-    System.out.println("Stage id: " + stageId);
     return redirect(routes.StageController.render(Long.toString(stageId), sessionId));
   }
 
@@ -167,10 +158,9 @@ public class OutcomeController extends Controller {
         controlEntryConfig, true);
 
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    boolean furtherChecksRequired = sessionService.furtherChecksRequired(sessionId);
-    System.out.println("Not found fcr: " + furtherChecksRequired);
+    Set<String> controlCodesToConfirmDecontrolledStatus = sessionService.getControlCodesToConfirmDecontrolledStatus(sessionId);
     return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode,
-        breadcrumbItemViews, relatedEntryViews, changeUrl, furtherChecksRequired));
+        breadcrumbItemViews, relatedEntryViews, changeUrl, controlCodesToConfirmDecontrolledStatus));
   }
 
   private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig,
@@ -184,9 +174,11 @@ public class OutcomeController extends Controller {
   }
 
   private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, StageConfig stageConfig, String sessionId) {
+    BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, true);
+    String decontrolUrl = breadcrumbViewService.createDecontrolUrl(sessionId, breadcrumbViewService.getControlEntryConfig(stageConfig));
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    boolean furtherChecksRequired = sessionService.furtherChecksRequired(sessionId);
-    return ok(decontrolOutcome.render(requestNlrForm, stageConfig.getStageId(), sessionId, resumeCode, furtherChecksRequired));
+    Set<String> controlCodesToConfirmDecontrolledStatus = sessionService.getControlCodesToConfirmDecontrolledStatus(sessionId);
+    return ok(decontrolOutcome.render(requestNlrForm, stageConfig.getStageId(), sessionId, resumeCode, decontrolUrl, breadcrumbView, controlCodesToConfirmDecontrolledStatus));
   }
 
   private Result redirectToIndex(String sessionId) {
