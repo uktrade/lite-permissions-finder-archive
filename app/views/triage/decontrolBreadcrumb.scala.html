@@ -4,7 +4,7 @@
 @import views.html.frontendComponents.controlCodeBreadcrumbs._
 @import com.google.common.collect.Iterables
 
-@(changeUrl: String, breadcrumbView: BreadcrumbView, answerViews: List[AnswerView])
+@(changeUrl: String, breadcrumbView: BreadcrumbView)
 
 @controlCodeBreadcrumbs(isWide = true) {
   @for(breadcrumbItemView <- breadcrumbView.getBreadcrumbItemViews) {
@@ -33,15 +33,6 @@
     }
     @if(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription!=null) {
       @Html(Iterables.getLast(breadcrumbView.getBreadcrumbItemViews).getDescription)
-    }
-    @if(!answerViews.isEmpty) {
-      <ul>
-      @for(answerView <- answerViews) {
-        <li>
-        @Html(answerView.getPrompt + subAnswers(answerView.getSubAnswerViews) + answerView.getNestedContent)
-        </li>
-      }
-      </ul>
     }
   }(HtmlFormat.empty)
 }

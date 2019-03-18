@@ -1,18 +1,20 @@
 package controllers;
 
 import com.google.inject.Inject;
+import components.cms.dao.ControlEntryDao;
+import components.cms.dao.SessionDao;
+import components.cms.dao.StageDao;
 import components.services.AnswerViewService;
 import components.services.BreadcrumbViewService;
+import components.services.ControlEntryService;
 import components.services.ProgressViewService;
 import components.services.RenderService;
 import controllers.guard.SessionGuardAction;
 import exceptions.UnknownParameterException;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import models.enums.PageType;
-import models.view.AnswerView;
 import models.view.BreadcrumbItemView;
 import models.view.BreadcrumbView;
 import models.view.ProgressView;
@@ -41,6 +43,8 @@ public class OutcomeController extends Controller {
 
   private final JourneyConfigService journeyConfigService;
   private final ControllerConfigService controllerConfigService;
+  private final StageDao stageDao;
+  private final ControlEntryDao controlEntryDao;
   private final SessionService sessionService;
   private final FormFactory formFactory;
   private final AnswerViewService answerViewService;
@@ -101,31 +105,8 @@ public class OutcomeController extends Controller {
   public Result outcomeDecontrol(String stageId, String sessionId) {
     StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
 
-    Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
-   /* if (answers.isEmpty()) {
-      LOGGER.error("Answers cannot be empty on outcome decontrol page.");
-      return redirectToIndex(sessionId);
-    } else {*/
-      Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class);
-      return renderOutcomeDecontrol(form, stageConfig, sessionId, answers);
-    //}
-  }
-
-  public Result outcomeDecontrol2(String stageId, String sessionId) {
-    StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
-
-    if (PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
-      throw UnknownParameterException.unknownStageId(stageId);
-    } else {
-      Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageId);
-      if (answers.isEmpty()) {
-        LOGGER.error("Answers cannot be empty on outcome decontrol page.");
-        return redirectToIndex(sessionId);
-      } else {
-        Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class);
-        return renderOutcomeDecontrol(form, stageConfig, sessionId, answers);
-      }
-    }
+    Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class);
+    return renderOutcomeDecontrol(form, stageConfig, sessionId);
   }
 
   public Result handleOutcomeDecontrolSubmit(String stageId, String sessionId) {
@@ -141,12 +122,20 @@ public class OutcomeController extends Controller {
       } else {
         Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();
         if (form.hasErrors() || !isChecked(form)) {
-          return renderOutcomeDecontrol(form, stageConfig, sessionId, answers);
+          return renderOutcomeDecontrol(form, stageConfig, sessionId);
         } else {
           return redirect(routes.ViewOutcomeController.registerDecontrolNlr(sessionId, stageConfig.getStageId()));
         }
       }
     }
+  }
+
+  public Result handleOutcomeFurtherChecksSubmit(String sessionId) {
+    long stageId = sessionService.getAndRemoveControlCodeToConfirmDecontrolledStatus(sessionId)
+      .map(controlCode -> controlEntryDao.getControlEntryByControlCode(controlCode).getId())
+      .map(controlEntryId -> stageDao.getStagesForControlEntryId(controlEntryId).get(0).getId())
+      .get();
+    return redirect(routes.StageController.render(Long.toString(stageId), sessionId));
   }
 
   public Result outcomeDropout(String sessionId) {
@@ -169,8 +158,9 @@ public class OutcomeController extends Controller {
         controlEntryConfig, true);
 
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
+    Set<String> controlCodesToConfirmDecontrolledStatus = sessionService.getControlCodesToConfirmDecontrolledStatus(sessionId);
     return ok(itemNotFound.render(requestNlrFormForm, controlEntryConfig.getId(), sessionId, resumeCode,
-        breadcrumbItemViews, relatedEntryViews, changeUrl));
+        breadcrumbItemViews, relatedEntryViews, changeUrl, controlCodesToConfirmDecontrolledStatus));
   }
 
   private Result renderOutcomeListed(Form<RequestOgelForm> requestOgelForm, ControlEntryConfig controlEntryConfig,
@@ -183,15 +173,12 @@ public class OutcomeController extends Controller {
     return ok(listedOutcome.render(requestOgelForm, controlEntryConfig.getId(), sessionId, resumeCode, breadcrumbViews, controlCode, description, subAnswerViews));
   }
 
-  private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, StageConfig stageConfig, String sessionId,
-                                        Set<String> answers) {
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true).stream()
-        .filter(answer -> answers.contains(answer.getValue()))
-        .collect(Collectors.toList());
+  private Result renderOutcomeDecontrol(Form<RequestNlrForm> requestNlrForm, StageConfig stageConfig, String sessionId) {
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, true);
     String decontrolUrl = breadcrumbViewService.createDecontrolUrl(sessionId, breadcrumbViewService.getControlEntryConfig(stageConfig));
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
-    return ok(decontrolOutcome.render(requestNlrForm, stageConfig.getStageId(), sessionId, resumeCode, decontrolUrl, breadcrumbView, answerViews));
+    Set<String> controlCodesToConfirmDecontrolledStatus = sessionService.getControlCodesToConfirmDecontrolledStatus(sessionId);
+    return ok(decontrolOutcome.render(requestNlrForm, stageConfig.getStageId(), sessionId, resumeCode, decontrolUrl, breadcrumbView, controlCodesToConfirmDecontrolledStatus));
   }
 
   private Result redirectToIndex(String sessionId) {

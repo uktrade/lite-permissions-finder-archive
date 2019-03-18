@@ -3,6 +3,7 @@ package components.cms.dao.impl;
 import com.google.inject.Inject;
 import components.cms.dao.SessionDao;
 import components.cms.jdbi.SessionJDBIDao;
+import java.util.Collection;
 import java.util.List;
 import org.skife.jdbi.v2.DBI;
 import triage.session.TriageSession;
@@ -33,9 +34,9 @@ public class SessionDaoImpl implements SessionDao {
   }
 
   @Override
-  public void updateControlEntryIdsToVerifyDecontrolledStatus(String sessionId, List<String> controlEntryIdsToVerifyDecontrolledStatus) {
-    sessionJDBIDao.updateControlEntryIdsToVerifyDecontrolledStatus(sessionId, String.join(",",
-      controlEntryIdsToVerifyDecontrolledStatus));
+  public void updateControlCodesToConfirmDecontrolledStatus(String sessionId, Collection<String> controlCodesToConfirmDecontrolledStatus) {
+    sessionJDBIDao.updateControlCodesToConfirmDecontrolledStatus(sessionId, String.join(",",
+      controlCodesToConfirmDecontrolledStatus));
   }
 
   @Override

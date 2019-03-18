@@ -19,11 +19,11 @@ public interface SessionService {
 
   void updateLastStageId(String sessionId, String lastStageId);
 
-  void addDecontrolledCodeFound(String sessionId, String controlCode);
+  void addDecontrolledCodeFound(String sessionId, String controlCode, Set<String> jumpToControlCodes);
 
-  void addControlEntryIdsToVerifyDecontrolledStatus(String sessionId, Set<String> controlEntryIds);
+  Set<String> getControlCodesToConfirmDecontrolledStatus(String sessionId);
 
-  Optional<String> getAndRemoveControlEntryIdForDecontrolledStatusVerification(String sessionId);
+  Optional<String> getAndRemoveControlCodeToConfirmDecontrolledStatus(String sessionId);
 
   void bindSessionToJourney(String sessionId, Journey journey);
 }

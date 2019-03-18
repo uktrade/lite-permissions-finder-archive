@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 
 public class ResultSetWrapper {
 
@@ -30,6 +31,7 @@ public class ResultSetWrapper {
     return !resultSet.wasNull() ? Arrays
       .stream(commaSeparatedStringList.split(","))
       .map(String::trim)
+      .filter(StringUtils::isNotEmpty)
       .collect(Collectors.toList())
       : Collections.EMPTY_LIST;
   }

@@ -22,8 +22,8 @@ public interface SessionJDBIDao {
   @SqlUpdate("UPDATE SESSION SET DECONTROL_CODES_FOUND = :decontrolCodesFound WHERE id = :id")
   void updateDecontrolCodesFound(@Bind("id") String sessionId, @Bind("decontrolCodesFound") String decontrolCodesFound);
 
-  @SqlUpdate("UPDATE SESSION SET CONTROL_ENTRY_IDS_TO_VERIFY_DECONTROLLED_STATUS = :controlEntryIdsToVerifyDecontrolledStatus WHERE id = :id")
-  void updateControlEntryIdsToVerifyDecontrolledStatus(@Bind("id") String sessionId, @Bind("controlEntryIdsToVerifyDecontrolledStatus") String controlEntryIdsToVerifyDecontrolledStatus);
+  @SqlUpdate("UPDATE SESSION SET CONTROL_CODES_TO_CONFIRM_DECONTROLLED_STATUS = :controlCodesToConfirmDecontrolledStatus WHERE id = :id")
+  void updateControlCodesToConfirmDecontrolledStatus(@Bind("id") String sessionId, @Bind("controlCodesToConfirmDecontrolledStatus") String controlCodesToConfirmDecontrolledStatus);
 
   @SqlUpdate("UPDATE SESSION SET JOURNEY_ID = :journeyId WHERE id = :id")
   void updateJourneyId(@Bind("id") String sessionId, @Bind("journeyId") Long journeyId);

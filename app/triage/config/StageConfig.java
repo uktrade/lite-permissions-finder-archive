@@ -24,8 +24,6 @@ public class StageConfig {
   private final String nextStageId;
   private final OutcomeType outcomeType;
 
-  private final boolean decontrolled;
-
   private final ControlEntryConfig relatedControlEntry;
 
   private final List<AnswerConfig> answerConfigs;
@@ -41,14 +39,9 @@ public class StageConfig {
             ", answerType=" + answerType +
             ", nextStageId='" + nextStageId + '\'' +
             ", outcomeType=" + outcomeType +
-            ", decontrolled=" + decontrolled +
             ", relatedControlEntry=" + relatedControlEntry +
             ", answerConfigs=" + answerConfigs +
             '}';
-  }
-
-  public boolean isDecontrolled() {
-    return decontrolled;
   }
 
   public String getStageId() {

@@ -16,8 +16,6 @@ public class PageTypeUtil {
       return PageType.DECONTROL;
     } else if (stageConfig.getQuestionType() == QuestionType.ITEM) {
       return PageType.ITEM;
-    } else if (stageConfig.getQuestionType() == QuestionType.FURTHER_DECONTROL_CHECKS) {
-      return PageType.FURTHER_DECONTROL_CHECKS;
     } else {
       return PageType.UNKNOWN;
     }

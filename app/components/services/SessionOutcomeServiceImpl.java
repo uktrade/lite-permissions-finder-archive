@@ -94,9 +94,8 @@ public class SessionOutcomeServiceImpl implements SessionOutcomeService {
   @Override
   public void generateDecontrolNlrLetter(String sessionId, String userId, AccountData accountData,
                                          StageConfig stageConfig, String resumeCode, Html description) {
-    List<AnswerView> answerViews = answerViewService.createAnswerViews(stageConfig, true);
     BreadcrumbView breadcrumbView = breadcrumbViewService.createBreadcrumbView(stageConfig, sessionId, false, HtmlRenderOption.OMIT_LINKS);
-    Html nlrBreadcrumb = decontrolBreadcrumb.render(null, breadcrumbView, answerViews);
+    Html nlrBreadcrumb = decontrolBreadcrumb.render(null, breadcrumbView);
 
     generateLetter(sessionId, userId, accountData, resumeCode, SessionOutcomeType.NLR_DECONTROL, nlrBreadcrumb, description);
   }

@@ -14,16 +14,6 @@ public class Stage {
   private AnswerType answerType;
   private Long nextStageId;
   private OutcomeType stageOutcomeType;
-  private boolean decontrolled;
-
-  public boolean isDecontrolled() {
-    return decontrolled;
-  }
-
-  public Stage setDecontrolled(boolean decontrolled) {
-    this.decontrolled = decontrolled;
-    return this;
-  }
 
   public Long getId() {
     return id;

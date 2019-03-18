@@ -65,6 +65,7 @@ GET     /outcome/listed/:controlEntryId             controllers.OutcomeControlle
 POST    /outcome/listed/:controlEntryId             controllers.OutcomeController.handleOutcomeListedSubmit(controlEntryId, sessionId)
 GET     /outcome/decontrol/:stageId                 controllers.OutcomeController.outcomeDecontrol(stageId, sessionId)
 POST    /outcome/decontrol/:stageId                 controllers.OutcomeController.handleOutcomeDecontrolSubmit(stageId, sessionId)
+POST    /outcome/decontrol-further-checks           controllers.OutcomeController.handleOutcomeFurtherChecksSubmit(sessionId)
 GET     /outcome/dropout                            controllers.OutcomeController.outcomeDropout(sessionId)
 GET     /stage                                      controllers.StageController.index(sessionId)
 GET     /stage/:stageId                             controllers.StageController.render(stageId, sessionId)

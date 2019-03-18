@@ -1,0 +1,12 @@
+@(sessionId: String, controlCodesToConfirmDecontrolledStatus: Set[String])
+
+<form action="@routes.OutcomeController.handleOutcomeFurtherChecksSubmit(sessionId)" method="POST">
+  @views.html.helper.CSRF.formField
+
+  <div class="govuk-body">
+    Further checks are required to confirm your item is not listed in following sections: @String.join(", ", controlCodesToConfirmDecontrolledStatus).
+  </div>
+
+
+<button type="submit" class="govuk-button" name="action" value="continue">Continue</button>
+</form>

@@ -1,10 +1,10 @@
 package components.cms.dao;
 
+import java.util.List;
 import models.cms.Stage;
 
-import java.util.List;
-
 public interface StageDao {
+
   Stage getStage(long id);
 
   Stage getByNextStageId(long nextStageId);
@@ -14,5 +14,4 @@ public interface StageDao {
   Long insertStage(Stage stage);
 
   void deleteAllStages();
-
 }
