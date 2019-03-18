@@ -56,7 +56,7 @@ public class OnboardingController {
       return redirect(routes.StaticContentController.renderMoreInformationRequired(sessionId));
     }
 
-	      sessionService.bindSessionToJourney(sessionId, journey);
+    sessionService.bindSessionToJourney(sessionId, journey);
     return redirect(routes.StageController.handleSubmit(journey.getInitialStageId().toString(), sessionId));
   }
 
