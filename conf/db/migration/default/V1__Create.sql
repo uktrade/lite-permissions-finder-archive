@@ -130,6 +130,7 @@ CREATE TABLE session (
   spreadsheet_version_id   BIGSERIAL NOT NULL,
   decontrol_codes_found    TEXT,
   control_codes_to_confirm_decontrolled_status TEXT,
+  last_controlled_code_id  BIGINT,
   FOREIGN KEY (journey_id) REFERENCES journey(id),
   FOREIGN KEY (spreadsheet_version_id) REFERENCES spreadsheet_version(id)
 );

@@ -53,4 +53,14 @@ public class SessionDaoImpl implements SessionDao {
   public TriageSession getSessionByResumeCode(String resumeCode) {
     return sessionJDBIDao.getSessionByResumeCode(resumeCode);
   }
+
+  @Override
+  public void updateLastControlledCode(String sessionId, long controlCodeId) {
+    sessionJDBIDao.updateLastControlledCodeId(sessionId, controlCodeId);
+  }
+
+  @Override
+  public long getLastControlledCode(String sessionId) {
+    return sessionJDBIDao.getLastControlledCode(sessionId);
+  }
 }

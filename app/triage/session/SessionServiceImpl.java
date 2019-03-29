@@ -1,9 +1,11 @@
 package triage.session;
 
 import com.google.inject.Inject;
+import components.cms.dao.ControlEntryDao;
 import components.cms.dao.SessionDao;
 import components.cms.dao.SessionStageDao;
 import components.cms.dao.SpreadsheetVersionDao;
+import java.util.Collection;
 import lombok.AllArgsConstructor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
+import models.cms.ControlEntry;
 import models.cms.Journey;
 
 @AllArgsConstructor(onConstructor = @__({ @Inject }))
@@ -28,6 +31,7 @@ public class SessionServiceImpl implements SessionService {
   private final SessionDao sessionDao;
   private final SessionStageDao sessionStageDao;
   private final SpreadsheetVersionDao spreadsheetVersionDao;
+  private final ControlEntryDao controlEntryDao;
 
   @Override
   public TriageSession createNewSession() {
@@ -107,6 +111,25 @@ public class SessionServiceImpl implements SessionService {
   @Override
   public void bindSessionToJourney(String sessionId, Journey journey) {
     sessionDao.updateJourneyId(sessionId, journey.getId());
+  }
+
+  @Override
+  public void updateLastControlledCodeSeen(String sessionId, long controlCodeId) {
+    ControlEntry controlEntry = controlEntryDao.getControlEntry(controlCodeId);
+    if (!controlEntry.isDecontrolled()) {
+      sessionDao.updateLastControlledCode(sessionId, controlCodeId);
+    }
+  }
+
+  @Override
+  public boolean allControlCodesDecontrolled(Collection<Long> controlCodes) {
+    return controlCodes.stream().map(code -> controlEntryDao.getControlEntry(code)).map(ControlEntry::isDecontrolled)
+      .reduce(Boolean::logicalAnd).orElse(false);
+  }
+
+  @Override
+  public long getLastControlledCodeSeen(String sessionId) {
+    return sessionDao.getLastControlledCode(sessionId);
   }
 
   private String generateResumeCode() {

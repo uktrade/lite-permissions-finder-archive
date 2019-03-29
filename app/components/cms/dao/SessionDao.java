@@ -19,4 +19,8 @@ public interface SessionDao {
   TriageSession getSessionById(String id);
 
   TriageSession getSessionByResumeCode(String resumeCode);
+
+  void updateLastControlledCode(String sessionId, long controlCodeId);
+
+  long getLastControlledCode(String sessionId);
 }
