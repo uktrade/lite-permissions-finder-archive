@@ -93,7 +93,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
           .map(TriageSession::getJourneyId).orElse(null))
       .map(journeyId -> journeyDao.getJourney(journeyId)).orElse(null);
     if (journey != null) {
-		breadcrumbItemViews.add(new BreadcrumbItemView(null, journey.getFriendlyJourneyName(), null, new ArrayList<>()));
+      breadcrumbItemViews.add(new BreadcrumbItemView(null, journey.getFriendlyJourneyName(), null, new ArrayList<>()));
     }
     return Lists.reverse(breadcrumbItemViews);
   }
@@ -106,15 +106,14 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     List<String> stageIds = journeyConfigService.getStageIdsForControlEntryId(controlEntryConfig.getId());
     List<NoteView> noteViews = createNoteViews(stageIds, htmlRenderOptions);
     String description = renderService.getSummaryDescription(controlEntryConfig, htmlRenderOptions);
-    String url = null;
-    if (includeChangeLinks) {
-      url = createChangeUrl(sessionId, stageIds);
-    }
-    BreadcrumbItemView breadcrumbItemView = new BreadcrumbItemView(controlCode, description, url, noteViews);
+    String url = includeChangeLinks ? createChangeUrl(sessionId, stageIds) : null;
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
-    breadcrumbItemViews.add(breadcrumbItemView);
+    if (!controlEntryConfig.isDecontrolled()) {
+      breadcrumbItemViews.add(new BreadcrumbItemView(controlCode, description, url, noteViews));
+    }
     Optional<ControlEntryConfig> parentControlEntry = controlEntryConfig.getParentControlEntry();
-    parentControlEntry.ifPresent(parent -> breadcrumbItemViews.addAll(createControlCodeBreadcrumbItemViews(sessionId, parent, includeChangeLinks, htmlRenderOptions)));
+    parentControlEntry.ifPresent(parent -> breadcrumbItemViews
+      .addAll(createControlCodeBreadcrumbItemViews(sessionId, parent, includeChangeLinks, htmlRenderOptions)));
     return breadcrumbItemViews;
   }
 

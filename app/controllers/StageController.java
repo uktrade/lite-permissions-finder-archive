@@ -207,8 +207,9 @@ public class StageController extends Controller {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
+    boolean isDecontrolled = controlEntryConfig.isDecontrolled();
     List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig, true);
-    return ok(item.render(answerForm, stageConfig.getStageId(), sessionId, resumeCode, breadcrumbView, controlCode, description, subAnswerViews));
+    return ok(item.render(answerForm, stageConfig.getStageId(), sessionId, resumeCode, breadcrumbView, controlCode, description, subAnswerViews, isDecontrolled));
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, StageConfig stageConfig, String sessionId,
@@ -340,8 +341,7 @@ public class StageController extends Controller {
         .collect(Collectors.toList()))
       ) {
         return redirect(routes.OutcomeController.outcomeListed(Long.toString(sessionService.getLastControlledCodeSeen(sessionId)), sessionId));
-      }
-      else {
+      } else {
         return resultForNoMatch(sessionId, stageConfig);
       }
     }

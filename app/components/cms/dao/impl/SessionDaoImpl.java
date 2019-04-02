@@ -55,12 +55,12 @@ public class SessionDaoImpl implements SessionDao {
   }
 
   @Override
-  public void updateLastControlledCode(String sessionId, long controlCodeId) {
+  public void updateLastControlCode(String sessionId, long controlCodeId) {
     sessionJDBIDao.updateLastControlledCodeId(sessionId, controlCodeId);
   }
 
   @Override
-  public long getLastControlledCode(String sessionId) {
+  public long getLastControlCode(String sessionId) {
     return sessionJDBIDao.getLastControlledCode(sessionId);
   }
 }

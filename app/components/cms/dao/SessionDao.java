@@ -20,7 +20,7 @@ public interface SessionDao {
 
   TriageSession getSessionByResumeCode(String resumeCode);
 
-  void updateLastControlledCode(String sessionId, long controlCodeId);
+  void updateLastControlCode(String sessionId, long controlCodeId);
 
-  long getLastControlledCode(String sessionId);
+  long getLastControlCode(String sessionId);
 }

@@ -117,7 +117,7 @@ public class SessionServiceImpl implements SessionService {
   public void updateLastControlledCodeSeen(String sessionId, long controlCodeId) {
     ControlEntry controlEntry = controlEntryDao.getControlEntry(controlCodeId);
     if (!controlEntry.isDecontrolled()) {
-      sessionDao.updateLastControlledCode(sessionId, controlCodeId);
+      sessionDao.updateLastControlCode(sessionId, controlCodeId);
     }
   }
 
@@ -129,7 +129,7 @@ public class SessionServiceImpl implements SessionService {
 
   @Override
   public long getLastControlledCodeSeen(String sessionId) {
-    return sessionDao.getLastControlledCode(sessionId);
+    return sessionDao.getLastControlCode(sessionId);
   }
 
   private String generateResumeCode() {

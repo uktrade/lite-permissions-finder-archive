@@ -36,9 +36,9 @@ public interface SessionJDBIDao {
   @SqlQuery("SELECT * FROM SESSION WHERE REPLACE(RESUME_CODE, '-', '') = :resumeCode")
   TriageSession getSessionByResumeCode(@Bind("resumeCode") String resumeCode);
 
-  @SqlUpdate("UPDATE SESSION SET LAST_CONTROLLED_CODE_ID = :controlCodeId WHERE ID = :id")
+  @SqlUpdate("UPDATE SESSION SET last_control_code_id = :controlCodeId WHERE ID = :id")
   void updateLastControlledCodeId(@Bind("id") String sessionId, @Bind("controlCodeId") long controlCodeId);
 
-  @SqlQuery("SELECT last_controlled_code_id FROM SESSION WHERE id = :id")
+  @SqlQuery("SELECT last_control_code_id FROM SESSION WHERE id = :id")
   long getLastControlledCode(@Bind("id") String sessionId);
 }
