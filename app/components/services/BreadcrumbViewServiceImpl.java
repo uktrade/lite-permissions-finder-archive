@@ -108,9 +108,7 @@ public class BreadcrumbViewServiceImpl implements BreadcrumbViewService {
     String description = renderService.getSummaryDescription(controlEntryConfig, htmlRenderOptions);
     String url = includeChangeLinks ? createChangeUrl(sessionId, stageIds) : null;
     List<BreadcrumbItemView> breadcrumbItemViews = new ArrayList<>();
-    if (!controlEntryConfig.isDecontrolled()) {
-      breadcrumbItemViews.add(new BreadcrumbItemView(controlCode, description, url, noteViews));
-    }
+    breadcrumbItemViews.add(new BreadcrumbItemView(controlCode, description, url, noteViews));
     Optional<ControlEntryConfig> parentControlEntry = controlEntryConfig.getParentControlEntry();
     parentControlEntry.ifPresent(parent -> breadcrumbItemViews
       .addAll(createControlCodeBreadcrumbItemViews(sessionId, parent, includeChangeLinks, htmlRenderOptions)));
