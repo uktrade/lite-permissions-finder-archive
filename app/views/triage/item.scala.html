@@ -8,7 +8,7 @@
 @import views.html.common.page._
 
 @this(standardPage: standardPage)
-@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, breadcrumbView: BreadcrumbView, controlCode: String, description: String, subAnswerViews: List[SubAnswerView])
+@(form: Form[_], stageId: String, sessionId: String, resumeCode: String, breadcrumbView: BreadcrumbView, controlCode: String, description: String, subAnswerViews: List[SubAnswerView], isDecontrolled: Boolean = false)
 
 @standardPage("Is this your item?", Some(heading("Is this your item?")), true, resumeCode, true){
   @errorSummary(form)
@@ -41,7 +41,7 @@
       <h3 class="govuk-heading-m">@controlCode</h3>
       <p class="govuk-label">
         @Html(description)
-	</p>
+	    </p>
       @if(!subAnswerViews.isEmpty) {
         @subAnswers(subAnswerViews)
       }

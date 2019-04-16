@@ -111,22 +111,11 @@ public class OutcomeController extends Controller {
 
   public Result handleOutcomeDecontrolSubmit(String stageId, String sessionId) {
     StageConfig stageConfig = controllerConfigService.getStageConfig(stageId);
-
-    if (PageTypeUtil.getPageType(stageConfig) != PageType.DECONTROL) {
-      throw UnknownParameterException.unknownStageId(stageId);
+    Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();
+    if (form.hasErrors() || !isChecked(form)) {
+      return renderOutcomeDecontrol(form, stageConfig, sessionId);
     } else {
-      Set<String> answers = sessionService.getAnswerIdsForStageId(sessionId, stageConfig.getStageId());
-      if (answers.isEmpty()) {
-        LOGGER.error("Answers cannot be empty on outcome decontrol page.");
-        return redirectToIndex(sessionId);
-      } else {
-        Form<RequestNlrForm> form = formFactory.form(RequestNlrForm.class).bindFromRequest();
-        if (form.hasErrors() || !isChecked(form)) {
-          return renderOutcomeDecontrol(form, stageConfig, sessionId);
-        } else {
-          return redirect(routes.ViewOutcomeController.registerDecontrolNlr(sessionId, stageConfig.getStageId()));
-        }
-      }
+      return redirect(routes.ViewOutcomeController.registerDecontrolNlr(sessionId, stageConfig.getStageId()));
     }
   }
 

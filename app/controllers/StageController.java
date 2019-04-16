@@ -207,8 +207,9 @@ public class StageController extends Controller {
     ControlEntryConfig controlEntryConfig = breadcrumbViewService.getControlEntryConfig(stageConfig);
     String controlCode = controlEntryConfig.getControlCode();
     String description = renderService.getFullDescription(controlEntryConfig);
+    boolean isDecontrolled = controlEntryConfig.isDecontrolled();
     List<SubAnswerView> subAnswerViews = answerViewService.createSubAnswerViews(controlEntryConfig, true);
-    return ok(item.render(answerForm, stageConfig.getStageId(), sessionId, resumeCode, breadcrumbView, controlCode, description, subAnswerViews));
+    return ok(item.render(answerForm, stageConfig.getStageId(), sessionId, resumeCode, breadcrumbView, controlCode, description, subAnswerViews, isDecontrolled));
   }
 
   private Result renderDecontrol(Form<MultiAnswerForm> multiAnswerForm, StageConfig stageConfig, String sessionId,
@@ -334,7 +335,15 @@ public class StageController extends Controller {
     // Redirect to none of the above
     if (answer != null && answer.equals("none")) {
       sessionService.updateLastStageId(sessionId, stageId);
-      return resultForNoMatch(sessionId, stageConfig);
+      if (sessionService.allControlCodesDecontrolled(stageConfig.getAnswerConfigs().stream()
+        .map(AnswerConfig::getAnswerId)
+        .map(Long::valueOf)
+        .collect(Collectors.toList()))
+      ) {
+        return redirect(routes.OutcomeController.outcomeListed(Long.toString(sessionService.getLastControlledCodeSeen(sessionId)), sessionId));
+      } else {
+        return resultForNoMatch(sessionId, stageConfig);
+      }
     }
 
     Optional<AnswerConfig> answerConfigOptional = stageConfig.getAnswerConfigs().stream()
@@ -345,6 +354,7 @@ public class StageController extends Controller {
       AnswerConfig answerConfig = answerConfigOptional.get();
       sessionService.saveAnswerIdsForStageId(sessionId, stageId, Collections.singleton(answerConfig.getAnswerId()));
       sessionService.updateLastStageId(sessionId, stageId);
+      sessionService.updateLastControlledCodeSeen(sessionId, Long.valueOf(answerConfig.getAnswerId()));
       return resultForStandardStageAnswer(stageId, sessionId, answerConfig);
     } else {
       LOGGER.error("Unknown answer {}", answer);

@@ -1,5 +1,6 @@
 package triage.session;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import models.cms.Journey;
@@ -26,4 +27,10 @@ public interface SessionService {
   Optional<String> getAndRemoveControlCodeToConfirmDecontrolledStatus(String sessionId);
 
   void bindSessionToJourney(String sessionId, Journey journey);
+
+  void updateLastControlledCodeSeen(String sessionId, long controlCodeId);
+
+  boolean allControlCodesDecontrolled(Collection<Long> controlCodes);
+
+  long getLastControlledCodeSeen(String sessionId);
 }
