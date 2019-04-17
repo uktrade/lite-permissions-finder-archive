@@ -33,6 +33,8 @@ public class OnboardingController {
   private final JourneyService journeyService;
 
   private final String DONT_KNOW = "DONT_KNOW";
+  private final String FIREARMS = "FIREARMS";
+  private final String SOFTWARE_AND_TECHNOLOGY = "SOFTWARE_AND_TECHNOLOGY";
 
   public CompletionStage<Result> renderForm(String sessionId) {
     String resumeCode = sessionService.getSessionById(sessionId).getResumeCode();
@@ -62,6 +64,9 @@ public class OnboardingController {
 
   private List<SelectOption> getSelectOptions() {
     List<SelectOption> optionList = new ArrayList<>();
+
+    optionList.add(new SelectOption(FIREARMS, "Firearms", true));
+    optionList.add(new SelectOption(SOFTWARE_AND_TECHNOLOGY, "Software and Technology", true));
 
     for (Journey journey : journeyService.getAllJourneys()) {
       optionList.add(new SelectOption(journey.getJourneyName(), journey.getFriendlyJourneyName(), false));
