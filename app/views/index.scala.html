@@ -12,7 +12,7 @@
 	<div class="govuk-breadcrumbs">
 		<ol class="govuk-breadcrumbs__list" aria-label="Breadcrumbs">
 			<li class="govuk-breadcrumbs__list-item">
-				<a class="govuk-breadcrumbs__link" href="#">Home</a>
+				<a class="govuk-breadcrumbs__link" href="https://www.gov.uk">Home</a>
 			</li>
 		</ol>
 	</div>
@@ -26,7 +26,6 @@
 				<ul class="govuk-list govuk-list--bullet">
 					<li>check if your item is controlled</li>
 					<li>find an open general export licence and register for one if needed</li>
-					<li>view your licensing information for licences you register for on this service</li>
 				</ul>
 
 				<div class="govuk-form-group">
@@ -56,18 +55,6 @@
 			</div>
 
 			<div class="govuk-grid-column-one-third related-content">
-				@if(dashboardConfig.getDashboardUrl() != null) {
-				<h2 class="govuk-heading-m">Go to</h2>
-
-				<nav role="navigation" aria-labelledby="go-to-title">
-					<ul class="govuk-list">
-						<li>
-							<a class="govuk-link" href="@dashboardConfig.getDashboardUrl()">View your licensing information</a>
-						</li>
-					</ul>
-				</nav>
-				}
-
 				<h2 class="govuk-heading-m">Related content</h2>
 
 				<ul class="govuk-list">
@@ -87,7 +74,6 @@
 						</a>
 					</li>
 				</ul>
-
 			</div>
 		</div>
 
