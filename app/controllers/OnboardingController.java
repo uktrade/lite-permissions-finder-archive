@@ -77,8 +77,6 @@ public class OnboardingController {
   }
 
   private String alterJourneyNameForTriage(String name) {
-      System.out.println("\n\n\n\n\n" + name.toString());
-      System.out.println(name.toString().equals("Paramilitary"));
       if (name.equals("UK Military List")) {
         return "Goods designed originally for military (armed forces) use? (eg vehicles, protective clothing, imaging equipment)";
       } else if (name.equals("Dual-Use List")) {
