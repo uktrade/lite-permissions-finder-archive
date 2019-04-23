@@ -77,19 +77,20 @@ public class OnboardingController {
   }
 
   private String alterJourneyNameForTriage(String name) {
-      if (name.equals("UK Military List")) {
+    switch (name) {
+      case "UK Military List":
         return "Goods designed originally for military (armed forces) use? (eg vehicles, protective clothing, imaging equipment)";
-      } else if (name.equals("Dual-Use List")) {
+      case "Dual-Use List":
         return "Goods that can be used for both public and military use (dual-use)? (eg detection equipment, SatNav/GPS)";
-      } else if (name.equals("Human Rights")) {
+      case "Human Rights":
         return "Goods that may be used for human torture or capital punishment? (eg restraints, products for lethal injection)";
-      } else if (name.equals("Paramilitary")) {
+      case "Paramilitary":
         return "Goods designed for paramilitary, security or police? (eg riot control equipment. This includes reproduction firearms)";
-      } else if (name.equals("Controlled Radioactive Sources")){
+      case "Controlled Radioactive Sources":
         return "Radioactive substances? (eg Co-60 (Cobalt 60), Yb-169 (Ytterbium 169))";
-      } else {
+      default:
         return name;
-      }
+    }
   }
 
   public static class OnboardingForm {
