@@ -65,15 +65,32 @@ public class OnboardingController {
   private List<SelectOption> getSelectOptions() {
     List<SelectOption> optionList = new ArrayList<>();
 
-    optionList.add(new SelectOption(FIREARMS, "Firearms", true));
-    optionList.add(new SelectOption(SOFTWARE_AND_TECHNOLOGY, "Software and Technology", true));
+    optionList.add(new SelectOption(FIREARMS, "A firearm (such a shotgun or rifle) or related to firearms (such as ammunition or accessories)?", true));
+    optionList.add(new SelectOption(SOFTWARE_AND_TECHNOLOGY, "Technology, software or an item that holds software? (eg manuals, blueprints, training and consultancy, data storage)", true));
 
     for (Journey journey : journeyService.getAllJourneys()) {
-      optionList.add(new SelectOption(journey.getJourneyName(), journey.getFriendlyJourneyName(), false));
+      optionList.add(new SelectOption(journey.getJourneyName(), alterJourneyNameForTriage(journey.getFriendlyJourneyName()), false));
     }
 
     optionList.add(new SelectOption(DONT_KNOW, "I don't know", true));
     return optionList;
+  }
+
+  private String alterJourneyNameForTriage(String name) {
+    switch (name) {
+      case "UK Military List":
+        return "Goods designed originally for military (armed forces) use? (eg vehicles, protective clothing, imaging equipment)";
+      case "Dual-Use List":
+        return "Goods that can be used for both public and military use (dual-use)? (eg detection equipment, SatNav/GPS)";
+      case "Human Rights":
+        return "Goods that may be used for human torture or capital punishment? (eg restraints, products for lethal injection)";
+      case "Paramilitary":
+        return "Goods designed for paramilitary, security or police? (eg riot control equipment. This includes reproduction firearms)";
+      case "Controlled Radioactive Sources":
+        return "Radioactive substances? (eg Co-60 (Cobalt 60), Yb-169 (Ytterbium 169))";
+      default:
+        return name;
+    }
   }
 
   public static class OnboardingForm {
