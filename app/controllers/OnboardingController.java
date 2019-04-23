@@ -72,7 +72,6 @@ public class OnboardingController {
       optionList.add(new SelectOption(journey.getJourneyName(), alterJourneyNameForTriage(journey.getFriendlyJourneyName()), false));
     }
 
-    optionList.add(new SelectOption(DONT_KNOW, "I don't know", true));
     return optionList;
   }
 
