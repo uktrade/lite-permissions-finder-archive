@@ -35,7 +35,7 @@ public class StaticContentController extends Controller {
     TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites", false),
     TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment", false),
     FAIR_PROCESSING_NOTE("fairProcessingNote.html", "Fair processing note", false),
-    NEED_ASSISTANCE("needAssistance.html", "Need assistance", true);
+    NEED_ASSISTANCE("needAssistance.html", "Need assistance", false);
 
     private final String filename;
     private final String title;
@@ -45,8 +45,8 @@ public class StaticContentController extends Controller {
     StaticHtml(String filename, String title, boolean showBackLink, Html pageHeading) {
       this.filename = filename;
       this.title = title;
-      this.pageHeading = pageHeading;
       this.showBackLink = showBackLink;
+      this.pageHeading = pageHeading;
     }
 
     StaticHtml(String filename, String title, boolean showBackLink) {
