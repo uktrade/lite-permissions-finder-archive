@@ -2,4 +2,4 @@
 
 @this(standardPage: standardPage)
 @(title: String, pageHeading: Option[Html], content: Html, showBackLink: Boolean, resumeCode: String)
-@standardPage(title, pageHeading, showBackLink = true, resumeCode = resumeCode){ }(content)
+@standardPage(title, pageHeading, showBackLink = showBackLink, resumeCode = resumeCode){ }(content)
