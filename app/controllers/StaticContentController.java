@@ -35,7 +35,7 @@ public class StaticContentController extends Controller {
     TOO_MANY_CUSTOMERS_OR_SITES("tooManyCustomersOrSites.html", "Too many customers or sites", false),
     TRANSHIPMENT("tradetypes/transhipment.html", "Transhipment", false),
     FAIR_PROCESSING_NOTE("fairProcessingNote.html", "Fair processing note", false),
-    NEED_ASSISTANCE("needAssistance.html", "Need assistance", false);
+    NEED_ASSISTANCE("needAssistance.html", "Need assistance", true);
 
     private final String filename;
     private final String title;
