@@ -13,6 +13,7 @@ pipeline {
           deleteDir()
           checkout scm
           deployer = docker.image("ukti/lite-image-builder")
+          docker_args = "--network host"
           deployer.pull()
           env.BUILD_VERSION = ''
         }
@@ -22,7 +23,7 @@ pipeline {
     stage('test') {
       steps {
         script {
-          deployer.inside {
+          deployer.inside(docker_args) {
             try {
               sh 'sbt -no-colors test'
               sh 'for report in target/test-reports/*.xml; do mv $report $(dirname $report)/TEST-$(basename $report); done;'
@@ -52,7 +53,7 @@ pipeline {
     stage('sonarqube') {
       steps {
         script {
-          deployer.inside {
+          deployer.inside(docker_args) {
             withSonarQubeEnv('sonarqube') {
               sh 'sbt -no-colors compile test:compile'
               sh "${env.SONAR_SCANNER_PATH}/sonar-scanner -Dsonar.projectVersion=${env.BUILD_VERSION}"
