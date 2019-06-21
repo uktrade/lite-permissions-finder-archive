@@ -17,7 +17,7 @@ import java.util.Collections;
 
 @RunWith(PactRunner.class)
 @Provider("lite-permissions-finder")
-@PactBroker(host = "pact-broker.ci.uktrade.io", port = "80")
+@PactBroker(host = "pact-broker.ci.uktrade.io", protocol = "https", port = "443")
 public class NotificationServiceProviderPact {
 
   private final AmazonSQS amazonSQS = mock(AmazonSQS.class);
