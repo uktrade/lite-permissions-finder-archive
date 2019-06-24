@@ -18,6 +18,13 @@
   }
 }
 
+@bodyStart = {
+	@if(StringUtils.isNotEmpty(analyticsConfig.getGoogleAnalyticsId)) {
+		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=@analyticsConfig.getGoogleAnalyticsId"
+	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+	}
+}
+
 @bodyEnd = {
   <script type="text/javascript" src="@routes.JavaScriptRoutesController.javascriptRoutes"></script>
   <script type="text/javascript" src="@controllers.routes.Assets.versioned("javascripts/standard-page.js")"></script>
@@ -41,7 +48,7 @@
   htmlLang = None
 )(
   head = head,
-  bodyStart = HtmlFormat.empty,
+  bodyStart = bodyStart,
   bodyEnd = bodyEnd,
   insideHeader = HtmlFormat.empty,
   afterHeader = HtmlFormat.empty,
