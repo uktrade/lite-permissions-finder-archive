@@ -116,7 +116,7 @@ public class SessionServiceImpl implements SessionService {
   @Override
   public void updateLastControlledCodeSeen(String sessionId, long controlCodeId) {
     ControlEntry controlEntry = controlEntryDao.getControlEntry(controlCodeId);
-    if (!controlEntry.isDecontrolled()) {
+    if (controlEntry != null && !controlEntry.isDecontrolled()) {
       sessionDao.updateLastControlCode(sessionId, controlCodeId);
     }
   }
