@@ -27,3 +27,4 @@ resolvers += "Lite Lib Releases " at "https://nexus.ci.uktrade.io/repository/mav
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.7.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-jacoco" % "3.0.3")
+addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "1.3.3")

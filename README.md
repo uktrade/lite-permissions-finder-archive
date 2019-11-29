@@ -64,3 +64,20 @@ application. Its URL is configured by the `dashboard.url` config option.
 
 Note: to preserve a user's authentication session between the permissions finder and the dashboard, both applications must
 be configured to use the same Play secret key and serve their session cookies from a shared domain suffix.
+
+
+### Dependency Checker
+
+Dependency-Check is a Software Composition Analysis (SCA) tool that attempts to detect publicly disclosed vulnerabilities contained within a project's dependencies. It does this by determining if there is a Common Platform Enumeration (CPE) identifier for a given dependency. If found, it will generate a report linking to the associated CVE entries.
+
+The reports will be written to the default location `crossTarget.value.` This can be overwritten by setting `dependencyCheckOutputDirectory`.
+
+### Tasks
+Task | Description | Command
+:-------|:------------|:-----
+dependencyCheck | Runs dependency-check against the current project, its aggregates and dependencies and generates a report for each project. | ```$ sbt dependencyCheck```
+dependencyCheckAggregate | Runs dependency-check against the current project, it's aggregates and dependencies and generates a single report in the current project's output directory. | ```$ sbt dependencyCheckAggregate```
+dependencyCheckUpdateOnly | Updates the local cache of the NVD data from NIST. | ```$ sbt dependencyCheckUpdateOnly```
+dependencyCheckPurge | Deletes the local copy of the NVD. This is used to force a refresh of the data. | ```$ sbt dependencyCheckPurge```
+
+
