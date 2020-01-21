@@ -1,9 +1,34 @@
 def projectName = 'lite-permissions-finder'
 pipeline {
+
   agent {
-    node {
-      label env.CI_SLAVE
+    kubernetes {
+      defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    job: ${env.JOB_NAME}
+    job_id: ${env.BUILD_NUMBER}
+spec:
+  nodeSelector:
+    role: worker
+  containers:
+  - name: lite-image-builder
+    image: ukti/lite-image-builder
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true
+"""
     }
+  }
+
+  options {
+    timestamps()
+    ansiColor('xterm')
+    buildDiscarder(logRotator(daysToKeepStr: '180'))
   }
 
   stages {
@@ -11,10 +36,6 @@ pipeline {
       steps {
         script {
           deleteDir()
-          checkout scm
-          deployer = docker.image("ukti/lite-image-builder")
-          docker_args = "--network host"
-          deployer.pull()
           env.BUILD_VERSION = ''
         }
       }
@@ -22,18 +43,24 @@ pipeline {
 
     stage('test') {
       steps {
-        script {
-          deployer.inside(docker_args) {
-            try {
-              sh 'sbt -no-colors test'
-              sh 'for report in target/test-reports/*.xml; do mv $report $(dirname $report)/TEST-$(basename $report); done;'
-            }
-            finally {
-              step([$class: 'JUnitResultArchiver', testResults: 'target/test-reports/**/*.xml'])
+          container('lite-image-builder'){
+            script {
+            checkout([
+                  $class: 'GitSCM', branches: [[name: "${env.GIT_BRANCH}"]],
+                  userRemoteConfigs: [[url: 'https://github.com/uktrade/lite-permissions-finder.git']]
+                ])
+
+                try {
+                  sh 'sbt -no-colors test'
+                  sh 'for report in target/test-reports/*.xml; do mv $report $(dirname $report)/TEST-$(basename $report); done;'
+                }
+                finally {
+                  step([$class: 'JUnitResultArchiver', testResults: 'target/test-reports/**/*.xml'])
+                }
+
             }
           }
         }
-      }
     }
 
      stage('build') {
@@ -52,15 +79,17 @@ pipeline {
 
     stage('sonarqube') {
       steps {
-        script {
-          deployer.inside(docker_args) {
-            withSonarQubeEnv('sonarqube') {
-              sh 'sbt -no-colors compile test:compile'
-              sh "${env.SONAR_SCANNER_PATH}/sonar-scanner -Dsonar.projectVersion=${env.BUILD_VERSION}"
+          container('lite-image-builder'){
+            script {
+
+                withSonarQubeEnv('sonarqube') {
+                  sh 'sbt -no-colors compile test:compile'
+                  sh "${env.SONAR_SCANNER_PATH}/sonar-scanner -Dsonar.projectVersion=${env.BUILD_VERSION}"
+                }
+
             }
           }
         }
-      }
     }
 
      stage('deploy') {
